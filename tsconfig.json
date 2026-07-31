@@ -1,0 +1,6 @@
+{
+  "$comment": "Root config for editors only. Each workspace has its own tsconfig that extends @serverless-ui/typescript-config.",
+  "extends": "./config/typescript-config/base.json",
+  "files": [],
+  "include": []
+}

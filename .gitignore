@@ -1,0 +1,57 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build output
+dist/
+build/
+*.tsbuildinfo
+
+# The admin console bundle is a build artifact and is not committed. The empty
+# directory is, because assets.go embeds it at compile time and go:embed fails on
+# a missing directory. The negation must stay below the `dist/` rule above to
+# take effect, and the re-exclusion below it, or the bundle comes back.
+!apps/serverless-admin/dist/
+apps/serverless-admin/dist/*
+!apps/serverless-admin/dist/.gitkeep
+
+# Nx
+.nx/
+
+# Vite's dependency pre-bundle cache. It lives in the app root as well as under
+# node_modules, so both spellings are needed.
+.vite/
+**/.vite/
+vite.config.*.timestamp-*
+
+# Tool caches
+.eslintcache
+.stylelintcache
+*.tsbuildinfo
+
+# Test output
+coverage/
+.nyc_output/
+
+# npm auth for GitHub Packages — the example is committed, the real one is not
+.npmrc
+
+# Local env
+.env
+.env.*
+!.env.example
+*.local
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+bun-debug.log*
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+*.swp
+*~

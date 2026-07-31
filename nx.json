@@ -1,0 +1,53 @@
+{
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "defaultBase": "main",
+  "namedInputs": {
+    "default": [
+      "{projectRoot}/**/*",
+      "sharedGlobals",
+      "!{projectRoot}/.nx/**/*",
+      "!{projectRoot}/*.tsbuildinfo",
+      "!{projectRoot}/dist/**/*"
+    ],
+    "production": ["default", "!{projectRoot}/**/*.md", "!{projectRoot}/eslint.config.js"],
+    "sharedGlobals": [
+      "{workspaceRoot}/config/typescript-config/*.json",
+      "{workspaceRoot}/config/eslint-config/*.js",
+      "{workspaceRoot}/.env.*local"
+    ]
+  },
+  "targetDefaults": {
+    "build": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"],
+      "outputs": ["{projectRoot}/dist"]
+    },
+    "typecheck": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"],
+      "outputs": []
+    },
+    "lint": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["default", "^production"],
+      "outputs": []
+    },
+    "dev": {
+      "cache": false,
+      "dependsOn": ["^build"],
+      "continuous": true
+    },
+    "preview": {
+      "cache": false,
+      "dependsOn": ["build"],
+      "continuous": true
+    },
+    "clean": {
+      "cache": false
+    }
+  },
+  "analytics": false
+}

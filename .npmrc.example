@@ -1,0 +1,12 @@
+# Consuming @datadack packages from GitHub Packages.
+#
+# Copy to .npmrc in the project that installs them (or to ~/.npmrc), and supply a
+# GitHub token with `read:packages`. GitHub Packages requires authentication even
+# for public packages, which is the one way it differs from npmjs.org.
+#
+#   export GITHUB_TOKEN=ghp_xxx
+#
+# .npmrc is gitignored here — never commit a token.
+
+@datadack:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
