@@ -35,7 +35,8 @@ web-ui/
 │   └── eslint-config/         # flat configs: base and react
 ├── packages/                  # publishable, reusable across apps
 └── apps/
-    └── serverless-admin/      # Vite + React app
+    ├── serverless-admin/      # Vite + React app (admin console at /admin)
+    └── cloud-react/           # Vite + React app (DataDack cloud console)
 ```
 
 `config/*` packages are `private` — they are consumed through workspace links
@@ -145,9 +146,9 @@ bun run release            # build packages, then publish
 ```
 
 `release` builds `-p tag:publishable` before handing off to `changeset publish`.
-`serverless-admin` is listed in `.changeset/config.json` under `ignore`, so the
-app is never versioned or published; it also lacks the `publishable` tag, so the
-release build skips it.
+`serverless-admin` and `cloud-react` are listed in `.changeset/config.json`
+under `ignore`, so the apps are never versioned or published; they also lack the
+`publishable` tag, so the release build skips them.
 
 `.github/workflows/publish-packages.yml` publishes to GitHub Packages on a tag
 shaped like `function-studio-v0.1.0`, and refuses to publish when the tag and the
