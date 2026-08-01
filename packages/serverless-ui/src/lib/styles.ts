@@ -67,3 +67,11 @@ export const glass2 = css`
   border: 1px solid var(--border-glass, rgb(0 0 0 / 0.08));
   border-radius: 0.75rem;
 `
+
+/** glass-3: the most opaque tier — overlay cards that must read over content. */
+export const glass3 = css`
+  background: var(--glass-3-bg, rgb(255 255 255 / 0.78));
+  backdrop-filter: blur(32px);
+  border: 1px solid var(--border-glass, rgb(0 0 0 / 0.08));
+  border-radius: 0.75rem;
+`

@@ -26,6 +26,10 @@ export {
 } from './console/status-config'
 
 // Console building blocks
+export {
+  CodeEditorPlaceholder,
+  type CodeEditorPlaceholderProps,
+} from './console/CodeEditorPlaceholder'
 export { EmptyState } from './console/EmptyState'
 export { KeyValueGrid, type KeyValueItem } from './console/KeyValueGrid'
 export { PageHeader } from './console/PageHeader'

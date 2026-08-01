@@ -10,6 +10,7 @@ import { timeAgo } from '@/lib/utils'
 import {
   Badge,
   Button,
+  CodeEditorPlaceholder,
   EmptyState,
   KeyValueGrid,
   Skeleton,
@@ -19,8 +20,6 @@ import {
   TabsList,
   TabsTrigger,
 } from '@datadack/serverless-ui'
-
-import { CodeEditorPlaceholder } from './CodeEditorPlaceholder'
 
 const TABS = [
   { value: 'code', label: 'Code', icon: Code2 },
@@ -121,7 +120,7 @@ export function FunctionDetailPage() {
         </TabsList>
 
         <TabsContent value="code">
-          <CodeTab functionName={fn.name} />
+          <CodeTab fn={fn} />
         </TabsContent>
         <TabsContent value="configuration">
           <ConfigurationTab fn={fn} />
@@ -149,8 +148,15 @@ function BackLink() {
 }
 
 /** Inline code editing is not built yet — the tab stays, the editor does not. */
-function CodeTab({ functionName }: Readonly<{ functionName: string }>) {
-  return <CodeEditorPlaceholder functionName={functionName} />
+function CodeTab({ fn }: Readonly<{ fn: FunctionEntity }>) {
+  return (
+    <CodeEditorPlaceholder
+      functionName={fn.name}
+      runtime={fn.runtime}
+      sizeBytes={fn.version?.codeArtifact?.sizeBytes}
+      version={fn.version?.version}
+    />
+  )
 }
 
 function ConfigurationTab({ fn }: Readonly<{ fn: FunctionEntity }>) {

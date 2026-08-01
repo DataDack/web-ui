@@ -42,11 +42,15 @@ injectGlobal(`
     --status-neutral: #717177;
     --status-neutral-bg: rgb(113 113 119 / 0.12);
 
+    --chart-1: #2a78d6;
+    --chart-2: #eb6834;
+    --chart-3: #1baf7a;
     --chart-grid: rgb(0 0 0 / 0.07);
 
     --border-glass: rgb(0 0 0 / 0.08);
     --glass-1-bg: rgb(255 255 255 / 0.55);
     --glass-2-bg: rgb(255 255 255 / 0.65);
+    --glass-3-bg: rgb(255 255 255 / 0.78);
 
     --dur-base: 250ms;
     --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -86,10 +90,14 @@ injectGlobal(`
     --status-neutral: #909096;
     --status-neutral-bg: rgb(144 144 150 / 0.14);
 
+    --chart-1: #3987e5;
+    --chart-2: #d95926;
+    --chart-3: #199e70;
     --chart-grid: rgb(255 255 255 / 0.08);
 
     --border-glass: rgb(255 255 255 / 0.1);
     --glass-1-bg: rgb(255 255 255 / 0.02);
     --glass-2-bg: rgb(255 255 255 / 0.03);
+    --glass-3-bg: rgb(32 31 32 / 0.72);
   }
 `)
