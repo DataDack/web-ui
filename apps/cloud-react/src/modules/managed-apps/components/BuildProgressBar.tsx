@@ -18,11 +18,11 @@ import { TRANSITIONAL_BUILD_STATUSES, type Build } from "../managed-apps.types"
 const STAGES = TRANSITIONAL_BUILD_STATUSES
 
 const STAGE_LABELS: Record<string, string> = {
-	queued: "Queued",
-	cloning: "Cloning",
-	building: "Building",
-	uploading: "Uploading",
-	deploying: "Deploying",
+    queued: "Queued",
+    cloning: "Cloning",
+    building: "Building",
+    uploading: "Uploading",
+    deploying: "Deploying",
 }
 
 /**
@@ -31,23 +31,23 @@ const STAGE_LABELS: Record<string, string> = {
  * "0001-01-01T00:00:00Z" (negative epoch ms), and empty strings parse as NaN.
  */
 function isTimeSet(iso: string | null | undefined): iso is string {
-	if (!iso) return false
-	const ms = new Date(iso).getTime()
-	return !Number.isNaN(ms) && ms > 0
+    if (!iso) return false
+    const ms = new Date(iso).getTime()
+    return !Number.isNaN(ms) && ms > 0
 }
 
 /** mm:ss, or h:mm:ss once a build has been running for over an hour. */
 function formatElapsed(ms: number): string {
-	const total = Math.max(0, Math.floor(ms / 1000))
-	const seconds = String(total % 60).padStart(2, "0")
-	const minutes = Math.floor(total / 60)
-	if (minutes < 60) return `${String(minutes).padStart(2, "0")}:${seconds}`
-	return `${String(Math.floor(minutes / 60))}:${String(minutes % 60).padStart(2, "0")}:${seconds}`
+    const total = Math.max(0, Math.floor(ms / 1000))
+    const seconds = String(total % 60).padStart(2, "0")
+    const minutes = Math.floor(total / 60)
+    if (minutes < 60) return `${String(minutes).padStart(2, "0")}:${seconds}`
+    return `${String(Math.floor(minutes / 60))}:${String(minutes % 60).padStart(2, "0")}:${seconds}`
 }
 
 interface BuildProgressBarProps {
-	build: Build
-	className?: string
+    build: Build
+    className?: string
 }
 
 /**
@@ -56,43 +56,43 @@ interface BuildProgressBarProps {
  * queue) and falls back to `created_at` for a build still queued.
  */
 export function BuildProgressBar({ build, className }: Readonly<BuildProgressBarProps>) {
-	const startIso = isTimeSet(build.started_at) ? build.started_at : build.created_at
-	const [elapsed, setElapsed] = useState(() => Date.now() - new Date(startIso).getTime())
+    const startIso = isTimeSet(build.started_at) ? build.started_at : build.created_at
+    const [elapsed, setElapsed] = useState(() => Date.now() - new Date(startIso).getTime())
 
-	useEffect(() => {
-		const tick = () => {
-			setElapsed(Date.now() - new Date(startIso).getTime())
-		}
-		tick()
-		const timer = setInterval(tick, 1000)
-		return () => {
-			clearInterval(timer)
-		}
-	}, [startIso])
+    useEffect(() => {
+        const tick = () => {
+            setElapsed(Date.now() - new Date(startIso).getTime())
+        }
+        tick()
+        const timer = setInterval(tick, 1000)
+        return () => {
+            clearInterval(timer)
+        }
+    }, [startIso])
 
-	const current = STAGES.indexOf(build.status)
-	// An unknown/settled status leaves the rail empty rather than guessing.
-	if (current === -1) return null
+    const current = STAGES.indexOf(build.status)
+    // An unknown/settled status leaves the rail empty rather than guessing.
+    if (current === -1) return null
 
-	return (
-		<div className={cn("space-y-1.5", className)}>
-			<div className="flex items-center gap-1" aria-hidden>
-				{STAGES.map((stage, index) => (
-					<span
-						key={stage}
-						className={cn(
-							"h-1 flex-1 rounded-full transition-colors",
-							index < current && "bg-status-info",
-							index === current && "animate-pulse bg-status-info",
-							index > current && "bg-border/60"
-						)}
-					/>
-				))}
-			</div>
-			<p className="font-mono text-[11px] text-muted-foreground">
-				{STAGE_LABELS[build.status] ?? build.status} · step {String(current + 1)} of{" "}
-				{String(STAGES.length)} · {formatElapsed(elapsed)}
-			</p>
-		</div>
-	)
+    return (
+        <div className={cn("space-y-1.5", className)}>
+            <div className="flex items-center gap-1" aria-hidden>
+                {STAGES.map((stage, index) => (
+                    <span
+                        key={stage}
+                        className={cn(
+                            "h-1 flex-1 rounded-full transition-colors",
+                            index < current && "bg-status-info",
+                            index === current && "animate-pulse bg-status-info",
+                            index > current && "bg-border/60"
+                        )}
+                    />
+                ))}
+            </div>
+            <p className="font-mono text-[11px] text-muted-foreground">
+                {STAGE_LABELS[build.status] ?? build.status} · step {String(current + 1)} of{" "}
+                {String(STAGES.length)} · {formatElapsed(elapsed)}
+            </p>
+        </div>
+    )
 }

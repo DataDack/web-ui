@@ -35,9 +35,7 @@ export function TestResultPanel({ result }: Readonly<{ result: TestChannelResult
                 <XCircle className="size-4 shrink-0" />
                 Not delivered
                 {typeof result.status_code === "number" && (
-                    <span className="font-mono text-xs opacity-80">
-                        HTTP {result.status_code}
-                    </span>
+                    <span className="font-mono text-xs opacity-80">HTTP {result.status_code}</span>
                 )}
             </div>
             {result.error && (

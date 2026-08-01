@@ -226,7 +226,7 @@ export function RouteCard({
                                     setValue(
                                         `${path}.tg_algorithm`,
                                         v as FormValues["listeners"][number]["tg_algorithm"],
-                                        { shouldValidate: true },
+                                        { shouldValidate: true }
                                     )
                                 }}
                             >
@@ -271,19 +271,17 @@ export function RouteCard({
                                     `${path}.targets`,
                                     checked
                                         ? [...l.targets, { instance_id: instanceId, port: "" }]
-                                        : l.targets.filter(
-                                              (tgt) => tgt.instance_id !== instanceId,
-                                          ),
-                                    { shouldValidate: true },
+                                        : l.targets.filter((tgt) => tgt.instance_id !== instanceId),
+                                    { shouldValidate: true }
                                 )
                             }}
                             onPortChange={(instanceId, port) => {
                                 setValue(
                                     `${path}.targets`,
                                     l.targets.map((tgt) =>
-                                        tgt.instance_id === instanceId ? { ...tgt, port } : tgt,
+                                        tgt.instance_id === instanceId ? { ...tgt, port } : tgt
                                     ),
-                                    { shouldValidate: true },
+                                    { shouldValidate: true }
                                 )
                             }}
                         />

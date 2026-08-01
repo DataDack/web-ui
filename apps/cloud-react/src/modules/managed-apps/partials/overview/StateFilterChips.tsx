@@ -5,10 +5,10 @@ import { cn } from "@/lib/utils"
 import type { StateChip, StateFilter } from "./project-list"
 
 interface StateFilterChipsProps {
-	chips: StateChip[]
-	total: number
-	value: StateFilter
-	onChange: (value: StateFilter) => void
+    chips: StateChip[]
+    total: number
+    value: StateFilter
+    onChange: (value: StateFilter) => void
 }
 
 /**
@@ -28,75 +28,75 @@ interface StateFilterChipsProps {
  * is a dead end.
  */
 export function StateFilterChips({
-	chips,
-	total,
-	value,
-	onChange,
+    chips,
+    total,
+    value,
+    onChange,
 }: Readonly<StateFilterChipsProps>) {
-	// One state, one chip, and it is already selected — the filter would be a
-	// no-op control that only ever narrows to what is already on screen.
-	if (chips.length < 2) return null
+    // One state, one chip, and it is already selected — the filter would be a
+    // no-op control that only ever narrows to what is already on screen.
+    if (chips.length < 2) return null
 
-	return (
-		<div
-			role="group"
-			aria-label="Filter by state"
-			className="-mx-0.5 flex min-w-0 flex-1 items-center gap-1 overflow-x-auto px-0.5 py-0.5"
-		>
-			<Chip
-				label="All"
-				count={total}
-				selected={value === "all"}
-				onClick={() => {
-					onChange("all")
-				}}
-			/>
-			{chips.map((chip) => (
-				<Chip
-					key={chip.kind}
-					label={chip.label}
-					count={chip.count}
-					selected={value === chip.kind}
-					toneClass={TONE_CLASSES[chip.tone]}
-					dotClass={TONE_DOT_CLASSES[chip.tone]}
-					onClick={() => {
-						// Clicking the active chip is how you get back to everything,
-						// so the control never becomes a trap.
-						onChange(value === chip.kind ? "all" : chip.kind)
-					}}
-				/>
-			))}
-		</div>
-	)
+    return (
+        <div
+            role="group"
+            aria-label="Filter by state"
+            className="-mx-0.5 flex min-w-0 flex-1 items-center gap-1 overflow-x-auto px-0.5 py-0.5"
+        >
+            <Chip
+                label="All"
+                count={total}
+                selected={value === "all"}
+                onClick={() => {
+                    onChange("all")
+                }}
+            />
+            {chips.map((chip) => (
+                <Chip
+                    key={chip.kind}
+                    label={chip.label}
+                    count={chip.count}
+                    selected={value === chip.kind}
+                    toneClass={TONE_CLASSES[chip.tone]}
+                    dotClass={TONE_DOT_CLASSES[chip.tone]}
+                    onClick={() => {
+                        // Clicking the active chip is how you get back to everything,
+                        // so the control never becomes a trap.
+                        onChange(value === chip.kind ? "all" : chip.kind)
+                    }}
+                />
+            ))}
+        </div>
+    )
 }
 
 interface ChipProps {
-	label: string
-	count: number
-	selected: boolean
-	onClick: () => void
-	toneClass?: string
-	dotClass?: string
+    label: string
+    count: number
+    selected: boolean
+    onClick: () => void
+    toneClass?: string
+    dotClass?: string
 }
 
 function Chip({ label, count, selected, onClick, toneClass, dotClass }: Readonly<ChipProps>) {
-	return (
-		<Button
-			type="button"
-			variant="ghost"
-			size="xs"
-			aria-pressed={selected}
-			onClick={onClick}
-			className={cn(
-				"shrink-0 gap-1.5 border border-transparent text-[11px] font-medium",
-				selected
-					? (toneClass ?? "border-border bg-muted text-foreground")
-					: "text-muted-foreground"
-			)}
-		>
-			{dotClass && <span className={cn("size-1.5 rounded-full", dotClass)} />}
-			{label}
-			<span className="font-mono tabular-nums opacity-70">{String(count)}</span>
-		</Button>
-	)
+    return (
+        <Button
+            type="button"
+            variant="ghost"
+            size="xs"
+            aria-pressed={selected}
+            onClick={onClick}
+            className={cn(
+                "shrink-0 gap-1.5 border border-transparent text-[11px] font-medium",
+                selected
+                    ? (toneClass ?? "border-border bg-muted text-foreground")
+                    : "text-muted-foreground"
+            )}
+        >
+            {dotClass && <span className={cn("size-1.5 rounded-full", dotClass)} />}
+            {label}
+            <span className="font-mono tabular-nums opacity-70">{String(count)}</span>
+        </Button>
+    )
 }

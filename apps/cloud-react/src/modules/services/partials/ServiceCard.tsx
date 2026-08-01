@@ -9,12 +9,29 @@ import type { ServiceDefinition, ServiceStatus } from "../services.types"
 
 /* ── Status indicator ──────────────────────────────────────────────────── */
 
-const STATUS_CONFIG: Record<ServiceStatus, { label: string; dotColor: string; textColor: string }> = {
-    operational: { label: "Operational", dotColor: "var(--success-pulse)", textColor: "var(--success-pulse)" },
-    degraded: { label: "Degraded", dotColor: "var(--secondary)", textColor: "var(--secondary)" },
-    maintenance: { label: "Maintenance", dotColor: "var(--secondary)", textColor: "var(--secondary)" },
-    outage: { label: "Outage", dotColor: "var(--destructive)", textColor: "var(--destructive)" },
-}
+const STATUS_CONFIG: Record<ServiceStatus, { label: string; dotColor: string; textColor: string }> =
+    {
+        operational: {
+            label: "Operational",
+            dotColor: "var(--success-pulse)",
+            textColor: "var(--success-pulse)",
+        },
+        degraded: {
+            label: "Degraded",
+            dotColor: "var(--secondary)",
+            textColor: "var(--secondary)",
+        },
+        maintenance: {
+            label: "Maintenance",
+            dotColor: "var(--secondary)",
+            textColor: "var(--secondary)",
+        },
+        outage: {
+            label: "Outage",
+            dotColor: "var(--destructive)",
+            textColor: "var(--destructive)",
+        },
+    }
 
 function StatusPill({ status }: Readonly<{ status: ServiceStatus }>) {
     const cfg = STATUS_CONFIG[status]
@@ -40,9 +57,7 @@ interface ServiceCardProps {
 export function ServiceCard({ service }: Readonly<ServiceCardProps>) {
     const Icon = service.icon
     const hasSubServices = service.subServices.length > 0
-    const degradedSubs = service.subServices.filter(
-        (s) => s.status !== "operational"
-    ).length
+    const degradedSubs = service.subServices.filter((s) => s.status !== "operational").length
 
     return (
         <Link to={service.path} className="block group">
@@ -60,9 +75,7 @@ export function ServiceCard({ service }: Readonly<ServiceCardProps>) {
                         {/* Status + arrow */}
                         <div className="flex items-center gap-2">
                             <StatusPill status={service.status} />
-                            <ArrowUpRight
-                                className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                            />
+                            <ArrowUpRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                         </div>
                     </div>
 
@@ -88,13 +101,15 @@ export function ServiceCard({ service }: Readonly<ServiceCardProps>) {
                                             key={sub.id}
                                             className="flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-md"
                                             style={{
-                                                background: sub.status !== "operational"
-                                                    ? "rgba(255,183,123,0.08)"
-                                                    : "rgba(255,255,255,0.04)",
+                                                background:
+                                                    sub.status !== "operational"
+                                                        ? "rgba(255,183,123,0.08)"
+                                                        : "rgba(255,255,255,0.04)",
                                                 border: "1px solid rgba(255,255,255,0.06)",
-                                                color: sub.status !== "operational"
-                                                    ? "var(--secondary)"
-                                                    : "var(--bsc-outline)",
+                                                color:
+                                                    sub.status !== "operational"
+                                                        ? "var(--secondary)"
+                                                        : "var(--bsc-outline)",
                                             }}
                                         >
                                             <SubIcon className="w-3 h-3" />
@@ -114,14 +129,16 @@ export function ServiceCard({ service }: Readonly<ServiceCardProps>) {
 
                 <CardFooter className="pt-0 pb-3">
                     <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
-                        {hasSubServices && (
-                            <span>{service.subServices.length} sub-services</span>
-                        )}
+                        {hasSubServices && <span>{service.subServices.length} sub-services</span>}
                         {degradedSubs > 0 && (
                             <Badge
                                 variant="outline"
                                 className="text-[10px] font-mono"
-                                style={{ color: "var(--secondary)", borderColor: "rgba(255,183,123,0.3)", background: "rgba(255,183,123,0.05)" }}
+                                style={{
+                                    color: "var(--secondary)",
+                                    borderColor: "rgba(255,183,123,0.3)",
+                                    background: "rgba(255,183,123,0.05)",
+                                }}
                             >
                                 {degradedSubs} affected
                             </Badge>

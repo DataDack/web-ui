@@ -32,8 +32,12 @@ export function ResourceGroupCard({ rg }: Readonly<Props>) {
     const isActive = activeRG?.id === rg.id
     const tagEntries = Object.entries(rg.tags)
 
-    const handleSetActive = () => { if (!isActive) switchRG(rg) }
-    const handleDelete = () => { if (!rg.isDefault) deleteRG(rg.id) }
+    const handleSetActive = () => {
+        if (!isActive) switchRG(rg)
+    }
+    const handleDelete = () => {
+        if (!rg.isDefault) deleteRG(rg.id)
+    }
     const goToDetail = () => void navigate(RG_ROUTES.detail(rg.id))
     const goToEdit = () => void navigate(`${RG_ROUTES.detail(rg.id)}?edit=1`)
 
@@ -68,17 +72,23 @@ export function ResourceGroupCard({ rg }: Readonly<Props>) {
                                 )}
                             </span>
                         </div>
-                        <h3 className="font-semibold text-foreground">{rg.displayName ?? rg.name}</h3>
+                        <h3 className="font-semibold text-foreground">
+                            {rg.displayName ?? rg.name}
+                        </h3>
                         {/* Only show the slug when it differs from the display name,
                             otherwise it reads as a duplicate (e.g. "default"/"default"). */}
                         {rg.displayName && rg.displayName !== rg.name && (
-                            <p className="font-mono text-xs text-muted-foreground mt-0.5">{rg.name}</p>
+                            <p className="font-mono text-xs text-muted-foreground mt-0.5">
+                                {rg.name}
+                            </p>
                         )}
                     </div>
 
                     {/* Description */}
                     {rg.description && (
-                        <p className="text-sm text-muted-foreground line-clamp-2">{rg.description}</p>
+                        <p className="text-sm text-muted-foreground line-clamp-2">
+                            {rg.description}
+                        </p>
                     )}
 
                     {/* Tags */}
@@ -107,8 +117,12 @@ export function ResourceGroupCard({ rg }: Readonly<Props>) {
                         className="flex items-center gap-4 pt-3 text-[11px] font-mono text-muted-foreground"
                         style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
                     >
-                        <span>{t("common.created")} {new Date(rg.createdAt).toLocaleDateString()}</span>
-                        <span>{t("common.updated")} {new Date(rg.updatedAt).toLocaleDateString()}</span>
+                        <span>
+                            {t("common.created")} {new Date(rg.createdAt).toLocaleDateString()}
+                        </span>
+                        <span>
+                            {t("common.updated")} {new Date(rg.updatedAt).toLocaleDateString()}
+                        </span>
                     </div>
 
                     {/* Actions */}
@@ -172,11 +186,7 @@ export function ResourceGroupCard({ rg }: Readonly<Props>) {
 
             {/* Right-click context menu */}
             <ContextMenuContent className="w-48">
-                <ContextMenuItem
-                    onSelect={handleSetActive}
-                    disabled={isActive}
-                    className="gap-2"
-                >
+                <ContextMenuItem onSelect={handleSetActive} disabled={isActive} className="gap-2">
                     <Check className="w-4 h-4" />
                     {t("resourceGroups.contextMenu.setActive")}
                 </ContextMenuItem>

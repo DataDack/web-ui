@@ -33,10 +33,7 @@ export function JiraOAuthCallbackPage() {
     const [phase, setPhase] = useState<Phase>(invalid ? "error" : "working")
     const [message, setMessage] = useState<string>(() => {
         if (oauthError) {
-            return (
-                params.get("error_description") ??
-                "Jira authorization was cancelled or denied."
-            )
+            return params.get("error_description") ?? "Jira authorization was cancelled or denied."
         }
         if (!code || !state) {
             return "Missing authorization code — please try connecting again."

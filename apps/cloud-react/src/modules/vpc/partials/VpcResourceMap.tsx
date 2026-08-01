@@ -48,7 +48,9 @@ export function VpcResourceMap({
     if (!revealed) {
         return (
             <div className="glass-1 rounded-xl p-4 space-y-3">
-                <h3 className="text-sm font-semibold text-foreground">{t("vpc.wizard.resourceMap")}</h3>
+                <h3 className="text-sm font-semibold text-foreground">
+                    {t("vpc.wizard.resourceMap")}
+                </h3>
                 <div className="grid place-items-center gap-2 rounded-lg border border-dashed border-border-glass bg-background/30 px-4 py-10 text-center">
                     <Network className="size-5 text-muted-foreground/60" aria-hidden />
                     <p className="text-[12px] text-muted-foreground">
@@ -74,7 +76,9 @@ export function VpcResourceMap({
     return (
         <div className="glass-1 rounded-xl p-4 space-y-3">
             <div className="flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-foreground">{t("vpc.wizard.resourceMap")}</h3>
+                <h3 className="text-sm font-semibold text-foreground">
+                    {t("vpc.wizard.resourceMap")}
+                </h3>
                 <span className="font-mono text-[11px] text-muted-foreground tabular-nums">
                     {t("vpc.wizard.subnetsTotal", {
                         subnets: valid.length,
@@ -91,7 +95,9 @@ export function VpcResourceMap({
                     </span>
                     <div className="min-w-0">
                         {name ? (
-                            <span className="block truncate font-mono text-[13px] text-foreground">{name}</span>
+                            <span className="block truncate font-mono text-[13px] text-foreground">
+                                {name}
+                            </span>
                         ) : (
                             <span className="block truncate font-mono text-[13px] italic text-muted-foreground">
                                 {t("vpc.wizard.previewAutoName")}
@@ -111,7 +117,9 @@ export function VpcResourceMap({
 
                 {/* AZ columns */}
                 {columns.length === 0 ? (
-                    <p className="mt-3 text-[11px] text-muted-foreground">{t("vpc.wizard.previewNoSubnets")}</p>
+                    <p className="mt-3 text-[11px] text-muted-foreground">
+                        {t("vpc.wizard.previewNoSubnets")}
+                    </p>
                 ) : (
                     <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
                         {columns.map(({ zone, subnets: zoneSubnets }) => (
@@ -140,10 +148,7 @@ export function VpcResourceMap({
     )
 }
 
-function ZoneColumn({
-    label,
-    subnets,
-}: Readonly<{ label: string; subnets: ResourceMapSubnet[] }>) {
+function ZoneColumn({ label, subnets }: Readonly<{ label: string; subnets: ResourceMapSubnet[] }>) {
     const publicSubnets = subnets.filter((s) => s.is_public)
     const privateSubnets = subnets.filter((s) => !s.is_public)
 
@@ -174,7 +179,11 @@ function SubnetBox({ subnet, index }: Readonly<{ subnet: ResourceMapSubnet; inde
 
     return (
         <div className={"flex items-center gap-1.5 rounded-md border px-2 py-1.5 " + accent}>
-            <span className={"grid size-4 shrink-0 place-items-center rounded text-[10px] " + iconAccent}>
+            <span
+                className={
+                    "grid size-4 shrink-0 place-items-center rounded text-[10px] " + iconAccent
+                }
+            >
                 <Icon className="size-2.5" aria-hidden />
             </span>
             <div className="min-w-0 flex-1">

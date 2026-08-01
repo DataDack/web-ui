@@ -25,12 +25,7 @@ export const authApi = {
     // phone is the signup mobile number — the API REQUIRES it to create a new
     // account (the provider profile carries no number) and ignores it for a
     // returning user, so it is collected in the confirmation step.
-    oauthSignIn: (
-        provider: OAuthProvider,
-        idToken: string,
-        acceptPolicies = false,
-        phone = ""
-    ) =>
+    oauthSignIn: (provider: OAuthProvider, idToken: string, acceptPolicies = false, phone = "") =>
         apiPost<AuthTokenResponse>(`/auth/users/oauth/${provider}/sign-in`, {
             id_token: idToken,
             accept_policies: acceptPolicies,

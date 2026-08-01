@@ -52,16 +52,24 @@ function loadGsi(): Promise<void> {
         }
         const existing = document.querySelector<HTMLScriptElement>(`script[src="${GSI_SRC}"]`)
         if (existing) {
-            existing.addEventListener("load", () => { resolve(); })
-            existing.addEventListener("error", () => { reject(new Error("gsi load failed")); })
+            existing.addEventListener("load", () => {
+                resolve()
+            })
+            existing.addEventListener("error", () => {
+                reject(new Error("gsi load failed"))
+            })
             return
         }
         const script = document.createElement("script")
         script.src = GSI_SRC
         script.async = true
         script.defer = true
-        script.onload = () => { resolve(); }
-        script.onerror = () => { reject(new Error("gsi load failed")); }
+        script.onload = () => {
+            resolve()
+        }
+        script.onerror = () => {
+            reject(new Error("gsi load failed"))
+        }
         document.head.appendChild(script)
     })
 }
@@ -113,7 +121,9 @@ export function GoogleButton({
         measure()
         const observer = new ResizeObserver(measure)
         observer.observe(host)
-        return () => { observer.disconnect(); }
+        return () => {
+            observer.disconnect()
+        }
     }, [])
 
     useEffect(() => {
@@ -156,7 +166,9 @@ export function GoogleButton({
         }
         void render()
 
-        return () => { cancelled = true; }
+        return () => {
+            cancelled = true
+        }
     }, [clientId, width, resolvedTheme, t])
 
     if (!clientId) {

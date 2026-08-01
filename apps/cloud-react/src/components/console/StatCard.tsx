@@ -106,10 +106,7 @@ interface StatGridProps {
 
 export function StatGrid({ stats, className }: Readonly<StatGridProps>) {
     return (
-        <Stagger
-            className={cn("grid grid-cols-2 lg:grid-cols-4 gap-3", className)}
-            stagger={0.05}
-        >
+        <Stagger className={cn("grid grid-cols-2 lg:grid-cols-4 gap-3", className)} stagger={0.05}>
             {stats.map((stat) => (
                 <StaggerItem key={stat.label}>
                     <StatCard {...stat} />

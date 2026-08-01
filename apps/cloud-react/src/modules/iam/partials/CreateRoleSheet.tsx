@@ -25,9 +25,9 @@ import { useCreateIAMRole } from "../iam.hooks"
 
 const makeSchema = (rule: NamingRule) =>
     z.object({
-    name: namingNameSchema(rule),
-    description: z.string().min(1, "Required").max(300, "Maximum 300 characters"),
-})
+        name: namingNameSchema(rule),
+        description: z.string().min(1, "Required").max(300, "Maximum 300 characters"),
+    })
 
 type FormValues = z.infer<ReturnType<typeof makeSchema>>
 
@@ -84,7 +84,9 @@ export function CreateRoleSheet({ open, onOpenChange }: Readonly<Props>) {
                                 className="font-mono"
                             />
                             {errors.name && (
-                                <p className="text-[11px] text-destructive">{errors.name.message}</p>
+                                <p className="text-[11px] text-destructive">
+                                    {errors.name.message}
+                                </p>
                             )}
                         </div>
 
@@ -114,9 +116,7 @@ export function CreateRoleSheet({ open, onOpenChange }: Readonly<Props>) {
                             {t("console.wizard.cancel")}
                         </Button>
                         <Button type="submit" variant="gold" disabled={isPending}>
-                            {isPending
-                                ? t("iam.roles.createForm.creating")
-                                : t("iam.roles.create")}
+                            {isPending ? t("iam.roles.createForm.creating") : t("iam.roles.create")}
                         </Button>
                     </div>
                 </form>

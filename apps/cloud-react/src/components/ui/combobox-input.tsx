@@ -80,7 +80,8 @@ export function ComboboxInput({
                     className={cn(
                         "relative flex h-9 w-full items-center rounded-md border border-input bg-transparent shadow-xs transition-[color,box-shadow] dark:bg-input/30",
                         "focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50",
-                        invalid && "border-destructive ring-destructive/20 dark:ring-destructive/40",
+                        invalid &&
+                            "border-destructive ring-destructive/20 dark:ring-destructive/40",
                         disabled && "pointer-events-none opacity-50",
                         className
                     )}
@@ -135,10 +136,7 @@ export function ComboboxInput({
                         }}
                     >
                         <ChevronDown
-                            className={cn(
-                                "size-4 transition-transform",
-                                showList && "rotate-180"
-                            )}
+                            className={cn("size-4 transition-transform", showList && "rotate-180")}
                         />
                     </button>
                 </div>

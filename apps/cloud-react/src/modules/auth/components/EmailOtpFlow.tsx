@@ -87,20 +87,32 @@ export function EmailOtpFlow({
         () => ({
             email: z.object({ email: z.email({ message: t("auth.errors.email") }) }),
             otp: z.object({ otp: z.string().length(6, { message: t("auth.otp.incomplete") }) }),
-            name: z.object({ name: z.string().trim().min(2, { message: t("auth.otp.nameRequired") }) }),
+            name: z.object({
+                name: z
+                    .string()
+                    .trim()
+                    .min(2, { message: t("auth.otp.nameRequired") }),
+            }),
         }),
         [t]
     )
 
-    const emailForm = useForm({ resolver: zodResolver(schemas.email), defaultValues: { email: "" } })
+    const emailForm = useForm({
+        resolver: zodResolver(schemas.email),
+        defaultValues: { email: "" },
+    })
     const otpForm = useForm({ resolver: zodResolver(schemas.otp), defaultValues: { otp: "" } })
     const nameForm = useForm({ resolver: zodResolver(schemas.name), defaultValues: { name: "" } })
 
     // Resend cooldown ticker.
     useEffect(() => {
         if (resendIn <= 0) return
-        const id = setTimeout(() => { setResendIn((s) => s - 1); }, 1000)
-        return () => { clearTimeout(id); }
+        const id = setTimeout(() => {
+            setResendIn((s) => s - 1)
+        }, 1000)
+        return () => {
+            clearTimeout(id)
+        }
     }, [resendIn])
 
     // Focus the active step's field (RHF-native, no autofocus prop).
@@ -207,7 +219,12 @@ export function EmailOtpFlow({
                             </FormItem>
                         )}
                     />
-                    <Button type="submit" variant="gold" disabled={send.isPending} className={pillButton}>
+                    <Button
+                        type="submit"
+                        variant="gold"
+                        disabled={send.isPending}
+                        className={pillButton}
+                    >
                         {send.isPending && <Loader2 className="animate-spin" />}
                         {t("auth.otp.send")}
                     </Button>
@@ -219,7 +236,10 @@ export function EmailOtpFlow({
     if (stage === "name") {
         return (
             <Form {...nameForm}>
-                <form className="space-y-3" onSubmit={(e) => void nameForm.handleSubmit(saveName)(e)}>
+                <form
+                    className="space-y-3"
+                    onSubmit={(e) => void nameForm.handleSubmit(saveName)(e)}
+                >
                     <p className="text-sm text-muted-foreground">{t("auth.otp.nameTitle")}</p>
                     <FormField
                         control={nameForm.control}
@@ -312,7 +332,9 @@ export function EmailOtpFlow({
                 <div className="flex items-center justify-between text-xs">
                     <button
                         type="button"
-                        onClick={() => { setStage("email"); }}
+                        onClick={() => {
+                            setStage("email")
+                        }}
                         className="text-muted-foreground transition-colors hover:text-foreground"
                     >
                         {t("auth.otp.changeEmail")}
@@ -323,7 +345,9 @@ export function EmailOtpFlow({
                         onClick={() => void requestCode(email)}
                         className="font-medium text-brand-gold transition-colors hover:text-brand-gold-hover disabled:text-muted-foreground"
                     >
-                        {resendIn > 0 ? t("auth.otp.resendIn", { seconds: resendIn }) : t("auth.otp.resend")}
+                        {resendIn > 0
+                            ? t("auth.otp.resendIn", { seconds: resendIn })
+                            : t("auth.otp.resend")}
                     </button>
                 </div>
                 <Button

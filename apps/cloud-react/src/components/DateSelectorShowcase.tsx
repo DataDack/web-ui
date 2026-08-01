@@ -22,11 +22,7 @@ export function DateSelectorShowcase() {
                     <BirthdateField value={birthdate} onChange={setBirthdate} />
                 </div>
 
-                <DayGridPicker
-                    className="max-w-md"
-                    value={day}
-                    onChange={setDay}
-                />
+                <DayGridPicker className="max-w-md" value={day} onChange={setDay} />
 
                 <MonthYearPicker
                     className="max-w-md"

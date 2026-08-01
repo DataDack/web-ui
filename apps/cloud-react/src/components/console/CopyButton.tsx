@@ -20,7 +20,12 @@ export function CopyButton({ value, label, mono = true, className }: Readonly<Co
     const [copied, setCopied] = useState(false)
     const timer = useRef<ReturnType<typeof setTimeout>>(undefined)
 
-    useEffect(() => () => { clearTimeout(timer.current); }, [])
+    useEffect(
+        () => () => {
+            clearTimeout(timer.current)
+        },
+        []
+    )
 
     const copy = async (event: React.MouseEvent) => {
         event.stopPropagation()
@@ -28,7 +33,9 @@ export function CopyButton({ value, label, mono = true, className }: Readonly<Co
         setCopied(true)
         toast.success(t("console.copy.copied"))
         clearTimeout(timer.current)
-        timer.current = setTimeout(() => { setCopied(false); }, 1500)
+        timer.current = setTimeout(() => {
+            setCopied(false)
+        }, 1500)
     }
 
     return (

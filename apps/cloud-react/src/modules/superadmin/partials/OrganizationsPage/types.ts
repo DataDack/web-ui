@@ -12,8 +12,8 @@ export type UserRow = OverviewUser & { orgName: string | null }
  * reports a change upward rather than holding it.
  */
 export interface TabProps {
-	q: string
-	page: number
-	pageSize: number
-	onPageChange: (page: number) => void
+    q: string
+    page: number
+    pageSize: number
+    onPageChange: (page: number) => void
 }

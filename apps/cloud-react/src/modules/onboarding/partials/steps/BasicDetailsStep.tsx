@@ -114,10 +114,17 @@ export function BasicDetailsStep({ onNext }: Readonly<{ onNext: () => void }>) {
         return (
             <div className="space-y-6">
                 <p className="text-sm text-muted-foreground">
-                    {t("onboarding.details.enterCode", { number: phone.formattedPreview || phone.e164 })}
+                    {t("onboarding.details.enterCode", {
+                        number: phone.formattedPreview || phone.e164,
+                    })}
                 </p>
                 <div className="flex justify-center">
-                    <InputOTP maxLength={6} value={otp} onChange={setOtp} containerClassName="justify-center">
+                    <InputOTP
+                        maxLength={6}
+                        value={otp}
+                        onChange={setOtp}
+                        containerClassName="justify-center"
+                    >
                         <InputOTPGroup className="gap-2">
                             {[0, 1, 2, 3, 4, 5].map((i) => (
                                 <InputOTPSlot key={i} index={i} />

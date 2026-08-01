@@ -51,11 +51,7 @@ export function useInstance(id: string) {
 }
 
 /** Live resource series for the instance over `range`, polled every 5s. */
-export function useInstanceMetrics(
-    id: string,
-    range: string,
-    options?: { enabled?: boolean }
-) {
+export function useInstanceMetrics(id: string, range: string, options?: { enabled?: boolean }) {
     const enabled = options?.enabled ?? true
     return useQuery({
         queryKey: VMS_QUERY_KEYS.metrics(id, range),

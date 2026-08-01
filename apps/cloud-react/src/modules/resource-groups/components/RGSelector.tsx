@@ -62,7 +62,9 @@ export function RGSelector() {
                         return (
                             <DropdownMenuItem
                                 key={rg.id}
-                                onSelect={() => { if (!isActive) switchRG(rg) }}
+                                onSelect={() => {
+                                    if (!isActive) switchRG(rg)
+                                }}
                                 style={staggerDelay(index)}
                                 className={cn(
                                     "flex animate-content-enter cursor-pointer items-center gap-2.5 rounded-md px-2 py-2",
@@ -74,15 +76,21 @@ export function RGSelector() {
                                     <span
                                         className={cn(
                                             "absolute -right-0.5 -top-0.5 size-2 rounded-full ring-2 ring-popover",
-                                            rg.status === "active" ? "bg-success-pulse" : "bg-outline"
+                                            rg.status === "active"
+                                                ? "bg-success-pulse"
+                                                : "bg-outline"
                                         )}
                                     />
                                 </span>
                                 <div className="min-w-0 flex-1">
-                                    <div className="truncate font-mono text-[13px] font-medium">{rg.name}</div>
+                                    <div className="truncate font-mono text-[13px] font-medium">
+                                        {rg.name}
+                                    </div>
                                     {rg.resourceCount != null && (
                                         <div className="truncate text-[10px] text-muted-foreground">
-                                            {t("resourceGroups.resourceCountLabel", { count: rg.resourceCount })}
+                                            {t("resourceGroups.resourceCountLabel", {
+                                                count: rg.resourceCount,
+                                            })}
                                         </div>
                                     )}
                                 </div>

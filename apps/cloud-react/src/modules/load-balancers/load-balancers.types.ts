@@ -8,12 +8,7 @@ import type {
 // Backend statuses: provisioning | active | failed | deleting.
 // "pending" / "error" are kept as aliases the UI may still reference.
 export type LoadBalancerStatus =
-    | "provisioning"
-    | "active"
-    | "failed"
-    | "deleting"
-    | "pending"
-    | "error"
+    "provisioning" | "active" | "failed" | "deleting" | "pending" | "error"
 export type LoadBalancerType = "application" | "network"
 export type LoadBalancerScheme = "internet_facing" | "internal"
 

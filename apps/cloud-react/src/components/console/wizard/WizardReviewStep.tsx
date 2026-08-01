@@ -25,14 +25,14 @@ export function WizardReviewStep({ groups, onEdit }: Readonly<WizardReviewStepPr
             {groups.map((group) => (
                 <div key={group.title} className="glass-1 p-4">
                     <div className="flex items-center justify-between mb-3">
-                        <h3 className="text-[13px] font-semibold text-foreground">
-                            {group.title}
-                        </h3>
+                        <h3 className="text-[13px] font-semibold text-foreground">{group.title}</h3>
                         <Button
                             type="button"
                             variant="ghost"
                             size="sm"
-                            onClick={() => { onEdit(group.stepIndex); }}
+                            onClick={() => {
+                                onEdit(group.stepIndex)
+                            }}
                             className="h-7 gap-1.5 text-xs text-muted-foreground"
                         >
                             <Pencil className="size-3" />

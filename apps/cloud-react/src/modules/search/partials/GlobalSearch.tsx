@@ -80,14 +80,18 @@ export function GlobalSearch({ open, onOpenChange }: Readonly<GlobalSearchProps>
                     <input
                         ref={inputRef}
                         value={query}
-                        onChange={(e) => { setQuery(e.target.value); }}
+                        onChange={(e) => {
+                            setQuery(e.target.value)
+                        }}
                         placeholder={t("nav.search")}
                         className="flex-1 bg-transparent text-[15px] text-foreground placeholder:text-muted-foreground focus:outline-none"
                     />
 
                     {query && (
                         <button
-                            onClick={() => { setQuery(""); }}
+                            onClick={() => {
+                                setQuery("")
+                            }}
                             className="p-1 rounded text-muted-foreground hover:text-foreground transition-colors shrink-0"
                         >
                             <X className="w-4 h-4" />
@@ -114,17 +118,19 @@ export function GlobalSearch({ open, onOpenChange }: Readonly<GlobalSearchProps>
                         )}
 
                         {/* Quick navigation (empty query) */}
-                        {!isLoading && !hasQuery && data?.groups.map((group, i) => (
-                            <SearchResultGroup
-                                key={group.type}
-                                label={group.label}
-                                results={group.results}
-                                selectedId={selectedId}
-                                onSelect={handleSelect}
-                                onHover={setSelectedId}
-                                divided={i > 0}
-                            />
-                        ))}
+                        {!isLoading &&
+                            !hasQuery &&
+                            data?.groups.map((group, i) => (
+                                <SearchResultGroup
+                                    key={group.type}
+                                    label={group.label}
+                                    results={group.results}
+                                    selectedId={selectedId}
+                                    onSelect={handleSelect}
+                                    onHover={setSelectedId}
+                                    divided={i > 0}
+                                />
+                            ))}
 
                         {/* Search results */}
                         {!isLoading && hasQuery && hasResults && (

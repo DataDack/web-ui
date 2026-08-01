@@ -48,9 +48,11 @@ export function formatAvailableIps(cidr: string, backendValue?: number): string 
 
 /** Dotted-quad → unsigned 32-bit integer. Assumes a valid IPv4 string. */
 export function ipToInt(ip: string): number {
-    return ip
-        .split(".")
-        .reduce((acc, octet) => (acc << 8) + (Number.parseInt(octet, 10) & 0xff), 0) >>> 0
+    return (
+        ip
+            .split(".")
+            .reduce((acc, octet) => (acc << 8) + (Number.parseInt(octet, 10) & 0xff), 0) >>> 0
+    )
 }
 
 /** Unsigned 32-bit integer → dotted-quad. */
@@ -308,7 +310,10 @@ export function carveSubnets({
 /** A short, lowercase, naming-convention-safe random suffix, e.g. "k3p9zq". */
 function randomSuffix(): string {
     // eslint-disable-next-line sonarjs/pseudo-random -- cosmetic name suffix, not security-sensitive
-    return Math.random().toString(36).slice(2, 8).replace(/[^a-z0-9]/g, "0")
+    return Math.random()
+        .toString(36)
+        .slice(2, 8)
+        .replace(/[^a-z0-9]/g, "0")
 }
 
 /** Auto-generate a VPC name when the user leaves the field blank (AWS-style). */

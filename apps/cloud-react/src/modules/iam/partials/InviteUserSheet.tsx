@@ -86,7 +86,9 @@ export function InviteUserSheet({ open, onOpenChange }: Readonly<Props>) {
                             </Label>
                             <Input {...register("name")} placeholder="Jane Doe" />
                             {errors.name && (
-                                <p className="text-[11px] text-destructive">{errors.name.message}</p>
+                                <p className="text-[11px] text-destructive">
+                                    {errors.name.message}
+                                </p>
                             )}
                         </div>
 
@@ -161,9 +163,7 @@ export function InviteUserSheet({ open, onOpenChange }: Readonly<Props>) {
                             {t("console.wizard.cancel")}
                         </Button>
                         <Button type="submit" variant="gold" disabled={isPending}>
-                            {isPending
-                                ? t("iam.users.inviteForm.inviting")
-                                : t("iam.users.invite")}
+                            {isPending ? t("iam.users.inviteForm.inviting") : t("iam.users.invite")}
                         </Button>
                     </div>
                 </form>

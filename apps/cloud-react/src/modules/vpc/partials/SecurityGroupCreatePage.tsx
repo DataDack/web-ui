@@ -98,10 +98,7 @@ export function SecurityGroupCreatePage() {
                 description={t("vpc.sgForm.subtitle")}
             />
 
-            <form
-                onSubmit={(e) => void handleSubmit(onSubmit)(e)}
-                className="mt-8 w-full max-w-xl"
-            >
+            <form onSubmit={(e) => void handleSubmit(onSubmit)(e)} className="mt-8 w-full max-w-xl">
                 <div className="rounded-xl border border-border-glass bg-background/50 backdrop-blur-xl shadow-sm p-6 space-y-5">
                     <div className="space-y-1.5">
                         <FieldLabel required>{t("vpc.sgForm.name")}</FieldLabel>

@@ -34,7 +34,12 @@ import {
 import { TG_ROUTES } from "@/modules/target-groups/target-groups.constants"
 import { useTargetGroups } from "@/modules/target-groups/target-groups.hooks"
 
-import { useCreateListener, useDeleteListener, useLBListeners, useLBSubnets } from "../load-balancers.hooks"
+import {
+    useCreateListener,
+    useDeleteListener,
+    useLBListeners,
+    useLBSubnets,
+} from "../load-balancers.hooks"
 import {
     PROTOCOLS_BY_LB_TYPE,
     type LBListener,
@@ -119,7 +124,7 @@ export function ListenersTab({ lb }: Readonly<{ lb: LoadBalancer }>) {
                                                 <ArrowRight className="size-3 text-muted-foreground" />
                                                 <Link
                                                     to={TG_ROUTES.detail(
-                                                        listener.default_target_group_id,
+                                                        listener.default_target_group_id
                                                     )}
                                                     className="font-mono text-[13px] text-status-info hover:underline"
                                                 >
@@ -162,7 +167,11 @@ export function ListenersTab({ lb }: Readonly<{ lb: LoadBalancer }>) {
                 loading={isDeleting}
                 onConfirm={() => {
                     if (pendingDelete) {
-                        remove(pendingDelete.id, { onSuccess: () => { setPendingDelete(null); } })
+                        remove(pendingDelete.id, {
+                            onSuccess: () => {
+                                setPendingDelete(null)
+                            },
+                        })
                     }
                 }}
             />
@@ -216,7 +225,7 @@ function AddListenerDialog({
                     reset()
                     onOpenChange(false)
                 },
-            },
+            }
         )
     }
 
@@ -281,7 +290,9 @@ function AddListenerDialog({
                         <Select value={targetGroupId} onValueChange={setTargetGroupId}>
                             <SelectTrigger className="w-full">
                                 <SelectValue
-                                    placeholder={t("loadBalancers.listeners.targetGroupPlaceholder")}
+                                    placeholder={t(
+                                        "loadBalancers.listeners.targetGroupPlaceholder"
+                                    )}
                                 />
                             </SelectTrigger>
                             <SelectContent>

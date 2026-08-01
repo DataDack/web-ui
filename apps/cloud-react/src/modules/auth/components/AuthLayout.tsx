@@ -86,7 +86,8 @@ function BrandPanel({
                     backgroundImage:
                         "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.6) 1px, transparent 0)",
                     backgroundSize: "28px 28px",
-                    maskImage: "radial-gradient(ellipse 80% 80% at 50% 30%, #000 40%, transparent 100%)",
+                    maskImage:
+                        "radial-gradient(ellipse 80% 80% at 50% 30%, #000 40%, transparent 100%)",
                 }}
             />
 
@@ -196,9 +197,13 @@ function SignInPanel({
                             {kicker}
                         </span>
                     )}
-                    <h1 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">{headline}</h1>
+                    <h1 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">
+                        {headline}
+                    </h1>
                     {subtitle && (
-                        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{subtitle}</p>
+                        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                            {subtitle}
+                        </p>
                     )}
                 </div>
 

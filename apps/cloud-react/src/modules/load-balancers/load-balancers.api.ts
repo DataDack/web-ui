@@ -33,8 +33,7 @@ export const lbApi = {
 
     delete: (id: string): Promise<void> => apiDelete(`${BASE}/${id}`),
 
-    subnets: (id: string): Promise<LBSubnet[]> =>
-        apiGet<LBSubnet[]>(`${BASE}/${id}/subnets`),
+    subnets: (id: string): Promise<LBSubnet[]> => apiGet<LBSubnet[]>(`${BASE}/${id}/subnets`),
 
     listeners: (id: string): Promise<LBListener[]> =>
         apiGet<LBListener[]>(`${BASE}/${id}/listeners`),
@@ -45,9 +44,8 @@ export const lbApi = {
     updateListener: (
         id: string,
         listenerId: string,
-        payload: UpdateListenerRequest,
-    ): Promise<LBListener> =>
-        apiPut<LBListener>(`${BASE}/${id}/listeners/${listenerId}`, payload),
+        payload: UpdateListenerRequest
+    ): Promise<LBListener> => apiPut<LBListener>(`${BASE}/${id}/listeners/${listenerId}`, payload),
 
     deleteListener: (id: string, listenerId: string): Promise<void> =>
         apiDelete(`${BASE}/${id}/listeners/${listenerId}`),

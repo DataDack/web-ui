@@ -103,7 +103,7 @@ export function BasicsStep({ form }: Readonly<{ form: UseFormReturn<FormValues> 
                                     "flex-1 px-3 py-1.5 text-[12px] transition-colors",
                                     cycle === c
                                         ? "bg-status-info-bg font-semibold text-status-info"
-                                        : "text-muted-foreground hover:bg-accent/40",
+                                        : "text-muted-foreground hover:bg-accent/40"
                                 )}
                             >
                                 {t(`loadBalancers.wizard.billingCycle.${c}`)}

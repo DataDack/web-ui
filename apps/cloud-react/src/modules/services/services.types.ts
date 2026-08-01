@@ -2,12 +2,7 @@ import type { LucideIcon } from "lucide-react"
 
 export type ServiceStatus = "operational" | "degraded" | "maintenance" | "outage"
 export type ServiceCategory =
-    | "compute"
-    | "network"
-    | "security"
-    | "storage"
-    | "management"
-    | "billing"
+    "compute" | "network" | "security" | "storage" | "management" | "billing"
 
 export interface ServiceMaintenance {
     id: string

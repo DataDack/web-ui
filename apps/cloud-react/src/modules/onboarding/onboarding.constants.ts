@@ -4,11 +4,39 @@ export const ONBOARDING_ROUTE = "/onboarding"
 // consumed via `useCountries()` — see modules/countries.
 
 export const INDIAN_STATES = [
-    "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat",
-    "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh",
-    "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan",
-    "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal",
-    "Delhi", "Jammu and Kashmir", "Ladakh", "Puducherry", "Chandigarh",
+    "Andhra Pradesh",
+    "Arunachal Pradesh",
+    "Assam",
+    "Bihar",
+    "Chhattisgarh",
+    "Goa",
+    "Gujarat",
+    "Haryana",
+    "Himachal Pradesh",
+    "Jharkhand",
+    "Karnataka",
+    "Kerala",
+    "Madhya Pradesh",
+    "Maharashtra",
+    "Manipur",
+    "Meghalaya",
+    "Mizoram",
+    "Nagaland",
+    "Odisha",
+    "Punjab",
+    "Rajasthan",
+    "Sikkim",
+    "Tamil Nadu",
+    "Telangana",
+    "Tripura",
+    "Uttar Pradesh",
+    "Uttarakhand",
+    "West Bengal",
+    "Delhi",
+    "Jammu and Kashmir",
+    "Ladakh",
+    "Puducherry",
+    "Chandigarh",
 ] as const
 
 // Client-side mirrors of the backend Indian-format validators (instant feedback).
@@ -23,8 +51,7 @@ export const isIndia = (country: string) => country.toUpperCase() === "IN"
 export const MIN_AGE_YEARS = 18
 
 /** Latest birth year that can possibly satisfy {@link MIN_AGE_YEARS} today. */
-export const maxBirthYear = (today = new Date()) =>
-    today.getFullYear() - MIN_AGE_YEARS
+export const maxBirthYear = (today = new Date()) => today.getFullYear() - MIN_AGE_YEARS
 
 /**
  * Whether an ISO `yyyy-mm-dd` birthdate is at least {@link MIN_AGE_YEARS} old

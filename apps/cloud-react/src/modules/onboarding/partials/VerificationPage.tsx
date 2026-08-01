@@ -1,6 +1,5 @@
 import { useEffect, useMemo } from "react"
 
-
 import { ExternalLink, Loader2, ShieldAlert, ShieldCheck } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useLocation, useNavigate } from "react-router-dom"
@@ -28,7 +27,11 @@ import { verificationErrorMessage } from "../start-verification"
 // which records a per-session skip (kyc-skip) and drops the user into the
 // console. Resource creation stays blocked by the backend kycguard either way.
 const STEP_META = [
-    { id: "verify", titleKey: "onboarding.verification.title", descKey: "onboarding.verification.desc" },
+    {
+        id: "verify",
+        titleKey: "onboarding.verification.title",
+        descKey: "onboarding.verification.desc",
+    },
 ]
 
 export function VerificationPage() {
@@ -96,7 +99,9 @@ export function VerificationPage() {
                     <div className="flex items-start gap-3 rounded-xl border border-border-glass bg-accent/10 p-4 text-sm">
                         <ShieldCheck className="mt-0.5 size-5 shrink-0 text-brand-gold" />
                         <div>
-                            <p className="font-semibold">{t("onboarding.verification.notRequiredTitle")}</p>
+                            <p className="font-semibold">
+                                {t("onboarding.verification.notRequiredTitle")}
+                            </p>
                             <p className="mt-0.5 text-muted-foreground">
                                 {t("onboarding.verification.notRequiredDesc")}
                             </p>
@@ -115,7 +120,9 @@ export function VerificationPage() {
                     <div className="flex items-start gap-3 rounded-xl border border-status-success/40 bg-status-success-bg p-4 text-sm">
                         <ShieldCheck className="mt-0.5 size-5 shrink-0 text-status-success" />
                         <div>
-                            <p className="font-semibold">{t("onboarding.verification.verifiedTitle")}</p>
+                            <p className="font-semibold">
+                                {t("onboarding.verification.verifiedTitle")}
+                            </p>
                             <p className="mt-0.5 text-muted-foreground">
                                 {t("onboarding.verification.verifiedDesc")}
                             </p>
@@ -142,10 +149,18 @@ export function VerificationPage() {
                     <ShieldAlert className="mt-0.5 size-5 shrink-0 text-status-warning" />
                     <div>
                         <p className="font-semibold">
-                            {t(rekyc ? "onboarding.verification.rekycTitle" : "onboarding.verification.requiredTitle")}
+                            {t(
+                                rekyc
+                                    ? "onboarding.verification.rekycTitle"
+                                    : "onboarding.verification.requiredTitle"
+                            )}
                         </p>
                         <p className="mt-0.5 text-muted-foreground">
-                            {t(rekyc ? "onboarding.verification.rekycDesc" : "onboarding.verification.requiredDesc")}
+                            {t(
+                                rekyc
+                                    ? "onboarding.verification.rekycDesc"
+                                    : "onboarding.verification.requiredDesc"
+                            )}
                         </p>
                     </div>
                 </div>

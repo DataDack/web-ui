@@ -92,7 +92,7 @@ export const makeSchema = (rule: NamingRule) =>
                     z.object({
                         vpc_id: z.string().min(1, "Select a VPC"),
                         subnet_ids: z.array(z.string()).min(1, "Select at least one subnet"),
-                    }),
+                    })
                 )
                 .min(1, "Attach at least one VPC")
                 .refine(
@@ -100,7 +100,7 @@ export const makeSchema = (rule: NamingRule) =>
                         const picked = rows.map((r) => r.vpc_id).filter(Boolean)
                         return new Set(picked).size === picked.length
                     },
-                    { message: "Each VPC can only be added once" },
+                    { message: "Each VPC can only be added once" }
                 ),
             security_group_ids: z.array(z.string()),
             // A load balancer with no listeners is legal — it just serves nothing,
@@ -200,7 +200,7 @@ export function splitCIDRs(raw: string): string[] {
 export function emptyListener(
     protocol: ListenerFormValues["protocol"],
     port: number,
-    tgPort: number,
+    tgPort: number
 ): ListenerFormValues {
     return {
         protocol,

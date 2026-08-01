@@ -15,10 +15,15 @@ interface TagEditorProps {
 export function TagEditor({ rows, onChange, label }: Readonly<TagEditorProps>) {
     const { t } = useTranslation()
 
-    const addRow = () => { onChange([...rows, { key: "", value: "" }]); }
-    const removeRow = (index: number) => { onChange(rows.filter((_, i) => i !== index)); }
-    const updateRow = (index: number, field: keyof TagRow, value: string) =>
-        { onChange(rows.map((row, i) => (i === index ? { ...row, [field]: value } : row))); }
+    const addRow = () => {
+        onChange([...rows, { key: "", value: "" }])
+    }
+    const removeRow = (index: number) => {
+        onChange(rows.filter((_, i) => i !== index))
+    }
+    const updateRow = (index: number, field: keyof TagRow, value: string) => {
+        onChange(rows.map((row, i) => (i === index ? { ...row, [field]: value } : row)))
+    }
 
     return (
         <div className="space-y-2">
@@ -45,14 +50,18 @@ export function TagEditor({ rows, onChange, label }: Readonly<TagEditorProps>) {
                     <div key={index} className="flex items-center gap-2">
                         <Input
                             value={row.key}
-                            onChange={(e) => { updateRow(index, "key", e.target.value); }}
+                            onChange={(e) => {
+                                updateRow(index, "key", e.target.value)
+                            }}
                             placeholder={t("console.tags.keyPlaceholder")}
                             className="font-mono flex-1"
                         />
                         <span className="text-muted-foreground text-sm">=</span>
                         <Input
                             value={row.value}
-                            onChange={(e) => { updateRow(index, "value", e.target.value); }}
+                            onChange={(e) => {
+                                updateRow(index, "value", e.target.value)
+                            }}
                             placeholder={t("console.tags.valuePlaceholder")}
                             className="flex-1"
                         />
@@ -60,7 +69,9 @@ export function TagEditor({ rows, onChange, label }: Readonly<TagEditorProps>) {
                             type="button"
                             variant="ghost"
                             size="icon"
-                            onClick={() => { removeRow(index); }}
+                            onClick={() => {
+                                removeRow(index)
+                            }}
                             disabled={rows.length === 1}
                             className="h-9 w-9 text-muted-foreground hover:text-destructive shrink-0"
                             aria-label={t("console.tags.remove")}

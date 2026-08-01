@@ -125,7 +125,9 @@ export function VmDetailPage() {
                                 size="sm"
                                 className="gap-1.5"
                                 disabled={isActing}
-                                onClick={() => { runAction({ id: instance.id, action: "start" }); }}
+                                onClick={() => {
+                                    runAction({ id: instance.id, action: "start" })
+                                }}
                             >
                                 {isActing ? (
                                     <Loader2 className="size-3.5 animate-spin" />
@@ -150,7 +152,9 @@ export function VmDetailPage() {
                                 size="sm"
                                 className="gap-1.5"
                                 disabled={isActing}
-                                onClick={() => { runAction({ id: instance.id, action: "resume" }); }}
+                                onClick={() => {
+                                    runAction({ id: instance.id, action: "resume" })
+                                }}
                             >
                                 <Play className="size-3.5" />
                                 {t("vms.actions.resume", "Resume")}
@@ -176,19 +180,25 @@ export function VmDetailPage() {
                                 {instance.status === "running" && !isProvisioning && (
                                     <>
                                         <DropdownMenuItem
-                                            onClick={() => { runAction({ id: instance.id, action: "restart" }); }}
+                                            onClick={() => {
+                                                runAction({ id: instance.id, action: "restart" })
+                                            }}
                                         >
                                             <RotateCw className="size-3.5" />
                                             {t("vms.actions.restart", "Restart")}
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
-                                            onClick={() => { runAction({ id: instance.id, action: "pause" }); }}
+                                            onClick={() => {
+                                                runAction({ id: instance.id, action: "pause" })
+                                            }}
                                         >
                                             <Pause className="size-3.5" />
                                             {t("vms.actions.pause", "Pause")}
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
-                                            onClick={() => { runAction({ id: instance.id, action: "stop" }); }}
+                                            onClick={() => {
+                                                runAction({ id: instance.id, action: "stop" })
+                                            }}
                                         >
                                             <Square className="size-3.5" />
                                             {t("vms.actions.stop", "Stop")}
@@ -198,7 +208,9 @@ export function VmDetailPage() {
                                 )}
                                 <DropdownMenuItem
                                     variant="destructive"
-                                    onClick={() => { setDeleteOpen(true); }}
+                                    onClick={() => {
+                                        setDeleteOpen(true)
+                                    }}
                                 >
                                     <Trash2 className="size-3.5" />
                                     {t("vms.actions.terminate", "Terminate")}
@@ -237,10 +249,7 @@ export function VmDetailPage() {
                         label: t("vms.tabs.monitoring", "Monitoring"),
                         icon: Activity,
                         content: (
-                            <MonitoringTab
-                                instanceId={instance.id}
-                                provisioning={isProvisioning}
-                            />
+                            <MonitoringTab instanceId={instance.id} provisioning={isProvisioning} />
                         ),
                     },
                 ]}
@@ -269,11 +278,11 @@ export function VmDetailPage() {
                 confirmLabel={t("vms.actions.terminate", "Terminate")}
                 confirmText={instance.name}
                 loading={isDeleting}
-                onConfirm={() =>
-                    { deleteInstance(instance.id, {
+                onConfirm={() => {
+                    deleteInstance(instance.id, {
                         onSuccess: () => void navigate(VMS_ROUTES.ROOT),
-                    }); }
-                }
+                    })
+                }}
             />
         </>
     )
@@ -347,14 +356,28 @@ function OverviewTab({ instance }: Readonly<{ instance: Instance }>) {
                 <KeyValueGrid
                     columns={3}
                     items={[
-                        { label: "Hostname", value: instance.hostname ?? instance.name, mono: true },
+                        {
+                            label: "Hostname",
+                            value: instance.hostname ?? instance.name,
+                            mono: true,
+                        },
                         { label: "Description", value: instance.description ?? "—" },
                         { label: "Architecture", value: instance.architecture, mono: true },
                         { label: "OS Version", value: instance.os_version, mono: true },
                         ...(instance.iam_profile_id
-                            ? [{ label: "IAM Profile ID", value: instance.iam_profile_id, mono: true }]
+                            ? [
+                                  {
+                                      label: "IAM Profile ID",
+                                      value: instance.iam_profile_id,
+                                      mono: true,
+                                  },
+                              ]
                             : []),
-                        { label: "Root Disk Size", value: `${String(instance.disk_size_gb)} GB`, mono: true },
+                        {
+                            label: "Root Disk Size",
+                            value: `${String(instance.disk_size_gb)} GB`,
+                            mono: true,
+                        },
                         {
                             label: "Termination Protection",
                             value: (
@@ -405,24 +428,22 @@ function OverviewTab({ instance }: Readonly<{ instance: Instance }>) {
             <ConfirmDialog
                 open={disableProtectionOpen}
                 onOpenChange={setDisableProtectionOpen}
-                title={t(
-                    "vms.detail.protectionDisableTitle",
-                    "Disable termination protection?"
-                )}
+                title={t("vms.detail.protectionDisableTitle", "Disable termination protection?")}
                 description={t(
                     "vms.detail.protectionDisableWarning",
-                    "Without termination protection, \"{{name}}\" can be permanently terminated — along with its boot disk — by anyone with delete access. Only disable it if you intend to terminate this instance.",
+                    'Without termination protection, "{{name}}" can be permanently terminated — along with its boot disk — by anyone with delete access. Only disable it if you intend to terminate this instance.',
                     { name: instance.name }
                 )}
-                confirmLabel={t(
-                    "vms.detail.protectionDisableConfirm",
-                    "Disable protection"
-                )}
+                confirmLabel={t("vms.detail.protectionDisableConfirm", "Disable protection")}
                 loading={isUpdating}
                 onConfirm={() => {
                     updateInstance(
                         { id: instance.id, payload: { termination_protection: false } },
-                        { onSuccess: () => { setDisableProtectionOpen(false); } }
+                        {
+                            onSuccess: () => {
+                                setDisableProtectionOpen(false)
+                            },
+                        }
                     )
                 }}
             />
@@ -536,7 +557,6 @@ function DisksTab({ instance }: Readonly<{ instance: Instance }>) {
                                 t("vms.columns.status"),
                                 "",
                             ].map((header) => (
-                                 
                                 <TableHead
                                     key={`index-${header}`}
                                     className="px-3 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground"
@@ -565,7 +585,10 @@ function DisksTab({ instance }: Readonly<{ instance: Instance }>) {
                                         <span className="flex items-center gap-2">
                                             {disk.name}
                                             {disk.is_boot && (
-                                                <Badge variant="outline" className="font-mono text-[10px]">
+                                                <Badge
+                                                    variant="outline"
+                                                    className="font-mono text-[10px]"
+                                                >
                                                     {t("vms.detail.bootDisk")}
                                                 </Badge>
                                             )}
@@ -674,7 +697,8 @@ function ActivityTab({ instanceId }: Readonly<{ instanceId: string }>) {
                             )}
                         </div>
                         <p className="text-[12px] text-muted-foreground mt-0.5">
-                            {event.actor} · {new Date(event.started_at || event.created_at).toLocaleString()}
+                            {event.actor} ·{" "}
+                            {new Date(event.started_at || event.created_at).toLocaleString()}
                             {typeof event.duration_ms === "number" && event.duration_ms > 0
                                 ? ` · ${formatEventDuration(event.duration_ms)}`
                                 : ""}
@@ -725,8 +749,7 @@ function MonitoringTab({
     const memPsiSome = points.map((p) => p.mem_psi_some)
     const memPsiFull = points.map((p) => p.mem_psi_full)
     const ready = !isLoading && points.length >= 2
-    const agoLabel =
-        METRIC_RANGES.find((r) => r.value === range)?.ago ?? "24h ago"
+    const agoLabel = METRIC_RANGES.find((r) => r.value === range)?.ago ?? "24h ago"
 
     return (
         <FadeIn>
@@ -749,7 +772,9 @@ function MonitoringTab({
                                 <span className="absolute inline-flex size-full animate-ping rounded-full bg-status-success/70" />
                                 <span className="relative inline-flex size-2 rounded-full bg-status-success" />
                             </span>
-                            <span className="text-foreground">{t("vms.monitoring.live", "Live")}</span>
+                            <span className="text-foreground">
+                                {t("vms.monitoring.live", "Live")}
+                            </span>
                             <span className="text-muted-foreground">·</span>
                             <span className="font-mono text-[11px] text-muted-foreground">
                                 {data?.source === "proxmox"
@@ -763,7 +788,9 @@ function MonitoringTab({
                             <button
                                 key={r.value}
                                 type="button"
-                                onClick={() => { setRange(r.value); }}
+                                onClick={() => {
+                                    setRange(r.value)
+                                }}
                                 className={cn(
                                     "rounded-md px-2.5 py-1 text-[11px] font-medium transition-colors",
                                     range === r.value

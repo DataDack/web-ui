@@ -16,13 +16,13 @@ import { PlanLimitsPanel } from "../../../components"
  * used" gauge would be inventing a measurement the platform does not take.
  */
 export function PlanSection() {
-	return (
-		<Section
-			variant="panel"
-			title="Plan"
-			description="The account plan this project runs under, and the quotas that come with it."
-		>
-			<PlanLimitsPanel />
-		</Section>
-	)
+    return (
+        <Section
+            variant="panel"
+            title="Plan"
+            description="The account plan this project runs under, and the quotas that come with it."
+        >
+            <PlanLimitsPanel />
+        </Section>
+    )
 }

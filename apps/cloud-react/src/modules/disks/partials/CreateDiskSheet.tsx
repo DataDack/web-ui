@@ -34,15 +34,15 @@ import { useCreateDisk } from "../disks.hooks"
 
 const makeSchema = (rule: NamingRule) =>
     z.object({
-    name: namingNameSchema(rule),
-    description: z.string().optional(),
-    size_gb: z.coerce.number().min(10, "Minimum 10 GB").max(65536, "Maximum 64 TB"),
-    disk_type: z.enum(["ssd", "hdd"]),
-    volume_class: z.string().optional(),
-    zone: z.string().min(1, "Required"),
-    multi_attach: z.boolean().default(false),
-    delete_on_termination: z.boolean().default(false),
-})
+        name: namingNameSchema(rule),
+        description: z.string().optional(),
+        size_gb: z.coerce.number().min(10, "Minimum 10 GB").max(65536, "Maximum 64 TB"),
+        disk_type: z.enum(["ssd", "hdd"]),
+        volume_class: z.string().optional(),
+        zone: z.string().min(1, "Required"),
+        multi_attach: z.boolean().default(false),
+        delete_on_termination: z.boolean().default(false),
+    })
 
 type Schema = ReturnType<typeof makeSchema>
 type FormInput = z.input<Schema>
@@ -69,7 +69,14 @@ export function CreateDiskSheet({ open, onOpenChange }: Readonly<Props>) {
         formState: { errors },
     } = useForm<FormInput, unknown, FormValues>({
         resolver: zodResolver(schema),
-        defaultValues: { size_gb: 100, disk_type: "ssd", zone: "", volume_class: "gp3", multi_attach: false, delete_on_termination: false },
+        defaultValues: {
+            size_gb: 100,
+            disk_type: "ssd",
+            zone: "",
+            volume_class: "gp3",
+            multi_attach: false,
+            delete_on_termination: false,
+        },
     })
 
     const close = () => {
@@ -85,8 +92,7 @@ export function CreateDiskSheet({ open, onOpenChange }: Readonly<Props>) {
 
     const onSubmit = (values: FormValues) => {
         const region =
-            zones.find((z) => z.code === values.zone)?.region ??
-            values.zone.replace(/-[a-z]$/, "")
+            zones.find((z) => z.code === values.zone)?.region ?? values.zone.replace(/-[a-z]$/, "")
         create({ ...values, region }, { onSuccess: close })
     }
 
@@ -110,9 +116,15 @@ export function CreateDiskSheet({ open, onOpenChange }: Readonly<Props>) {
                                 {t("disks.form.name")}
                                 <span className="text-destructive ml-0.5">*</span>
                             </Label>
-                            <Input {...register("name")} placeholder="my-data-disk" className="font-mono" />
+                            <Input
+                                {...register("name")}
+                                placeholder="my-data-disk"
+                                className="font-mono"
+                            />
                             {errors.name && (
-                                <p className="text-[11px] text-destructive">{errors.name.message}</p>
+                                <p className="text-[11px] text-destructive">
+                                    {errors.name.message}
+                                </p>
                             )}
                         </div>
 
@@ -120,7 +132,10 @@ export function CreateDiskSheet({ open, onOpenChange }: Readonly<Props>) {
                             <Label className="text-xs font-semibold tracking-wide uppercase text-muted-foreground">
                                 Description
                             </Label>
-                            <Input {...register("description")} placeholder="Optional description..." />
+                            <Input
+                                {...register("description")}
+                                placeholder="Optional description..."
+                            />
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
@@ -203,7 +218,9 @@ export function CreateDiskSheet({ open, onOpenChange }: Readonly<Props>) {
                                     }}
                                 >
                                     <SelectTrigger className="w-full">
-                                        <SelectValue placeholder={t("disks.form.zonePlaceholder")} />
+                                        <SelectValue
+                                            placeholder={t("disks.form.zonePlaceholder")}
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {zones.map((zone) => (
@@ -223,21 +240,30 @@ export function CreateDiskSheet({ open, onOpenChange }: Readonly<Props>) {
                             <div className="flex items-center justify-between">
                                 <div className="space-y-0.5">
                                     <Label>Multi-Attach</Label>
-                                    <p className="text-xs text-muted-foreground">Allow mounting to multiple instances simultaneously.</p>
+                                    <p className="text-xs text-muted-foreground">
+                                        Allow mounting to multiple instances simultaneously.
+                                    </p>
                                 </div>
                                 <Switch
                                     checked={watch("multi_attach")}
-                                    onCheckedChange={(checked) => { setValue("multi_attach", checked); }}
+                                    onCheckedChange={(checked) => {
+                                        setValue("multi_attach", checked)
+                                    }}
                                 />
                             </div>
                             <div className="flex items-center justify-between">
                                 <div className="space-y-0.5">
                                     <Label>Delete on Termination</Label>
-                                    <p className="text-xs text-muted-foreground">Automatically delete disk when the attached instance terminates.</p>
+                                    <p className="text-xs text-muted-foreground">
+                                        Automatically delete disk when the attached instance
+                                        terminates.
+                                    </p>
                                 </div>
                                 <Switch
                                     checked={watch("delete_on_termination")}
-                                    onCheckedChange={(checked) => { setValue("delete_on_termination", checked); }}
+                                    onCheckedChange={(checked) => {
+                                        setValue("delete_on_termination", checked)
+                                    }}
                                 />
                             </div>
                         </div>

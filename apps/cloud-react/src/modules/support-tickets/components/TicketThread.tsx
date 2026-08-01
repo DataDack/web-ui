@@ -25,7 +25,9 @@ export function TicketThread({
                 <div key={c.id} className="rounded-lg border border-border/60 bg-background/40 p-3">
                     <div className="mb-1 flex items-center gap-2 text-xs text-muted-foreground">
                         <span
-                            className={c.authorName ? "font-medium text-foreground/80" : "font-mono"}
+                            className={
+                                c.authorName ? "font-medium text-foreground/80" : "font-mono"
+                            }
                             title={c.authorEmail ?? c.authorId}
                         >
                             {formatTicketPerson(c.authorId, c.authorName, c.authorEmail)}

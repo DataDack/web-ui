@@ -36,20 +36,20 @@ const DEFAULT_DOCUMENT = `{
 
 const makeSchema = (rule: NamingRule) =>
     z.object({
-    name: namingNameSchema(rule),
-    description: z.string().min(1, "Required").max(300, "Maximum 300 characters"),
-    document: z.string().refine(
-        (value) => {
-            try {
-                JSON.parse(value)
-                return true
-            } catch {
-                return false
-            }
-        },
-        { message: "Must be valid JSON" }
-    ),
-})
+        name: namingNameSchema(rule),
+        description: z.string().min(1, "Required").max(300, "Maximum 300 characters"),
+        document: z.string().refine(
+            (value) => {
+                try {
+                    JSON.parse(value)
+                    return true
+                } catch {
+                    return false
+                }
+            },
+            { message: "Must be valid JSON" }
+        ),
+    })
 
 type FormValues = z.infer<ReturnType<typeof makeSchema>>
 
@@ -112,7 +112,9 @@ export function CreatePolicySheet({ open, onOpenChange }: Readonly<Props>) {
                                 className="font-mono"
                             />
                             {errors.name && (
-                                <p className="text-[11px] text-destructive">{errors.name.message}</p>
+                                <p className="text-[11px] text-destructive">
+                                    {errors.name.message}
+                                </p>
                             )}
                         </div>
 

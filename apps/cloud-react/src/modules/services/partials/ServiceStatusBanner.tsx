@@ -11,7 +11,8 @@ interface Props {
 
 export function ServiceStatusBanner({ serviceId }: Readonly<Props>) {
     const [dismissed, setDismissed] = useState(false)
-    const { isUnderMaintenance, isDegraded, maintenance, affectedSubServices } = useServiceStatus(serviceId)
+    const { isUnderMaintenance, isDegraded, maintenance, affectedSubServices } =
+        useServiceStatus(serviceId)
 
     if (dismissed || (!isUnderMaintenance && !isDegraded)) return null
 
@@ -20,7 +21,9 @@ export function ServiceStatusBanner({ serviceId }: Readonly<Props>) {
             <MaintenanceBanner
                 maintenance={maintenance}
                 affectedSubServices={affectedSubServices}
-                onDismiss={() => { setDismissed(true); }}
+                onDismiss={() => {
+                    setDismissed(true)
+                }}
             />
         )
     }
@@ -42,7 +45,9 @@ export function ServiceStatusBanner({ serviceId }: Readonly<Props>) {
                     </span>
                 </div>
                 <button
-                    onClick={() => { setDismissed(true); }}
+                    onClick={() => {
+                        setDismissed(true)
+                    }}
                     className="text-xs text-muted-foreground hover:text-foreground transition-colors shrink-0"
                 >
                     Dismiss

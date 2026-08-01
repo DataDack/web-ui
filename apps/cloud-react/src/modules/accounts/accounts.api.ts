@@ -53,8 +53,7 @@ export const accountsApi = {
         apiPost<null>(`${BASE}/${id}/transfer/confirm`, { otp }),
 
     /** Whether an ownership transfer is pending — lets the UI resume the code step. */
-    pendingTransfer: (id: string) =>
-        apiGet<PendingTransfer>(`${BASE}/${id}/transfer/pending`),
+    pendingTransfer: (id: string) => apiGet<PendingTransfer>(`${BASE}/${id}/transfer/pending`),
 
     /** Abandon an in-flight ownership transfer, clearing the pending code. */
     cancelTransfer: (id: string) => apiDelete(`${BASE}/${id}/transfer`),

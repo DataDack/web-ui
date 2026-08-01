@@ -30,8 +30,7 @@ export const MONITORING_QUERY_KEYS = {
     notifications: ["monitoring", "notifications"] as const,
     channels: ["monitoring", "channels"] as const,
     jiraConnections: ["monitoring", "jira", "connections"] as const,
-    jiraProjects: (cloudId: string) =>
-        ["monitoring", "jira", "projects", cloudId] as const,
+    jiraProjects: (cloudId: string) => ["monitoring", "jira", "projects", cloudId] as const,
     jiraIssueTypes: (cloudId: string, projectKey: string) =>
         ["monitoring", "jira", "issue-types", cloudId, projectKey] as const,
     jiraLabels: (cloudId: string, projectKey: string) =>

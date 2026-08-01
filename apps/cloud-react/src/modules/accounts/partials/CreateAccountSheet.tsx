@@ -68,9 +68,14 @@ export function CreateAccountSheet({ open, onOpenChange }: Readonly<Props>) {
                                 {t("accounts.form.name")}
                                 <span className="text-destructive ml-0.5">*</span>
                             </Label>
-                            <Input {...register("name")} placeholder={t("accounts.form.namePlaceholder")} />
+                            <Input
+                                {...register("name")}
+                                placeholder={t("accounts.form.namePlaceholder")}
+                            />
                             {errors.name ? (
-                                <p className="text-[11px] text-destructive">{errors.name.message}</p>
+                                <p className="text-[11px] text-destructive">
+                                    {errors.name.message}
+                                </p>
                             ) : (
                                 <p className="text-[11px] text-muted-foreground">
                                     {t("accounts.form.nameHint")}

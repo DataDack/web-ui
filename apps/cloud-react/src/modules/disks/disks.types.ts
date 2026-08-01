@@ -3,13 +3,7 @@
 // Backend lifecycle: creating | available | in_use | deleting | deleted | error.
 // The API layer maps `in_use` -> `attached` so the console's status badge,
 // stats and action gating keep working against existing i18n keys.
-export type DiskStatus =
-    | "creating"
-    | "available"
-    | "attached"
-    | "deleting"
-    | "deleted"
-    | "error"
+export type DiskStatus = "creating" | "available" | "attached" | "deleting" | "deleted" | "error"
 // Backend accepts ssd | hdd | nvme. The create form only offers ssd/hdd
 // (the values that have i18n labels); nvme is read-only support for listing.
 export type DiskType = "ssd" | "hdd" | "nvme"

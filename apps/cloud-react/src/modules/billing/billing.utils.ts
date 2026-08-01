@@ -48,7 +48,10 @@ export function spendSeries(ledger: LedgerEntry[], days = 30, now = Date.now()):
     const totals = new Map<string, number>()
     for (const entry of ledger) {
         if (entry.kind !== "debit") continue
-        totals.set(dayKey(entry.created_at), (totals.get(dayKey(entry.created_at)) ?? 0) + entry.amount)
+        totals.set(
+            dayKey(entry.created_at),
+            (totals.get(dayKey(entry.created_at)) ?? 0) + entry.amount
+        )
     }
     const series: number[] = []
     for (let i = days - 1; i >= 0; i--) {
@@ -63,7 +66,12 @@ export function spendSeries(ledger: LedgerEntry[], days = 30, now = Date.now()):
  * ledger `balance_after`. Falls back to the current balance when the window has
  * no entries so the sparkline still renders a flat line.
  */
-export function balanceSeries(ledger: LedgerEntry[], current: number, days = 30, now = Date.now()): number[] {
+export function balanceSeries(
+    ledger: LedgerEntry[],
+    current: number,
+    days = 30,
+    now = Date.now()
+): number[] {
     const cutoff = now - days * DAY_MS
     const recent = [...ledger]
         .filter((e) => new Date(e.created_at).getTime() >= cutoff)

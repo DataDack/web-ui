@@ -7,7 +7,7 @@ import { IMAGE_CATALOG } from "./images.catalog"
 import { PlannedSlot } from "./PlannedSlot"
 
 interface ImageCatalogProps {
-	onBack: () => void
+    onBack: () => void
 }
 
 /**
@@ -19,41 +19,41 @@ interface ImageCatalogProps {
  * measured before the provisioner is built.
  */
 export function ImageCatalog({ onBack }: Readonly<ImageCatalogProps>) {
-	const featured = IMAGE_CATALOG.filter((image) => image.availability === "coming_soon")
-	const planned = IMAGE_CATALOG.filter((image) => image.availability === "planned")
+    const featured = IMAGE_CATALOG.filter((image) => image.availability === "coming_soon")
+    const planned = IMAGE_CATALOG.filter((image) => image.availability === "planned")
 
-	return (
-		<div className="mx-auto w-full max-w-3xl space-y-6">
-			<div className="flex items-center gap-3">
-				<Button
-					type="button"
-					variant="ghost"
-					size="sm"
-					className="-ml-2 gap-1.5 text-muted-foreground"
-					onClick={onBack}
-				>
-					<ArrowLeft className="size-3.5" />
-					Source
-				</Button>
-				<div>
-					<h2 className="text-sm font-semibold">Public Images</h2>
-					<p className="text-[12px] text-muted-foreground">
-						Ready-made services we run for you — no repository, no build pipeline.
-					</p>
-				</div>
-			</div>
+    return (
+        <div className="mx-auto w-full max-w-3xl space-y-6">
+            <div className="flex items-center gap-3">
+                <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="-ml-2 gap-1.5 text-muted-foreground"
+                    onClick={onBack}
+                >
+                    <ArrowLeft className="size-3.5" />
+                    Source
+                </Button>
+                <div>
+                    <h2 className="text-sm font-semibold">Public Images</h2>
+                    <p className="text-[12px] text-muted-foreground">
+                        Ready-made services we run for you — no repository, no build pipeline.
+                    </p>
+                </div>
+            </div>
 
-			<div className="space-y-4">
-				{featured.map((image) => (
-					<ImageCard key={image.slug} image={image} />
-				))}
+            <div className="space-y-4">
+                {featured.map((image) => (
+                    <ImageCard key={image.slug} image={image} />
+                ))}
 
-				<div className="grid gap-3 sm:grid-cols-3">
-					{planned.map((image) => (
-						<PlannedSlot key={image.slug} image={image} />
-					))}
-				</div>
-			</div>
-		</div>
-	)
+                <div className="grid gap-3 sm:grid-cols-3">
+                    {planned.map((image) => (
+                        <PlannedSlot key={image.slug} image={image} />
+                    ))}
+                </div>
+            </div>
+        </div>
+    )
 }

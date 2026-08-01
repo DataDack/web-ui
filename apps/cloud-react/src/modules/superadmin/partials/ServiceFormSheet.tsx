@@ -327,7 +327,9 @@ export function ServiceFormSheet({ open, onOpenChange, service }: Readonly<Props
                     >
                         <div className="flex gap-2">
                             <Input
-                                {...register(`metrics.${String(index)}.label` as `metrics.${number}.label`)}
+                                {...register(
+                                    `metrics.${String(index)}.label` as `metrics.${number}.label`
+                                )}
                                 placeholder={t("superAdmin.services.fields.metricLabel")}
                                 className="flex-1"
                             />
@@ -347,7 +349,9 @@ export function ServiceFormSheet({ open, onOpenChange, service }: Readonly<Props
                         <div className="flex items-center gap-2">
                             <Controller
                                 control={control}
-                                name={`metrics.${String(index)}.source` as `metrics.${number}.source`}
+                                name={
+                                    `metrics.${String(index)}.source` as `metrics.${number}.source`
+                                }
                                 render={({ field }) => (
                                     <Select value={field.value} onValueChange={field.onChange}>
                                         <SelectTrigger className="flex-1">
@@ -369,7 +373,9 @@ export function ServiceFormSheet({ open, onOpenChange, service }: Readonly<Props
                             />
                             <Controller
                                 control={control}
-                                name={`metrics.${String(index)}.accent` as `metrics.${number}.accent`}
+                                name={
+                                    `metrics.${String(index)}.accent` as `metrics.${number}.accent`
+                                }
                                 render={({ field }) => (
                                     <label className="flex shrink-0 items-center gap-1.5 text-[11px] text-muted-foreground">
                                         <Switch

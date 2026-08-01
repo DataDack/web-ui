@@ -143,7 +143,11 @@ export function SubnetsTab({ network }: Readonly<{ network: VPCNetwork }>) {
                 loading={isDeleting}
                 onConfirm={() => {
                     if (toDelete) {
-                        deleteSubnet(toDelete.id, { onSuccess: () => { setToDelete(null); } })
+                        deleteSubnet(toDelete.id, {
+                            onSuccess: () => {
+                                setToDelete(null)
+                            },
+                        })
                     }
                 }}
             />

@@ -41,7 +41,12 @@ export function MicrosoftButton({
 
     if (!clientId) {
         return (
-            <button type="button" disabled title={t("auth.microsoft.unconfigured")} className={pill}>
+            <button
+                type="button"
+                disabled
+                title={t("auth.microsoft.unconfigured")}
+                className={pill}
+            >
                 <MicrosoftIcon className="size-5" />
                 {t("auth.microsoft.continue")}
             </button>
@@ -72,7 +77,11 @@ export function MicrosoftButton({
             onClick={() => void onClick()}
             className={cn(pill)}
         >
-            {loading ? <Loader2 className="size-4 animate-spin" /> : <MicrosoftIcon className="size-5" />}
+            {loading ? (
+                <Loader2 className="size-4 animate-spin" />
+            ) : (
+                <MicrosoftIcon className="size-5" />
+            )}
             {t("auth.microsoft.continue")}
         </button>
     )

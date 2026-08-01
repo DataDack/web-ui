@@ -53,10 +53,7 @@ export function RequestIncreaseDialog({
     const { mutate: requestIncrease, isPending } = useRequestQuotaIncrease()
 
     // Adjustable quotas only; an unlimited quota has nothing left to raise.
-    const options = useMemo(
-        () => quotas.filter((q) => q.adjustable && q.limit !== -1),
-        [quotas]
-    )
+    const options = useMemo(() => quotas.filter((q) => q.adjustable && q.limit !== -1), [quotas])
 
     const [code, setCode] = useState<string | null>(initialCode)
     const [limitInput, setLimitInput] = useState("")

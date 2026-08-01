@@ -59,8 +59,18 @@ const TYPE_LABEL: Record<string, string> = {
 // Status buckets for the at-a-glance stat cards. Anything not explicitly healthy
 // or failing is treated as pending/transitional.
 const HEALTHY = new Set([
-    "running", "active", "available", "optimal", "in_use", "succeeded",
-    "attached", "assigned", "healthy", "operational", "connected", "paid",
+    "running",
+    "active",
+    "available",
+    "optimal",
+    "in_use",
+    "succeeded",
+    "attached",
+    "assigned",
+    "healthy",
+    "operational",
+    "connected",
+    "paid",
 ])
 const FAILING = new Set(["error", "failed", "outage", "overdue", "unpaid", "degraded"])
 
@@ -71,7 +81,12 @@ function typeLabel(type: string): string {
 export function ResourceGroupResourcesTab({ groupId }: Readonly<{ groupId: string }>) {
     const { t } = useTranslation()
     const navigate = useNavigate()
-    const { data: resources = [], isLoading, isError, refetch } = useResourceGroupResources$(groupId)
+    const {
+        data: resources = [],
+        isLoading,
+        isError,
+        refetch,
+    } = useResourceGroupResources$(groupId)
 
     const stats = useMemo<StatCardProps[]>(() => {
         const healthy = resources.filter((r) => r.status && HEALTHY.has(r.status)).length

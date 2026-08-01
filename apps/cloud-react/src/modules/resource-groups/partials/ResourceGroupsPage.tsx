@@ -1,11 +1,16 @@
-import { useId } from "react";
+import { useId } from "react"
 
 import { FolderTree, Plus, RefreshCw } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
-
-import { EmptyState, PageHeader, type StatCardProps, StatGrid, staggerDelay } from "@/components/console"
+import {
+    EmptyState,
+    PageHeader,
+    type StatCardProps,
+    StatGrid,
+    staggerDelay,
+} from "@/components/console"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useScreen } from "@/services/api/screen"
@@ -23,7 +28,12 @@ export function ResourceGroupsPage() {
     // Backend has no per-group resource count, so the "resources" stat is omitted.
     const stats: StatCardProps[] = [
         { label: t("resourceGroups.stats.total"), value: groups.length, loading: isLoading },
-        { label: t("resourceGroups.stats.active"), value: groups.filter((g) => g.status === "active").length, color: "success", loading: isLoading },
+        {
+            label: t("resourceGroups.stats.active"),
+            value: groups.filter((g) => g.status === "active").length,
+            color: "success",
+            loading: isLoading,
+        },
     ]
 
     const renderContent = () => {
@@ -41,7 +51,10 @@ export function ResourceGroupsPage() {
             return (
                 <div className="flex flex-wrap gap-5 items-start">
                     {Array.from({ length: 4 }).map((_, i) => (
-                        <div key={`${id}-skeleton-${String(i)}`} className="glass-2 p-5 space-y-4 w-full sm:w-85">
+                        <div
+                            key={`${id}-skeleton-${String(i)}`}
+                            className="glass-2 p-5 space-y-4 w-full sm:w-85"
+                        >
                             <Skeleton className="h-3 w-1/3" />
                             <Skeleton className="h-5 w-2/3" />
                             <Skeleton className="h-3 w-full" />

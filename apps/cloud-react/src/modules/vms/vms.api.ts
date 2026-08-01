@@ -88,7 +88,11 @@ function resolveOS(
     return { os: imageId }
 }
 
-function enrich(raw: RawInstance, prices: VMPriceOption[], families: ImageCatalogFamily[]): Instance {
+function enrich(
+    raw: RawInstance,
+    prices: VMPriceOption[],
+    families: ImageCatalogFamily[]
+): Instance {
     const mt = prices.find((p) => p.id === raw.machine_type_id)
     return {
         ...raw,

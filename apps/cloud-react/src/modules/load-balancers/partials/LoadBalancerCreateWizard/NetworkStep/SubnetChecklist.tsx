@@ -50,8 +50,7 @@ export function SubnetChecklist({
                         }}
                     />
                     <span>
-                        {subnet.name}{" "}
-                        <span className="text-muted-foreground">({subnet.cidr})</span>
+                        {subnet.name} <span className="text-muted-foreground">({subnet.cidr})</span>
                     </span>
                     <span className="flex-1" />
                     {/* The load balancer takes one address per subnet, so a nearly

@@ -37,10 +37,7 @@ export function MaintenanceBanner({
         <div
             className="rounded-xl px-4 py-3.5 flex items-start gap-3"
             style={{
-                background:
-                    impact === "full"
-                        ? "rgba(255,180,171,0.08)"
-                        : "rgba(255,183,123,0.08)",
+                background: impact === "full" ? "rgba(255,180,171,0.08)" : "rgba(255,183,123,0.08)",
                 border:
                     impact === "full"
                         ? "1px solid rgba(255,180,171,0.25)"
@@ -56,13 +53,18 @@ export function MaintenanceBanner({
             {/* Content */}
             <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-sm font-semibold text-foreground">{maintenance.title}</span>
+                    <span className="text-sm font-semibold text-foreground">
+                        {maintenance.title}
+                    </span>
                     <Badge
                         variant="outline"
                         className="text-[10px] font-mono"
                         style={{
                             color: impact === "full" ? "var(--destructive)" : "var(--secondary)",
-                            borderColor: impact === "full" ? "rgba(255,180,171,0.3)" : "rgba(255,183,123,0.3)",
+                            borderColor:
+                                impact === "full"
+                                    ? "rgba(255,180,171,0.3)"
+                                    : "rgba(255,183,123,0.3)",
                             background: "transparent",
                         }}
                     >
@@ -70,7 +72,9 @@ export function MaintenanceBanner({
                     </Badge>
                 </div>
 
-                <p className="text-xs text-muted-foreground mt-1 leading-5">{maintenance.message}</p>
+                <p className="text-xs text-muted-foreground mt-1 leading-5">
+                    {maintenance.message}
+                </p>
 
                 <div className="flex items-center gap-4 mt-2 flex-wrap">
                     <span className="flex items-center gap-1 text-[11px] text-muted-foreground">

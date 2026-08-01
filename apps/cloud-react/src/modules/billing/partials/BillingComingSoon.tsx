@@ -14,7 +14,11 @@ interface BillingComingSoonProps {
  * already renders the section header + nav, so this omits the PageHeader that
  * the shared `ComingSoon` includes.
  */
-export function BillingComingSoon({ icon: Icon, title, description }: Readonly<BillingComingSoonProps>) {
+export function BillingComingSoon({
+    icon: Icon,
+    title,
+    description,
+}: Readonly<BillingComingSoonProps>) {
     const { t } = useTranslation()
     return (
         <FadeIn className="glass-1 flex flex-col items-center justify-center rounded-xl border border-dashed border-border/60 px-6 py-20 text-center">

@@ -16,7 +16,12 @@ interface ComingSoonProps {
  * route but no implementation yet. Renders the standard page header followed by
  * a centered "coming soon" panel.
  */
-export function ComingSoon({ icon: Icon, title, description, breadcrumbs }: Readonly<ComingSoonProps>) {
+export function ComingSoon({
+    icon: Icon,
+    title,
+    description,
+    breadcrumbs,
+}: Readonly<ComingSoonProps>) {
     const { t } = useTranslation()
 
     return (

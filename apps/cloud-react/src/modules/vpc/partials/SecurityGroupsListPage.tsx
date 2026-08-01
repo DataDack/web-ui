@@ -233,7 +233,11 @@ export function SecurityGroupsListPage() {
                 loading={isDeleting}
                 onConfirm={() => {
                     if (toDelete) {
-                        deleteGroup(toDelete.id, { onSuccess: () => { setToDelete(null); } })
+                        deleteGroup(toDelete.id, {
+                            onSuccess: () => {
+                                setToDelete(null)
+                            },
+                        })
                     }
                 }}
             />

@@ -51,7 +51,12 @@ function formatDate(raw?: string | null): string {
 // Read-only drill-in for one request: the full justification (the table clamps
 // it to two lines) plus the review trail, with approve/reject at hand while
 // the request is still pending.
-export function RequestDetailSheet({ request, onOpenChange, onApprove, onReject }: Readonly<Props>) {
+export function RequestDetailSheet({
+    request,
+    onOpenChange,
+    onApprove,
+    onReject,
+}: Readonly<Props>) {
     const { t } = useTranslation()
 
     return (
@@ -79,9 +84,7 @@ export function RequestDetailSheet({ request, onOpenChange, onApprove, onReject 
                         </Row>
 
                         <Row label={t("superAdmin.quotaRequests.columns.account")}>
-                            <p className="text-sm text-foreground">
-                                {request.account_name || "—"}
-                            </p>
+                            <p className="text-sm text-foreground">{request.account_name || "—"}</p>
                             {request.account_number && (
                                 <p className="font-mono text-[11px] text-muted-foreground">
                                     {request.account_number}

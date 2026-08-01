@@ -24,14 +24,14 @@ export function TypeCard({
                 "glass-1 rounded-lg border p-3.5 text-left transition-colors",
                 selected
                     ? "border-status-info/60 ring-1 ring-status-info/30"
-                    : "border-border/60 hover:border-border",
+                    : "border-border/60 hover:border-border"
             )}
         >
             <div className="flex items-center gap-2">
                 <Icon
                     className={cn(
                         "size-4",
-                        selected ? "text-status-info" : "text-muted-foreground",
+                        selected ? "text-status-info" : "text-muted-foreground"
                     )}
                 />
                 <span className="text-[13px] font-semibold">{title}</span>

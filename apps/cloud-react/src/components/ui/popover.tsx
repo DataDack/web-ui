@@ -40,11 +40,7 @@ function PopoverContent({
 
     if (!portalled) return content
 
-    return (
-        <PopoverPrimitive.Portal>
-            {content}
-        </PopoverPrimitive.Portal>
-    )
+    return <PopoverPrimitive.Portal>{content}</PopoverPrimitive.Portal>
 }
 
 export { Popover, PopoverAnchor, PopoverContent, PopoverTrigger }

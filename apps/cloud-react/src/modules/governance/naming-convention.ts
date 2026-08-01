@@ -75,9 +75,10 @@ const FLAG_KEYS = ["digits", "hyphen", "underscore", "dot", "space"] as const
 const FLAG_COMBOS: Pick<NamingBuilder, (typeof FLAG_KEYS)[number]>[] = Array.from(
     { length: 1 << FLAG_KEYS.length },
     (_, mask) =>
-        Object.fromEntries(
-            FLAG_KEYS.map((k, i) => [k, Boolean(mask & (1 << i))])
-        ) as Pick<NamingBuilder, (typeof FLAG_KEYS)[number]>
+        Object.fromEntries(FLAG_KEYS.map((k, i) => [k, Boolean(mask & (1 << i))])) as Pick<
+            NamingBuilder,
+            (typeof FLAG_KEYS)[number]
+        >
 )
 
 /** Recover a builder from a pattern, or null when the pattern was not produced

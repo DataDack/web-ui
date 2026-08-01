@@ -116,9 +116,7 @@ export function SummaryRail({
             </Section>
 
             <div className="space-y-2">
-                {blocker && (
-                    <p className="text-[12px] text-muted-foreground">{blocker}</p>
-                )}
+                {blocker && <p className="text-[12px] text-muted-foreground">{blocker}</p>}
                 <div className="flex items-center justify-end gap-2">
                     <Button type="button" variant="ghost" onClick={onCancel}>
                         Cancel

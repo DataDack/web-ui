@@ -49,9 +49,20 @@ export function ReviewStep({
                 Microsoft basic profile, or the name + email entered at signup). */}
             <dl className="grid gap-3 sm:grid-cols-2">
                 <Summary label={t("onboarding.review.name")} value={status.name || "—"} />
-                <Summary label={t("onboarding.review.email")} value={status.email || "—"} ok={status.email_verified} />
-                <Summary label={t("onboarding.review.phone")} value={user?.phone ? user.phone : "—"} ok={status.phone_verified} />
-                <Summary label={t("onboarding.review.type")} value={t(`onboarding.type.${accountType}`)} />
+                <Summary
+                    label={t("onboarding.review.email")}
+                    value={status.email || "—"}
+                    ok={status.email_verified}
+                />
+                <Summary
+                    label={t("onboarding.review.phone")}
+                    value={user?.phone ? user.phone : "—"}
+                    ok={status.phone_verified}
+                />
+                <Summary
+                    label={t("onboarding.review.type")}
+                    value={t(`onboarding.type.${accountType}`)}
+                />
                 {isBusiness && <Summary label={t("onboarding.review.orgName")} value={orgName} />}
             </dl>
 
@@ -75,7 +86,11 @@ export function ReviewStep({
             </div>
 
             {requireConsent && (
-                <PolicyConsent checked={consent} onCheckedChange={setConsent} disabled={isCompleting} />
+                <PolicyConsent
+                    checked={consent}
+                    onCheckedChange={setConsent}
+                    disabled={isCompleting}
+                />
             )}
 
             <div className="flex items-center gap-3">
@@ -84,7 +99,11 @@ export function ReviewStep({
                     disabled={isCompleting || blocked}
                     className="btn-gold rounded-full font-bold"
                 >
-                    {isCompleting ? <Loader2 className="size-4 animate-spin" /> : <Rocket className="size-4" />}
+                    {isCompleting ? (
+                        <Loader2 className="size-4 animate-spin" />
+                    ) : (
+                        <Rocket className="size-4" />
+                    )}
                     {t("onboarding.review.create")}
                 </Button>
                 <Button variant="ghost" onClick={onBack} disabled={isCompleting}>

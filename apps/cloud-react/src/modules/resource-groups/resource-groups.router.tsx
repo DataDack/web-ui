@@ -8,9 +8,7 @@ export const resourceGroupsRoutes: RouteObject[] = [
         path: "resource-groups",
         handle: { hideSidebar: true },
         lazy: async () => {
-            const { ResourceGroupsPage } = await import(
-                "./partials/ResourceGroupsPage"
-            )
+            const { ResourceGroupsPage } = await import("./partials/ResourceGroupsPage")
             return { Component: ResourceGroupsPage }
         },
     },
@@ -18,9 +16,8 @@ export const resourceGroupsRoutes: RouteObject[] = [
         path: "resource-groups/create",
         handle: { hideSidebar: true },
         lazy: async () => {
-            const { ResourceGroupCreateWizardPage } = await import(
-                "./partials/ResourceGroupCreateWizardPage"
-            )
+            const { ResourceGroupCreateWizardPage } =
+                await import("./partials/ResourceGroupCreateWizardPage")
             return { Component: ResourceGroupCreateWizardPage }
         },
     },
@@ -28,9 +25,7 @@ export const resourceGroupsRoutes: RouteObject[] = [
         path: "resource-groups/:id",
         handle: { hideSidebar: true },
         lazy: async () => {
-            const { ResourceGroupDetailPage } = await import(
-                "./partials/ResourceGroupDetailPage"
-            )
+            const { ResourceGroupDetailPage } = await import("./partials/ResourceGroupDetailPage")
             return { Component: ResourceGroupDetailPage }
         },
     },

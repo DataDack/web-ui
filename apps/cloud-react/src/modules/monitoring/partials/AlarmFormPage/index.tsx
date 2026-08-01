@@ -51,11 +51,7 @@ import { TargetSection } from "./TargetSection"
 import { useTargetNames } from "./useAlarmTargets"
 import { MONITORING_ROUTES } from "../../monitoring.constants"
 import { useAlarm, useCreateAlarm, useUpdateAlarm } from "../../monitoring.hooks"
-import {
-    OPERATOR_PHRASES,
-    TREAT_MISSING_LABELS,
-    periodLabel,
-} from "../../monitoring.meta"
+import { OPERATOR_PHRASES, TREAT_MISSING_LABELS, periodLabel } from "../../monitoring.meta"
 import {
     TARGET_TYPE_META,
     describeMetric,
@@ -66,8 +62,7 @@ import {
 } from "../../monitoring.targets"
 import type { CreateAlarmRequest, MetricDescriptor } from "../../monitoring.types"
 
-const LABEL_CLASS =
-    "text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+const LABEL_CLASS = "text-xs font-semibold uppercase tracking-wide text-muted-foreground"
 const ERROR_CLASS = "text-[11px] text-destructive"
 
 /**
@@ -360,8 +355,7 @@ export function AlarmFormPage() {
                                     errors={{
                                         targetIds: errors.targetIds?.message,
                                         customNamespace: errors.customNamespace?.message,
-                                        customDimensions:
-                                            errors.customDimensions?.message,
+                                        customDimensions: errors.customDimensions?.message,
                                     }}
                                     onTypeChange={handleTypeChange}
                                     onTargetIdsChange={handleTargetIdsChange}
@@ -387,9 +381,7 @@ export function AlarmFormPage() {
                                     namespace={namespace}
                                     dimensions={dimensions}
                                     hasTarget={hasTarget}
-                                    targetLabel={
-                                        firstTargetId ? resolveName(firstTargetId) : ""
-                                    }
+                                    targetLabel={firstTargetId ? resolveName(firstTargetId) : ""}
                                     error={errors.metric?.message}
                                     onMetricChange={(value) => {
                                         setValue("metric", value)
@@ -422,10 +414,8 @@ export function AlarmFormPage() {
                                     register={register}
                                     errors={{
                                         threshold: errors.threshold?.message,
-                                        datapointsToAlarm:
-                                            errors.datapointsToAlarm?.message,
-                                        evaluationPeriods:
-                                            errors.evaluationPeriods?.message,
+                                        datapointsToAlarm: errors.datapointsToAlarm?.message,
+                                        evaluationPeriods: errors.evaluationPeriods?.message,
                                     }}
                                     onStatisticChange={(value) => {
                                         setValue("statistic", value)
@@ -479,15 +469,12 @@ export function AlarmFormPage() {
                                         />
                                         {values.targetIds.length > 1 && (
                                             <p className="text-[11px] text-muted-foreground">
-                                                Each alarm gets its resource name added, so
-                                                the {values.targetIds.length} names stay
-                                                distinct.
+                                                Each alarm gets its resource name added, so the{" "}
+                                                {values.targetIds.length} names stay distinct.
                                             </p>
                                         )}
                                         {errors.name?.message && (
-                                            <p className={ERROR_CLASS}>
-                                                {errors.name.message}
-                                            </p>
+                                            <p className={ERROR_CLASS}>{errors.name.message}</p>
                                         )}
                                     </div>
                                     <div className="space-y-1.5">

@@ -148,7 +148,7 @@ export function CreateWizard<T extends FieldValues, TInput extends FieldValues =
             // Schema-level failures (a superRefine across listeners, say) resolve
             // to no visible field error on the review step, so say it plainly.
             setSubmitBlocked(true)
-        },
+        }
     )
 
     const values = resolvedForm.getValues()
@@ -218,10 +218,7 @@ export function CreateWizard<T extends FieldValues, TInput extends FieldValues =
                 </div>
 
                 {submitBlocked && (
-                    <p
-                        role="alert"
-                        className="shrink-0 mt-3 text-[12px] text-destructive"
-                    >
+                    <p role="alert" className="shrink-0 mt-3 text-[12px] text-destructive">
                         {t("console.wizard.fixErrors")}
                     </p>
                 )}
@@ -229,7 +226,12 @@ export function CreateWizard<T extends FieldValues, TInput extends FieldValues =
                 {/* Fixed footer: a static flex row pinned below the scroll region,
                     so content never slides underneath it. */}
                 <div className="flex items-center justify-between gap-3 shrink-0 pt-4 mt-1 border-t border-border-glass">
-                    <Button type="button" variant="ghost" onClick={onCancel} disabled={isSubmitting}>
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={onCancel}
+                        disabled={isSubmitting}
+                    >
                         {t("console.wizard.cancel")}
                     </Button>
                     <div className="flex items-center gap-2">

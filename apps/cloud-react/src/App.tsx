@@ -49,9 +49,8 @@ const router = createBrowserRouter([
             {
                 path: "organization/new",
                 lazy: async () => {
-                    const { NewOrgWizardPage } = await import(
-                        "@/modules/organizations/partials/NewOrgWizardPage"
-                    )
+                    const { NewOrgWizardPage } =
+                        await import("@/modules/organizations/partials/NewOrgWizardPage")
                     return {
                         Component: () => (
                             <RequireAuth>

@@ -137,10 +137,7 @@ export function LoadBalancersListPage() {
                         >
                             <RefreshCw className={`w-4 h-4 ${isFetching ? "animate-spin" : ""}`} />
                         </Button>
-                        <Button
-                            className="gap-2"
-                            onClick={() => void navigate(LB_ROUTES.CREATE)}
-                        >
+                        <Button className="gap-2" onClick={() => void navigate(LB_ROUTES.CREATE)}>
                             <Plus className="w-4 h-4" />
                             {t("loadBalancers.create")}
                         </Button>

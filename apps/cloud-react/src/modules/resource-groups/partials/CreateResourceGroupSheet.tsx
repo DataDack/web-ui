@@ -30,13 +30,16 @@ import type { CreateResourceGroupPayload, ResourceGroup } from "../resource-grou
 
 const makeSchema = (rule: NamingRule) =>
     z.object({
-    name: namingNameSchema(rule),
-    description: z.string().max(500, "Maximum 500 characters"),
-})
+        name: namingNameSchema(rule),
+        description: z.string().max(500, "Maximum 500 characters"),
+    })
 
 type FormValues = z.infer<ReturnType<typeof makeSchema>>
 
-interface TagRow { key: string; value: string }
+interface TagRow {
+    key: string
+    value: string
+}
 
 /* ── Component ─────────────────────────────────────────────────────── */
 
@@ -84,17 +87,19 @@ export function CreateResourceGroupSheet({ open, onOpenChange, onCreated }: Read
         })
     }
 
-    const addTag = () => { setTags((prev) => [...prev, { key: "", value: "" }]); }
-    const removeTag = (idx: number) => { setTags((prev) => prev.filter((_, i) => i !== idx)); }
-    const updateTag = (idx: number, field: "key" | "value", val: string) =>
-        { setTags((prev) => prev.map((t, i) => (i === idx ? { ...t, [field]: val } : t))); }
+    const addTag = () => {
+        setTags((prev) => [...prev, { key: "", value: "" }])
+    }
+    const removeTag = (idx: number) => {
+        setTags((prev) => prev.filter((_, i) => i !== idx))
+    }
+    const updateTag = (idx: number, field: "key" | "value", val: string) => {
+        setTags((prev) => prev.map((t, i) => (i === idx ? { ...t, [field]: val } : t)))
+    }
 
     return (
         <Sheet open={open} onOpenChange={onOpenChange}>
-            <SheetContent
-                side="right"
-                className="w-full max-w-[480px] p-0 flex flex-col gap-0"
-            >
+            <SheetContent side="right" className="w-full max-w-[480px] p-0 flex flex-col gap-0">
                 <SheetHeader className="px-6 py-5 shrink-0">
                     <SheetTitle>{t("resourceGroups.form.title")}</SheetTitle>
                     <SheetDescription>{t("resourceGroups.form.subtitle")}</SheetDescription>
@@ -102,11 +107,19 @@ export function CreateResourceGroupSheet({ open, onOpenChange, onCreated }: Read
 
                 <Separator />
 
-                <form onSubmit={(e) => void handleSubmit(onSubmit)(e)} className="flex flex-col flex-1 overflow-hidden">
+                <form
+                    onSubmit={(e) => void handleSubmit(onSubmit)(e)}
+                    className="flex flex-col flex-1 overflow-hidden"
+                >
                     <ScrollArea className="flex-1 px-6 py-5">
                         <div className="space-y-5 pr-1">
                             {/* Name */}
-                            <FormField label={t("resourceGroups.form.name")} required error={errors.name?.message} hint={t("resourceGroups.form.nameHint")}>
+                            <FormField
+                                label={t("resourceGroups.form.name")}
+                                required
+                                error={errors.name?.message}
+                                hint={t("resourceGroups.form.nameHint")}
+                            >
                                 <Input
                                     {...register("name")}
                                     placeholder="my-resource-group"
@@ -115,7 +128,10 @@ export function CreateResourceGroupSheet({ open, onOpenChange, onCreated }: Read
                             </FormField>
 
                             {/* Description */}
-                            <FormField label={t("resourceGroups.form.description")} error={errors.description?.message}>
+                            <FormField
+                                label={t("resourceGroups.form.description")}
+                                error={errors.description?.message}
+                            >
                                 <Textarea
                                     {...register("description")}
                                     placeholder="Describe the purpose of this resource group..."
@@ -147,14 +163,18 @@ export function CreateResourceGroupSheet({ open, onOpenChange, onCreated }: Read
                                         <div key={i} className="flex items-center gap-2">
                                             <Input
                                                 value={tag.key}
-                                                onChange={(e) => { updateTag(i, "key", e.target.value); }}
+                                                onChange={(e) => {
+                                                    updateTag(i, "key", e.target.value)
+                                                }}
                                                 placeholder="key"
                                                 className="font-mono flex-1"
                                             />
                                             <span className="text-muted-foreground text-sm">=</span>
                                             <Input
                                                 value={tag.value}
-                                                onChange={(e) => { updateTag(i, "value", e.target.value); }}
+                                                onChange={(e) => {
+                                                    updateTag(i, "value", e.target.value)
+                                                }}
                                                 placeholder="value"
                                                 className="flex-1"
                                             />
@@ -162,7 +182,9 @@ export function CreateResourceGroupSheet({ open, onOpenChange, onCreated }: Read
                                                 type="button"
                                                 variant="ghost"
                                                 size="icon"
-                                                onClick={() => { removeTag(i); }}
+                                                onClick={() => {
+                                                    removeTag(i)
+                                                }}
                                                 disabled={tags.length === 1}
                                                 className="h-9 w-9 text-muted-foreground hover:text-destructive shrink-0"
                                             >
@@ -215,9 +237,7 @@ function FormField({
                 {required && <span className="text-destructive ml-0.5">*</span>}
             </Label>
             {children}
-            {hint && !error && (
-                <p className="text-[11px] text-muted-foreground">{hint}</p>
-            )}
+            {hint && !error && <p className="text-[11px] text-muted-foreground">{hint}</p>}
             {error && <p className="text-[11px] text-destructive">{error}</p>}
         </div>
     )

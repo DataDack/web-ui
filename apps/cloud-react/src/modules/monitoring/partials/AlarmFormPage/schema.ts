@@ -24,12 +24,7 @@ import type { Alarm, CreateAlarmRequest } from "../../monitoring.types"
 // and TypeScript agree on the literal unions.
 // ---------------------------------------------------------------------------
 
-export const TARGET_TYPE_VALUES = [
-    "loadbalancer",
-    "instance",
-    "disk",
-    "custom",
-] as const
+export const TARGET_TYPE_VALUES = ["loadbalancer", "instance", "disk", "custom"] as const
 
 const STATISTIC_VALUES = ["avg", "sum", "min", "max", "p95", "p99"] as const
 const OPERATOR_VALUES = ["gt", "gte", "lt", "lte"] as const

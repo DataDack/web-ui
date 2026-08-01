@@ -1,9 +1,6 @@
 import { z } from "zod/v4"
 
-import type {
-    CreateChannelRequest,
-    TestChannelRequest,
-} from "../monitoring.types"
+import type { CreateChannelRequest, TestChannelRequest } from "../monitoring.types"
 import { CHANNEL_TYPES, SEVERITIES } from "./channels.meta"
 
 function isHttpsUrl(value: string): boolean {
@@ -59,7 +56,8 @@ function validateJira(v: ChannelFormDraft): ValidationIssue[] {
 
         const email = v.jiraEmail?.trim() ?? ""
         if (!email) issues.push(issue("jiraEmail", "Email is required"))
-        else if (!z.email().safeParse(email).success) issues.push(issue("jiraEmail", "Must be a valid email"))
+        else if (!z.email().safeParse(email).success)
+            issues.push(issue("jiraEmail", "Must be a valid email"))
 
         if (!v.jiraApiToken?.trim()) issues.push(issue("jiraApiToken", "API token is required"))
     }

@@ -16,8 +16,7 @@ interface QuotaGatePayload {
 export function quotaGatePayload(e: unknown): QuotaGatePayload | null {
     if (!axios.isAxiosError(e) || e.response?.status !== 403) return null
     const body = e.response.data as
-        | { data?: { code?: string; quota_code?: string }; meta?: { message?: string } }
-        | undefined
+        { data?: { code?: string; quota_code?: string }; meta?: { message?: string } } | undefined
     if (body?.data?.code !== "quota_exceeded") return null
     return {
         quotaCode: body.data.quota_code ?? "",

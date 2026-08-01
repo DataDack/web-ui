@@ -58,7 +58,9 @@ export function ResourceGroupDetailPage() {
                         variant="outline"
                         size="sm"
                         className="gap-1.5"
-                        onClick={() => { setEditOpen(true); }}
+                        onClick={() => {
+                            setEditOpen(true)
+                        }}
                     >
                         <Pencil className="size-3.5" />
                         {t("resourceGroups.form.edit")}
@@ -126,4 +128,3 @@ function OverviewTab({ group }: Readonly<{ group: ResourceGroup }>) {
         </div>
     )
 }
-

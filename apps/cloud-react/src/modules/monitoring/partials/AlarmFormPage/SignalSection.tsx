@@ -11,8 +11,7 @@ import { MetricCard } from "./MetricCard"
 import { metricsFor, type AlarmTargetType } from "../../monitoring.targets"
 import type { MetricDescriptor } from "../../monitoring.types"
 
-const LABEL_CLASS =
-    "text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+const LABEL_CLASS = "text-xs font-semibold uppercase tracking-wide text-muted-foreground"
 
 export function SignalSection({
     targetType,

@@ -6,10 +6,10 @@
  * character and starts empty.
  */
 export interface EnvRow {
-	id: string
-	key: string
-	value: string
-	state: EnvRowState
+    id: string
+    key: string
+    value: string
+    state: EnvRowState
 }
 
 /**
@@ -25,33 +25,33 @@ export type EnvRowState = "new" | "stored" | "edited"
 
 /** Fresh row for the editor's "Add variable" control. */
 export function newEnvRow(key = "", value = ""): EnvRow {
-	return { id: crypto.randomUUID(), key, value, state: "new" }
+    return { id: crypto.randomUUID(), key, value, state: "new" }
 }
 
 /** Rows for variables that already exist server-side, values unknown. */
 export function storedEnvRows(names: readonly string[]): EnvRow[] {
-	return names.map((key) => ({ id: crypto.randomUUID(), key, value: "", state: "stored" }))
+    return names.map((key) => ({ id: crypto.randomUUID(), key, value: "", state: "stored" }))
 }
 
 /** Keys appearing on more than one row, ignoring blanks. Case-sensitive. */
 export function duplicateKeys(rows: readonly EnvRow[]): Set<string> {
-	const seen = new Set<string>()
-	const duplicates = new Set<string>()
-	for (const row of rows) {
-		const key = row.key.trim()
-		if (key === "") continue
-		if (seen.has(key)) duplicates.add(key)
-		seen.add(key)
-	}
-	return duplicates
+    const seen = new Set<string>()
+    const duplicates = new Set<string>()
+    for (const row of rows) {
+        const key = row.key.trim()
+        if (key === "") continue
+        if (seen.has(key)) duplicates.add(key)
+        seen.add(key)
+    }
+    return duplicates
 }
 
 /** The map to send. Blank keys are dropped; later rows win a key collision. */
 export function toEnvMap(rows: readonly EnvRow[]): Record<string, string> {
-	const out: Record<string, string> = {}
-	for (const row of rows) {
-		const key = row.key.trim()
-		if (key !== "") out[key] = row.value
-	}
-	return out
+    const out: Record<string, string> = {}
+    for (const row of rows) {
+        const key = row.key.trim()
+        if (key !== "") out[key] = row.value
+    }
+    return out
 }

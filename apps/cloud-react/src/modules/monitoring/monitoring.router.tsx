@@ -55,9 +55,7 @@ export const monitoringRoutes: RouteObject[] = [
         // can redirect the browser here after consent.
         path: "monitoring/channels/jira/callback",
         lazy: async () => {
-            const { JiraOAuthCallbackPage } = await import(
-                "./partials/JiraOAuthCallbackPage"
-            )
+            const { JiraOAuthCallbackPage } = await import("./partials/JiraOAuthCallbackPage")
             return { Component: JiraOAuthCallbackPage }
         },
     },

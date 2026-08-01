@@ -61,6 +61,8 @@ export function OSIcon({
         )
     }
 
-    const { icon: Icon, color } = osFamily ? (OS_ICONS[osFamily.toLowerCase()] ?? FALLBACK) : FALLBACK
+    const { icon: Icon, color } = osFamily
+        ? (OS_ICONS[osFamily.toLowerCase()] ?? FALLBACK)
+        : FALLBACK
     return <Icon className={className} style={{ color }} aria-hidden />
 }

@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react"
 
-
 import { Check, RefreshCw, RotateCcw, ScrollText, X } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
@@ -61,8 +60,7 @@ export function NamingConventionsPage() {
     // flat user role — every owner carries the flat "user" role. The platform
     // super admin may always edit.
     const canEdit =
-        user?.is_super_admin === true ||
-        ORG_MANAGER_ROLES.includes(activeOrg?.member_role ?? "")
+        user?.is_super_admin === true || ORG_MANAGER_ROLES.includes(activeOrg?.member_role ?? "")
 
     const saved = data?.namingConvention ?? ""
     const working = draft ?? saved
@@ -72,12 +70,18 @@ export function NamingConventionsPage() {
     const builder = useMemo(() => patternToBuilder(working), [working])
     const activePreset = useMemo(() => presetForPattern(working), [working])
 
-    const setRestricted = (on: boolean) => { setDraft(on ? builderToPattern(DEFAULT_BUILDER) : ""); }
-    const selectPreset = (p: NamingPreset) => { setDraft(builderToPattern(p.builder)); }
+    const setRestricted = (on: boolean) => {
+        setDraft(on ? builderToPattern(DEFAULT_BUILDER) : "")
+    }
+    const selectPreset = (p: NamingPreset) => {
+        setDraft(builderToPattern(p.builder))
+    }
     const patchBuilder = (patch: Partial<NamingBuilder>) => {
         setDraft(builderToPattern({ ...(builder ?? DEFAULT_BUILDER), ...patch }))
     }
-    const reset = () => { setDraft(null); }
+    const reset = () => {
+        setDraft(null)
+    }
 
     const submit = () => {
         if (restricted) {
@@ -88,7 +92,11 @@ export function NamingConventionsPage() {
                 return
             }
         }
-        save(working, { onSuccess: () => { setDraft(null); } })
+        save(working, {
+            onSuccess: () => {
+                setDraft(null)
+            },
+        })
     }
 
     return (
@@ -104,7 +112,9 @@ export function NamingConventionsPage() {
                 meta={
                     data ? (
                         <Badge variant={data.isDefault ? "outline" : "secondary"}>
-                            {data.isDefault ? t("naming.badges.default") : t("naming.badges.custom")}
+                            {data.isDefault
+                                ? t("naming.badges.default")
+                                : t("naming.badges.custom")}
                         </Badge>
                     ) : undefined
                 }
@@ -120,7 +130,12 @@ export function NamingConventionsPage() {
                             <RefreshCw className={`w-4 h-4 ${isFetching ? "animate-spin" : ""}`} />
                         </Button>
                         {canEdit && dirty && (
-                            <Button variant="ghost" className="gap-1.5" onClick={reset} disabled={isSaving}>
+                            <Button
+                                variant="ghost"
+                                className="gap-1.5"
+                                onClick={reset}
+                                disabled={isSaving}
+                            >
                                 <RotateCcw className="size-3.5" />
                                 {t("naming.actions.reset")}
                             </Button>
@@ -152,7 +167,10 @@ export function NamingConventionsPage() {
                         <Section variant="panel" className="space-y-4">
                             <div className="flex items-start justify-between gap-4">
                                 <div className="space-y-0.5">
-                                    <Label htmlFor="naming-restrict" className="text-[13px] font-medium">
+                                    <Label
+                                        htmlFor="naming-restrict"
+                                        className="text-[13px] font-medium"
+                                    >
                                         {t("naming.restrict.label")}
                                     </Label>
                                     <p className="text-[12px] text-muted-foreground">
@@ -170,14 +188,24 @@ export function NamingConventionsPage() {
 
                     {canEdit && restricted && (
                         <>
-                            <PresetPicker activeId={activePreset?.id ?? null} onSelect={selectPreset} />
+                            <PresetPicker
+                                activeId={activePreset?.id ?? null}
+                                onSelect={selectPreset}
+                            />
                             <BuilderPanel builder={builder} onChange={patchBuilder} />
-                            <AdvancedPattern value={working} onChange={(v) => { setDraft(v); }} />
+                            <AdvancedPattern
+                                value={working}
+                                onChange={(v) => {
+                                    setDraft(v)
+                                }}
+                            />
                         </>
                     )}
 
                     {!canEdit && (
-                        <p className="px-1 text-[12px] text-muted-foreground">{t("naming.readOnlyHint")}</p>
+                        <p className="px-1 text-[12px] text-muted-foreground">
+                            {t("naming.readOnlyHint")}
+                        </p>
                     )}
                     <p className="px-1 text-[12px] leading-relaxed text-muted-foreground">
                         {t("naming.footnote")}
@@ -202,8 +230,12 @@ function CurrentConvention({ pattern }: Readonly<{ pattern: string }>) {
                 <>
                     <p className="text-[13px] text-muted-foreground">{describePattern(pattern)}</p>
                     <div className="flex flex-wrap items-center gap-2 text-[12px]">
-                        <span className="text-muted-foreground">{t("naming.current.patternLabel")}</span>
-                        <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[12px]">{pattern}</code>
+                        <span className="text-muted-foreground">
+                            {t("naming.current.patternLabel")}
+                        </span>
+                        <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[12px]">
+                            {pattern}
+                        </code>
                     </div>
                 </>
             ) : (
@@ -211,12 +243,16 @@ function CurrentConvention({ pattern }: Readonly<{ pattern: string }>) {
             )}
 
             <div className="max-w-sm space-y-1.5">
-                <Label htmlFor="naming-test" className="text-[12px]">{t("naming.test.label")}</Label>
+                <Label htmlFor="naming-test" className="text-[12px]">
+                    {t("naming.test.label")}
+                </Label>
                 <div className="relative">
                     <Input
                         id="naming-test"
                         value={sample}
-                        onChange={(e) => { setSample(e.target.value); }}
+                        onChange={(e) => {
+                            setSample(e.target.value)
+                        }}
                         placeholder={t("naming.test.placeholder")}
                         className="h-8 pr-8 font-mono text-[13px]"
                     />
@@ -231,7 +267,9 @@ function CurrentConvention({ pattern }: Readonly<{ pattern: string }>) {
                     )}
                 </div>
                 {sample && (
-                    <p className={`text-[12px] ${ok ? "text-emerald-600 dark:text-emerald-400" : "text-destructive"}`}>
+                    <p
+                        className={`text-[12px] ${ok ? "text-emerald-600 dark:text-emerald-400" : "text-destructive"}`}
+                    >
                         {ok ? t("naming.test.valid") : error}
                     </p>
                 )}
@@ -255,7 +293,9 @@ function PresetPicker({
                         <button
                             key={p.id}
                             type="button"
-                            onClick={() => { onSelect(p); }}
+                            onClick={() => {
+                                onSelect(p)
+                            }}
                             aria-pressed={active}
                             className={`rounded-lg border p-3 text-left transition-colors ${
                                 active
@@ -264,10 +304,14 @@ function PresetPicker({
                             }`}
                         >
                             <div className="flex items-center justify-between gap-2">
-                                <span className="text-[13px] font-medium text-foreground">{p.label}</span>
+                                <span className="text-[13px] font-medium text-foreground">
+                                    {p.label}
+                                </span>
                                 {active && <Check className="size-4 text-primary" />}
                             </div>
-                            <p className="mt-0.5 text-[12px] text-muted-foreground">{p.description}</p>
+                            <p className="mt-0.5 text-[12px] text-muted-foreground">
+                                {p.description}
+                            </p>
                             <code className="mt-1.5 inline-block rounded bg-muted px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground">
                                 {p.example}
                             </code>
@@ -306,13 +350,20 @@ function BuilderPanel({
             <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-1.5">
                     <Label className="text-[12px]">{t("naming.fields.letterCase")}</Label>
-                    <Select value={b.letterCase} onValueChange={(v) => { onChange({ letterCase: v as LetterCase }); }}>
+                    <Select
+                        value={b.letterCase}
+                        onValueChange={(v) => {
+                            onChange({ letterCase: v as LetterCase })
+                        }}
+                    >
                         <SelectTrigger className="h-8 text-[13px]">
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
                             {CASE_OPTIONS.map((o) => (
-                                <SelectItem key={o.value} value={o.value}>{t(o.labelKey)}</SelectItem>
+                                <SelectItem key={o.value} value={o.value}>
+                                    {t(o.labelKey)}
+                                </SelectItem>
                             ))}
                         </SelectContent>
                     </Select>
@@ -320,24 +371,32 @@ function BuilderPanel({
 
                 <div className="grid grid-cols-2 gap-2">
                     <div className="space-y-1.5">
-                        <Label htmlFor="naming-min" className="text-[12px]">{t("naming.fields.minLength")}</Label>
+                        <Label htmlFor="naming-min" className="text-[12px]">
+                            {t("naming.fields.minLength")}
+                        </Label>
                         <Input
                             id="naming-min"
                             type="number"
                             min={1}
                             value={b.minLength}
-                            onChange={(e) => { onChange({ minLength: Number(e.target.value) }); }}
+                            onChange={(e) => {
+                                onChange({ minLength: Number(e.target.value) })
+                            }}
                             className="h-8 text-[13px]"
                         />
                     </div>
                     <div className="space-y-1.5">
-                        <Label htmlFor="naming-max" className="text-[12px]">{t("naming.fields.maxLength")}</Label>
+                        <Label htmlFor="naming-max" className="text-[12px]">
+                            {t("naming.fields.maxLength")}
+                        </Label>
                         <Input
                             id="naming-max"
                             type="number"
                             min={1}
                             value={b.maxLength}
-                            onChange={(e) => { onChange({ maxLength: Number(e.target.value) }); }}
+                            onChange={(e) => {
+                                onChange({ maxLength: Number(e.target.value) })
+                            }}
                             className="h-8 text-[13px]"
                         />
                     </div>
@@ -353,7 +412,9 @@ function BuilderPanel({
                         <Switch
                             id={`naming-${tg.key}`}
                             checked={Boolean(b[tg.key])}
-                            onCheckedChange={(v) => { onChange({ [tg.key]: v }); }}
+                            onCheckedChange={(v) => {
+                                onChange({ [tg.key]: v })
+                            }}
                         />
                     </div>
                 ))}
@@ -364,7 +425,9 @@ function BuilderPanel({
                     <Switch
                         id="naming-startsWithLetter"
                         checked={b.startsWithLetter}
-                        onCheckedChange={(v) => { onChange({ startsWithLetter: v }); }}
+                        onCheckedChange={(v) => {
+                            onChange({ startsWithLetter: v })
+                        }}
                     />
                 </div>
             </div>
@@ -389,12 +452,16 @@ function AdvancedPattern({
             <p className="text-[12px] text-muted-foreground">{t("naming.edit.advancedHint")}</p>
             <Input
                 value={value}
-                onChange={(e) => { onChange(e.target.value); }}
+                onChange={(e) => {
+                    onChange(e.target.value)
+                }}
                 spellCheck={false}
                 className={`h-8 font-mono text-[13px] ${valid ? "" : "border-destructive"}`}
                 aria-invalid={!valid}
             />
-            {!valid && <p className="text-[12px] text-destructive">{t("naming.edit.invalidPattern")}</p>}
+            {!valid && (
+                <p className="text-[12px] text-destructive">{t("naming.edit.invalidPattern")}</p>
+            )}
         </Section>
     )
 }

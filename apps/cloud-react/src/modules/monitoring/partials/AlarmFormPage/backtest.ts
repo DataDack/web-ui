@@ -11,15 +11,13 @@
 
 import type { AlarmComparisonOperator, TreatMissingData } from "../../monitoring.types"
 
-const COMPARATORS: Record<
-    AlarmComparisonOperator,
-    (value: number, threshold: number) => boolean
-> = {
-    gt: (value, threshold) => value > threshold,
-    gte: (value, threshold) => value >= threshold,
-    lt: (value, threshold) => value < threshold,
-    lte: (value, threshold) => value <= threshold,
-}
+const COMPARATORS: Record<AlarmComparisonOperator, (value: number, threshold: number) => boolean> =
+    {
+        gt: (value, threshold) => value > threshold,
+        gte: (value, threshold) => value >= threshold,
+        lt: (value, threshold) => value < threshold,
+        lte: (value, threshold) => value <= threshold,
+    }
 
 /** Does one datapoint breach the threshold? Mirrors `breachesThreshold` in Go. */
 export function breaches(

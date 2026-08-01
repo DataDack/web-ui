@@ -39,7 +39,10 @@ export function KeyValueGrid({ items, columns = 2, className }: Readonly<KeyValu
                         )}
                     >
                         {item.copyable && typeof item.value === "string" ? (
-                            <CopyButton value={item.value} className="text-foreground text-[13px]" />
+                            <CopyButton
+                                value={item.value}
+                                className="text-foreground text-[13px]"
+                            />
                         ) : (
                             (item.value ?? <span className="text-muted-foreground">—</span>)
                         )}

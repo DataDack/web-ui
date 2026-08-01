@@ -60,7 +60,9 @@ function ServiceCard({ service }: Readonly<{ service: CatalogService }>) {
                         className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wide text-muted-foreground"
                         title={STATUS_LABEL[service.status]}
                     >
-                        <span className={cn("h-1.5 w-1.5 rounded-full", STATUS_DOT[service.status])} />
+                        <span
+                            className={cn("h-1.5 w-1.5 rounded-full", STATUS_DOT[service.status])}
+                        />
                         {STATUS_LABEL[service.status]}
                     </span>
                 )}

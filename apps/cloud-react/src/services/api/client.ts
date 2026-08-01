@@ -64,7 +64,12 @@ api.interceptors.request.use((config) => {
 
 // Routes exempt from the 401 refresh-and-retry: a 401 here means the credentials
 // themselves are bad, so retrying with a fresh access token can't help.
-const AUTH_ROUTES = ["/auth/users/token", "/auth/users/login", "/auth/users/register", "/auth/users/otp"]
+const AUTH_ROUTES = [
+    "/auth/users/token",
+    "/auth/users/login",
+    "/auth/users/register",
+    "/auth/users/otp",
+]
 
 // 401 → try one silent refresh from the IndexedDB refresh token, then replay the original
 // request once. A second 401 (or a request that is itself the refresh/login
@@ -72,7 +77,8 @@ const AUTH_ROUTES = ["/auth/users/token", "/auth/users/login", "/auth/users/regi
 api.interceptors.response.use(
     (res) => res,
     async (error: AxiosError) => {
-        const original = error.config as (InternalAxiosRequestConfig & { _retried?: boolean }) | undefined
+        const original = error.config as
+            (InternalAxiosRequestConfig & { _retried?: boolean }) | undefined
         const url = original?.url ?? ""
         const isAuthRoute = AUTH_ROUTES.some((route) => url.includes(route))
 
@@ -101,8 +107,7 @@ api.interceptors.response.use(
         // away to show a payment screen the user has to come back from anyway.
         if (error.response?.status === 402 && !window.location.pathname.startsWith("/billing")) {
             const body = error.response.data as
-                | { data?: { shortfall?: number; required?: number } }
-                | undefined
+                { data?: { shortfall?: number; required?: number } } | undefined
             const amount = Math.ceil(body?.data?.shortfall ?? body?.data?.required ?? 0)
             if (amount > 0) {
                 openTopupTab(amount)

@@ -68,7 +68,9 @@ export function ZoneCapacityStrip({ zones, isLoading }: Readonly<ZoneCapacityStr
                             <span
                                 className={cn(
                                     "size-1.5 shrink-0 rounded-full",
-                                    live ? "animate-pulse bg-status-success" : "bg-muted-foreground/40"
+                                    live
+                                        ? "animate-pulse bg-status-success"
+                                        : "bg-muted-foreground/40"
                                 )}
                             />
                             <span className="flex min-w-0 flex-col">
@@ -86,7 +88,9 @@ export function ZoneCapacityStrip({ zones, isLoading }: Readonly<ZoneCapacityStr
                         </div>
 
                         <span className="w-16 shrink-0 text-right font-mono text-[12px] tabular-nums text-foreground">
-                            <span className={live ? "text-status-success" : "text-muted-foreground"}>
+                            <span
+                                className={live ? "text-status-success" : "text-muted-foreground"}
+                            >
                                 {row.running}
                             </span>
                             <span className="text-muted-foreground">/{row.total}</span>

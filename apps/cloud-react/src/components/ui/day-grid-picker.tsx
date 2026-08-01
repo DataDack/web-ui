@@ -45,7 +45,9 @@ export function DayGridPicker({
                             key={day}
                             type="button"
                             aria-pressed={selected}
-                            onClick={() => { onChange(day); }}
+                            onClick={() => {
+                                onChange(day)
+                            }}
                             className={cn(
                                 "flex size-9 items-center justify-center rounded-md text-sm font-normal tabular-nums outline-none transition-colors",
                                 "focus-visible:ring-[3px] focus-visible:ring-ring/50",

@@ -199,10 +199,7 @@ export const PERIOD_OPTIONS: readonly { value: number; label: string }[] = [
 ]
 
 export function periodLabel(seconds: number): string {
-    return (
-        PERIOD_OPTIONS.find((option) => option.value === seconds)?.label ??
-        `${String(seconds)}s`
-    )
+    return PERIOD_OPTIONS.find((option) => option.value === seconds)?.label ?? `${String(seconds)}s`
 }
 
 // ---------------------------------------------------------------------------

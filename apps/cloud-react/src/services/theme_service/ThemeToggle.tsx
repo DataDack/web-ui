@@ -18,24 +18,32 @@ export function ThemeToggle() {
         >
             <button
                 type="button"
-                onClick={() => { setTheme("dark"); }}
+                onClick={() => {
+                    setTheme("dark")
+                }}
                 aria-pressed={isDark}
                 aria-label="Dark"
                 className={cn(
                     "flex size-7 items-center justify-center rounded-full transition-colors",
-                    isDark ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground"
+                    isDark
+                        ? "bg-muted text-foreground"
+                        : "text-muted-foreground hover:text-foreground"
                 )}
             >
                 <Moon className="size-4" />
             </button>
             <button
                 type="button"
-                onClick={() => { setTheme("light"); }}
+                onClick={() => {
+                    setTheme("light")
+                }}
                 aria-pressed={!isDark}
                 aria-label="Light"
                 className={cn(
                     "flex size-7 items-center justify-center rounded-full transition-colors",
-                    !isDark ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground"
+                    !isDark
+                        ? "bg-muted text-foreground"
+                        : "text-muted-foreground hover:text-foreground"
                 )}
             >
                 <Sun className="size-4" />

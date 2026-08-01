@@ -120,7 +120,9 @@ function matchesCountryPattern(country: Country, nationalNumber: string) {
 
 export function isValidNationalNumber(country: Country | undefined, nationalNumber: string) {
     if (!country || !/^\d+$/.test(nationalNumber)) return false
-    return hasAcceptedLength(country, nationalNumber) && matchesCountryPattern(country, nationalNumber)
+    return (
+        hasAcceptedLength(country, nationalNumber) && matchesCountryPattern(country, nationalNumber)
+    )
 }
 
 export function placeholderForCountry(country: Country | undefined, fallback: string) {

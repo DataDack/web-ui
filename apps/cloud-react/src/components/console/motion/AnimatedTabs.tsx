@@ -21,7 +21,13 @@ interface AnimatedTabsProps {
     className?: string
 }
 
-export function AnimatedTabs({ tabs, value, onChange, layoutId, className }: Readonly<AnimatedTabsProps>) {
+export function AnimatedTabs({
+    tabs,
+    value,
+    onChange,
+    layoutId,
+    className,
+}: Readonly<AnimatedTabsProps>) {
     return (
         <div
             role="tablist"
@@ -38,7 +44,9 @@ export function AnimatedTabs({ tabs, value, onChange, layoutId, className }: Rea
                         key={tab.value}
                         role="tab"
                         aria-selected={active}
-                        onClick={() => { onChange(tab.value); }}
+                        onClick={() => {
+                            onChange(tab.value)
+                        }}
                         className={cn(
                             "relative flex items-center gap-1.5 px-3 py-2.5 text-sm whitespace-nowrap transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring/50 rounded-t-md",
                             active

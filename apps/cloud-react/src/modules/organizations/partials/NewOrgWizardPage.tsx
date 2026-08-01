@@ -1,6 +1,5 @@
 import { useState } from "react"
 
-
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Building2, Check, Loader2, User } from "lucide-react"
 import { Controller, useForm } from "react-hook-form"
@@ -28,10 +27,21 @@ const STEP_META = [
 
 type AccountType = "individual" | "business"
 
-const TYPE_OPTIONS: { value: AccountType; icon: typeof User; titleKey: string; descKey: string }[] = [
-    { value: "individual", icon: User, titleKey: "onboarding.type.individual", descKey: "onboarding.type.individualDesc" },
-    { value: "business", icon: Building2, titleKey: "onboarding.type.business", descKey: "onboarding.type.businessDesc" },
-]
+const TYPE_OPTIONS: { value: AccountType; icon: typeof User; titleKey: string; descKey: string }[] =
+    [
+        {
+            value: "individual",
+            icon: User,
+            titleKey: "onboarding.type.individual",
+            descKey: "onboarding.type.individualDesc",
+        },
+        {
+            value: "business",
+            icon: Building2,
+            titleKey: "onboarding.type.business",
+            descKey: "onboarding.type.businessDesc",
+        },
+    ]
 
 export function NewOrgWizardPage() {
     useScreen("organizations.new-org-wizard")
@@ -130,7 +140,12 @@ export function NewOrgWizardPage() {
             description={t(STEP_META[0].descKey)}
         >
             <form onSubmit={(e) => void handleSubmit(onSubmit)(e)} className="max-w-xl space-y-6">
-                <Field label={t("org.newOrg.name")} required hint={t("org.newOrg.nameHint")} error={errors.name?.message}>
+                <Field
+                    label={t("org.newOrg.name")}
+                    required
+                    hint={t("org.newOrg.nameHint")}
+                    error={errors.name?.message}
+                >
                     <Input {...register("name")} placeholder="Acme Inc." />
                 </Field>
 
@@ -150,7 +165,9 @@ export function NewOrgWizardPage() {
                                         <button
                                             key={value}
                                             type="button"
-                                            onClick={() => { field.onChange(value); }}
+                                            onClick={() => {
+                                                field.onChange(value)
+                                            }}
                                             aria-pressed={active}
                                             className={cn(
                                                 "relative flex flex-col items-start gap-2 rounded-xl border p-4 text-left outline-none transition-all duration-200 focus-visible:ring-2 focus-visible:ring-brand-gold/50",
@@ -166,7 +183,9 @@ export function NewOrgWizardPage() {
                                             )}
                                             <Icon className="size-5" />
                                             <span>
-                                                <span className="block text-sm font-semibold">{t(titleKey)}</span>
+                                                <span className="block text-sm font-semibold">
+                                                    {t(titleKey)}
+                                                </span>
                                                 <span className="mt-0.5 block text-[12px] text-muted-foreground">
                                                     {t(descKey)}
                                                 </span>
@@ -184,16 +203,29 @@ export function NewOrgWizardPage() {
                     hint={t(k("optional"))}
                     error={errors.billing_email?.message}
                 >
-                    <Input {...register("billing_email")} type="email" placeholder="billing@acme.com" className="font-mono" />
+                    <Input
+                        {...register("billing_email")}
+                        type="email"
+                        placeholder="billing@acme.com"
+                        className="font-mono"
+                    />
                 </Field>
 
                 {isBusiness && (
                     <div className="grid gap-5 sm:grid-cols-2">
                         <Field label="GSTIN" hint={t(k("optional"))}>
-                            <Input {...register("gstin")} placeholder="22AAAAA9999A1Z5" className="font-mono uppercase" />
+                            <Input
+                                {...register("gstin")}
+                                placeholder="22AAAAA9999A1Z5"
+                                className="font-mono uppercase"
+                            />
                         </Field>
                         <Field label="TAN" hint={t(k("optional"))}>
-                            <Input {...register("tan")} placeholder="AAAA99999A" className="font-mono uppercase" />
+                            <Input
+                                {...register("tan")}
+                                placeholder="AAAA99999A"
+                                className="font-mono uppercase"
+                            />
                         </Field>
                     </div>
                 )}
@@ -215,10 +247,16 @@ export function NewOrgWizardPage() {
                             <Input {...register("city")} placeholder={t(k("placeholders.city"))} />
                         </Field>
                         <Field label={t(k("state"))} error={errors.state?.message}>
-                            <Input {...register("state")} placeholder={t(k("placeholders.state"))} />
+                            <Input
+                                {...register("state")}
+                                placeholder={t(k("placeholders.state"))}
+                            />
                         </Field>
                         <Field label={t(k("postalCode"))} error={errors.postal_code?.message}>
-                            <Input {...register("postal_code")} placeholder={t(k("placeholders.postalCode"))} />
+                            <Input
+                                {...register("postal_code")}
+                                placeholder={t(k("placeholders.postalCode"))}
+                            />
                         </Field>
                         <Field label={t(k("country"))} error={errors.country?.message}>
                             <Controller
@@ -237,7 +275,11 @@ export function NewOrgWizardPage() {
                     </div>
                 </div>
 
-                <PolicyConsent checked={consent} onCheckedChange={setConsent} disabled={create.isPending} />
+                <PolicyConsent
+                    checked={consent}
+                    onCheckedChange={setConsent}
+                    disabled={create.isPending}
+                />
 
                 <Button
                     type="submit"

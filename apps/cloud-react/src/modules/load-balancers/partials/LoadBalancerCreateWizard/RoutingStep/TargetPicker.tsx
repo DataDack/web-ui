@@ -53,7 +53,7 @@ export function TargetPicker({
 
     const selected = useMemo(
         () => new Map(targets.map((tgt) => [tgt.instance_id, tgt.port])),
-        [targets],
+        [targets]
     )
 
     const candidates: Candidate[] = useMemo(
@@ -69,7 +69,7 @@ export function TargetPicker({
                         return a.reason === null ? -1 : 1
                     return a.instance.name.localeCompare(b.instance.name)
                 }),
-        [instances, reachableVpcIds],
+        [instances, reachableVpcIds]
     )
 
     const eligibleCount = candidates.filter((c) => c.reason === null).length
@@ -132,13 +132,13 @@ export function TargetPicker({
                             key={instance.id}
                             className={cn(
                                 "flex items-center gap-2.5 rounded-md border border-border/60 px-2.5 py-2 text-[13px]",
-                                disabled ? "opacity-50" : "hover:border-border",
+                                disabled ? "opacity-50" : "hover:border-border"
                             )}
                         >
                             <label
                                 className={cn(
                                     "flex min-w-0 flex-1 items-center gap-2.5",
-                                    disabled ? "cursor-not-allowed" : "cursor-pointer",
+                                    disabled ? "cursor-not-allowed" : "cursor-pointer"
                                 )}
                             >
                                 <Checkbox
@@ -174,7 +174,7 @@ export function TargetPicker({
                                         "rounded-full px-1.5 py-0.5 text-[10px] font-medium",
                                         disabled
                                             ? "bg-status-warning-bg text-status-warning"
-                                            : "bg-status-success-bg text-status-success",
+                                            : "bg-status-success-bg text-status-success"
                                     )}
                                 >
                                     {reason === null
@@ -205,7 +205,7 @@ export function TargetPicker({
  */
 function ineligibility(
     instance: Instance,
-    reachableVpcIds: ReadonlySet<string>,
+    reachableVpcIds: ReadonlySet<string>
 ): Ineligibility | null {
     if (!instance.private_ip) return "no_private_ip"
     if (!reachableVpcIds.has(instance.vpc_id)) return "wrong_vpc"

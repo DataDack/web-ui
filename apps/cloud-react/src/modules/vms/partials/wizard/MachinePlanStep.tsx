@@ -175,7 +175,9 @@ export function MachinePlanStep({ form, zonePrices, activePrice }: MachinePlanSt
                                                     </td>
                                                     <td className="px-4 py-3">
                                                         {(() => {
-                                                            const { src, alt } = archLogo(archLabel(price))
+                                                            const { src, alt } = archLogo(
+                                                                archLabel(price)
+                                                            )
                                                             return (
                                                                 <img
                                                                     src={src}

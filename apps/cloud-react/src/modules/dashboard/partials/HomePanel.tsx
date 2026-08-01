@@ -36,9 +36,7 @@ export function HomePanel({
                 {action && <div className="text-xs text-muted-foreground">{action}</div>}
             </header>
             <div className={cn("flex-1 px-5", bodyClassName)}>{children}</div>
-            {footer && (
-                <div className="mt-1 border-t border-border px-5 py-3.5">{footer}</div>
-            )}
+            {footer && <div className="mt-1 border-t border-border px-5 py-3.5">{footer}</div>}
         </section>
     )
 }

@@ -5,12 +5,7 @@ import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
 
-import {
-    extractError,
-    useGoogleSignIn,
-    useMicrosoftSignIn,
-    usePreviewOAuth,
-} from "../auth.hooks"
+import { extractError, useGoogleSignIn, useMicrosoftSignIn, usePreviewOAuth } from "../auth.hooks"
 import type { OAuthPreview, OAuthProvider, UserProfile } from "../auth.types"
 import { EmailOtpFlow } from "./EmailOtpFlow"
 import { GoogleButton } from "./GoogleButton"
@@ -45,7 +40,9 @@ export function AuthProviders({ flow = "login" }: Readonly<{ flow?: "login" | "s
     const [pending, setPending] = useState<PendingOAuth | null>(null)
 
     const routeAfter = (user: UserProfile) => {
-        void navigate(user.onboarding_status === "completed" ? "/" : "/onboarding", { replace: true })
+        void navigate(user.onboarding_status === "completed" ? "/" : "/onboarding", {
+            replace: true,
+        })
     }
 
     /** `details` is present only when the sign-in creates a new account, where
@@ -70,7 +67,8 @@ export function AuthProviders({ flow = "login" }: Readonly<{ flow?: "login" | "s
     // the login panel, which has no consent checkbox). The confirm step collects
     // both, so a new user is never rejected for a missing number.
     const startOAuth = async (provider: OAuthProvider, token: string) => {
-        const failMsg = provider === "google" ? "auth.errors.googleFailed" : "auth.errors.microsoftFailed"
+        const failMsg =
+            provider === "google" ? "auth.errors.googleFailed" : "auth.errors.microsoftFailed"
         try {
             const profile = await preview.mutateAsync({ provider, token })
             if (profile.is_new_user) {
@@ -89,7 +87,9 @@ export function AuthProviders({ flow = "login" }: Readonly<{ flow?: "login" | "s
             await signIn(pending.provider, pending.token, details)
         } catch (e) {
             const failMsg =
-                pending.provider === "google" ? "auth.errors.googleFailed" : "auth.errors.microsoftFailed"
+                pending.provider === "google"
+                    ? "auth.errors.googleFailed"
+                    : "auth.errors.microsoftFailed"
             toast.error(extractError(e, t(failMsg)))
         }
     }
@@ -104,7 +104,9 @@ export function AuthProviders({ flow = "login" }: Readonly<{ flow?: "login" | "s
                 // login panel has none, so take it here before creating.
                 requireConsent={!isSignup}
                 onConfirm={(details) => void confirmOAuth(details)}
-                onCancel={() => { setPending(null); }}
+                onCancel={() => {
+                    setPending(null)
+                }}
             />
         )
     }
@@ -115,7 +117,9 @@ export function AuthProviders({ flow = "login" }: Readonly<{ flow?: "login" | "s
             <EmailOtpFlow
                 acceptPolicies={isSignup && consent}
                 onAuthed={routeAfter}
-                onBack={() => { setEmailMode(false); }}
+                onBack={() => {
+                    setEmailMode(false)
+                }}
             />
         )
     }
@@ -130,8 +134,14 @@ export function AuthProviders({ flow = "login" }: Readonly<{ flow?: "login" | "s
                 <PolicyConsent checked={consent} onCheckedChange={setConsent} disabled={busy} />
             )}
 
-            <GoogleButton onToken={(tok) => void startOAuth("google", tok)} disabled={busy || blocked} />
-            <MicrosoftButton onToken={(tok) => void startOAuth("microsoft", tok)} disabled={busy || blocked} />
+            <GoogleButton
+                onToken={(tok) => void startOAuth("google", tok)}
+                disabled={busy || blocked}
+            />
+            <MicrosoftButton
+                onToken={(tok) => void startOAuth("microsoft", tok)}
+                disabled={busy || blocked}
+            />
 
             <div className="flex items-center gap-3 py-1">
                 <span className="h-px flex-1 bg-border" />
@@ -144,7 +154,9 @@ export function AuthProviders({ flow = "login" }: Readonly<{ flow?: "login" | "s
             <button
                 type="button"
                 disabled={busy || blocked}
-                onClick={() => { setEmailMode(true); }}
+                onClick={() => {
+                    setEmailMode(true)
+                }}
                 className={pill}
             >
                 <Mail className="size-5" />

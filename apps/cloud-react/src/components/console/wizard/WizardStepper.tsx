@@ -29,7 +29,10 @@ interface WizardStepperProps {
 }
 
 /** Per-state class tokens, resolved up-front to keep the JSX free of nested ternaries. */
-const STEP_STYLES: Record<Variant, Record<StepState, { circle: string; title: string; desc: string }>> = {
+const STEP_STYLES: Record<
+    Variant,
+    Record<StepState, { circle: string; title: string; desc: string }>
+> = {
     default: {
         current: {
             circle: "border-transparent bg-brand-gold text-brand-gold-foreground font-semibold shadow-sm ring-2 ring-brand-gold/30",
@@ -86,13 +89,17 @@ export function WizardStepper({
                         <button
                             type="button"
                             disabled={!isReachable}
-                            onClick={() => { onStepClick(index); }}
+                            onClick={() => {
+                                onStepClick(index)
+                            }}
                             className={cn(
                                 "relative flex items-center lg:items-start gap-2.5 rounded-lg px-2.5 py-2 text-left transition-colors outline-none focus-visible:ring-2 w-full",
                                 "focus-visible:ring-brand-gold/60",
                                 isReachable && "cursor-pointer",
                                 isReachable && "hover:bg-brand-gold/10",
-                                !isReachable && !isCurrent && (onBrand ? "opacity-70" : "opacity-50")
+                                !isReachable &&
+                                    !isCurrent &&
+                                    (onBrand ? "opacity-70" : "opacity-50")
                             )}
                         >
                             <span className="relative flex flex-col items-center shrink-0">
@@ -123,7 +130,9 @@ export function WizardStepper({
                                     {step.title}
                                 </span>
                                 {step.description && (
-                                    <span className={cn("hidden lg:block text-[11px] mt-0.5", s.desc)}>
+                                    <span
+                                        className={cn("hidden lg:block text-[11px] mt-0.5", s.desc)}
+                                    >
                                         {step.description}
                                     </span>
                                 )}

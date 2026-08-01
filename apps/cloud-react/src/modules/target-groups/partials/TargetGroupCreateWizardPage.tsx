@@ -98,7 +98,10 @@ export function TargetGroupCreateWizardPage() {
             reviewItems: (v) => [
                 {
                     label: t("targetGroups.health.path"),
-                    value: v.protocol === "HTTP" ? v.health_check_path : t("targetGroups.health.tcpCheck"),
+                    value:
+                        v.protocol === "HTTP"
+                            ? v.health_check_path
+                            : t("targetGroups.health.tcpCheck"),
                     mono: true,
                 },
                 {

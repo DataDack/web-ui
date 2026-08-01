@@ -110,9 +110,7 @@ export function CidrInput({
                         disabled={disabled}
                         className="w-7 bg-transparent text-center tabular-nums outline-none placeholder:text-muted-foreground/40"
                     />
-                    {index < 3 && (
-                        <span className="text-muted-foreground/60 select-none">.</span>
-                    )}
+                    {index < 3 && <span className="text-muted-foreground/60 select-none">.</span>}
                 </div>
             ))}
 

@@ -70,7 +70,10 @@ export function useCreateOrganization() {
         mutationFn: (payload: ProvisionOrganizationPayload) => organizationsApi.provision(payload),
         onSuccess: (org) => {
             toast.success(t("org.switcher.created", { name: org.organization_name }))
-            activeScope.set({ accountId: org.account_id || null, organizationId: org.organization_id })
+            activeScope.set({
+                accountId: org.account_id || null,
+                organizationId: org.organization_id,
+            })
             for (const key of SCOPED_STORAGE_KEYS) localStorage.removeItem(key)
             window.location.assign("/")
         },

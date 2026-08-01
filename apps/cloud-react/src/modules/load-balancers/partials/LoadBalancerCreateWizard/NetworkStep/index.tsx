@@ -84,7 +84,7 @@ export function NetworkStep({ form }: Readonly<{ form: UseFormReturn<FormValues>
                             new Set(
                                 selected
                                     .map((g, i) => (i === index ? "" : g.vpc_id))
-                                    .filter(Boolean),
+                                    .filter(Boolean)
                             )
                         }
                         canRemove={fields.length > 1}
@@ -138,9 +138,13 @@ export function NetworkStep({ form }: Readonly<{ form: UseFormReturn<FormValues>
                     // Drop the new VPC into the first empty group, or add one.
                     const emptyIndex = selected.findIndex((g) => !g.vpc_id)
                     if (emptyIndex >= 0) {
-                        form.setValue(`vpcs.${String(emptyIndex)}.vpc_id` as `vpcs.${number}.vpc_id`, vpcId, {
-                            shouldValidate: true,
-                        })
+                        form.setValue(
+                            `vpcs.${String(emptyIndex)}.vpc_id` as `vpcs.${number}.vpc_id`,
+                            vpcId,
+                            {
+                                shouldValidate: true,
+                            }
+                        )
                     } else {
                         append({ vpc_id: vpcId, subnet_ids: [] })
                     }

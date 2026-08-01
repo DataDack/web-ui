@@ -19,45 +19,45 @@ import type { Project } from "../../../managed-apps.types"
  * have to wonder whether their repo is about to be touched.
  */
 export function DangerZone({ project }: Readonly<{ project: Project }>) {
-	const navigate = useNavigate()
-	const deleteProject = useDeleteProject()
-	const [confirmOpen, setConfirmOpen] = useState(false)
+    const navigate = useNavigate()
+    const deleteProject = useDeleteProject()
+    const [confirmOpen, setConfirmOpen] = useState(false)
 
-	return (
-		<>
-			<Section
-				variant="panel"
-				title="Danger zone"
-				description="Deleting a project removes it, its build history and its public address. Your repository is left untouched."
-				className="border border-destructive/30"
-			>
-				<Button
-					variant="destructive"
-					size="sm"
-					className="gap-1.5"
-					onClick={() => {
-						setConfirmOpen(true)
-					}}
-				>
-					<Trash2 className="size-3.5" />
-					Delete project
-				</Button>
-			</Section>
+    return (
+        <>
+            <Section
+                variant="panel"
+                title="Danger zone"
+                description="Deleting a project removes it, its build history and its public address. Your repository is left untouched."
+                className="border border-destructive/30"
+            >
+                <Button
+                    variant="destructive"
+                    size="sm"
+                    className="gap-1.5"
+                    onClick={() => {
+                        setConfirmOpen(true)
+                    }}
+                >
+                    <Trash2 className="size-3.5" />
+                    Delete project
+                </Button>
+            </Section>
 
-			<ConfirmDialog
-				open={confirmOpen}
-				onOpenChange={setConfirmOpen}
-				title="Delete project"
-				description={`This permanently deletes "${project.name}", its build history and its public address. The workflow file stays in your repository — remove it there if you no longer want it.`}
-				confirmLabel="Delete project"
-				confirmText={project.name}
-				loading={deleteProject.isPending}
-				onConfirm={() => {
-					deleteProject.mutate(project.id, {
-						onSuccess: () => void navigate(MANAGED_APPS_ROUTES.root),
-					})
-				}}
-			/>
-		</>
-	)
+            <ConfirmDialog
+                open={confirmOpen}
+                onOpenChange={setConfirmOpen}
+                title="Delete project"
+                description={`This permanently deletes "${project.name}", its build history and its public address. The workflow file stays in your repository — remove it there if you no longer want it.`}
+                confirmLabel="Delete project"
+                confirmText={project.name}
+                loading={deleteProject.isPending}
+                onConfirm={() => {
+                    deleteProject.mutate(project.id, {
+                        onSuccess: () => void navigate(MANAGED_APPS_ROUTES.root),
+                    })
+                }}
+            />
+        </>
+    )
 }

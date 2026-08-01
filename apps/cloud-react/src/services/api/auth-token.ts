@@ -65,17 +65,13 @@ export function refreshAccessToken(): Promise<string | null> {
             const body = new URLSearchParams()
             body.set("grant_type", "refresh_token")
             body.set("refresh_token", stored)
-            const res = await axios.post<RefreshTokenResponse>(
-                "/api/v1/auth/users/token",
-                body,
-                {
-                    withCredentials: true,
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded",
-                        "X-Requested-With": "XMLHttpRequest",
-                    },
-                }
-            )
+            const res = await axios.post<RefreshTokenResponse>("/api/v1/auth/users/token", body, {
+                withCredentials: true,
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-Requested-With": "XMLHttpRequest",
+                },
+            })
             accessToken = res.data.access_token ?? null
             if (res.data.refresh_token) await refreshToken.set(res.data.refresh_token)
             return accessToken

@@ -58,7 +58,11 @@ interface Props {
     availabilityZone?: AvailabilityZone | null
 }
 
-export function AvailabilityZoneFormSheet({ open, onOpenChange, availabilityZone }: Readonly<Props>) {
+export function AvailabilityZoneFormSheet({
+    open,
+    onOpenChange,
+    availabilityZone,
+}: Readonly<Props>) {
     const { t } = useTranslation()
     const { mutate: save, isPending } = useSaveAvailabilityZone()
     const { data: countries = [] } = useCountries()
@@ -68,7 +72,10 @@ export function AvailabilityZoneFormSheet({ open, onOpenChange, availabilityZone
     // Existing regions are derived from the AZ list — each AZ carries its region
     // inline, so we de-dup by region_code to build the picker's options.
     const regions = useMemo(() => {
-        const byCode = new Map<string, { region_code: string; region_name: string; country: string }>()
+        const byCode = new Map<
+            string,
+            { region_code: string; region_name: string; country: string }
+        >()
         for (const az of azs) {
             if (!byCode.has(az.region_code)) {
                 byCode.set(az.region_code, {
@@ -216,10 +223,7 @@ export function AvailabilityZoneFormSheet({ open, onOpenChange, availabilityZone
                                         </SelectItem>
                                     ))}
                                     <SelectSeparator />
-                                    <SelectItem
-                                        value={NEW_REGION_VALUE}
-                                        className="font-medium"
-                                    >
+                                    <SelectItem value={NEW_REGION_VALUE} className="font-medium">
                                         <span className="flex items-center gap-1.5">
                                             <Plus className="w-4 h-4" />
                                             {t("superAdmin.availabilityZones.fields.newRegion")}

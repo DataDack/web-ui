@@ -101,7 +101,11 @@ export function CreditGuardDialog({
                     <div className="space-y-2 rounded-lg border border-border-glass bg-muted/20 p-4">
                         <AmountRow label="Required" value={formatCredits(verdict.required)} />
                         <AmountRow label="Current balance" value={formatCredits(verdict.balance)} />
-                        <AmountRow label="Shortfall" value={formatCredits(verdict.shortfall)} accent />
+                        <AmountRow
+                            label="Shortfall"
+                            value={formatCredits(verdict.shortfall)}
+                            accent
+                        />
                     </div>
                 )}
                 {verdict.kind === "low-runway" && (

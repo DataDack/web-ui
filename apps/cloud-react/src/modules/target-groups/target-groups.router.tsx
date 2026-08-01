@@ -16,9 +16,8 @@ export const targetGroupsRoutes: RouteObject[] = [
         path: "compute/target-groups/create",
         handle: { hideSidebar: true },
         lazy: async () => {
-            const { TargetGroupCreateWizardPage } = await import(
-                "./partials/TargetGroupCreateWizardPage"
-            )
+            const { TargetGroupCreateWizardPage } =
+                await import("./partials/TargetGroupCreateWizardPage")
             return { Component: TargetGroupCreateWizardPage }
         },
     },

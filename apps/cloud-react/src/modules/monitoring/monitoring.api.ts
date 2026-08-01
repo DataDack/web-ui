@@ -122,8 +122,7 @@ export const monitoringApi = {
     updateChannel: (id: string, payload: UpdateChannelRequest): Promise<ChannelResponse> =>
         apiPut<ChannelResponse>(`${ALERTS_BASE}/channels/${id}`, payload),
 
-    deleteChannel: (id: string): Promise<void> =>
-        apiDelete(`${ALERTS_BASE}/channels/${id}`),
+    deleteChannel: (id: string): Promise<void> => apiDelete(`${ALERTS_BASE}/channels/${id}`),
 
     /**
      * Fire a test notification at an unsaved channel config. The backend
@@ -146,10 +145,7 @@ export const monitoringApi = {
         apiGet<JiraAuthorizeUrl>(`${ALERTS_BASE}/channels/jira/oauth/authorize-url`),
 
     /** Exchange the callback code+state; returns the connected site(s). */
-    jiraOAuthCallback: (payload: {
-        code: string
-        state: string
-    }): Promise<JiraConnection[]> =>
+    jiraOAuthCallback: (payload: { code: string; state: string }): Promise<JiraConnection[]> =>
         apiPost<JiraConnection[] | null>(
             `${ALERTS_BASE}/channels/jira/oauth/callback`,
             payload
@@ -207,9 +203,9 @@ export const monitoringApi = {
     deleteAlarm: (id: string): Promise<void> => apiDelete(`${ALERTS_BASE}/alarms/${id}`),
 
     setAlarmEnabled: (id: string, enabled: boolean): Promise<Alarm> =>
-        apiPut<WireAlarm>(
-            `${ALERTS_BASE}/alarms/${id}/${enabled ? "enable" : "disable"}`
-        ).then(normalizeAlarm),
+        apiPut<WireAlarm>(`${ALERTS_BASE}/alarms/${id}/${enabled ? "enable" : "disable"}`).then(
+            normalizeAlarm
+        ),
 
     alarmHistory: (id: string, limit = 50): Promise<AlarmHistoryEntry[]> =>
         apiGet<WireHistoryEntry[] | null>(

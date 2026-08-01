@@ -1,15 +1,7 @@
 import { useMemo, useState } from "react"
 
-
 import { zodResolver } from "@hookform/resolvers/zod"
-import {
-    AlertTriangle,
-    Download,
-    KeyRound,
-    Loader2,
-    Sparkles,
-    Upload,
-} from "lucide-react"
+import { AlertTriangle, Download, KeyRound, Loader2, Sparkles, Upload } from "lucide-react"
 import { motion } from "motion/react"
 import { useForm, type UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
@@ -32,18 +24,20 @@ import { useScreen } from "@/services/api/screen"
 import { SSH_KEYS_ROUTES } from "../ssh-keys.constants"
 import { useCreateSSHKey } from "../ssh-keys.hooks"
 
-const PUBLIC_KEY_PATTERN =
-    /^(ssh-(rsa|ed25519|dss)|ecdsa-sha2-nistp(256|384|521))\s+\S+/
+const PUBLIC_KEY_PATTERN = /^(ssh-(rsa|ed25519|dss)|ecdsa-sha2-nistp(256|384|521))\s+\S+/
 
 const makeSchema = (rule: NamingRule) =>
     z.object({
-    method: z.enum(["generate", "import"]),
-    name: namingNameSchema(rule),
-    public_key: z
-        .string()
-        .min(1, "Required")
-        .regex(PUBLIC_KEY_PATTERN, "Must be a valid OpenSSH public key (e.g. starts with ssh-ed25519)"),
-})
+        method: z.enum(["generate", "import"]),
+        name: namingNameSchema(rule),
+        public_key: z
+            .string()
+            .min(1, "Required")
+            .regex(
+                PUBLIC_KEY_PATTERN,
+                "Must be a valid OpenSSH public key (e.g. starts with ssh-ed25519)"
+            ),
+    })
 
 type FormValues = z.infer<ReturnType<typeof makeSchema>>
 
@@ -181,14 +175,12 @@ export function SshKeyCreateWizardPage() {
                 submitLabel={t("sshKeys.form.add")}
                 isSubmitting={isPending}
                 onCancel={() => void navigate(SSH_KEYS_ROUTES.ROOT)}
-                onSubmit={(values) =>
-                    {
-                        create(
-                            { name: values.name, public_key: values.public_key },
-                            { onSuccess: () => void navigate(SSH_KEYS_ROUTES.ROOT) }
-                        )
-                    }
-                }
+                onSubmit={(values) => {
+                    create(
+                        { name: values.name, public_key: values.public_key },
+                        { onSuccess: () => void navigate(SSH_KEYS_ROUTES.ROOT) }
+                    )
+                }}
             />
         </div>
     )
@@ -249,7 +241,9 @@ function MethodStep({ form, onSelect }: Readonly<MethodStepProps>) {
                         type="button"
                         whileTap={option.disabled ? undefined : { scale: 0.98 }}
                         disabled={option.disabled}
-                        onClick={() => { onSelect(option.value); }}
+                        onClick={() => {
+                            onSelect(option.value)
+                        }}
                         className={cn(
                             "glass-1 relative px-4 py-4 text-left transition-colors",
                             active ? "gradient-ring" : "hover:bg-accent/30 border-border-glass",
@@ -279,12 +273,7 @@ interface KeyStepProps {
     onDownload: () => void
 }
 
-function KeyStep({
-    form,
-    generating,
-    onGenerate,
-    onDownload,
-}: Readonly<KeyStepProps>) {
+function KeyStep({ form, generating, onGenerate, onDownload }: Readonly<KeyStepProps>) {
     const { t } = useTranslation()
     const method = form.watch("method")
     const publicKey = form.watch("public_key")

@@ -474,9 +474,7 @@ function DeliveriesTable({
                 </TableHeader>
                 <TableBody>
                     {rows.map((row) => {
-                        const binding = row.channel_id
-                            ? bindings.get(row.channel_id)
-                            : undefined
+                        const binding = row.channel_id ? bindings.get(row.channel_id) : undefined
                         return (
                             <TableRow key={row.id}>
                                 <TableCell
@@ -505,9 +503,7 @@ function DeliveriesTable({
                                         )}
                                     />
                                 </TableCell>
-                                <TableCell
-                                    className={cn(CELL_MUTED, "max-w-[22rem] break-words")}
-                                >
+                                <TableCell className={cn(CELL_MUTED, "max-w-[22rem] break-words")}>
                                     {row.error || DASH}
                                 </TableCell>
                             </TableRow>
@@ -731,8 +727,8 @@ export function AlarmDetailPage() {
     const deleteAlarm = useDeleteAlarm()
     const testChannel = useTestSavedChannel()
 
-    const windowMs =
-        (CHART_RANGES.find((range) => range.id === rangeId) ?? DEFAULT_CHART_RANGE).windowMs
+    const windowMs = (CHART_RANGES.find((range) => range.id === rangeId) ?? DEFAULT_CHART_RANGE)
+        .windowMs
 
     const metricsWindow = useMemo<MetricsWindowQuery | null>(() => {
         if (!alarm) return null
@@ -910,12 +906,7 @@ export function AlarmDetailPage() {
             <ConditionPanel alarm={alarm} />
             <AlarmNotices alarm={alarm} />
 
-            <AnimatedTabs
-                tabs={tabs}
-                value={tab}
-                onChange={setTab}
-                layoutId="alarm-detail-tabs"
-            />
+            <AnimatedTabs tabs={tabs} value={tab} onChange={setTab} layoutId="alarm-detail-tabs" />
 
             {tab === TAB_OVERVIEW && (
                 <OverviewTab
@@ -938,9 +929,7 @@ export function AlarmDetailPage() {
                 />
             )}
             {tab === TAB_HISTORY && <HistoryTab entries={history} />}
-            {tab === TAB_CONFIG && (
-                <ConfigurationTab alarm={alarm} type={type} display={display} />
-            )}
+            {tab === TAB_CONFIG && <ConfigurationTab alarm={alarm} type={type} display={display} />}
 
             <ConfirmDialog
                 open={deleteOpen}

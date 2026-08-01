@@ -38,8 +38,7 @@ export function useChannels() {
 export function useCreateChannel() {
     const queryClient = useQueryClient()
     return useMutation({
-        mutationFn: (payload: CreateChannelRequest) =>
-            monitoringService.createChannel(payload),
+        mutationFn: (payload: CreateChannelRequest) => monitoringService.createChannel(payload),
         onSuccess: (res) => {
             void queryClient.invalidateQueries({ queryKey: MONITORING_QUERY_KEYS.channels })
             toast.success(`Channel "${res.channel.name}" created`)
@@ -273,8 +272,7 @@ export function useCreateAlarm() {
 export function useUpdateAlarm(id: string) {
     const queryClient = useQueryClient()
     return useMutation({
-        mutationFn: (payload: UpdateAlarmRequest) =>
-            monitoringService.updateAlarm(id, payload),
+        mutationFn: (payload: UpdateAlarmRequest) => monitoringService.updateAlarm(id, payload),
         onSuccess: () => {
             void queryClient.invalidateQueries({ queryKey: MONITORING_QUERY_KEYS.alarms })
             toast.success("Alarm updated")

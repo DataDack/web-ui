@@ -9,16 +9,16 @@ type RepoRuntime = Extract<ProjectType, "opennext" | "react">
 const RUNTIMES: readonly RepoRuntime[] = ["opennext", "react"]
 
 const RUNTIME_DESCRIPTIONS: Record<RepoRuntime, string> = {
-	opennext: "Next.js built with OpenNext — SSR, API routes and static assets.",
-	react: "A static build (Vite, CRA) compiled once and served as files.",
+    opennext: "Next.js built with OpenNext — SSR, API routes and static assets.",
+    react: "A static build (Vite, CRA) compiled once and served as files.",
 }
 
 interface RuntimeSelectProps {
-	value: RepoRuntime | undefined
-	onChange: (runtime: RepoRuntime) => void
-	disabled?: boolean
-	invalid?: boolean
-	id?: string
+    value: RepoRuntime | undefined
+    onChange: (runtime: RepoRuntime) => void
+    disabled?: boolean
+    invalid?: boolean
+    id?: string
 }
 
 /**
@@ -35,40 +35,40 @@ interface RuntimeSelectProps {
  * evidence for it, and the shape of this control does not change when it does.
  */
 export function RuntimeSelect({
-	value,
-	onChange,
-	disabled,
-	invalid,
-	id,
+    value,
+    onChange,
+    disabled,
+    invalid,
+    id,
 }: Readonly<RuntimeSelectProps>) {
-	const options: SmartSelectOption<RepoRuntime>[] = RUNTIMES.map((runtime) => ({
-		value: runtime,
-		item: runtime,
-		searchText: `${runtime} ${PROJECT_TYPE_META[runtime].label}`,
-	}))
+    const options: SmartSelectOption<RepoRuntime>[] = RUNTIMES.map((runtime) => ({
+        value: runtime,
+        item: runtime,
+        searchText: `${runtime} ${PROJECT_TYPE_META[runtime].label}`,
+    }))
 
-	return (
-		<SmartSelect<RepoRuntime>
-			id={id}
-			ariaLabel="Runtime"
-			options={options}
-			value={value}
-			disabled={disabled}
-			invalid={invalid}
-			placeholder="Select a runtime"
-			searchPlaceholder="Search runtimes…"
-			onValueChange={(_next, runtime) => {
-				onChange(runtime)
-			}}
-			renderValue={(option) => PROJECT_TYPE_META[option.item].label}
-			renderRow={(option) => {
-				const Icon = PROJECT_TYPE_META[option.item].icon
-				return {
-					leading: <Icon className="size-4 text-muted-foreground" />,
-					primary: PROJECT_TYPE_META[option.item].label,
-					secondary: RUNTIME_DESCRIPTIONS[option.item],
-				}
-			}}
-		/>
-	)
+    return (
+        <SmartSelect<RepoRuntime>
+            id={id}
+            ariaLabel="Runtime"
+            options={options}
+            value={value}
+            disabled={disabled}
+            invalid={invalid}
+            placeholder="Select a runtime"
+            searchPlaceholder="Search runtimes…"
+            onValueChange={(_next, runtime) => {
+                onChange(runtime)
+            }}
+            renderValue={(option) => PROJECT_TYPE_META[option.item].label}
+            renderRow={(option) => {
+                const Icon = PROJECT_TYPE_META[option.item].icon
+                return {
+                    leading: <Icon className="size-4 text-muted-foreground" />,
+                    primary: PROJECT_TYPE_META[option.item].label,
+                    secondary: RUNTIME_DESCRIPTIONS[option.item],
+                }
+            }}
+        />
+    )
 }

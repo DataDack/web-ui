@@ -149,7 +149,12 @@ export function BillingLayout() {
                         >
                             <RefreshCw className={cn("size-4", fetching && "animate-spin")} />
                         </Button>
-                        <Button variant="gold" onClick={() => { openTopup() }}>
+                        <Button
+                            variant="gold"
+                            onClick={() => {
+                                openTopup()
+                            }}
+                        >
                             <Plus className="mr-1.5 size-4" />
                             {t("billing.actions.buy")}
                         </Button>

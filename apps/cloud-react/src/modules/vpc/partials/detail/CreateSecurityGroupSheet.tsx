@@ -26,9 +26,9 @@ import type { VPCNetwork } from "../../vpc.types"
 
 const makeSchema = (rule: NamingRule) =>
     z.object({
-    name: namingNameSchema(rule),
-    description: z.string().max(300, "Maximum 300 characters"),
-})
+        name: namingNameSchema(rule),
+        description: z.string().max(300, "Maximum 300 characters"),
+    })
 
 type FormValues = z.infer<ReturnType<typeof makeSchema>>
 

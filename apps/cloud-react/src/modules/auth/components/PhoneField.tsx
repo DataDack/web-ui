@@ -61,7 +61,9 @@ export function PhoneField({
                     <Input
                         id={numberId}
                         value={input.raw}
-                        onChange={(e) => { input.setRaw(e.target.value); }}
+                        onChange={(e) => {
+                            input.setRaw(e.target.value)
+                        }}
                         onKeyDown={(e) => {
                             if (e.key === "Enter") onEnter?.()
                         }}

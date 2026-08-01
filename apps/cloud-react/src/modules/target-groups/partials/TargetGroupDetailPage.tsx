@@ -238,7 +238,7 @@ function TargetsTab({ group }: Readonly<{ group: TargetGroup }>) {
                             <TableBody>
                                 {targets.map((target, index) => {
                                     const instance = instances.find(
-                                        (i) => i.id === target.instance_id,
+                                        (i) => i.id === target.instance_id
                                     )
                                     return (
                                         <TableRow
@@ -274,7 +274,9 @@ function TargetsTab({ group }: Readonly<{ group: TargetGroup }>) {
                                                 <Button
                                                     size="icon"
                                                     variant="ghost"
-                                                    aria-label={t("targetGroups.targets.deregister")}
+                                                    aria-label={t(
+                                                        "targetGroups.targets.deregister"
+                                                    )}
                                                     onClick={() => {
                                                         setPendingRemove(target)
                                                     }}
@@ -350,8 +352,7 @@ function RegisterTargetDialog({
     const candidates = instances.filter((i) => !alreadyRegistered.has(i.id))
 
     const portNum = port === "" ? group.port : Number(port)
-    const valid =
-        !!instanceId && Number.isInteger(portNum) && portNum >= 1 && portNum <= 65535
+    const valid = !!instanceId && Number.isInteger(portNum) && portNum >= 1 && portNum <= 65535
 
     const submit = () => {
         register(
@@ -362,7 +363,7 @@ function RegisterTargetDialog({
                     setPort("")
                     onOpenChange(false)
                 },
-            },
+            }
         )
     }
 

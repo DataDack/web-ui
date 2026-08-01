@@ -55,18 +55,14 @@ export const vpcRoutes: RouteObject[] = [
         path: "networking/security-groups/create",
         handle: { hideSidebar: true },
         lazy: async () => {
-            const { SecurityGroupCreatePage } = await import(
-                "./partials/SecurityGroupCreatePage"
-            )
+            const { SecurityGroupCreatePage } = await import("./partials/SecurityGroupCreatePage")
             return { Component: SecurityGroupCreatePage }
         },
     },
     {
         path: "networking/security-groups/:id",
         lazy: async () => {
-            const { SecurityGroupDetailPage } = await import(
-                "./partials/SecurityGroupDetailPage"
-            )
+            const { SecurityGroupDetailPage } = await import("./partials/SecurityGroupDetailPage")
             return { Component: SecurityGroupDetailPage }
         },
     },

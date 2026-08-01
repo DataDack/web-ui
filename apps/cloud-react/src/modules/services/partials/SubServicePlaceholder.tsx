@@ -13,11 +13,26 @@ interface SubServicePlaceholderProps {
     onConfigure?: () => void
 }
 
-const STATUS_CONFIG: Record<ServiceStatus, { icon: LucideIcon; label: string; badgeClass: string }> = {
+const STATUS_CONFIG: Record<
+    ServiceStatus,
+    { icon: LucideIcon; label: string; badgeClass: string }
+> = {
     operational: { icon: Construction, label: "Not Configured", badgeClass: "" },
-    degraded: { icon: AlertTriangle, label: "Degraded", badgeClass: "bg-secondary/10 text-secondary border-secondary/30" },
-    maintenance: { icon: Settings, label: "Under Maintenance", badgeClass: "bg-secondary/10 text-secondary border-secondary/30" },
-    outage: { icon: AlertTriangle, label: "Outage", badgeClass: "bg-destructive/10 text-destructive border-destructive/30" },
+    degraded: {
+        icon: AlertTriangle,
+        label: "Degraded",
+        badgeClass: "bg-secondary/10 text-secondary border-secondary/30",
+    },
+    maintenance: {
+        icon: Settings,
+        label: "Under Maintenance",
+        badgeClass: "bg-secondary/10 text-secondary border-secondary/30",
+    },
+    outage: {
+        icon: AlertTriangle,
+        label: "Outage",
+        badgeClass: "bg-destructive/10 text-destructive border-destructive/30",
+    },
 }
 
 export function SubServicePlaceholder({
@@ -30,10 +45,11 @@ export function SubServicePlaceholder({
     const status = subService?.status ?? "operational"
     const cfg = STATUS_CONFIG[status]
     const StatusIcon = cfg.icon
-    const DisplayIcon = icon ?? (subService?.icon ?? Construction)
+    const DisplayIcon = icon ?? subService?.icon ?? Construction
 
     const displayName = name ?? subService?.name ?? "Sub-service"
-    const displayDesc = description ?? subService?.description ?? "This sub-service has not been configured yet."
+    const displayDesc =
+        description ?? subService?.description ?? "This sub-service has not been configured yet."
 
     const isIssue = status !== "operational"
 
@@ -62,14 +78,18 @@ export function SubServicePlaceholder({
                 <div className="flex items-center justify-center gap-2 mb-1">
                     <h3 className="font-semibold text-foreground">{displayName}</h3>
                     {isIssue && (
-                        <Badge variant="outline" className={`text-[10px] font-mono ${cfg.badgeClass}`}>
+                        <Badge
+                            variant="outline"
+                            className={`text-[10px] font-mono ${cfg.badgeClass}`}
+                        >
                             {cfg.label}
                         </Badge>
                     )}
                 </div>
                 <p className="text-sm text-muted-foreground max-w-sm">
                     {isIssue
-                        ? subService?.maintenance?.message ?? `${displayName} is currently ${status}.`
+                        ? (subService?.maintenance?.message ??
+                          `${displayName} is currently ${status}.`)
                         : displayDesc}
                 </p>
             </div>

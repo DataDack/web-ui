@@ -11,15 +11,7 @@
 
 import { useMemo } from "react"
 
-import {
-    Activity,
-    ArrowRight,
-    BellRing,
-    CheckCircle2,
-    Plus,
-    Radio,
-    WifiOff,
-} from "lucide-react"
+import { Activity, ArrowRight, BellRing, CheckCircle2, Plus, Radio, WifiOff } from "lucide-react"
 import { Link } from "react-router-dom"
 
 import { PageHeader, Section, StatGrid, type StatCardProps } from "@/components/console"
@@ -35,18 +27,9 @@ import { TYPE_META } from "../channels/channels.meta"
 import { AlarmStateChip } from "../components/StateChips"
 import { MONITORING_ROUTES } from "../monitoring.constants"
 import { useAccountHistory, useAlarms, useChannels } from "../monitoring.hooks"
-import {
-    ALARM_STATE_META,
-    alarmStateLabel,
-    timeAgo,
-} from "../monitoring.meta"
+import { ALARM_STATE_META, alarmStateLabel, timeAgo } from "../monitoring.meta"
 import { resolveTarget, TARGET_TYPE_META, type AlarmTargetType } from "../monitoring.targets"
-import type {
-    Alarm,
-    AlarmHistoryEntry,
-    AlarmState,
-    ChannelResponse,
-} from "../monitoring.types"
+import type { Alarm, AlarmHistoryEntry, AlarmState, ChannelResponse } from "../monitoring.types"
 
 // ---------------------------------------------------------------------------
 // Shared class vocabulary
@@ -142,9 +125,7 @@ function hourLabel(ms: number): string {
 }
 
 /** alarm_id -> its transitions, oldest first. */
-function historyByAlarm(
-    history: readonly AlarmHistoryEntry[]
-): Map<string, AlarmHistoryEntry[]> {
+function historyByAlarm(history: readonly AlarmHistoryEntry[]): Map<string, AlarmHistoryEntry[]> {
     const byAlarm = new Map<string, AlarmHistoryEntry[]>()
     for (const entry of history) {
         const existing = byAlarm.get(entry.alarm_id)
@@ -260,10 +241,7 @@ function byStateThenRecency(a: Alarm, b: Alarm): number {
 }
 
 /** One bad load balancer trips several alarms — show it as one problem. */
-function groupByResource(
-    alarms: readonly Alarm[],
-    names: Map<string, string>
-): AttentionGroup[] {
+function groupByResource(alarms: readonly Alarm[], names: Map<string, string>): AttentionGroup[] {
     const groups = new Map<string, AttentionGroup>()
     for (const alarm of alarms) {
         const resource = describeResource(alarm, names)
@@ -369,10 +347,7 @@ function buildStats(
             loading: alarmsLoading,
         },
         {
-            label:
-                failing > 0
-                    ? `Channels · ${String(failing)} not delivering`
-                    : "Channels",
+            label: failing > 0 ? `Channels · ${String(failing)} not delivering` : "Channels",
             value: channels.length,
             color: failing > 0 ? "danger" : "info",
             icon: Radio,
@@ -447,8 +422,7 @@ function StripLegend() {
                 </span>
             ))}
             <span className="text-[11px] text-muted-foreground/80">
-                An alarm with no recorded change holds its current state across the whole
-                strip.
+                An alarm with no recorded change holds its current state across the whole strip.
             </span>
         </div>
     )
@@ -519,9 +493,7 @@ function ChannelHealthRow({ channel }: Readonly<{ channel: ChannelResponse }>) {
         <li className="py-2.5 first:pt-0 last:pb-0">
             <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                 <Icon className="size-3.5 shrink-0 text-muted-foreground" />
-                <span className="truncate text-sm font-medium text-foreground">
-                    {channel.name}
-                </span>
+                <span className="truncate text-sm font-medium text-foreground">{channel.name}</span>
                 {!channel.enabled && (
                     <Badge variant="outline" className={cn(CHIP, CHIP_IDLE)}>
                         paused

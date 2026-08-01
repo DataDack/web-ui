@@ -17,8 +17,7 @@ import {
 import { useRouters, useVPNConnections } from "../../vpc.hooks"
 import type { VPCNetwork } from "../../vpc.types"
 
-const HEAD_CLASS =
-    "px-3 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground"
+const HEAD_CLASS = "px-3 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground"
 
 export function VpnTab({ network }: Readonly<{ network: VPCNetwork }>) {
     const { t } = useTranslation()

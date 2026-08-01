@@ -25,13 +25,7 @@ export function QuotasPage() {
     const { t } = useTranslation()
     const [searchParams, setSearchParams] = useSearchParams()
 
-    const {
-        data: quotas = [],
-        isLoading,
-        isError,
-        refetch,
-        isFetching,
-    } = useQuotas()
+    const { data: quotas = [], isLoading, isError, refetch, isFetching } = useQuotas()
     const requestsQuery = useQuotaRequests()
     const requests = requestsQuery.data ?? []
 
@@ -200,9 +194,7 @@ export function QuotasPage() {
 
 /** Bucket quotas into registry modules, keeping the canonical module order and
  *  appending any module the registry grows later so no row is ever dropped. */
-function groupByModule(
-    quotas: EffectiveQuota[]
-): { module: string; quotas: EffectiveQuota[] }[] {
+function groupByModule(quotas: EffectiveQuota[]): { module: string; quotas: EffectiveQuota[] }[] {
     const buckets = new Map<string, EffectiveQuota[]>()
     for (const quota of quotas) {
         const bucket = buckets.get(quota.module)

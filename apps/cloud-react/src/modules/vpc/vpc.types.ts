@@ -88,12 +88,7 @@ export interface SGRule {
 }
 
 export type StaticIPStatus =
-    | "provisioning"
-    | "reserved"
-    | "assigned"
-    | "available"
-    | "associated"
-    | "releasing"
+    "provisioning" | "reserved" | "assigned" | "available" | "associated" | "releasing"
 
 export interface StaticIP {
     id: string
@@ -152,12 +147,7 @@ export interface Router {
 }
 
 export type NATGatewayStatus =
-    | "pending"
-    | "available"
-    | "active"
-    | "deleting"
-    | "deleted"
-    | "failed"
+    "pending" | "available" | "active" | "deleting" | "deleted" | "failed"
 
 export interface NATGateway {
     id: string
@@ -187,13 +177,7 @@ export interface InternetGateway {
 }
 
 export type VPNConnectionStatus =
-    | "connected"
-    | "pending"
-    | "available"
-    | "deleting"
-    | "deleted"
-    | "failed"
-    | "error"
+    "connected" | "pending" | "available" | "deleting" | "deleted" | "failed" | "error"
 
 export interface VPNConnection {
     id: string

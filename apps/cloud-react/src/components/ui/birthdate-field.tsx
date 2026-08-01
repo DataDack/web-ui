@@ -4,11 +4,7 @@ import { Cake } from "lucide-react"
 
 import { DayGridPicker } from "@/components/ui/day-grid-picker"
 import { MONTHS, MonthYearPicker } from "@/components/ui/month-year-picker"
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 
 /** Parse an ISO `yyyy-mm-dd` string into parts (no timezone shift). */
@@ -62,9 +58,7 @@ export function BirthdateField({
 
     // Draft parts let the user pick month/year before a day exists yet.
     const [draftYear, setDraftYear] = useState<number | undefined>(parts?.year)
-    const [draftMonth, setDraftMonth] = useState<number | undefined>(
-        parts?.month
-    )
+    const [draftMonth, setDraftMonth] = useState<number | undefined>(parts?.month)
 
     const year = parts?.year ?? draftYear
     const month = parts?.month ?? draftMonth
@@ -102,13 +96,9 @@ export function BirthdateField({
                             {parts ? String(parts.day).padStart(2, "0") : "DD"}
                         </Segment>
                         <Divider />
-                        <Segment empty={!parts}>
-                            {parts ? MONTHS[parts.month] : "Mon"}
-                        </Segment>
+                        <Segment empty={!parts}>{parts ? MONTHS[parts.month] : "Mon"}</Segment>
                         <Divider />
-                        <Segment empty={!parts}>
-                            {parts ? parts.year : "YYYY"}
-                        </Segment>
+                        <Segment empty={!parts}>{parts ? parts.year : "YYYY"}</Segment>
                     </span>
                     <Cake className="size-4 text-muted-foreground" />
                 </button>
@@ -157,7 +147,9 @@ export function BirthdateField({
                 {view === "calendar" ? (
                     <button
                         type="button"
-                        onClick={() => { setView("monthYear"); }}
+                        onClick={() => {
+                            setView("monthYear")
+                        }}
                         className="w-full rounded-b-md border-t px-4 py-2 text-center text-xs font-medium text-muted-foreground outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50"
                     >
                         Change month &amp; year
@@ -168,15 +160,8 @@ export function BirthdateField({
     )
 }
 
-function Segment({
-    children,
-    empty,
-}: Readonly<{ children: React.ReactNode; empty?: boolean }>) {
-    return (
-        <span className={cn("font-medium", empty && "text-muted-foreground")}>
-            {children}
-        </span>
-    )
+function Segment({ children, empty }: Readonly<{ children: React.ReactNode; empty?: boolean }>) {
+    return <span className={cn("font-medium", empty && "text-muted-foreground")}>{children}</span>
 }
 
 function Divider() {

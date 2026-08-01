@@ -75,7 +75,10 @@ export function VmConnectPage() {
                     </SummaryItem>
                     <SummaryItem label={t("vms.connect.vpcId", "VPC ID")}>
                         {instance.vpc_id ? (
-                            <CopyButton value={instance.vpc_id} label={`${instance.vpc_id.slice(0, 8)}…`} />
+                            <CopyButton
+                                value={instance.vpc_id}
+                                label={`${instance.vpc_id.slice(0, 8)}…`}
+                            />
                         ) : (
                             "—"
                         )}
@@ -119,10 +122,7 @@ export function VmConnectPage() {
     )
 }
 
-function SummaryItem({
-    label,
-    children,
-}: Readonly<{ label: string; children: React.ReactNode }>) {
+function SummaryItem({ label, children }: Readonly<{ label: string; children: React.ReactNode }>) {
     return (
         <div className="min-w-0 space-y-0.5">
             <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
@@ -194,7 +194,9 @@ function InstanceConnectTab({ instance }: Readonly<{ instance: Instance }>) {
                                 "vms.connect.publicIpOptionDesc",
                                 "Connect using the instance's public IPv4 address"
                             )}
-                            onSelect={() => { setIpKind("public"); }}
+                            onSelect={() => {
+                                setIpKind("public")
+                            }}
                         />
                         <ChoiceCard
                             selected={ipKind === "private"}
@@ -204,7 +206,9 @@ function InstanceConnectTab({ instance }: Readonly<{ instance: Instance }>) {
                                 "vms.connect.privateIpOptionDesc",
                                 "Connect using the private IP address within the VPC"
                             )}
-                            onSelect={() => { setIpKind("private"); }}
+                            onSelect={() => {
+                                setIpKind("private")
+                            }}
                         />
                     </div>
                 </div>
@@ -227,7 +231,9 @@ function InstanceConnectTab({ instance }: Readonly<{ instance: Instance }>) {
                         <Input
                             id="connect-username"
                             value={username}
-                            onChange={(e) => { setUsername(e.target.value); }}
+                            onChange={(e) => {
+                                setUsername(e.target.value)
+                            }}
                             placeholder={guessUsername(instance.os)}
                             className="h-8 font-mono"
                         />
@@ -304,7 +310,8 @@ function SshClientTab({ instance }: Readonly<{ instance: Instance }>) {
                     <li>
                         <div className="space-y-1">
                             {t("vms.connect.ssh.step4", {
-                                defaultValue: "Connect to your instance using its {{kind}} IP address:",
+                                defaultValue:
+                                    "Connect to your instance using its {{kind}} IP address:",
                                 kind: instance.public_ip
                                     ? t("vms.connect.ssh.public", "public")
                                     : t("vms.connect.ssh.private", "private"),
@@ -317,7 +324,9 @@ function SshClientTab({ instance }: Readonly<{ instance: Instance }>) {
                 <div className="space-y-1.5">
                     <Label>{t("vms.connect.ssh.example", "Example:")}</Label>
                     <div className="rounded-lg border border-border bg-muted/40 px-3 py-2">
-                        <CopyButton value={`ssh -i "${keyFile}" ${user}@${host || "<instance-ip>"}`} />
+                        <CopyButton
+                            value={`ssh -i "${keyFile}" ${user}@${host || "<instance-ip>"}`}
+                        />
                     </div>
                 </div>
 

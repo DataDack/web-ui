@@ -79,7 +79,9 @@ export function InviteMemberDialog({
         }
     }
 
-    const close = () => { onOpenChange(false) }
+    const close = () => {
+        onOpenChange(false)
+    }
 
     const submit = () => {
         if (!isValidEmail(email)) {
@@ -148,7 +150,9 @@ export function InviteMemberDialog({
                         <Field label={t("iam.columns.email")} required>
                             <Input
                                 value={email}
-                                onChange={(e) => { setEmail(e.target.value); }}
+                                onChange={(e) => {
+                                    setEmail(e.target.value)
+                                }}
                                 placeholder="teammate@company.com"
                                 className="font-mono"
                                 type="email"
@@ -177,11 +181,17 @@ export function InviteMemberDialog({
                             <Field label={t("iam.invitations.form.group")}>
                                 <Select value={groupId} onValueChange={setGroupId}>
                                     <SelectTrigger className="w-full text-[13px]">
-                                        <SelectValue placeholder={t("iam.invitations.form.noGroup")} />
+                                        <SelectValue
+                                            placeholder={t("iam.invitations.form.noGroup")}
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {groups.map((g) => (
-                                            <SelectItem key={g.id} value={g.id} className="text-[13px]">
+                                            <SelectItem
+                                                key={g.id}
+                                                value={g.id}
+                                                className="text-[13px]"
+                                            >
                                                 {g.name}
                                             </SelectItem>
                                         ))}
@@ -192,11 +202,17 @@ export function InviteMemberDialog({
                             <Field label={t("iam.invitations.form.role")}>
                                 <Select value={roleId} onValueChange={setRoleId}>
                                     <SelectTrigger className="w-full text-[13px]">
-                                        <SelectValue placeholder={t("iam.invitations.form.noRole")} />
+                                        <SelectValue
+                                            placeholder={t("iam.invitations.form.noRole")}
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {roles.map((r) => (
-                                            <SelectItem key={r.id} value={r.id} className="text-[13px]">
+                                            <SelectItem
+                                                key={r.id}
+                                                value={r.id}
+                                                className="text-[13px]"
+                                            >
                                                 {r.name}
                                             </SelectItem>
                                         ))}
@@ -208,7 +224,9 @@ export function InviteMemberDialog({
                         <Field label={t("iam.invitations.form.message")}>
                             <Textarea
                                 value={message}
-                                onChange={(e) => { setMessage(e.target.value); }}
+                                onChange={(e) => {
+                                    setMessage(e.target.value)
+                                }}
                                 placeholder={t("iam.invitations.form.messagePlaceholder")}
                                 rows={2}
                                 className="resize-none"
@@ -220,7 +238,12 @@ export function InviteMemberDialog({
                 <DialogFooter>
                     {result && !result.email_sent ? (
                         <>
-                            <Button variant="ghost" onClick={() => { setResult(null); }}>
+                            <Button
+                                variant="ghost"
+                                onClick={() => {
+                                    setResult(null)
+                                }}
+                            >
                                 {t("iam.invitations.linkPanel.another")}
                             </Button>
                             <Button variant="gold" onClick={close}>

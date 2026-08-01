@@ -11,11 +11,7 @@ import {
     CommandItem,
     CommandList,
 } from "@/components/ui/command"
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 
 import { useCountries } from "./countries.hooks"
@@ -136,9 +132,7 @@ export function CurrencySelect({
                     <span className="flex min-w-0 items-center gap-2">
                         {value ? (
                             <>
-                                <span className="w-4 shrink-0 text-center">
-                                    {symbolFor(value)}
-                                </span>
+                                <span className="w-4 shrink-0 text-center">{symbolFor(value)}</span>
                                 <span className="font-mono">{value}</span>
                                 <span className="truncate text-muted-foreground">
                                     {currencyName(value)}
@@ -153,10 +147,7 @@ export function CurrencySelect({
                     <ChevronDown className="size-4 shrink-0 opacity-50" />
                 </button>
             </PopoverTrigger>
-            <PopoverContent
-                className="w-(--radix-popover-trigger-width) p-0"
-                align="start"
-            >
+            <PopoverContent className="w-(--radix-popover-trigger-width) p-0" align="start">
                 <Command
                     filter={(itemValue, search) =>
                         itemValue.toLowerCase().includes(search.toLowerCase()) ? 1 : 0

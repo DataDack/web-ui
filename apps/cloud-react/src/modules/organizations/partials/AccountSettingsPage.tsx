@@ -17,13 +17,7 @@ import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 import { z } from "zod/v4"
 
-import {
-    EmptyState,
-    KeyValueGrid,
-    PageHeader,
-    Section,
-    StatusBadge,
-} from "@/components/console"
+import { EmptyState, KeyValueGrid, PageHeader, Section, StatusBadge } from "@/components/console"
 import { Button } from "@/components/ui/button"
 import {
     Dialog,
@@ -166,11 +160,17 @@ function VerificationSection() {
     return (
         <Section
             variant="panel"
-            title={rekyc ? t("onboarding.verification.rekycTitle") : t("onboarding.verification.requiredTitle")}
+            title={
+                rekyc
+                    ? t("onboarding.verification.rekycTitle")
+                    : t("onboarding.verification.requiredTitle")
+            }
         >
             <div className="flex flex-wrap items-center justify-between gap-3">
                 <p className="text-sm text-muted-foreground">
-                    {rekyc ? t("onboarding.verification.rekycDesc") : t("onboarding.review.kycLater")}
+                    {rekyc
+                        ? t("onboarding.verification.rekycDesc")
+                        : t("onboarding.review.kycLater")}
                 </p>
                 <Button
                     onClick={() => void navigate("/onboarding/kyc")}
@@ -216,7 +216,11 @@ function AccountDetailsSection({
     const onSubmit = (values: AccountFormValues) => {
         save(
             { id: account.id, payload: { name: values.name } },
-            { onSuccess: () => { setEditing(false); } }
+            {
+                onSuccess: () => {
+                    setEditing(false)
+                },
+            }
         )
     }
 
@@ -237,7 +241,10 @@ function AccountDetailsSection({
             }
         >
             {editing ? (
-                <form onSubmit={(e) => void handleSubmit(onSubmit)(e)} className="max-w-xl space-y-5">
+                <form
+                    onSubmit={(e) => void handleSubmit(onSubmit)(e)}
+                    className="max-w-xl space-y-5"
+                >
                     <Field
                         label={t("account.settings.name", { defaultValue: "Account name" })}
                         required
@@ -249,7 +256,9 @@ function AccountDetailsSection({
                         <Button
                             type="button"
                             variant="ghost"
-                            onClick={() => { setEditing(false); }}
+                            onClick={() => {
+                                setEditing(false)
+                            }}
                             disabled={isPending}
                         >
                             {t("common.cancel", { defaultValue: "Cancel" })}
@@ -331,10 +340,7 @@ const orgSchema = z.object({
 })
 type OrgFormValues = z.infer<typeof orgSchema>
 
-function OrgDetailsSection({
-    org,
-    canEdit,
-}: Readonly<{ org: Organization; canEdit: boolean }>) {
+function OrgDetailsSection({ org, canEdit }: Readonly<{ org: Organization; canEdit: boolean }>) {
     const { t } = useTranslation()
     const { mutate: save, isPending } = useUpdateOrganization()
     const [editing, setEditing] = useState(false)
@@ -355,7 +361,14 @@ function OrgDetailsSection({
     }
 
     const onSubmit = (values: OrgFormValues) => {
-        save({ id: org.id, payload: values }, { onSuccess: () => { setEditing(false); } })
+        save(
+            { id: org.id, payload: values },
+            {
+                onSuccess: () => {
+                    setEditing(false)
+                },
+            }
+        )
     }
 
     return (
@@ -373,7 +386,10 @@ function OrgDetailsSection({
             }
         >
             {editing ? (
-                <form onSubmit={(e) => void handleSubmit(onSubmit)(e)} className="max-w-xl space-y-5">
+                <form
+                    onSubmit={(e) => void handleSubmit(onSubmit)(e)}
+                    className="max-w-xl space-y-5"
+                >
                     <Field label={t("org.settings.name")} required error={errors.name?.message}>
                         <Input {...register("name")} placeholder="Acme Inc." />
                     </Field>
@@ -396,7 +412,9 @@ function OrgDetailsSection({
                         <Button
                             type="button"
                             variant="ghost"
-                            onClick={() => { setEditing(false); }}
+                            onClick={() => {
+                                setEditing(false)
+                            }}
                             disabled={isPending}
                         >
                             {t("common.cancel", { defaultValue: "Cancel" })}
@@ -450,7 +468,9 @@ function MetaSection({ account }: Readonly<{ account: MyAccount }>) {
                         copyable: true,
                     },
                     {
-                        label: t("accounts.detail.accountNumber", { defaultValue: "Account number" }),
+                        label: t("accounts.detail.accountNumber", {
+                            defaultValue: "Account number",
+                        }),
                         value: account.account_number,
                         mono: true,
                         copyable: true,
@@ -547,7 +567,11 @@ function BillingAddressSection({
                     billing_address: values,
                 },
             },
-            { onSuccess: () => { setEditing(false); } }
+            {
+                onSuccess: () => {
+                    setEditing(false)
+                },
+            }
         )
     }
 
@@ -577,7 +601,10 @@ function BillingAddressSection({
             }
         >
             {editing ? (
-                <form onSubmit={(e) => void handleSubmit(onSubmit)(e)} className="max-w-xl space-y-5">
+                <form
+                    onSubmit={(e) => void handleSubmit(onSubmit)(e)}
+                    className="max-w-xl space-y-5"
+                >
                     <Field label={t(k("line1"))} required error={errors.line1?.message}>
                         <Input {...register("line1")} placeholder={t(k("placeholders.line1"))} />
                     </Field>
@@ -589,9 +616,16 @@ function BillingAddressSection({
                             <Input {...register("city")} placeholder={t(k("placeholders.city"))} />
                         </Field>
                         <Field label={t(k("state"))} required error={errors.state?.message}>
-                            <Input {...register("state")} placeholder={t(k("placeholders.state"))} />
+                            <Input
+                                {...register("state")}
+                                placeholder={t(k("placeholders.state"))}
+                            />
                         </Field>
-                        <Field label={t(k("postalCode"))} required error={errors.postal_code?.message}>
+                        <Field
+                            label={t(k("postalCode"))}
+                            required
+                            error={errors.postal_code?.message}
+                        >
                             <Input
                                 {...register("postal_code")}
                                 placeholder={t(k("placeholders.postalCode"))}
@@ -616,12 +650,19 @@ function BillingAddressSection({
                         <Button
                             type="button"
                             variant="ghost"
-                            onClick={() => { setEditing(false); }}
+                            onClick={() => {
+                                setEditing(false)
+                            }}
                             disabled={isPending}
                         >
                             {t(k("cancel"))}
                         </Button>
-                        <Button type="submit" variant="gold" className="gap-1.5" disabled={isPending}>
+                        <Button
+                            type="submit"
+                            variant="gold"
+                            className="gap-1.5"
+                            disabled={isPending}
+                        >
                             <Save className="size-3.5" />
                             {isPending ? t("org.settings.saving") : t("org.settings.save")}
                         </Button>
@@ -704,7 +745,11 @@ function AccountAddressSection({
     const onSubmit = (values: Values) => {
         save(
             { legal_name: profile?.legal_name || undefined, ...values },
-            { onSuccess: () => { setEditing(false); } }
+            {
+                onSuccess: () => {
+                    setEditing(false)
+                },
+            }
         )
     }
 
@@ -728,7 +773,10 @@ function AccountAddressSection({
             })}
             action={
                 canEdit
-                    ? { label: t("account.settings.address.add", { defaultValue: "Add address" }), onClick: startEdit }
+                    ? {
+                          label: t("account.settings.address.add", { defaultValue: "Add address" }),
+                          onClick: startEdit,
+                      }
                     : undefined
             }
         />
@@ -749,7 +797,10 @@ function AccountAddressSection({
             }
         >
             {editing ? (
-                <form onSubmit={(e) => void handleSubmit(onSubmit)(e)} className="max-w-xl space-y-5">
+                <form
+                    onSubmit={(e) => void handleSubmit(onSubmit)(e)}
+                    className="max-w-xl space-y-5"
+                >
                     <Field label={t(k("line1"))} required error={errors.line1?.message}>
                         <Input {...register("line1")} placeholder={t(k("placeholders.line1"))} />
                     </Field>
@@ -761,10 +812,16 @@ function AccountAddressSection({
                             <Input {...register("city")} placeholder={t(k("placeholders.city"))} />
                         </Field>
                         <Field label={t(k("state"))} required error={errors.state?.message}>
-                            <Input {...register("state")} placeholder={t(k("placeholders.state"))} />
+                            <Input
+                                {...register("state")}
+                                placeholder={t(k("placeholders.state"))}
+                            />
                         </Field>
                         <Field label={t(k("postalCode"))} required error={errors.pincode?.message}>
-                            <Input {...register("pincode")} placeholder={t(k("placeholders.postalCode"))} />
+                            <Input
+                                {...register("pincode")}
+                                placeholder={t(k("placeholders.postalCode"))}
+                            />
                         </Field>
                         <Field label={t(k("country"))} required error={errors.country?.message}>
                             <Controller
@@ -782,10 +839,22 @@ function AccountAddressSection({
                         </Field>
                     </div>
                     <div className="flex items-center justify-end gap-3 pt-1">
-                        <Button type="button" variant="ghost" onClick={() => { setEditing(false); }} disabled={isPending}>
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            onClick={() => {
+                                setEditing(false)
+                            }}
+                            disabled={isPending}
+                        >
                             {t(k("cancel"))}
                         </Button>
-                        <Button type="submit" variant="gold" className="gap-1.5" disabled={isPending}>
+                        <Button
+                            type="submit"
+                            variant="gold"
+                            className="gap-1.5"
+                            disabled={isPending}
+                        >
                             <Save className="size-3.5" />
                             {isPending ? t("org.settings.saving") : t("org.settings.save")}
                         </Button>
@@ -830,12 +899,15 @@ function ConvertToBusinessSection({
             variant="panel"
             title={t("account.settings.business", { defaultValue: "Business profile" })}
             description={t("account.settings.businessDescription", {
-                defaultValue: "Organization, billing contact and tax details for business accounts.",
+                defaultValue:
+                    "Organization, billing contact and tax details for business accounts.",
             })}
         >
             <EmptyState
                 icon={Building2}
-                title={t("account.settings.individualTitle", { defaultValue: "Individual account" })}
+                title={t("account.settings.individualTitle", {
+                    defaultValue: "Individual account",
+                })}
                 description={t("account.settings.convert.description", {
                     defaultValue:
                         "Register a business to add an organization, billing contact and tax details. This starts a fresh verification.",
@@ -843,8 +915,12 @@ function ConvertToBusinessSection({
                 action={
                     canEdit
                         ? {
-                              label: t("account.settings.convert.cta", { defaultValue: "Convert to business" }),
-                              onClick: () => { setOpen(true); },
+                              label: t("account.settings.convert.cta", {
+                                  defaultValue: "Convert to business",
+                              }),
+                              onClick: () => {
+                                  setOpen(true)
+                              },
                           }
                         : undefined
                 }
@@ -897,12 +973,17 @@ function ConvertToBusinessSheet({
             state: z.string().trim().min(1, req),
             pincode: z.string().trim().min(1, req),
         })
-        .refine((v) => (v.country === "IN" ? !!v.pan && !!v.gstin : !!v.registration_number && !!v.tax_id), {
-            message: t("account.settings.convert.idsRequired", {
-                defaultValue: "Enter the required business identifiers for the selected country.",
-            }),
-            path: ["gstin"],
-        })
+        .refine(
+            (v) =>
+                v.country === "IN" ? !!v.pan && !!v.gstin : !!v.registration_number && !!v.tax_id,
+            {
+                message: t("account.settings.convert.idsRequired", {
+                    defaultValue:
+                        "Enter the required business identifiers for the selected country.",
+                }),
+                path: ["gstin"],
+            }
+        )
     type Values = z.infer<typeof schema>
 
     const {
@@ -982,9 +1063,14 @@ function ConvertToBusinessSheet({
                     </SheetDescription>
                 </SheetHeader>
 
-                <form onSubmit={(e) => void handleSubmit(onSubmit)(e)} className="space-y-5 px-6 pb-6">
+                <form
+                    onSubmit={(e) => void handleSubmit(onSubmit)(e)}
+                    className="space-y-5 px-6 pb-6"
+                >
                     <Field
-                        label={t("account.settings.convert.orgName", { defaultValue: "Organization name" })}
+                        label={t("account.settings.convert.orgName", {
+                            defaultValue: "Organization name",
+                        })}
                         required
                         error={errors.org_name?.message}
                     >
@@ -995,10 +1081,16 @@ function ConvertToBusinessSheet({
                         hint={t(k("optional"))}
                         error={errors.billing_email?.message}
                     >
-                        <Input {...register("billing_email")} type="email" placeholder="billing@acme.com" />
+                        <Input
+                            {...register("billing_email")}
+                            type="email"
+                            placeholder="billing@acme.com"
+                        />
                     </Field>
                     <Field
-                        label={t("account.settings.convert.legalName", { defaultValue: "Legal name" })}
+                        label={t("account.settings.convert.legalName", {
+                            defaultValue: "Legal name",
+                        })}
                         required
                         error={errors.legal_name?.message}
                     >
@@ -1022,26 +1114,46 @@ function ConvertToBusinessSheet({
                     {isIndia ? (
                         <div className="grid gap-5 sm:grid-cols-2">
                             <Field label="PAN" required error={errors.pan?.message}>
-                                <Input {...register("pan")} placeholder="AAAAA9999A" className="font-mono uppercase" />
+                                <Input
+                                    {...register("pan")}
+                                    placeholder="AAAAA9999A"
+                                    className="font-mono uppercase"
+                                />
                             </Field>
                             <Field label="GSTIN" required error={errors.gstin?.message}>
-                                <Input {...register("gstin")} placeholder="22AAAAA9999A1Z5" className="font-mono uppercase" />
+                                <Input
+                                    {...register("gstin")}
+                                    placeholder="22AAAAA9999A1Z5"
+                                    className="font-mono uppercase"
+                                />
                             </Field>
-                            <Field label={t("account.settings.convert.cin", { defaultValue: "CIN (optional)" })}>
-                                <Input {...register("cin")} placeholder="U12345KA2020PTC000000" className="font-mono uppercase" />
+                            <Field
+                                label={t("account.settings.convert.cin", {
+                                    defaultValue: "CIN (optional)",
+                                })}
+                            >
+                                <Input
+                                    {...register("cin")}
+                                    placeholder="U12345KA2020PTC000000"
+                                    className="font-mono uppercase"
+                                />
                             </Field>
                         </div>
                     ) : (
                         <div className="grid gap-5 sm:grid-cols-2">
                             <Field
-                                label={t("account.settings.convert.regNo", { defaultValue: "Registration number" })}
+                                label={t("account.settings.convert.regNo", {
+                                    defaultValue: "Registration number",
+                                })}
                                 required
                                 error={errors.registration_number?.message}
                             >
                                 <Input {...register("registration_number")} />
                             </Field>
                             <Field
-                                label={t("account.settings.convert.taxId", { defaultValue: "Tax ID" })}
+                                label={t("account.settings.convert.taxId", {
+                                    defaultValue: "Tax ID",
+                                })}
                                 required
                                 error={errors.tax_id?.message}
                             >
@@ -1075,7 +1187,9 @@ function ConvertToBusinessSheet({
                         <Button type="submit" variant="gold" disabled={isPending}>
                             {isPending
                                 ? t("org.settings.saving")
-                                : t("account.settings.convert.submit", { defaultValue: "Convert & verify" })}
+                                : t("account.settings.convert.submit", {
+                                      defaultValue: "Convert & verify",
+                                  })}
                         </Button>
                     </div>
                 </form>
@@ -1108,7 +1222,14 @@ function TransferOwnershipSection({ account }: Readonly<{ account: MyAccount }>)
                     "Hand this account to another user. You'll confirm with a code sent to your email; you keep admin access afterwards.",
             })}
             actions={
-                <Button variant="outline" size="sm" className="gap-1.5" onClick={() => { setOpen(true); }}>
+                <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-1.5"
+                    onClick={() => {
+                        setOpen(true)
+                    }}
+                >
                     <ArrowLeftRight className="size-3.5" />
                     {t("account.settings.transfer.cta", { defaultValue: "Transfer" })}
                 </Button>
@@ -1146,13 +1267,25 @@ function TransferOwnershipSection({ account }: Readonly<{ account: MyAccount }>)
                         <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => { cancel.mutate(); }}
+                            onClick={() => {
+                                cancel.mutate()
+                            }}
                             disabled={cancel.isPending}
                         >
-                            {t("account.settings.transfer.cancelPending", { defaultValue: "Cancel" })}
+                            {t("account.settings.transfer.cancelPending", {
+                                defaultValue: "Cancel",
+                            })}
                         </Button>
-                        <Button variant="gold" size="sm" onClick={() => { setOpen(true); }}>
-                            {t("account.settings.transfer.enterCode", { defaultValue: "Enter code" })}
+                        <Button
+                            variant="gold"
+                            size="sm"
+                            onClick={() => {
+                                setOpen(true)
+                            }}
+                        >
+                            {t("account.settings.transfer.enterCode", {
+                                defaultValue: "Enter code",
+                            })}
                         </Button>
                     </div>
                 </div>
@@ -1227,10 +1360,14 @@ function TransferOwnershipDialog({
         const timer = setInterval(() => {
             setResendIn((s) => (s > 0 ? s - 1 : 0))
         }, 1000)
-        return () => { clearInterval(timer) }
+        return () => {
+            clearInterval(timer)
+        }
     }, [open])
 
-    const close = () => { onOpenChange(false) }
+    const close = () => {
+        onOpenChange(false)
+    }
 
     const onSend = () => {
         initiate(email.trim(), {
@@ -1270,22 +1407,31 @@ function TransferOwnershipDialog({
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>
-                        {t("account.settings.transfer.title", { defaultValue: "Transfer ownership" })}
+                        {t("account.settings.transfer.title", {
+                            defaultValue: "Transfer ownership",
+                        })}
                     </DialogTitle>
                     <DialogDescription>
                         {step === "email"
                             ? t("account.settings.transfer.emailStep", {
-                                  defaultValue: "Choose the member who should become the new owner.",
+                                  defaultValue:
+                                      "Choose the member who should become the new owner.",
                               })
                             : t("account.settings.transfer.otpStep", {
-                                  defaultValue: "Enter the 6-digit code we emailed you to confirm the transfer.",
+                                  defaultValue:
+                                      "Enter the 6-digit code we emailed you to confirm the transfer.",
                               })}
                     </DialogDescription>
                 </DialogHeader>
 
                 {step === "email" ? (
                     <div className="space-y-4">
-                        <Field label={t("account.settings.transfer.targetEmail", { defaultValue: "New owner" })} required>
+                        <Field
+                            label={t("account.settings.transfer.targetEmail", {
+                                defaultValue: "New owner",
+                            })}
+                            required
+                        >
                             {eligibleMembers.length === 0 && !membersLoading ? (
                                 <div className="flex flex-col items-start gap-3">
                                     <p className="text-sm text-muted-foreground">
@@ -1299,7 +1445,9 @@ function TransferOwnershipDialog({
                                         variant="outline"
                                         size="sm"
                                         className="gap-1.5"
-                                        onClick={() => { setInviteOpen(true); }}
+                                        onClick={() => {
+                                            setInviteOpen(true)
+                                        }}
                                     >
                                         <UserPlus className="size-3.5" />
                                         {t("account.settings.transfer.inviteMember", {
@@ -1312,14 +1460,21 @@ function TransferOwnershipDialog({
                                     />
                                 </div>
                             ) : (
-                                <Select value={email} onValueChange={setEmail} disabled={membersLoading}>
+                                <Select
+                                    value={email}
+                                    onValueChange={setEmail}
+                                    disabled={membersLoading}
+                                >
                                     <SelectTrigger className="w-full">
                                         <SelectValue
                                             placeholder={
                                                 membersLoading
-                                                    ? t("account.settings.transfer.membersLoading", {
-                                                          defaultValue: "Loading members…",
-                                                      })
+                                                    ? t(
+                                                          "account.settings.transfer.membersLoading",
+                                                          {
+                                                              defaultValue: "Loading members…",
+                                                          }
+                                                      )
                                                     : t("account.settings.transfer.selectMember", {
                                                           defaultValue: "Select a member",
                                                       })
@@ -1330,7 +1485,9 @@ function TransferOwnershipDialog({
                                         {eligibleMembers.map((m) => (
                                             <SelectItem key={m.user_id} value={m.email}>
                                                 <span className="flex min-w-0 flex-col text-left">
-                                                    <span className="truncate">{m.name || m.email}</span>
+                                                    <span className="truncate">
+                                                        {m.name || m.email}
+                                                    </span>
                                                     {m.name && (
                                                         <span className="truncate text-[12px] text-muted-foreground">
                                                             {m.email}
@@ -1355,7 +1512,12 @@ function TransferOwnershipDialog({
                             </p>
                         )}
                         <div className="flex justify-center">
-                            <InputOTP maxLength={6} value={otp} onChange={setOtp} containerClassName="justify-center">
+                            <InputOTP
+                                maxLength={6}
+                                value={otp}
+                                onChange={setOtp}
+                                containerClassName="justify-center"
+                            >
                                 <InputOTPGroup className="gap-2">
                                     {[0, 1, 2, 3, 4, 5].map((i) => (
                                         <InputOTPSlot key={i} index={i} />
@@ -1365,7 +1527,10 @@ function TransferOwnershipDialog({
                         </div>
                         {devOtp && (
                             <p className="text-center text-[11px] text-muted-foreground">
-                                {t("account.settings.transfer.devOtp", { defaultValue: "Dev code" })}: <span className="font-mono">{devOtp}</span>
+                                {t("account.settings.transfer.devOtp", {
+                                    defaultValue: "Dev code",
+                                })}
+                                : <span className="font-mono">{devOtp}</span>
                             </p>
                         )}
                         {/* Resend (cooldown-gated) + start-over, so a closed dialog or a
@@ -1415,13 +1580,21 @@ function TransferOwnershipDialog({
                         <Button variant="gold" onClick={onSend} disabled={sending || !email.trim()}>
                             {sending
                                 ? t("org.settings.saving")
-                                : t("account.settings.transfer.send", { defaultValue: "Send code" })}
+                                : t("account.settings.transfer.send", {
+                                      defaultValue: "Send code",
+                                  })}
                         </Button>
                     ) : (
-                        <Button variant="gold" onClick={onConfirm} disabled={confirming || otp.length !== 6}>
+                        <Button
+                            variant="gold"
+                            onClick={onConfirm}
+                            disabled={confirming || otp.length !== 6}
+                        >
                             {confirming
                                 ? t("org.settings.saving")
-                                : t("account.settings.transfer.confirm", { defaultValue: "Confirm transfer" })}
+                                : t("account.settings.transfer.confirm", {
+                                      defaultValue: "Confirm transfer",
+                                  })}
                         </Button>
                     )}
                 </DialogFooter>

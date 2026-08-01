@@ -111,8 +111,12 @@ export function SearchResultItem({
     return (
         <button
             data-result-id={result.id}
-            onClick={() => { onSelect(result); }}
-            onMouseEnter={() => { onHover(result.id); }}
+            onClick={() => {
+                onSelect(result)
+            }}
+            onMouseEnter={() => {
+                onHover(result.id)
+            }}
             className="w-full flex items-center gap-3 mx-2 px-3 py-2.5 rounded-lg text-left transition-colors"
             style={{
                 width: "calc(100% - 1rem)",

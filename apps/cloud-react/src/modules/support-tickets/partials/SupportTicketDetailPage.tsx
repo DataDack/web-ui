@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react"
 
-
 import { ArrowLeft, LifeBuoy, Send } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
@@ -97,7 +96,14 @@ export function SupportTicketDetailPage() {
     const submitReply = () => {
         const body = reply.trim()
         if (!body) return
-        addComment({ id, payload: { body, isInternal: false } }, { onSuccess: () => { setReply(""); } })
+        addComment(
+            { id, payload: { body, isInternal: false } },
+            {
+                onSuccess: () => {
+                    setReply("")
+                },
+            }
+        )
     }
 
     return (

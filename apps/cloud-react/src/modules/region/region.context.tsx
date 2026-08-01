@@ -13,8 +13,8 @@ interface RegionContextValue {
 const RegionContext = createContext<RegionContextValue | null>(null)
 
 export function RegionProvider({ children }: Readonly<{ children: ReactNode }>) {
-    const [activeRegionCode, setState] = useState<string | null>(
-        () => localStorage.getItem(STORAGE_KEY)
+    const [activeRegionCode, setState] = useState<string | null>(() =>
+        localStorage.getItem(STORAGE_KEY)
     )
 
     const setActiveRegionCode = useCallback((code: string) => {

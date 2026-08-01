@@ -33,7 +33,9 @@ export function PolicyConsent({
                 id={id}
                 checked={checked}
                 disabled={disabled}
-                onCheckedChange={(v) => { onCheckedChange(v === true); }}
+                onCheckedChange={(v) => {
+                    onCheckedChange(v === true)
+                }}
                 className="mt-0.5"
             />
             <span>
@@ -49,7 +51,9 @@ export function PolicyConsent({
                                 target="_blank"
                                 rel="noreferrer"
                                 className={policyLink}
-                                onClick={(e) => { e.stopPropagation(); }}
+                                onClick={(e) => {
+                                    e.stopPropagation()
+                                }}
                             >
                                 Privacy Policy
                             </a>
@@ -60,7 +64,9 @@ export function PolicyConsent({
                                 target="_blank"
                                 rel="noreferrer"
                                 className={policyLink}
-                                onClick={(e) => { e.stopPropagation(); }}
+                                onClick={(e) => {
+                                    e.stopPropagation()
+                                }}
                             >
                                 Terms of Service
                             </a>

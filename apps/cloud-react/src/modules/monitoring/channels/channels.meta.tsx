@@ -20,8 +20,7 @@ export const TYPE_META: Record<
     discord: {
         label: "Discord",
         icon: MessageSquare,
-        badgeClass:
-            "border-indigo-500/40 text-indigo-600 dark:text-indigo-400 bg-indigo-500/10",
+        badgeClass: "border-indigo-500/40 text-indigo-600 dark:text-indigo-400 bg-indigo-500/10",
         activeClass: "border-indigo-500/60 bg-indigo-500/10 text-indigo-700 dark:text-indigo-300",
     },
     jira: {
@@ -33,8 +32,7 @@ export const TYPE_META: Record<
     webhook: {
         label: "Webhook",
         icon: Webhook,
-        badgeClass:
-            "border-violet-500/40 text-violet-600 dark:text-violet-400 bg-violet-500/10",
+        badgeClass: "border-violet-500/40 text-violet-600 dark:text-violet-400 bg-violet-500/10",
         activeClass: "border-violet-500/60 bg-violet-500/10 text-violet-700 dark:text-violet-300",
     },
 }

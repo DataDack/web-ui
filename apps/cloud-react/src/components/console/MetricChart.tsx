@@ -55,8 +55,7 @@ export function MetricChart({
     // The overlay (if any) shares the domain so both lines stay on-screen. We keep
     // it only when its length matches `data`, so a single truthy check gates use.
     const overlayColor = overlay?.color ?? "currentColor"
-    const overlayData =
-        overlay?.data.length === data.length ? overlay.data : undefined
+    const overlayData = overlay?.data.length === data.length ? overlay.data : undefined
     const domainValues = overlayData ? [...data, ...overlayData] : data
     const lo = min ?? Math.min(...domainValues)
     const hi = max ?? Math.max(...domainValues)
@@ -71,9 +70,7 @@ export function MetricChart({
         })
 
     const toPath = (pts: readonly (readonly [number, number])[]) =>
-        pts
-            .map(([x, y], i) => `${i === 0 ? "M" : "L"}${x.toFixed(2)} ${y.toFixed(2)}`)
-            .join(" ")
+        pts.map(([x, y], i) => `${i === 0 ? "M" : "L"}${x.toFixed(2)} ${y.toFixed(2)}`).join(" ")
 
     const points = project(data)
     const line = toPath(points)

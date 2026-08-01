@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react"
 
-
 import { useQueryClient } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { Navigate, useNavigate } from "react-router-dom"
@@ -14,7 +13,11 @@ import { useScreen } from "@/services/api/screen"
 import { OnboardingLayout } from "./OnboardingLayout"
 import { onboardingApi } from "../onboarding.api"
 import { OnboardingFlowProvider, type OnboardingFlow } from "../onboarding.flow"
-import { ONBOARDING_QUERY_KEYS, useCompleteOnboarding, useOnboardingStatus } from "../onboarding.hooks"
+import {
+    ONBOARDING_QUERY_KEYS,
+    useCompleteOnboarding,
+    useOnboardingStatus,
+} from "../onboarding.hooks"
 import { AccountTypeStep } from "./steps/AccountTypeStep"
 import { BasicDetailsStep } from "./steps/BasicDetailsStep"
 import { ReviewStep } from "./steps/ReviewStep"
@@ -25,7 +28,11 @@ import { ReviewStep } from "./steps/ReviewStep"
 // and create. KYC verification is a separate, skippable flow (/onboarding/kyc)
 // — required only before creating billable resources.
 const STEP_META = [
-    { id: "details", titleKey: "onboarding.steps.details", descKey: "onboarding.steps.detailsDesc" },
+    {
+        id: "details",
+        titleKey: "onboarding.steps.details",
+        descKey: "onboarding.steps.detailsDesc",
+    },
     { id: "type", titleKey: "onboarding.steps.type", descKey: "onboarding.steps.typeDesc" },
     { id: "review", titleKey: "onboarding.steps.review", descKey: "onboarding.steps.reviewDesc" },
 ]
@@ -102,7 +109,13 @@ export function OnboardingPage() {
         if (isLoading || !status) return <OnboardingStepSkeleton />
         switch (STEP_META[step].id) {
             case "details":
-                return <BasicDetailsStep onNext={() => { setStep(step + 1); }} />
+                return (
+                    <BasicDetailsStep
+                        onNext={() => {
+                            setStep(step + 1)
+                        }}
+                    />
+                )
             case "type":
                 return (
                     <AccountTypeStep
@@ -124,7 +137,9 @@ export function OnboardingPage() {
                         accountType={choice || "individual"}
                         orgName={orgName}
                         isCompleting={complete.isPending}
-                        onBack={() => { setStep(step - 1); }}
+                        onBack={() => {
+                            setStep(step - 1)
+                        }}
                         onComplete={() => void onComplete()}
                     />
                 )
@@ -136,7 +151,9 @@ export function OnboardingPage() {
             steps={steps}
             currentIndex={step}
             maxVisitedIndex={step}
-            onStepClick={(i) => { if (i <= step) setStep(i); }}
+            onStepClick={(i) => {
+                if (i <= step) setStep(i)
+            }}
             title={t(STEP_META[step].titleKey)}
             description={t(STEP_META[step].descKey)}
         >

@@ -37,10 +37,7 @@ export function BillingHero({
     const balanceValue = balance?.balance ?? 0
 
     const series = useMemo(() => balanceSeries(ledger, balanceValue), [ledger, balanceValue])
-    const burn = useMemo(
-        () => burnSummary(usage, balanceValue, GST_RATE),
-        [usage, balanceValue]
-    )
+    const burn = useMemo(() => burnSummary(usage, balanceValue, GST_RATE), [usage, balanceValue])
     const totalPurchased = useMemo(
         () => purchases.filter((p) => p.status === "paid").reduce((sum, p) => sum + p.credits, 0),
         [purchases]
@@ -77,7 +74,14 @@ export function BillingHero({
                     )}
 
                     <div className="mt-4 h-10 w-full max-w-md text-brand-gold">
-                        <Sparkline data={series} area glow color="var(--brand-gold)" height={40} className="h-10 w-full" />
+                        <Sparkline
+                            data={series}
+                            area
+                            glow
+                            color="var(--brand-gold)"
+                            height={40}
+                            className="h-10 w-full"
+                        />
                     </div>
                 </div>
             </div>
@@ -93,7 +97,11 @@ export function BillingHero({
                     icon={<TimerReset className={cn("size-4", tone.className)} />}
                     label={t("billing.hero.runway")}
                     value={loading ? null : runwayText}
-                    hint={<span className={cn("text-[11px]", tone.className)}>{t(`billing.hero.${tone.label}`)}</span>}
+                    hint={
+                        <span className={cn("text-[11px]", tone.className)}>
+                            {t(`billing.hero.${tone.label}`)}
+                        </span>
+                    }
                 />
                 <MetricCell
                     icon={<Wallet className="size-4 text-status-success" />}

@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react"
 
-
 import type { ColumnDef } from "@tanstack/react-table"
 import { Mail, Plus, RefreshCw, Send, Trash2, Users, X } from "lucide-react"
 import { useTranslation } from "react-i18next"
@@ -161,7 +160,8 @@ export function UsersListPage() {
                 header: t("iam.columns.accountRole"),
                 // Root users (org/account owners) show as "Root" regardless of
                 // their account member_role.
-                accessor: (u) => (u.is_root ? t("iam.badges.root") : accountRole.get(u.id) ?? "—"),
+                accessor: (u) =>
+                    u.is_root ? t("iam.badges.root") : (accountRole.get(u.id) ?? "—"),
                 mono: true,
                 responsive: "md",
             }),

@@ -16,8 +16,18 @@ import { useOnboardingFlow } from "../../onboarding.flow"
 type Choice = "individual" | "business"
 
 const OPTIONS: { value: Choice; icon: typeof User; titleKey: string; descKey: string }[] = [
-    { value: "individual", icon: User, titleKey: "onboarding.type.individual", descKey: "onboarding.type.individualDesc" },
-    { value: "business", icon: Building2, titleKey: "onboarding.type.business", descKey: "onboarding.type.businessDesc" },
+    {
+        value: "individual",
+        icon: User,
+        titleKey: "onboarding.type.individual",
+        descKey: "onboarding.type.individualDesc",
+    },
+    {
+        value: "business",
+        icon: Building2,
+        titleKey: "onboarding.type.business",
+        descKey: "onboarding.type.businessDesc",
+    },
 ]
 
 export function AccountTypeStep({
@@ -65,7 +75,9 @@ export function AccountTypeStep({
                         <button
                             key={value}
                             type="button"
-                            onClick={() => { setChoice(value); }}
+                            onClick={() => {
+                                setChoice(value)
+                            }}
                             aria-pressed={active}
                             className={cn(
                                 "relative flex flex-col items-start gap-3 rounded-xl border p-5 text-left outline-none transition-all duration-200 focus-visible:ring-2 focus-visible:ring-brand-gold/50",
@@ -82,7 +94,9 @@ export function AccountTypeStep({
                             <span
                                 className={cn(
                                     "grid size-11 place-items-center rounded-lg",
-                                    active ? "bg-brand-gold text-brand-gold-foreground" : "bg-accent text-foreground"
+                                    active
+                                        ? "bg-brand-gold text-brand-gold-foreground"
+                                        : "bg-accent text-foreground"
                                 )}
                             >
                                 <Icon className="size-5" />
@@ -104,7 +118,9 @@ export function AccountTypeStep({
                     <Input
                         id="org-name"
                         value={orgName}
-                        onChange={(e) => { setOrgName(e.target.value); }}
+                        onChange={(e) => {
+                            setOrgName(e.target.value)
+                        }}
                         placeholder={t("onboarding.type.orgNamePlaceholder")}
                         maxLength={200}
                     />

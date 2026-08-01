@@ -47,9 +47,15 @@ async function deleteAllIndexedDBs(): Promise<void> {
                 new Promise<void>((resolve) => {
                     try {
                         const req = indexedDB.deleteDatabase(name)
-                        req.onsuccess = () => { resolve() }
-                        req.onerror = () => { resolve() }
-                        req.onblocked = () => { resolve() }
+                        req.onsuccess = () => {
+                            resolve()
+                        }
+                        req.onerror = () => {
+                            resolve()
+                        }
+                        req.onblocked = () => {
+                            resolve()
+                        }
                     } catch {
                         resolve()
                     }

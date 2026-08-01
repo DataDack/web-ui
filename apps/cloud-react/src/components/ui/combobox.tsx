@@ -11,11 +11,7 @@ import {
     CommandItem,
     CommandList,
 } from "@/components/ui/command"
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 
 export interface ComboboxOption {
@@ -75,21 +71,13 @@ export function Combobox({
                         className
                     )}
                 >
-                    <span
-                        className={cn(
-                            "min-w-0 truncate",
-                            !selected && "text-muted-foreground"
-                        )}
-                    >
+                    <span className={cn("min-w-0 truncate", !selected && "text-muted-foreground")}>
                         {selected ? selected.label : placeholder}
                     </span>
                     <ChevronDown className="size-4 shrink-0 opacity-50" />
                 </button>
             </PopoverTrigger>
-            <PopoverContent
-                className="w-(--radix-popover-trigger-width) p-0"
-                align="start"
-            >
+            <PopoverContent className="w-(--radix-popover-trigger-width) p-0" align="start">
                 <Command
                     filter={(itemValue, search) =>
                         itemValue.toLowerCase().includes(search.toLowerCase()) ? 1 : 0
@@ -114,9 +102,7 @@ export function Combobox({
                                     <Check
                                         className={cn(
                                             "ml-auto size-4",
-                                            option.value === value
-                                                ? "opacity-100"
-                                                : "opacity-0"
+                                            option.value === value ? "opacity-100" : "opacity-0"
                                         )}
                                     />
                                 </CommandItem>

@@ -38,10 +38,8 @@ export const monitoringService = {
     updateAlarm: (id: string, payload: UpdateAlarmRequest) =>
         monitoringApi.updateAlarm(id, payload),
     removeAlarm: (id: string) => monitoringApi.deleteAlarm(id),
-    setAlarmEnabled: (id: string, enabled: boolean) =>
-        monitoringApi.setAlarmEnabled(id, enabled),
-    fetchAlarmHistory: (id: string, limit?: number) =>
-        monitoringApi.alarmHistory(id, limit),
+    setAlarmEnabled: (id: string, enabled: boolean) => monitoringApi.setAlarmEnabled(id, enabled),
+    fetchAlarmHistory: (id: string, limit?: number) => monitoringApi.alarmHistory(id, limit),
     fetchAccountHistory: (limit?: number) => monitoringApi.accountHistory(limit),
     fetchNotifications: (limit?: number) => monitoringApi.notifications(limit),
 

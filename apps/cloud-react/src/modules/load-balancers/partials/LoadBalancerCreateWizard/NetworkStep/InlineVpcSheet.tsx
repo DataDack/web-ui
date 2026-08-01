@@ -78,16 +78,16 @@ export function InlineVpcSheet({
             nextFreeSubnetCidr(
                 PRIVATE_SUPERNET,
                 existingVpcs.map((v) => v.cidr),
-                VPC_PREFIX,
+                VPC_PREFIX
             ) ?? "",
-        [existingVpcs],
+        [existingVpcs]
     )
     const cidr = cidrOverride ?? suggestedVpcCidr
 
     // The first subnet is then carved from whatever VPC block ended up chosen.
     const suggestedSubnetCidr = useMemo(
         () => (cidr ? (nextFreeSubnetCidr(cidr, []) ?? "") : ""),
-        [cidr],
+        [cidr]
     )
     const subnetCidr = subnetOverride ?? suggestedSubnetCidr
 

@@ -45,7 +45,10 @@ export function BillingOverviewPage() {
         const bal = balance?.balance ?? 0
         if (bal <= 0) return { tone: "danger", message: t("billing.lowBalance.empty") }
         if (burn.runwayDays !== null && burn.runwayDays < 7)
-            return { tone: "warning", message: t("billing.lowBalance.low", { days: burn.runwayDays }) }
+            return {
+                tone: "warning",
+                message: t("billing.lowBalance.low", { days: burn.runwayDays }),
+            }
         return null
     })()
 
@@ -64,12 +67,20 @@ export function BillingOverviewPage() {
                         <AlertTriangle
                             className={cn(
                                 "size-4 shrink-0",
-                                banner.tone === "danger" ? "text-status-danger" : "text-status-warning"
+                                banner.tone === "danger"
+                                    ? "text-status-danger"
+                                    : "text-status-warning"
                             )}
                         />
                         <span className="text-[13px] text-foreground">{banner.message}</span>
                     </div>
-                    <Button variant="gold" size="sm" onClick={() => { openTopup() }}>
+                    <Button
+                        variant="gold"
+                        size="sm"
+                        onClick={() => {
+                            openTopup()
+                        }}
+                    >
                         {t("billing.lowBalance.cta")}
                     </Button>
                 </div>
@@ -111,7 +122,9 @@ export function BillingOverviewPage() {
                             {services.map((slice) => (
                                 <li key={slice.service}>
                                     <div className="mb-1 flex items-center justify-between text-[13px]">
-                                        <span className="truncate text-foreground">{slice.service}</span>
+                                        <span className="truncate text-foreground">
+                                            {slice.service}
+                                        </span>
                                         <span className="ml-2 font-mono tabular-nums text-muted-foreground">
                                             {inr(slice.cost)}
                                         </span>
@@ -119,7 +132,9 @@ export function BillingOverviewPage() {
                                     <div className="h-2 overflow-hidden rounded-full bg-muted">
                                         <div
                                             className="h-full rounded-full bg-gradient-brand"
-                                            style={{ width: `${String(Math.max(4, slice.fraction * 100))}%` }}
+                                            style={{
+                                                width: `${String(Math.max(4, slice.fraction * 100))}%`,
+                                            }}
                                         />
                                     </div>
                                 </li>

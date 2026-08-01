@@ -39,11 +39,11 @@ export function RoutingStep({ form }: Readonly<{ form: UseFormReturn<FormValues>
     // could never route to, so those are not offered.
     const reachableVpcIds = useMemo(
         () => new Set(vpcs.map((v) => v.vpc_id).filter(Boolean)),
-        [vpcs],
+        [vpcs]
     )
     const existingGroups = useMemo(
         () => allGroups.filter((g) => reachableVpcIds.has(g.vpc_id)),
-        [allGroups, reachableVpcIds],
+        [allGroups, reachableVpcIds]
     )
 
     // Each LB type permits exactly one listener protocol; the backend rejects

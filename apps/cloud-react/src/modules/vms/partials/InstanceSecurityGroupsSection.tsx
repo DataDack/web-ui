@@ -24,9 +24,7 @@ import {
 
 /** "Security groups" panel on the VM detail Networking tab: lists the groups
  *  attached to the instance and lets the user attach/detach. */
-export function InstanceSecurityGroupsSection({
-    instanceId,
-}: Readonly<{ instanceId: string }>) {
+export function InstanceSecurityGroupsSection({ instanceId }: Readonly<{ instanceId: string }>) {
     const { t } = useTranslation()
     const { data: attached = [], isLoading } = useInstanceSecurityGroups(instanceId)
     const { data: allGroups = [] } = useAllSecurityGroups()
@@ -52,9 +50,7 @@ export function InstanceSecurityGroupsSection({
                                 className="w-56 font-mono text-[12px]"
                                 aria-label={t("vms.detail.attachSgPlaceholder")}
                             >
-                                <SelectValue
-                                    placeholder={t("vms.detail.attachSgPlaceholder")}
-                                />
+                                <SelectValue placeholder={t("vms.detail.attachSgPlaceholder")} />
                             </SelectTrigger>
                             <SelectContent>
                                 {attachable.map((g) => (
@@ -76,7 +72,11 @@ export function InstanceSecurityGroupsSection({
                             onClick={() => {
                                 attach(
                                     { instanceId, sgId: toAttach },
-                                    { onSuccess: () => { setToAttach(""); } }
+                                    {
+                                        onSuccess: () => {
+                                            setToAttach("")
+                                        },
+                                    }
                                 )
                             }}
                         >

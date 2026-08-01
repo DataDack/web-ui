@@ -79,10 +79,9 @@ export const networkInterfacesApi = {
     delete: (id: string): Promise<void> => apiDelete(`${NETWORK_INTERFACES_BASE}/${id}`),
 
     attach: async (id: string, instanceId: string): Promise<NetworkInterface> => {
-        const raw = await apiPost<RawNetworkInterface>(
-            `${NETWORK_INTERFACES_BASE}/${id}/attach`,
-            { instance_id: instanceId }
-        )
+        const raw = await apiPost<RawNetworkInterface>(`${NETWORK_INTERFACES_BASE}/${id}/attach`, {
+            instance_id: instanceId,
+        })
         return toNetworkInterface(raw)
     },
 

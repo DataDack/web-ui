@@ -1,11 +1,7 @@
 import type { MyAccount } from "@/modules/accounts/accounts.types"
 import type { MyOrganization } from "@/modules/organizations/organizations.types"
 
-export type OnboardingStatus =
-    | "registered"
-    | "email_verified"
-    | "type_selected"
-    | "completed"
+export type OnboardingStatus = "registered" | "email_verified" | "type_selected" | "completed"
 
 export type UserType = "" | "individual" | "business"
 

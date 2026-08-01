@@ -203,14 +203,18 @@ function OverviewTab({ network }: Readonly<{ network: VPCNetwork }>) {
                 <Section variant="panel" title={t("vpc.detail.configuration")}>
                     <div className="flex flex-col gap-5 mt-2">
                         <div className="flex flex-col gap-1.5 pb-4 border-b border-border-glass">
-                            <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Region & Zone</span>
+                            <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
+                                Region & Zone
+                            </span>
                             <div className="flex items-center gap-2">
                                 <Globe className="size-4 text-foreground/70" />
                                 <span className="text-[13px] font-medium">
                                     {regionName ? (
                                         <>
                                             {regionName}{" "}
-                                            <span className="font-mono text-muted-foreground">({network.region})</span>
+                                            <span className="font-mono text-muted-foreground">
+                                                ({network.region})
+                                            </span>
                                         </>
                                     ) : (
                                         <span className="font-mono">{network.region}</span>
@@ -220,32 +224,55 @@ function OverviewTab({ network }: Readonly<{ network: VPCNetwork }>) {
                         </div>
 
                         <div className="flex flex-col gap-1.5 pb-4 border-b border-border-glass">
-                            <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Routing</span>
+                            <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
+                                Routing
+                            </span>
                             <div className="flex items-center gap-2">
-                                <RouterIcon className={routerActive ? "size-4 text-status-info" : "size-4 text-muted-foreground"} />
+                                <RouterIcon
+                                    className={
+                                        routerActive
+                                            ? "size-4 text-status-info"
+                                            : "size-4 text-muted-foreground"
+                                    }
+                                />
                                 <span className="text-[13px] font-medium">{routingLabel}</span>
                             </div>
                         </div>
 
                         <div className="flex flex-col gap-1.5 pb-4 border-b border-border-glass">
-                            <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Default Network</span>
+                            <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
+                                Default Network
+                            </span>
                             {network.is_default ? (
-                                <Badge variant="outline" className="w-fit font-mono text-[11px] text-status-info bg-status-info-bg border-status-info/25">
+                                <Badge
+                                    variant="outline"
+                                    className="w-fit font-mono text-[11px] text-status-info bg-status-info-bg border-status-info/25"
+                                >
                                     {t("vpc.badges.default")}
                                 </Badge>
                             ) : (
-                                <span className="text-[13px] text-muted-foreground">{t("vpc.detail.notDefault")}</span>
+                                <span className="text-[13px] text-muted-foreground">
+                                    {t("vpc.detail.notDefault")}
+                                </span>
                             )}
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="flex flex-col gap-1">
-                                <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Created</span>
-                                <span className="text-[12px] font-mono text-muted-foreground">{new Date(network.created_at).toLocaleDateString()}</span>
+                                <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
+                                    Created
+                                </span>
+                                <span className="text-[12px] font-mono text-muted-foreground">
+                                    {new Date(network.created_at).toLocaleDateString()}
+                                </span>
                             </div>
                             <div className="flex flex-col gap-1">
-                                <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Updated</span>
-                                <span className="text-[12px] font-mono text-muted-foreground">{new Date(network.updated_at).toLocaleDateString()}</span>
+                                <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
+                                    Updated
+                                </span>
+                                <span className="text-[12px] font-mono text-muted-foreground">
+                                    {new Date(network.updated_at).toLocaleDateString()}
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -340,14 +367,18 @@ function NetworkDiagram({
                                 <div className="space-y-4">
                                     <SubnetTier
                                         icon={Globe}
-                                        title={t("vpc.detail.publicSubnets", { count: publicSubnets.length })}
+                                        title={t("vpc.detail.publicSubnets", {
+                                            count: publicSubnets.length,
+                                        })}
                                         subnets={publicSubnets}
                                         azName={azName}
                                         instanceCount={instanceCount}
                                     />
                                     <SubnetTier
                                         icon={Lock}
-                                        title={t("vpc.detail.privateSubnets", { count: privateSubnets.length })}
+                                        title={t("vpc.detail.privateSubnets", {
+                                            count: privateSubnets.length,
+                                        })}
                                         subnets={privateSubnets}
                                         azName={azName}
                                         instanceCount={instanceCount}
@@ -361,7 +392,9 @@ function NetworkDiagram({
                             <span className="inline-flex items-center gap-1.5">
                                 <Network className="size-3.5" aria-hidden />
                                 {t("vpc.detail.vpcCidr")}{" "}
-                                <span className="font-mono text-foreground tabular-nums">{cidr}</span>
+                                <span className="font-mono text-foreground tabular-nums">
+                                    {cidr}
+                                </span>
                             </span>
                             <span className="font-mono tabular-nums">
                                 {t("vpc.detail.instancesTotal", { count: totalInstances })}
@@ -387,7 +420,9 @@ function IgwNode({ igw, tone }: Readonly<{ igw?: InternetGateway; tone: StatusTo
                     <Lock className="size-4" aria-hidden />
                 </span>
                 <div className="min-w-0">
-                    <span className="block text-[13px] font-medium">{t("vpc.detail.noIgwTitle")}</span>
+                    <span className="block text-[13px] font-medium">
+                        {t("vpc.detail.noIgwTitle")}
+                    </span>
                     <span className="block text-[11px]">{t("vpc.detail.noIgwHint")}</span>
                 </div>
             </div>
@@ -396,17 +431,25 @@ function IgwNode({ igw, tone }: Readonly<{ igw?: InternetGateway; tone: StatusTo
 
     return (
         <div className="flex items-center gap-2.5 rounded-lg border border-border-glass bg-background/40 p-3">
-            <span className={`grid size-7 shrink-0 place-items-center rounded-md ${TONE_CLASSES[tone]}`}>
+            <span
+                className={`grid size-7 shrink-0 place-items-center rounded-md ${TONE_CLASSES[tone]}`}
+            >
                 <Globe className="size-4" aria-hidden />
             </span>
             <div className="min-w-0 flex-1">
-                <span className="block truncate text-[13px] font-medium text-foreground">{igw.name}</span>
+                <span className="block truncate text-[13px] font-medium text-foreground">
+                    {igw.name}
+                </span>
                 <span className="block truncate font-mono text-[10px] uppercase tracking-wide text-muted-foreground">
                     {igw.id}
                 </span>
             </div>
-            <span className={`inline-flex shrink-0 items-center gap-1.5 rounded border px-1.5 py-0.5 font-mono text-[11px] ${TONE_CLASSES[tone]}`}>
-                <span className={`size-1.5 rounded-full ${tone === "success" ? "animate-pulse " : ""}${TONE_DOT_CLASSES[tone]}`} />
+            <span
+                className={`inline-flex shrink-0 items-center gap-1.5 rounded border px-1.5 py-0.5 font-mono text-[11px] ${TONE_CLASSES[tone]}`}
+            >
+                <span
+                    className={`size-1.5 rounded-full ${tone === "success" ? "animate-pulse " : ""}${TONE_DOT_CLASSES[tone]}`}
+                />
                 {t(`status.${normalizeIgw(igw.status)}`, { defaultValue: igw.status })}
             </span>
         </div>
@@ -437,7 +480,12 @@ function SubnetTier({
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {subnets.map((s) => (
-                    <SubnetNode key={s.id} subnet={s} az={azName(s)} instances={instanceCount(s.id)} />
+                    <SubnetNode
+                        key={s.id}
+                        subnet={s}
+                        az={azName(s)}
+                        instances={instanceCount(s.id)}
+                    />
                 ))}
             </div>
         </div>
@@ -485,15 +533,23 @@ function SubnetNode({
         <div className={`rounded-lg border p-3 ${accent}`}>
             <div className="flex items-center justify-between gap-2">
                 <div className="flex min-w-0 items-center gap-2">
-                    <span className={`grid size-5 shrink-0 place-items-center rounded ${iconAccent}`}>
+                    <span
+                        className={`grid size-5 shrink-0 place-items-center rounded ${iconAccent}`}
+                    >
                         <Icon className="size-3" aria-hidden />
                     </span>
-                    <span className="truncate text-[13px] font-medium text-foreground">{subnet.name}</span>
+                    <span className="truncate text-[13px] font-medium text-foreground">
+                        {subnet.name}
+                    </span>
                 </div>
                 {subnet.status && (
-                    <span className={`inline-flex shrink-0 items-center gap-1 rounded border px-1.5 py-0.5 font-mono text-[10px] ${TONE_CLASSES[tone]}`}>
+                    <span
+                        className={`inline-flex shrink-0 items-center gap-1 rounded border px-1.5 py-0.5 font-mono text-[10px] ${TONE_CLASSES[tone]}`}
+                    >
                         <span className={`size-1.5 rounded-full ${TONE_DOT_CLASSES[tone]}`} />
-                        {t(`status.${subnet.status.toLowerCase()}`, { defaultValue: subnet.status })}
+                        {t(`status.${subnet.status.toLowerCase()}`, {
+                            defaultValue: subnet.status,
+                        })}
                     </span>
                 )}
             </div>

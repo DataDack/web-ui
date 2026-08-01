@@ -35,32 +35,33 @@ import { useCreateASG } from "../autoscaling.hooks"
 import type { ScalingPolicy } from "../autoscaling.types"
 
 const makeSchema = (rule: NamingRule) =>
-    z.object({
-        name: namingNameSchema(rule),
-        description: z.string().optional(),
-        // launch_template_id is required (uuid4) by the backend create DTO; the
-        // backend resolves machine type / image from the template.
-        launch_template_id: z.uuid("Must be a valid launch template id"),
-        // machine_type and scaling_policy are form-only UI and are NOT sent to the
-        // backend (the ASG create DTO does not accept them).
-        machine_type: z.string().min(1, "Required"),
-        region: z.string().min(1, "Required"),
-        scaling_policy: z.enum(["cpu-based", "schedule-based", "manual"]),
-        min_size: z.coerce.number().min(0).max(100),
-        max_size: z.coerce.number().min(1).max(100),
-        desired_capacity: z.coerce.number().min(0).max(100),
-        health_check_grace_period: z.coerce.number().min(0).max(3600),
-        termination_policy: z.string(),
-        capacity_rebalance: z.boolean().default(false),
-    })
-    .refine((v) => v.min_size <= v.max_size, {
-        message: "Min must be ≤ max",
-        path: ["min_size"],
-    })
-    .refine((v) => v.desired_capacity >= v.min_size && v.desired_capacity <= v.max_size, {
-        message: "Desired must be between min and max",
-        path: ["desired_capacity"],
-    })
+    z
+        .object({
+            name: namingNameSchema(rule),
+            description: z.string().optional(),
+            // launch_template_id is required (uuid4) by the backend create DTO; the
+            // backend resolves machine type / image from the template.
+            launch_template_id: z.uuid("Must be a valid launch template id"),
+            // machine_type and scaling_policy are form-only UI and are NOT sent to the
+            // backend (the ASG create DTO does not accept them).
+            machine_type: z.string().min(1, "Required"),
+            region: z.string().min(1, "Required"),
+            scaling_policy: z.enum(["cpu-based", "schedule-based", "manual"]),
+            min_size: z.coerce.number().min(0).max(100),
+            max_size: z.coerce.number().min(1).max(100),
+            desired_capacity: z.coerce.number().min(0).max(100),
+            health_check_grace_period: z.coerce.number().min(0).max(3600),
+            termination_policy: z.string(),
+            capacity_rebalance: z.boolean().default(false),
+        })
+        .refine((v) => v.min_size <= v.max_size, {
+            message: "Min must be ≤ max",
+            path: ["min_size"],
+        })
+        .refine((v) => v.desired_capacity >= v.min_size && v.desired_capacity <= v.max_size, {
+            message: "Desired must be between min and max",
+            path: ["desired_capacity"],
+        })
 
 type Schema = ReturnType<typeof makeSchema>
 type FormInput = z.input<Schema>
@@ -150,9 +151,15 @@ export function CreateAsgSheet({ open, onOpenChange }: Readonly<Props>) {
                     <div className="flex-1 px-6 py-5 space-y-5 overflow-y-auto">
                         <div className="space-y-1.5">
                             {fieldLabel(t("autoscaling.columns.name"))}
-                            <Input {...register("name")} placeholder="my-asg" className="font-mono" />
+                            <Input
+                                {...register("name")}
+                                placeholder="my-asg"
+                                className="font-mono"
+                            />
                             {errors.name && (
-                                <p className="text-[11px] text-destructive">{errors.name.message}</p>
+                                <p className="text-[11px] text-destructive">
+                                    {errors.name.message}
+                                </p>
                             )}
                         </div>
 
@@ -160,7 +167,10 @@ export function CreateAsgSheet({ open, onOpenChange }: Readonly<Props>) {
                             <Label className="text-xs font-semibold tracking-wide uppercase text-muted-foreground">
                                 Description
                             </Label>
-                            <Input {...register("description")} placeholder="Optional description..." />
+                            <Input
+                                {...register("description")}
+                                placeholder="Optional description..."
+                            />
                         </div>
 
                         <div className="space-y-1.5">
@@ -281,28 +291,42 @@ export function CreateAsgSheet({ open, onOpenChange }: Readonly<Props>) {
                             <h4 className="text-sm font-semibold">Advanced Scaling Policies</h4>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-1.5">
-                                    <Label className="text-xs font-semibold tracking-wide uppercase text-muted-foreground">Health Check Grace (s)</Label>
+                                    <Label className="text-xs font-semibold tracking-wide uppercase text-muted-foreground">
+                                        Health Check Grace (s)
+                                    </Label>
                                     <Input
                                         type="number"
-                                        {...register("health_check_grace_period", { valueAsNumber: true })}
+                                        {...register("health_check_grace_period", {
+                                            valueAsNumber: true,
+                                        })}
                                         className="font-mono"
                                     />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <Label className="text-xs font-semibold tracking-wide uppercase text-muted-foreground">Termination Policy</Label>
+                                    <Label className="text-xs font-semibold tracking-wide uppercase text-muted-foreground">
+                                        Termination Policy
+                                    </Label>
                                     <Select
                                         value={watch("termination_policy")}
                                         onValueChange={(value) => {
-                                            setValue("termination_policy", value, { shouldValidate: true })
+                                            setValue("termination_policy", value, {
+                                                shouldValidate: true,
+                                            })
                                         }}
                                     >
                                         <SelectTrigger className="w-full">
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="OldestInstance">Oldest Instance</SelectItem>
-                                            <SelectItem value="NewestInstance">Newest Instance</SelectItem>
-                                            <SelectItem value="ClosestToNextInstanceHour">Closest To Hour</SelectItem>
+                                            <SelectItem value="OldestInstance">
+                                                Oldest Instance
+                                            </SelectItem>
+                                            <SelectItem value="NewestInstance">
+                                                Newest Instance
+                                            </SelectItem>
+                                            <SelectItem value="ClosestToNextInstanceHour">
+                                                Closest To Hour
+                                            </SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
@@ -311,11 +335,16 @@ export function CreateAsgSheet({ open, onOpenChange }: Readonly<Props>) {
                             <div className="flex items-center justify-between mt-2">
                                 <div className="space-y-0.5">
                                     <Label>Capacity Rebalance</Label>
-                                    <p className="text-xs text-muted-foreground">Automatically redistribute instances across availability zones.</p>
+                                    <p className="text-xs text-muted-foreground">
+                                        Automatically redistribute instances across availability
+                                        zones.
+                                    </p>
                                 </div>
                                 <Switch
                                     checked={watch("capacity_rebalance")}
-                                    onCheckedChange={(checked) => { setValue("capacity_rebalance", checked); }}
+                                    onCheckedChange={(checked) => {
+                                        setValue("capacity_rebalance", checked)
+                                    }}
                                 />
                             </div>
                         </div>

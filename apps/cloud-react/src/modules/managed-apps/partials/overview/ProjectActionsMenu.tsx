@@ -3,11 +3,11 @@ import { Link } from "react-router-dom"
 
 import { Button } from "@/components/ui/button"
 import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
 
@@ -16,11 +16,11 @@ import type { ProjectEntry } from "../../managed-apps.state"
 import type { Project } from "../../managed-apps.types"
 
 interface ProjectActionsMenuProps {
-	entry: ProjectEntry
-	deploying: boolean
-	onDeploy: (project: Project) => void
-	onDelete: (project: Project) => void
-	className?: string
+    entry: ProjectEntry
+    deploying: boolean
+    onDeploy: (project: Project) => void
+    onDelete: (project: Project) => void
+    className?: string
 }
 
 /**
@@ -39,60 +39,60 @@ interface ProjectActionsMenuProps {
  * actions menu behind a hover state that does not exist on a touch screen.
  */
 export function ProjectActionsMenu({
-	entry,
-	deploying,
-	onDeploy,
-	onDelete,
-	className,
+    entry,
+    deploying,
+    onDeploy,
+    onDelete,
+    className,
 }: Readonly<ProjectActionsMenuProps>) {
-	const { project, state } = entry
+    const { project, state } = entry
 
-	return (
-		<DropdownMenu>
-			<DropdownMenuTrigger asChild>
-				<Button
-					variant="ghost"
-					size="icon-sm"
-					aria-label={`Actions for ${project.name}`}
-					className={cn("shrink-0 text-muted-foreground", className)}
-				>
-					<MoreHorizontal className="size-4" />
-				</Button>
-			</DropdownMenuTrigger>
-			<DropdownMenuContent align="end" className="w-44">
-				{state.kind === "awaiting_setup" && (
-					<DropdownMenuItem asChild>
-						<Link to={MANAGED_APPS_ROUTES.setup(project.id)}>Finish setup</Link>
-					</DropdownMenuItem>
-				)}
-				<DropdownMenuItem
-					disabled={!state.canDeploy || deploying}
-					onSelect={() => {
-						onDeploy(project)
-					}}
-				>
-					{state.kind === "awaiting_build" ? "Deploy now" : "Rebuild"}
-				</DropdownMenuItem>
-				<DropdownMenuItem asChild>
-					<Link to={`${MANAGED_APPS_ROUTES.project(project.id)}?tab=builds`}>
-						View builds
-					</Link>
-				</DropdownMenuItem>
-				<DropdownMenuItem asChild>
-					<Link to={`${MANAGED_APPS_ROUTES.project(project.id)}?tab=settings`}>
-						Settings
-					</Link>
-				</DropdownMenuItem>
-				<DropdownMenuSeparator />
-				<DropdownMenuItem
-					variant="destructive"
-					onSelect={() => {
-						onDelete(project)
-					}}
-				>
-					Delete
-				</DropdownMenuItem>
-			</DropdownMenuContent>
-		</DropdownMenu>
-	)
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    aria-label={`Actions for ${project.name}`}
+                    className={cn("shrink-0 text-muted-foreground", className)}
+                >
+                    <MoreHorizontal className="size-4" />
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-44">
+                {state.kind === "awaiting_setup" && (
+                    <DropdownMenuItem asChild>
+                        <Link to={MANAGED_APPS_ROUTES.setup(project.id)}>Finish setup</Link>
+                    </DropdownMenuItem>
+                )}
+                <DropdownMenuItem
+                    disabled={!state.canDeploy || deploying}
+                    onSelect={() => {
+                        onDeploy(project)
+                    }}
+                >
+                    {state.kind === "awaiting_build" ? "Deploy now" : "Rebuild"}
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                    <Link to={`${MANAGED_APPS_ROUTES.project(project.id)}?tab=builds`}>
+                        View builds
+                    </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                    <Link to={`${MANAGED_APPS_ROUTES.project(project.id)}?tab=settings`}>
+                        Settings
+                    </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                    variant="destructive"
+                    onSelect={() => {
+                        onDelete(project)
+                    }}
+                >
+                    Delete
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+    )
 }

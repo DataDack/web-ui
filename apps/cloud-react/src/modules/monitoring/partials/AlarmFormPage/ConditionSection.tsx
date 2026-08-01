@@ -284,8 +284,7 @@ export function ConditionSection({
                 <div className="space-y-2 rounded-xl border border-border-glass bg-muted/10 p-3">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                         <p className="text-[12px] text-muted-foreground">
-                            Last 24 hours at {periodLabel(periodSeconds)} · threshold in
-                            amber
+                            Last 24 hours at {periodLabel(periodSeconds)} · threshold in amber
                         </p>
                         {backtest.wouldBeInAlarm && (
                             <Badge

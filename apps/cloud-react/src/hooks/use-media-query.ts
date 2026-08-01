@@ -12,18 +12,18 @@ import { useCallback, useSyncExternalStore } from "react"
  * correct without a setState-in-effect cascade.
  */
 export function useMediaQuery(query: string): boolean {
-	const subscribe = useCallback(
-		(onStoreChange: () => void) => {
-			const list = window.matchMedia(query)
-			list.addEventListener("change", onStoreChange)
-			return () => {
-				list.removeEventListener("change", onStoreChange)
-			}
-		},
-		[query]
-	)
+    const subscribe = useCallback(
+        (onStoreChange: () => void) => {
+            const list = window.matchMedia(query)
+            list.addEventListener("change", onStoreChange)
+            return () => {
+                list.removeEventListener("change", onStoreChange)
+            }
+        },
+        [query]
+    )
 
-	const getSnapshot = useCallback(() => window.matchMedia(query).matches, [query])
+    const getSnapshot = useCallback(() => window.matchMedia(query).matches, [query])
 
-	return useSyncExternalStore(subscribe, getSnapshot)
+    return useSyncExternalStore(subscribe, getSnapshot)
 }

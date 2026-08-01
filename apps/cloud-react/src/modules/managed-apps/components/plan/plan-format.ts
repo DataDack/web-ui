@@ -11,7 +11,7 @@ import type { Plan, PlanLimits } from "../../managed-apps.types"
 const UNLIMITED = -1
 
 export function isUnlimited(limit: number): boolean {
-	return limit === UNLIMITED
+    return limit === UNLIMITED
 }
 
 /**
@@ -19,9 +19,9 @@ export function isUnlimited(limit: number): boolean {
  * ceiling, a real none, and a number — so each gets its own word.
  */
 export function formatLimit(limit: number): string {
-	if (isUnlimited(limit)) return "Unlimited"
-	if (limit === 0) return "None"
-	return limit.toLocaleString()
+    if (isUnlimited(limit)) return "Unlimited"
+    if (limit === 0) return "None"
+    return limit.toLocaleString()
 }
 
 /**
@@ -33,29 +33,29 @@ export function formatLimit(limit: number): string {
  * beats throwing inside a render.
  */
 export function formatPrice(plan: Pick<Plan, "price_minor" | "currency">): string {
-	if (plan.price_minor === 0) return "Free"
-	const major = plan.price_minor / 100
-	try {
-		return new Intl.NumberFormat(undefined, {
-			style: "currency",
-			currency: plan.currency,
-			maximumFractionDigits: major % 1 === 0 ? 0 : 2,
-		}).format(major)
-	} catch {
-		return `${plan.currency} ${major.toLocaleString()}`
-	}
+    if (plan.price_minor === 0) return "Free"
+    const major = plan.price_minor / 100
+    try {
+        return new Intl.NumberFormat(undefined, {
+            style: "currency",
+            currency: plan.currency,
+            maximumFractionDigits: major % 1 === 0 ? 0 : 2,
+        }).format(major)
+    } catch {
+        return `${plan.currency} ${major.toLocaleString()}`
+    }
 }
 
 export interface PlanHighlight {
-	label: string
-	value: string
+    label: string
+    value: string
 }
 
 interface QuotaField {
-	key: keyof PlanLimits
-	label: string
-	/** Appended to the number — "GB", "MB", "s". */
-	suffix?: string
+    key: keyof PlanLimits
+    label: string
+    /** Appended to the number — "GB", "MB", "s". */
+    suffix?: string
 }
 
 /**
@@ -67,18 +67,18 @@ interface QuotaField {
  * called. The first four are the ones a tier is chosen on — see planHighlights.
  */
 const QUOTA_FIELDS: QuotaField[] = [
-	{ key: "max_projects", label: "Projects" },
-	{ key: "bandwidth_gb", label: "Bandwidth", suffix: " GB" },
-	{ key: "build_minutes", label: "Build minutes" },
-	{ key: "max_deployment_mb", label: "Deployment", suffix: " MB" },
-	{ key: "max_custom_domains", label: "Custom domains" },
-	{ key: "max_upload_mb", label: "Max upload body", suffix: " MB" },
-	{ key: "request_timeout_seconds", label: "Request timeout", suffix: "s" },
-	{ key: "edge_requests", label: "Edge requests" },
+    { key: "max_projects", label: "Projects" },
+    { key: "bandwidth_gb", label: "Bandwidth", suffix: " GB" },
+    { key: "build_minutes", label: "Build minutes" },
+    { key: "max_deployment_mb", label: "Deployment", suffix: " MB" },
+    { key: "max_custom_domains", label: "Custom domains" },
+    { key: "max_upload_mb", label: "Max upload body", suffix: " MB" },
+    { key: "request_timeout_seconds", label: "Request timeout", suffix: "s" },
+    { key: "edge_requests", label: "Edge requests" },
 ]
 
 function formatField(field: QuotaField, limits: PlanLimits): string {
-	return `${formatLimit(limits[field.key])}${field.suffix ?? ""}`
+    return `${formatLimit(limits[field.key])}${field.suffix ?? ""}`
 }
 
 /**
@@ -90,26 +90,26 @@ function formatField(field: QuotaField, limits: PlanLimits): string {
  * they belong on the project's plan panel, not in the picker.
  */
 export function planHighlights(limits: PlanLimits): PlanHighlight[] {
-	return QUOTA_FIELDS.slice(0, 4).map((field) => ({
-		label: field.label,
-		value: formatField(field, limits),
-	}))
+    return QUOTA_FIELDS.slice(0, 4).map((field) => ({
+        label: field.label,
+        value: formatField(field, limits),
+    }))
 }
 
 /** Every quota, for the detail panel where the full picture is the point. */
 export function planQuotaRows(limits: PlanLimits): PlanHighlight[] {
-	return QUOTA_FIELDS.map((field) => ({
-		label: field.label,
-		value: formatField(field, limits),
-	}))
+    return QUOTA_FIELDS.map((field) => ({
+        label: field.label,
+        value: formatField(field, limits),
+    }))
 }
 
 export interface PlanQuotaDelta {
-	label: string
-	from: string
-	to: string
-	/** Whether the number moves in the account's favour. */
-	direction: "up" | "down"
+    label: string
+    from: string
+    to: string
+    /** Whether the number moves in the account's favour. */
+    direction: "up" | "down"
 }
 
 /**
@@ -121,18 +121,18 @@ export interface PlanQuotaDelta {
  * which is the one comparison the -1 sentinel would otherwise get backwards.
  */
 export function planQuotaDeltas(from: PlanLimits, to: PlanLimits): PlanQuotaDelta[] {
-	const rank = (value: number) => (isUnlimited(value) ? Infinity : value)
-	return QUOTA_FIELDS.flatMap((field) => {
-		const before = rank(from[field.key])
-		const after = rank(to[field.key])
-		if (before === after) return []
-		return [
-			{
-				label: field.label,
-				from: formatField(field, from),
-				to: formatField(field, to),
-				direction: after > before ? ("up" as const) : ("down" as const),
-			},
-		]
-	})
+    const rank = (value: number) => (isUnlimited(value) ? Infinity : value)
+    return QUOTA_FIELDS.flatMap((field) => {
+        const before = rank(from[field.key])
+        const after = rank(to[field.key])
+        if (before === after) return []
+        return [
+            {
+                label: field.label,
+                from: formatField(field, from),
+                to: formatField(field, to),
+                direction: after > before ? ("up" as const) : ("down" as const),
+            },
+        ]
+    })
 }

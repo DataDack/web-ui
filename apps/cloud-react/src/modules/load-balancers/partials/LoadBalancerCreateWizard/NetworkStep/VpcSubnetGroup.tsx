@@ -60,9 +60,7 @@ export function VpcSubnetGroup({
     const selectedVpc = vpcs.find((v) => v.id === vpcId)
 
     const toggleSubnet = (subnetId: string, checked: boolean) => {
-        const next = checked
-            ? [...subnetIds, subnetId]
-            : subnetIds.filter((id) => id !== subnetId)
+        const next = checked ? [...subnetIds, subnetId] : subnetIds.filter((id) => id !== subnetId)
         setValue(`${path}.subnet_ids`, next, { shouldValidate: true })
     }
 

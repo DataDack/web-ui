@@ -15,11 +15,7 @@ function isModifierPressed(e: KeyboardEvent, modifier: Modifier): boolean {
  * Registers a single-key shortcut (with optional modifier).
  * Uses a ref for handler so re-renders don't reinstall the listener.
  */
-export function useKeyboardShortcut(
-    key: string,
-    handler: () => void,
-    modifier: Modifier = "cmd"
-) {
+export function useKeyboardShortcut(key: string, handler: () => void, modifier: Modifier = "cmd") {
     const handlerRef = useLatestRef(handler)
 
     useEffect(() => {
@@ -30,6 +26,8 @@ export function useKeyboardShortcut(
             }
         }
         window.addEventListener("keydown", onKeyDown)
-        return () => { window.removeEventListener("keydown", onKeyDown); }
+        return () => {
+            window.removeEventListener("keydown", onKeyDown)
+        }
     }, [key, modifier, handlerRef]) // key and modifier are primitives — stable
 }

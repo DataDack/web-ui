@@ -7,14 +7,14 @@ import type { ProjectType } from "../managed-apps.types"
 // comingSoon types stay visible everywhere (sidebar, wizard, badges) but
 // cannot be selected when creating a project.
 export const PROJECT_TYPE_META: Record<
-	ProjectType,
-	{ label: string; icon: LucideIcon; comingSoon?: boolean }
+    ProjectType,
+    { label: string; icon: LucideIcon; comingSoon?: boolean }
 > = {
-	opennext: { label: "OpenNext", icon: AppWindow },
-	react: { label: "React", icon: Atom },
-	n8n: { label: "n8n Agent", icon: Workflow, comingSoon: true },
+    opennext: { label: "OpenNext", icon: AppWindow },
+    react: { label: "React", icon: Atom },
+    n8n: { label: "n8n Agent", icon: Workflow, comingSoon: true },
 }
 
 export function projectTypeLabel(type: ProjectType): string {
-	return PROJECT_TYPE_META[type].label
+    return PROJECT_TYPE_META[type].label
 }

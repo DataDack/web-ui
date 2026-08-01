@@ -46,7 +46,7 @@ export function InlineSubnetSheet({
 
     const siblings = useMemo(
         () => allSubnets.filter((s) => s.network_id === vpcId).map((s) => s.cidr),
-        [allSubnets, vpcId],
+        [allSubnets, vpcId]
     )
 
     // The suggested block comes from the VPC's own range and the subnets already
@@ -54,7 +54,7 @@ export function InlineSubnetSheet({
     // a fixed default would collide the moment a VPC used a different range.
     const suggested = useMemo(
         () => (vpc ? (nextFreeSubnetCidr(vpc.cidr, siblings) ?? "") : ""),
-        [vpc, siblings],
+        [vpc, siblings]
     )
     const cidr = cidrOverride ?? suggested
     const issue = vpc && cidr ? subnetCidrIssue(vpc.cidr, cidr, siblings) : null

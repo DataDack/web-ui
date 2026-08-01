@@ -26,8 +26,7 @@ export const billingApi = {
     listPurchases: () => apiGet<CreditPurchase[]>("/billing/credits/purchases"),
     purchaseCredits: (payload: PurchaseCreditsRequest) =>
         apiPost<PurchaseCreditsResponse>("/billing/credits/purchase", payload),
-    listLedger: (accountId: string) =>
-        apiGet<LedgerApiEntry[]>(`/billing/ledger/${accountId}`),
+    listLedger: (accountId: string) => apiGet<LedgerApiEntry[]>(`/billing/ledger/${accountId}`),
     listInvoices: () => apiGet<Invoice[]>(`/billing/invoices${LIST_QUERY}`),
     listUsage: () => apiGet<UsageRecordApi[]>("/billing/charge/usage"),
     listSubscriptions: () => apiGet<SubscriptionApi[]>("/billing/charge/subscriptions"),

@@ -2,7 +2,11 @@ import { useMemo } from "react"
 
 import { useQuery } from "@tanstack/react-query"
 
-import { DASHBOARD_SERVICE_ORDER, SERVICE_REGISTRY, SERVICES_QUERY_KEYS } from "./services.constants"
+import {
+    DASHBOARD_SERVICE_ORDER,
+    SERVICE_REGISTRY,
+    SERVICES_QUERY_KEYS,
+} from "./services.constants"
 import { servicesService } from "./services.service"
 import type { ServiceDefinition, ServiceMaintenance } from "./services.types"
 
@@ -37,8 +41,7 @@ export function useServices(): ServiceDefinition[] {
                 subServices: svc.subServices.map((sub) => ({
                     ...sub,
                     status: liveStatus.subServices?.[sub.id]?.status ?? sub.status,
-                    maintenance:
-                        liveStatus.subServices?.[sub.id]?.maintenance ?? sub.maintenance,
+                    maintenance: liveStatus.subServices?.[sub.id]?.maintenance ?? sub.maintenance,
                 })),
             }
         })

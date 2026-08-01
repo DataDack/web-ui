@@ -30,7 +30,9 @@ export function handleKycGateError(e: unknown): boolean {
     if (!code) return false
     const rekyc = code === "rekyc_required"
     toast.error(
-        i18n.t(rekyc ? "onboarding.verification.rekycTitle" : "onboarding.verification.requiredTitle"),
+        i18n.t(
+            rekyc ? "onboarding.verification.rekycTitle" : "onboarding.verification.requiredTitle"
+        ),
         {
             id: "kyc-gate", // keep a single persistent toast even across repeated submits
             duration: Infinity,

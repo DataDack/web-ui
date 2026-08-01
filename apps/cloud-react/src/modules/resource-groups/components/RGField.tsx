@@ -53,7 +53,8 @@ export function RGField({
         if (seed) onChange(seed.id)
     }, [value, defaultToActive, activeRG, groups, onChange])
 
-    const selected = groups.find((g) => g.id === value) ?? (value === activeRG?.id ? activeRG : null)
+    const selected =
+        groups.find((g) => g.id === value) ?? (value === activeRG?.id ? activeRG : null)
     let label = selected?.name ?? t("resourceGroups.field.placeholder")
     if (!selected && isLoading) label = t("common.loading")
 

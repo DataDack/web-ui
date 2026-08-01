@@ -13,16 +13,7 @@
 import { useMemo, useState } from "react"
 
 import type { ColumnDef } from "@tanstack/react-table"
-import {
-    BellOff,
-    BellRing,
-    Pencil,
-    Plus,
-    RefreshCw,
-    Search,
-    SearchX,
-    Trash2,
-} from "lucide-react"
+import { BellOff, BellRing, Pencil, Plus, RefreshCw, Search, SearchX, Trash2 } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
 
 import {
@@ -51,11 +42,7 @@ import { useScreen } from "@/services/api/screen"
 import { AlarmStateChip, SeverityChip } from "../components/StateChips"
 import { MONITORING_ROUTES } from "../monitoring.constants"
 import { useAlarms, useDeleteAlarm, useSetAlarmEnabled } from "../monitoring.hooks"
-import {
-    alarmStateLabel,
-    conditionSummary,
-    timeAgo,
-} from "../monitoring.meta"
+import { alarmStateLabel, conditionSummary, timeAgo } from "../monitoring.meta"
 import {
     type AlarmTargetType,
     metricLabelForAlarm,
@@ -313,10 +300,7 @@ export function AlarmsListPage() {
     )
 
     const filtersActive =
-        search.trim() !== "" ||
-        stateFilter !== ALL ||
-        severityFilter !== ALL ||
-        typeFilter !== ALL
+        search.trim() !== "" || stateFilter !== ALL || severityFilter !== ALL || typeFilter !== ALL
 
     const visibleRows = useMemo(() => {
         const filters: Filters = {
@@ -501,9 +485,7 @@ export function AlarmsListPage() {
                             disabled={isFetching}
                             aria-label="Refresh"
                         >
-                            <RefreshCw
-                                className={cn("size-4", isFetching && "animate-spin")}
-                            />
+                            <RefreshCw className={cn("size-4", isFetching && "animate-spin")} />
                         </Button>
                         <Button
                             className="gap-2"
@@ -562,9 +544,7 @@ export function AlarmsListPage() {
                 onRetry={() => void refetch()}
                 getRowId={(row) => row.alarm.id}
                 onRowClick={(row) => void navigate(MONITORING_ROUTES.alarm(row.alarm.id))}
-                emptyState={
-                    filtersActive && rows.length > 0 ? noMatchState : noAlarmsState
-                }
+                emptyState={filtersActive && rows.length > 0 ? noMatchState : noAlarmsState}
             />
 
             <ConfirmDialog

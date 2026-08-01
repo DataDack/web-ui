@@ -36,18 +36,15 @@ export const vpcService = {
     fetchAllSecurityGroups: () => securityGroupsApi.listAll(),
     fetchSecurityGroups: (networkId: string) => securityGroupsApi.list(networkId),
     fetchSecurityGroup: (id: string) => securityGroupsApi.get(id),
-    createSecurityGroup: (payload: CreateSecurityGroupRequest) =>
-        securityGroupsApi.create(payload),
-    createDefaultSecurityGroup: (networkId?: string) =>
-        securityGroupsApi.createDefault(networkId),
+    createSecurityGroup: (payload: CreateSecurityGroupRequest) => securityGroupsApi.create(payload),
+    createDefaultSecurityGroup: (networkId?: string) => securityGroupsApi.createDefault(networkId),
     removeSecurityGroup: (id: string) => securityGroupsApi.delete(id),
     fetchSGRules: (sgId: string) => securityGroupsApi.listRules(sgId),
     addSGRule: (sgId: string, payload: AddSGRuleRequest) =>
         securityGroupsApi.addRule(sgId, payload),
     updateSGRule: (sgId: string, ruleId: string, payload: UpdateSGRuleRequest) =>
         securityGroupsApi.updateRule(sgId, ruleId, payload),
-    removeSGRule: (sgId: string, ruleId: string) =>
-        securityGroupsApi.removeRule(sgId, ruleId),
+    removeSGRule: (sgId: string, ruleId: string) => securityGroupsApi.removeRule(sgId, ruleId),
     fetchInstanceSecurityGroups: (instanceId: string) =>
         securityGroupsApi.listForInstance(instanceId),
     attachInstanceSecurityGroup: (instanceId: string, sgId: string) =>

@@ -24,12 +24,10 @@ export const VPC_QUERY_KEYS = {
     securityGroups: (networkId: string) => ["vpc", "sgs", networkId] as const,
     securityGroupDetail: (id: string) => ["vpc", "sgs", "detail", id] as const,
     sgRules: (sgId: string) => ["vpc", "sg-rules", sgId] as const,
-    instanceSecurityGroups: (instanceId: string) =>
-        ["vpc", "instance-sgs", instanceId] as const,
+    instanceSecurityGroups: (instanceId: string) => ["vpc", "instance-sgs", instanceId] as const,
     staticIps: ["vpc", "static-ips"] as const,
     networkInterfaces: ["vpc", "network-interfaces"] as const,
-    networkInterfaceDetail: (id: string) =>
-        ["vpc", "network-interfaces", "detail", id] as const,
+    networkInterfaceDetail: (id: string) => ["vpc", "network-interfaces", "detail", id] as const,
     routers: ["vpc", "routers"] as const,
     nat: ["vpc", "nat"] as const,
     igw: ["vpc", "igw"] as const,

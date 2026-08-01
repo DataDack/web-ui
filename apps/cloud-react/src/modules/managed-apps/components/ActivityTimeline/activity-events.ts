@@ -8,24 +8,24 @@ import type { StatusTone } from "@/components/console/status-config"
 import type { Build, BuildStatus, BuildTrigger } from "../../managed-apps.types"
 
 export interface ActivityEvent {
-	/** `${buildId}:${stage}` — stable across refetches, unique across builds. */
-	id: string
-	buildId: string
-	/** The ISO stamp the event is anchored to — always set, never a Go zero time. */
-	at: string
-	title: string
-	/** Secondary line under the title — "" renders nothing. */
-	detail: string
-	tone: StatusTone
-	/** External link shown with the detail (the GitHub Actions run). */
-	href?: string
-	/**
-	 * Position in the build's lifecycle, used only as a sort tie-break: two
-	 * events of one build can carry the same second-resolution stamp (a failure
-	 * is often stamped in the same write as the claim), and wall-clock order
-	 * alone would let "Build queued" render above "Build failed".
-	 */
-	seq: number
+    /** `${buildId}:${stage}` — stable across refetches, unique across builds. */
+    id: string
+    buildId: string
+    /** The ISO stamp the event is anchored to — always set, never a Go zero time. */
+    at: string
+    title: string
+    /** Secondary line under the title — "" renders nothing. */
+    detail: string
+    tone: StatusTone
+    /** External link shown with the detail (the GitHub Actions run). */
+    href?: string
+    /**
+     * Position in the build's lifecycle, used only as a sort tie-break: two
+     * events of one build can carry the same second-resolution stamp (a failure
+     * is often stamped in the same write as the claim), and wall-clock order
+     * alone would let "Build queued" render above "Build failed".
+     */
+    seq: number
 }
 
 /**
@@ -35,9 +35,9 @@ export interface ActivityEvent {
  * epoch ms), and empty strings parse as NaN.
  */
 function isTimeSet(iso: string | null | undefined): iso is string {
-	if (!iso) return false
-	const ms = new Date(iso).getTime()
-	return !Number.isNaN(ms) && ms > 0
+    if (!iso) return false
+    const ms = new Date(iso).getTime()
+    return !Number.isNaN(ms) && ms > 0
 }
 
 /**
@@ -48,16 +48,16 @@ function isTimeSet(iso: string | null | undefined): iso is string {
  * arithmetic would render as a straight-faced "20657d ago".
  */
 export function timeSince(iso: string): string {
-	const ms = new Date(iso).getTime()
-	if (Number.isNaN(ms) || ms <= 0) return "—"
-	const deltaMs = Date.now() - ms
-	const minutes = Math.floor(deltaMs / 60_000)
-	if (minutes < 1) return "just now"
-	if (minutes < 60) return `${String(minutes)}m ago`
-	const hours = Math.floor(minutes / 60)
-	if (hours < 24) return `${String(hours)}h ago`
-	const days = Math.floor(hours / 24)
-	return `${String(days)}d ago`
+    const ms = new Date(iso).getTime()
+    if (Number.isNaN(ms) || ms <= 0) return "—"
+    const deltaMs = Date.now() - ms
+    const minutes = Math.floor(deltaMs / 60_000)
+    if (minutes < 1) return "just now"
+    if (minutes < 60) return `${String(minutes)}m ago`
+    const hours = Math.floor(minutes / 60)
+    if (hours < 24) return `${String(hours)}h ago`
+    const days = Math.floor(hours / 24)
+    return `${String(days)}d ago`
 }
 
 /**
@@ -67,25 +67,25 @@ export function timeSince(iso: string): string {
  * artifact rather than an unknown one.
  */
 export function formatArtifactBytes(bytes: number): string {
-	if (bytes <= 0) return ""
-	if (bytes < 1024) return `${String(bytes)} B`
-	const units = ["KB", "MB", "GB", "TB"] as const
-	let value = bytes
-	let unit = -1
-	do {
-		value /= 1024
-		unit += 1
-		// Judged on the ROUNDED value: 1048200 bytes is 1023.63 KB, which the
-		// display would round to "1024 KB" — it belongs to the next unit up.
-	} while (Math.round(value) >= 1024 && unit < units.length - 1)
-	return `${value >= 10 ? String(Math.round(value)) : value.toFixed(1)} ${units[unit]}`
+    if (bytes <= 0) return ""
+    if (bytes < 1024) return `${String(bytes)} B`
+    const units = ["KB", "MB", "GB", "TB"] as const
+    let value = bytes
+    let unit = -1
+    do {
+        value /= 1024
+        unit += 1
+        // Judged on the ROUNDED value: 1048200 bytes is 1023.63 KB, which the
+        // display would round to "1024 KB" — it belongs to the next unit up.
+    } while (Math.round(value) >= 1024 && unit < units.length - 1)
+    return `${value >= 10 ? String(Math.round(value)) : value.toFixed(1)} ${units[unit]}`
 }
 
 /** Exhaustive by construction — a new BuildTrigger will not compile without one. */
 const TRIGGER_LABEL_MAP: Record<BuildTrigger, string> = {
-	push: "Push",
-	manual: "Manual",
-	initial: "Initial",
+    push: "Push",
+    manual: "Manual",
+    initial: "Initial",
 }
 
 // Read through a Map because the value comes off the wire: an unrecognised
@@ -99,103 +99,103 @@ const TRIGGER_LOOKUP = new Map<string, string>(Object.entries(TRIGGER_LABEL_MAP)
  * success state today: the artifact exists, there is just no runtime fleet yet.
  */
 const TERMINAL_META: Record<
-	Exclude<BuildStatus, "queued" | "cloning" | "building" | "uploading" | "deploying">,
-	{ title: string; tone: StatusTone; detail?: string }
+    Exclude<BuildStatus, "queued" | "cloning" | "building" | "uploading" | "deploying">,
+    { title: string; tone: StatusTone; detail?: string }
 > = {
-	built: { title: "Build succeeded", tone: "success", detail: "Artifact stored and verified" },
-	ready: { title: "Build succeeded", tone: "success", detail: "Deployed and serving" },
-	failed: { title: "Build failed", tone: "danger" },
-	canceled: { title: "Build canceled", tone: "neutral" },
-	superseded: {
-		title: "Build superseded",
-		tone: "neutral",
-		detail: "A newer build replaced this one before it settled",
-	},
+    built: { title: "Build succeeded", tone: "success", detail: "Artifact stored and verified" },
+    ready: { title: "Build succeeded", tone: "success", detail: "Deployed and serving" },
+    failed: { title: "Build failed", tone: "danger" },
+    canceled: { title: "Build canceled", tone: "neutral" },
+    superseded: {
+        title: "Build superseded",
+        tone: "neutral",
+        detail: "A newer build replaced this one before it settled",
+    },
 }
 
 // Same Record-for-compile-safety / Map-for-reads split as BuildStatusPill: the
 // status is whatever the API sent, and a status added server-side since this
 // bundle was built must degrade to a neutral row, not an error boundary.
 const TERMINAL_LOOKUP = new Map<string, { title: string; tone: StatusTone; detail?: string }>(
-	Object.entries(TERMINAL_META)
+    Object.entries(TERMINAL_META)
 )
 
 /** First 7 chars of a commit SHA — "" stays "". */
 function shortSha(sha: string): string {
-	return sha.slice(0, 7)
+    return sha.slice(0, 7)
 }
 
 /** One build's events, oldest first (the `seq` values encode this order). */
 function deriveBuildEvents(build: Build): ActivityEvent[] {
-	const events: ActivityEvent[] = []
+    const events: ActivityEvent[] = []
 
-	// created_at is NOT gated on isTimeSet: a build row cannot exist without
-	// being created, so a missing stamp here is corrupt data worth surfacing as
-	// a "—" timestamp rather than a build silently absent from the feed.
-	events.push({
-		id: `${build.id}:queued`,
-		buildId: build.id,
-		at: build.created_at,
-		title: "Build queued",
-		detail: [`${TRIGGER_LOOKUP.get(build.triggered_by) ?? build.triggered_by} trigger`]
-			.concat(build.commit_sha !== "" ? [shortSha(build.commit_sha)] : [])
-			.join(" · "),
-		tone: "info",
-		seq: 0,
-	})
+    // created_at is NOT gated on isTimeSet: a build row cannot exist without
+    // being created, so a missing stamp here is corrupt data worth surfacing as
+    // a "—" timestamp rather than a build silently absent from the feed.
+    events.push({
+        id: `${build.id}:queued`,
+        buildId: build.id,
+        at: build.created_at,
+        title: "Build queued",
+        detail: [`${TRIGGER_LOOKUP.get(build.triggered_by) ?? build.triggered_by} trigger`]
+            .concat(build.commit_sha !== "" ? [shortSha(build.commit_sha)] : [])
+            .join(" · "),
+        tone: "info",
+        seq: 0,
+    })
 
-	if (isTimeSet(build.claimed_at)) {
-		events.push({
-			id: `${build.id}:claimed`,
-			buildId: build.id,
-			at: build.claimed_at,
-			title: "Runner claimed build",
-			detail: build.gh_run_url !== "" ? "View the run on GitHub" : "",
-			href: build.gh_run_url !== "" ? build.gh_run_url : undefined,
-			tone: "info",
-			seq: 1,
-		})
-	}
+    if (isTimeSet(build.claimed_at)) {
+        events.push({
+            id: `${build.id}:claimed`,
+            buildId: build.id,
+            at: build.claimed_at,
+            title: "Runner claimed build",
+            detail: build.gh_run_url !== "" ? "View the run on GitHub" : "",
+            href: build.gh_run_url !== "" ? build.gh_run_url : undefined,
+            tone: "info",
+            seq: 1,
+        })
+    }
 
-	if (isTimeSet(build.artifact_at)) {
-		events.push({
-			id: `${build.id}:artifact`,
-			buildId: build.id,
-			at: build.artifact_at,
-			title: "Artifact uploaded",
-			detail: formatArtifactBytes(build.artifact_bytes),
-			tone: "info",
-			seq: 2,
-		})
-	}
+    if (isTimeSet(build.artifact_at)) {
+        events.push({
+            id: `${build.id}:artifact`,
+            buildId: build.id,
+            at: build.artifact_at,
+            title: "Artifact uploaded",
+            detail: formatArtifactBytes(build.artifact_bytes),
+            tone: "info",
+            seq: 2,
+        })
+    }
 
-	if (isTimeSet(build.finished_at)) {
-		const meta = TERMINAL_LOOKUP.get(build.status) ?? {
-			title: `Build ${build.status}`,
-			tone: "neutral" as StatusTone,
-		}
-		events.push({
-			id: `${build.id}:finished`,
-			buildId: build.id,
-			at: build.finished_at,
-			title: meta.title,
-			// The server's verbatim failure beats any canned phrasing.
-			detail: build.status === "failed" ? build.build_error : (meta.detail ?? ""),
-			tone: meta.tone,
-			seq: 3,
-		})
-	}
+    if (isTimeSet(build.finished_at)) {
+        const meta = TERMINAL_LOOKUP.get(build.status) ?? {
+            title: `Build ${build.status}`,
+            tone: "neutral" as StatusTone,
+        }
+        events.push({
+            id: `${build.id}:finished`,
+            buildId: build.id,
+            at: build.finished_at,
+            title: meta.title,
+            // The server's verbatim failure beats any canned phrasing.
+            detail: build.status === "failed" ? build.build_error : (meta.detail ?? ""),
+            tone: meta.tone,
+            seq: 3,
+        })
+    }
 
-	return events
+    return events
 }
 
 /** The whole feed, newest first, across every build in the list. */
 export function deriveActivityEvents(builds: readonly Build[]): ActivityEvent[] {
-	return builds.flatMap(deriveBuildEvents).sort((a, b) => {
-		const delta = new Date(b.at).getTime() - new Date(a.at).getTime()
-		if (delta !== 0) return delta
-		// Same instant, same build: later lifecycle stage on top. Different
-		// builds tied to the second keep a stable, if arbitrary, order.
-		return a.buildId === b.buildId ? b.seq - a.seq : 0
-	})
+    return builds.flatMap(deriveBuildEvents).sort((a, b) => {
+        const delta = new Date(b.at).getTime() - new Date(a.at).getTime()
+        if (delta !== 0) return delta
+        // Same instant, same build: later lifecycle stage on top. Different
+        // builds tied to the second keep a stable, if arbitrary, order.
+        return a.buildId === b.buildId ? b.seq - a.seq : 0
+    })
 }

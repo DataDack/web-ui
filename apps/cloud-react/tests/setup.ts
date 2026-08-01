@@ -2,10 +2,8 @@ import { GlobalRegistrator } from "@happy-dom/global-registrator"
 
 GlobalRegistrator.register()
 
-// Register jest-dom's matchers on bun:test's expect. The named-module import
-// (rather than the package root) is what makes this typecheck: the root ships
-// global-style declarations that TS refuses to treat as a module. The matcher
-// TYPES are merged into bun:test in ./testing-library.d.ts.
-const { expect } = await import("bun:test")
-const matchers = await import("@testing-library/jest-dom/matchers")
-expect.extend(matchers)
+// Importing the package root self-registers every matcher on the active
+// `expect` (bun's, here) — the matcher TYPES are merged into bun:test in
+// ./testing-library.d.ts.
+// @ts-expect-error -- the package root ships global-script declarations that TS refuses to treat as a module; the runtime side effect is exactly what we want
+await import("@testing-library/jest-dom")

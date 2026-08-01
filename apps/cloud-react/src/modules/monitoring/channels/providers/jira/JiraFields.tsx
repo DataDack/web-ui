@@ -131,7 +131,9 @@ function JiraOAuthConnect({
                         variant="ghost"
                         size="sm"
                         className="gap-1.5 text-muted-foreground hover:text-destructive"
-                        disabled={disconnectJira.isPending && disconnectJira.variables === activeCloudId}
+                        disabled={
+                            disconnectJira.isPending && disconnectJira.variables === activeCloudId
+                        }
                         onClick={() => {
                             disconnectJira.mutate(activeCloudId)
                         }}
@@ -167,7 +169,10 @@ export function JiraFields({ form }: Readonly<{ form: UseFormReturn<ChannelFormV
     const labelsValue = useWatch({ control, name: "jiraLabels" })
     const activeCloudId = jiraCloudId?.trim() ? jiraCloudId : connections[0]?.cloud_id
 
-    const projects = useJiraProjects(activeCloudId, jiraAuthMode === "oauth" && connections.length > 0)
+    const projects = useJiraProjects(
+        activeCloudId,
+        jiraAuthMode === "oauth" && connections.length > 0
+    )
     const issueTypes = useJiraIssueTypes(
         activeCloudId,
         projectKey,
@@ -323,8 +328,8 @@ export function JiraFields({ form }: Readonly<{ form: UseFormReturn<ChannelFormV
                     />
                     {!issueTypes.isFetching && (
                         <p className="text-[11px] text-muted-foreground">
-                            Standard issue types only — sub-tasks need a parent issue, so
-                            Jira can’t use them for alerts.
+                            Standard issue types only — sub-tasks need a parent issue, so Jira can’t
+                            use them for alerts.
                         </p>
                     )}
                 </div>

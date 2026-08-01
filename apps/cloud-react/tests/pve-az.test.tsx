@@ -83,10 +83,7 @@ test("AZ list resolves BEFORE the node", async () => {
     renderForm()
     expect(await screen.findByDisplayValue("pve1-a")).toBeInTheDocument()
     await sleep(150)
-    const boxes = screen.queryAllByRole("combobox")
-    console.log("  comboboxes:", boxes.length)
     const text = await azTriggerText()
-    console.log("  AZ trigger after az-first load:", JSON.stringify(text))
     expect(text).toContain("ap-south-3a")
 })
 
@@ -97,6 +94,5 @@ test("node resolves BEFORE the AZ list", async () => {
     expect(await screen.findByDisplayValue("pve1-a")).toBeInTheDocument()
     await sleep(150) // let the AZ query land and any reset settle
     const text = await azTriggerText()
-    console.log("  AZ trigger after node-first load:", JSON.stringify(text))
     expect(text).toContain("ap-south-3a")
 })

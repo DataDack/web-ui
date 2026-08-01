@@ -78,9 +78,9 @@ export function TopologyAside({ form }: Readonly<{ form: UseFormReturn<FormValue
                         </div>
                     )}
 
-                    {values.listeners.some(
-                        (l) => l.tg_mode === "new" && l.targets.length > 0,
-                    ) && <div className="text-muted-foreground">↓</div>}
+                    {values.listeners.some((l) => l.tg_mode === "new" && l.targets.length > 0) && (
+                        <div className="text-muted-foreground">↓</div>
+                    )}
 
                     {values.listeners.map((l, i) =>
                         l.tg_mode === "new" && l.tg_name ? (
@@ -95,7 +95,7 @@ export function TopologyAside({ form }: Readonly<{ form: UseFormReturn<FormValue
                                     })}
                                 </span>
                             </div>
-                        ) : null,
+                        ) : null
                     )}
                 </div>
             </Section>

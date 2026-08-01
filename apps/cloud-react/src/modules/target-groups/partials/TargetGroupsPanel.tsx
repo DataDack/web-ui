@@ -50,7 +50,7 @@ export function TargetGroupsPanel() {
                 loading: isLoading,
             },
         ],
-        [groups, isLoading, t],
+        [groups, isLoading, t]
     )
 
     const columns = useMemo<ColumnDef<TargetGroup>[]>(
@@ -104,7 +104,7 @@ export function TargetGroupsPanel() {
                 ],
             }),
         ],
-        [t],
+        [t]
     )
 
     return (

@@ -23,8 +23,7 @@ import {
 } from "../../monitoring.targets"
 import type { AlarmTarget } from "../../monitoring.types"
 
-const LABEL_CLASS =
-    "text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+const LABEL_CLASS = "text-xs font-semibold uppercase tracking-wide text-muted-foreground"
 const ERROR_CLASS = "text-[11px] text-destructive"
 const MUTED_NOTE_CLASS = "text-[12px] text-muted-foreground"
 
@@ -283,14 +282,12 @@ export function TargetSection({
                         </button>
                     </div>
 
-                    {isLoading && (
-                        <p className={MUTED_NOTE_CLASS}>Loading {meta.plural}…</p>
-                    )}
+                    {isLoading && <p className={MUTED_NOTE_CLASS}>Loading {meta.plural}…</p>}
 
                     {!isLoading && targets.length === 0 && (
                         <p className="rounded-lg border border-dashed border-border p-4 text-center text-[13px] text-muted-foreground">
-                            No {meta.plural} in this account yet. Pick another kind of
-                            resource, or watch a custom metric.
+                            No {meta.plural} in this account yet. Pick another kind of resource, or
+                            watch a custom metric.
                         </p>
                     )}
 
@@ -319,8 +316,7 @@ export function TargetSection({
 
                     {singleSelect && (
                         <p className={MUTED_NOTE_CLASS}>
-                            An alarm watches one resource — choosing another moves this
-                            alarm to it.
+                            An alarm watches one resource — choosing another moves this alarm to it.
                         </p>
                     )}
 
@@ -329,10 +325,8 @@ export function TargetSection({
                             <Check className="mt-0.5 size-3.5 shrink-0 text-brand-gold" />
                             <span>
                                 One alarm is created per resource —{" "}
-                                <span className="font-medium">
-                                    {targetIds.length} alarms
-                                </span>
-                                , each watching its own {meta.label.toLowerCase()}.
+                                <span className="font-medium">{targetIds.length} alarms</span>, each
+                                watching its own {meta.label.toLowerCase()}.
                             </span>
                         </p>
                     )}

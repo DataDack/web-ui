@@ -44,18 +44,10 @@ export function MonthYearPicker({
     toYear?: number
     className?: string
 }>) {
-    const years = Array.from(
-        { length: toYear - fromYear + 1 },
-        (_, i) => fromYear + i
-    )
+    const years = Array.from({ length: toYear - fromYear + 1 }, (_, i) => fromYear + i)
 
     return (
-        <div
-            className={cn(
-                "rounded-xl border bg-card text-card-foreground shadow-sm",
-                className
-            )}
-        >
+        <div className={cn("rounded-xl border bg-card text-card-foreground shadow-sm", className)}>
             <div className="flex items-center justify-between px-4 pt-4 pb-2 text-sm font-medium text-muted-foreground">
                 <div className="flex items-center gap-1">
                     {onBack ? (
@@ -82,7 +74,9 @@ export function MonthYearPicker({
                                     key={name}
                                     type="button"
                                     aria-pressed={selected}
-                                    onClick={() => { onMonthChange(index); }}
+                                    onClick={() => {
+                                        onMonthChange(index)
+                                    }}
                                     className={cn(
                                         "rounded-md px-3 py-2 text-left text-sm outline-none transition-colors",
                                         "focus-visible:ring-[3px] focus-visible:ring-ring/50",
@@ -106,7 +100,9 @@ export function MonthYearPicker({
                                     key={value}
                                     type="button"
                                     aria-pressed={selected}
-                                    onClick={() => { onYearChange(value); }}
+                                    onClick={() => {
+                                        onYearChange(value)
+                                    }}
                                     className={cn(
                                         "rounded-md px-2 py-2 text-center text-sm outline-none transition-colors",
                                         "focus-visible:ring-[3px] focus-visible:ring-ring/50",

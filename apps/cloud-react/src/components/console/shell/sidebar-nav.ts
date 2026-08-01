@@ -135,7 +135,11 @@ export const CONSOLE_SERVICES: ConsoleService[] = [
                 path: "/networking/vpn",
                 comingSoon: true,
             },
-            { labelKey: "console.nav.items.staticIps", icon: Globe, path: "/networking/static-ips" },
+            {
+                labelKey: "console.nav.items.staticIps",
+                icon: Globe,
+                path: "/networking/static-ips",
+            },
             {
                 labelKey: "console.nav.items.networkInterfaces",
                 icon: EthernetPort,

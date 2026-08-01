@@ -8,10 +8,7 @@ import { Section } from "@/components/console"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
-import {
-    useAllSecurityGroups,
-    useCreateDefaultSecurityGroup,
-} from "@/modules/vpc/vpc.hooks"
+import { useAllSecurityGroups, useCreateDefaultSecurityGroup } from "@/modules/vpc/vpc.hooks"
 
 import type { FormValues } from "../schema"
 import { EffectiveFirewall } from "./EffectiveFirewall"
@@ -37,14 +34,14 @@ export function SecurityStep({ form }: Readonly<{ form: UseFormReturn<FormValues
 
     const reachableVpcIds = useMemo(
         () => new Set(vpcs.map((v) => v.vpc_id).filter(Boolean)),
-        [vpcs],
+        [vpcs]
     )
 
     // Account-wide groups (no VPC) always apply; a VPC-scoped one only if the LB
     // has a NIC in that VPC.
     const eligible = useMemo(
         () => allGroups.filter((g) => !g.network_id || reachableVpcIds.has(g.network_id)),
-        [allGroups, reachableVpcIds],
+        [allGroups, reachableVpcIds]
     )
 
     // Drop selections that fell out of scope, e.g. after going back and changing
@@ -60,7 +57,7 @@ export function SecurityStep({ form }: Readonly<{ form: UseFormReturn<FormValues
     const toggle = (id: string, checked: boolean) => {
         setValue(
             "security_group_ids",
-            checked ? [...selected, id] : selected.filter((s) => s !== id),
+            checked ? [...selected, id] : selected.filter((s) => s !== id)
         )
     }
 

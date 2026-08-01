@@ -1,10 +1,5 @@
 export type HealthStatus =
-    | "operational"
-    | "elevated"
-    | "degraded"
-    | "outage"
-    | "inactive"
-    | "coming_soon"
+    "operational" | "elevated" | "degraded" | "outage" | "inactive" | "coming_soon"
 
 export interface ServiceHealthItem {
     id: string

@@ -32,14 +32,9 @@ import {
     TRANSITION_OPTIONS,
     timeAgo,
 } from "../../monitoring.meta"
-import type {
-    AlarmTransition,
-    AlertSeverity,
-    ChannelResponse,
-} from "../../monitoring.types"
+import type { AlarmTransition, AlertSeverity, ChannelResponse } from "../../monitoring.types"
 
-const LABEL_CLASS =
-    "text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+const LABEL_CLASS = "text-xs font-semibold uppercase tracking-wide text-muted-foreground"
 
 const SEVERITY_RANK: Record<AlertSeverity, number> = {
     info: 0,
@@ -74,14 +69,9 @@ function silenceNote(channels: ChannelResponse[], severity: AlertSeverity): stri
 
 function DeliveryHealth({ channel }: Readonly<{ channel: ChannelResponse }>) {
     if (!channel.last_delivery_at) {
-        return (
-            <span className="block text-[11px] text-muted-foreground">
-                no deliveries yet
-            </span>
-        )
+        return <span className="block text-[11px] text-muted-foreground">no deliveries yet</span>
     }
-    const ok =
-        channel.last_delivery_status === "ok" || channel.last_delivery_status === "sent"
+    const ok = channel.last_delivery_status === "ok" || channel.last_delivery_status === "sent"
     if (ok) {
         return (
             <span className="block text-[11px] text-muted-foreground">
@@ -169,8 +159,8 @@ function ChannelRow({
                     <DeliveryHealth channel={channel} />
                     {silent && (
                         <span className="block text-[11px] text-status-warning">
-                            Stays silent at this alarm’s severity — raise the severity or
-                            lower the channel’s minimum.
+                            Stays silent at this alarm’s severity — raise the severity or lower the
+                            channel’s minimum.
                         </span>
                     )}
                 </span>
@@ -179,9 +169,7 @@ function ChannelRow({
             {selected && (
                 <div className="mt-2.5 space-y-1.5 border-t border-border-glass pt-2.5">
                     <div className="flex flex-wrap items-center gap-1.5">
-                        <span className="mr-1 text-[11px] text-muted-foreground">
-                            Notify on
-                        </span>
+                        <span className="mr-1 text-[11px] text-muted-foreground">Notify on</span>
                         {/*
                           Three independent toggles, not one exclusive choice —
                           each maps to its own CloudWatch action list, so any
@@ -292,9 +280,7 @@ export function NotifySection({
                                     : "border-border text-muted-foreground hover:border-brand-gold/40 hover:text-foreground"
                             )}
                         >
-                            <span
-                                className={cn("size-1.5 rounded-full", option.dotClass)}
-                            />
+                            <span className={cn("size-1.5 rounded-full", option.dotClass)} />
                             {option.label}
                         </button>
                     ))}
@@ -326,8 +312,8 @@ export function NotifySection({
                 {!isLoading && available.length === 0 && (
                     <div className="rounded-lg border border-dashed border-border p-4 text-center">
                         <p className="text-[13px] text-muted-foreground">
-                            No channels yet. The alarm will still track state and record
-                            every transition — but nobody is told when it breaches.
+                            No channels yet. The alarm will still track state and record every
+                            transition — but nobody is told when it breaches.
                         </p>
                         <Button
                             type="button"

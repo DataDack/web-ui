@@ -83,9 +83,7 @@ export function HealthCheckFields({
                             </Label>
                             <Input
                                 className="font-mono"
-                                {...register(
-                                    `${path}.health_check_path`,
-                                )}
+                                {...register(`${path}.health_check_path`)}
                             />
                             {rowErrors?.health_check_path && (
                                 <p className="text-[11px] text-destructive">
@@ -102,10 +100,9 @@ export function HealthCheckFields({
                             type="number"
                             inputMode="numeric"
                             className="font-mono"
-                            {...register(
-                                `${path}.health_check_interval_s`,
-                                { valueAsNumber: true },
-                            )}
+                            {...register(`${path}.health_check_interval_s`, {
+                                valueAsNumber: true,
+                            })}
                         />
                     </div>
                     <div className="grid grid-cols-2 gap-3">
@@ -117,10 +114,7 @@ export function HealthCheckFields({
                                 type="number"
                                 inputMode="numeric"
                                 className="font-mono"
-                                {...register(
-                                    `${path}.healthy_threshold`,
-                                    { valueAsNumber: true },
-                                )}
+                                {...register(`${path}.healthy_threshold`, { valueAsNumber: true })}
                             />
                         </div>
                         <div className="space-y-1.5">
@@ -131,10 +125,9 @@ export function HealthCheckFields({
                                 type="number"
                                 inputMode="numeric"
                                 className="font-mono"
-                                {...register(
-                                    `${path}.unhealthy_threshold`,
-                                    { valueAsNumber: true },
-                                )}
+                                {...register(`${path}.unhealthy_threshold`, {
+                                    valueAsNumber: true,
+                                })}
                             />
                         </div>
                     </div>

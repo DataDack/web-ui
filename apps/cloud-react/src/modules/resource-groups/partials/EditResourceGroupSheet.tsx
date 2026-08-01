@@ -31,9 +31,9 @@ import type { ResourceGroup, UpdateResourceGroupPayload } from "../resource-grou
 
 const makeSchema = (rule: NamingRule) =>
     z.object({
-    name: namingNameSchema(rule),
-    description: z.string().max(500, "Maximum 500 characters"),
-})
+        name: namingNameSchema(rule),
+        description: z.string().max(500, "Maximum 500 characters"),
+    })
 
 type FormValues = z.infer<ReturnType<typeof makeSchema>>
 
@@ -77,15 +77,24 @@ export function EditResourceGroupSheet({ group, open, onOpenChange }: Readonly<P
             description: values.description,
             tags: tagRowsToRecord(tags),
         }
-        update({ id: group.id, payload }, { onSuccess: () => { onOpenChange(false); } })
+        update(
+            { id: group.id, payload },
+            {
+                onSuccess: () => {
+                    onOpenChange(false)
+                },
+            }
+        )
     }
 
     return (
-        <Sheet open={open} onOpenChange={(next) => { if (!next) close() }}>
-            <SheetContent
-                side="right"
-                className="w-full max-w-[480px] p-0 flex flex-col gap-0"
-            >
+        <Sheet
+            open={open}
+            onOpenChange={(next) => {
+                if (!next) close()
+            }}
+        >
+            <SheetContent side="right" className="w-full max-w-[480px] p-0 flex flex-col gap-0">
                 <SheetHeader className="px-6 py-5 shrink-0">
                     <SheetTitle>{t("resourceGroups.form.editTitle")}</SheetTitle>
                     <SheetDescription>{t("resourceGroups.form.editSubtitle")}</SheetDescription>

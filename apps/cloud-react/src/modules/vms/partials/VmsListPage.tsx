@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react"
 
-
 import type { ColumnDef } from "@tanstack/react-table"
 import {
     Cpu,
@@ -72,7 +71,8 @@ export function VmsListPage() {
                 // reachable, while pending/starting are still in flight.
                 label: t("status.running"),
                 value: instances.filter(
-                    (i) => i.status === "pending" || i.status === "starting" || i.status === "running"
+                    (i) =>
+                        i.status === "pending" || i.status === "starting" || i.status === "running"
                 ).length,
                 color: "info" as const,
                 loading: isLoading,
@@ -197,7 +197,9 @@ export function VmsListPage() {
                             </div>
                         )}
                         <div className="flex items-center gap-1.5 text-muted-foreground">
-                            <Shield className={row.original.private_ip ? "size-3" : "size-3 opacity-50"} />
+                            <Shield
+                                className={row.original.private_ip ? "size-3" : "size-3 opacity-50"}
+                            />
                             <span className={row.original.private_ip ? undefined : "opacity-50"}>
                                 {row.original.private_ip || "No Private IP"}
                             </span>
@@ -392,11 +394,9 @@ export function VmsListPage() {
                         {toDelete.some((i) => i.termination_protection) && (
                             <span className="mt-2 block font-medium text-destructive">
                                 {t("vms.terminateConfirm.protectionWarning", {
-                                    count: toDelete.filter((i) => i.termination_protection)
-                                        .length,
+                                    count: toDelete.filter((i) => i.termination_protection).length,
                                     name:
-                                        toDelete.find((i) => i.termination_protection)
-                                            ?.name ?? "",
+                                        toDelete.find((i) => i.termination_protection)?.name ?? "",
                                 })}
                             </span>
                         )}

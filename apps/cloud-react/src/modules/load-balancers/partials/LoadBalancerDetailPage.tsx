@@ -1,15 +1,6 @@
 import { useState } from "react"
 
-import {
-    AlertTriangle,
-    Boxes,
-    Crosshair,
-    Ear,
-    Info,
-    Layers,
-    Network,
-    Trash2,
-} from "lucide-react"
+import { AlertTriangle, Boxes, Crosshair, Ear, Info, Layers, Network, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link, useNavigate, useParams } from "react-router-dom"
 

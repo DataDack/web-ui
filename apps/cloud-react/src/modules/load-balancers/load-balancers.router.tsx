@@ -14,9 +14,8 @@ export const loadBalancersRoutes: RouteObject[] = [
         // Full-bleed wizard: hide the service sidebar and center the content.
         handle: { hideSidebar: true },
         lazy: async () => {
-            const { LoadBalancerCreateWizardPage } = await import(
-                "./partials/LoadBalancerCreateWizard"
-            )
+            const { LoadBalancerCreateWizardPage } =
+                await import("./partials/LoadBalancerCreateWizard")
             return { Component: LoadBalancerCreateWizardPage }
         },
     },

@@ -9,7 +9,6 @@ import { useScreen } from "@/services/api/screen"
 
 import { useInstance } from "../vms.hooks"
 
-
 // Standalone terminal tab: nothing but the terminal itself, edge to edge. The
 // tab title carries the instance name so the window stays identifiable.
 export function InstanceConsolePage() {

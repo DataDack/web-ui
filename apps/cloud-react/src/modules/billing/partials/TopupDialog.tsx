@@ -33,12 +33,18 @@ interface TopupDialogProps {
  * server-side ComputeBreakdown (zero GST). On submit it hands off to the gateway's
  * hosted checkout via useBuyCredits.
  */
-export function TopupDialog({ open, onOpenChange, initialCredits = 0 }: Readonly<TopupDialogProps>) {
+export function TopupDialog({
+    open,
+    onOpenChange,
+    initialCredits = 0,
+}: Readonly<TopupDialogProps>) {
     const { t } = useTranslation()
     const { mutate: buyCredits, isPending: isBuying } = useBuyCredits()
     // Seeded once from initialCredits; the parent remounts (via key) with a fresh
     // shortfall, so no effect is needed to re-seed.
-    const [creditsInput, setCreditsInput] = useState(initialCredits > 0 ? String(initialCredits) : "")
+    const [creditsInput, setCreditsInput] = useState(
+        initialCredits > 0 ? String(initialCredits) : ""
+    )
 
     const creditsNum = Math.max(0, Math.floor(Number(creditsInput) || 0))
     const totalRupees = creditsNum // GST-free top-up
@@ -86,7 +92,9 @@ export function TopupDialog({ open, onOpenChange, initialCredits = 0 }: Readonly
                     </div>
 
                     <div className="space-y-1.5">
-                        <Label htmlFor="credits-amount">{t("billing.buyDialog.creditsLabel")}</Label>
+                        <Label htmlFor="credits-amount">
+                            {t("billing.buyDialog.creditsLabel")}
+                        </Label>
                         <Input
                             id="credits-amount"
                             type="number"
@@ -106,7 +114,9 @@ export function TopupDialog({ open, onOpenChange, initialCredits = 0 }: Readonly
 
                     <dl className="divide-y divide-border/60 rounded-md border border-border/60 text-sm">
                         <div className="flex items-center justify-between px-3 py-2">
-                            <dt className="text-muted-foreground">{t("billing.buyDialog.credits")}</dt>
+                            <dt className="text-muted-foreground">
+                                {t("billing.buyDialog.credits")}
+                            </dt>
                             <dd className="font-mono">{inr(creditsNum)}</dd>
                         </div>
                         <div className="flex items-center justify-between px-3 py-2">
@@ -129,7 +139,11 @@ export function TopupDialog({ open, onOpenChange, initialCredits = 0 }: Readonly
                     >
                         {t("common.cancel")}
                     </Button>
-                    <Button variant="gold" onClick={submitBuy} disabled={creditsNum < 1 || isBuying}>
+                    <Button
+                        variant="gold"
+                        onClick={submitBuy}
+                        disabled={creditsNum < 1 || isBuying}
+                    >
                         {isBuying
                             ? t("billing.buyDialog.redirecting")
                             : t("billing.buyDialog.payCta", { amount: inr(totalRupees) })}

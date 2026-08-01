@@ -11,7 +11,12 @@ interface StaggerProps {
     delayChildren?: number
 }
 
-export function Stagger({ children, className, stagger = 0.04, delayChildren = 0 }: Readonly<StaggerProps>) {
+export function Stagger({
+    children,
+    className,
+    stagger = 0.04,
+    delayChildren = 0,
+}: Readonly<StaggerProps>) {
     return (
         <motion.div
             className={className}
@@ -27,7 +32,10 @@ export function Stagger({ children, className, stagger = 0.04, delayChildren = 0
     )
 }
 
-export function StaggerItem({ children, className }: Readonly<{ children: ReactNode; className?: string }>) {
+export function StaggerItem({
+    children,
+    className,
+}: Readonly<{ children: ReactNode; className?: string }>) {
     return (
         <motion.div
             className={className}

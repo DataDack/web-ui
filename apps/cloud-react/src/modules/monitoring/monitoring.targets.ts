@@ -238,10 +238,7 @@ export function metricsFor(type: AlarmTargetType): readonly MetricDescriptor[] {
     return CATALOG[type]
 }
 
-export function findMetric(
-    type: AlarmTargetType,
-    metric: string
-): MetricDescriptor | undefined {
+export function findMetric(type: AlarmTargetType, metric: string): MetricDescriptor | undefined {
     return CATALOG[type].find((entry) => entry.metric === metric)
 }
 

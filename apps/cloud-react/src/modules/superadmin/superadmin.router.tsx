@@ -25,8 +25,7 @@ export const superadminRoutes: RouteObject[] = [
             {
                 path: "accounts/:accountId/resources",
                 lazy: async () => {
-                    const { AccountResourcesPage } =
-                        await import("./partials/AccountResourcesPage")
+                    const { AccountResourcesPage } = await import("./partials/AccountResourcesPage")
                     return { Component: AccountResourcesPage }
                 },
             },
@@ -47,8 +46,7 @@ export const superadminRoutes: RouteObject[] = [
             {
                 path: "users/:userId",
                 lazy: async () => {
-                    const { AdminUserProfilePage } =
-                        await import("./partials/AdminUserProfilePage")
+                    const { AdminUserProfilePage } = await import("./partials/AdminUserProfilePage")
                     return { Component: AdminUserProfilePage }
                 },
             },

@@ -20,10 +20,7 @@ import { SecurityStep } from "./SecurityStep"
 import { TopologyAside } from "./TopologyAside"
 import { LB_ROUTES } from "../../load-balancers.constants"
 import { useCreateLoadBalancer } from "../../load-balancers.hooks"
-import type {
-    LBListenerSpec,
-    LBTargetGroupSpec,
-} from "../../load-balancers.types"
+import type { LBListenerSpec, LBTargetGroupSpec } from "../../load-balancers.types"
 
 export function LoadBalancerCreateWizardPage() {
     useScreen("load-balancers.load-balancer-create-wizard")
@@ -146,7 +143,7 @@ export function LoadBalancerCreateWizardPage() {
      */
     const onSubmit = (values: FormValues) => {
         const subnets = values.vpcs.flatMap((g) =>
-            g.subnet_ids.map((subnet_id) => ({ vpc_id: g.vpc_id, subnet_id })),
+            g.subnet_ids.map((subnet_id) => ({ vpc_id: g.vpc_id, subnet_id }))
         )
 
         // Listeners that create their own group get a request-local ref, which is
@@ -200,7 +197,7 @@ export function LoadBalancerCreateWizardPage() {
                 target_groups: targetGroups,
                 listeners,
             },
-            { onSuccess: (lb) => void navigate(LB_ROUTES.detail(lb.id)) },
+            { onSuccess: (lb) => void navigate(LB_ROUTES.detail(lb.id)) }
         )
     }
 

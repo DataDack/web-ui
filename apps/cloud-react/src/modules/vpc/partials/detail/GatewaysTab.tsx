@@ -3,13 +3,7 @@ import { useMemo, useState } from "react"
 import { Link2, Loader2, Unlink } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import {
-    ConfirmDialog,
-    CopyButton,
-    Section,
-    staggerDelay,
-    StatusBadge,
-} from "@/components/console"
+import { ConfirmDialog, CopyButton, Section, staggerDelay, StatusBadge } from "@/components/console"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
@@ -31,8 +25,7 @@ import {
 } from "../../vpc.hooks"
 import type { InternetGateway, VPCNetwork } from "../../vpc.types"
 
-const HEAD_CLASS =
-    "px-3 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground"
+const HEAD_CLASS = "px-3 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground"
 
 function LoadingRows() {
     return (
@@ -130,9 +123,7 @@ function InternetGatewaysSection({ network }: Readonly<{ network: VPCNetwork }>)
     const [toDetach, setToDetach] = useState<InternetGateway | null>(null)
 
     // Show gateways attached to this network plus detached ones available to attach.
-    const visible = gateways.filter(
-        (g) => g.network_id === network.id || g.status === "detached"
-    )
+    const visible = gateways.filter((g) => g.network_id === network.id || g.status === "detached")
 
     return (
         <Section
@@ -229,7 +220,11 @@ function InternetGatewaysSection({ network }: Readonly<{ network: VPCNetwork }>)
                 loading={isDetaching}
                 onConfirm={() => {
                     if (toDetach) {
-                        detach(toDetach.id, { onSuccess: () => { setToDetach(null); } })
+                        detach(toDetach.id, {
+                            onSuccess: () => {
+                                setToDetach(null)
+                            },
+                        })
                     }
                 }}
             />
@@ -245,10 +240,7 @@ function NatGatewaysSection({ network }: Readonly<{ network: VPCNetwork }>) {
     const { data: subnets = [] } = useVPCSubnets(network.id)
 
     const networkNats = natGateways.filter((n) => n.network_id === network.id)
-    const subnetNames = useMemo(
-        () => new Map(subnets.map((s) => [s.id, s.name])),
-        [subnets]
-    )
+    const subnetNames = useMemo(() => new Map(subnets.map((s) => [s.id, s.name])), [subnets])
 
     return (
         <Section

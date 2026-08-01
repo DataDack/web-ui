@@ -11,11 +11,7 @@ import {
     CommandItem,
     CommandList,
 } from "@/components/ui/command"
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 
 import { useCountries } from "./countries.hooks"
@@ -70,10 +66,7 @@ export function CountrySelect({
     const { data: countries = [] } = useCountries()
     const [open, setOpen] = useState(false)
 
-    const selected = useMemo(
-        () => countries.find((c) => c.iso2 === value),
-        [countries, value]
-    )
+    const selected = useMemo(() => countries.find((c) => c.iso2 === value), [countries, value])
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
@@ -129,16 +122,11 @@ export function CountrySelect({
                                         setOpen(false)
                                     }}
                                 >
-                                    <CountryRow
-                                        country={country}
-                                        showDialCode={showDialCode}
-                                    />
+                                    <CountryRow country={country} showDialCode={showDialCode} />
                                     <Check
                                         className={cn(
                                             "ml-auto size-4",
-                                            country.iso2 === value
-                                                ? "opacity-100"
-                                                : "opacity-0"
+                                            country.iso2 === value ? "opacity-100" : "opacity-0"
                                         )}
                                     />
                                 </CommandItem>
