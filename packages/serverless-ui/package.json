@@ -1,0 +1,65 @@
+{
+  "name": "@datadack/serverless-ui",
+  "version": "0.1.0",
+  "description": "Shared console kit for DataDack web surfaces: status tones, badges, list/detail building blocks, charts, and the shadcn-style primitives they stand on.",
+  "license": "UNLICENSED",
+  "type": "module",
+  "sideEffects": [
+    "*.css"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./styles.css": "./dist/styles.css"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DataDack/web-ui.git",
+    "directory": "packages/serverless-ui"
+  },
+  "scripts": {
+    "build": "tsup && cp src/styles.css dist/styles.css",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "clean": "rm -rf dist node_modules/.cache"
+  },
+  "dependencies": {
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "radix-ui": "^1.6.7",
+    "tailwind-merge": "^3.6.0"
+  },
+  "peerDependencies": {
+    "@tanstack/react-table": "^8.0.0",
+    "lucide-react": ">=1.0.0",
+    "react": ">=19.0.0",
+    "react-dom": ">=19.0.0"
+  },
+  "devDependencies": {
+    "tsup": "^8.5.0"
+  },
+  "nx": {
+    "tags": [
+      "scope:package",
+      "publishable"
+    ],
+    "implicitDependencies": [
+      "@serverless-ui/eslint-config",
+      "@serverless-ui/typescript-config"
+    ]
+  }
+}

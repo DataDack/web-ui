@@ -3,14 +3,20 @@ import { useMemo, useState } from 'react'
 import type { ColumnDef } from '@tanstack/react-table'
 import { ScrollText, ShieldCheck, ShieldX, UserCheck } from 'lucide-react'
 
-import { PageHeader } from '@/components/console/PageHeader'
-import { cellMono, cellText, ResourceTable } from '@/components/console/ResourceTable'
-import { StatCard, StatGrid } from '@/components/console/StatCard'
-import { Badge } from '@/components/ui/badge'
 import { apiErrorMessage } from '@/lib/api'
 import { useAuditEvents } from '@/lib/queries'
 import type { AuditEvent } from '@/lib/schemas'
 import { cn, timeAgo } from '@/lib/utils'
+
+import {
+  Badge,
+  PageHeader,
+  ResourceTable,
+  StatCard,
+  StatGrid,
+  cellMono,
+  cellText,
+} from '@datadack/serverless-ui'
 
 const RANGES = [
   { label: '1h', since: '-1h' },

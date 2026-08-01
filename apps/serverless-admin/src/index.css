@@ -4,6 +4,10 @@
 @import '@fontsource-variable/geist';
 @import '@fontsource/jetbrains-mono';
 
+/* The shared console kit ships class names in compiled JS — point Tailwind's
+   scanner at it so those utilities are generated in this app's build. */
+@source '../../../node_modules/@datadack/serverless-ui/dist';
+
 @custom-variant dark (&:is(.dark *));
 
 /* ─── Theme ───────────────────────────────────────────────────────────── */

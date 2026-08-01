@@ -34,9 +34,8 @@ web-ui/
 │   ├── typescript-config/     # base / react-library / vite-app tsconfigs
 │   └── eslint-config/         # flat configs: base and react
 ├── packages/                  # publishable, reusable across apps
-│   └── function-studio/       # @datadack/function-studio — authoring UI
 └── apps/
-    └── serverless-admin/      # Vite + React app consuming the package
+    └── serverless-admin/      # Vite + React app
 ```
 
 `config/*` packages are `private` — they are consumed through workspace links

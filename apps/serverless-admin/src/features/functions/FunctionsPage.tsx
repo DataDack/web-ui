@@ -4,14 +4,20 @@ import type { ColumnDef } from '@tanstack/react-table'
 import { Boxes, Container, Cpu, Package, Plus, Zap } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 
-import { PageHeader } from '@/components/console/PageHeader'
-import { cellMono, cellText, ResourceTable } from '@/components/console/ResourceTable'
-import { StatCard, StatGrid } from '@/components/console/StatCard'
-import { StatusBadge } from '@/components/console/StatusBadge'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { useDashboard } from '@/lib/queries'
 import type { FunctionEntity } from '@/lib/schemas'
+
+import {
+  Badge,
+  Button,
+  PageHeader,
+  ResourceTable,
+  StatCard,
+  StatGrid,
+  StatusBadge,
+  cellMono,
+  cellText,
+} from '@datadack/serverless-ui'
 
 export function FunctionsPage() {
   const { data, isLoading } = useDashboard()

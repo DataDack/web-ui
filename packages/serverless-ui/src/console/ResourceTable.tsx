@@ -11,18 +11,11 @@ import {
 } from '@tanstack/react-table'
 import { ArrowDown, ArrowUp, ArrowUpDown, type LucideIcon, Search } from 'lucide-react'
 
-import { EmptyState } from '@/components/console/EmptyState'
-import { Input } from '@/components/ui/input'
-import { Skeleton } from '@/components/ui/skeleton'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-import { cn } from '@/lib/utils'
+import { EmptyState } from './EmptyState'
+import { cn } from '../lib/cn'
+import { Input } from '../ui/input'
+import { Skeleton } from '../ui/skeleton'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table'
 
 interface ResourceTableProps<T> {
   data: T[]

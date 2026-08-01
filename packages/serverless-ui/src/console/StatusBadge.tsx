@@ -1,9 +1,8 @@
 import { Loader2 } from 'lucide-react'
 
-import { Badge } from '@/components/ui/badge'
-import { cn } from '@/lib/utils'
-
 import { getStatusConfig, TONE_CLASSES, TONE_DOT_CLASSES } from './status-config'
+import { cn } from '../lib/cn'
+import { Badge } from '../ui/badge'
 
 interface StatusBadgeProps {
   status: string

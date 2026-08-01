@@ -1,7 +1,7 @@
 import type { LucideIcon } from 'lucide-react'
 
-import { Skeleton } from '@/components/ui/skeleton'
-import { cn } from '@/lib/utils'
+import { cn } from '../lib/cn'
+import { Skeleton } from '../ui/skeleton'
 
 export type StatColor = 'default' | 'success' | 'warning' | 'danger' | 'info'
 

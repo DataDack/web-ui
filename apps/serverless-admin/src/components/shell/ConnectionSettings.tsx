@@ -3,9 +3,9 @@ import { useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { KeyRound } from 'lucide-react'
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { connection } from '@/lib/api'
+
+import { Button, Input } from '@datadack/serverless-ui'
 
 /**
  * Where the operator token is entered.

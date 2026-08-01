@@ -2,21 +2,25 @@ import { useQuery } from '@tanstack/react-query'
 import { ArrowLeft, Code2, Container, GitBranch, History, Package, Settings2 } from 'lucide-react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 
-import { EmptyState } from '@/components/console/EmptyState'
-import { KeyValueGrid } from '@/components/console/KeyValueGrid'
-import { StatusBadge } from '@/components/console/StatusBadge'
-import { useTheme } from '@/components/shell/ThemeProvider'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { FunctionCodeEditor } from '@/features/studio/components/FunctionCodeEditor'
 import { http } from '@/lib/api'
 import { useDashboard } from '@/lib/queries'
 import { functionVersionSchema, type FunctionEntity } from '@/lib/schemas'
 import { timeAgo } from '@/lib/utils'
 
-import '@/features/studio/studio.css'
+import {
+  Badge,
+  Button,
+  EmptyState,
+  KeyValueGrid,
+  Skeleton,
+  StatusBadge,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@datadack/serverless-ui'
+
+import { CodeEditorPlaceholder } from './CodeEditorPlaceholder'
 
 const TABS = [
   { value: 'code', label: 'Code', icon: Code2 },
@@ -144,10 +148,9 @@ function BackLink() {
   )
 }
 
-/** The packaged editor, mounted with nothing but connection settings. */
+/** Inline code editing is not built yet — the tab stays, the editor does not. */
 function CodeTab({ functionName }: Readonly<{ functionName: string }>) {
-  const { resolvedTheme } = useTheme()
-  return <FunctionCodeEditor functionName={functionName} theme={resolvedTheme} />
+  return <CodeEditorPlaceholder functionName={functionName} />
 }
 
 function ConfigurationTab({ fn }: Readonly<{ fn: FunctionEntity }>) {

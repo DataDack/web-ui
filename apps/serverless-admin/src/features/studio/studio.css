@@ -816,3 +816,74 @@
   font-size: 12px;
   word-break: break-word;
 }
+
+/* ---------------------------------------------------------------------------
+   Create form: method selector, env editor, inline source textareas.
+--------------------------------------------------------------------------- */
+
+.fs-methods {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+}
+.fs-method {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 12px 14px;
+  border: 1px solid var(--fs-border);
+  border-radius: 8px;
+  background: var(--fs-bg);
+  color: var(--fs-fg);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.fs-method:hover {
+  border-color: var(--fs-accent);
+}
+.fs-method[aria-pressed='true'] {
+  border-color: var(--fs-accent);
+  box-shadow: 0 0 0 3px var(--fs-accent-soft);
+}
+.fs-method-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.fs-method-desc {
+  color: var(--fs-muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.fs-textarea {
+  width: 100%;
+  min-height: 180px;
+  padding: 10px;
+  border: 1px solid var(--fs-border);
+  border-radius: 6px;
+  background: var(--fs-bg);
+  color: var(--fs-fg);
+  font-family: var(--fs-font-mono, ui-monospace, monospace);
+  font-size: 12.5px;
+  line-height: 1.65;
+  outline: none;
+  resize: vertical;
+  tab-size: 2;
+  white-space: pre;
+}
+.fs-textarea:focus-visible {
+  border-color: var(--fs-accent);
+  box-shadow: 0 0 0 3px var(--fs-accent-soft);
+}
+
+.fs-envrow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) auto;
+  gap: 8px;
+  align-items: center;
+}

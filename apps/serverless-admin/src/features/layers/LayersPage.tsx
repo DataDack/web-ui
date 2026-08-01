@@ -3,13 +3,19 @@ import { useMemo } from 'react'
 import type { ColumnDef } from '@tanstack/react-table'
 import { Layers, Package } from 'lucide-react'
 
-import { PageHeader } from '@/components/console/PageHeader'
-import { cellMono, cellText, ResourceTable } from '@/components/console/ResourceTable'
-import { StatCard, StatGrid } from '@/components/console/StatCard'
-import { Badge } from '@/components/ui/badge'
 import { useDashboard } from '@/lib/queries'
 import type { LayerVersion } from '@/lib/schemas'
 import { formatBytes, timeAgo } from '@/lib/utils'
+
+import {
+  Badge,
+  PageHeader,
+  ResourceTable,
+  StatCard,
+  StatGrid,
+  cellMono,
+  cellText,
+} from '@datadack/serverless-ui'
 
 export function LayersPage() {
   const { data, isLoading } = useDashboard()

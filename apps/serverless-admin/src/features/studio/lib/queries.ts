@@ -81,6 +81,7 @@ export interface CreateFunctionInput {
   architecture?: string
   memorySize?: number
   timeout?: number
+  env?: Record<string, string>
   files: { path: string; content: string }[]
 }
 
@@ -89,6 +90,33 @@ export function useCreateFunction() {
   return useMutation({
     mutationFn: async (input: CreateFunctionInput) => {
       const { data } = await http.post<unknown>('/v1/functions/source', input)
+      return data
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: keys.functions })
+    },
+  })
+}
+
+/**
+ * Direct deploy through POST /v1/functions — the packaged paths the source
+ * route cannot express: a pre-built container image, or a local process
+ * (`fprocess`) command that runs with no artifact at all.
+ */
+export interface DeployFunctionInput {
+  name: string
+  image: string
+  fprocess?: string
+  memorySize?: number
+  timeout?: number
+  env?: Record<string, string>
+}
+
+export function useDeployFunction() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (input: DeployFunctionInput) => {
+      const { data } = await http.post<unknown>('/v1/functions', input)
       return data
     },
     onSuccess: () => {

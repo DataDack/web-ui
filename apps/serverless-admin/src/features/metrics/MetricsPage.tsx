@@ -3,20 +3,24 @@ import { useMemo, useState } from 'react'
 import type { ColumnDef } from '@tanstack/react-table'
 import { Activity, AlertTriangle, Gauge, Snowflake, Timer } from 'lucide-react'
 
-import {
-  BarTimeChart,
-  ChartNote,
-  LineTimeChart,
-  formatTick,
-  type ChartPoint,
-} from '@/components/charts/TimeChart'
-import { PageHeader } from '@/components/console/PageHeader'
-import { cellMono, cellText, ResourceTable } from '@/components/console/ResourceTable'
-import { StatCard, StatGrid } from '@/components/console/StatCard'
 import { apiErrorMessage } from '@/lib/api'
 import { useDashboard, useMetricSeries } from '@/lib/queries'
 import type { MetricSeries } from '@/lib/schemas'
 import { cn } from '@/lib/utils'
+
+import {
+  BarTimeChart,
+  ChartNote,
+  LineTimeChart,
+  PageHeader,
+  ResourceTable,
+  StatCard,
+  StatGrid,
+  cellMono,
+  cellText,
+  formatTick,
+  type ChartPoint,
+} from '@datadack/serverless-ui'
 
 /** The windows the control plane's relative `since` parameter accepts. */
 const RANGES = [

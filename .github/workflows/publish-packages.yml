@@ -2,20 +2,22 @@ name: Publish packages
 
 # Publishes this workspace's packages to GitHub Packages.
 #
-# Triggered by a tag shaped like `function-studio-v0.1.0`, so each package is
-# released independently and the tag records exactly what shipped. The workflow
-# refuses to publish when the tag and the package.json version disagree — a
-# mismatch there produces a release nobody can reproduce from the repo.
+# Triggered by a tag shaped like `<package>-v<version>` (e.g.
+# `serverless-ui-v0.1.0`), so each package is released independently and the
+# tag records exactly what shipped. The package directory is derived from the
+# tag. The workflow refuses to publish when the tag and the package.json
+# version disagree — a mismatch there produces a release nobody can reproduce
+# from the repo.
 on:
   push:
     tags:
-      - 'function-studio-v*'
+      - 'serverless-ui-v*'
   workflow_dispatch:
     inputs:
       package:
         description: Package directory under packages/
         required: true
-        default: function-studio
+        default: serverless-ui
 
 permissions:
   contents: read
@@ -44,13 +46,19 @@ jobs:
       - name: Resolve package
         id: pkg
         run: |
-          NAME="${{ github.event.inputs.package || 'function-studio' }}"
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            # `<package>-v<version>` → `<package>`
+            NAME="${GITHUB_REF_NAME%-v*}"
+          else
+            NAME="${{ github.event.inputs.package }}"
+          fi
           DIR="packages/$NAME"
           if [ ! -f "$DIR/package.json" ]; then
             echo "::error::$DIR/package.json not found. The package must live in this repository for this workflow to publish it."
             exit 1
           fi
           VERSION=$(node -p "require('./$DIR/package.json').version")
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"
           echo "dir=$DIR" >> "$GITHUB_OUTPUT"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "Publishing $DIR at $VERSION"
@@ -70,7 +78,7 @@ jobs:
         env:
           NX_DAEMON: 'false'
           NX_TUI: 'false'
-        run: bunx nx build @datadack/function-studio
+        run: bunx nx build '@datadack/${{ steps.pkg.outputs.name }}'
 
       - name: Verify build output
         run: |

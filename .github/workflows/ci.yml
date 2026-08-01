@@ -8,9 +8,9 @@ on:
   pull_request:
     branches: [main]
     paths-ignore:
-      - "**/*.md"
-      - ".github/ISSUE_TEMPLATE/**"
-      - ".github/PULL_REQUEST_TEMPLATE.md"
+      - '**/*.md'
+      - '.github/ISSUE_TEMPLATE/**'
+      - '.github/PULL_REQUEST_TEMPLATE.md'
 
 permissions:
   contents: read
@@ -21,8 +21,8 @@ concurrency:
 
 env:
   # Nx runs one-shot in CI: no background daemon, no interactive TUI.
-  NX_DAEMON: "false"
-  NX_TUI: "false"
+  NX_DAEMON: 'false'
+  NX_TUI: 'false'
 
 jobs:
   # Lint, types and formatting are independent of each other, so they run as one
@@ -35,15 +35,15 @@ jobs:
       fail-fast: false
       matrix:
         check:
-          - { name: ESLint, run: "bun run lint" }
-          - { name: TypeScript, run: "bun run typecheck" }
-          - { name: Formatting, run: "bun run format:check" }
+          - { name: ESLint, run: 'bun run lint' }
+          - { name: TypeScript, run: 'bun run typecheck' }
+          - { name: Formatting, run: 'bun run format:check' }
     steps:
       - uses: actions/checkout@v7
 
       - uses: oven-sh/setup-bun@v2
         with:
-          bun-version: "1.3.14"
+          bun-version: '1.3.14'
 
       - name: Cache bun dependencies
         uses: actions/cache@v4
@@ -67,7 +67,7 @@ jobs:
 
       - uses: oven-sh/setup-bun@v2
         with:
-          bun-version: "1.3.14"
+          bun-version: '1.3.14'
 
       - name: Cache bun dependencies
         uses: actions/cache@v4

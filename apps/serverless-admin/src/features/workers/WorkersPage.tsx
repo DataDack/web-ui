@@ -3,14 +3,20 @@ import { useMemo } from 'react'
 import type { ColumnDef } from '@tanstack/react-table'
 import { Cpu, HardDrive, Server, ServerOff } from 'lucide-react'
 
-import { PageHeader } from '@/components/console/PageHeader'
-import { cellMono, cellText, ResourceTable } from '@/components/console/ResourceTable'
-import { StatCard, StatGrid } from '@/components/console/StatCard'
-import { StatusBadge } from '@/components/console/StatusBadge'
-import { Badge } from '@/components/ui/badge'
 import { useDashboard } from '@/lib/queries'
 import type { Worker } from '@/lib/schemas'
 import { timeAgo } from '@/lib/utils'
+
+import {
+  Badge,
+  PageHeader,
+  ResourceTable,
+  StatCard,
+  StatGrid,
+  StatusBadge,
+  cellMono,
+  cellText,
+} from '@datadack/serverless-ui'
 
 const LIVE_STATES = ['ready', 'active']
 

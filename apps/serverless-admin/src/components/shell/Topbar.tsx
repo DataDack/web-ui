@@ -5,8 +5,9 @@ import { ConnectionSettings } from '@/components/shell/ConnectionSettings'
 import { Logo } from '@/components/shell/Logo'
 import { ScopeSwitcher } from '@/components/shell/ScopeSwitcher'
 import { ThemeToggle } from '@/components/shell/ThemeToggle'
-import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+
+import { Button } from '@datadack/serverless-ui'
 
 interface TopbarProps {
   onRefresh: () => void

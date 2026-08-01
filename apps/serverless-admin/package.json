@@ -20,5 +20,8 @@
       "@serverless-ui/eslint-config",
       "@serverless-ui/typescript-config"
     ]
+  },
+  "dependencies": {
+    "@datadack/serverless-ui": "workspace:*"
   }
 }
