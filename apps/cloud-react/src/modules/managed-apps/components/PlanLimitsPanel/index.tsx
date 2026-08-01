@@ -2,8 +2,9 @@ import { AlertCircle, ArrowRight, Sparkles } from "lucide-react"
 import { Link } from "react-router-dom"
 
 import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
+
+import { Skeleton } from "@datadack/serverless-ui"
 
 import { QuotaMeter } from "./QuotaMeter"
 import { MANAGED_APPS_ROUTES } from "../../managed-apps.constants"

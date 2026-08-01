@@ -3,7 +3,8 @@ import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
 import { StatusBadge } from "@/components/console"
-import { Skeleton } from "@/components/ui/skeleton"
+
+import { Skeleton } from "@datadack/serverless-ui"
 
 export interface AttentionItem {
   id: string

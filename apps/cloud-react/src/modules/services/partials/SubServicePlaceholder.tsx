@@ -1,7 +1,8 @@
 import { type LucideIcon, AlertTriangle, Construction, Plus, Settings } from "lucide-react"
 
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+
+import { Badge } from "@datadack/serverless-ui"
 
 import type { ServiceStatus, SubServiceDefinition } from "../services.types"
 

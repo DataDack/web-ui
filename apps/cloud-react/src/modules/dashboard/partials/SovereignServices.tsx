@@ -2,11 +2,12 @@ import { CheckCircle2, Grip } from "lucide-react"
 import { Link } from "react-router-dom"
 
 import { Stagger, StaggerItem } from "@/components/console"
-import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 import { useCatalogServices } from "@/modules/services/catalog.hooks"
 import type { CatalogMetric, CatalogService, CatalogStatus } from "@/modules/services/catalog.types"
 import { ServiceIcon } from "@/modules/services/ServiceIcon"
+
+import { Skeleton } from "@datadack/serverless-ui"
 
 // Health-dot colour per operational status.
 const STATUS_DOT: Record<CatalogStatus, string> = {

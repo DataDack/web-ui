@@ -5,8 +5,9 @@ import { useTranslation } from "react-i18next"
 
 import { ConfirmDialog, EmptyState, PageHeader, StatGrid } from "@/components/console"
 import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
 import { useScreen } from "@/services/api/screen"
+
+import { Skeleton } from "@datadack/serverless-ui"
 
 import { EMPTY_SELECTION, summarize, toggle, toggleGroup, type Selection } from "./cache-selection"
 import { ClearBar } from "./ClearBar"

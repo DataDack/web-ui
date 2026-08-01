@@ -1,8 +1,9 @@
 import { ExternalLink } from "lucide-react"
 
 import { SmartSelect, type SmartSelectOption } from "@/components/console"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+
+import { Badge } from "@datadack/serverless-ui"
 
 import { GitHubAvatar } from "./GitHubAvatar"
 import { GITHUB_INSTALLATIONS_URL } from "../managed-apps.constants"

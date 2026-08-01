@@ -1,5 +1,6 @@
-import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
+
+import { Badge } from "@datadack/serverless-ui"
 
 import type { ProjectType } from "../managed-apps.types"
 import { PROJECT_TYPE_META, projectTypeLabel } from "./project-type"

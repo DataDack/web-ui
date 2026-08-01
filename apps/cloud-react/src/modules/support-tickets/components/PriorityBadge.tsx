@@ -1,8 +1,9 @@
 import { useTranslation } from "react-i18next"
 
 import type { StatusTone } from "@/components/console"
-import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
+
+import { Badge } from "@datadack/serverless-ui"
 
 import { priorityMeta } from "../support-tickets.constants"
 import type { TicketPriority } from "../support-tickets.types"

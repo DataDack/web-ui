@@ -3,9 +3,10 @@ import { useState } from "react"
 import { Plus, Terminal, X } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+
+import { Badge } from "@datadack/serverless-ui"
 
 interface CustomPatternCardProps {
   patterns: string[]

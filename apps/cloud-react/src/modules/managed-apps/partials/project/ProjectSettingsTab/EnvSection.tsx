@@ -4,7 +4,8 @@ import { Loader2 } from "lucide-react"
 
 import { ConfirmDialog, Section } from "@/components/console"
 import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
+
+import { Skeleton } from "@datadack/serverless-ui"
 
 import { EnvVarEditor, storedEnvRows, toEnvMap, type EnvRow } from "../../../components"
 import { useProjectEnv, useUpdateProjectEnv } from "../../../managed-apps.hooks"

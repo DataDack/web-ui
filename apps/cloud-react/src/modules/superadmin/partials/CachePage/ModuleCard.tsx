@@ -1,9 +1,10 @@
 import { useTranslation } from "react-i18next"
 
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { cn } from "@/lib/utils"
+
+import { Badge } from "@datadack/serverless-ui"
 
 import { groupState, type Selection } from "./cache-selection"
 import { ImpactBadge } from "./ImpactBadge"

@@ -2,8 +2,9 @@ import { useMemo } from "react"
 
 import { useTranslation } from "react-i18next"
 
-import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
+
+import { Skeleton } from "@datadack/serverless-ui"
 
 import type { ComputeZoneStatus } from "../../vms.types"
 

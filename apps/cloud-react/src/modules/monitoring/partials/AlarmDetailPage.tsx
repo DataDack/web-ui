@@ -34,9 +34,7 @@ import {
   PageHeader,
   Section,
 } from "@/components/console"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
 import {
   Table,
   TableBody,
@@ -50,6 +48,8 @@ import { useDisks } from "@/modules/disks/disks.hooks"
 import { useLoadBalancers } from "@/modules/load-balancers/load-balancers.hooks"
 import { useInstances } from "@/modules/vms/vms.hooks"
 import { useScreen } from "@/services/api/screen"
+
+import { Badge, Skeleton } from "@datadack/serverless-ui"
 
 import { TYPE_META } from "../channels/channels.meta"
 import { AlarmStateChip, SeverityChip } from "../components/StateChips"

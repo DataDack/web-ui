@@ -8,11 +8,12 @@ import { CopyButton, PageHeader, Section } from "@/components/console"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
 import { useSSHKeys } from "@/modules/ssh-keys/ssh-keys.hooks"
 import { useScreen } from "@/services/api/screen"
+
+import { Skeleton } from "@datadack/serverless-ui"
 
 import { VMS_ROUTES } from "../vms.constants"
 import { useInstance } from "../vms.hooks"

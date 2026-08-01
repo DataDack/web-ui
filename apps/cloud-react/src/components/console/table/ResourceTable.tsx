@@ -26,7 +26,6 @@ import { useTranslation } from "react-i18next"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Skeleton } from "@/components/ui/skeleton"
 import {
   Table,
   TableBody,
@@ -36,6 +35,8 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
+
+import { Skeleton } from "@datadack/serverless-ui"
 
 import { type BulkAction, BulkActionsBar } from "./BulkActionsBar"
 import { staggerDelay } from "../motion/motion-config"

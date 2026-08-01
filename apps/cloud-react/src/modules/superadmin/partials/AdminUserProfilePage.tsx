@@ -10,9 +10,10 @@ import {
   Section,
   type KeyValueItem,
 } from "@/components/console"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { useScreen } from "@/services/api/screen"
+
+import { Badge } from "@datadack/serverless-ui"
 
 import { ActiveBadge } from "../components/ActiveBadge"
 import { useAdminPlatformOverview } from "../superadmin.hooks"

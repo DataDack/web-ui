@@ -6,9 +6,10 @@ import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
 import { actionsColumn, EmptyState, PageHeader, ResourceTable } from "@/components/console"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { useScreen } from "@/services/api/screen"
+
+import { Badge } from "@datadack/serverless-ui"
 
 import { ActiveBadge } from "../components/ActiveBadge"
 import { useAdminAvailabilityZones, useAdminVMPrices } from "../superadmin.hooks"

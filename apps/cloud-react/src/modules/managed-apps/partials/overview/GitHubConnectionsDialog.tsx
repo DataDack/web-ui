@@ -3,7 +3,6 @@ import { useState } from "react"
 import { ExternalLink, Loader2, Plus, Unlink } from "lucide-react"
 
 import { ConfirmDialog } from "@/components/console"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -14,7 +13,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
-import { Skeleton } from "@/components/ui/skeleton"
+
+import { Badge, Skeleton } from "@datadack/serverless-ui"
 
 import { GitHubMark } from "../../components/GitHubMark"
 import { GITHUB_INSTALLATIONS_URL } from "../../managed-apps.constants"

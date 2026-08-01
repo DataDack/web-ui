@@ -1,8 +1,9 @@
 import { Loader2 } from "lucide-react"
 
 import { TONE_CLASSES, type StatusTone } from "@/components/console/status-config"
-import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
+
+import { Badge } from "@datadack/serverless-ui"
 
 import { type BuildStatus, isBuildTransitional } from "../managed-apps.types"
 

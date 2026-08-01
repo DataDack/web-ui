@@ -4,7 +4,6 @@ import { Loader2, Lock, Plus, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { ConfirmDialog, EmptyState, staggerDelay } from "@/components/console"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -14,7 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Skeleton } from "@/components/ui/skeleton"
 import {
   Table,
   TableBody,
@@ -23,6 +21,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+
+import { Badge, Skeleton } from "@datadack/serverless-ui"
 
 import { CreateSecurityGroupSheet } from "./CreateSecurityGroupSheet"
 import { sgProtocolUsesPorts } from "../../api/shared"

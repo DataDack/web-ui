@@ -13,7 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Skeleton } from "@/components/ui/skeleton"
 import { VPC_ROUTES } from "@/modules/vpc/vpc.constants"
 import {
   useAllSecurityGroups,
@@ -21,6 +20,8 @@ import {
   useDetachInstanceSG,
   useInstanceSecurityGroups,
 } from "@/modules/vpc/vpc.hooks"
+
+import { Skeleton } from "@datadack/serverless-ui"
 
 /** "Security groups" panel on the VM detail Networking tab: lists the groups
  *  attached to the instance and lets the user attach/detach. */

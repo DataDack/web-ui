@@ -12,7 +12,6 @@ import { ChevronDown } from "lucide-react"
 import type { UseFormRegister } from "react-hook-form"
 
 import { MetricChart } from "@/components/console"
-import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import {
   Select,
@@ -22,6 +21,8 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
+
+import { Badge } from "@datadack/serverless-ui"
 
 import { simulateAlarm, windowCount } from "./backtest"
 import { numeric, type FormValues, type PeriodSeconds } from "./schema"

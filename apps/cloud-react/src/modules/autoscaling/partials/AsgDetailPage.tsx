@@ -16,9 +16,10 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Skeleton } from "@/components/ui/skeleton"
 import { parseTags } from "@/lib/tags"
 import { useScreen } from "@/services/api/screen"
+
+import { Skeleton } from "@datadack/serverless-ui"
 
 import { ASG_ROUTES } from "../autoscaling.constants"
 import { useASG, useDeleteASG, useSetASGCapacity } from "../autoscaling.hooks"

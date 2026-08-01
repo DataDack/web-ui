@@ -5,7 +5,6 @@ import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 import { EmptyState, PageHeader, Section } from "@/components/console"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -16,12 +15,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Skeleton } from "@/components/ui/skeleton"
 import { Switch } from "@/components/ui/switch"
 import { useAuth } from "@/modules/auth/auth.context"
 import { ORG_MANAGER_ROLES } from "@/modules/organizations/organizations.constants"
 import { useActiveOrganization } from "@/modules/organizations/organizations.hooks"
 import { useScreen } from "@/services/api/screen"
+
+import { Badge, Skeleton } from "@datadack/serverless-ui"
 
 import { useNamingPolicy, useUpdateNamingPolicy } from "../governance.hooks"
 import {

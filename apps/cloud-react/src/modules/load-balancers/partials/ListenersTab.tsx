@@ -22,7 +22,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Skeleton } from "@/components/ui/skeleton"
 import {
   Table,
   TableBody,
@@ -33,6 +32,8 @@ import {
 } from "@/components/ui/table"
 import { TG_ROUTES } from "@/modules/target-groups/target-groups.constants"
 import { useTargetGroups } from "@/modules/target-groups/target-groups.hooks"
+
+import { Skeleton } from "@datadack/serverless-ui"
 
 import {
   useCreateListener,

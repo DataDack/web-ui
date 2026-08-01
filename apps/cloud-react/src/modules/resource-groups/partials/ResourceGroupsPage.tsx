@@ -12,8 +12,9 @@ import {
   staggerDelay,
 } from "@/components/console"
 import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
 import { useScreen } from "@/services/api/screen"
+
+import { Skeleton } from "@datadack/serverless-ui"
 
 import { RG_ROUTES } from "../resource-groups.constants"
 import { useResourceGroups } from "../resource-groups.hooks"

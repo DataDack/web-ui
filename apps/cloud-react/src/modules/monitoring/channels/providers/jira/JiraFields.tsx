@@ -4,7 +4,6 @@ import { CheckCircle2, Loader2, Plus, Unlink } from "lucide-react"
 import { useWatch, type UseFormReturn } from "react-hook-form"
 import { SiJira } from "react-icons/si"
 
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ComboboxInput } from "@/components/ui/combobox-input"
 import { Input } from "@/components/ui/input"
@@ -15,7 +14,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 import {
   useDisconnectJira,
@@ -25,6 +23,8 @@ import {
   useJiraProjects,
   useStartJiraOAuth,
 } from "@/modules/monitoring/monitoring.hooks"
+
+import { Badge, Skeleton } from "@datadack/serverless-ui"
 
 import type { JiraConnection } from "../../../monitoring.types"
 import { splitJiraLabels, type ChannelFormValues } from "../../channels.form"

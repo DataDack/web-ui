@@ -2,10 +2,10 @@ import { ArrowRight, Check, Inbox, X } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { EmptyState } from "@/components/console"
-import { Badge } from "@/components/ui/badge"
-import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 import { timeAgo } from "@/modules/monitoring/monitoring.meta"
+
+import { Badge, Skeleton } from "@datadack/serverless-ui"
 
 import type { QuotaRequest, QuotaRequestStatus } from "../../quotas.types"
 

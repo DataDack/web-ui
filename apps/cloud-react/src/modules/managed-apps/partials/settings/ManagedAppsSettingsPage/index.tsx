@@ -4,9 +4,10 @@ import { AlertCircle, Settings2 } from "lucide-react"
 import { toast } from "sonner"
 
 import { ConfirmDialog, PageHeader, Section } from "@/components/console"
-import { Skeleton } from "@/components/ui/skeleton"
 import { useScreen } from "@/services/api/screen"
 import { useConsoleBroadcast } from "@/services/broadcast"
+
+import { Skeleton } from "@datadack/serverless-ui"
 
 import { CustomPlanCard } from "./CustomPlanCard"
 import { CustomPlanDialog } from "./CustomPlanDialog"

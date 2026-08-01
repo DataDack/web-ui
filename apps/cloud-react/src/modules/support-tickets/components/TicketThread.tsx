@@ -1,7 +1,7 @@
 import { Lock } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { Skeleton } from "@/components/ui/skeleton"
+import { Skeleton } from "@datadack/serverless-ui"
 
 import { formatTicketDateTime, formatTicketPerson } from "./ticket-format"
 import type { TicketComment } from "../support-tickets.types"

@@ -15,11 +15,12 @@ import { useState } from "react"
 
 import { AlertTriangle, Plus } from "lucide-react"
 
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
+
+import { Badge } from "@datadack/serverless-ui"
 
 import type { ChannelBinding } from "./schema"
 import { ChannelCreateDialog } from "../../channels/ChannelCreateDialog"

@@ -1,10 +1,6 @@
 {
   "extends": "@serverless-ui/typescript-config/react-library.json",
   "compilerOptions": {
-    // The shared react-library preset assumes emotion's jsx runtime; this
-    // package styles through @emotion/css class names (no css prop), so the
-    // plain React runtime is correct.
-    "jsxImportSource": "react",
     "noEmit": true
   },
   "include": ["src", "tsup.config.ts"]

@@ -18,11 +18,12 @@ import {
   statusColumn,
   textColumn,
 } from "@/components/console"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useAvailabilityZoneMap } from "@/modules/catalog/catalog.hooks"
 import { useScreen } from "@/services/api/screen"
+
+import { Badge } from "@datadack/serverless-ui"
 
 import { VPC_ROUTES } from "../vpc.constants"
 import { useAllSubnets, useDeleteSubnet, useVPCs } from "../vpc.hooks"

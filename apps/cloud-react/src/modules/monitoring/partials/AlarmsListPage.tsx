@@ -23,7 +23,6 @@ import {
   PageHeader,
   ResourceTable,
 } from "@/components/console"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -38,6 +37,8 @@ import { useDisks } from "@/modules/disks/disks.hooks"
 import { useLoadBalancers } from "@/modules/load-balancers/load-balancers.hooks"
 import { useInstances } from "@/modules/vms/vms.hooks"
 import { useScreen } from "@/services/api/screen"
+
+import { Badge } from "@datadack/serverless-ui"
 
 import { AlarmStateChip, SeverityChip } from "../components/StateChips"
 import { MONITORING_ROUTES } from "../monitoring.constants"

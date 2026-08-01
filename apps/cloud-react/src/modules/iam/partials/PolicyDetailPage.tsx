@@ -6,8 +6,9 @@ import { useNavigate, useParams } from "react-router-dom"
 
 import { ConfirmDialog, CopyButton, DetailPage, KeyValueGrid, Section } from "@/components/console"
 import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
 import { useScreen } from "@/services/api/screen"
+
+import { Skeleton } from "@datadack/serverless-ui"
 
 import { IAM_ROUTES } from "../iam.constants"
 import { useDeleteIAMPolicy, useIAMPolicy } from "../iam.hooks"

@@ -35,7 +35,6 @@ import {
   TagList,
   type KeyValueItem,
 } from "@/components/console"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -44,7 +43,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Skeleton } from "@/components/ui/skeleton"
 import { Switch } from "@/components/ui/switch"
 import {
   Table,
@@ -60,6 +58,8 @@ import { useDetachDisk, useDisks } from "@/modules/disks/disks.hooks"
 import { useSSHKeys } from "@/modules/ssh-keys/ssh-keys.hooks"
 import { useVPC, useVPCSubnets } from "@/modules/vpc/vpc.hooks"
 import { useScreen } from "@/services/api/screen"
+
+import { Badge, Skeleton } from "@datadack/serverless-ui"
 
 import { isVmTransitional, VMS_ROUTES, vmDisplayStatus } from "../vms.constants"
 import { InstanceSecurityGroupsSection } from "./InstanceSecurityGroupsSection"

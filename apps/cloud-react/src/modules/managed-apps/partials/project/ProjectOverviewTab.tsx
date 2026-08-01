@@ -2,8 +2,9 @@ import { ExternalLink, GitBranch, GitPullRequest } from "lucide-react"
 import { Link } from "react-router-dom"
 
 import { KeyValueGrid, Section } from "@/components/console"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+
+import { Badge } from "@datadack/serverless-ui"
 
 import { CurrentDeploymentHero } from "./CurrentDeploymentHero"
 import { RuntimePanel } from "./RuntimePanel"

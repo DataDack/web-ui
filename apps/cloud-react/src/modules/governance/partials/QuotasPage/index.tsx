@@ -6,8 +6,9 @@ import { useSearchParams } from "react-router-dom"
 
 import { AnimatedTabs, PageHeader, StatGrid } from "@/components/console"
 import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
 import { useScreen } from "@/services/api/screen"
+
+import { Skeleton } from "@datadack/serverless-ui"
 
 import { MODULE_ORDER } from "./modules-meta"
 import { ModuleSection } from "./ModuleSection"

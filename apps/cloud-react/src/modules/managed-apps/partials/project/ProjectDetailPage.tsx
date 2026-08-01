@@ -3,8 +3,9 @@ import { Link, useNavigate, useParams } from "react-router-dom"
 
 import { DetailPage, EmptyState } from "@/components/console"
 import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
 import { useScreen } from "@/services/api/screen"
+
+import { Skeleton } from "@datadack/serverless-ui"
 
 import { ProjectBuildsTab } from "./ProjectBuildsTab"
 import { ProjectOverviewTab } from "./ProjectOverviewTab"

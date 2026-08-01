@@ -5,7 +5,6 @@ import { useSearchParams } from "react-router-dom"
 
 import { EmptyState, Section, staggerDelay } from "@/components/console"
 import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
 import {
   Table,
   TableBody,
@@ -14,6 +13,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+
+import { Skeleton } from "@datadack/serverless-ui"
 
 import { formatDuration, isTimeSet, shortSha, timeSince, triggerLabel } from "./build-format"
 import { BuildLogConsole } from "./BuildLogConsole"

@@ -44,7 +44,6 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet"
-import { Skeleton } from "@/components/ui/skeleton"
 import { ACCOUNT_MANAGER_ROLES } from "@/modules/accounts/accounts.constants"
 import {
   useAccountMembers,
@@ -71,6 +70,8 @@ import { CountrySelect } from "@/modules/countries/CountrySelect"
 import { InviteMemberDialog } from "@/modules/iam/partials/InviteMemberDialog"
 import { useOnboardingStatus } from "@/modules/onboarding/onboarding.hooks"
 import { useScreen } from "@/services/api/screen"
+
+import { Skeleton } from "@datadack/serverless-ui"
 
 import { useOrganization, useUpdateOrganization } from "../organizations.hooks"
 import type { BillingAddress, Organization } from "../organizations.types"

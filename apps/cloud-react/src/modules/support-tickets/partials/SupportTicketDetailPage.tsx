@@ -12,9 +12,10 @@ import {
   StatusBadge,
 } from "@/components/console"
 import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
 import { Textarea } from "@/components/ui/textarea"
 import { useScreen } from "@/services/api/screen"
+
+import { Skeleton } from "@datadack/serverless-ui"
 
 import { PriorityBadge } from "../components/PriorityBadge"
 import { formatTicketDateTime, formatTicketPerson } from "../components/ticket-format"

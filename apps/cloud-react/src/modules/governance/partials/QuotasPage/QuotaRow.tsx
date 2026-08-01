@@ -1,9 +1,10 @@
 import { ArrowUpRight } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+
+import { Badge } from "@datadack/serverless-ui"
 
 import { QuotaRing } from "../../components/QuotaRing"
 import { type QuotaTone, quotaTone } from "../../components/QuotaRing/quota-tone"

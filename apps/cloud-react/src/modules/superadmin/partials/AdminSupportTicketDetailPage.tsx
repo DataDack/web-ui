@@ -14,7 +14,6 @@ import {
 } from "@/components/console"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Skeleton } from "@/components/ui/skeleton"
 import { Textarea } from "@/components/ui/textarea"
 import { PriorityBadge } from "@/modules/support-tickets/components/PriorityBadge"
 import {
@@ -33,6 +32,8 @@ import {
   useUpdateSupportTicket,
 } from "@/modules/support-tickets/support-tickets.hooks"
 import { useScreen } from "@/services/api/screen"
+
+import { Skeleton } from "@datadack/serverless-ui"
 
 const ADMIN_SUPPORT_ROOT = "/admin/support"
 

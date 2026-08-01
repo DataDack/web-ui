@@ -3,8 +3,9 @@
 // that exports both components and helpers breaks fast refresh for everything
 // importing it.
 
-import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
+
+import { Badge } from "@datadack/serverless-ui"
 
 import { SEVERITY_BADGE_CLASS } from "../channels/channels.meta"
 import { ALARM_STATE_META } from "../monitoring.meta"

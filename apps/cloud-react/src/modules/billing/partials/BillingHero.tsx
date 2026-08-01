@@ -4,8 +4,9 @@ import { Flame, TimerReset, Wallet } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { AnimatedNumber, Sparkline } from "@/components/console"
-import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
+
+import { Skeleton } from "@datadack/serverless-ui"
 
 import { GST_RATE } from "../billing.constants"
 import type { CreditBalance, CreditPurchase, LedgerEntry, UsageRecordApi } from "../billing.types"

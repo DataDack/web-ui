@@ -31,7 +31,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Skeleton } from "@/components/ui/skeleton"
 import {
   Table,
   TableBody,
@@ -43,6 +42,8 @@ import {
 import { VMS_ROUTES } from "@/modules/vms/vms.constants"
 import { useInstances } from "@/modules/vms/vms.hooks"
 import { useScreen } from "@/services/api/screen"
+
+import { Skeleton } from "@datadack/serverless-ui"
 
 import { TG_ROUTES } from "../target-groups.constants"
 import {

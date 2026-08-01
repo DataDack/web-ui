@@ -8,14 +8,14 @@ import { z } from "zod/v4"
 
 import { KeyValueGrid, PageHeader, Section } from "@/components/console"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Skeleton } from "@/components/ui/skeleton"
 import { useAuth } from "@/modules/auth/auth.context"
 import { useCountries } from "@/modules/countries/countries.hooks"
 import { useScreen } from "@/services/api/screen"
+
+import { Badge, Skeleton } from "@datadack/serverless-ui"
 
 import { useUpdateProfile } from "../organizations.hooks"
 

@@ -1,8 +1,9 @@
 import { type LucideIcon, TrendingDown, TrendingUp } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 
-import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
+
+import { Skeleton } from "@datadack/serverless-ui"
 
 import { AnimatedNumber } from "./motion/AnimatedNumber"
 import { DUR, EASE } from "./motion/motion-config"

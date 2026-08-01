@@ -14,9 +14,10 @@ import {
   ResourceTable,
   textColumn,
 } from "@/components/console"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { useAvailabilityZoneMap } from "@/modules/catalog/catalog.hooks"
+
+import { Badge } from "@datadack/serverless-ui"
 
 import { AddSubnetSheet } from "./AddSubnetSheet"
 import { useDeleteSubnet, useVPCSubnets } from "../../vpc.hooks"

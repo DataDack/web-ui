@@ -24,9 +24,10 @@ import { PageHeader, Section } from "@/components/console"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Skeleton } from "@/components/ui/skeleton"
 import { Textarea } from "@/components/ui/textarea"
 import { useScreen } from "@/services/api/screen"
+
+import { Skeleton } from "@datadack/serverless-ui"
 
 import { ConditionSection } from "./ConditionSection"
 import { NotifySection } from "./NotifySection"

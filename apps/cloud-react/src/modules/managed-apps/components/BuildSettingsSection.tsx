@@ -5,7 +5,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
-import { Skeleton } from "@/components/ui/skeleton"
+
+import { Skeleton } from "@datadack/serverless-ui"
 
 import { RootDirectoryInput } from "./RootDirectoryInput"
 import { useBuildDefaults } from "../managed-apps.hooks"

@@ -5,9 +5,10 @@ import { HardDrive, Pencil, Plus, RefreshCw, Globe } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { actionsColumn, EmptyState, PageHeader, ResourceTable } from "@/components/console"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { useScreen } from "@/services/api/screen"
+
+import { Badge } from "@datadack/serverless-ui"
 
 import { ActiveBadge } from "../components/ActiveBadge"
 import { useAdminAvailabilityZones, useAdminStoragePrices } from "../superadmin.hooks"

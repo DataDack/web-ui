@@ -23,7 +23,6 @@ import {
   ResourceTable,
   StatGrid,
 } from "@/components/console"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -31,6 +30,8 @@ import { useImageCatalog } from "@/modules/catalog/catalog.hooks"
 import type { ImageCatalogFamily } from "@/modules/catalog/catalog.types"
 import { OSIcon } from "@/modules/catalog/os-icons"
 import { useScreen } from "@/services/api/screen"
+
+import { Badge } from "@datadack/serverless-ui"
 
 import { VMS_ROUTES } from "../vms.constants"
 

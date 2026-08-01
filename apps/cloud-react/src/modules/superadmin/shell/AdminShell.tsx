@@ -4,7 +4,8 @@ import { useOutlet } from "react-router-dom"
 
 import { MotionProvider } from "@/components/console"
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet"
-import { Skeleton } from "@/components/ui/skeleton"
+
+import { Skeleton } from "@datadack/serverless-ui"
 
 import { AdminSidebar } from "./AdminSidebar"
 import { AdminTopbar } from "./AdminTopbar"

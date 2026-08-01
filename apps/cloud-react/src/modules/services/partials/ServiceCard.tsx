@@ -1,9 +1,10 @@
 import { ArrowUpRight } from "lucide-react"
 import { Link } from "react-router-dom"
 
-import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
+
+import { Badge } from "@datadack/serverless-ui"
 
 import type { ServiceDefinition, ServiceStatus } from "../services.types"
 

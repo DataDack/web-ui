@@ -1,9 +1,10 @@
 import type { ReactNode } from "react"
 
-import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import { cn } from "@/lib/utils"
+
+import { Badge } from "@datadack/serverless-ui"
 
 import { FieldRow } from "./FieldRow"
 

@@ -1,9 +1,10 @@
 import { Radio, ScrollText } from "lucide-react"
 
 import { EmptyState, PageHeader } from "@/components/console"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { useScreen } from "@/services/api/screen"
+
+import { Badge } from "@datadack/serverless-ui"
 
 export function LogsPage() {
   useScreen("monitoring.logs")

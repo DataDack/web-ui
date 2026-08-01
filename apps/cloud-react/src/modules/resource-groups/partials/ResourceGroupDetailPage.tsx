@@ -4,8 +4,9 @@ import { useParams, useSearchParams } from "react-router-dom"
 
 import { DetailPage, KeyValueGrid, Section, TagList } from "@/components/console"
 import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
 import { useScreen } from "@/services/api/screen"
+
+import { Skeleton } from "@datadack/serverless-ui"
 
 import { useResourceGroup$ } from "../resource-groups.hooks"
 import type { ResourceGroup } from "../resource-groups.types"

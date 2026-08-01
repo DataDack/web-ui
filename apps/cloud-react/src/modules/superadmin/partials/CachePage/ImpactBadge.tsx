@@ -1,7 +1,7 @@
 import { ShieldAlert, ShieldCheck } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { Badge } from "@/components/ui/badge"
+import { Badge } from "@datadack/serverless-ui"
 
 import type { CacheImpact } from "../../superadmin.types"
 

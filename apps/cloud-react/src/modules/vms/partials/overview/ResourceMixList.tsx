@@ -2,7 +2,8 @@ import { ChevronRight, type LucideIcon } from "lucide-react"
 import { Link } from "react-router-dom"
 
 import { AnimatedNumber } from "@/components/console/motion/AnimatedNumber"
-import { Skeleton } from "@/components/ui/skeleton"
+
+import { Skeleton } from "@datadack/serverless-ui"
 
 export interface ResourceMixItem {
   icon: LucideIcon

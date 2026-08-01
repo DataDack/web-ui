@@ -16,7 +16,6 @@ import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
 
 import { ConfirmDialog, DetailPage, EmptyState, staggerDelay } from "@/components/console"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -26,7 +25,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Skeleton } from "@/components/ui/skeleton"
 import {
   Table,
   TableBody,
@@ -36,6 +34,8 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { useScreen } from "@/services/api/screen"
+
+import { Badge, Skeleton } from "@datadack/serverless-ui"
 
 import { sgProtocolUsesPorts } from "../api/shared"
 import { SG_PROTOCOLS, SG_RULE_ACTIONS, VPC_ROUTES } from "../vpc.constants"

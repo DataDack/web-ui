@@ -5,7 +5,6 @@ import { useTranslation } from "react-i18next"
 
 import { ConfirmDialog, CopyButton, Section, staggerDelay, StatusBadge } from "@/components/console"
 import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
 import {
   Table,
   TableBody,
@@ -14,6 +13,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+
+import { Skeleton } from "@datadack/serverless-ui"
 
 import {
   useAttachIGW,

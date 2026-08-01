@@ -4,9 +4,10 @@ import { AlertTriangle, Search } from "lucide-react"
 
 import { EmptyState, staggerDelay } from "@/components/console"
 import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
 import { useQueryParamState } from "@/hooks/use-query-param-state"
 import { useViewPreference } from "@/hooks/use-view-preference"
+
+import { Skeleton } from "@datadack/serverless-ui"
 
 import { OverviewToolbar } from "./OverviewToolbar"
 import {

@@ -7,10 +7,11 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { useVPCs, useVPCSubnets } from "@/modules/vpc/vpc.hooks"
 import type { Subnet, VPCNetwork } from "@/modules/vpc/vpc.types"
+
+import { Badge } from "@datadack/serverless-ui"
 
 interface NetworkingSectionProps {
   vpcId: string
