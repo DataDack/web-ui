@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react"
-import { useScreen } from "@/services/api/screen"
 
 import type { ColumnDef } from "@tanstack/react-table"
 import { LifeBuoy, RefreshCw } from "lucide-react"
@@ -33,6 +32,7 @@ import {
 } from "@/modules/support-tickets/support-tickets.constants"
 import { useAllSupportTickets } from "@/modules/support-tickets/support-tickets.hooks"
 import type { SupportTicket, TicketStatus } from "@/modules/support-tickets/support-tickets.types"
+import { useScreen } from "@/services/api/screen"
 
 type StatusFilter = TicketStatus | "all"
 

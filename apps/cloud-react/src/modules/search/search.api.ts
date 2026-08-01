@@ -16,25 +16,167 @@ import type {
  * and merged ahead of the live resource hits.
  */
 const MODULES: SearchResult[] = [
-    { id: "module-dashboard", type: "module", label: "Dashboard", description: "Telemetry, zone status and command centre", path: "/", status: "active" },
-    { id: "module-compute", type: "module", iconType: "vm", label: "Compute", description: "Fleet overview, instances and compute resources", path: "/compute/overview", status: "active" },
-    { id: "module-vms", type: "module", iconType: "vm", label: "Virtual Machines", description: "Compute instances, templates and snapshots", path: "/compute/instances", status: "active" },
-    { id: "module-disks", type: "module", iconType: "disk", label: "Disks", description: "Block volumes and snapshots", path: "/compute/disks", status: "active" },
-    { id: "module-vpc", type: "module", iconType: "vpc", label: "VPC Networks", description: "Virtual private clouds, subnets and firewalls", path: "/networking", status: "active" },
-    { id: "module-static-ips", type: "module", iconType: "static-ip", label: "Static IPs", description: "Reserved public addresses", path: "/networking/static-ips", status: "active" },
-    { id: "module-network-interfaces", type: "module", iconType: "network-interface", label: "Network Interfaces", description: "Elastic network interfaces (ENI) for your instances", path: "/networking/network-interfaces", status: "active" },
-    { id: "module-iam", type: "module", iconType: "iam-user", label: "IAM & Access", description: "Users, roles, service accounts and permissions", path: "/iam/users", status: "active" },
-    { id: "module-rg", type: "module", iconType: "resource-group", label: "Resource Groups", description: "Logical resource groupings", path: "/resource-groups", status: "active" },
-    { id: "module-billing", type: "module", iconType: "invoice", label: "Billing & Costs", description: "Invoices, budgets and expenditure", path: "/billing", status: "active" },
-    { id: "module-monitoring", type: "module", label: "Monitoring & Alerts", description: "Alarms over live metrics, notification channels and logs", path: "/monitoring", status: "active" },
-    { id: "module-monitoring-alarms", type: "module", label: "Alarms", description: "CloudWatch-style metric alarms and state history", path: "/monitoring/alarms", status: "active" },
-    { id: "module-monitoring-channels", type: "module", label: "Notification Channels", description: "Discord, Jira and webhook delivery targets", path: "/monitoring/channels", status: "active" },
-    { id: "module-monitoring-logs", type: "module", label: "Logs", description: "Log groups and events (coming soon)", path: "/monitoring/logs", status: "active" },
-    { id: "module-managed-apps", type: "module", label: "Managed Apps", description: "Deploy OpenNext, React and n8n apps from GitHub", path: "/managed-apps", status: "active" },
-    { id: "module-managed-apps-create", type: "module", label: "Deploy application", description: "Deploy a new managed app from a GitHub repository", path: "/managed-apps/create", status: "active" },
-    { id: "module-managed-apps-opennext", type: "module", label: "OpenNext", description: "Server-rendered Next.js deployments (OpenNext)", path: "/managed-apps?type=opennext", status: "active" },
-    { id: "module-managed-apps-react", type: "module", label: "React app", description: "Static React app hosting with managed builds", path: "/managed-apps?type=react", status: "active" },
-    { id: "module-managed-apps-n8n", type: "module", label: "n8n", description: "Managed n8n agent workflow instances (coming soon)", path: "/managed-apps?type=n8n", status: "active" },
+    {
+        id: "module-dashboard",
+        type: "module",
+        label: "Dashboard",
+        description: "Telemetry, zone status and command centre",
+        path: "/",
+        status: "active",
+    },
+    {
+        id: "module-compute",
+        type: "module",
+        iconType: "vm",
+        label: "Compute",
+        description: "Fleet overview, instances and compute resources",
+        path: "/compute/overview",
+        status: "active",
+    },
+    {
+        id: "module-vms",
+        type: "module",
+        iconType: "vm",
+        label: "Virtual Machines",
+        description: "Compute instances, templates and snapshots",
+        path: "/compute/instances",
+        status: "active",
+    },
+    {
+        id: "module-disks",
+        type: "module",
+        iconType: "disk",
+        label: "Disks",
+        description: "Block volumes and snapshots",
+        path: "/compute/disks",
+        status: "active",
+    },
+    {
+        id: "module-vpc",
+        type: "module",
+        iconType: "vpc",
+        label: "VPC Networks",
+        description: "Virtual private clouds, subnets and firewalls",
+        path: "/networking",
+        status: "active",
+    },
+    {
+        id: "module-static-ips",
+        type: "module",
+        iconType: "static-ip",
+        label: "Static IPs",
+        description: "Reserved public addresses",
+        path: "/networking/static-ips",
+        status: "active",
+    },
+    {
+        id: "module-network-interfaces",
+        type: "module",
+        iconType: "network-interface",
+        label: "Network Interfaces",
+        description: "Elastic network interfaces (ENI) for your instances",
+        path: "/networking/network-interfaces",
+        status: "active",
+    },
+    {
+        id: "module-iam",
+        type: "module",
+        iconType: "iam-user",
+        label: "IAM & Access",
+        description: "Users, roles, service accounts and permissions",
+        path: "/iam/users",
+        status: "active",
+    },
+    {
+        id: "module-rg",
+        type: "module",
+        iconType: "resource-group",
+        label: "Resource Groups",
+        description: "Logical resource groupings",
+        path: "/resource-groups",
+        status: "active",
+    },
+    {
+        id: "module-billing",
+        type: "module",
+        iconType: "invoice",
+        label: "Billing & Costs",
+        description: "Invoices, budgets and expenditure",
+        path: "/billing",
+        status: "active",
+    },
+    {
+        id: "module-monitoring",
+        type: "module",
+        label: "Monitoring & Alerts",
+        description: "Alarms over live metrics, notification channels and logs",
+        path: "/monitoring",
+        status: "active",
+    },
+    {
+        id: "module-monitoring-alarms",
+        type: "module",
+        label: "Alarms",
+        description: "CloudWatch-style metric alarms and state history",
+        path: "/monitoring/alarms",
+        status: "active",
+    },
+    {
+        id: "module-monitoring-channels",
+        type: "module",
+        label: "Notification Channels",
+        description: "Discord, Jira and webhook delivery targets",
+        path: "/monitoring/channels",
+        status: "active",
+    },
+    {
+        id: "module-monitoring-logs",
+        type: "module",
+        label: "Logs",
+        description: "Log groups and events (coming soon)",
+        path: "/monitoring/logs",
+        status: "active",
+    },
+    {
+        id: "module-managed-apps",
+        type: "module",
+        label: "Managed Apps",
+        description: "Deploy OpenNext, React and n8n apps from GitHub",
+        path: "/managed-apps",
+        status: "active",
+    },
+    {
+        id: "module-managed-apps-create",
+        type: "module",
+        label: "Deploy application",
+        description: "Deploy a new managed app from a GitHub repository",
+        path: "/managed-apps/create",
+        status: "active",
+    },
+    {
+        id: "module-managed-apps-opennext",
+        type: "module",
+        label: "OpenNext",
+        description: "Server-rendered Next.js deployments (OpenNext)",
+        path: "/managed-apps?type=opennext",
+        status: "active",
+    },
+    {
+        id: "module-managed-apps-react",
+        type: "module",
+        label: "React app",
+        description: "Static React app hosting with managed builds",
+        path: "/managed-apps?type=react",
+        status: "active",
+    },
+    {
+        id: "module-managed-apps-n8n",
+        type: "module",
+        label: "n8n",
+        description: "Managed n8n agent workflow instances (coming soon)",
+        path: "/managed-apps?type=n8n",
+        status: "active",
+    },
 ]
 
 /* ── Backend contract ──────────────────────────────────────────────────────
@@ -47,7 +189,7 @@ interface SearchHit {
     type: string
     region?: string
     status?: string
-    tags?: TagsInput
+    tags?: Exclude<TagsInput, undefined>
     meta?: string[]
     updated_at?: string
 }
@@ -103,8 +245,15 @@ function pathFor(type: SearchResultType, id: string): string {
 }
 
 const KNOWN_STATUSES = new Set<SearchResultStatus>([
-    "running", "stopped", "pending", "error", "active",
-    "inactive", "optimal", "paid", "overdue",
+    "running",
+    "stopped",
+    "pending",
+    "error",
+    "active",
+    "inactive",
+    "optimal",
+    "paid",
+    "overdue",
 ])
 
 /** Normalise a backend status string to the console's status vocabulary. */

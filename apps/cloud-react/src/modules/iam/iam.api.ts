@@ -49,12 +49,11 @@ export const iamApi = {
     deleteRole: (id: string) => apiDelete(`/auth/roles/${id}`),
 
     /* user ↔ role */
-    listUserRoles: (userId: string) =>
-        apiGet<UserRoleBinding[]>(`/auth/iam/users/${userId}/roles`),
+    listUserRoles: (userId: string) => apiGet<UserRoleBinding[]>(`/auth/iam/users/${userId}/roles`),
     assignRole: (userId: string, roleId: string) =>
         apiPost<null>("/auth/iam/roles/assign", {
-            user_id: String(userId),
-            role_id: String(roleId),
+            user_id: userId,
+            role_id: roleId,
         }),
     revokeRole: (userId: string, roleId: string) =>
         apiDelete(`/auth/iam/users/${userId}/roles/${roleId}`),
@@ -76,9 +75,9 @@ export const iamApi = {
     ) =>
         apiPost<null>("/auth/iam/policies/attach", {
             principal_type: principalType,
-            principal_id: String(principalId),
-            policy_id: String(policyId),
-            ...(accountId ? { account_id: String(accountId) } : {}),
+            principal_id: principalId,
+            policy_id: policyId,
+            ...(accountId ? { account_id: accountId } : {}),
         }),
     detachPolicy: (principalType: string, principalId: string, policyId: string) =>
         apiDelete(`/auth/iam/${principalType}/${principalId}/policies/${policyId}`),
@@ -98,7 +97,7 @@ export const iamApi = {
     listGroupMembers: (groupId: string) =>
         apiGet<GroupMember[]>(`/auth/iam/groups/${groupId}/members`),
     addGroupMember: (groupId: string, userId: string) =>
-        apiPost<null>(`/auth/iam/groups/${groupId}/members`, { user_id: String(userId) }),
+        apiPost<null>(`/auth/iam/groups/${groupId}/members`, { user_id: userId }),
     removeGroupMember: (groupId: string, userId: string) =>
         apiDelete(`/auth/iam/groups/${groupId}/members/${userId}`),
 
@@ -122,8 +121,7 @@ export const iamApi = {
     listPermissions: () => apiGet<Permission[]>(`/auth/permissions${LIST_QUERY}`),
 
     /* members of the caller's default account (for the account-role column) */
-    listCurrentAccountMembers: () =>
-        apiGet<AccountMember[]>("/org/accounts/current/members"),
+    listCurrentAccountMembers: () => apiGet<AccountMember[]>("/org/accounts/current/members"),
 
     /* authz engine — dry-run a decision (admin) */
     simulate: (payload: SimulateRequest) =>
@@ -140,9 +138,9 @@ export const iamApi = {
     createInvitation: (payload: CreateInvitationRequest) =>
         apiPost<InvitationResult>("/auth/invitations", {
             ...payload,
-            account_id: payload.account_id != null ? String(payload.account_id) : undefined,
+            account_id: payload.account_id != null ? payload.account_id : undefined,
             group_ids: payload.group_ids?.map(String),
-            role_id: payload.role_id != null ? String(payload.role_id) : undefined,
+            role_id: payload.role_id != null ? payload.role_id : undefined,
             policy_ids: payload.policy_ids?.map(String),
         }),
     resendInvitation: (id: string) =>

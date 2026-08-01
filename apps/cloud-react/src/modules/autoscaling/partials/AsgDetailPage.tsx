@@ -1,17 +1,10 @@
 import { useState } from "react"
-import { useScreen } from "@/services/api/screen"
 
 import { Activity, Gauge, Info, Loader2, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
 
-import {
-    ConfirmDialog,
-    DetailPage,
-    KeyValueGrid,
-    Section,
-    TagList,
-} from "@/components/console"
+import { ConfirmDialog, DetailPage, KeyValueGrid, Section, TagList } from "@/components/console"
 import { Button } from "@/components/ui/button"
 import {
     Dialog,
@@ -25,6 +18,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Skeleton } from "@/components/ui/skeleton"
 import { parseTags } from "@/lib/tags"
+import { useScreen } from "@/services/api/screen"
 
 import { ASG_ROUTES } from "../autoscaling.constants"
 import { useASG, useDeleteASG, useSetASGCapacity } from "../autoscaling.hooks"
@@ -161,9 +155,16 @@ function OverviewTab({ asg }: Readonly<{ asg: AutoScalingGroup }>) {
                             value: asg.region,
                             mono: true,
                         },
-                        { label: "Health Check Grace", value: `${String(asg.health_check_grace_period)}s`, mono: true },
+                        {
+                            label: "Health Check Grace",
+                            value: `${String(asg.health_check_grace_period)}s`,
+                            mono: true,
+                        },
                         { label: "Termination Policy", value: asg.termination_policy, mono: true },
-                        { label: "Capacity Rebalance", value: asg.capacity_rebalance ? "Enabled" : "Disabled" },
+                        {
+                            label: "Capacity Rebalance",
+                            value: asg.capacity_rebalance ? "Enabled" : "Disabled",
+                        },
                         {
                             label: t("common.created"),
                             value: new Date(asg.created_at).toLocaleString(),
@@ -193,8 +194,7 @@ function SetCapacityDialog({
     const [desired, setDesired] = useState(String(asg.desired_capacity))
 
     const parsed = Number(desired)
-    const valid =
-        Number.isInteger(parsed) && parsed >= asg.min_size && parsed <= asg.max_size
+    const valid = Number.isInteger(parsed) && parsed >= asg.min_size && parsed <= asg.max_size
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>

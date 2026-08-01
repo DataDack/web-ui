@@ -5,6 +5,7 @@ import { Receipt, Wallet } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import {
+    type AnimatedTab,
     AnimatedTabs,
     dateColumn,
     EmptyState,
@@ -14,7 +15,6 @@ import {
     statusColumn,
     textColumn,
 } from "@/components/console"
-import type { AnimatedTab } from "@/components/console"
 
 import { useCreditBalance, useCreditPurchases, useLedger } from "../billing.hooks"
 import type { CreditPurchase, LedgerEntry } from "../billing.types"
@@ -156,7 +156,9 @@ export function LedgerPage() {
             <AnimatedTabs
                 tabs={tabs}
                 value={activeTab}
-                onChange={(v) => { setActiveTab(v as "ledger" | "topups"); }}
+                onChange={(v) => {
+                    setActiveTab(v as "ledger" | "topups")
+                }}
                 layoutId="billing-ledger-tabs"
             />
 

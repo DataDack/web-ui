@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react"
-import { useScreen } from "@/services/api/screen"
 
 import { ArrowLeft, LifeBuoy, Send, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
@@ -33,6 +32,7 @@ import {
     useSupportTicketComments$,
     useUpdateSupportTicket,
 } from "@/modules/support-tickets/support-tickets.hooks"
+import { useScreen } from "@/services/api/screen"
 
 const ADMIN_SUPPORT_ROOT = "/admin/support"
 

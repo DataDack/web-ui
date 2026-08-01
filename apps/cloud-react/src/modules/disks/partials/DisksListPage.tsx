@@ -1,10 +1,10 @@
 import { useCallback, useMemo, useState } from "react"
-import { useScreen } from "@/services/api/screen"
 
 import type { ColumnDef } from "@tanstack/react-table"
 import { HardDrive, Link2, Plus, RefreshCw, Trash2, Unlink } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
+
 import {
     actionsColumn,
     ConfirmDialog,
@@ -19,6 +19,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { VMS_ROUTES } from "@/modules/vms/vms.constants"
 import { useInstances } from "@/modules/vms/vms.hooks"
+import { useScreen } from "@/services/api/screen"
 
 import { useDeleteDisk, useDetachDisk, useDisks } from "../disks.hooks"
 import type { Disk } from "../disks.types"
@@ -76,7 +77,11 @@ export function DisksListPage() {
         () => [
             {
                 id: "name",
-                header: () => <span className="text-xs font-semibold uppercase tracking-wider">{t("disks.columns.name")}</span>,
+                header: () => (
+                    <span className="text-xs font-semibold uppercase tracking-wider">
+                        {t("disks.columns.name")}
+                    </span>
+                ),
                 accessorFn: (d) => d.name,
                 cell: ({ row }) => (
                     <div className="flex flex-col">
@@ -96,21 +101,36 @@ export function DisksListPage() {
             }),
             {
                 id: "type_and_size",
-                header: () => <span className="text-xs font-semibold uppercase tracking-wider">{t("disks.columns.size")}</span>,
+                header: () => (
+                    <span className="text-xs font-semibold uppercase tracking-wider">
+                        {t("disks.columns.size")}
+                    </span>
+                ),
                 accessorFn: (d) => d.size_gb,
                 cell: ({ row }) => (
                     <div className="flex items-center gap-3">
                         <div className="flex flex-col gap-1 w-24">
-                            <span className="font-mono text-[13px] font-medium">{row.original.size_gb} GB</span>
+                            <span className="font-mono text-[13px] font-medium">
+                                {row.original.size_gb} GB
+                            </span>
                             <div className="h-1.5 w-full bg-accent/30 rounded-full overflow-hidden">
-                                <div className="h-full bg-status-info/70" style={{ width: '100%' }} />
+                                <div
+                                    className="h-full bg-status-info/70"
+                                    style={{ width: "100%" }}
+                                />
                             </div>
                         </div>
-                        <Badge variant="outline" className="font-mono text-[10px] uppercase bg-accent/10">
+                        <Badge
+                            variant="outline"
+                            className="font-mono text-[10px] uppercase bg-accent/10"
+                        >
                             {row.original.volume_class || row.original.disk_type}
                         </Badge>
                         {row.original.multi_attach && (
-                            <Badge variant="outline" className="text-[10px] bg-accent/20 border-status-info text-status-info">
+                            <Badge
+                                variant="outline"
+                                className="text-[10px] bg-accent/20 border-status-info text-status-info"
+                            >
                                 Multi-Attach
                             </Badge>
                         )}
@@ -119,9 +139,15 @@ export function DisksListPage() {
             },
             {
                 id: "zone",
-                header: () => <span className="text-xs font-semibold uppercase tracking-wider">{t("vms.columns.zone")}</span>,
+                header: () => (
+                    <span className="text-xs font-semibold uppercase tracking-wider">
+                        {t("vms.columns.zone")}
+                    </span>
+                ),
                 accessorFn: (d) => d.zone,
-                cell: ({ row }) => <span className="text-muted-foreground text-[13px]">{row.original.zone}</span>,
+                cell: ({ row }) => (
+                    <span className="text-muted-foreground text-[13px]">{row.original.zone}</span>
+                ),
                 meta: { responsive: "lg" },
             },
             {

@@ -29,8 +29,12 @@ function openDB(): Promise<IDBDatabase> {
                 req.result.createObjectStore(STORE)
             }
         }
-        req.onsuccess = () => resolve(req.result)
-        req.onerror = () => reject(req.error)
+        req.onsuccess = () => {
+            resolve(req.result)
+        }
+        req.onerror = () => {
+            reject(req.error ?? new Error("IndexedDB request failed"))
+        }
     })
 }
 
@@ -40,8 +44,12 @@ export async function idbGet<T>(key: string): Promise<T | null> {
         return await new Promise<T | null>((resolve, reject) => {
             const tx = db.transaction(STORE, "readonly")
             const req = tx.objectStore(STORE).get(key)
-            req.onsuccess = () => resolve((req.result as T) ?? null)
-            req.onerror = () => reject(req.error)
+            req.onsuccess = () => {
+                resolve((req.result as T) ?? null)
+            }
+            req.onerror = () => {
+                reject(req.error ?? new Error("IndexedDB request failed"))
+            }
         })
     } catch {
         return null // IndexedDB unavailable (private mode, etc.) — degrade to memory-only
@@ -54,8 +62,12 @@ export async function idbSet(key: string, value: unknown): Promise<void> {
         await new Promise<void>((resolve, reject) => {
             const tx = db.transaction(STORE, "readwrite")
             tx.objectStore(STORE).put(value, key)
-            tx.oncomplete = () => resolve()
-            tx.onerror = () => reject(tx.error)
+            tx.oncomplete = () => {
+                resolve()
+            }
+            tx.onerror = () => {
+                reject(tx.error ?? new Error("IndexedDB transaction failed"))
+            }
         })
     } catch {
         // best-effort persistence
@@ -68,8 +80,12 @@ export async function idbDel(key: string): Promise<void> {
         await new Promise<void>((resolve, reject) => {
             const tx = db.transaction(STORE, "readwrite")
             tx.objectStore(STORE).delete(key)
-            tx.oncomplete = () => resolve()
-            tx.onerror = () => reject(tx.error)
+            tx.oncomplete = () => {
+                resolve()
+            }
+            tx.onerror = () => {
+                reject(tx.error ?? new Error("IndexedDB transaction failed"))
+            }
         })
     } catch {
         // best-effort
@@ -107,7 +123,10 @@ export const activeScope = {
     hydrate: async (): Promise<void> => {
         const saved = await idbGet<ActiveScope>(SCOPE_KEY)
         if (saved && (saved.accountId || saved.organizationId)) {
-            scope = { accountId: saved.accountId ?? null, organizationId: saved.organizationId ?? null }
+            scope = {
+                accountId: saved.accountId ?? null,
+                organizationId: saved.organizationId ?? null,
+            }
             emit()
         }
     },

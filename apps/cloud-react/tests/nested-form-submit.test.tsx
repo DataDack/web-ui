@@ -11,10 +11,10 @@
 // guards away believing the portal isolates it), and that each guard stops it.
 
 import { expect, test } from "bun:test"
-import { render, screen } from "@testing-library/react"
-import userEvent from "@testing-library/user-event"
 
 import * as Dialog from "@radix-ui/react-dialog"
+import { render, screen } from "@testing-library/react"
+import userEvent from "@testing-library/user-event"
 
 /** The shape the bug had: no stopPropagation, no target guard. */
 function Unguarded({ onOuter, onInner }: Readonly<{ onOuter: () => void; onInner: () => void }>) {

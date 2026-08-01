@@ -45,7 +45,7 @@ function toSubnet(raw: RawSubnet): Subnet {
         id: String(rest.id),
         network_id: String(networkId),
         user_id: String(rest.user_id),
-        availability_zone_id: azId && azId !== ZERO_UUID ? String(azId) : undefined,
+        availability_zone_id: azId && azId !== ZERO_UUID ? azId : undefined,
     }
 }
 

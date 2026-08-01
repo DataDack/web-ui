@@ -1,5 +1,4 @@
 import { useState } from "react"
-import { useScreen } from "@/services/api/screen"
 
 import { CheckCircle2, FlaskConical, Loader2, XCircle } from "lucide-react"
 import { useTranslation } from "react-i18next"
@@ -15,6 +14,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import { useScreen } from "@/services/api/screen"
 
 import { useIAMUsers, usePermissions, useSimulate } from "../iam.hooks"
 
@@ -119,9 +119,7 @@ export function PolicySimulatorPage() {
                         )}
                         <div>
                             <p className="text-base font-semibold">
-                                {result.allow
-                                    ? t("iam.simulator.allow")
-                                    : t("iam.simulator.deny")}
+                                {result.allow ? t("iam.simulator.allow") : t("iam.simulator.deny")}
                             </p>
                             <p className="text-[12px] text-muted-foreground">
                                 {result.deciding_sid

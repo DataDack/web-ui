@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react"
-import { useScreen } from "@/services/api/screen"
 
 import type { ColumnDef } from "@tanstack/react-table"
 import { Network, Plus, RefreshCw, Search, Trash2 } from "lucide-react"
@@ -22,6 +21,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { useScreen } from "@/services/api/screen"
 
 import { VPC_ROUTES } from "../vpc.constants"
 import {
@@ -86,7 +86,17 @@ export function VpcListPage() {
                 loading: ipsLoading,
             },
         ],
-        [t, networks, isLoading, subnets, subnetsLoading, securityGroups, sgsLoading, staticIps, ipsLoading]
+        [
+            t,
+            networks,
+            isLoading,
+            subnets,
+            subnetsLoading,
+            securityGroups,
+            sgsLoading,
+            staticIps,
+            ipsLoading,
+        ]
     )
 
     const columns = useMemo<ColumnDef<VPCNetwork>[]>(
@@ -247,7 +257,11 @@ export function VpcListPage() {
                 loading={isDeleting}
                 onConfirm={() => {
                     if (toDelete) {
-                        deleteVPC(toDelete.id, { onSuccess: () => { setToDelete(null); } })
+                        deleteVPC(toDelete.id, {
+                            onSuccess: () => {
+                                setToDelete(null)
+                            },
+                        })
                     }
                 }}
             />

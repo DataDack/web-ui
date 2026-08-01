@@ -22,8 +22,8 @@ export function useNamingPolicy() {
 export function useNamingRule(
     // _resourceKey is accepted for call-site compatibility — one convention applies
     // to every resource, so the key is intentionally ignored.
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _resourceKey?: string,
+
+    _resourceKey?: string
 ): { rule: NamingRule; isLoading: boolean } {
     const { data, isLoading } = useNamingPolicy()
     // Empty pattern means "allow any name" — the default until an admin sets one.

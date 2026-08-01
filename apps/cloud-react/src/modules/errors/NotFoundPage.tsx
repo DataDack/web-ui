@@ -1,10 +1,10 @@
 import { ArrowRight } from "lucide-react"
-import { useScreen } from "@/services/api/screen"
 import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from "motion/react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
 import { Logo } from "@/components/Logo"
+import { useScreen } from "@/services/api/screen"
 
 import { Network404 } from "./Network404"
 import { NetworkField } from "./NetworkField"

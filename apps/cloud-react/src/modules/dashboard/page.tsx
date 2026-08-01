@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next"
-import { useScreen } from "@/services/api/screen"
 
 import { PageHeader } from "@/components/console"
+import { useScreen } from "@/services/api/screen"
 
 import { QuickActions } from "./partials/QuickActions"
 import { ServiceHealth } from "./partials/ServiceHealth"

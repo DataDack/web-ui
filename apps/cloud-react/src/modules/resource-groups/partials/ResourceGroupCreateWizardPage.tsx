@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react"
-import { useScreen } from "@/services/api/screen"
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { FolderTree } from "lucide-react"
@@ -16,15 +15,16 @@ import { tagRowsToRecord, type TagRow } from "@/lib/tags"
 import { useNamingRule } from "@/modules/governance/governance.hooks"
 import type { NamingRule } from "@/modules/governance/governance.types"
 import { namingNameSchema } from "@/modules/governance/governance.validation"
+import { useScreen } from "@/services/api/screen"
 
 import { RG_ROUTES } from "../resource-groups.constants"
 import { useCreateResourceGroup } from "../resource-groups.hooks"
 
 const makeSchema = (rule: NamingRule) =>
     z.object({
-    name: namingNameSchema(rule),
-    description: z.string().max(500, "Maximum 500 characters"),
-})
+        name: namingNameSchema(rule),
+        description: z.string().max(500, "Maximum 500 characters"),
+    })
 
 type FormValues = z.infer<ReturnType<typeof makeSchema>>
 

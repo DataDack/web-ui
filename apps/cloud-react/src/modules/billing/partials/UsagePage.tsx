@@ -5,6 +5,7 @@ import { Activity, CreditCard, Layers } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import {
+    type AnimatedTab,
     AnimatedTabs,
     dateColumn,
     EmptyState,
@@ -14,7 +15,6 @@ import {
     statusColumn,
     textColumn,
 } from "@/components/console"
-import type { AnimatedTab } from "@/components/console"
 
 import { useSubscriptions, useUsage } from "../billing.hooks"
 import type { SubscriptionApi, UsageRecordApi } from "../billing.types"
@@ -119,7 +119,9 @@ export function UsagePage() {
                 id: "rate",
                 header: t("billing.columns.rate"),
                 accessor: (s) =>
-                    s.cycle === "monthly" ? `${inr(s.monthly_amount)}/mo` : `${inr(s.hourly_rate)}/hr`,
+                    s.cycle === "monthly"
+                        ? `${inr(s.monthly_amount)}/mo`
+                        : `${inr(s.hourly_rate)}/hr`,
                 mono: true,
             }),
             statusColumn<SubscriptionApi>({
@@ -163,7 +165,9 @@ export function UsagePage() {
             <AnimatedTabs
                 tabs={tabs}
                 value={activeTab}
-                onChange={(v) => { setActiveTab(v as "usage" | "subscriptions"); }}
+                onChange={(v) => {
+                    setActiveTab(v as "usage" | "subscriptions")
+                }}
                 layoutId="billing-usage-tabs"
             />
 

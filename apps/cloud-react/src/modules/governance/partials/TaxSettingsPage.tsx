@@ -295,7 +295,7 @@ function pickActiveRegistration(
     activeAccountId: string | null
 ): TaxRegistration | undefined {
     if (activeAccountId) {
-        return rows.find((r) => String(r.accountId) === activeAccountId)
+        return rows.find((r) => r.accountId === activeAccountId)
     }
     return rows.length === 1 ? rows[0] : undefined
 }

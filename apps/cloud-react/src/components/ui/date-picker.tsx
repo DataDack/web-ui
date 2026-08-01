@@ -4,11 +4,7 @@ import { CalendarIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 
 /** Parse an ISO `yyyy-mm-dd` string into a local Date (no timezone shift). */
@@ -83,6 +79,7 @@ export function DatePicker({
                     startMonth={new Date(fromYear, 0)}
                     endMonth={toDate}
                     disabled={{ after: toDate }}
+                    // eslint-disable-next-line jsx-a11y/no-autofocus -- popover focus management: the calendar must receive focus when it opens or keyboard users are stranded on the trigger
                     autoFocus
                     onSelect={(date) => {
                         if (date) {

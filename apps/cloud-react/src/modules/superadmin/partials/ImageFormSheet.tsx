@@ -195,7 +195,9 @@ export function ImageFormSheet({ open, onOpenChange, image }: Readonly<Props>) {
                             <button
                                 key={mode}
                                 type="button"
-                                onClick={() => setIconMode(mode)}
+                                onClick={() => {
+                                    setIconMode(mode)
+                                }}
                                 aria-pressed={iconMode === mode}
                                 className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
                                     iconMode === mode
@@ -239,7 +241,8 @@ export function ImageFormSheet({ open, onOpenChange, image }: Readonly<Props>) {
                                         size="sm"
                                         onClick={() => {
                                             setFile(null)
-                                            if (fileInputRef.current) fileInputRef.current.value = ""
+                                            if (fileInputRef.current)
+                                                fileInputRef.current.value = ""
                                         }}
                                     >
                                         {t("console.wizard.cancel")}

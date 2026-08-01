@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react"
-import { useScreen } from "@/services/api/screen"
 
 import type { ColumnDef } from "@tanstack/react-table"
 import { LifeBuoy, Plus, RefreshCw } from "lucide-react"
@@ -22,6 +21,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import { useScreen } from "@/services/api/screen"
 
 import { PriorityBadge } from "../components/PriorityBadge"
 import { SUPPORT_ROUTES, TICKET_STATUSES, categoryLabelKey } from "../support-tickets.constants"

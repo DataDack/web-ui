@@ -1,5 +1,4 @@
 import { useEffect, type ReactNode } from "react"
-import { useScreen } from "@/services/api/screen"
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { AlignLeft, ArrowLeft, Check, Compass, LifeBuoy, PenLine, Send } from "lucide-react"
@@ -14,6 +13,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { cn } from "@/lib/utils"
+import { useScreen } from "@/services/api/screen"
 
 import { PriorityBadge } from "../components/PriorityBadge"
 import {
@@ -106,10 +106,13 @@ export function SupportTicketCreatePage() {
 
     // The chosen category seeds the priority (mirrors the backend). The user can
     // still override it before filing. Re-derive whenever the category changes.
-    const category = watch("category")
+    // Typed as possibly-undefined on purpose: zod infers `category` as always
+    // present because submission requires it, but there is no defaultValue, so
+    // until the user picks one the runtime value really is undefined.
+    const category = watch("category") as FormValues["category"] | undefined
     const priority = watch("priority")
-    const subject = watch("subject") ?? ""
-    const description = watch("description") ?? ""
+    const subject = watch("subject")
+    const description = watch("description")
 
     useEffect(() => {
         if (category) {
@@ -118,9 +121,7 @@ export function SupportTicketCreatePage() {
     }, [category, setValue])
 
     const selectedCat = TICKET_CATEGORIES.find((c) => c.value === category)
-    const isDefaultPriority = category
-        ? priority === defaultPriorityForCategory(category)
-        : true
+    const isDefaultPriority = category ? priority === defaultPriorityForCategory(category) : true
 
     const onSubmit = (values: FormValues) => {
         create(
@@ -157,18 +158,13 @@ export function SupportTicketCreatePage() {
                 }
             />
 
-            <form
-                onSubmit={(e) => void handleSubmit(onSubmit)(e)}
-                className="mx-auto space-y-5"
-            >
+            <form onSubmit={(e) => void handleSubmit(onSubmit)(e)} className="mx-auto space-y-5">
                 <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
                     {/* ── Left: the details ─────────────────────────────────── */}
                     <Section variant="panel" className="space-y-6">
                         {/* Category — required, rendered as a selectable card grid */}
                         <div className="space-y-2">
-                            <FieldLabel required>
-                                {t("supportTickets.columns.category")}
-                            </FieldLabel>
+                            <FieldLabel required>{t("supportTickets.columns.category")}</FieldLabel>
                             <p className="text-[11px] text-muted-foreground">
                                 {t("supportTickets.createForm.categoryHint")}
                             </p>
@@ -227,7 +223,10 @@ export function SupportTicketCreatePage() {
                                                     </span>
                                                     {selected && (
                                                         <span className="absolute right-2.5 top-2.5 flex size-4 items-center justify-center rounded-full bg-brand-gold text-brand-gold-foreground">
-                                                            <Check className="size-3" strokeWidth={3} />
+                                                            <Check
+                                                                className="size-3"
+                                                                strokeWidth={3}
+                                                            />
                                                         </span>
                                                     )}
                                                 </button>

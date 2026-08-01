@@ -71,7 +71,10 @@ interface RawStaticIPPriceOption extends Omit<StaticIPPriceOption, "id" | "avail
     id: string | number
     availability_zone_id: string | number
 }
-interface RawBandwidthPriceOption extends Omit<BandwidthPriceOption, "id" | "availability_zone_id"> {
+interface RawBandwidthPriceOption extends Omit<
+    BandwidthPriceOption,
+    "id" | "availability_zone_id"
+> {
     id: string | number
     availability_zone_id: string | number
 }
@@ -88,8 +91,8 @@ export function useImageCatalog() {
             const data = await apiGet<RawImageCatalogFamily[]>("/platform/infra/catalog/images")
             return data.map((f) => ({
                 ...f,
-                id: String(f.id),
-                versions: f.versions.map((v) => ({ ...v, id: String(v.id) })),
+                id: f.id,
+                versions: f.versions.map((v) => ({ ...v, id: v.id })),
             }))
         },
         staleTime: STALE,
@@ -104,10 +107,10 @@ export function useRegionCatalog() {
             const data = await apiGet<RawRegionCatalog[]>("/platform/infra/catalog/regions")
             return data.map((r) => ({
                 ...r,
-                id: String(r.id),
+                id: r.id,
                 availability_zones: r.availability_zones.map((az) => ({
                     ...az,
-                    id: String(az.id),
+                    id: az.id,
                 })),
             }))
         },
@@ -139,8 +142,8 @@ export function useVMPrices() {
             const data = await apiGet<RawVMPriceOption[]>("/platform/infra/vm-prices")
             return data.map((p) => ({
                 ...p,
-                id: String(p.id),
-                availability_zone_id: String(p.availability_zone_id),
+                id: p.id,
+                availability_zone_id: p.availability_zone_id,
             }))
         },
         staleTime: STALE,
@@ -153,9 +156,7 @@ export function useStaticIPPrices() {
     return useQuery({
         queryKey: CATALOG_QUERY_KEYS.staticIpPrices,
         queryFn: async (): Promise<StaticIPPriceOption[]> => {
-            const data = await apiGet<RawStaticIPPriceOption[]>(
-                "/platform/infra/static-ip-prices"
-            )
+            const data = await apiGet<RawStaticIPPriceOption[]>("/platform/infra/static-ip-prices")
             return data.map((p) => ({
                 ...p,
                 id: String(p.id),
@@ -172,9 +173,7 @@ export function useBandwidthPrices() {
     return useQuery({
         queryKey: CATALOG_QUERY_KEYS.bandwidthPrices,
         queryFn: async (): Promise<BandwidthPriceOption[]> => {
-            const data = await apiGet<RawBandwidthPriceOption[]>(
-                "/platform/infra/bandwidth-prices"
-            )
+            const data = await apiGet<RawBandwidthPriceOption[]>("/platform/infra/bandwidth-prices")
             return data.map((p) => ({
                 ...p,
                 id: String(p.id),

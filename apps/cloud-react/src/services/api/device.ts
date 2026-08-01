@@ -18,6 +18,7 @@ function randomId(): string {
     if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
         return crypto.randomUUID()
     }
+    // eslint-disable-next-line sonarjs/pseudo-random -- fallback path only; the id is a non-secret browser tag, as the comment above spells out
     return `dev-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`
 }
 

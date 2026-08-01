@@ -39,7 +39,7 @@ export function useQuotaBlocked(code: string, count = 1): boolean {
  * `code`, deep-linking into the increase-request flow. Renders nothing while
  * within limits.
  */
-export function QuotaNotice({ code, count = 1 }: QuotaNoticeProps) {
+export function QuotaNotice({ code, count = 1 }: Readonly<QuotaNoticeProps>) {
     const { t } = useTranslation()
     const { data } = useQuotas()
 

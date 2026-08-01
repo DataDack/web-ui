@@ -14,7 +14,13 @@ export const servicesApi = {
         const services: ServicesHealth["services"] = {}
 
         for (const [id, svc] of Object.entries(SERVICE_REGISTRY)) {
-            const subServices: Record<string, { status: typeof svc.status; maintenance?: (typeof svc.subServices)[number]["maintenance"] }> = {}
+            const subServices: Record<
+                string,
+                {
+                    status: typeof svc.status
+                    maintenance?: NonNullable<(typeof svc.subServices)[number]["maintenance"]>
+                }
+            > = {}
 
             for (const sub of svc.subServices) {
                 subServices[sub.id] = {

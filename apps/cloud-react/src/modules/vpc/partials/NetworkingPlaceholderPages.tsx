@@ -1,8 +1,8 @@
 import { ArrowRightLeft, Cable, Router, Waypoints } from "lucide-react"
-import { useScreen } from "@/services/api/screen"
 import { useTranslation } from "react-i18next"
 
 import { ComingSoon } from "@/components/console"
+import { useScreen } from "@/services/api/screen"
 
 /**
  * Networking sub-services promoted out of the VPC detail tabs into their own

@@ -1,5 +1,4 @@
 import { useMemo } from "react"
-import { useScreen } from "@/services/api/screen"
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ArrowLeft, Users } from "lucide-react"
@@ -16,15 +15,16 @@ import { Textarea } from "@/components/ui/textarea"
 import { useNamingRule } from "@/modules/governance/governance.hooks"
 import type { NamingRule } from "@/modules/governance/governance.types"
 import { namingNameSchema } from "@/modules/governance/governance.validation"
+import { useScreen } from "@/services/api/screen"
 
 import { IAM_ROUTES } from "../iam.constants"
 import { useCreateIAMGroup } from "../iam.hooks"
 
 const makeSchema = (rule: NamingRule) =>
     z.object({
-    name: namingNameSchema(rule),
-    description: z.string().max(255, "Maximum 255 characters").optional(),
-})
+        name: namingNameSchema(rule),
+        description: z.string().max(255, "Maximum 255 characters").optional(),
+    })
 
 type FormValues = z.infer<ReturnType<typeof makeSchema>>
 

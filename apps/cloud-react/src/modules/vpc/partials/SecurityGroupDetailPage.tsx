@@ -37,8 +37,8 @@ import {
 } from "@/components/ui/table"
 import { useScreen } from "@/services/api/screen"
 
-import { SG_PROTOCOLS, SG_RULE_ACTIONS, VPC_ROUTES } from "../vpc.constants"
 import { sgProtocolUsesPorts } from "../api/shared"
+import { SG_PROTOCOLS, SG_RULE_ACTIONS, VPC_ROUTES } from "../vpc.constants"
 import {
     useAddSGRule,
     useDeleteSecurityGroup,

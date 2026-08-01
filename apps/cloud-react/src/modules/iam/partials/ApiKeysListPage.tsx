@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react"
-import { useScreen } from "@/services/api/screen"
 
 import type { ColumnDef } from "@tanstack/react-table"
 import { KeySquare, Loader2, Plus, RefreshCw, Trash2, TriangleAlert } from "lucide-react"
@@ -34,6 +33,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import { useScreen } from "@/services/api/screen"
 
 import { useAPIKeys, useCreateAPIKey, useDeleteAPIKey } from "../iam.hooks"
 import type { APIKey, CreatedAPIKey } from "../iam.types"
@@ -253,9 +253,7 @@ function CreateApiKeyDialog({
 
     const submit = () => {
         const option = EXPIRY_OPTIONS.find((o) => o.value === expiry)
-        const expiresAt = option?.days
-            ? Math.floor(Date.now() / 1000) + option.days * 86400
-            : null
+        const expiresAt = option?.days ? Math.floor(Date.now() / 1000) + option.days * 86400 : null
         create(
             { name: name.trim(), expires_at: expiresAt },
             {

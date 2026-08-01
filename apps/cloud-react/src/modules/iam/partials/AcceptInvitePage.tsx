@@ -1,5 +1,4 @@
 import { useState } from "react"
-import { useScreen } from "@/services/api/screen"
 
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { CheckCircle2, Loader2, MailX } from "lucide-react"
@@ -11,6 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useAuth } from "@/modules/auth/auth.context"
 import type { AuthTokenResponse } from "@/modules/auth/auth.types"
+import { useScreen } from "@/services/api/screen"
 
 import { iamService } from "../iam.service"
 

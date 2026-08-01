@@ -21,7 +21,7 @@ import { TagList } from "../TagList"
 
 interface BaseColumnOptions {
     header: string
-    responsive?: ColumnMeta["responsive"]
+    responsive?: NonNullable<ColumnMeta["responsive"]>
 }
 
 export function nameColumn<TData>(
@@ -41,7 +41,10 @@ export function nameColumn<TData>(
 }
 
 export function statusColumn<TData>(
-    options: BaseColumnOptions & { accessor: (row: TData) => string; pulse?: (row: TData) => boolean }
+    options: BaseColumnOptions & {
+        accessor: (row: TData) => string
+        pulse?: (row: TData) => boolean
+    }
 ): ColumnDef<TData> {
     return {
         id: "status",
@@ -187,7 +190,9 @@ export function actionsColumn<TData>(options: {
                                 return (
                                     <DropdownMenuItem
                                         key={action.label}
-                                        onClick={() => { action.onAction(row.original); }}
+                                        onClick={() => {
+                                            action.onAction(row.original)
+                                        }}
                                     >
                                         {Icon && <Icon className="size-3.5" />}
                                         {action.label}
@@ -203,7 +208,9 @@ export function actionsColumn<TData>(options: {
                                     <DropdownMenuItem
                                         key={action.label}
                                         variant="destructive"
-                                        onClick={() => { action.onAction(row.original); }}
+                                        onClick={() => {
+                                            action.onAction(row.original)
+                                        }}
                                     >
                                         {Icon && <Icon className="size-3.5" />}
                                         {action.label}

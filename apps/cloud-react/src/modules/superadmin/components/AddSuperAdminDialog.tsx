@@ -47,10 +47,7 @@ export function AddSuperAdminDialog({ open, onOpenChange }: Readonly<AddSuperAdm
     const { data: users = [], isFetching } = useAdminUsers(debounced || undefined)
     const { mutate: setSuperAdmin } = useSetSuperAdmin()
 
-    const candidates = useMemo<AdminUser[]>(
-        () => users.filter((u) => !u.is_super_admin),
-        [users]
-    )
+    const candidates = useMemo<AdminUser[]>(() => users.filter((u) => !u.is_super_admin), [users])
 
     // Reset local state on close so the dialog opens fresh next time.
     const handleOpenChange = (next: boolean) => {
@@ -106,6 +103,7 @@ export function AddSuperAdminDialog({ open, onOpenChange }: Readonly<AddSuperAdm
                         }}
                         placeholder={t("superAdmin.users.addDialog.searchPlaceholder")}
                         className="h-9 pl-8"
+                        // eslint-disable-next-line jsx-a11y/no-autofocus -- dialog focus management: the search field is the dialog's single purpose and receives focus on open
                         autoFocus
                         // Defeat the browser's email/contact autofill overlay, which
                         // otherwise covers the results dropdown.
@@ -266,7 +264,9 @@ function initials(name: string, email: string): string {
     const parts = name.trim().split(/\s+/).filter(Boolean)
     if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase()
     if (parts.length === 1 && parts[0]) return parts[0].slice(0, 2).toUpperCase()
-    return (email[0] ?? "?").toUpperCase()
+    // charAt returns "" past the end, so an empty email still yields the
+    // placeholder — indexing would type the char as always-present.
+    return (email.charAt(0) || "?").toUpperCase()
 }
 
 function formatDate(iso: string): string {

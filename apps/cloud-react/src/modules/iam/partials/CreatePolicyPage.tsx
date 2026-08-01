@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react"
-import { useScreen } from "@/services/api/screen"
 
 import { ArrowLeft, Code2, FileText, Plus, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
@@ -17,6 +16,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
+import { useScreen } from "@/services/api/screen"
 
 import { IAM_ROUTES } from "../iam.constants"
 import { useCreateIAMPolicy } from "../iam.hooks"
@@ -28,7 +28,12 @@ interface StatementForm {
     resources: string
 }
 
-const emptyStatement = (): StatementForm => ({ sid: "", effect: "Allow", actions: "", resources: "*" })
+const emptyStatement = (): StatementForm => ({
+    sid: "",
+    effect: "Allow",
+    actions: "",
+    resources: "*",
+})
 
 function splitList(value: string): string[] {
     return value
@@ -65,7 +70,10 @@ export function CreatePolicyPage() {
     const [rawJson, setRawJson] = useState("")
     const [error, setError] = useState("")
 
-    const builtJson = useMemo(() => JSON.stringify(buildDocument(statements), null, 2), [statements])
+    const builtJson = useMemo(
+        () => JSON.stringify(buildDocument(statements), null, 2),
+        [statements]
+    )
     const documentJson = rawMode ? rawJson : builtJson
 
     const updateStatement = (index: number, patch: Partial<StatementForm>) => {
@@ -96,7 +104,10 @@ export function CreatePolicyPage() {
             return
         }
         const stmts = parsed.Statement ?? []
-        if (stmts.length === 0 || !stmts.some((s) => Array.isArray(s.Action) && s.Action.length > 0)) {
+        if (
+            stmts.length === 0 ||
+            !stmts.some((s) => Array.isArray(s.Action) && s.Action.length > 0)
+        ) {
             setError(t("iam.policies.editor.needAction"))
             return
         }
@@ -167,7 +178,9 @@ export function CreatePolicyPage() {
                 actions={
                     <Button variant="outline" size="sm" className="gap-1.5" onClick={toggleRaw}>
                         <Code2 className="size-3.5" />
-                        {rawMode ? t("iam.policies.editor.useBuilder") : t("iam.policies.editor.useJson")}
+                        {rawMode
+                            ? t("iam.policies.editor.useBuilder")
+                            : t("iam.policies.editor.useJson")}
                     </Button>
                 }
             >
@@ -222,14 +235,13 @@ export function CreatePolicyPage() {
                 {error && <p className="text-[12px] text-destructive mt-3">{error}</p>}
 
                 <div className="flex items-center justify-end gap-3 pt-4">
-                    <Button
-                        variant="ghost"
-                        onClick={() => void navigate(IAM_ROUTES.POLICIES)}
-                    >
+                    <Button variant="ghost" onClick={() => void navigate(IAM_ROUTES.POLICIES)}>
                         {t("console.wizard.cancel")}
                     </Button>
                     <Button onClick={submit} disabled={isPending}>
-                        {isPending ? t("iam.policies.createForm.creating") : t("iam.policies.create")}
+                        {isPending
+                            ? t("iam.policies.createForm.creating")
+                            : t("iam.policies.create")}
                     </Button>
                 </div>
             </Section>

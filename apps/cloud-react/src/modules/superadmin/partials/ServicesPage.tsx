@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react"
-import { useScreen } from "@/services/api/screen"
 
 import type { ColumnDef } from "@tanstack/react-table"
 import { Ban, CheckCircle2, Clock, LayoutGrid, Pencil, Plus, RefreshCw, Trash2 } from "lucide-react"
@@ -17,6 +16,7 @@ import {
 } from "@/components/console"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { useScreen } from "@/services/api/screen"
 
 import { useAdminServices, useDeleteService, useUpdateServiceState } from "../superadmin.hooks"
 import type { CatalogServiceAdmin, ServiceState } from "../superadmin.types"
@@ -198,7 +198,7 @@ export function ServicesPage() {
                 isLoading={isLoading}
                 isError={isError}
                 onRetry={() => void refetch()}
-                getRowId={(s) => String(s.id)}
+                getRowId={(s) => s.id}
                 onRowClick={openEdit}
                 emptyState={
                     <EmptyState

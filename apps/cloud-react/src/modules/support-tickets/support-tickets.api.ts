@@ -45,7 +45,7 @@ interface TicketEntity {
     assigned_to?: string | null
     assigned_to_name?: string
     assigned_to_email?: string
-    tags?: TagsInput
+    tags?: Exclude<TagsInput, undefined>
     created_at?: string
     updated_at?: string
 }

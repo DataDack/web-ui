@@ -27,7 +27,7 @@ export function useCreditPurchases() {
 export function useLedger(accountId: string | undefined) {
     return useQuery({
         queryKey: BILLING_QUERY_KEYS.ledger(accountId ?? ""),
-        queryFn: () => billingService.fetchLedger(accountId as string),
+        queryFn: () => billingService.fetchLedger(accountId!),
         enabled: typeof accountId === "string" && accountId !== "",
     })
 }

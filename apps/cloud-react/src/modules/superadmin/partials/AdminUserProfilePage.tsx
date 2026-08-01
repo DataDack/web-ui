@@ -3,7 +3,13 @@ import { useMemo } from "react"
 import { ArrowLeft, Boxes, Crown, ShieldCheck, Star, UserRound } from "lucide-react"
 import { useNavigate, useParams } from "react-router-dom"
 
-import { EmptyState, KeyValueGrid, PageHeader, Section, type KeyValueItem } from "@/components/console"
+import {
+    EmptyState,
+    KeyValueGrid,
+    PageHeader,
+    Section,
+    type KeyValueItem,
+} from "@/components/console"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { useScreen } from "@/services/api/screen"
@@ -84,7 +90,12 @@ export function AdminUserProfilePage() {
             const m = account.members.find((x) => x.user_id === userId)
             // Ownership is member_role, not is_owner (that flag marks the user's
             // own home account and is false on accounts they provisioned later).
-            if (m) rows.push({ account, memberRole: m.member_role, isOwner: m.member_role === "owner" })
+            if (m)
+                rows.push({
+                    account,
+                    memberRole: m.member_role,
+                    isOwner: m.member_role === "owner",
+                })
         }
         // Owned accounts first.
         return rows.sort((a, b) => Number(b.isOwner) - Number(a.isOwner))
@@ -102,7 +113,11 @@ export function AdminUserProfilePage() {
                     ]}
                     title="User not found"
                     actions={
-                        <Button variant="outline" size="sm" onClick={() => void navigate(ORGS_PATH)}>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => void navigate(ORGS_PATH)}
+                        >
                             <ArrowLeft className="size-4" />
                             Back
                         </Button>
@@ -149,7 +164,10 @@ export function AdminUserProfilePage() {
               { label: "Status", value: <ActiveBadge active={user.is_active} /> },
               { label: "Access", value: access },
               { label: "Organization", value: user.orgName ?? "—" },
-              { label: "Onboarding", value: user.onboarding_status ? titleCase(user.onboarding_status) : "—" },
+              {
+                  label: "Onboarding",
+                  value: user.onboarding_status ? titleCase(user.onboarding_status) : "—",
+              },
               {
                   label: "KYC",
                   value: (
@@ -193,7 +211,7 @@ export function AdminUserProfilePage() {
             >
                 {memberships.length === 0 ? (
                     <p className="text-sm text-muted-foreground">
-                        This user isn't a member of any account.
+                        This user isn&apos;t a member of any account.
                     </p>
                 ) : (
                     <div className="space-y-2">
@@ -202,9 +220,7 @@ export function AdminUserProfilePage() {
                                 key={account.id}
                                 type="button"
                                 onClick={() =>
-                                    void navigate(
-                                        `/admin/accounts/${String(account.id)}/resources`
-                                    )
+                                    void navigate(`/admin/accounts/${account.id}/resources`)
                                 }
                                 className="flex w-full items-center gap-3 rounded-lg border border-border-glass bg-muted/20 px-3 py-2.5 text-left transition-colors hover:border-brand-gold/40 hover:bg-muted/40"
                             >

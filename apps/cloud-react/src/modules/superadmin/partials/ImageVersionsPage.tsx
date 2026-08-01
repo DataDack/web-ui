@@ -1,5 +1,4 @@
 import { useMemo, useState, type ReactNode } from "react"
-import { useScreen } from "@/services/api/screen"
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
@@ -33,18 +32,14 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-} from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Switch } from "@/components/ui/switch"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
 import { useQueryParamState } from "@/hooks/use-query-param-state"
 import { cn } from "@/lib/utils"
+import { useScreen } from "@/services/api/screen"
 
 import { ActiveBadge } from "../components/ActiveBadge"
 import { useAdminImages, useDeleteImageVersion, useSaveImageVersion } from "../superadmin.hooks"
@@ -151,7 +146,7 @@ export function ImageVersionsPage() {
         // The API serialises the image id as a JSON number (Go uint) while the
         // route param is a string, so compare them as strings to avoid a
         // strict-equality miss that would wrongly render "Image not found".
-        () => images.find((candidate) => String(candidate.id) === imageId) ?? null,
+        () => images.find((candidate) => candidate.id === imageId) ?? null,
         [images, imageId]
     )
 
@@ -235,11 +230,7 @@ export function ImageVersionsPage() {
     if (mode.kind !== "list" && image) {
         return (
             <VersionWizard
-                key={
-                    mode.kind === "edit"
-                        ? `edit-${String(mode.version.id)}`
-                        : `create-${image.id}`
-                }
+                key={mode.kind === "edit" ? `edit-${mode.version.id}` : `create-${image.id}`}
                 image={image}
                 mode={mode}
                 onCancel={backToList}
@@ -294,9 +285,7 @@ export function ImageVersionsPage() {
 
             {isError && (
                 <div className="glass-1 flex flex-col items-center justify-center px-6 py-14 text-center">
-                    <p className="mb-3 text-sm text-muted-foreground">
-                        {t("console.table.error")}
-                    </p>
+                    <p className="mb-3 text-sm text-muted-foreground">{t("console.table.error")}</p>
                     <Button variant="outline" onClick={() => void refetch()}>
                         {t("console.table.retry")}
                     </Button>
@@ -555,10 +544,7 @@ function VersionCard({
                 <VersionDatum
                     icon={<FileArchive className="size-3.5" />}
                     label={t("superAdmin.images.versions.fields.amiFile")}
-                    value={textOrFallback(
-                        version.ami_file,
-                        t("superAdmin.images.versions.noFile")
-                    )}
+                    value={textOrFallback(version.ami_file, t("superAdmin.images.versions.noFile"))}
                 />
                 <VersionDatum
                     icon={<Hash className="size-3.5" />}
@@ -660,16 +646,18 @@ function VersionWizard({
                 reviewItems: (values) => [
                     {
                         label: t("superAdmin.images.versions.fields.amiFile"),
-                        value: values.ami_file.length > 0
-                            ? values.ami_file
-                            : t("superAdmin.images.versions.noFile"),
+                        value:
+                            values.ami_file.length > 0
+                                ? values.ami_file
+                                : t("superAdmin.images.versions.noFile"),
                         mono: true,
                     },
                     {
                         label: t("superAdmin.images.versions.fields.vmid"),
-                        value: values.vmid > 0
-                            ? String(values.vmid)
-                            : t("superAdmin.images.versions.noVmid"),
+                        value:
+                            values.vmid > 0
+                                ? String(values.vmid)
+                                : t("superAdmin.images.versions.noVmid"),
                         mono: true,
                     },
                     {
@@ -947,9 +935,7 @@ function AvailabilityStep({
                                 <Select value={field.value} onValueChange={field.onChange}>
                                     <SelectTrigger className="w-full">
                                         <span>
-                                            {t(
-                                                `superAdmin.images.versions.status.${field.value}`
-                                            )}
+                                            {t(`superAdmin.images.versions.status.${field.value}`)}
                                         </span>
                                     </SelectTrigger>
                                     <SelectContent>
@@ -1022,9 +1008,7 @@ function VersionSwitch({
         <div className="glass-1 flex items-center justify-between gap-4 px-3.5 py-3">
             <div className="min-w-0">
                 <p className="text-sm font-medium text-foreground">{title}</p>
-                <p className="mt-0.5 text-[11px] leading-4 text-muted-foreground">
-                    {description}
-                </p>
+                <p className="mt-0.5 text-[11px] leading-4 text-muted-foreground">{description}</p>
             </div>
             {control}
         </div>

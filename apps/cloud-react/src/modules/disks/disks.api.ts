@@ -50,12 +50,12 @@ function normalizeStatus(status: string): DiskStatus {
 /** Normalise a transient instance id: nil-UUID / falsy → "" (unattached). */
 function normalizeInstanceId(id: string | undefined): string {
     if (!id || id === NIL_UUID) return ""
-    return String(id)
+    return id
 }
 
 function toDisk(raw: RawDisk): Disk {
     return {
-        id: String(raw.id),
+        id: raw.id,
         tenant_serial: raw.tenant_serial ?? 0,
         created_at: raw.created_at,
         updated_at: raw.updated_at,

@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react"
-import { useScreen } from "@/services/api/screen"
 
 import type { ColumnDef } from "@tanstack/react-table"
 import { KeyRound, Plus, RefreshCw, Trash2 } from "lucide-react"
@@ -17,6 +16,7 @@ import {
     ResourceTable,
 } from "@/components/console"
 import { Button } from "@/components/ui/button"
+import { useScreen } from "@/services/api/screen"
 
 import { SSH_KEYS_ROUTES } from "../ssh-keys.constants"
 import { useDeleteSSHKey, useSSHKeys } from "../ssh-keys.hooks"
@@ -60,7 +60,9 @@ export function SshKeysListPage() {
                         label: t("sshKeys.actions.delete"),
                         icon: Trash2,
                         destructive: true,
-                        onAction: () => { setKeyToDelete(key); },
+                        onAction: () => {
+                            setKeyToDelete(key)
+                        },
                     },
                 ],
             }),
@@ -130,7 +132,11 @@ export function SshKeysListPage() {
                 loading={isDeleting}
                 onConfirm={() => {
                     if (!keyToDelete) return
-                    deleteKey(keyToDelete.id, { onSuccess: () => { setKeyToDelete(null); } })
+                    deleteKey(keyToDelete.id, {
+                        onSuccess: () => {
+                            setKeyToDelete(null)
+                        },
+                    })
                 }}
             />
         </div>

@@ -1,5 +1,4 @@
 import { useEffect } from "react"
-import { useScreen } from "@/services/api/screen"
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { BadgeCheck, Save, ShieldCheck, UserCog } from "lucide-react"
@@ -16,6 +15,7 @@ import { Label } from "@/components/ui/label"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useAuth } from "@/modules/auth/auth.context"
 import { useCountries } from "@/modules/countries/countries.hooks"
+import { useScreen } from "@/services/api/screen"
 
 import { useUpdateProfile } from "../organizations.hooks"
 
@@ -40,9 +40,7 @@ export function ProfileSettingsPage() {
     // Resolve the stored ISO code (e.g. "IN") to a flagged name; fall back to the
     // raw code while the list loads or for an unknown code.
     const country = countries?.find((c) => c.iso2 === user?.country)
-    const countryLabel = country
-        ? `${country.flag} ${country.name}`
-        : (user?.country ?? "") || "—"
+    const countryLabel = country ? `${country.flag} ${country.name}` : (user?.country ?? "") || "—"
 
     const {
         register,

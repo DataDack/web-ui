@@ -1,8 +1,7 @@
 import { useMemo, useState } from "react"
-import { useScreen } from "@/services/api/screen"
 
 import type { ColumnDef } from "@tanstack/react-table"
-import { Activity, Plus, RefreshCw, Trash2 } from "lucide-react"
+import { Activity, Globe, Plus, RefreshCw, Trash2, Users } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
@@ -16,8 +15,8 @@ import {
     StatGrid,
     statusColumn,
 } from "@/components/console"
-import { Globe, Users } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useScreen } from "@/services/api/screen"
 
 import { ASG_ROUTES } from "../autoscaling.constants"
 import { useASGs, useDeleteASG } from "../autoscaling.hooks"
@@ -56,7 +55,11 @@ export function AutoscalingListPage() {
         () => [
             {
                 id: "name",
-                header: () => <span className="text-xs font-semibold uppercase tracking-wider">{t("autoscaling.columns.name")}</span>,
+                header: () => (
+                    <span className="text-xs font-semibold uppercase tracking-wider">
+                        {t("autoscaling.columns.name")}
+                    </span>
+                ),
                 accessorFn: (g) => g.name,
                 cell: ({ row }) => (
                     <div className="flex flex-col">
@@ -77,21 +80,34 @@ export function AutoscalingListPage() {
             }),
             {
                 id: "capacity",
-                header: () => <span className="text-xs font-semibold uppercase tracking-wider">{t("autoscaling.columns.capacity")}</span>,
+                header: () => (
+                    <span className="text-xs font-semibold uppercase tracking-wider">
+                        {t("autoscaling.columns.capacity")}
+                    </span>
+                ),
                 accessorFn: (a) => a.desired_capacity,
                 cell: ({ row }) => {
-                    const { min_size, desired_capacity, max_size } = row.original
+                    const {
+                        min_size: minSize,
+                        desired_capacity: desiredCapacity,
+                        max_size: maxSize,
+                    } = row.original
                     // Mock capacity bar visually representing desired relative to max
-                    const percentage = max_size > 0 ? (desired_capacity / max_size) * 100 : 0
+                    const percentage = maxSize > 0 ? (desiredCapacity / maxSize) * 100 : 0
                     return (
                         <div className="flex flex-col gap-1.5 w-32">
                             <div className="flex justify-between items-center text-[11px] font-mono text-muted-foreground">
-                                <span>{min_size} Min</span>
-                                <span className="text-foreground font-medium">{desired_capacity} Curr</span>
-                                <span>{max_size} Max</span>
+                                <span>{minSize} Min</span>
+                                <span className="text-foreground font-medium">
+                                    {desiredCapacity} Curr
+                                </span>
+                                <span>{maxSize} Max</span>
                             </div>
                             <div className="h-1.5 w-full bg-accent/30 rounded-full overflow-hidden">
-                                <div className="h-full bg-status-info/70" style={{ width: `${percentage}%` }} />
+                                <div
+                                    className="h-full bg-status-info/70"
+                                    style={{ width: `${percentage}%` }}
+                                />
                             </div>
                         </div>
                     )
@@ -99,7 +115,11 @@ export function AutoscalingListPage() {
             },
             {
                 id: "location",
-                header: () => <span className="text-xs font-semibold uppercase tracking-wider">{t("loadBalancers.columns.region")}</span>,
+                header: () => (
+                    <span className="text-xs font-semibold uppercase tracking-wider">
+                        {t("loadBalancers.columns.region")}
+                    </span>
+                ),
                 accessorFn: (a) => a.region,
                 cell: ({ row }) => (
                     <span className="flex items-center gap-1.5 font-medium text-[13px] text-foreground">

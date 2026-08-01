@@ -1,8 +1,8 @@
 import { ShieldCheck } from "lucide-react"
-import { useScreen } from "@/services/api/screen"
 import { useTranslation } from "react-i18next"
 
 import { ComingSoon } from "@/components/console"
+import { useScreen } from "@/services/api/screen"
 
 export function RolesListPage() {
     useScreen("iam.roles-list")

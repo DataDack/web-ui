@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react"
-import { useScreen } from "@/services/api/screen"
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import type { ColumnDef } from "@tanstack/react-table"
@@ -43,6 +42,7 @@ import type { NamingRule } from "@/modules/governance/governance.types"
 import { namingNameSchema } from "@/modules/governance/governance.validation"
 import { VMS_ROUTES } from "@/modules/vms/vms.constants"
 import { useInstances } from "@/modules/vms/vms.hooks"
+import { useScreen } from "@/services/api/screen"
 
 import {
     useAssignStaticIP,
@@ -60,9 +60,9 @@ const FIELD_LABEL_CLASS = "text-xs font-semibold tracking-wide uppercase text-mu
 
 const makeReserveSchema = (rule: NamingRule) =>
     z.object({
-    name: namingNameSchema(rule),
-    region: z.string().min(1, "Required"),
-})
+        name: namingNameSchema(rule),
+        region: z.string().min(1, "Required"),
+    })
 
 type ReserveValues = z.infer<ReturnType<typeof makeReserveSchema>>
 
@@ -103,9 +103,7 @@ function ReserveIpDialog({
             <DialogContent className="sm:max-w-md glass-3">
                 <DialogHeader>
                     <DialogTitle>{t("staticIps.reserveForm.title")}</DialogTitle>
-                    <DialogDescription>
-                        {t("staticIps.reserveForm.description")}
-                    </DialogDescription>
+                    <DialogDescription>{t("staticIps.reserveForm.description")}</DialogDescription>
                 </DialogHeader>
                 <form onSubmit={(e) => void handleSubmit(onSubmit)(e)} className="space-y-5">
                     <QuotaNotice code="vpc.static_ips" />
@@ -269,10 +267,7 @@ export function StaticIpsPage() {
     const [toUnassign, setToUnassign] = useState<StaticIP | null>(null)
     const [toRelease, setToRelease] = useState<StaticIP | null>(null)
 
-    const instanceNames = useMemo(
-        () => new Map(instances.map((i) => [i.id, i.name])),
-        [instances]
-    )
+    const instanceNames = useMemo(() => new Map(instances.map((i) => [i.id, i.name])), [instances])
 
     const filtered = useMemo(() => {
         if (!query.trim()) return ips
@@ -307,7 +302,11 @@ export function StaticIpsPage() {
         () => [
             {
                 id: "name",
-                header: () => <span className="text-xs font-semibold uppercase tracking-wider">{t("staticIps.columns.name")}</span>,
+                header: () => (
+                    <span className="text-xs font-semibold uppercase tracking-wider">
+                        {t("staticIps.columns.name")}
+                    </span>
+                ),
                 accessorFn: (ip) => ip.name,
                 cell: ({ row }) => (
                     <div className="flex flex-col">
@@ -323,7 +322,11 @@ export function StaticIpsPage() {
             },
             {
                 id: "region",
-                header: () => <span className="text-xs font-semibold uppercase tracking-wider">{t("staticIps.columns.region")}</span>,
+                header: () => (
+                    <span className="text-xs font-semibold uppercase tracking-wider">
+                        {t("staticIps.columns.region")}
+                    </span>
+                ),
                 accessorFn: (ip) => ip.region,
                 cell: ({ row }) => (
                     <span className="flex items-center gap-1.5 font-medium text-[13px] text-foreground">
@@ -365,39 +368,39 @@ export function StaticIpsPage() {
             },
             actionsColumn<StaticIP>({
                 ariaLabel: t("console.table.actions"),
-                actions: (ip) => [
+                actions: (ip) => {
                     // Provisioning IPs are still being allocated — neither
                     // assign nor unassign applies until the address is ready.
-                    ...(ip.status === "provisioning"
-                        ? []
-                        : ip.status === "reserved"
-                          ? [
-                                {
-                                    label: t("staticIps.actions.assign"),
-                                    icon: Link2,
-                                    onAction: (row: StaticIP) => {
-                                        setToAssign(row)
-                                    },
-                                },
-                            ]
-                          : [
-                                {
-                                    label: t("staticIps.actions.unassign"),
-                                    icon: Unlink,
-                                    onAction: (row: StaticIP) => {
-                                        setToUnassign(row)
-                                    },
-                                },
-                            ]),
-                    {
-                        label: t("staticIps.actions.release"),
-                        icon: Trash2,
-                        destructive: true,
-                        onAction: (row: StaticIP) => {
-                            setToRelease(row)
+                    const attachmentActions = []
+                    if (ip.status === "reserved") {
+                        attachmentActions.push({
+                            label: t("staticIps.actions.assign"),
+                            icon: Link2,
+                            onAction: (row: StaticIP) => {
+                                setToAssign(row)
+                            },
+                        })
+                    } else if (ip.status !== "provisioning") {
+                        attachmentActions.push({
+                            label: t("staticIps.actions.unassign"),
+                            icon: Unlink,
+                            onAction: (row: StaticIP) => {
+                                setToUnassign(row)
+                            },
+                        })
+                    }
+                    return [
+                        ...attachmentActions,
+                        {
+                            label: t("staticIps.actions.release"),
+                            icon: Trash2,
+                            destructive: true,
+                            onAction: (row: StaticIP) => {
+                                setToRelease(row)
+                            },
                         },
-                    },
-                ],
+                    ]
+                },
             }),
         ],
         [t, instanceNames]
@@ -499,7 +502,11 @@ export function StaticIpsPage() {
                 loading={isUnassigning}
                 onConfirm={() => {
                     if (toUnassign) {
-                        unassign(toUnassign.id, { onSuccess: () => { setToUnassign(null); } })
+                        unassign(toUnassign.id, {
+                            onSuccess: () => {
+                                setToUnassign(null)
+                            },
+                        })
                     }
                 }}
             />
@@ -517,7 +524,11 @@ export function StaticIpsPage() {
                 loading={isReleasing}
                 onConfirm={() => {
                     if (toRelease) {
-                        release(toRelease.id, { onSuccess: () => { setToRelease(null); } })
+                        release(toRelease.id, {
+                            onSuccess: () => {
+                                setToRelease(null)
+                            },
+                        })
                     }
                 }}
             />

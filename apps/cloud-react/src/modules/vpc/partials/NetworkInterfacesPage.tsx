@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react"
-import { useScreen } from "@/services/api/screen"
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import type { ColumnDef } from "@tanstack/react-table"
@@ -49,6 +48,7 @@ import type { NamingRule } from "@/modules/governance/governance.types"
 import { namingNameSchema } from "@/modules/governance/governance.validation"
 import { VMS_ROUTES } from "@/modules/vms/vms.constants"
 import { useInstances } from "@/modules/vms/vms.hooks"
+import { useScreen } from "@/services/api/screen"
 
 import { VPC_ROUTES } from "../vpc.constants"
 import {
@@ -200,9 +200,7 @@ function CreateNetworkInterfaceDialog({
                 subnet_id: values.subnet_id,
                 private_ip: values.private_ip.trim() || undefined,
                 security_group_ids:
-                    values.security_group_ids.length > 0
-                        ? values.security_group_ids
-                        : undefined,
+                    values.security_group_ids.length > 0 ? values.security_group_ids : undefined,
                 description: values.description.trim() || undefined,
             },
             { onSuccess: close }
@@ -251,7 +249,10 @@ function CreateNetworkInterfaceDialog({
                                 {vpcs.map((vpc) => (
                                     <SelectItem key={vpc.id} value={vpc.id}>
                                         {vpc.name} — {vpc.cidr}
-                                        <span className="text-muted-foreground"> · {vpc.region}</span>
+                                        <span className="text-muted-foreground">
+                                            {" "}
+                                            · {vpc.region}
+                                        </span>
                                     </SelectItem>
                                 ))}
                             </SelectContent>
@@ -324,9 +325,7 @@ function CreateNetworkInterfaceDialog({
                         </Label>
                         <Textarea
                             {...register("description")}
-                            placeholder={t(
-                                "networkInterfaces.createForm.descriptionPlaceholder"
-                            )}
+                            placeholder={t("networkInterfaces.createForm.descriptionPlaceholder")}
                             rows={2}
                             className="resize-none text-[13px]"
                         />
@@ -473,10 +472,7 @@ export function NetworkInterfacesPage() {
         return map
     }, [subnets])
 
-    const instanceNames = useMemo(
-        () => new Map(instances.map((i) => [i.id, i.name])),
-        [instances]
-    )
+    const instanceNames = useMemo(() => new Map(instances.map((i) => [i.id, i.name])), [instances])
 
     const filtered = useMemo(() => {
         if (!query.trim()) return nics
@@ -546,9 +542,7 @@ export function NetworkInterfacesPage() {
                             className="font-mono text-[13px] text-status-info hover:underline"
                             onClick={(e) => {
                                 e.stopPropagation()
-                                void navigate(
-                                    `${VPC_ROUTES.detail(nic.network_id)}?tab=subnets`
-                                )
+                                void navigate(`${VPC_ROUTES.detail(nic.network_id)}?tab=subnets`)
                             }}
                         >
                             {label}
@@ -619,8 +613,7 @@ export function NetworkInterfacesPage() {
             }),
             {
                 id: "instance",
-                accessorFn: (nic: NetworkInterface) =>
-                    instanceNames.get(nic.instance_id) ?? "",
+                accessorFn: (nic: NetworkInterface) => instanceNames.get(nic.instance_id) ?? "",
                 header: () => t("networkInterfaces.columns.instance"),
                 meta: { interactive: true },
                 cell: ({ row }) => {

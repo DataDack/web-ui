@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react"
-import { useScreen } from "@/services/api/screen"
 
 import type { ColumnDef } from "@tanstack/react-table"
 import { MapPin, Pencil, Plus, RefreshCw } from "lucide-react"
@@ -15,6 +14,7 @@ import {
     textColumn,
 } from "@/components/console"
 import { Button } from "@/components/ui/button"
+import { useScreen } from "@/services/api/screen"
 
 import { ActiveBadge } from "../components/ActiveBadge"
 import { useAdminAvailabilityZones } from "../superadmin.hooks"

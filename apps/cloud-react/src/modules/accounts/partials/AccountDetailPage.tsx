@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react"
-import { useScreen } from "@/services/api/screen"
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Ban, Check, PlayCircle, Save, Star, Wallet } from "lucide-react"
@@ -8,19 +7,14 @@ import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
 import { z } from "zod/v4"
 
-import {
-    ConfirmDialog,
-    KeyValueGrid,
-    PageHeader,
-    Section,
-    StatusBadge,
-} from "@/components/console"
+import { ConfirmDialog, KeyValueGrid, PageHeader, Section, StatusBadge } from "@/components/console"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useAuth } from "@/modules/auth/auth.context"
+import { useScreen } from "@/services/api/screen"
 
 import { ACCOUNT_MANAGER_ROLES, ACCOUNT_ROUTES } from "../accounts.constants"
 import {
@@ -60,8 +54,7 @@ export function AccountDetailPage() {
     // Account authority comes from the caller's membership role in THIS account
     // (owner/admin), not an organization. The platform super admin may always manage.
     const canManage =
-        user?.is_super_admin === true ||
-        ACCOUNT_MANAGER_ROLES.includes(account?.member_role ?? "")
+        user?.is_super_admin === true || ACCOUNT_MANAGER_ROLES.includes(account?.member_role ?? "")
 
     const {
         register,
@@ -95,9 +88,12 @@ export function AccountDetailPage() {
     }
 
     const isActiveScope = activeAccount?.id === account.id
-    const onRename = (values: FormValues) => { update({ id: account.id, payload: { name: values.name } }); }
-    const changeStatus = (status: "active" | "suspended" | "closed") =>
-        { update({ id: account.id, payload: { status } }); }
+    const onRename = (values: FormValues) => {
+        update({ id: account.id, payload: { name: values.name } })
+    }
+    const changeStatus = (status: "active" | "suspended" | "closed") => {
+        update({ id: account.id, payload: { status } })
+    }
 
     return (
         <div className="space-y-6">
@@ -123,7 +119,13 @@ export function AccountDetailPage() {
                 actions={
                     !isActiveScope &&
                     account.status !== "closed" && (
-                        <Button variant="outline" className="gap-1.5" onClick={() => { switchAccount(account); }}>
+                        <Button
+                            variant="outline"
+                            className="gap-1.5"
+                            onClick={() => {
+                                switchAccount(account)
+                            }}
+                        >
                             <Check className="size-3.5" />
                             {t("accounts.switchTo")}
                         </Button>
@@ -176,7 +178,9 @@ export function AccountDetailPage() {
                                 variant="outline"
                                 className="gap-1.5"
                                 disabled={settingDefault}
-                                onClick={() => { setDefault(account.id); }}
+                                onClick={() => {
+                                    setDefault(account.id)
+                                }}
                             >
                                 <Star className="size-3.5" />
                                 {t("accounts.lifecycle.setDefault")}
@@ -187,7 +191,9 @@ export function AccountDetailPage() {
                                 variant="outline"
                                 className="gap-1.5"
                                 disabled={saving}
-                                onClick={() => { changeStatus("suspended"); }}
+                                onClick={() => {
+                                    changeStatus("suspended")
+                                }}
                             >
                                 <Ban className="size-3.5" />
                                 {t("accounts.lifecycle.suspend")}
@@ -198,7 +204,9 @@ export function AccountDetailPage() {
                                 variant="outline"
                                 className="gap-1.5"
                                 disabled={saving}
-                                onClick={() => { changeStatus("active"); }}
+                                onClick={() => {
+                                    changeStatus("active")
+                                }}
                             >
                                 <PlayCircle className="size-3.5" />
                                 {t("accounts.lifecycle.reactivate")}
@@ -208,7 +216,9 @@ export function AccountDetailPage() {
                             <Button
                                 variant="destructive"
                                 className="gap-1.5"
-                                onClick={() => { setCloseOpen(true); }}
+                                onClick={() => {
+                                    setCloseOpen(true)
+                                }}
                             >
                                 <Ban className="size-3.5" />
                                 {t("accounts.lifecycle.close")}
@@ -229,9 +239,22 @@ export function AccountDetailPage() {
                 <KeyValueGrid
                     columns={2}
                     items={[
-                        { label: t("accounts.detail.accountNumber"), value: account.account_number, mono: true, copyable: true },
-                        { label: t("accounts.detail.accountId"), value: account.id, mono: true, copyable: true },
-                        { label: t("org.settings.status"), value: <StatusBadge status={account.status} /> },
+                        {
+                            label: t("accounts.detail.accountNumber"),
+                            value: account.account_number,
+                            mono: true,
+                            copyable: true,
+                        },
+                        {
+                            label: t("accounts.detail.accountId"),
+                            value: account.id,
+                            mono: true,
+                            copyable: true,
+                        },
+                        {
+                            label: t("org.settings.status"),
+                            value: <StatusBadge status={account.status} />,
+                        },
                     ]}
                 />
             </Section>
@@ -244,12 +267,16 @@ export function AccountDetailPage() {
                 confirmText={account.name}
                 confirmLabel={t("accounts.lifecycle.close")}
                 loading={saving}
-                onConfirm={() =>
-                    { update(
+                onConfirm={() => {
+                    update(
                         { id: account.id, payload: { status: "closed" } },
-                        { onSuccess: () => { setCloseOpen(false); } }
-                    ); }
-                }
+                        {
+                            onSuccess: () => {
+                                setCloseOpen(false)
+                            },
+                        }
+                    )
+                }}
             />
         </div>
     )
@@ -285,7 +312,8 @@ function MembersSection({ accountId }: Readonly<{ accountId: string }>) {
                                         {displayName}
                                     </span>
                                     <span className="text-[11px] text-muted-foreground truncate">
-                                        {m.email || `${t("accounts.detail.accountId")} ${m.user_id}`}
+                                        {m.email ||
+                                            `${t("accounts.detail.accountId")} ${m.user_id}`}
                                     </span>
                                 </span>
                             </span>

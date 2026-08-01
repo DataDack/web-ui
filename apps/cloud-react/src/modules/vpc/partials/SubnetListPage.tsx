@@ -1,5 +1,4 @@
 import { useCallback, useMemo, useState } from "react"
-import { useScreen } from "@/services/api/screen"
 
 import type { ColumnDef } from "@tanstack/react-table"
 import { GitBranch, RefreshCw, Search, Trash2 } from "lucide-react"
@@ -22,8 +21,8 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-
 import { useAvailabilityZoneMap } from "@/modules/catalog/catalog.hooks"
+import { useScreen } from "@/services/api/screen"
 
 import { VPC_ROUTES } from "../vpc.constants"
 import { useAllSubnets, useDeleteSubnet, useVPCs } from "../vpc.hooks"
@@ -68,7 +67,8 @@ export function SubnetListPage() {
     // The backend returns `availability_zone_id` (a uuid); resolve it to the
     // zone's display name via the region catalog.
     const azLabel = useCallback(
-        (s: Subnet) => (s.availability_zone_id ? azMap.get(s.availability_zone_id)?.name : undefined),
+        (s: Subnet) =>
+            s.availability_zone_id ? azMap.get(s.availability_zone_id)?.name : undefined,
         [azMap]
     )
 
@@ -257,7 +257,11 @@ export function SubnetListPage() {
                 loading={isDeleting}
                 onConfirm={() => {
                     if (toDelete) {
-                        deleteSubnet(toDelete.id, { onSuccess: () => { setToDelete(null); } })
+                        deleteSubnet(toDelete.id, {
+                            onSuccess: () => {
+                                setToDelete(null)
+                            },
+                        })
                     }
                 }}
             />

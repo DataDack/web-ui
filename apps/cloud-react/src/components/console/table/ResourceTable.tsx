@@ -286,7 +286,6 @@ export function ResourceTable<TData>({
         return [selectColumn, ...columns]
     }, [columns, enableSelection, t])
 
-    // eslint-disable-next-line react-hooks/incompatible-library -- TanStack Table is compiler-incompatible by design
     const table = useReactTable({
         data,
         columns: allColumns,

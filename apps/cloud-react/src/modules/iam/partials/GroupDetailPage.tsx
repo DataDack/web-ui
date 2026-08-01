@@ -1,5 +1,4 @@
 import { useState } from "react"
-import { useScreen } from "@/services/api/screen"
 
 import { FileText, Info, Loader2, Plus, Trash2, Users, X } from "lucide-react"
 import { useTranslation } from "react-i18next"
@@ -22,6 +21,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useScreen } from "@/services/api/screen"
 
 import { IAM_ROUTES } from "../iam.constants"
 import {
@@ -127,8 +127,14 @@ function OverviewTab({ group }: Readonly<{ group: IAMGroup }>) {
                 items={[
                     { label: t("iam.columns.description"), value: group.description },
                     { label: t("iam.columns.path"), value: group.path },
-                    { label: t("common.created"), value: new Date(group.created_at).toLocaleString() },
-                    { label: t("common.updated"), value: new Date(group.updated_at).toLocaleString() },
+                    {
+                        label: t("common.created"),
+                        value: new Date(group.created_at).toLocaleString(),
+                    },
+                    {
+                        label: t("common.updated"),
+                        value: new Date(group.updated_at).toLocaleString(),
+                    },
                 ]}
             />
         </Section>

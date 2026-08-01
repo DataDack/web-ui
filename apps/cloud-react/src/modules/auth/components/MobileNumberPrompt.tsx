@@ -57,7 +57,6 @@ export function MobileNumberPrompt() {
         const now = Date.now()
         if (now - last < THROTTLE_MS) return
         localStorage.setItem(THROTTLE_KEY, String(now))
-        // eslint-disable-next-line react-hooks/set-state-in-effect -- surface the reminder once per throttle window; there is no user event to hang this off, it is driven by the persisted session + timestamp
         setOpen(true)
     }, [needsPhone])
 

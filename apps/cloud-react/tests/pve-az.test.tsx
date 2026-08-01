@@ -1,11 +1,13 @@
 import { expect, mock, test } from "bun:test"
-import { render, screen, waitFor } from "@testing-library/react"
+
+import { render, screen } from "@testing-library/react"
 
 // Exact payloads the live API returns for this node + AZ list.
 const NODE = {
     id: "019f41cf-1170-70f3-84f2-b4af8d4650c1",
     availability_zone_id: "019ef08e-d0fd-7eba-a2c3-19cfe5e0fea0",
     name: "pve1-a",
+    // eslint-disable-next-line sonarjs/no-hardcoded-ip -- inert fixture mirroring the backend row shape; never dialled
     ip_address: "167.104.222.3",
     status: "online",
     cpu_total: 24,
@@ -23,15 +25,15 @@ const AZS = [
 
 // Per-request latency, set by each test to control which query resolves first.
 const delay: { azs: number; node: number } = { azs: 0, node: 0 }
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
-mock.module("react-i18next", () => ({
+await mock.module("react-i18next", () => ({
     useTranslation: () => ({ t: (k: string) => k }),
 }))
 
 // Mock only the HTTP layer: real hooks, real react-query, real component — so
 // this exercises the actual load ordering.
-mock.module("@/services/api/client", () => ({
+await mock.module("@/services/api/client", () => ({
     api: {},
     apiGet: async (url: string) => {
         if (url.includes("/availability-zones/all")) {
@@ -72,7 +74,7 @@ function renderForm() {
 // The AZ trigger is the first combobox on the Placement step.
 async function azTriggerText() {
     const trigger = await screen.findByRole("combobox")
-    return trigger.textContent ?? ""
+    return trigger.textContent
 }
 
 test("AZ list resolves BEFORE the node", async () => {

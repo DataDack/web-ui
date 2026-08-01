@@ -44,20 +44,27 @@ export function ServiceHealth() {
             ) : (
                 <ul>
                     {health.items.map((s) => {
-                        const meta = STATUS_META[s.status] ?? STATUS_META.inactive
+                        // Statuses are normalized at the API boundary, so the
+                        // lookup is total by construction.
+                        const meta = STATUS_META[s.status]
                         return (
                             <li
                                 key={s.id}
                                 className="flex items-center gap-3 border-t border-border py-3 first:border-t-0"
                             >
-                                <span className="flex-1 truncate text-sm text-foreground">{s.name}</span>
+                                <span className="flex-1 truncate text-sm text-foreground">
+                                    {s.name}
+                                </span>
                                 <span
                                     className="flex items-center gap-2 text-sm font-medium"
                                     style={{ color: meta.color }}
                                 >
                                     <span
                                         className="size-[7px] shrink-0 rounded-full"
-                                        style={{ background: meta.color, boxShadow: `0 0 8px ${meta.color}` }}
+                                        style={{
+                                            background: meta.color,
+                                            boxShadow: `0 0 8px ${meta.color}`,
+                                        }}
                                     />
                                     {t(meta.labelKey)}
                                 </span>

@@ -25,11 +25,10 @@ import {
     SheetTitle,
 } from "@/components/ui/sheet"
 import { Switch } from "@/components/ui/switch"
+import { useRegionCatalog } from "@/modules/catalog/catalog.hooks"
 import { useNamingRule } from "@/modules/governance/governance.hooks"
 import type { NamingRule } from "@/modules/governance/governance.types"
 import { namingNameSchema } from "@/modules/governance/governance.validation"
-
-import { useRegionCatalog } from "@/modules/catalog/catalog.hooks"
 
 import { CIDR_REGEX } from "../../vpc.constants"
 import { useCreateSubnet } from "../../vpc.hooks"
@@ -40,11 +39,11 @@ const SUBNET_CIDR_DEFAULT = "10.0.1.0/24"
 
 const makeSchema = (rule: NamingRule) =>
     z.object({
-    name: namingNameSchema(rule),
-    cidr: z.string().regex(CIDR_REGEX, "Must be CIDR notation, e.g. 10.0.4.0/24"),
-    zone: z.string().min(1, "Required"),
-    is_public: z.boolean(),
-})
+        name: namingNameSchema(rule),
+        cidr: z.string().regex(CIDR_REGEX, "Must be CIDR notation, e.g. 10.0.4.0/24"),
+        zone: z.string().min(1, "Required"),
+        is_public: z.boolean(),
+    })
 
 type FormValues = z.infer<ReturnType<typeof makeSchema>>
 
@@ -94,10 +93,7 @@ export function AddSubnetSheet({ network, open, onOpenChange }: Readonly<Props>)
     }
 
     const onSubmit = (values: FormValues) => {
-        create(
-            { ...values, network_id: network.id, region: network.region },
-            { onSuccess: close }
-        )
+        create({ ...values, network_id: network.id, region: network.region }, { onSuccess: close })
     }
 
     return (

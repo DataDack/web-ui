@@ -33,7 +33,7 @@ interface RGEntity {
     name: string
     description?: string
     status?: string
-    tags?: TagsInput
+    tags?: Exclude<TagsInput, undefined>
     created_at?: string
     updated_at?: string
     is_default?: boolean
@@ -133,10 +133,7 @@ export const resourceGroupsApi = {
         return toResourceGroup(item)
     },
 
-    update: async (
-        id: string,
-        payload: UpdateResourceGroupPayload
-    ): Promise<ResourceGroup> => {
+    update: async (id: string, payload: UpdateResourceGroupPayload): Promise<ResourceGroup> => {
         const body: Record<string, unknown> = {}
         if (payload.name !== undefined) body.name = payload.name
         if (payload.description !== undefined) body.description = payload.description

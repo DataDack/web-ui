@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react"
-import { useScreen } from "@/services/api/screen"
 
 import type { ColumnDef } from "@tanstack/react-table"
 import { Plus, RefreshCw, Trash2, Users } from "lucide-react"
@@ -17,6 +16,7 @@ import {
     textColumn,
 } from "@/components/console"
 import { Button } from "@/components/ui/button"
+import { useScreen } from "@/services/api/screen"
 
 import { IAM_ROUTES } from "../iam.constants"
 import { useDeleteIAMGroup, useIAMGroups } from "../iam.hooks"

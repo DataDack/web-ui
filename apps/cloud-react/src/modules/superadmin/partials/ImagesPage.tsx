@@ -1,5 +1,4 @@
 import { useCallback, useMemo, useState } from "react"
-import { useScreen } from "@/services/api/screen"
 
 import type { ColumnDef } from "@tanstack/react-table"
 import { Disc3, Layers, Pencil, Plus, RefreshCw, Trash2 } from "lucide-react"
@@ -19,6 +18,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useQueryParamState } from "@/hooks/use-query-param-state"
+import { useScreen } from "@/services/api/screen"
 
 import { ActiveBadge } from "../components/ActiveBadge"
 import { useAdminImages, useDeleteImage } from "../superadmin.hooks"
@@ -92,9 +92,12 @@ export function ImagesPage() {
         setEditing(image)
         setFormOpen(true)
     }, [])
-    const openVersions = useCallback((image: Image) => {
-        void navigate(`/admin/images/${image.id}/versions`)
-    }, [navigate])
+    const openVersions = useCallback(
+        (image: Image) => {
+            void navigate(`/admin/images/${image.id}/versions`)
+        },
+        [navigate]
+    )
 
     const columns = useMemo<ColumnDef<Image>[]>(() => {
         const helpers: ImageActionHelpers = {

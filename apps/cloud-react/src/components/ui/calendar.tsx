@@ -1,4 +1,4 @@
-import * as React from "react"
+import type * as React from "react"
 
 import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react"
 import { DayPicker, getDefaultClassNames } from "react-day-picker"
@@ -20,10 +20,7 @@ function Calendar({
             className={cn("p-3", className)}
             classNames={{
                 root: cn("w-fit", defaultClassNames.root),
-                months: cn(
-                    "relative flex flex-col gap-4 sm:flex-row",
-                    defaultClassNames.months
-                ),
+                months: cn("relative flex flex-col gap-4 sm:flex-row", defaultClassNames.months),
                 month: cn("flex w-full flex-col gap-4", defaultClassNames.month),
                 nav: cn(
                     "absolute inset-x-0 top-0 flex w-full items-center justify-between",
@@ -55,10 +52,7 @@ function Calendar({
                     "relative rounded-md border border-input shadow-xs has-focus:border-ring has-focus:ring-[3px] has-focus:ring-ring/50",
                     defaultClassNames.dropdown_root
                 ),
-                dropdown: cn(
-                    "absolute inset-0 bg-popover opacity-0",
-                    defaultClassNames.dropdown
-                ),
+                dropdown: cn("absolute inset-0 bg-popover opacity-0", defaultClassNames.dropdown),
                 month_grid: cn("w-full border-collapse", defaultClassNames.month_grid),
                 weekdays: cn("flex", defaultClassNames.weekdays),
                 weekday: cn(
@@ -79,29 +73,21 @@ function Calendar({
                     "rounded-md bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
                     defaultClassNames.selected
                 ),
-                today: cn(
-                    "rounded-md bg-accent text-accent-foreground",
-                    defaultClassNames.today
-                ),
+                today: cn("rounded-md bg-accent text-accent-foreground", defaultClassNames.today),
                 outside: cn(
                     "text-muted-foreground aria-selected:text-muted-foreground",
                     defaultClassNames.outside
                 ),
-                disabled: cn(
-                    "text-muted-foreground opacity-50",
-                    defaultClassNames.disabled
-                ),
+                disabled: cn("text-muted-foreground opacity-50", defaultClassNames.disabled),
                 hidden: cn("invisible", defaultClassNames.hidden),
                 ...classNames,
             }}
             components={{
+                // eslint-disable-next-line react/prop-types -- props are fully typed by react-day-picker's CustomComponents contract; the rule cannot see through the inline render-prop
                 Chevron: ({ orientation, className: chevClassName, ...chevProps }) => {
-                    const Icon =
-                        orientation === "left"
-                            ? ChevronLeft
-                            : orientation === "right"
-                              ? ChevronRight
-                              : ChevronDown
+                    let Icon = ChevronDown
+                    if (orientation === "left") Icon = ChevronLeft
+                    else if (orientation === "right") Icon = ChevronRight
                     return <Icon className={cn("size-4", chevClassName)} {...chevProps} />
                 },
             }}

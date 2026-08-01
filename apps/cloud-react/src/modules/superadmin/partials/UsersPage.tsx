@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react"
-import { useScreen } from "@/services/api/screen"
 
 import type { ColumnDef } from "@tanstack/react-table"
 import { Plus, RefreshCw, Search, ShieldCheck, ShieldOff, Users } from "lucide-react"
@@ -20,6 +19,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/modules/auth/auth.context"
+import { useScreen } from "@/services/api/screen"
 
 import { ActiveBadge } from "../components/ActiveBadge"
 import { AddSuperAdminDialog } from "../components/AddSuperAdminDialog"

@@ -1,19 +1,13 @@
 import { useState } from "react"
-import { useScreen } from "@/services/api/screen"
 
 import { FileText, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
 
-import {
-    ConfirmDialog,
-    CopyButton,
-    DetailPage,
-    KeyValueGrid,
-    Section,
-} from "@/components/console"
+import { ConfirmDialog, CopyButton, DetailPage, KeyValueGrid, Section } from "@/components/console"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useScreen } from "@/services/api/screen"
 
 import { IAM_ROUTES } from "../iam.constants"
 import { useDeleteIAMPolicy, useIAMPolicy } from "../iam.hooks"
@@ -93,9 +87,7 @@ export function PolicyDetailPage() {
                                             },
                                             {
                                                 label: t("common.updated"),
-                                                value: new Date(
-                                                    policy.updated_at
-                                                ).toLocaleString(),
+                                                value: new Date(policy.updated_at).toLocaleString(),
                                             },
                                         ]}
                                     />
@@ -104,7 +96,13 @@ export function PolicyDetailPage() {
                                 <Section
                                     variant="panel"
                                     title={t("iam.policies.createForm.document")}
-                                    actions={<CopyButton value={pretty} label={t("iam.detail.copyDocument")} mono={false} />}
+                                    actions={
+                                        <CopyButton
+                                            value={pretty}
+                                            label={t("iam.detail.copyDocument")}
+                                            mono={false}
+                                        />
+                                    }
                                 >
                                     <pre className="glass-1 p-4 overflow-x-auto font-mono text-[12px] leading-relaxed text-foreground">
                                         {pretty}

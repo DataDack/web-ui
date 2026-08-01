@@ -1,0 +1,5 @@
+[install]
+# npm-style flat layout: one hoisted node_modules at the repo root instead of
+# bun 1.3's default isolated linker, which creates a symlink-only node_modules
+# inside every workspace project.
+linker = "hoisted"

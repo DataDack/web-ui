@@ -66,10 +66,11 @@ export function useSearchInput(open: boolean) {
 
     useEffect(() => {
         if (open) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect -- reset the transient query when the dialog opens; `open` is controlled by the parent so there is no local event handler to move this into
             setQuery("")
             const t = setTimeout(() => inputRef.current?.focus(), 30)
-            return () => { clearTimeout(t); }
+            return () => {
+                clearTimeout(t)
+            }
         }
     }, [open])
 

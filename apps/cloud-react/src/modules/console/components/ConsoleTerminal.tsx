@@ -1,8 +1,9 @@
+import { useEffect, useRef, useState } from "react"
+
 import { FitAddon } from "@xterm/addon-fit"
 import { Terminal } from "@xterm/xterm"
 
 import "@xterm/xterm/css/xterm.css"
-import { useEffect, useRef, useState } from "react"
 
 import { cn } from "@/lib/utils"
 
@@ -15,6 +16,13 @@ const STATUS_LABEL: Record<Status, string> = {
     connected: "Connected",
     error: "Connection failed",
     closed: "Session ended",
+}
+
+const STATUS_DOT: Record<Status, string> = {
+    connecting: "bg-amber-500",
+    connected: "bg-green-500",
+    error: "bg-red-500",
+    closed: "bg-red-500",
 }
 
 /**
@@ -66,7 +74,8 @@ export function ConsoleTerminal({
             }
         }
         const onData = term.onData((d) => {
-            if (ws?.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type: "input", data: d }))
+            if (ws?.readyState === WebSocket.OPEN)
+                ws.send(JSON.stringify({ type: "input", data: d }))
         })
         const onResize = term.onResize(sendSize)
 
@@ -101,8 +110,12 @@ export function ConsoleTerminal({
                         /* ignore non-JSON control frames */
                     }
                 }
-                ws.onclose = () => { setStatus((s) => (s === "error" ? s : "closed")); }
-                ws.onerror = () => { setStatus("error"); }
+                ws.onclose = () => {
+                    setStatus((s) => (s === "error" ? s : "closed"))
+                }
+                ws.onerror = () => {
+                    setStatus("error")
+                }
             } catch (e) {
                 if (disposed) return
                 setStatus("error")
@@ -123,18 +136,14 @@ export function ConsoleTerminal({
     }, [instanceId, target, username])
 
     return (
-        <div className={cn("flex h-full flex-col overflow-hidden rounded-md border border-border bg-[#0b0e14]", className)}>
+        <div
+            className={cn(
+                "flex h-full flex-col overflow-hidden rounded-md border border-border bg-[#0b0e14]",
+                className
+            )}
+        >
             <div className="flex items-center gap-2 border-b border-border/60 px-3 py-1.5 text-xs text-muted-foreground">
-                <span
-                    className={
-                        "size-2 rounded-full " +
-                        (status === "connected"
-                            ? "bg-green-500"
-                            : status === "connecting"
-                              ? "bg-amber-500"
-                              : "bg-red-500")
-                    }
-                />
+                <span className={cn("size-2 rounded-full", STATUS_DOT[status])} />
                 <span>{STATUS_LABEL[status]}</span>
                 {error && <span className="truncate text-red-400">— {error}</span>}
             </div>
