@@ -3,11 +3,10 @@ import { ArrowLeft, Plus } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 
-import { useTheme } from '@/components/shell/ThemeProvider'
 import { CreateFunctionForm } from '@/features/studio/components/CreateFunctionForm'
 import { queryKeys } from '@/lib/queries'
 
-import { Button, PageHeader } from '@datadack/serverless-ui'
+import { Button, PageHeader, useTheme } from '@datadack/serverless-ui'
 
 import '@/features/studio/studio.css'
 

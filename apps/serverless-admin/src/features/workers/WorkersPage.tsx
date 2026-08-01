@@ -5,17 +5,17 @@ import { Cpu, HardDrive, Server, ServerOff } from 'lucide-react'
 
 import { useDashboard } from '@/lib/queries'
 import type { Worker } from '@/lib/schemas'
-import { timeAgo } from '@/lib/utils'
 
 import {
   Badge,
+  cellMono,
+  cellText,
   PageHeader,
   ResourceTable,
   StatCard,
   StatGrid,
   StatusBadge,
-  cellMono,
-  cellText,
+  timeAgo,
 } from '@datadack/serverless-ui'
 
 const LIVE_STATES = ['ready', 'active']

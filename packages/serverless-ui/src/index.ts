@@ -33,9 +33,18 @@ export {
 export { EmptyState } from './console/EmptyState'
 export { KeyValueGrid, type KeyValueItem } from './console/KeyValueGrid'
 export { PageHeader } from './console/PageHeader'
+export { Logo } from './console/Logo'
 export { ResourceTable, cellMono, cellText } from './console/ResourceTable'
+export {
+  RuntimeCatalog,
+  type RuntimeCatalogProps,
+  type RuntimeInfo,
+} from './console/RuntimeCatalog'
+export { familyLabel, RuntimeIcon } from './console/RuntimeIcon'
 export { StatCard, StatGrid, type StatCardProps, type StatColor } from './console/StatCard'
 export { StatusBadge } from './console/StatusBadge'
+export { ThemeProvider, useTheme } from './console/ThemeProvider'
+export { ThemeToggle } from './console/ThemeToggle'
 
 // Charts
 export {

@@ -30,6 +30,8 @@ injectGlobal(`
     --brand-gold: #c9971b;
     --brand-gold-hover: #d9ac33;
     --brand-gold-foreground: #221a03;
+    --brand-gold-soft: rgb(201 151 27 / 0.12);
+    --surface-glass: rgb(255 255 255 / 0.65);
 
     --status-success: #5d5fae;
     --status-success-bg: rgb(112 114 192 / 0.13);
@@ -78,6 +80,8 @@ injectGlobal(`
     --brand-gold: #e9b94f;
     --brand-gold-hover: #f4cd6f;
     --brand-gold-foreground: #1f1604;
+    --brand-gold-soft: rgb(233 185 79 / 0.12);
+    --surface-glass: rgb(255 255 255 / 0.03);
 
     --status-success: #c0c1ff;
     --status-success-bg: rgb(192 193 255 / 0.13);

@@ -22,6 +22,8 @@ const options: Options = {
     'react-dom',
     'react/jsx-runtime',
     'lucide-react',
+    'react-icons',
+    'react-icons/si',
     '@tanstack/react-table',
     'radix-ui',
     '@emotion/css',

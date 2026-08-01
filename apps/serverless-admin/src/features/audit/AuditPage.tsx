@@ -6,16 +6,17 @@ import { ScrollText, ShieldCheck, ShieldX, UserCheck } from 'lucide-react'
 import { apiErrorMessage } from '@/lib/api'
 import { useAuditEvents } from '@/lib/queries'
 import type { AuditEvent } from '@/lib/schemas'
-import { cn, timeAgo } from '@/lib/utils'
 
 import {
   Badge,
+  cellMono,
+  cellText,
+  cn,
   PageHeader,
   ResourceTable,
   StatCard,
   StatGrid,
-  cellMono,
-  cellText,
+  timeAgo,
 } from '@datadack/serverless-ui'
 
 const RANGES = [

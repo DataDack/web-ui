@@ -5,16 +5,17 @@ import { Layers, Package } from 'lucide-react'
 
 import { useDashboard } from '@/lib/queries'
 import type { LayerVersion } from '@/lib/schemas'
-import { formatBytes, timeAgo } from '@/lib/utils'
 
 import {
   Badge,
+  cellMono,
+  cellText,
+  formatBytes,
   PageHeader,
   ResourceTable,
   StatCard,
   StatGrid,
-  cellMono,
-  cellText,
+  timeAgo,
 } from '@datadack/serverless-ui'
 
 export function LayersPage() {

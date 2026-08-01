@@ -3,11 +3,10 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { AlertTriangle, Boxes, Loader2, Rocket } from 'lucide-react'
 
 import { apiErrorMessage } from '@/lib/api'
-import { cn } from '@/lib/utils'
 
-import { RuntimeCatalog } from './RuntimeCatalog'
-import { RuntimeIcon } from './RuntimeIcon'
-import { useCreateFunction } from '../lib/queries'
+import { cn, RuntimeCatalog, RuntimeIcon } from '@datadack/serverless-ui'
+
+import { useCreateFunction, useRuntimes } from '../lib/queries'
 import type { Runtime } from '../lib/schemas'
 import { templateFor } from '../lib/templates'
 
@@ -88,6 +87,7 @@ function CreateFunctionFormView({
 }: Readonly<Omit<CreateFunctionFormProps, 'theme'>>) {
   const [name, setName] = useState('')
   const [runtime, setRuntime] = useState<Runtime | undefined>()
+  const runtimes = useRuntimes()
   const [handler, setHandler] = useState('')
   const [architecture, setArchitecture] = useState('x86_64')
   const [memorySize, setMemorySize] = useState(128)
@@ -165,7 +165,14 @@ function CreateFunctionFormView({
         description="Served live from the control plane's catalog. Deprecated runtimes are hidden."
       >
         {!isPage && <span className="fs-label">Runtime</span>}
-        <RuntimeCatalog value={runtime?.name} onSelect={setRuntime} hideDeprecated />
+        <RuntimeCatalog
+          runtimes={runtimes.data ?? []}
+          isLoading={runtimes.isLoading}
+          errored={runtimes.isError}
+          value={runtime?.name}
+          onSelect={setRuntime}
+          hideDeprecated
+        />
       </Group>
 
       {runtime?.bundledRic && (

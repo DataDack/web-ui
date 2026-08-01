@@ -9,7 +9,7 @@ import {
 } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 
-import { cn } from '@/lib/utils'
+import { cn } from '@datadack/serverless-ui'
 
 interface NavItem {
   to: string

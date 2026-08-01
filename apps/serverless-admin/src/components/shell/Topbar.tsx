@@ -2,12 +2,9 @@ import { RefreshCw } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 import { ConnectionSettings } from '@/components/shell/ConnectionSettings'
-import { Logo } from '@/components/shell/Logo'
 import { ScopeSwitcher } from '@/components/shell/ScopeSwitcher'
-import { ThemeToggle } from '@/components/shell/ThemeToggle'
-import { cn } from '@/lib/utils'
 
-import { Button } from '@datadack/serverless-ui'
+import { Button, cn, Logo, ThemeToggle } from '@datadack/serverless-ui'
 
 interface TopbarProps {
   onRefresh: () => void
@@ -24,6 +21,7 @@ export function Topbar({ onRefresh, refreshing = false, status }: Readonly<Topba
           className="focus-visible:ring-ring/50 shrink-0 rounded-md outline-none focus-visible:ring-2"
         >
           <Logo
+            iconSrc="/admin/datadack-icon.png"
             iconClassName="size-6"
             className="text-[15px]"
             wordmarkClassName="whitespace-nowrap"

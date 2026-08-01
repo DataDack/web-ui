@@ -6,7 +6,8 @@ import { BrowserRouter } from 'react-router-dom'
 import { Toaster } from 'sonner'
 
 import { App } from '@/App'
-import { ThemeProvider } from '@/components/shell/ThemeProvider'
+
+import { ThemeProvider } from '@datadack/serverless-ui'
 
 import './index.css'
 
@@ -30,7 +31,7 @@ if (!rootElement) {
 
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
-    <ThemeProvider>
+    <ThemeProvider storageKey="faas.admin.theme">
       <QueryClientProvider client={queryClient}>
         {/* The control plane serves this SPA from /admin, so the router shares
             that basename and every route resolves under it. */}

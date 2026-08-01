@@ -9,29 +9,39 @@ interface ThemeContextValue {
 }
 
 const ThemeContext = createContext<ThemeContextValue | null>(null)
-const STORAGE_KEY = 'faas.admin.theme'
 
 function systemTheme(): 'light' | 'dark' {
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 }
 
-function storedTheme(): Theme {
-  const stored = localStorage.getItem(STORAGE_KEY)
+function storedTheme(storageKey: string): Theme {
+  const stored = localStorage.getItem(storageKey)
   if (stored === 'light' || stored === 'dark' || stored === 'system') return stored
   // Default to the OS preference so the console honours it before anyone
   // touches the toggle.
   return 'system'
 }
 
-export function ThemeProvider({ children }: Readonly<{ children: ReactNode }>) {
-  const [theme, setThemeState] = useState<Theme>(storedTheme)
+/**
+ * Owns the `.dark` class on <html> — the same class every kit component's
+ * dark tokens key off — persists the choice, and tracks the OS preference
+ * while on "system".
+ *
+ * `storageKey` namespaces the persisted choice per console; pass the key the
+ * console already used so existing users keep their setting.
+ */
+export function ThemeProvider({
+  children,
+  storageKey = 'datadack.theme',
+}: Readonly<{ children: ReactNode; storageKey?: string }>) {
+  const [theme, setThemeState] = useState<Theme>(() => storedTheme(storageKey))
   const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>(() =>
     theme === 'system' ? systemTheme() : theme,
   )
 
   const setTheme = (next: Theme) => {
     setThemeState(next)
-    localStorage.setItem(STORAGE_KEY, next)
+    localStorage.setItem(storageKey, next)
   }
 
   // Applies the .dark class and tracks OS preference changes while on "system".

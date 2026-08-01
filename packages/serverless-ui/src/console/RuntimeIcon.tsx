@@ -1,8 +1,7 @@
+import { css, cx } from '@emotion/css'
 import { Terminal } from 'lucide-react'
 import type { IconType } from 'react-icons'
 import { SiDotnet, SiGo, SiNodedotjs, SiOpenjdk, SiPython, SiRuby } from 'react-icons/si'
-
-import { cn } from '@/lib/utils'
 
 interface FamilyBrand {
   Icon: IconType
@@ -31,6 +30,12 @@ export function familyLabel(family: string): string {
   return BRANDS[family]?.label ?? family
 }
 
+const icon = css`
+  width: 16px;
+  height: 16px;
+  flex: none;
+`
+
 export function RuntimeIcon({
   family,
   className,
@@ -41,7 +46,7 @@ export function RuntimeIcon({
   const { Icon } = brand
   return (
     <Icon
-      className={cn('fs-runtime-icon', className)}
+      className={cx(icon, className)}
       style={monochrome ? undefined : { color: brand.color }}
       aria-hidden
     />

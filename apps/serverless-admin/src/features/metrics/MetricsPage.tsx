@@ -6,20 +6,20 @@ import { Activity, AlertTriangle, Gauge, Snowflake, Timer } from 'lucide-react'
 import { apiErrorMessage } from '@/lib/api'
 import { useDashboard, useMetricSeries } from '@/lib/queries'
 import type { MetricSeries } from '@/lib/schemas'
-import { cn } from '@/lib/utils'
 
 import {
   BarTimeChart,
+  cellMono,
+  cellText,
   ChartNote,
+  type ChartPoint,
+  cn,
+  formatTick,
   LineTimeChart,
   PageHeader,
   ResourceTable,
   StatCard,
   StatGrid,
-  cellMono,
-  cellText,
-  formatTick,
-  type ChartPoint,
 } from '@datadack/serverless-ui'
 
 /** The windows the control plane's relative `since` parameter accepts. */

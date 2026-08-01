@@ -5,7 +5,6 @@ import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { http } from '@/lib/api'
 import { useDashboard } from '@/lib/queries'
 import { functionVersionSchema, type FunctionEntity } from '@/lib/schemas'
-import { timeAgo } from '@/lib/utils'
 
 import {
   Badge,
@@ -19,6 +18,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
+  timeAgo,
 } from '@datadack/serverless-ui'
 
 const TABS = [
