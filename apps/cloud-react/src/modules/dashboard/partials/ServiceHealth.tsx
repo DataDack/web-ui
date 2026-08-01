@@ -1,6 +1,5 @@
-import { useTranslation } from "react-i18next"
-
 import { Skeleton } from "@DataDack/common-ui"
+import { useTranslation } from "react-i18next"
 
 import { HomePanel } from "./HomePanel"
 import { useServiceHealth } from "../dashboard.hooks"

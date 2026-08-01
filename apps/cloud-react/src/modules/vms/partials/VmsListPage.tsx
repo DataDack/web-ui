@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react"
 
+import { Badge } from "@DataDack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import {
   Cpu,
@@ -33,8 +34,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { OSIcon } from "@/modules/catalog/os-icons"
 import { useScreen } from "@/services/api/screen"
-
-import { Badge } from "@DataDack/common-ui"
 
 import { VMS_ROUTES, vmDisplayStatus } from "../vms.constants"
 import { useDeleteInstance, useInstanceAction, useInstances } from "../vms.hooks"

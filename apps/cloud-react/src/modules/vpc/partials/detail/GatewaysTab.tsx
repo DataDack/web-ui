@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react"
 
+import { Skeleton } from "@DataDack/common-ui"
 import { Link2, Loader2, Unlink } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
@@ -13,8 +14,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-
-import { Skeleton } from "@DataDack/common-ui"
 
 import {
   useAttachIGW,

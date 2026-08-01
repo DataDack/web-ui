@@ -1,5 +1,6 @@
 import { useMemo } from "react"
 
+import { Skeleton } from "@DataDack/common-ui"
 import { Hammer, Loader2, RotateCcw, X } from "lucide-react"
 import { useSearchParams } from "react-router-dom"
 
@@ -13,8 +14,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-
-import { Skeleton } from "@DataDack/common-ui"
 
 import { formatDuration, isTimeSet, shortSha, timeSince, triggerLabel } from "./build-format"
 import { BuildLogConsole } from "./BuildLogConsole"

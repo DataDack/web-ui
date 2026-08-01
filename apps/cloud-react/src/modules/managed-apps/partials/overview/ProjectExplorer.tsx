@@ -1,13 +1,12 @@
 import { type ReactNode, useMemo, useState } from "react"
 
+import { Skeleton } from "@DataDack/common-ui"
 import { AlertTriangle, Search } from "lucide-react"
 
 import { EmptyState, staggerDelay } from "@/components/console"
 import { Button } from "@/components/ui/button"
 import { useQueryParamState } from "@/hooks/use-query-param-state"
 import { useViewPreference } from "@/hooks/use-view-preference"
-
-import { Skeleton } from "@DataDack/common-ui"
 
 import { OverviewToolbar } from "./OverviewToolbar"
 import {

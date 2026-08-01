@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react"
 
+import { Badge } from "@DataDack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { ArrowLeft, Boxes, CalendarClock, Clock, RefreshCw, Trash2, Wallet } from "lucide-react"
 import { useNavigate, useParams } from "react-router-dom"
@@ -18,8 +19,6 @@ import {
 } from "@/components/console"
 import { Button } from "@/components/ui/button"
 import { useScreen } from "@/services/api/screen"
-
-import { Badge } from "@DataDack/common-ui"
 
 import {
   useAdminAccountResources,

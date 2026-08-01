@@ -1,9 +1,8 @@
+import { Badge } from "@DataDack/common-ui"
 import { Check, X } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { cn } from "@/lib/utils"
-
-import { Badge } from "@DataDack/common-ui"
 
 import type { QuotaRequestStatus } from "../../superadmin.types"
 

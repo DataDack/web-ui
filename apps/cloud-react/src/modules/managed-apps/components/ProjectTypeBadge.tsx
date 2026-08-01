@@ -1,6 +1,6 @@
-import { cn } from "@/lib/utils"
-
 import { Badge } from "@DataDack/common-ui"
+
+import { cn } from "@/lib/utils"
 
 import type { ProjectType } from "../managed-apps.types"
 import { PROJECT_TYPE_META, projectTypeLabel } from "./project-type"

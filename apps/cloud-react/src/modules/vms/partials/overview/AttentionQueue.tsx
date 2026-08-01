@@ -1,10 +1,9 @@
+import { Skeleton } from "@DataDack/common-ui"
 import { CheckCircle2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
 import { StatusBadge } from "@/components/console"
-
-import { Skeleton } from "@DataDack/common-ui"
 
 export interface AttentionItem {
   id: string

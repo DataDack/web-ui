@@ -1,4 +1,4 @@
-import { Label } from "@/components/ui/label"
+import { Label } from "@DataDack/common-ui"
 
 export function FieldError({ message }: Readonly<{ message?: string }>) {
   if (!message) return null

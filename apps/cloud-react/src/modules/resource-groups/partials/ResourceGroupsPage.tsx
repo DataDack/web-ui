@@ -1,5 +1,6 @@
 import { useId } from "react"
 
+import { Skeleton } from "@DataDack/common-ui"
 import { FolderTree, Plus, RefreshCw } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
@@ -13,8 +14,6 @@ import {
 } from "@/components/console"
 import { Button } from "@/components/ui/button"
 import { useScreen } from "@/services/api/screen"
-
-import { Skeleton } from "@DataDack/common-ui"
 
 import { RG_ROUTES } from "../resource-groups.constants"
 import { useResourceGroups } from "../resource-groups.hooks"

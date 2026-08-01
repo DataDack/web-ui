@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 
+import { Label } from "@DataDack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
   AlertTriangle,
@@ -26,7 +27,6 @@ import {
 } from "@/components/console"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import {
   Select,
   SelectContent,

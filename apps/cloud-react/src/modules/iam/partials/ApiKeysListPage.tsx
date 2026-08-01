@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react"
 
+import { Label } from "@DataDack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { KeySquare, Loader2, Plus, RefreshCw, Trash2, TriangleAlert } from "lucide-react"
 import { useTranslation } from "react-i18next"
@@ -25,7 +26,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import {
   Select,
   SelectContent,

@@ -1,5 +1,6 @@
 import { useState } from "react"
 
+import { Skeleton } from "@DataDack/common-ui"
 import { FileText, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
@@ -7,8 +8,6 @@ import { useNavigate, useParams } from "react-router-dom"
 import { ConfirmDialog, CopyButton, DetailPage, KeyValueGrid, Section } from "@/components/console"
 import { Button } from "@/components/ui/button"
 import { useScreen } from "@/services/api/screen"
-
-import { Skeleton } from "@DataDack/common-ui"
 
 import { IAM_ROUTES } from "../iam.constants"
 import { useDeleteIAMPolicy, useIAMPolicy } from "../iam.hooks"

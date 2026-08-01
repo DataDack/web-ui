@@ -1,5 +1,6 @@
 import { type ReactNode, useMemo, useState } from "react"
 
+import { Skeleton } from "@DataDack/common-ui"
 import { CircleAlert, Gauge, Hourglass, Plus, RefreshCw, TriangleAlert } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useSearchParams } from "react-router-dom"
@@ -7,8 +8,6 @@ import { useSearchParams } from "react-router-dom"
 import { AnimatedTabs, PageHeader, StatGrid } from "@/components/console"
 import { Button } from "@/components/ui/button"
 import { useScreen } from "@/services/api/screen"
-
-import { Skeleton } from "@DataDack/common-ui"
 
 import { MODULE_ORDER } from "./modules-meta"
 import { ModuleSection } from "./ModuleSection"

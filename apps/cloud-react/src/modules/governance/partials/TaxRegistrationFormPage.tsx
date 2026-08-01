@@ -1,5 +1,6 @@
 import { useEffect } from "react"
 
+import { Label } from "@DataDack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2, Receipt } from "lucide-react"
 import { Controller, useForm, useWatch } from "react-hook-form"
@@ -10,7 +11,6 @@ import { z } from "zod/v4"
 import { PageHeader, Section } from "@/components/console"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import {
   Select,
   SelectContent,

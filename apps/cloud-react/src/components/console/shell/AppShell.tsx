@@ -1,5 +1,6 @@
 import { Suspense, useCallback, useEffect, useState } from "react"
 
+import { Skeleton } from "@DataDack/common-ui"
 import { useLocation, useMatches, useNavigate, useOutlet } from "react-router-dom"
 
 import { useKeySequence } from "@/hooks/use-key-sequence"
@@ -8,8 +9,6 @@ import { cn } from "@/lib/utils"
 import { MobileNumberPrompt } from "@/modules/auth/components/MobileNumberPrompt"
 import { GlobalSearch } from "@/modules/search/partials/GlobalSearch"
 import { useConsoleBroadcastSync } from "@/services/broadcast"
-
-import { Skeleton } from "@DataDack/common-ui"
 
 import { Sidebar } from "./Sidebar"
 import { Topbar } from "./Topbar"

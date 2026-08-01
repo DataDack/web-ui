@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react"
 
+import { Label } from "@DataDack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { AlertTriangle, KeyRound, Loader2, Server, ShieldCheck } from "lucide-react"
 import { Controller, useForm, type UseFormReturn } from "react-hook-form"
@@ -16,7 +17,6 @@ import {
 } from "@/components/console"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select"
 import { useScreen } from "@/services/api/screen"
 

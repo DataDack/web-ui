@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react"
 
+import { Label, Separator, Textarea } from "@DataDack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Plus, Tag, Trash2 } from "lucide-react"
 import { useForm } from "react-hook-form"
@@ -8,9 +9,7 @@ import { z } from "zod/v4"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Separator } from "@/components/ui/separator"
 import {
   Sheet,
   SheetContent,
@@ -18,7 +17,6 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet"
-import { Textarea } from "@/components/ui/textarea"
 import { useNamingRule } from "@/modules/governance/governance.hooks"
 import type { NamingRule } from "@/modules/governance/governance.types"
 import { namingNameSchema } from "@/modules/governance/governance.validation"

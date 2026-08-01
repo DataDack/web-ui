@@ -1,5 +1,6 @@
 import { useState } from "react"
 
+import { Badge, Skeleton } from "@DataDack/common-ui"
 import {
   AlertTriangle,
   ArrowDownToLine,
@@ -34,8 +35,6 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { useScreen } from "@/services/api/screen"
-
-import { Badge, Skeleton } from "@DataDack/common-ui"
 
 import { sgProtocolUsesPorts } from "../api/shared"
 import { SG_PROTOCOLS, SG_RULE_ACTIONS, VPC_ROUTES } from "../vpc.constants"

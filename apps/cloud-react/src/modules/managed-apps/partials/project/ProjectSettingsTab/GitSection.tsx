@@ -1,12 +1,11 @@
 import { useState } from "react"
 
+import { Badge } from "@DataDack/common-ui"
 import { ExternalLink, GitPullRequest, Loader2 } from "lucide-react"
 import { Link } from "react-router-dom"
 
 import { FieldRow, KeyValueGrid, Section } from "@/components/console"
 import { Button } from "@/components/ui/button"
-
-import { Badge } from "@DataDack/common-ui"
 
 import { BranchSelect } from "../../../components"
 import { MANAGED_APPS_ROUTES } from "../../../managed-apps.constants"

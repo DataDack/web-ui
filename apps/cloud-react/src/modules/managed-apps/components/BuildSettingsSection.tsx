@@ -1,3 +1,5 @@
+import { Skeleton } from "@DataDack/common-ui"
+
 import { OverrideField } from "@/components/console"
 import {
   Accordion,
@@ -5,8 +7,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
-
-import { Skeleton } from "@DataDack/common-ui"
 
 import { RootDirectoryInput } from "./RootDirectoryInput"
 import { useBuildDefaults } from "../managed-apps.hooks"

@@ -1,5 +1,6 @@
 import * as React from "react"
 
+import { Label } from "@DataDack/common-ui"
 import { Slot } from "radix-ui"
 import {
   Controller,
@@ -11,7 +12,6 @@ import {
   type FieldValues,
 } from "react-hook-form"
 
-import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 
 const Form = FormProvider

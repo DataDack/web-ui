@@ -1,12 +1,12 @@
 import { useMemo, useState } from "react"
 
+import { Label } from "@DataDack/common-ui"
 import { Loader2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { CidrInput } from "@/components/console"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import {
   Select,
   SelectContent,

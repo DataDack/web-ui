@@ -3,9 +3,9 @@
 // that exports both components and helpers breaks fast refresh for everything
 // importing it.
 
-import { cn } from "@/lib/utils"
-
 import { Badge } from "@DataDack/common-ui"
+
+import { cn } from "@/lib/utils"
 
 import { SEVERITY_BADGE_CLASS } from "../channels/channels.meta"
 import { ALARM_STATE_META } from "../monitoring.meta"

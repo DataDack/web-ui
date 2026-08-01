@@ -1,5 +1,6 @@
 import { useMemo } from "react"
 
+import { Badge } from "@DataDack/common-ui"
 import { ArrowLeft, Boxes, Crown, ShieldCheck, Star, UserRound } from "lucide-react"
 import { useNavigate, useParams } from "react-router-dom"
 
@@ -12,8 +13,6 @@ import {
 } from "@/components/console"
 import { Button } from "@/components/ui/button"
 import { useScreen } from "@/services/api/screen"
-
-import { Badge } from "@DataDack/common-ui"
 
 import { ActiveBadge } from "../components/ActiveBadge"
 import { useAdminPlatformOverview } from "../superadmin.hooks"

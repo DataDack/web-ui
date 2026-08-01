@@ -1,5 +1,7 @@
 import { useState } from "react"
 
+import { Label } from "@DataDack/common-ui"
+import { Skeleton } from "@DataDack/common-ui"
 import { Activity, Gauge, Info, Loader2, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
@@ -15,11 +17,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { parseTags } from "@/lib/tags"
 import { useScreen } from "@/services/api/screen"
-
-import { Skeleton } from "@DataDack/common-ui"
 
 import { ASG_ROUTES } from "../autoscaling.constants"
 import { useASG, useDeleteASG, useSetASGCapacity } from "../autoscaling.hooks"

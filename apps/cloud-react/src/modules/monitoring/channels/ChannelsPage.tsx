@@ -1,5 +1,7 @@
 import { useCallback, useMemo, useState } from "react"
 
+import { Switch } from "@DataDack/common-ui"
+import { Badge } from "@DataDack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { BellRing, Plus, RefreshCw, Send, Trash2 } from "lucide-react"
 import { toast } from "sonner"
@@ -12,11 +14,8 @@ import {
   ResourceTable,
 } from "@/components/console"
 import { Button } from "@/components/ui/button"
-import { Switch } from "@/components/ui/switch"
 import { cn } from "@/lib/utils"
 import { useScreen } from "@/services/api/screen"
-
-import { Badge } from "@DataDack/common-ui"
 
 import {
   useChannels,

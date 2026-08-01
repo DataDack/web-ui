@@ -49,12 +49,33 @@ export {
 } from "./charts/TimeChart"
 
 // Primitives (shadcn-style)
+export {
+  Avatar,
+  AvatarBadge,
+  AvatarFallback,
+  AvatarGroup,
+  AvatarGroupCount,
+  AvatarImage,
+} from "./ui/avatar"
 export { Badge, badgeVariants } from "./ui/badge"
 export { Button, buttonVariants } from "./ui/button"
+export {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "./ui/card"
 export { Input } from "./ui/input"
+export { Label } from "./ui/label"
+export { Separator } from "./ui/separator"
 export { Skeleton } from "./ui/skeleton"
+export { Switch } from "./ui/switch"
 export { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table"
 export { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs"
+export { Textarea } from "./ui/textarea"
 
 // Style primitives — the tokens and helpers components are built from, exported
 // so domain kits can style consistently instead of re-deriving them.

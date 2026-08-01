@@ -1,5 +1,6 @@
 import { useState } from "react"
 
+import { Badge, Skeleton } from "@DataDack/common-ui"
 import { Loader2, Lock, Plus, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
@@ -21,8 +22,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-
-import { Badge, Skeleton } from "@DataDack/common-ui"
 
 import { CreateSecurityGroupSheet } from "./CreateSecurityGroupSheet"
 import { sgProtocolUsesPorts } from "../../api/shared"

@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from "react"
 
+import { Label } from "@DataDack/common-ui"
 import { Loader2 } from "lucide-react"
 import type { UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
@@ -7,7 +8,6 @@ import { useTranslation } from "react-i18next"
 import { Section } from "@/components/console"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Label } from "@/components/ui/label"
 import { useAllSecurityGroups, useCreateDefaultSecurityGroup } from "@/modules/vpc/vpc.hooks"
 
 import type { FormValues } from "../schema"

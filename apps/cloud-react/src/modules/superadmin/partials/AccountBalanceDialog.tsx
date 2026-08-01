@@ -1,5 +1,6 @@
 import { useMemo } from "react"
 
+import { Textarea } from "@DataDack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2, Wallet } from "lucide-react"
 import { Controller, useForm, useWatch } from "react-hook-form"
@@ -22,7 +23,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
 
 import { Field } from "../components/form-fields"
 import { useAdjustAccountBalance } from "../superadmin.hooks"

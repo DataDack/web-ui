@@ -1,9 +1,8 @@
+import { Skeleton } from "@DataDack/common-ui"
 import { ChevronRight, type LucideIcon } from "lucide-react"
 import { Link } from "react-router-dom"
 
 import { AnimatedNumber } from "@/components/console/motion/AnimatedNumber"
-
-import { Skeleton } from "@DataDack/common-ui"
 
 export interface ResourceMixItem {
   icon: LucideIcon

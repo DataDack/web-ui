@@ -8,6 +8,7 @@
 
 import { useMemo, useState } from "react"
 
+import { Badge } from "@DataDack/common-ui"
 import { ChevronDown } from "lucide-react"
 import type { UseFormRegister } from "react-hook-form"
 
@@ -21,8 +22,6 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
-
-import { Badge } from "@DataDack/common-ui"
 
 import { simulateAlarm, windowCount } from "./backtest"
 import { numeric, type FormValues, type PeriodSeconds } from "./schema"

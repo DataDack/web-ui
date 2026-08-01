@@ -1,5 +1,7 @@
 import { useMemo, useState, type ReactNode } from "react"
 
+import { Label, Switch, Textarea } from "@DataDack/common-ui"
+import { Badge, Skeleton } from "@DataDack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
   ArrowLeft,
@@ -30,16 +32,11 @@ import {
 } from "@/components/console"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Textarea } from "@/components/ui/textarea"
 import { useQueryParamState } from "@/hooks/use-query-param-state"
 import { cn } from "@/lib/utils"
 import { useScreen } from "@/services/api/screen"
-
-import { Badge, Skeleton } from "@DataDack/common-ui"
 
 import { ActiveBadge } from "../components/ActiveBadge"
 import { useAdminImages, useDeleteImageVersion, useSaveImageVersion } from "../superadmin.hooks"

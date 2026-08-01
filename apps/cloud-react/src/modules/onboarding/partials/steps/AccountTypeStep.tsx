@@ -1,5 +1,6 @@
 import { useState } from "react"
 
+import { Label } from "@DataDack/common-ui"
 import { useMutation } from "@tanstack/react-query"
 import { Building2, Check, Loader2, User } from "lucide-react"
 import { useTranslation } from "react-i18next"
@@ -7,7 +8,6 @@ import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 import { extractError } from "@/services/api/client"
 

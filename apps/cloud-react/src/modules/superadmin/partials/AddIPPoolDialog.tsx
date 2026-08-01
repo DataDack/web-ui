@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from "react"
 
+import { Textarea } from "@DataDack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2, Network } from "lucide-react"
 import { Controller, useForm, useWatch } from "react-hook-form"
@@ -23,7 +24,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
 import { cn } from "@/lib/utils"
 
 import { Field } from "../components/form-fields"

@@ -1,5 +1,6 @@
 import { type ReactNode, useMemo, useState } from "react"
 
+import { Skeleton } from "@DataDack/common-ui"
 import {
   type ColumnDef,
   flexRender,
@@ -35,8 +36,6 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
-
-import { Skeleton } from "@DataDack/common-ui"
 
 import { type BulkAction, BulkActionsBar } from "./BulkActionsBar"
 import { staggerDelay } from "../motion/motion-config"

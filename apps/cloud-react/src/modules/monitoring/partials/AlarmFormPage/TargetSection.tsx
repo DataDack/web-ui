@@ -6,12 +6,12 @@
 
 import { useMemo, useState } from "react"
 
+import { Label } from "@DataDack/common-ui"
 import { Check, Search } from "lucide-react"
 
 import { getStatusConfig, StatusBadge } from "@/components/console"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 
 import { useAlarmTargets, useTargetCounts } from "./useAlarmTargets"

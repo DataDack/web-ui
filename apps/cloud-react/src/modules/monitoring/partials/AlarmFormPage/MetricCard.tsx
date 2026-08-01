@@ -6,10 +6,10 @@
 
 import { useMemo } from "react"
 
+import { Badge } from "@DataDack/common-ui"
+
 import { Sparkline } from "@/components/console"
 import { cn } from "@/lib/utils"
-
-import { Badge } from "@DataDack/common-ui"
 
 import { useMetricsQuery } from "../../monitoring.hooks"
 import { SERIES_COLOR_OK } from "../../monitoring.meta"

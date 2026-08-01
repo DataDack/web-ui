@@ -1,5 +1,7 @@
 import { useMemo, useState } from "react"
 
+import { Textarea } from "@DataDack/common-ui"
+import { Skeleton } from "@DataDack/common-ui"
 import { ArrowLeft, LifeBuoy, Send } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
@@ -12,10 +14,7 @@ import {
   StatusBadge,
 } from "@/components/console"
 import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
 import { useScreen } from "@/services/api/screen"
-
-import { Skeleton } from "@DataDack/common-ui"
 
 import { PriorityBadge } from "../components/PriorityBadge"
 import { formatTicketDateTime, formatTicketPerson } from "../components/ticket-format"

@@ -1,5 +1,6 @@
 import { useState, useMemo, useRef } from "react"
 
+import { Textarea } from "@DataDack/common-ui"
 import { KeyRound, Sparkles, Upload, Loader2, Plus } from "lucide-react"
 import type { UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
@@ -21,7 +22,6 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet"
-import { Textarea } from "@/components/ui/textarea"
 import { canGenerateKeyPair, generateEd25519KeyPair } from "@/lib/ssh-keygen"
 import { cn } from "@/lib/utils"
 import { useNamingRule } from "@/modules/governance/governance.hooks"

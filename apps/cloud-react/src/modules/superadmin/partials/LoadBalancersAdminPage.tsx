@@ -1,5 +1,7 @@
 import { Fragment, useState } from "react"
 
+import { Switch } from "@DataDack/common-ui"
+import { Badge } from "@DataDack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQueryClient } from "@tanstack/react-query"
 import {
@@ -23,7 +25,6 @@ import { CopyButton, PageHeader, Section } from "@/components/console"
 import { TONE_CLASSES, TONE_DOT_CLASSES, type StatusTone } from "@/components/console/status-config"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Switch } from "@/components/ui/switch"
 import {
   Table,
   TableBody,
@@ -34,8 +35,6 @@ import {
 } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
 import { useScreen } from "@/services/api/screen"
-
-import { Badge } from "@DataDack/common-ui"
 
 import { Field } from "../components/form-fields"
 import { SUPERADMIN_QUERY_KEYS } from "../superadmin.constants"

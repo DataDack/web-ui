@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 
+import { Switch, Textarea } from "@DataDack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useForm, useWatch } from "react-hook-form"
 import { useTranslation } from "react-i18next"
@@ -7,8 +8,6 @@ import { z } from "zod/v4"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Switch } from "@/components/ui/switch"
-import { Textarea } from "@/components/ui/textarea"
 
 import { Field, FormSheet } from "../components/form-fields"
 import { useSaveImage, useUploadImageIcon } from "../superadmin.hooks"

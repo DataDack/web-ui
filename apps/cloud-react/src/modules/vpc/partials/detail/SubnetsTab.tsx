@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react"
 
+import { Badge } from "@DataDack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { GitBranch, Plus, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
@@ -16,8 +17,6 @@ import {
 } from "@/components/console"
 import { Button } from "@/components/ui/button"
 import { useAvailabilityZoneMap } from "@/modules/catalog/catalog.hooks"
-
-import { Badge } from "@DataDack/common-ui"
 
 import { AddSubnetSheet } from "./AddSubnetSheet"
 import { useDeleteSubnet, useVPCSubnets } from "../../vpc.hooks"

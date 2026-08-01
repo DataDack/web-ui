@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
 
+import { Switch } from "@DataDack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Plus } from "lucide-react"
 import { Controller, useForm } from "react-hook-form"
@@ -15,7 +16,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
 import { useCountries } from "@/modules/countries/countries.hooks"
 
 import { Field, FormSheet } from "../components/form-fields"

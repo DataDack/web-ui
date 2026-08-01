@@ -1,13 +1,12 @@
 import { useEffect, useMemo, useState } from "react"
 
+import { Label, Textarea } from "@DataDack/common-ui"
 import { Check, ChevronsUpDown, FolderTree, Loader2, Plus } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Textarea } from "@/components/ui/textarea"
 import { cn } from "@/lib/utils"
 import { useNamingRule } from "@/modules/governance/governance.hooks"
 import { namingNameSchema } from "@/modules/governance/governance.validation"

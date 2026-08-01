@@ -1,10 +1,9 @@
 import type { ReactNode } from "react"
 
+import { Label, Separator } from "@DataDack/common-ui"
 import { useTranslation } from "react-i18next"
 
 import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { Separator } from "@/components/ui/separator"
 import {
   Sheet,
   SheetContent,

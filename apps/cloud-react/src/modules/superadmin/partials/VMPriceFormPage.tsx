@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from "react"
 
+import { Label, Switch, Textarea } from "@DataDack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Cpu } from "lucide-react"
 import { Controller, useForm, type UseFormReturn } from "react-hook-form"
@@ -9,10 +10,7 @@ import { z } from "zod/v4"
 
 import { CreateWizard, PageHeader, type WizardStep } from "@/components/console"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
-import { Textarea } from "@/components/ui/textarea"
 import { CurrencySelect } from "@/modules/countries/CurrencySelect"
 import { useScreen } from "@/services/api/screen"
 

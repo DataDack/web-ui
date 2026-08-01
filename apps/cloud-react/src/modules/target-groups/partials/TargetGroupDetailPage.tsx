@@ -1,5 +1,7 @@
 import { useState } from "react"
 
+import { Label } from "@DataDack/common-ui"
+import { Skeleton } from "@DataDack/common-ui"
 import { Activity, Crosshair, Plus, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link, useNavigate, useParams } from "react-router-dom"
@@ -23,7 +25,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import {
   Select,
   SelectContent,
@@ -42,8 +43,6 @@ import {
 import { VMS_ROUTES } from "@/modules/vms/vms.constants"
 import { useInstances } from "@/modules/vms/vms.hooks"
 import { useScreen } from "@/services/api/screen"
-
-import { Skeleton } from "@DataDack/common-ui"
 
 import { TG_ROUTES } from "../target-groups.constants"
 import {

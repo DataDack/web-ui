@@ -1,7 +1,6 @@
+import { Badge } from "@DataDack/common-ui"
 import { ShieldAlert, ShieldCheck } from "lucide-react"
 import { useTranslation } from "react-i18next"
-
-import { Badge } from "@DataDack/common-ui"
 
 import type { CacheImpact } from "../../superadmin.types"
 

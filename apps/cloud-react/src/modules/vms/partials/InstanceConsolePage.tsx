@@ -1,12 +1,11 @@
 import { useEffect } from "react"
 
+import { Skeleton } from "@DataDack/common-ui"
 import { useParams, useSearchParams } from "react-router-dom"
 
 import { ConsoleTerminal } from "@/modules/console/components/ConsoleTerminal"
 import type { ConsoleTarget } from "@/modules/console/console.api"
 import { useScreen } from "@/services/api/screen"
-
-import { Skeleton } from "@DataDack/common-ui"
 
 import { useInstance } from "../vms.hooks"
 

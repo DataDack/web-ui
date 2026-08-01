@@ -1,9 +1,8 @@
+import { Badge } from "@DataDack/common-ui"
 import { Loader2 } from "lucide-react"
 
 import { TONE_CLASSES, TONE_DOT_CLASSES } from "@/components/console/status-config"
 import { cn } from "@/lib/utils"
-
-import { Badge } from "@DataDack/common-ui"
 
 import type { ProjectState } from "../managed-apps.state"
 

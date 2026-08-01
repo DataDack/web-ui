@@ -1,10 +1,9 @@
+import { Skeleton } from "@DataDack/common-ui"
 import { AlertCircle, ArrowRight, Sparkles } from "lucide-react"
 import { Link } from "react-router-dom"
 
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-
-import { Skeleton } from "@DataDack/common-ui"
 
 import { QuotaMeter } from "./QuotaMeter"
 import { MANAGED_APPS_ROUTES } from "../../managed-apps.constants"

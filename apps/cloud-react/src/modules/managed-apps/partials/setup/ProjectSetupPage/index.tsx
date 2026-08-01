@@ -1,3 +1,4 @@
+import { Skeleton } from "@DataDack/common-ui"
 import {
   AlertTriangle,
   ArrowLeft,
@@ -13,8 +14,6 @@ import { Link, useNavigate, useParams } from "react-router-dom"
 import { EmptyState } from "@/components/console"
 import { Button } from "@/components/ui/button"
 import { useScreen } from "@/services/api/screen"
-
-import { Skeleton } from "@DataDack/common-ui"
 
 import { SetupFlowGraphic } from "./SetupFlowGraphic"
 import { SetupWorkPanel } from "./SetupWorkPanel"

@@ -1,5 +1,6 @@
 import { useMemo } from "react"
 
+import { Label } from "@DataDack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm, type UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
@@ -8,7 +9,6 @@ import { z } from "zod/v4"
 
 import { CreateWizard, PageHeader, type WizardStep } from "@/components/console"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import {
   Select,
   SelectContent,

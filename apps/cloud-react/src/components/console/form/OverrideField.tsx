@@ -1,10 +1,10 @@
 import type { ReactNode } from "react"
 
-import { Input } from "@/components/ui/input"
-import { Switch } from "@/components/ui/switch"
-import { cn } from "@/lib/utils"
-
+import { Switch } from "@DataDack/common-ui"
 import { Badge } from "@DataDack/common-ui"
+
+import { Input } from "@/components/ui/input"
+import { cn } from "@/lib/utils"
 
 import { FieldRow } from "./FieldRow"
 

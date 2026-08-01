@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react"
 
+import { Skeleton } from "@DataDack/common-ui"
 import { Link2, Loader2, ShieldCheck, Unlink } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
@@ -20,8 +21,6 @@ import {
   useDetachInstanceSG,
   useInstanceSecurityGroups,
 } from "@/modules/vpc/vpc.hooks"
-
-import { Skeleton } from "@DataDack/common-ui"
 
 /** "Security groups" panel on the VM detail Networking tab: lists the groups
  *  attached to the instance and lets the user attach/detach. */

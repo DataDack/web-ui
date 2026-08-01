@@ -12,6 +12,7 @@
 
 import { useMemo, useState } from "react"
 
+import { Badge } from "@DataDack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { BellOff, BellRing, Pencil, Plus, RefreshCw, Search, SearchX, Trash2 } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
@@ -37,8 +38,6 @@ import { useDisks } from "@/modules/disks/disks.hooks"
 import { useLoadBalancers } from "@/modules/load-balancers/load-balancers.hooks"
 import { useInstances } from "@/modules/vms/vms.hooks"
 import { useScreen } from "@/services/api/screen"
-
-import { Badge } from "@DataDack/common-ui"
 
 import { AlarmStateChip, SeverityChip } from "../components/StateChips"
 import { MONITORING_ROUTES } from "../monitoring.constants"

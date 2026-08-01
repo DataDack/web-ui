@@ -1,5 +1,7 @@
 import { useMemo, useState } from "react"
 
+import { Label, Switch } from "@DataDack/common-ui"
+import { Badge, Skeleton } from "@DataDack/common-ui"
 import { Check, RefreshCw, RotateCcw, ScrollText, X } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
@@ -7,7 +9,6 @@ import { toast } from "sonner"
 import { EmptyState, PageHeader, Section } from "@/components/console"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import {
   Select,
   SelectContent,
@@ -15,13 +16,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
 import { useAuth } from "@/modules/auth/auth.context"
 import { ORG_MANAGER_ROLES } from "@/modules/organizations/organizations.constants"
 import { useActiveOrganization } from "@/modules/organizations/organizations.hooks"
 import { useScreen } from "@/services/api/screen"
-
-import { Badge, Skeleton } from "@DataDack/common-ui"
 
 import { useNamingPolicy, useUpdateNamingPolicy } from "../governance.hooks"
 import {

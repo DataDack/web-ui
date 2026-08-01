@@ -11,6 +11,7 @@
 
 import { useMemo } from "react"
 
+import { Badge } from "@DataDack/common-ui"
 import { Activity, ArrowRight, BellRing, CheckCircle2, Plus, Radio, WifiOff } from "lucide-react"
 import { Link } from "react-router-dom"
 
@@ -21,8 +22,6 @@ import { useDisks } from "@/modules/disks/disks.hooks"
 import { useLoadBalancers } from "@/modules/load-balancers/load-balancers.hooks"
 import { useInstances } from "@/modules/vms/vms.hooks"
 import { useScreen } from "@/services/api/screen"
-
-import { Badge } from "@DataDack/common-ui"
 
 import { TYPE_META } from "../channels/channels.meta"
 import { AlarmStateChip } from "../components/StateChips"

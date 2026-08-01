@@ -1,5 +1,6 @@
 import { useEffect, type ReactNode } from "react"
 
+import { Label, Textarea } from "@DataDack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { AlignLeft, ArrowLeft, Check, Compass, LifeBuoy, PenLine, Send } from "lucide-react"
 import { Controller, useForm } from "react-hook-form"
@@ -10,8 +11,6 @@ import { z } from "zod/v4"
 import { type StatusTone, PageHeader, Section } from "@/components/console"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import { cn } from "@/lib/utils"
 import { useScreen } from "@/services/api/screen"
 

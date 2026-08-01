@@ -1,5 +1,6 @@
 import { useEffect } from "react"
 
+import { Switch, Textarea } from "@DataDack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
@@ -13,8 +14,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
-import { Textarea } from "@/components/ui/textarea"
 import { CurrencySelect } from "@/modules/countries/CurrencySelect"
 
 import { Field, FormSheet } from "../components/form-fields"

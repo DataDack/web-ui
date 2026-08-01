@@ -4,8 +4,9 @@
 // each with the statistic, direction and starting threshold that make sense for
 // it. Picking one fills the condition in below, so the rule starts out sane.
 
+import { Label } from "@DataDack/common-ui"
+
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 
 import { MetricCard } from "./MetricCard"
 import { metricsFor, type AlarmTargetType } from "../../monitoring.targets"

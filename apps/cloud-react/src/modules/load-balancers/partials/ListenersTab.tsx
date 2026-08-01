@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react"
 
-import { ArrowRight, Ear, Plus, Trash2 } from "lucide-react"
+import { Skeleton } fro@DataDack/ck/common-ui"
+import { ArrowRight, Ear, @DataDack/h2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
@@ -33,7 +34,6 @@ import {
 import { TG_ROUTES } from "@/modules/target-groups/target-groups.constants"
 import { useTargetGroups } from "@/modules/target-groups/target-groups.hooks"
 
-import { Skeleton } from "@DataDack/common-ui"
 
 import {
   useCreateListener,

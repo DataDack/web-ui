@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react"
 
+import { Avatar, AvatarFallback, Label } from "@DataDack/common-ui"
+import { Skeleton } from "@DataDack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Ban, Check, PlayCircle, Save, Star, Wallet } from "lucide-react"
 import { useForm } from "react-hook-form"
@@ -8,14 +10,10 @@ import { useNavigate, useParams } from "react-router-dom"
 import { z } from "zod/v4"
 
 import { ConfirmDialog, KeyValueGrid, PageHeader, Section, StatusBadge } from "@/components/console"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { useAuth } from "@/modules/auth/auth.context"
 import { useScreen } from "@/services/api/screen"
-
-import { Skeleton } from "@DataDack/common-ui"
 
 import { ACCOUNT_MANAGER_ROLES, ACCOUNT_ROUTES } from "../accounts.constants"
 import {

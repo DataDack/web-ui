@@ -1,5 +1,6 @@
 import { useState } from "react"
 
+import { Skeleton } from "@DataDack/common-ui"
 import { AlertTriangle, Boxes, Crosshair, Ear, Info, Layers, Network, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link, useNavigate, useParams } from "react-router-dom"
@@ -32,8 +33,6 @@ import { VMS_ROUTES } from "@/modules/vms/vms.constants"
 import { useInstances } from "@/modules/vms/vms.hooks"
 import { useAllSubnets, useVPC, useVPCs } from "@/modules/vpc/vpc.hooks"
 import { useScreen } from "@/services/api/screen"
-
-import { Skeleton } from "@DataDack/common-ui"
 
 import { isLbTransitional, LB_ROUTES } from "../load-balancers.constants"
 import {

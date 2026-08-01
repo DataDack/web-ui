@@ -14,6 +14,8 @@
 
 import { useEffect, useMemo, useRef, useState, type RefObject } from "react"
 
+import { Label, Textarea } from "@DataDack/common-ui"
+import { Skeleton } from "@DataDack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ArrowLeft, BellPlus } from "lucide-react"
 import { useForm } from "react-hook-form"
@@ -23,11 +25,7 @@ import { toast } from "sonner"
 import { PageHeader, Section } from "@/components/console"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import { useScreen } from "@/services/api/screen"
-
-import { Skeleton } from "@DataDack/common-ui"
 
 import { ConditionSection } from "./ConditionSection"
 import { NotifySection } from "./NotifySection"

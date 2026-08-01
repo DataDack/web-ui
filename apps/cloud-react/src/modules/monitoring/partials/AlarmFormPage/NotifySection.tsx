@@ -13,14 +13,13 @@
 
 import { useState } from "react"
 
+import { Label } from "@DataDack/common-ui"
+import { Badge } from "@DataDack/common-ui"
 import { AlertTriangle, Plus } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
-
-import { Badge } from "@DataDack/common-ui"
 
 import type { ChannelBinding } from "./schema"
 import { ChannelCreateDialog } from "../../channels/ChannelCreateDialog"

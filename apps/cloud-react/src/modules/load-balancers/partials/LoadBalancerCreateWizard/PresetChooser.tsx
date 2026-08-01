@@ -1,10 +1,9 @@
 import { useState } from "react"
 
+import { Label } from "@DataDack/common-ui"
 import { Globe, Network, SquareDashed } from "lucide-react"
 import type { UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
-
-import { Label } from "@/components/ui/label"
 
 import { applyPreset, type PresetId } from "./presets"
 import type { FormValues } from "./schema"

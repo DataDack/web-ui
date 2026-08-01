@@ -1,12 +1,11 @@
 import { useMemo } from "react"
 
+import { Skeleton } from "@DataDack/common-ui"
 import { Flame, TimerReset, Wallet } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { AnimatedNumber, Sparkline } from "@/components/console"
 import { cn } from "@/lib/utils"
-
-import { Skeleton } from "@DataDack/common-ui"
 
 import { GST_RATE } from "../billing.constants"
 import type { CreditBalance, CreditPurchase, LedgerEntry, UsageRecordApi } from "../billing.types"

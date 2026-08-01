@@ -1,10 +1,9 @@
+import { Switch, Textarea } from "@DataDack/common-ui"
 import type { UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 
 import { TagEditor } from "@/components/console"
 import { Input } from "@/components/ui/input"
-import { Switch } from "@/components/ui/switch"
-import { Textarea } from "@/components/ui/textarea"
 import type { TagRow } from "@/lib/tags"
 import { RGField } from "@/modules/resource-groups/components/RGField"
 

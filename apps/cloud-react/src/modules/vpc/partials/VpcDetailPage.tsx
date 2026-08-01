@@ -1,5 +1,6 @@
 import { useState } from "react"
 
+import { Badge, Skeleton } from "@DataDack/common-ui"
 import {
   GitBranch,
   Globe,
@@ -25,8 +26,6 @@ import { Button } from "@/components/ui/button"
 import { parseTags } from "@/lib/tags"
 import { useAvailabilityZoneMap } from "@/modules/catalog/catalog.hooks"
 import { useScreen } from "@/services/api/screen"
-
-import { Badge, Skeleton } from "@DataDack/common-ui"
 
 import { VPC_ROUTES } from "../vpc.constants"
 import {

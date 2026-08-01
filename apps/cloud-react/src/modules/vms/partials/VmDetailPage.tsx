@@ -1,5 +1,7 @@
 import { useState } from "react"
 
+import { Switch } from "@DataDack/common-ui"
+import { Badge, Skeleton } from "@DataDack/common-ui"
 import {
   Activity,
   Cpu,
@@ -43,7 +45,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Switch } from "@/components/ui/switch"
 import {
   Table,
   TableBody,
@@ -58,8 +59,6 @@ import { useDetachDisk, useDisks } from "@/modules/disks/disks.hooks"
 import { useSSHKeys } from "@/modules/ssh-keys/ssh-keys.hooks"
 import { useVPC, useVPCSubnets } from "@/modules/vpc/vpc.hooks"
 import { useScreen } from "@/services/api/screen"
-
-import { Badge, Skeleton } from "@DataDack/common-ui"
 
 import { isVmTransitional, VMS_ROUTES, vmDisplayStatus } from "../vms.constants"
 import { InstanceSecurityGroupsSection } from "./InstanceSecurityGroupsSection"

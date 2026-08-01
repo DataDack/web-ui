@@ -1,5 +1,6 @@
 import { useMemo } from "react"
 
+import { Badge } from "@DataDack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Cpu, Plus, RefreshCw, Monitor, Globe, Pencil } from "lucide-react"
 import { useTranslation } from "react-i18next"
@@ -8,8 +9,6 @@ import { useNavigate } from "react-router-dom"
 import { actionsColumn, EmptyState, PageHeader, ResourceTable } from "@/components/console"
 import { Button } from "@/components/ui/button"
 import { useScreen } from "@/services/api/screen"
-
-import { Badge } from "@DataDack/common-ui"
 
 import { ActiveBadge } from "../components/ActiveBadge"
 import { useAdminAvailabilityZones, useAdminVMPrices } from "../superadmin.hooks"

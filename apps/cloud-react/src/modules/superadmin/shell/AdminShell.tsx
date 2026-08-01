@@ -1,11 +1,10 @@
 import { Suspense, useState } from "react"
 
+import { Skeleton } from "@DataDack/common-ui"
 import { useOutlet } from "react-router-dom"
 
 import { MotionProvider } from "@/components/console"
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet"
-
-import { Skeleton } from "@DataDack/common-ui"
 
 import { AdminSidebar } from "./AdminSidebar"
 import { AdminTopbar } from "./AdminTopbar"

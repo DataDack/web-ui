@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from "react"
 
+import { Switch } from "@DataDack/common-ui"
 import {
   Anchor,
   CheckCircle2,
@@ -32,7 +33,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
 import { cn } from "@/lib/utils"
 import type { RegionCatalog, StaticIPPriceOption } from "@/modules/catalog/catalog.types"
 import { VPC_ROUTES } from "@/modules/vpc/vpc.constants"

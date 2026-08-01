@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react"
 
+import { Label, Textarea } from "@DataDack/common-ui"
 import { ArrowLeft, Code2, FileText, Plus, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
@@ -7,7 +8,6 @@ import { useNavigate } from "react-router-dom"
 import { PageHeader, Section } from "@/components/console"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import {
   Select,
   SelectContent,
@@ -15,7 +15,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
 import { useScreen } from "@/services/api/screen"
 
 import { IAM_ROUTES } from "../iam.constants"

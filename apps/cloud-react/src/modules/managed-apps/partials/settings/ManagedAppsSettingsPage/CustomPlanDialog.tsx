@@ -1,5 +1,6 @@
 import { useState } from "react"
 
+import { Label, Textarea } from "@DataDack/common-ui"
 import { Loader2, MessageSquare } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 
@@ -13,8 +14,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import { SUPPORT_ROUTES } from "@/modules/support-tickets/support-tickets.constants"
 import { useCreateSupportTicket } from "@/modules/support-tickets/support-tickets.hooks"
 

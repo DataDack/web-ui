@@ -1,5 +1,6 @@
 import { useEffect } from "react"
 
+import { Badge, Skeleton } from "@DataDack/common-ui"
 import { CheckCircle2, Loader2, Plus, Unlink } from "lucide-react"
 import { useWatch, type UseFormReturn } from "react-hook-form"
 import { SiJira } from "react-icons/si"
@@ -23,8 +24,6 @@ import {
   useJiraProjects,
   useStartJiraOAuth,
 } from "@/modules/monitoring/monitoring.hooks"
-
-import { Badge, Skeleton } from "@DataDack/common-ui"
 
 import type { JiraConnection } from "../../../monitoring.types"
 import { splitJiraLabels, type ChannelFormValues } from "../../channels.form"

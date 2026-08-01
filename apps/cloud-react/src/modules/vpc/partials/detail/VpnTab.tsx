@@ -1,5 +1,6 @@
 import { useMemo } from "react"
 
+import { Skeleton } from "@DataDack/common-ui"
 import { Cable } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
@@ -12,8 +13,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-
-import { Skeleton } from "@DataDack/common-ui"
 
 import { useRouters, useVPNConnections } from "../../vpc.hooks"
 import type { VPCNetwork } from "../../vpc.types"

@@ -1,13 +1,12 @@
 import { useMemo, useState } from "react"
 
+import { Skeleton } from "@DataDack/common-ui"
 import { Database, Flame, RefreshCw, ShieldAlert, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { ConfirmDialog, EmptyState, PageHeader, StatGrid } from "@/components/console"
 import { Button } from "@/components/ui/button"
 import { useScreen } from "@/services/api/screen"
-
-import { Skeleton } from "@DataDack/common-ui"
 
 import { EMPTY_SELECTION, summarize, toggle, toggleGroup, type Selection } from "./cache-selection"
 import { ClearBar } from "./ClearBar"

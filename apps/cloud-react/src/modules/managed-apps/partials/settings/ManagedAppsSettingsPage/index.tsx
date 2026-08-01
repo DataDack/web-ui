@@ -1,13 +1,12 @@
 import { useState } from "react"
 
+import { Skeleton } from "@DataDack/common-ui"
 import { AlertCircle, Settings2 } from "lucide-react"
 import { toast } from "sonner"
 
 import { ConfirmDialog, PageHeader, Section } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 import { useConsoleBroadcast } from "@/services/broadcast"
-
-import { Skeleton } from "@DataDack/common-ui"
 
 import { CustomPlanCard } from "./CustomPlanCard"
 import { CustomPlanDialog } from "./CustomPlanDialog"
