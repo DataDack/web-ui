@@ -165,3 +165,13 @@ export const accordionAnimation = css`
     animation: ${accordionUpFrames} 200ms ease-out;
   }
 `
+
+const caretBlinkFrames = keyframes`
+  0%, 70%, 100% { opacity: 1; }
+  20%, 50% { opacity: 0; }
+`
+
+/** The OTP field's fake caret, which blinks on a 1s cycle. */
+export const caretBlink = css`
+  animation: ${caretBlinkFrames} 1000ms ease-out infinite;
+`

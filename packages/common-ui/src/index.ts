@@ -87,6 +87,7 @@ export {
   ContextMenuSubTrigger,
   ContextMenuTrigger,
 } from "./ui/context-menu"
+export { DayGridPicker } from "./ui/day-grid-picker"
 export {
   Dialog,
   DialogClose,
@@ -117,6 +118,7 @@ export {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu"
 export { Input } from "./ui/input"
+export { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "./ui/input-otp"
 export { Label } from "./ui/label"
 export { Popover, PopoverAnchor, PopoverContent, PopoverTrigger } from "./ui/popover"
 export { ScrollArea, ScrollBar } from "./ui/scroll-area"
@@ -156,6 +158,7 @@ export {
   accordionAnimation,
   animatePulse,
   animateSpin,
+  caretBlink,
   contentEnter,
   fontMono,
   glass1,

@@ -1,7 +1,7 @@
 import { useState } from "react"
 
 import { BirthdateField } from "@/components/ui/birthdate-field"
-import { DayGridPicker } from "@/components/ui/day-grid-picker"
+import { DayGridPicker } from "@datadack/common-ui"
 import { MonthYearPicker } from "@/components/ui/month-year-picker"
 
 /**

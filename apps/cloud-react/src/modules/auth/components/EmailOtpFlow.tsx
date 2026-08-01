@@ -7,10 +7,8 @@ import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { z } from "zod"
 
-import { Button, Input } from "@datadack/common-ui"
+import { Button, Input, InputOTP, InputOTPGroup, InputOTPSlot } from "@datadack/common-ui"
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form"
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp"
-
 import { extractError, useSendLoginOtp, useUpdateProfile, useVerifyLoginOtp } from "../auth.hooks"
 import type { UserProfile } from "../auth.types"
 import { usePhoneInput } from "../phone"

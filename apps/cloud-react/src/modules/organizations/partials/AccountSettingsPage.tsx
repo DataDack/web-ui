@@ -29,6 +29,9 @@ import {
   DialogHeader,
   DialogTitle,
   Input,
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
   Select,
   SelectContent,
   SelectItem,
@@ -40,7 +43,6 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@datadack/common-ui"
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp"
 import { ACCOUNT_MANAGER_ROLES } from "@/modules/accounts/accounts.constants"
 import {
   useAccountMembers,
