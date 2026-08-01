@@ -1,6 +1,5 @@
-import { expect, mock, test } from "bun:test"
-
 import { render, screen } from "@testing-library/react"
+import { expect, mock, test } from "bun:test"
 
 // Exact payloads the live API returns for this node + AZ list.
 const NODE = {

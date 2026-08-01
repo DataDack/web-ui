@@ -1,9 +1,5 @@
 import { useMemo } from "react"
 
-import type { ColumnDef } from "@tanstack/react-table"
-import { ArrowLeft, Container, GitBranch, History, Package, Settings2 } from "lucide-react"
-import { Link, useParams, useSearchParams } from "react-router-dom"
-
 import {
   Badge,
   cellMono,
@@ -19,6 +15,9 @@ import {
   TabsTrigger,
   timeAgo,
 } from "@datadack/serverless-ui"
+import type { ColumnDef } from "@tanstack/react-table"
+import { ArrowLeft, Container, GitBranch, History, Package, Settings2 } from "lucide-react"
+import { Link, useParams, useSearchParams } from "react-router-dom"
 
 import { useFunctionAliases, useFunctionVersions, useServerlessFunction } from "../serverless.hooks"
 import type { FunctionAlias, FunctionVersion } from "../serverless.types"

@@ -1,8 +1,5 @@
 import { useMemo } from "react"
 
-import type { ColumnDef } from "@tanstack/react-table"
-import { Layers } from "lucide-react"
-
 import {
   Badge,
   cellMono,
@@ -12,6 +9,8 @@ import {
   ResourceTable,
   timeAgo,
 } from "@datadack/serverless-ui"
+import type { ColumnDef } from "@tanstack/react-table"
+import { Layers } from "lucide-react"
 
 import { useServerlessLayers } from "../serverless.hooks"
 import type { LayerVersion } from "../serverless.types"

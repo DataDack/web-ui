@@ -1,9 +1,8 @@
-import { expect, mock, test } from "bun:test"
-
 import { createElement, Fragment, type ReactNode } from "react"
 
 import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
+import { expect, mock, test } from "bun:test"
 
 const ACCOUNT_ID = "acct-1"
 const ACCOUNT_NUMBER = "ACC-1001"

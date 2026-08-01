@@ -9,10 +9,9 @@
     "erasableSyntaxOnly": true,
     "noUncheckedSideEffectImports": true,
 
-    /* Relaxations against the shared base, to be removed as the code is
-           brought up to it. noUncheckedIndexedAccess in particular turns every
-           array and record read into T | undefined, which this app is not yet
-           written for. */
+    /* Relaxations against the shared base, to be removed as the code is brought
+       up to it. noUncheckedIndexedAccess in particular turns every array and
+       record read into T | undefined, which this app is not yet written for. */
     "noUncheckedIndexedAccess": false,
     "noImplicitOverride": false,
 
