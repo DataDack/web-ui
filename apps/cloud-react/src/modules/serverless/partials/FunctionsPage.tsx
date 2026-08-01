@@ -9,7 +9,7 @@ import {
   cellMono,
   cellText,
   timeAgo,
-} from "@DataDack/common-ui"
+} from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Activity, Boxes, Container, Package, Zap } from "lucide-react"
 import { Link } from "react-router-dom"
@@ -19,7 +19,7 @@ import type { FunctionEntity } from "../serverless.types"
 
 /**
  * Serverless landing: the account's functions. Built from the shared
- * @DataDack/serverless-ui kit — the same components the serverless-web
+ * @datadack/serverless-ui kit — the same components the serverless-web
  * console renders this list with, so the two surfaces stay visually and
  * behaviorally identical.
  */

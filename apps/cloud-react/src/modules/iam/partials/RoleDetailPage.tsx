@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-import { Skeleton } from "@DataDack/common-ui"
+import { Skeleton } from "@datadack/common-ui"
 import { FileText, Info, Loader2, Plus, ShieldCheck, Trash2, Users, X } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link, useNavigate, useParams } from "react-router-dom"

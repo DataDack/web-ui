@@ -1,4 +1,4 @@
-import { Skeleton } from "@DataDack/common-ui"
+import { Skeleton } from "@datadack/common-ui"
 import { GitPullRequest, Hammer, Info, PackageX, Settings } from "lucide-react"
 import { Link, useNavigate, useParams } from "react-router-dom"
 

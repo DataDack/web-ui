@@ -1,4 +1,4 @@
-import { Skeleton } from "@DataDack/common-ui"
+import { Skeleton } from "@datadack/common-ui"
 import { AlertTriangle, Loader2 } from "lucide-react"
 
 import { Button } from "@datadack/common-ui"

@@ -1,4 +1,4 @@
-import { Skeleton } from "@DataDack/common-ui"
+import { Skeleton } from "@datadack/common-ui"
 import { useTranslation } from "react-i18next"
 
 import { HomePanel } from "./HomePanel"

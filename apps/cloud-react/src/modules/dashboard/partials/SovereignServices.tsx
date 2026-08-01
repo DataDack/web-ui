@@ -1,4 +1,4 @@
-import { Skeleton } from "@DataDack/common-ui"
+import { Skeleton } from "@datadack/common-ui"
 import { CheckCircle2, Grip } from "lucide-react"
 import { Link } from "react-router-dom"
 

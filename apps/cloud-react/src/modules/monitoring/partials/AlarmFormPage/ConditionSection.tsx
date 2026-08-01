@@ -8,7 +8,7 @@
 
 import { useMemo, useState } from "react"
 
-import { Badge } from "@DataDack/common-ui"
+import { Badge } from "@datadack/common-ui"
 import { ChevronDown } from "lucide-react"
 import type { UseFormRegister } from "react-hook-form"
 

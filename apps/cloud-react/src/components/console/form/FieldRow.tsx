@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 
-import { Label } from "@DataDack/common-ui"
+import { Label } from "@datadack/common-ui"
 
 import { cn } from "@/lib/utils"
 

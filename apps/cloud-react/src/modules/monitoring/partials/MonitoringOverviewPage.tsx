@@ -11,7 +11,7 @@
 
 import { useMemo } from "react"
 
-import { Badge } from "@DataDack/common-ui"
+import { Badge } from "@datadack/common-ui"
 import { Activity, ArrowRight, BellRing, CheckCircle2, Plus, Radio, WifiOff } from "lucide-react"
 import { Link } from "react-router-dom"
 

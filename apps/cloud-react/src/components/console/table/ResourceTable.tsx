@@ -1,6 +1,6 @@
 import { type ReactNode, useMemo, useState } from "react"
 
-import { Skeleton } from "@DataDack/common-ui"
+import { Skeleton } from "@datadack/common-ui"
 import {
   type ColumnDef,
   flexRender,
@@ -25,8 +25,8 @@ import {
 import { useTranslation } from "react-i18next"
 
 import { Button } from "@datadack/common-ui"
-import { Checkbox } from "@DataDack/common-ui"
-import { Popover, PopoverContent, PopoverTrigger } from "@DataDack/common-ui"
+import { Checkbox } from "@datadack/common-ui"
+import { Popover, PopoverContent, PopoverTrigger } from "@datadack/common-ui"
 import {
   Table,
   TableBody,

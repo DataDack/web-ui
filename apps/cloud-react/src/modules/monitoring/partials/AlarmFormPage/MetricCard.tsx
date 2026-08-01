@@ -6,7 +6,7 @@
 
 import { useMemo } from "react"
 
-import { Badge } from "@DataDack/common-ui"
+import { Badge } from "@datadack/common-ui"
 
 import { Sparkline } from "@/components/console"
 import { cn } from "@/lib/utils"

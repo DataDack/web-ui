@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react"
 
-import { Label, Textarea } from "@DataDack/common-ui"
+import { Label, Textarea } from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { FolderTree } from "lucide-react"
 import { useForm, type UseFormReturn } from "react-hook-form"

@@ -1,6 +1,6 @@
 import { Suspense, useCallback, useEffect, useState } from "react"
 
-import { Skeleton } from "@DataDack/common-ui"
+import { Skeleton } from "@datadack/common-ui"
 import { useLocation, useMatches, useNavigate, useOutlet } from "react-router-dom"
 
 import { useKeySequence } from "@/hooks/use-key-sequence"

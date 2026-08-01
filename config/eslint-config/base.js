@@ -120,7 +120,7 @@ export const base = defineConfig([
             { pattern: "react", group: "external", position: "before" },
             { pattern: "@/**", group: "internal", position: "after" },
             { pattern: "@serverless-ui/**", group: "internal", position: "after" },
-            { pattern: "@DataDack/**", group: "internal", position: "after" },
+            { pattern: "@datadack/**", group: "internal", position: "after" },
           ],
           pathGroupsExcludedImportTypes: ["react"],
           alphabetize: { order: "asc", caseInsensitive: true },

@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next"
 
-import { Checkbox } from "@DataDack/common-ui"
+import { Checkbox } from "@datadack/common-ui"
 import type { Subnet } from "@/modules/vpc/vpc.types"
 
 /**

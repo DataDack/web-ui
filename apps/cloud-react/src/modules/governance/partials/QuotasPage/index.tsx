@@ -1,6 +1,6 @@
 import { type ReactNode, useMemo, useState } from "react"
 
-import { Skeleton } from "@DataDack/common-ui"
+import { Skeleton } from "@datadack/common-ui"
 import { CircleAlert, Gauge, Hourglass, Plus, RefreshCw, TriangleAlert } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useSearchParams } from "react-router-dom"

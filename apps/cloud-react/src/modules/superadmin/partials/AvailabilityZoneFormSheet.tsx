@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
 
-import { Switch } from "@DataDack/common-ui"
+import { Switch } from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Plus } from "lucide-react"
 import { Controller, useForm } from "react-hook-form"

@@ -17,7 +17,7 @@ import {
   cellText,
   cn,
   timeAgo,
-} from "@DataDack/common-ui"
+} from "@datadack/common-ui"
 const RANGES = [
   { label: "1h", since: "-1h" },
   { label: "24h", since: "-24h" },

@@ -2,7 +2,7 @@ import { useId, useMemo, useRef, useState } from "react"
 
 import { Check, ChevronDown, Loader2 } from "lucide-react"
 
-import { Popover, PopoverAnchor, PopoverContent } from "@DataDack/common-ui"
+import { Popover, PopoverAnchor, PopoverContent } from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 
 export interface ComboboxInputOption {

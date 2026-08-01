@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react"
 
-import { Label } from "@DataDack/common-ui"
+import { Label } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { KeySquare, Loader2, Plus, RefreshCw, Trash2, TriangleAlert } from "lucide-react"
 import { useTranslation } from "react-i18next"

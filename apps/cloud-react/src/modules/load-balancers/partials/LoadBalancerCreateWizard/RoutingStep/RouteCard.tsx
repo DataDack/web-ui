@@ -1,4 +1,4 @@
-import { Label } from "@DataDack/common-ui"
+import { Label } from "@datadack/common-ui"
 import { ArrowDown, Trash2 } from "lucide-react"
 import type { UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"

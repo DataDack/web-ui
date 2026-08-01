@@ -1,4 +1,4 @@
-import { Badge } from "@DataDack/common-ui"
+import { Badge } from "@datadack/common-ui"
 import { useTranslation } from "react-i18next"
 
 import type { StatusTone } from "@/components/console"

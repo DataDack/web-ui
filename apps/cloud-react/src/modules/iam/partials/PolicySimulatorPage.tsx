@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-import { Label } from "@DataDack/common-ui"
+import { Label } from "@datadack/common-ui"
 import { CheckCircle2, FlaskConical, Loader2, XCircle } from "lucide-react"
 import { useTranslation } from "react-i18next"
 

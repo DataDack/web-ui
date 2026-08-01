@@ -1,7 +1,7 @@
 import type { ReactNode } from "react"
 
-import { Switch } from "@DataDack/common-ui"
-import { Badge } from "@DataDack/common-ui"
+import { Switch } from "@datadack/common-ui"
+import { Badge } from "@datadack/common-ui"
 
 import { Input } from "@datadack/common-ui"
 import { cn } from "@/lib/utils"

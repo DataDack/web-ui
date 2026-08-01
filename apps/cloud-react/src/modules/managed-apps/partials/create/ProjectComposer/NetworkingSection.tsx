@@ -1,4 +1,4 @@
-import { Badge } from "@DataDack/common-ui"
+import { Badge } from "@datadack/common-ui"
 import { Network } from "lucide-react"
 
 import { SmartSelect, type SmartSelectOption } from "@/components/console"

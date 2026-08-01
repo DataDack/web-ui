@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-import { Badge } from "@DataDack/common-ui"
+import { Badge } from "@datadack/common-ui"
 import { Archive, ExternalLink, GitFork, Lock } from "lucide-react"
 
 import { SmartSelect, type SmartSelectOption } from "@/components/console"

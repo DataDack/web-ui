@@ -26,6 +26,7 @@
     "graph": "nx graph",
     "format": "prettier --write \"**/*.{ts,tsx,js,json,md}\" --ignore-path .gitignore --ignore-path .prettierignore",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,json,md}\" --ignore-path .gitignore --ignore-path .prettierignore",
+    "check:scope-case": "! grep -rIl --exclude-dir=node_modules --exclude-dir=dist --exclude-dir=.git -E '@D[a]taDack/' . || (echo '::error::Scoped package names must be lowercase @datadack/' && exit 1)",
     "clean": "nx run-many -t clean && nx reset",
     "changeset": "changeset",
     "version-packages": "changeset version",

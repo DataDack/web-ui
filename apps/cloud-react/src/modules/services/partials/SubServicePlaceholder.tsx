@@ -1,4 +1,4 @@
-import { Badge } from "@DataDack/common-ui"
+import { Badge } from "@datadack/common-ui"
 import { type LucideIcon, AlertTriangle, Construction, Plus, Settings } from "lucide-react"
 
 import { Button } from "@datadack/common-ui"

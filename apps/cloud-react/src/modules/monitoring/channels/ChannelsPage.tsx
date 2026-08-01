@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from "react"
 
-import { Switch } from "@DataDack/common-ui"
-import { Badge } from "@DataDack/common-ui"
+import { Switch } from "@datadack/common-ui"
+import { Badge } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { BellRing, Plus, RefreshCw, Send, Trash2 } from "lucide-react"
 import { toast } from "sonner"

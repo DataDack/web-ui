@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react"
 
-import { Label, Textarea } from "@DataDack/common-ui"
+import { Label, Textarea } from "@datadack/common-ui"
 import { ArrowLeft, Code2, FileText, Plus, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"

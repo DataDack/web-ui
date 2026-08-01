@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 
-import { Avatar, AvatarFallback, Label } from "@DataDack/common-ui"
-import { Skeleton } from "@DataDack/common-ui"
+import { Avatar, AvatarFallback, Label } from "@datadack/common-ui"
+import { Skeleton } from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Ban, Check, PlayCircle, Save, Star, Wallet } from "lucide-react"
 import { useForm } from "react-hook-form"

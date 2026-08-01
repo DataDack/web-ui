@@ -1,4 +1,4 @@
-import { Label, Separator } from "@DataDack/common-ui"
+import { Label, Separator } from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"

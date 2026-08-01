@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { Label } from "@DataDack/common-ui"
+import { Label } from "@datadack/common-ui"
 import { Slot } from "radix-ui"
 import {
   Controller,

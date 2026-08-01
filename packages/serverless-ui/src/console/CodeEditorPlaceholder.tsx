@@ -10,7 +10,7 @@ import {
   glass3,
   media,
   mix,
-} from "@DataDack/common-ui"
+} from "@datadack/common-ui"
 const root = css`
   position: relative;
   overflow: hidden;

@@ -32,6 +32,11 @@ jobs:
       fail-fast: false
       matrix:
         check:
+          # Package names are lowercase; a capitalised scope resolves on a
+          # case-insensitive macOS filesystem and fails on Linux, so it passes
+          # review locally and breaks CI and the image build. It has reappeared
+          # from editor auto-imports several times, hence a hard gate.
+          - { name: Package name case, run: 'bun run check:scope-case' }
           - { name: ESLint, run: 'bun run lint' }
           - { name: TypeScript, run: 'bun run typecheck' }
           - { name: Formatting, run: 'bun run format:check' }

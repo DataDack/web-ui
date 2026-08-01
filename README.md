@@ -83,7 +83,7 @@ Every task runs through Nx from the workspace root:
 single-project form of any root script:
 
 ```bash
-bunx nx build @DataDack/function-studio   # one project
+bunx nx build @datadack/function-studio   # one project
 bunx nx dev serverless-web           # builds the packages first, then serves
 bunx nx run-many -t build              # every project, respecting the graph
 bunx nx run-many -t lint -p tag:scope:package
@@ -122,7 +122,7 @@ users can install the "Nx Console" plugin for the same view.
 
 ## Adding a package
 
-1. `mkdir packages/<name>` with a `package.json` named `@DataDack/<name>` — that
+1. `mkdir packages/<name>` with a `package.json` named `@datadack/<name>` — that
    is the scope the publish workflow authenticates against.
 2. Extend `@serverless-ui/typescript-config/react-library.json` in `tsconfig.json`.
 3. Re-export from `eslint.config.js`: `export { default } from '@serverless-ui/eslint-config/react'`.

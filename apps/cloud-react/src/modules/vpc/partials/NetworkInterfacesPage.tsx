@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react"
 
-import { Label, Textarea } from "@DataDack/common-ui"
+import { Label, Textarea } from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import type { ColumnDef } from "@tanstack/react-table"
 import { EthernetPort, Link2, Plus, RefreshCw, Search, Trash2, Unlink } from "lucide-react"
@@ -38,7 +38,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@datadack/common-ui"
-import { Checkbox } from "@DataDack/common-ui"
+import { Checkbox } from "@datadack/common-ui"
 import { useAvailabilityZoneMap } from "@/modules/catalog/catalog.hooks"
 import { useNamingRule } from "@/modules/governance/governance.hooks"
 import type { NamingRule } from "@/modules/governance/governance.types"

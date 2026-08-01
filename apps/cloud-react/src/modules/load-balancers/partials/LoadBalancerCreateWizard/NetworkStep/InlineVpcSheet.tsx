@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react"
 
-import { Label } from "@DataDack/common-ui"
+import { Label } from "@datadack/common-ui"
 import { Loader2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 

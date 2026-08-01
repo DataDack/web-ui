@@ -1,4 +1,4 @@
-import { Skeleton } from "@DataDack/common-ui"
+import { Skeleton } from "@datadack/common-ui"
 import { Lock } from "lucide-react"
 import { useTranslation } from "react-i18next"
 

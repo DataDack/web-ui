@@ -1,4 +1,4 @@
-import { Badge } from "@DataDack/common-ui"
+import { Badge } from "@datadack/common-ui"
 
 import { cn } from "@/lib/utils"
 

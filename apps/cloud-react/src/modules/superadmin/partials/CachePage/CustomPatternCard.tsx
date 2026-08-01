@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-import { Badge } from "@DataDack/common-ui"
+import { Badge } from "@datadack/common-ui"
 import { Plus, Terminal, X } from "lucide-react"
 import { useTranslation } from "react-i18next"
 

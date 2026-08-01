@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 
-import { Switch, Textarea } from "@DataDack/common-ui"
+import { Switch, Textarea } from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Plus, Trash2 } from "lucide-react"
 import { Controller, useFieldArray, useForm } from "react-hook-form"

@@ -1,6 +1,6 @@
 import { useMemo } from "react"
 
-import { Badge } from "@DataDack/common-ui"
+import { Badge } from "@datadack/common-ui"
 import { ArrowLeft, Boxes, Crown, ShieldCheck, Star, UserRound } from "lucide-react"
 import { useNavigate, useParams } from "react-router-dom"
 

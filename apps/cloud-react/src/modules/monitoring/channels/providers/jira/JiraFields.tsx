@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 
-import { Badge, Skeleton } from "@DataDack/common-ui"
+import { Badge, Skeleton } from "@datadack/common-ui"
 import { CheckCircle2, Loader2, Plus, Unlink } from "lucide-react"
 import { useWatch, type UseFormReturn } from "react-hook-form"
 import { SiJira } from "react-icons/si"

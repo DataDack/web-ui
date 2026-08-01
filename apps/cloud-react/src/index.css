@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
-/* The shared @DataDack/serverless-ui kit ships class names in compiled JS —
+/* The shared @datadack/serverless-ui kit ships class names in compiled JS —
    point Tailwind's scanner at it so those utilities are generated here. */
-@source "../node_modules/@DataDack/serverless-ui/dist";
+@source "../node_modules/@datadack/serverless-ui/dist";
 @import "tw-animate-css";
 @plugin "@tailwindcss/typography";
 

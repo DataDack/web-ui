@@ -1,7 +1,7 @@
 import { Fragment, useState } from "react"
 
-import { Switch } from "@DataDack/common-ui"
-import { Badge } from "@DataDack/common-ui"
+import { Switch } from "@datadack/common-ui"
+import { Badge } from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQueryClient } from "@tanstack/react-query"
 import {

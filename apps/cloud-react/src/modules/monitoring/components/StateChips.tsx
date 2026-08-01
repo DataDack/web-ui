@@ -3,7 +3,7 @@
 // that exports both components and helpers breaks fast refresh for everything
 // importing it.
 
-import { Badge } from "@DataDack/common-ui"
+import { Badge } from "@datadack/common-ui"
 
 import { cn } from "@/lib/utils"
 

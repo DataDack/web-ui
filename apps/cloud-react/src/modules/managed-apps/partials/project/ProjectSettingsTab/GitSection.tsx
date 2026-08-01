@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-import { Badge } from "@DataDack/common-ui"
+import { Badge } from "@datadack/common-ui"
 import { ExternalLink, GitPullRequest, Loader2 } from "lucide-react"
 import { Link } from "react-router-dom"
 

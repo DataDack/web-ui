@@ -1,4 +1,4 @@
-import { Badge } from "@DataDack/common-ui"
+import { Badge } from "@datadack/common-ui"
 import { AlertTriangle, Clock, X } from "lucide-react"
 
 import { Button } from "@datadack/common-ui"

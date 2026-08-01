@@ -8,7 +8,7 @@ import {
   cellText,
   formatBytes,
   timeAgo,
-} from "@DataDack/common-ui"
+} from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Layers } from "lucide-react"
 

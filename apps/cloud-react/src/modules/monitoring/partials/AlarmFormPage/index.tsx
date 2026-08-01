@@ -14,8 +14,8 @@
 
 import { useEffect, useMemo, useRef, useState, type RefObject } from "react"
 
-import { Label, Textarea } from "@DataDack/common-ui"
-import { Skeleton } from "@DataDack/common-ui"
+import { Label, Textarea } from "@datadack/common-ui"
+import { Skeleton } from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ArrowLeft, BellPlus } from "lucide-react"
 import { useForm } from "react-hook-form"

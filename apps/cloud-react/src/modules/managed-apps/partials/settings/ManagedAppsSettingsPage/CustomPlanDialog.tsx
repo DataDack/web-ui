@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-import { Label, Textarea } from "@DataDack/common-ui"
+import { Label, Textarea } from "@datadack/common-ui"
 import { Loader2, MessageSquare } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 

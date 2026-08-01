@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react"
 
-import { Label } from "@DataDack/common-ui"
+import { Label } from "@datadack/common-ui"
 import { FileUp, Plus } from "lucide-react"
 
 import { Button } from "@datadack/common-ui"

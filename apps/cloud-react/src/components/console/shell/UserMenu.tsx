@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-import { Avatar, AvatarFallback } from "@DataDack/common-ui"
+import { Avatar, AvatarFallback } from "@datadack/common-ui"
 import { Check, LifeBuoy, LogOut, Plus, Settings, ShieldCheck, Star, Wallet } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"

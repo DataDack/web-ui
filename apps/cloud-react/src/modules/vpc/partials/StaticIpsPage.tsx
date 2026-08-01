@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react"
 
-import { Label } from "@DataDack/common-ui"
+import { Label } from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Globe, Link2, Plus, RefreshCw, Search, Trash2, Unlink } from "lucide-react"

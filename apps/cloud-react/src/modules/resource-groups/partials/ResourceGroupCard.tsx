@@ -1,4 +1,4 @@
-import { Badge } from "@DataDack/common-ui"
+import { Badge } from "@datadack/common-ui"
 import { Check, Eye, Hash, Pencil, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
@@ -11,7 +11,7 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from "@datadack/common-ui"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@DataDack/common-ui"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@datadack/common-ui"
 import { useResourceGroup } from "@/modules/resource-groups/resource-group.context"
 
 import { RG_ROUTES } from "../resource-groups.constants"

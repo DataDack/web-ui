@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-import { Skeleton } from "@DataDack/common-ui"
+import { Skeleton } from "@datadack/common-ui"
 import { AlertCircle, Settings2 } from "lucide-react"
 import { toast } from "sonner"
 

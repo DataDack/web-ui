@@ -14,7 +14,7 @@ import {
   cellMono,
   cellText,
   timeAgo,
-} from "@DataDack/common-ui"
+} from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { ArrowLeft, Container, GitBranch, History, Package, Settings2 } from "lucide-react"
 import { Link, useParams, useSearchParams } from "react-router-dom"

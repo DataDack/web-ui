@@ -1,4 +1,4 @@
-import { Badge } from "@DataDack/common-ui"
+import { Badge } from "@datadack/common-ui"
 import { Radio, ScrollText } from "lucide-react"
 
 import { EmptyState, PageHeader } from "@/components/console"

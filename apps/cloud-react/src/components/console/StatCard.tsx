@@ -1,4 +1,4 @@
-import { Skeleton } from "@DataDack/common-ui"
+import { Skeleton } from "@datadack/common-ui"
 import { type LucideIcon, TrendingDown, TrendingUp } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 

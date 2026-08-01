@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react"
 
-import { Badge } from "@DataDack/common-ui"
+import { Badge } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import {
   Cpu,

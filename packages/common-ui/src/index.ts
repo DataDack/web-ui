@@ -1,9 +1,9 @@
-// @DataDack/common-ui — the DataDack design system.
+// @datadack/common-ui — the DataDack design system.
 //
 // Every generic web surface piece lives here: the shadcn-derived primitives, the
 // list/detail building blocks both consoles are made of, the charts, the theme,
 // and the status→tone language they share. Domain kits build on this one;
-// @DataDack/serverless-ui is the FaaS-specific layer.
+// @datadack/serverless-ui is the FaaS-specific layer.
 //
 // Styling is @emotion/css at runtime: importing the kit is the whole setup. No
 // Tailwind build, no `@source` scan, no CSS file to import — which is what makes

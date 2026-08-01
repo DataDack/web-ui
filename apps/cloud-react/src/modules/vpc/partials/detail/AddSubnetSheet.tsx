@@ -1,6 +1,6 @@
 import { useMemo } from "react"
 
-import { Label, Separator, Switch } from "@DataDack/common-ui"
+import { Label, Separator, Switch } from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"

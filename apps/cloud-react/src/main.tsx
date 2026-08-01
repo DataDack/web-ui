@@ -11,7 +11,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { createRoot } from "react-dom/client"
 import { Toaster } from "sonner"
 
-import { TooltipProvider } from "@DataDack/common-ui"
+import { TooltipProvider } from "@datadack/common-ui"
 import { env } from "@/env"
 import { AuthProvider } from "@/modules/auth/auth.context"
 import { RegionProvider } from "@/modules/region/region.context"

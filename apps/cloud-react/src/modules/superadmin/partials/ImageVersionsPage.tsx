@@ -1,7 +1,7 @@
 import { useMemo, useState, type ReactNode } from "react"
 
-import { Label, Switch, Textarea } from "@DataDack/common-ui"
-import { Badge, Skeleton } from "@DataDack/common-ui"
+import { Label, Switch, Textarea } from "@datadack/common-ui"
+import { Badge, Skeleton } from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
   ArrowLeft,

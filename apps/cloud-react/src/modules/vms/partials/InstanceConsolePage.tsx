@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 
-import { Skeleton } from "@DataDack/common-ui"
+import { Skeleton } from "@datadack/common-ui"
 import { useParams, useSearchParams } from "react-router-dom"
 
 import { ConsoleTerminal } from "@/modules/console/components/ConsoleTerminal"

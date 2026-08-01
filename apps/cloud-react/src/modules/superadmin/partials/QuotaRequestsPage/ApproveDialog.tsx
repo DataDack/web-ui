@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-import { Textarea } from "@DataDack/common-ui"
+import { Textarea } from "@datadack/common-ui"
 import { ArrowRight, Check, Loader2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 

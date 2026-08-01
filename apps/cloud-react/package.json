@@ -16,7 +16,7 @@
     "clean": "rm -rf dist node_modules/.vite node_modules/.tmp"
   },
   "dependencies": {
-    "@DataDack/common-ui": "workspace:*"
+    "@datadack/common-ui": "workspace:*"
   },
   "nx": {
     "tags": [

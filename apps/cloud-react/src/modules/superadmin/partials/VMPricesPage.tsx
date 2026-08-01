@@ -1,6 +1,6 @@
 import { useMemo } from "react"
 
-import { Badge } from "@DataDack/common-ui"
+import { Badge } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Cpu, Plus, RefreshCw, Monitor, Globe, Pencil } from "lucide-react"
 import { useTranslation } from "react-i18next"

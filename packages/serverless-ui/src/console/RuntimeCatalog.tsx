@@ -3,7 +3,7 @@ import { useMemo, useState } from "react"
 import { css, cx } from "@emotion/css"
 import { AlertTriangle, Check, PackageOpen, Search } from "lucide-react"
 
-import { Input, fontMono } from "@DataDack/common-ui"
+import { Input, fontMono } from "@datadack/common-ui"
 
 import { familyLabel, RuntimeIcon } from "./RuntimeIcon"
 /**

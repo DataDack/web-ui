@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from "react"
 
-import { Textarea } from "@DataDack/common-ui"
+import { Textarea } from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2, Network } from "lucide-react"
 import { Controller, useForm, useWatch } from "react-hook-form"

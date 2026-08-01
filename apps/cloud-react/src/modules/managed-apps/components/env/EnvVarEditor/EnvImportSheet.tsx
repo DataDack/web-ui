@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react"
 
-import { Textarea } from "@DataDack/common-ui"
+import { Textarea } from "@datadack/common-ui"
 import { AlertTriangle } from "lucide-react"
 
 import {

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 
-import { Switch, Textarea } from "@DataDack/common-ui"
+import { Switch, Textarea } from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useForm, useWatch } from "react-hook-form"
 import { useTranslation } from "react-i18next"

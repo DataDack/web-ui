@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react"
 
-import { Skeleton } from "@DataDack/common-ui"
+import { Skeleton } from "@datadack/common-ui"
 import { Loader2 } from "lucide-react"
 
 import { ConfirmDialog, Section } from "@/components/console"

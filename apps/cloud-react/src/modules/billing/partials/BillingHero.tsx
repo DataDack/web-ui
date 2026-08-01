@@ -1,6 +1,6 @@
 import { useMemo } from "react"
 
-import { Skeleton } from "@DataDack/common-ui"
+import { Skeleton } from "@datadack/common-ui"
 import { Flame, TimerReset, Wallet } from "lucide-react"
 import { useTranslation } from "react-i18next"
 

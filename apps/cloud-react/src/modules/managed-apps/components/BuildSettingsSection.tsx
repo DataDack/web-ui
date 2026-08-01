@@ -1,4 +1,4 @@
-import { Skeleton } from "@DataDack/common-ui"
+import { Skeleton } from "@datadack/common-ui"
 
 import { OverrideField } from "@/components/console"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@datadack/common-ui"

@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-import { Badge } from "@DataDack/common-ui"
+import { Badge } from "@datadack/common-ui"
 import { Eye, EyeOff, Trash2 } from "lucide-react"
 
 import { Button, Input } from "@datadack/common-ui"

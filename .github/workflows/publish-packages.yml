@@ -81,7 +81,7 @@ jobs:
         env:
           NX_DAEMON: "false"
           NX_TUI: "false"
-        run: bunx nx build '@DataDack/${{ steps.pkg.outputs.name }}'
+        run: bunx nx build '@datadack/${{ steps.pkg.outputs.name }}'
 
       - name: Verify build output
         run: |
@@ -107,7 +107,7 @@ jobs:
         run: |
           npm pack
           gh release create "$GITHUB_REF_NAME" ./*.tgz \
-            --title "@DataDack/${{ steps.pkg.outputs.name }} ${{ steps.pkg.outputs.version }}" \
+            --title "@datadack/${{ steps.pkg.outputs.name }} ${{ steps.pkg.outputs.version }}" \
             --notes "Token-free install: bun add https://github.com/${{ github.repository }}/releases/download/$GITHUB_REF_NAME/datadack-${{ steps.pkg.outputs.name }}-${{ steps.pkg.outputs.version }}.tgz"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

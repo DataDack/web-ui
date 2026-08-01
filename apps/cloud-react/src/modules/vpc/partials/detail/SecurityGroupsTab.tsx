@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-import { Badge, Skeleton } from "@DataDack/common-ui"
+import { Badge, Skeleton } from "@datadack/common-ui"
 import { Loader2, Lock, Plus, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 

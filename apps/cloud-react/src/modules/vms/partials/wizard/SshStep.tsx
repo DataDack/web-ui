@@ -1,6 +1,6 @@
 import { useState, useMemo, useRef } from "react"
 
-import { Textarea } from "@DataDack/common-ui"
+import { Textarea } from "@datadack/common-ui"
 import { KeyRound, Sparkles, Upload, Loader2, Plus } from "lucide-react"
 import type { UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"

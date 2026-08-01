@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-import { Label } from "@DataDack/common-ui"
+import { Label } from "@datadack/common-ui"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { CheckCircle2, Loader2, MailX } from "lucide-react"
 import { useTranslation } from "react-i18next"

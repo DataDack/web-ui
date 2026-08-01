@@ -1,4 +1,4 @@
-import { Badge } from "@DataDack/common-ui"
+import { Badge } from "@datadack/common-ui"
 import { ExternalLink, GitBranch, GitPullRequest } from "lucide-react"
 import { Link } from "react-router-dom"
 

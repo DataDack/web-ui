@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react"
 
-import { Label, Switch } from "@DataDack/common-ui"
-import { Badge, Skeleton } from "@DataDack/common-ui"
+import { Label, Switch } from "@datadack/common-ui"
+import { Badge, Skeleton } from "@datadack/common-ui"
 import { Check, RefreshCw, RotateCcw, ScrollText, X } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"

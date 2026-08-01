@@ -1,4 +1,4 @@
-import { Switch, Textarea } from "@DataDack/common-ui"
+import { Switch, Textarea } from "@datadack/common-ui"
 import type { UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 

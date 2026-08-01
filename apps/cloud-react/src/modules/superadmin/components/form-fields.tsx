@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 
-import { Label, Separator } from "@DataDack/common-ui"
+import { Label, Separator } from "@datadack/common-ui"
 import { useTranslation } from "react-i18next"
 
 import {

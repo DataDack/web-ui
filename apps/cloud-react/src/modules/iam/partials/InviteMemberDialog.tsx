@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-import { Label, Textarea } from "@DataDack/common-ui"
+import { Label, Textarea } from "@datadack/common-ui"
 import { Link2, MailWarning } from "lucide-react"
 import { useTranslation } from "react-i18next"
 

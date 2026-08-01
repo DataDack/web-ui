@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-import { Label } from "@DataDack/common-ui"
+import { Label } from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Building2, Check, Loader2, User } from "lucide-react"
 import { Controller, useForm } from "react-hook-form"

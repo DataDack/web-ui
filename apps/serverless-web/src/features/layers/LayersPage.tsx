@@ -16,7 +16,7 @@ import {
   cellText,
   formatBytes,
   timeAgo,
-} from "@DataDack/common-ui"
+} from "@datadack/common-ui"
 export function LayersPage() {
   const { data, isLoading } = useDashboard()
   const layers = data?.detail.layers ?? []

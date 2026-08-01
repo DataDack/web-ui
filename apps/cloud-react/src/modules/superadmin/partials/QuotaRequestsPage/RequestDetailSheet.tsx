@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 
-import { Separator } from "@DataDack/common-ui"
+import { Separator } from "@datadack/common-ui"
 import { ArrowRight, Check, X } from "lucide-react"
 import { useTranslation } from "react-i18next"
 

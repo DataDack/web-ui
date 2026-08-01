@@ -1,6 +1,6 @@
 import { Suspense, useState } from "react"
 
-import { Skeleton } from "@DataDack/common-ui"
+import { Skeleton } from "@datadack/common-ui"
 import { useOutlet } from "react-router-dom"
 
 import { MotionProvider } from "@/components/console"

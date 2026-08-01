@@ -1,4 +1,4 @@
-import { Label } from "@DataDack/common-ui"
+import { Label } from "@datadack/common-ui"
 import { useTranslation } from "react-i18next"
 
 import { Input } from "@datadack/common-ui"

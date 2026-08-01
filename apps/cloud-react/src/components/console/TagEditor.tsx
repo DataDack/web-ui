@@ -1,4 +1,4 @@
-import { Label } from "@DataDack/common-ui"
+import { Label } from "@datadack/common-ui"
 import { Plus, Tag, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 

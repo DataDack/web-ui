@@ -1,6 +1,6 @@
 import { useMemo } from "react"
 
-import { Skeleton } from "@DataDack/common-ui"
+import { Skeleton } from "@datadack/common-ui"
 import { Hammer, Loader2, RotateCcw, X } from "lucide-react"
 import { useSearchParams } from "react-router-dom"
 

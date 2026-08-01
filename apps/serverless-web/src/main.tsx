@@ -7,7 +7,7 @@ import { Toaster } from "sonner"
 
 import { App } from "@/App"
 
-import { ThemeProvider } from "@DataDack/common-ui"
+import { ThemeProvider } from "@datadack/common-ui"
 import "./index.css"
 
 const queryClient = new QueryClient({

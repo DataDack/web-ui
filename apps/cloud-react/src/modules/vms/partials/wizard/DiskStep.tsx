@@ -1,4 +1,4 @@
-import { Label, Switch } from "@DataDack/common-ui"
+import { Label, Switch } from "@datadack/common-ui"
 import type { UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 

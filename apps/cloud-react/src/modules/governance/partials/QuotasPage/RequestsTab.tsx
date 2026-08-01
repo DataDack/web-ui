@@ -1,4 +1,4 @@
-import { Badge, Skeleton } from "@DataDack/common-ui"
+import { Badge, Skeleton } from "@datadack/common-ui"
 import { ArrowRight, Check, Inbox, X } from "lucide-react"
 import { useTranslation } from "react-i18next"
 

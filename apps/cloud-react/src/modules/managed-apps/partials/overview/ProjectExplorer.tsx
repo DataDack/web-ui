@@ -1,6 +1,6 @@
 import { type ReactNode, useMemo, useState } from "react"
 
-import { Skeleton } from "@DataDack/common-ui"
+import { Skeleton } from "@datadack/common-ui"
 import { AlertTriangle, Search } from "lucide-react"
 
 import { EmptyState, staggerDelay } from "@/components/console"

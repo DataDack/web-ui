@@ -11,7 +11,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command"
-import { Popover, PopoverContent, PopoverTrigger } from "@DataDack/common-ui"
+import { Popover, PopoverContent, PopoverTrigger } from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 
 import { useCountries } from "./countries.hooks"

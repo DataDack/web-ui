@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react"
 
-import { Textarea } from "@DataDack/common-ui"
-import { Skeleton } from "@DataDack/common-ui"
+import { Textarea } from "@datadack/common-ui"
+import { Skeleton } from "@datadack/common-ui"
 import { ArrowLeft, LifeBuoy, Send } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"

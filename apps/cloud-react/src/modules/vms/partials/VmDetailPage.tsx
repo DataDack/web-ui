@@ -1,7 +1,7 @@
 import { useState } from "react"
 
-import { Switch } from "@DataDack/common-ui"
-import { Badge, Skeleton } from "@DataDack/common-ui"
+import { Switch } from "@datadack/common-ui"
+import { Badge, Skeleton } from "@datadack/common-ui"
 import {
   Activity,
   Cpu,

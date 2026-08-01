@@ -80,15 +80,15 @@
       "name": "cloud-react",
       "version": "0.0.0",
       "dependencies": {
-        "@DataDack/common-ui": "workspace:*",
+        "@datadack/common-ui": "workspace:*",
       },
     },
     "apps/serverless-web": {
       "name": "serverless-web",
       "version": "0.0.0",
       "dependencies": {
-        "@DataDack/common-ui": "workspace:*",
-        "@DataDack/serverless-ui": "workspace:*",
+        "@datadack/common-ui": "workspace:*",
+        "@datadack/serverless-ui": "workspace:*",
       },
     },
     "config/eslint-config": {
@@ -118,7 +118,7 @@
       "version": "0.0.0",
     },
     "packages/common-ui": {
-      "name": "@DataDack/common-ui",
+      "name": "@datadack/common-ui",
       "version": "0.0.0",
       "dependencies": {
         "@emotion/css": "^11.13.5",
@@ -138,7 +138,7 @@
       },
     },
     "packages/serverless-ui": {
-      "name": "@DataDack/serverless-ui",
+      "name": "@datadack/serverless-ui",
       "version": "1.0.0",
       "dependencies": {
         "@emotion/css": "^11.13.5",
@@ -147,7 +147,7 @@
         "tailwind-merge": "^3.6.0",
       },
       "devDependencies": {
-        "@DataDack/common-ui": "workspace:*",
+        "@datadack/common-ui": "workspace:*",
         "tsup": "^8.5.0",
       },
       "peerDependencies": {
@@ -264,9 +264,9 @@
 
     "@changesets/write": ["@changesets/write@0.4.0", "", { "dependencies": { "@changesets/types": "^6.1.0", "fs-extra": "^7.0.1", "human-id": "^4.1.1", "prettier": "^2.7.1" } }, "sha512-CdTLvIOPiCNuH71pyDu3rA+Q0n65cmAbXnwWH84rKGiFumFzkmHNT8KHTMEchcxN+Kl8I54xGUhJ7l3E7X396Q=="],
 
-    "@DataDack/common-ui": ["@DataDack/common-ui@workspace:packages/common-ui"],
+    "@datadack/common-ui": ["@datadack/common-ui@workspace:packages/common-ui"],
 
-    "@DataDack/serverless-ui": ["@DataDack/serverless-ui@workspace:packages/serverless-ui"],
+    "@datadack/serverless-ui": ["@datadack/serverless-ui@workspace:packages/serverless-ui"],
 
     "@date-fns/tz": ["@date-fns/tz@1.5.0", "", {}, "sha512-lwYN/vDPeNRULcepoE/LO2Pgx+7/RV+S9ARfbc9lr2DtGkOD7pAiruHvbR1RX3Qyf6ja47EWJDMsNK5vK08DJg=="],
 
