@@ -23,7 +23,7 @@
     "eslint-plugin-react-compiler": "^19.0.0-beta-decd7b8-20250118",
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-react-refresh": "^0.4.16",
-    "eslint-plugin-sonarjs": "^3.0.1",
+    "eslint-plugin-sonarjs": "^4.2.0",
     "eslint-plugin-unused-imports": "^4.1.4",
     "globals": "^15.14.0",
     "typescript-eslint": "^8.18.1"
