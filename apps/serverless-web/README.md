@@ -1,4 +1,4 @@
-# serverless-admin
+# serverless-web
 
 Vite + React admin console for the serverless-faas control plane.
 
@@ -12,7 +12,7 @@ Function authoring is not implemented here: it comes from
 
 ```bash
 # from serverless-ui/
-bunx nx dev serverless-admin
+bunx nx dev serverless-web
 ```
 
 Serves on `http://localhost:3000/admin/` and proxies `/v1`, `/function`,
@@ -26,7 +26,7 @@ another port and leaving you wondering why the proxy stopped working.
 ## Build
 
 ```bash
-bunx nx build serverless-admin   # builds the workspace package, type-checks, then emits dist/
+bunx nx build serverless-web   # builds the workspace package, type-checks, then emits dist/
 ```
 
 `dist/` is **not** committed — it is a build artifact. `assets.go` embeds it at

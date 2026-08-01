@@ -1,5 +1,5 @@
 {
-  "name": "serverless-admin",
+  "name": "serverless-web",
   "version": "0.0.0",
   "private": true,
   "description": "Admin console for the serverless-faas control plane.",

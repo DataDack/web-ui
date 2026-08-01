@@ -32,7 +32,7 @@ const TABS = [
 /**
  * A function's home, Lambda-style: identity and state in the header,
  * everything else behind URL-persisted tabs. Same layout as the
- * serverless-admin console's detail page, rendered from the shared kit.
+ * serverless-web console's detail page, rendered from the shared kit.
  */
 export function ServerlessFunctionDetailPage() {
     const { name = "" } = useParams()

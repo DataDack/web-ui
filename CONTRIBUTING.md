@@ -42,7 +42,7 @@ so a change here can break a build you are not looking at.
 
 ## Downstream impact
 
-`apps/serverless-admin/dist` is embedded into the `serverless_faas` Go binary
+`apps/serverless-web/dist` is embedded into the `serverless_faas` Go binary
 through `assets.go`. Two consequences:
 
 1. If the admin build stops emitting `dist/index.html`, CI fails here rather

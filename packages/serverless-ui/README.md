@@ -1,7 +1,7 @@
 # @datadack/serverless-ui
 
 Shared console kit for DataDack web surfaces — the single source of truth for
-the pieces the serverless-admin console (this repo) and the cloud-react
+the pieces the serverless-web console (this repo) and the cloud-react
 customer console previously kept as drifting copies.
 
 ## What's inside

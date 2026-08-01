@@ -1,6 +1,6 @@
 // @datadack/serverless-ui — the shared console kit for DataDack web surfaces.
 //
-// One source of truth for the pieces both consoles (the serverless-admin app
+// One source of truth for the pieces both consoles (the serverless-web app
 // in this repo and the cloud-react customer console) kept as drifting copies:
 // the status→tone mapping, the badge that renders it, the list/detail
 // building blocks, and the small shadcn-style primitives they stand on.

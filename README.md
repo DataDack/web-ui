@@ -19,10 +19,10 @@ Clone the parent with `--recurse-submodules`, or run
 `git submodule update --init` afterwards; otherwise `web/` is empty and the Go
 build fails on a missing embed.
 
-> `apps/serverless-admin` **is** the admin console served at `/admin`. Its
+> `apps/serverless-web` **is** the admin console served at `/admin`. Its
 > `dist/` is embedded into the Go binary via `assets.go` but is **not**
 > committed — build it with `make admin-ui-build` from the `serverless_faas`
-> root, or `nx build serverless-admin` here, before building a release binary.
+> root, or `nx build serverless-web` here, before building a release binary.
 > CI asserts the bundle exists, so a broken admin build fails here with a clear
 > message rather than as an opaque `go:embed` error downstream.
 
@@ -35,7 +35,7 @@ web-ui/
 │   └── eslint-config/         # flat configs: base and react
 ├── packages/                  # publishable, reusable across apps
 └── apps/
-    ├── serverless-admin/      # Vite + React app (admin console at /admin)
+    ├── serverless-web/      # Vite + React app (admin console at /admin)
     └── cloud-react/           # Vite + React app (DataDack cloud console)
 ```
 
@@ -84,12 +84,12 @@ single-project form of any root script:
 
 ```bash
 bunx nx build @datadack/function-studio   # one project
-bunx nx dev serverless-admin           # builds the packages first, then serves
+bunx nx dev serverless-web           # builds the packages first, then serves
 bunx nx run-many -t build              # every project, respecting the graph
 bunx nx run-many -t lint -p tag:scope:package
 bunx nx affected -t build              # only what your branch touched
 bunx nx show projects                  # what Nx sees
-bunx nx show project serverless-admin --web
+bunx nx show project serverless-web --web
 bunx nx graph                          # dependency graph in the browser
 bunx nx reset                          # clear the local cache and daemon
 ```
@@ -104,7 +104,7 @@ the cross-cutting rules: `dependsOn: ["^build"]` so nothing ever compiles
 against stale package output, `outputs: ["{projectRoot}/dist"]` so cached runs
 restore artifacts, and named inputs that keep Markdown out of a task's hash.
 
-`apps/serverless-admin/dist` is excluded from the `default` input set, so the
+`apps/serverless-web/dist` is excluded from the `default` input set, so the
 app's own output cannot feed its own hash and defeat the cache.
 
 Projects carry tags (`scope:app`, `scope:package`, `scope:config`, and
@@ -146,7 +146,7 @@ bun run release            # build packages, then publish
 ```
 
 `release` builds `-p tag:publishable` before handing off to `changeset publish`.
-`serverless-admin` and `cloud-react` are listed in `.changeset/config.json`
+`serverless-web` and `cloud-react` are listed in `.changeset/config.json`
 under `ignore`, so the apps are never versioned or published; they also lack the
 `publishable` tag, so the release build skips them.
 
@@ -195,7 +195,7 @@ Run `bun run lint` before pushing; the pre-commit hook only covers staged files.
 ## Styling
 
 Tailwind CSS v4, via `@tailwindcss/vite`. Design tokens are CSS custom properties
-declared in `apps/serverless-admin/src/index.css` — a light block and a `.dark`
+declared in `apps/serverless-web/src/index.css` — a light block and a `.dark`
 block — and exposed to Tailwind through `@theme`. Components compose classes with
 `clsx` and `tailwind-merge` (the `cn` helper) and vary with
 `class-variance-authority`.

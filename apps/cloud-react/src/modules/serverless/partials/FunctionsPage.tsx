@@ -20,7 +20,7 @@ import type { FunctionEntity } from "../serverless.types"
 
 /**
  * Serverless landing: the account's functions. Built from the shared
- * @datadack/serverless-ui kit — the same components the serverless-admin
+ * @datadack/serverless-ui kit — the same components the serverless-web
  * console renders this list with, so the two surfaces stay visually and
  * behaviorally identical.
  */
