@@ -1,0 +1,98 @@
+name: CI
+
+# Quality gates for the bun/Nx workspace. Every job installs from the committed
+# lockfile, so a dependency that only resolves on someone's machine fails here.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - "**/*.md"
+      - ".github/ISSUE_TEMPLATE/**"
+      - ".github/PULL_REQUEST_TEMPLATE.md"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Nx runs one-shot in CI: no background daemon, no interactive TUI.
+  NX_DAEMON: "false"
+  NX_TUI: "false"
+
+jobs:
+  # Lint, types and formatting are independent of each other, so they run as one
+  # matrix rather than three near-identical jobs. A failure names the check.
+  checks:
+    name: ${{ matrix.check.name }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        check:
+          - { name: ESLint, run: "bun run lint" }
+          - { name: TypeScript, run: "bun run typecheck" }
+          - { name: Formatting, run: "bun run format:check" }
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.3.14"
+
+      - name: Cache bun dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
+          restore-keys: ${{ runner.os }}-bun-
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: ${{ matrix.check.name }}
+        run: ${{ matrix.check.run }}
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.3.14"
+
+      - name: Cache bun dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
+          restore-keys: ${{ runner.os }}-bun-
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      # Builds every project in the workspace, so a break in the publishable
+      # package is caught here and not at publish time.
+      - name: Build workspace
+        run: bun run build
+
+      # serverless_faas embeds this bundle into its Go binary via
+      # apps/serverless-admin/assets.go. If the admin build stops producing
+      # dist/, that image build fails with a confusing go:embed error instead —
+      # so assert it here, where the cause is obvious.
+      - name: Verify admin bundle
+        run: |
+          DIST=apps/serverless-admin/dist
+          if [ ! -s "$DIST/index.html" ]; then
+            echo "::error::$DIST/index.html missing or empty — the Go embed in serverless_faas will fail"
+            exit 1
+          fi
+          echo "admin bundle: $(find "$DIST" -type f | wc -l) files"

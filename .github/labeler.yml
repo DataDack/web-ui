@@ -1,0 +1,34 @@
+# Automatically applied by actions/labeler
+
+"app: serverless-admin":
+  - changed-files:
+      - any-glob-to-any-file: "apps/serverless-admin/**"
+
+"pkg: function-studio":
+  - changed-files:
+      - any-glob-to-any-file: "packages/function-studio/**"
+
+"area: components":
+  - changed-files:
+      - any-glob-to-any-file: "src/components/**"
+
+"area: config":
+  - changed-files:
+      - any-glob-to-any-file: "config/**"
+
+"area: ci":
+  - changed-files:
+      - any-glob-to-any-file:
+          - ".github/**"
+          - "nx.json"
+
+"area: deps":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "package.json"
+          - "bun.lock"
+          - "**/package.json"
+
+"area: docs":
+  - changed-files:
+      - any-glob-to-any-file: "**/*.md"

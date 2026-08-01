@@ -16,8 +16,15 @@
   "dependencies": {
     "@eslint/js": "^9.17.0",
     "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import-x": "^4.6.1",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-promise": "^7.2.1",
+    "eslint-plugin-react": "^7.37.4",
+    "eslint-plugin-react-compiler": "^19.0.0-beta-decd7b8-20250118",
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-react-refresh": "^0.4.16",
+    "eslint-plugin-sonarjs": "^3.0.1",
+    "eslint-plugin-unused-imports": "^4.1.4",
     "globals": "^15.14.0",
     "typescript-eslint": "^8.18.1"
   },
