@@ -15,7 +15,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
+} from "@datadack/common-ui"
 import { Input } from "@/components/ui/input"
 import { parseTags } from "@/lib/tags"
 import { useScreen } from "@/services/api/screen"

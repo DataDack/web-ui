@@ -49,6 +49,7 @@ export {
 } from "./charts/TimeChart"
 
 // Primitives (shadcn-style)
+export { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion"
 export {
   Avatar,
   AvatarBadge,
@@ -69,9 +70,22 @@ export {
   CardTitle,
 } from "./ui/card"
 export { Checkbox } from "./ui/checkbox"
+export {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogOverlay,
+  DialogPortal,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog"
 export { Input } from "./ui/input"
 export { Label } from "./ui/label"
 export { Popover, PopoverAnchor, PopoverContent, PopoverTrigger } from "./ui/popover"
+export { ScrollArea, ScrollBar } from "./ui/scroll-area"
 export { Separator } from "./ui/separator"
 export { Skeleton } from "./ui/skeleton"
 export { Switch } from "./ui/switch"
@@ -83,6 +97,7 @@ export { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/t
 // Style primitives — the tokens and helpers components are built from, exported
 // so domain kits can style consistently instead of re-deriving them.
 export {
+  accordionAnimation,
   animatePulse,
   animateSpin,
   contentEnter,

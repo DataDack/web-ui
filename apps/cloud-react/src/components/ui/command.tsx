@@ -9,7 +9,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
+} from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 
 function Command({ className, ...props }: React.ComponentProps<typeof CommandPrimitive>) {

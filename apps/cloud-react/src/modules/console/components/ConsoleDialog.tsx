@@ -6,7 +6,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
+} from "@datadack/common-ui"
 
 import type { ConsoleTarget } from "../console.api"
 import { ConsoleTerminal } from "./ConsoleTerminal"

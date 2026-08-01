@@ -9,7 +9,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
+} from "@datadack/common-ui"
 
 import { BILLING_ROUTES } from "../billing.constants"
 import {

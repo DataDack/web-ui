@@ -11,7 +11,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
+} from "@datadack/common-ui"
 
 import { Field } from "../../components/form-fields"
 import { useRejectQuotaRequest } from "../../superadmin.hooks"

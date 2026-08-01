@@ -5,8 +5,8 @@ import { Loader2, Search, X } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { Dialog, DialogContent, DialogTitle } from "@datadack/common-ui"
+import { ScrollArea } from "@datadack/common-ui"
 
 import { useSearch, useSearchInput, useSearchNavigation } from "../search.hooks"
 import type { SearchResult } from "../search.types"

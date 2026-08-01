@@ -13,7 +13,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
+} from "@datadack/common-ui"
 
 import { GitHubMark } from "../../components/GitHubMark"
 import { GITHUB_INSTALLATIONS_URL } from "../../managed-apps.constants"

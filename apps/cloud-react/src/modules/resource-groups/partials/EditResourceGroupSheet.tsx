@@ -9,7 +9,7 @@ import { z } from "zod/v4"
 import { TagEditor } from "@/components/console"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { ScrollArea } from "@datadack/common-ui"
 import {
   Sheet,
   SheetContent,

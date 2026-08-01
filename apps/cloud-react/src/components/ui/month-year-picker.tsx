@@ -1,6 +1,6 @@
 import { ChevronLeft } from "lucide-react"
 
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { ScrollArea } from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 
 const MONTHS = [

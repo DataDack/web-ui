@@ -144,3 +144,24 @@ export const overlayAnimation = css`
     animation: ${exitFrames} 150ms cubic-bezier(0.4, 0, 1, 1);
   }
 `
+
+const accordionDownFrames = keyframes`
+  from { height: 0; }
+  to { height: var(--radix-accordion-content-height); }
+`
+
+const accordionUpFrames = keyframes`
+  from { height: var(--radix-accordion-content-height); }
+  to { height: 0; }
+`
+
+/** Height collapse/expand keyed on Radix's data-state, for accordion content. */
+export const accordionAnimation = css`
+  &[data-state="open"] {
+    animation: ${accordionDownFrames} 200ms ease-out;
+  }
+
+  &[data-state="closed"] {
+    animation: ${accordionUpFrames} 200ms ease-out;
+  }
+`

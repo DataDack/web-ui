@@ -12,7 +12,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
+} from "@datadack/common-ui"
 import { Input } from "@/components/ui/input"
 import { SUPPORT_ROUTES } from "@/modules/support-tickets/support-tickets.constants"
 import { useCreateSupportTicket } from "@/modules/support-tickets/support-tickets.hooks"
