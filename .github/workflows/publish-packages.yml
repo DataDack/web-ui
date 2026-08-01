@@ -35,7 +35,7 @@ jobs:
 
       # setup-node is here only for the authenticated .npmrc it writes; the
       # build itself runs on bun.
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: '20'
           registry-url: 'https://npm.pkg.github.com'
