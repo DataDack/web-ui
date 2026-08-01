@@ -26,7 +26,7 @@ import { cn } from '@/lib/utils'
 
 interface ResourceTableProps<T> {
   data: T[]
-  columns: ColumnDef<T, unknown>[]
+  columns: ColumnDef<T>[]
   loading?: boolean
   /** Placeholder for the global filter box; omit to hide the toolbar. */
   searchPlaceholder?: string

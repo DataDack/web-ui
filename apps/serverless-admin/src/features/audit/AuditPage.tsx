@@ -37,7 +37,7 @@ export function AuditPage() {
   })
   const events = data ?? []
 
-  const columns = useMemo<ColumnDef<AuditEvent, unknown>[]>(
+  const columns = useMemo<ColumnDef<AuditEvent>[]>(
     () => [
       {
         accessorKey: 'occurredAt',

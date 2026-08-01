@@ -19,7 +19,7 @@ export function FunctionsPage() {
 
   const navigate = useNavigate()
 
-  const columns = useMemo<ColumnDef<FunctionEntity, unknown>[]>(
+  const columns = useMemo<ColumnDef<FunctionEntity>[]>(
     () => [
       {
         accessorKey: 'name',

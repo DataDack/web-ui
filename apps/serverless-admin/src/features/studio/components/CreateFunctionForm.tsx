@@ -3,12 +3,13 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { AlertTriangle, Boxes, Loader2, Rocket } from 'lucide-react'
 
 import { apiErrorMessage } from '@/lib/api'
+import { cn } from '@/lib/utils'
+
+import { RuntimeCatalog } from './RuntimeCatalog'
+import { RuntimeIcon } from './RuntimeIcon'
 import { useCreateFunction } from '../lib/queries'
 import type { Runtime } from '../lib/schemas'
 import { templateFor } from '../lib/templates'
-import { cn } from '@/lib/utils'
-import { RuntimeCatalog } from './RuntimeCatalog'
-import { RuntimeIcon } from './RuntimeIcon'
 
 export interface CreateFunctionFormProps {
   onCreated?: (functionName: string) => void

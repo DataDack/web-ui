@@ -2,10 +2,11 @@ import { useMemo, useState } from 'react'
 
 import { AlertTriangle, Check, PackageOpen, Search } from 'lucide-react'
 
+import { cn } from '@/lib/utils'
+
+import { familyLabel, RuntimeIcon } from './RuntimeIcon'
 import { useRuntimes } from '../lib/queries'
 import type { Runtime } from '../lib/schemas'
-import { cn } from '@/lib/utils'
-import { familyLabel, RuntimeIcon } from './RuntimeIcon'
 
 export interface RuntimeCatalogProps {
   theme?: 'light' | 'dark'

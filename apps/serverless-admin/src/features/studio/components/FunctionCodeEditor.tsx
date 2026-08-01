@@ -3,6 +3,8 @@ import { lazy, Suspense, useMemo } from 'react'
 import { AlertTriangle, FileCode2, Loader2, Rocket, Trash2 } from 'lucide-react'
 
 import { apiErrorMessage } from '@/lib/api'
+import { cn, formatBytes } from '@/lib/utils'
+
 import {
   useCodeSources,
   useCodeTree,
@@ -11,7 +13,6 @@ import {
   useSaveCodeFile,
 } from '../lib/queries'
 import type { CodeTree } from '../lib/schemas'
-import { cn, formatBytes } from '@/lib/utils'
 import { WorkbenchBoundary } from './vscode/WorkbenchBoundary'
 
 // Kept out of the main chunk: the VS Code workbench and its default extensions

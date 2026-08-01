@@ -1,10 +1,10 @@
 import { createRequire } from 'node:module'
 import { fileURLToPath, URL } from 'node:url'
 
+import importMetaUrlPlugin from '@codingame/esbuild-import-meta-url-plugin'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
-import importMetaUrlPlugin from '@codingame/esbuild-import-meta-url-plugin'
 
 /** Control plane origin the dev server proxies API calls to. */
 const CONTROL_PLANE = process.env.CONTROL_PLANE_URL ?? 'http://127.0.0.1:8080'

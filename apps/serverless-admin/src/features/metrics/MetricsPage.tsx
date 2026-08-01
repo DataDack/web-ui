@@ -71,7 +71,7 @@ export function MetricsPage() {
     [buckets],
   )
 
-  const columns = useMemo<ColumnDef<FunctionTotal, unknown>[]>(
+  const columns = useMemo<ColumnDef<FunctionTotal>[]>(
     () => [
       {
         accessorKey: 'functionName',

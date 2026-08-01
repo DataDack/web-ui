@@ -18,7 +18,7 @@ export function WorkersPage() {
   const { data, isLoading } = useDashboard()
   const workers = data?.detail.workers ?? []
 
-  const columns = useMemo<ColumnDef<Worker, unknown>[]>(
+  const columns = useMemo<ColumnDef<Worker>[]>(
     () => [
       {
         accessorKey: 'hostname',

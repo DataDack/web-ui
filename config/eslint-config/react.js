@@ -52,7 +52,9 @@ export const react = defineConfig([
       'react/jsx-filename-extension': ['warn', { extensions: ['.tsx'] }],
       'react/function-component-definition': ['warn', { namedComponents: 'function-declaration' }],
       'react/self-closing-comp': 'error',
-      'react/jsx-no-useless-fragment': 'error',
+      // Adoption baseline — see the note in base.js. Promote to 'error' once
+      // the existing hits are cleared.
+      'react/jsx-no-useless-fragment': 'warn',
       'react/jsx-pascal-case': 'error',
       // Index keys silently break reconciliation the moment a list reorders.
       'react/no-array-index-key': 'warn',

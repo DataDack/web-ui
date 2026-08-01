@@ -15,7 +15,7 @@ export function LayersPage() {
   const { data, isLoading } = useDashboard()
   const layers = data?.detail.layers ?? []
 
-  const columns = useMemo<ColumnDef<LayerVersion, unknown>[]>(
+  const columns = useMemo<ColumnDef<LayerVersion>[]>(
     () => [
       {
         accessorKey: 'name',

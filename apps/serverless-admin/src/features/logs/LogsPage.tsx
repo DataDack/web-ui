@@ -54,7 +54,7 @@ export function LogsPage() {
     setDropped(0)
     setLines([])
 
-    const close = streamLogs(query, {
+    return streamLogs(query, {
       onLine: (line) => {
         setLines((current) => {
           const next = [...current, line]
@@ -64,7 +64,6 @@ export function LogsPage() {
       onDropped: setDropped,
       onError: setStreamError,
     })
-    return close
   }, [live, query])
 
   const snapshotLines = snapshot.data?.lines
