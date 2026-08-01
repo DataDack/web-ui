@@ -34,9 +34,6 @@ vite.config.*.timestamp-*
 coverage/
 .nyc_output/
 
-# npm auth for GitHub Packages — the example is committed, the real one is not
-.npmrc
-
 # Local env
 .env
 .env.*
