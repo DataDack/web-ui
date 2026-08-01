@@ -5,9 +5,9 @@ import { Loader2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { CidrInput } from "@/components/console"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import {
+  Button,
+  Input,
   Sheet,
   SheetContent,
   SheetDescription,

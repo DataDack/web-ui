@@ -4,7 +4,7 @@ import { Skeleton } from "@DataDack/common-ui"
 import { Loader2 } from "lucide-react"
 
 import { ConfirmDialog, Section } from "@/components/console"
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 
 import { EnvVarEditor, storedEnvRows, toEnvMap, type EnvRow } from "../../../components"
 import { useProjectEnv, useUpdateProjectEnv } from "../../../managed-apps.hooks"

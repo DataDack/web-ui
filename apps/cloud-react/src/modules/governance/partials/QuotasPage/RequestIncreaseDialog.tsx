@@ -4,17 +4,21 @@ import { Label, Textarea } from "@DataDack/common-ui"
 import { Loader2, Minus, Plus } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { Button } from "@/components/ui/button"
 import {
+  Button,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@datadack/common-ui"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 
 import { QuotaRing } from "../../components/QuotaRing"

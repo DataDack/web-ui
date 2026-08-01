@@ -1,7 +1,7 @@
 import { ExternalLink } from "lucide-react"
 import { Link } from "react-router-dom"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 
 import type { CardAction } from "./card-action"
 

@@ -1,9 +1,7 @@
 import { ChevronLeft, GitBranch } from "lucide-react"
 
 import { FieldRow } from "@/components/console"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-
+import { Button, Input } from "@datadack/common-ui"
 import { DetectionNotice } from "./DetectionNotice"
 import { NetworkingSection } from "./NetworkingSection"
 import type { ComposerValues } from "./schema"

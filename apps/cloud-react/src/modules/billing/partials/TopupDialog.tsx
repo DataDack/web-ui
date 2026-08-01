@@ -3,17 +3,16 @@ import { useState } from "react"
 import { Label } from "@DataDack/common-ui"
 import { useTranslation } from "react-i18next"
 
-import { Button } from "@/components/ui/button"
 import {
+  Button,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  Input,
 } from "@datadack/common-ui"
-import { Input } from "@/components/ui/input"
-
 import { useBuyCredits } from "../billing.hooks"
 import { inr } from "../billing.utils"
 

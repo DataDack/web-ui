@@ -3,8 +3,8 @@ import { useMemo, useState } from "react"
 import { Textarea } from "@DataDack/common-ui"
 import { AlertTriangle } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
 import {
+  Button,
   Sheet,
   SheetContent,
   SheetDescription,
@@ -12,7 +12,6 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@datadack/common-ui"
-
 import { parseDotEnv } from "./env-parse"
 
 interface EnvImportSheetProps {

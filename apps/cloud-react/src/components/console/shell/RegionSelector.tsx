@@ -4,8 +4,8 @@ import { Check, ChevronDown, Globe, Loader2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { staggerDelay } from "@/components/console"
-import { Button } from "@/components/ui/button"
 import {
+  Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,

@@ -5,17 +5,21 @@ import { Loader2, Save, Send, TriangleAlert } from "lucide-react"
 import { useForm, useWatch, type UseFormReturn } from "react-hook-form"
 import { toast } from "sonner"
 
-import { Button } from "@/components/ui/button"
 import {
+  Button,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@datadack/common-ui"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 
 import { useCreateChannel, useTestChannel } from "../monitoring.hooks"

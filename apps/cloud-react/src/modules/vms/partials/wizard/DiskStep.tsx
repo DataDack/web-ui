@@ -2,8 +2,14 @@ import { Label, Switch } from "@DataDack/common-ui"
 import type { UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@datadack/common-ui"
+import {
+  Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@datadack/common-ui"
 import type { StoragePriceOption } from "@/modules/catalog/catalog.types"
 
 import { formatPrice } from "./wizard.format"

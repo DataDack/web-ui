@@ -4,16 +4,16 @@ import { Label, Textarea } from "@DataDack/common-ui"
 import { Loader2, MessageSquare } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 
-import { Button } from "@/components/ui/button"
 import {
+  Button,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  Input,
 } from "@datadack/common-ui"
-import { Input } from "@/components/ui/input"
 import { SUPPORT_ROUTES } from "@/modules/support-tickets/support-tickets.constants"
 import { useCreateSupportTicket } from "@/modules/support-tickets/support-tickets.hooks"
 

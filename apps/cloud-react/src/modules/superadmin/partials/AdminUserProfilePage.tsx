@@ -11,7 +11,7 @@ import {
   Section,
   type KeyValueItem,
 } from "@/components/console"
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 import { useScreen } from "@/services/api/screen"
 
 import { ActiveBadge } from "../components/ActiveBadge"

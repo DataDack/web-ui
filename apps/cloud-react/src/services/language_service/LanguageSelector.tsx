@@ -1,8 +1,8 @@
 import { Globe } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { Button } from "@/components/ui/button"
 import {
+  Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -10,7 +10,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@datadack/common-ui"
-
 const LANGUAGES = [
   { code: "en", label: "English", native: "English", script: "EN" },
   { code: "hi", label: "Hindi", native: "हिंदी", script: "HI" },

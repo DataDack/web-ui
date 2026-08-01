@@ -2,7 +2,7 @@ import type * as React from "react"
 
 import { css, cx } from "@emotion/css"
 
-import { mix } from "../lib/styles"
+import { media, mix } from "../lib/styles"
 
 const input = css`
   display: flex;
@@ -13,8 +13,10 @@ const input = css`
   border: 1px solid var(--input);
   background: transparent;
   padding: 4px 12px;
-  font-size: 14px;
-  line-height: 20px;
+  /* text-base until md, where it drops to text-sm — the original was sized for
+     touch first, and losing that made mobile inputs a step smaller. */
+  font-size: 16px;
+  line-height: 24px;
   box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   transition-property: color, box-shadow;
   transition-duration: 150ms;
@@ -22,6 +24,13 @@ const input = css`
   outline: none;
 
   &::file-selector-button {
+    display: inline-flex;
+    height: 28px;
+    border: 0;
+    background: transparent;
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 500;
     color: var(--foreground);
   }
 
@@ -35,6 +44,7 @@ const input = css`
   }
 
   &:disabled {
+    pointer-events: none;
     cursor: not-allowed;
     opacity: 0.5;
   }
@@ -42,6 +52,24 @@ const input = css`
   &:focus-visible {
     border-color: var(--ring);
     box-shadow: 0 0 0 3px ${mix("--ring", 50)};
+  }
+
+  &[aria-invalid="true"] {
+    border-color: var(--destructive);
+    box-shadow: 0 0 0 3px ${mix("--destructive", 20)};
+  }
+
+  ${media.md} {
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .dark & {
+    background: ${mix("--input", 30)};
+  }
+
+  .dark &[aria-invalid="true"] {
+    box-shadow: 0 0 0 3px ${mix("--destructive", 40)};
   }
 `
 

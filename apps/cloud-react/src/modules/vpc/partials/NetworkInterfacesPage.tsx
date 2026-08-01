@@ -23,18 +23,22 @@ import {
   statusColumn,
   textColumn,
 } from "@/components/console"
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@DataDack/common-ui"
 import {
+  Button,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@datadack/common-ui"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@datadack/common-ui"
+import { Checkbox } from "@DataDack/common-ui"
 import { useAvailabilityZoneMap } from "@/modules/catalog/catalog.hooks"
 import { useNamingRule } from "@/modules/governance/governance.hooks"
 import type { NamingRule } from "@/modules/governance/governance.types"

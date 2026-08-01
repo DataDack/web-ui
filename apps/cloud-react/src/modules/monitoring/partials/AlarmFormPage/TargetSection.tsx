@@ -11,7 +11,7 @@ import { Check, Search } from "lucide-react"
 
 import { getStatusConfig, StatusBadge } from "@/components/console"
 import { Checkbox } from "@DataDack/common-ui"
-import { Input } from "@/components/ui/input"
+import { Input } from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 
 import { useAlarmTargets, useTargetCounts } from "./useAlarmTargets"

@@ -23,8 +23,7 @@ import { z } from "zod/v4"
 
 import { CopyButton, PageHeader, Section } from "@/components/console"
 import { TONE_CLASSES, TONE_DOT_CLASSES, type StatusTone } from "@/components/console/status-config"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { Button, Input } from "@datadack/common-ui"
 import {
   Table,
   TableBody,

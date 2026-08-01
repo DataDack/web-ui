@@ -22,7 +22,7 @@ import {
   TONE_DOT_CLASSES,
   type StatusTone,
 } from "@/components/console/status-config"
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 import { parseTags } from "@/lib/tags"
 import { useAvailabilityZoneMap } from "@/modules/catalog/catalog.hooks"
 import { useScreen } from "@/services/api/screen"

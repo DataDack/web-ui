@@ -5,9 +5,15 @@ import { Loader2, Lock, Plus, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { ConfirmDialog, EmptyState, staggerDelay } from "@/components/console"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@datadack/common-ui"
+import {
+  Button,
+  Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@datadack/common-ui"
 import {
   Table,
   TableBody,

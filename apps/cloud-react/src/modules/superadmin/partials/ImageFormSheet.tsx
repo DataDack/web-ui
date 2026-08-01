@@ -6,9 +6,7 @@ import { Controller, useForm, useWatch } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { z } from "zod/v4"
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-
+import { Button, Input } from "@datadack/common-ui"
 import { Field, FormSheet } from "../components/form-fields"
 import { useSaveImage, useUploadImageIcon } from "../superadmin.hooks"
 import type { CreateImageRequest, Image, UpdateImageRequest } from "../superadmin.types"

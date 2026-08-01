@@ -1,9 +1,14 @@
 import { LayoutGrid, List, Search } from "lucide-react"
 
 import { SegmentedControl, type SegmentedOption } from "@/components/console"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@datadack/common-ui"
-
+import {
+  Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@datadack/common-ui"
 import {
   PROJECT_SORTS,
   type ProjectSort,

@@ -1,7 +1,7 @@
 import { FolderTree } from "lucide-react"
 
 import { FieldRow } from "@/components/console"
-import { Input } from "@/components/ui/input"
+import { Input } from "@datadack/common-ui"
 
 interface RootDirectoryInputProps {
   value: string

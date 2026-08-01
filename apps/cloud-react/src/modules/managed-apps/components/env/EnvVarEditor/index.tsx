@@ -3,7 +3,7 @@ import { useMemo, useState } from "react"
 import { Label } from "@DataDack/common-ui"
 import { FileUp, Plus } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 
 import { duplicateKeys, newEnvRow, type EnvRow } from "./env-types"
 import { EnvImportSheet } from "./EnvImportSheet"

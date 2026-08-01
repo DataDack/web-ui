@@ -4,7 +4,7 @@ import { ArrowLeft, type LucideIcon } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 import { Link, useSearchParams } from "react-router-dom"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 
 import { CopyButton } from "./CopyButton"
 import { AnimatedTabs } from "./motion/AnimatedTabs"

@@ -15,7 +15,7 @@ import {
   ResourceTable,
   textColumn,
 } from "@/components/console"
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 import { useAvailabilityZoneMap } from "@/modules/catalog/catalog.hooks"
 
 import { AddSubnetSheet } from "./AddSubnetSheet"

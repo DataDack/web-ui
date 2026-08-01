@@ -30,8 +30,7 @@ import {
   StatGrid,
   statusColumn,
 } from "@/components/console"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { Button, Input } from "@datadack/common-ui"
 import { OSIcon } from "@/modules/catalog/os-icons"
 import { useScreen } from "@/services/api/screen"
 

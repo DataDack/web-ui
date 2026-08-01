@@ -4,10 +4,15 @@ import { Label } from "@DataDack/common-ui"
 import { useTranslation } from "react-i18next"
 
 import { Section } from "@/components/console"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@datadack/common-ui"
-
+import {
+  Button,
+  Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@datadack/common-ui"
 import { TICKET_PRIORITIES, TICKET_STATUSES } from "../support-tickets.constants"
 import type { SupportTicket, UpdateTicketPayload } from "../support-tickets.types"
 

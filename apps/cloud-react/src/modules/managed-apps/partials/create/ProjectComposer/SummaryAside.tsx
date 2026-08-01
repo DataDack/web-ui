@@ -1,6 +1,6 @@
 import { AlertCircle, GitPullRequest, Loader2, Rocket } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 
 import type { ComposerValues } from "./schema"

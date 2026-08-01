@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next"
 import { useLocation, useNavigate } from "react-router-dom"
 
 import { OnboardingStepSkeleton } from "@/components/console/feedback/Skeletons"
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 import { useAuth } from "@/modules/auth/auth.context"
 import { useScreen } from "@/services/api/screen"
 

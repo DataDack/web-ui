@@ -1,6 +1,6 @@
 import type { UseFormReturn } from "react-hook-form"
 
-import { Input } from "@/components/ui/input"
+import { Input } from "@datadack/common-ui"
 
 import type { ChannelFormValues } from "../../channels.form"
 import { FieldError, FieldLabel } from "../../components/FormFields"

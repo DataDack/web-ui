@@ -6,10 +6,20 @@ import type { UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@datadack/common-ui"
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@datadack/common-ui"
+import {
+  Button,
+  Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@datadack/common-ui"
 import { canGenerateKeyPair, generateEd25519KeyPair } from "@/lib/ssh-keygen"
 import { cn } from "@/lib/utils"
 import { useNamingRule } from "@/modules/governance/governance.hooks"

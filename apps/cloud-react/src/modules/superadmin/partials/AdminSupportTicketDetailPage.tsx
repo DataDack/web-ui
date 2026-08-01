@@ -14,7 +14,7 @@ import {
   Section,
   StatusBadge,
 } from "@/components/console"
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 import { Checkbox } from "@DataDack/common-ui"
 import { PriorityBadge } from "@/modules/support-tickets/components/PriorityBadge"
 import {

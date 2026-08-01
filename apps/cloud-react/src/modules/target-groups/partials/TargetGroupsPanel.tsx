@@ -16,7 +16,7 @@ import {
   StatGrid,
   textColumn,
 } from "@/components/console"
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 
 import { TG_ROUTES } from "../target-groups.constants"
 import { useDeleteTargetGroup, useTargetGroups } from "../target-groups.hooks"

@@ -4,7 +4,7 @@ import { Badge } from "@DataDack/common-ui"
 import { Archive, ExternalLink, GitFork, Lock } from "lucide-react"
 
 import { SmartSelect, type SmartSelectOption } from "@/components/console"
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 
 import { GitHubAvatar } from "./GitHubAvatar"
 import { LanguageDot } from "./LanguageDot"

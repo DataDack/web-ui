@@ -6,8 +6,7 @@ import { Building2, Check, Loader2, User } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { Button, Input } from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 import { extractError } from "@/services/api/client"
 

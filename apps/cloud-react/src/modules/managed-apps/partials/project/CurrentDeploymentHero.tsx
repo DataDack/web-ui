@@ -2,7 +2,7 @@ import { ExternalLink, GitBranch, Loader2, PackageCheck, Rocket } from "lucide-r
 import { Link } from "react-router-dom"
 
 import { CopyButton } from "@/components/console"
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 
 import { hostLabel, isTimeSet, shortSha, timeSince } from "./build-format"
 import { BuildProgressBar, ProjectStateChip } from "../../components"

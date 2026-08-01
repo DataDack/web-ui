@@ -5,8 +5,7 @@ import { Globe, RefreshCw, Search } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { copyColumn, dateColumn, EmptyState, ResourceTable, textColumn } from "@/components/console"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { Button, Input } from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 
 import { useAdminStaticIPAllocations } from "../superadmin.hooks"

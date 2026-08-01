@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next"
 import { useSearchParams } from "react-router-dom"
 
 import { AnimatedTabs, PageHeader, StatGrid } from "@/components/console"
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 import { useScreen } from "@/services/api/screen"
 
 import { MODULE_ORDER } from "./modules-meta"

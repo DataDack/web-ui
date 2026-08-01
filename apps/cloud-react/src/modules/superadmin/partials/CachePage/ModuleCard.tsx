@@ -1,7 +1,7 @@
 import { Badge } from "@DataDack/common-ui"
 import { useTranslation } from "react-i18next"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 import { Checkbox } from "@DataDack/common-ui"
 import { cn } from "@/lib/utils"
 

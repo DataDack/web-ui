@@ -4,7 +4,7 @@ import { Skeleton } from "@DataDack/common-ui"
 import { AlertTriangle, Search } from "lucide-react"
 
 import { EmptyState, staggerDelay } from "@/components/console"
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 import { useQueryParamState } from "@/hooks/use-query-param-state"
 import { useViewPreference } from "@/hooks/use-view-preference"
 

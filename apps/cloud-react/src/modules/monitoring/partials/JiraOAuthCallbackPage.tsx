@@ -4,7 +4,7 @@ import { CheckCircle2, Loader2, XCircle } from "lucide-react"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { toast } from "sonner"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 import { extractError } from "@/services/api/client"
 
 import { MONITORING_ROUTES } from "../monitoring.constants"

@@ -4,16 +4,20 @@ import { Label } from "@DataDack/common-ui"
 import { Loader2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { Button } from "@/components/ui/button"
 import {
+  Button,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@datadack/common-ui"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@datadack/common-ui"
 import { useInstances } from "@/modules/vms/vms.hooks"
 
 import { useAttachDisk } from "../disks.hooks"

@@ -4,7 +4,7 @@ import { Network, Pencil, Plus } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { PageHeader } from "@/components/console"
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useQueryParamState } from "@/hooks/use-query-param-state"
 import { cn } from "@/lib/utils"

@@ -13,7 +13,7 @@ import {
   statusColumn,
   textColumn,
 } from "@/components/console"
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 
 import { useInvoices } from "../billing.hooks"
 import { billingService } from "../billing.service"

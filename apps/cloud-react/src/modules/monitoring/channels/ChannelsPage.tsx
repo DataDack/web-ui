@@ -13,7 +13,7 @@ import {
   PageHeader,
   ResourceTable,
 } from "@/components/console"
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 import { useScreen } from "@/services/api/screen"
 

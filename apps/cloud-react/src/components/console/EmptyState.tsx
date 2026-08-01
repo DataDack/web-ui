@@ -1,6 +1,6 @@
 import type { LucideIcon } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 
 import { FadeIn } from "./motion/FadeIn"

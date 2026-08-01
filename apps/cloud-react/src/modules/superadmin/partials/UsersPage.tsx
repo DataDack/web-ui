@@ -15,8 +15,7 @@ import {
   textColumn,
   type RowAction,
 } from "@/components/console"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { Button, Input } from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/modules/auth/auth.context"
 import { useScreen } from "@/services/api/screen"

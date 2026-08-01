@@ -5,10 +5,16 @@ import { CheckCircle2, Loader2, Plus, Unlink } from "lucide-react"
 import { useWatch, type UseFormReturn } from "react-hook-form"
 import { SiJira } from "react-icons/si"
 
-import { Button } from "@/components/ui/button"
+import {
+  Button,
+  Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@datadack/common-ui"
 import { ComboboxInput } from "@/components/ui/combobox-input"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 import {
   useDisconnectJira,

@@ -15,7 +15,7 @@ import {
   textColumn,
   type RowAction,
 } from "@/components/console"
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useQueryParamState } from "@/hooks/use-query-param-state"
 import { useScreen } from "@/services/api/screen"

@@ -37,8 +37,8 @@ import {
   TagList,
   type KeyValueItem,
 } from "@/components/console"
-import { Button } from "@/components/ui/button"
 import {
+  Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,

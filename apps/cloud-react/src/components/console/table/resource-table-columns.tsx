@@ -1,8 +1,8 @@
 import type { ColumnDef } from "@tanstack/react-table"
 import { type LucideIcon, MoreHorizontal } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
 import {
+  Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,

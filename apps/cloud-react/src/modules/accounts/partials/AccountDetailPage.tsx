@@ -10,8 +10,7 @@ import { useNavigate, useParams } from "react-router-dom"
 import { z } from "zod/v4"
 
 import { ConfirmDialog, KeyValueGrid, PageHeader, Section, StatusBadge } from "@/components/console"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { Button, Input } from "@datadack/common-ui"
 import { useAuth } from "@/modules/auth/auth.context"
 import { useScreen } from "@/services/api/screen"
 

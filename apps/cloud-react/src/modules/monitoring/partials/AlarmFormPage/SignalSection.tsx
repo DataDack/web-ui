@@ -6,7 +6,7 @@
 
 import { Label } from "@DataDack/common-ui"
 
-import { Input } from "@/components/ui/input"
+import { Input } from "@datadack/common-ui"
 
 import { MetricCard } from "./MetricCard"
 import { metricsFor, type AlarmTargetType } from "../../monitoring.targets"

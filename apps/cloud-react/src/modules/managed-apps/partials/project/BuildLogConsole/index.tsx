@@ -1,9 +1,14 @@
 import { Loader2, X } from "lucide-react"
 
 import { CopyButton } from "@/components/console"
-import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@datadack/common-ui"
-
+import {
+  Button,
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@datadack/common-ui"
 import { LogBody } from "./LogBody"
 import { LogToolbar } from "./LogToolbar"
 import { useLogView } from "./useLogView"

@@ -24,7 +24,7 @@ import {
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 import { Checkbox } from "@DataDack/common-ui"
 import { Popover, PopoverContent, PopoverTrigger } from "@DataDack/common-ui"
 import {

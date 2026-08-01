@@ -1,6 +1,6 @@
 import { ArrowDownToLine, Copy, Download, WrapText } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 
 interface LogToolbarProps {

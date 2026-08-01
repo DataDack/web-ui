@@ -12,7 +12,7 @@ import {
 import { Link, useNavigate, useParams } from "react-router-dom"
 
 import { EmptyState } from "@/components/console"
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 import { useScreen } from "@/services/api/screen"
 
 import { SetupFlowGraphic } from "./SetupFlowGraphic"

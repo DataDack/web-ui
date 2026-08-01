@@ -12,7 +12,7 @@ import {
   StatGrid,
   textColumn,
 } from "@/components/console"
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 
 import { ActiveBadge } from "../components/ActiveBadge"
 import { useAdminAvailabilityZones, useAdminIPPools, useDeleteIPPool } from "../superadmin.hooks"

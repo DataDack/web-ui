@@ -17,11 +17,20 @@ import { motion } from "motion/react"
 import type { UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@datadack/common-ui"
-import { Button } from "@/components/ui/button"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+  Button,
+  Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@datadack/common-ui"
 import { Checkbox } from "@DataDack/common-ui"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 import type { RegionCatalog, StaticIPPriceOption } from "@/modules/catalog/catalog.types"
 import { VPC_ROUTES } from "@/modules/vpc/vpc.constants"

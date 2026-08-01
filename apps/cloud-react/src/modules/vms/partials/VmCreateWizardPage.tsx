@@ -18,7 +18,7 @@ import { useTranslation } from "react-i18next"
 import { Link, useNavigate } from "react-router-dom"
 
 import { ConfirmDialog, PageHeader } from "@/components/console"
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 import { tagRowsToRecord, type TagRow } from "@/lib/tags"
 import { evaluateCreditGuard, type CreditGuardVerdict } from "@/modules/billing/billing.guard"
 import { useCreditBalance, useSubscriptions } from "@/modules/billing/billing.hooks"

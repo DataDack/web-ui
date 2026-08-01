@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next"
 import { useSearchParams } from "react-router-dom"
 
 import { PageHeader } from "@/components/console"
-import { Input } from "@/components/ui/input"
+import { Input } from "@datadack/common-ui"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useDebounce } from "@/hooks/use-debounce"
 import { cn } from "@/lib/utils"

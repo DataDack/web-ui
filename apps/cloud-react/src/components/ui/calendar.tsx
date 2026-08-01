@@ -3,7 +3,7 @@ import type * as React from "react"
 import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react"
 import { DayPicker, getDefaultClassNames } from "react-day-picker"
 
-import { buttonVariants } from "@/components/ui/button"
+import { buttonVariants } from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 
 function Calendar({

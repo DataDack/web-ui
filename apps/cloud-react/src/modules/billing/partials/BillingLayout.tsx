@@ -7,7 +7,7 @@ import { NavLink, Outlet } from "react-router-dom"
 import { toast } from "sonner"
 
 import { PageHeader } from "@/components/console"
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 import { useScreen } from "@/services/api/screen"
 import { publishConsoleEvent } from "@/services/broadcast"

@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom"
 import { z } from "zod/v4"
 
 import { CreateWizard, PageHeader, TagEditor, type WizardStep } from "@/components/console"
-import { Input } from "@/components/ui/input"
+import { Input } from "@datadack/common-ui"
 import { tagRowsToRecord, type TagRow } from "@/lib/tags"
 import { useNamingRule } from "@/modules/governance/governance.hooks"
 import type { NamingRule } from "@/modules/governance/governance.types"

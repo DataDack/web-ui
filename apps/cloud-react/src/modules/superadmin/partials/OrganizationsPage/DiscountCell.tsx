@@ -3,9 +3,7 @@ import { useEffect, useRef, useState, type SyntheticEvent } from "react"
 import { Check, Pencil, X } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-
+import { Button, Input } from "@datadack/common-ui"
 import type { AccountRow } from "./types"
 import { useSetAccountDiscount } from "../../superadmin.hooks"
 

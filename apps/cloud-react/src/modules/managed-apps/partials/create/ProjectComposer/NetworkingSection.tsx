@@ -2,8 +2,13 @@ import { Badge } from "@DataDack/common-ui"
 import { Network } from "lucide-react"
 
 import { SmartSelect, type SmartSelectOption } from "@/components/console"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@datadack/common-ui"
-import { Button } from "@/components/ui/button"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+  Button,
+} from "@datadack/common-ui"
 import { useVPCs, useVPCSubnets } from "@/modules/vpc/vpc.hooks"
 import type { Subnet, VPCNetwork } from "@/modules/vpc/vpc.types"
 

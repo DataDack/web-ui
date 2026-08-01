@@ -10,7 +10,7 @@
 import { Check, Circle, Loader2, Send } from "lucide-react"
 
 import { Section } from "@/components/console"
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 
 import type { ReadinessRow, SectionId } from "./schema"

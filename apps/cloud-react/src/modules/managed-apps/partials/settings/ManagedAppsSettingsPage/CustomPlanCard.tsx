@@ -1,6 +1,6 @@
 import { MessagesSquare, Sparkles } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 
 /** What a Custom tier answers, in the same four slots the priced tiers use. */
 const CUSTOM_HIGHLIGHTS = [

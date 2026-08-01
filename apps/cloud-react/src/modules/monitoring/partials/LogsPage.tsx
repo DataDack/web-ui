@@ -2,7 +2,7 @@ import { Badge } from "@DataDack/common-ui"
 import { Radio, ScrollText } from "lucide-react"
 
 import { EmptyState, PageHeader } from "@/components/console"
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 import { useScreen } from "@/services/api/screen"
 
 export function LogsPage() {

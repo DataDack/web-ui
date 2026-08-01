@@ -12,7 +12,7 @@ import {
   StatGrid,
   staggerDelay,
 } from "@/components/console"
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 import { useScreen } from "@/services/api/screen"
 
 import { RG_ROUTES } from "../resource-groups.constants"

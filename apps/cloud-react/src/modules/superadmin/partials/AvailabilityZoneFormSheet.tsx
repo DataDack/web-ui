@@ -7,8 +7,8 @@ import { Controller, useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { z } from "zod/v4"
 
-import { Input } from "@/components/ui/input"
 import {
+  Input,
   Select,
   SelectContent,
   SelectItem,

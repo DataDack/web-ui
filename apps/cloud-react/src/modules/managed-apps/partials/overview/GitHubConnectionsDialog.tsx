@@ -5,16 +5,15 @@ import { Badge, Skeleton } from "@DataDack/common-ui"
 import { ExternalLink, Loader2, Plus, Unlink } from "lucide-react"
 
 import { ConfirmDialog } from "@/components/console"
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@DataDack/common-ui"
 import {
+  Button,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@datadack/common-ui"
-
+import { Checkbox } from "@DataDack/common-ui"
 import { GitHubMark } from "../../components/GitHubMark"
 import { GITHUB_INSTALLATIONS_URL } from "../../managed-apps.constants"
 import {

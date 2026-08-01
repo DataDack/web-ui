@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "motion/react"
 import type { FieldValues, Path, UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 
 import type { KeyValueItem } from "../KeyValueGrid"

@@ -6,17 +6,21 @@ import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
 import { ConfirmDialog, EmptyState, Section, staggerDelay } from "@/components/console"
-import { Button } from "@/components/ui/button"
 import {
+  Button,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  Input,
+  Label,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@datadack/common-ui"
-import { Input } from "@/components/ui/input"
-import { Label } from "@datadack/common-ui"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@datadack/common-ui"
 import {
   Table,
   TableBody,

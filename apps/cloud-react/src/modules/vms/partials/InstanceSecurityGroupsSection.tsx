@@ -6,8 +6,14 @@ import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
 import { Section, StatusBadge } from "@/components/console"
-import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@datadack/common-ui"
+import {
+  Button,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@datadack/common-ui"
 import { VPC_ROUTES } from "@/modules/vpc/vpc.constants"
 import {
   useAllSecurityGroups,

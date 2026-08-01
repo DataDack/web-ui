@@ -5,7 +5,7 @@ import { useFieldArray, type UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 
 import { EmptyState } from "@/components/console"
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 import { useTargetGroups } from "@/modules/target-groups/target-groups.hooks"
 import { useInstances } from "@/modules/vms/vms.hooks"
 

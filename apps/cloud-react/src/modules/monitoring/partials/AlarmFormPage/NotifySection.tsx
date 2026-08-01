@@ -17,7 +17,7 @@ import { Label } from "@DataDack/common-ui"
 import { Badge } from "@DataDack/common-ui"
 import { AlertTriangle, Plus } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 import { Checkbox } from "@DataDack/common-ui"
 import { cn } from "@/lib/utils"
 

@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
 import { EmptyState, MetricChart, Section } from "@/components/console"
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 
 import { BILLING_ROUTES, GST_RATE } from "../billing.constants"

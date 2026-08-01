@@ -5,18 +5,21 @@ import { Link2, MailWarning } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { CopyButton } from "@/components/console"
-import { Button } from "@/components/ui/button"
 import {
+  Button,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@datadack/common-ui"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@datadack/common-ui"
-
 import { useCreateInvitation, useIAMGroups, useIAMRoles } from "../iam.hooks"
 import type { InvitationResult } from "../iam.types"
 

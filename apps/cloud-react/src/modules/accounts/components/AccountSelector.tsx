@@ -4,8 +4,8 @@ import { Check, ChevronsUpDown, Plus, Star, Wallet } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { staggerDelay } from "@/components/console"
-import { Button } from "@/components/ui/button"
 import {
+  Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,

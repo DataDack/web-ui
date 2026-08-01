@@ -2,7 +2,7 @@ import { type LucideIcon, X } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 import { useTranslation } from "react-i18next"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 
 import { DUR, EASE } from "../motion/motion-config"
 

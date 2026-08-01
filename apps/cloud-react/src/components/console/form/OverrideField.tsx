@@ -3,7 +3,7 @@ import type { ReactNode } from "react"
 import { Switch } from "@DataDack/common-ui"
 import { Badge } from "@DataDack/common-ui"
 
-import { Input } from "@/components/ui/input"
+import { Input } from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 
 import { FieldRow } from "./FieldRow"

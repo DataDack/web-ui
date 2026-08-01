@@ -2,7 +2,7 @@ import { useState } from "react"
 
 import { ChevronDown, ChevronRight, Loader2, Sparkles, TriangleAlert } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 
 import type { RepoDetection } from "../../../managed-apps.types"
 

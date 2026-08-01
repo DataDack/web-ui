@@ -6,7 +6,7 @@ import type { UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 
 import { Section } from "@/components/console"
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 import { Checkbox } from "@DataDack/common-ui"
 import { useAllSecurityGroups, useCreateDefaultSecurityGroup } from "@/modules/vpc/vpc.hooks"
 

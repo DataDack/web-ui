@@ -5,7 +5,7 @@ import { ExternalLink, GitPullRequest, Loader2 } from "lucide-react"
 import { Link } from "react-router-dom"
 
 import { FieldRow, KeyValueGrid, Section } from "@/components/console"
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 
 import { BranchSelect } from "../../../components"
 import { MANAGED_APPS_ROUTES } from "../../../managed-apps.constants"

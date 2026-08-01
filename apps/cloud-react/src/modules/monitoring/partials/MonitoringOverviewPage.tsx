@@ -16,7 +16,7 @@ import { Activity, ArrowRight, BellRing, CheckCircle2, Plus, Radio, WifiOff } fr
 import { Link } from "react-router-dom"
 
 import { PageHeader, Section, StatGrid, type StatCardProps } from "@/components/console"
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 import { useDisks } from "@/modules/disks/disks.hooks"
 import { useLoadBalancers } from "@/modules/load-balancers/load-balancers.hooks"

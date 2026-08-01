@@ -7,9 +7,15 @@ import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 import { EmptyState, PageHeader, Section } from "@/components/console"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@datadack/common-ui"
+import {
+  Button,
+  Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@datadack/common-ui"
 import { useAuth } from "@/modules/auth/auth.context"
 import { ORG_MANAGER_ROLES } from "@/modules/organizations/organizations.constants"
 import { useActiveOrganization } from "@/modules/organizations/organizations.hooks"

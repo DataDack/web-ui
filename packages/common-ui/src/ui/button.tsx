@@ -171,9 +171,22 @@ const sizes = {
     width: 36px;
     height: 36px;
   `,
+  "icon-xs": css`
+    width: 24px;
+    height: 24px;
+
+    & svg:not([class*="size-"]) {
+      width: 12px;
+      height: 12px;
+    }
+  `,
   "icon-sm": css`
     width: 32px;
     height: 32px;
+  `,
+  "icon-lg": css`
+    width: 40px;
+    height: 40px;
   `,
 } as const
 
@@ -210,6 +223,7 @@ function Button({
     <Comp
       data-slot="button"
       data-variant={variant}
+      data-size={size}
       className={buttonVariants({ variant, size, className })}
       {...props}
     />

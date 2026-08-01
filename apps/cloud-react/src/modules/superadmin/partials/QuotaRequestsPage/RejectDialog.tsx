@@ -4,15 +4,14 @@ import { Textarea } from "@DataDack/common-ui"
 import { Loader2, X } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { Button } from "@/components/ui/button"
 import {
+  Button,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@datadack/common-ui"
-
 import { Field } from "../../components/form-fields"
 import { useRejectQuotaRequest } from "../../superadmin.hooks"
 import type { AdminQuotaRequest } from "../../superadmin.types"

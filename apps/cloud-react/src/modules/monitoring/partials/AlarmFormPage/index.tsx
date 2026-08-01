@@ -23,8 +23,7 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom"
 import { toast } from "sonner"
 
 import { PageHeader, Section } from "@/components/console"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { Button, Input } from "@datadack/common-ui"
 import { useScreen } from "@/services/api/screen"
 
 import { ConditionSection } from "./ConditionSection"

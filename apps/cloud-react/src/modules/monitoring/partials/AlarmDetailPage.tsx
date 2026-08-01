@@ -35,7 +35,7 @@ import {
   PageHeader,
   Section,
 } from "@/components/console"
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 import {
   Table,
   TableBody,

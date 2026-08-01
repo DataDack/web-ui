@@ -13,8 +13,14 @@ import { ChevronDown } from "lucide-react"
 import type { UseFormRegister } from "react-hook-form"
 
 import { MetricChart } from "@/components/console"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@datadack/common-ui"
+import {
+  Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 
 import { simulateAlarm, windowCount } from "./backtest"

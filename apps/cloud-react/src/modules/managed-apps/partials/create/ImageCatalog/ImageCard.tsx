@@ -2,7 +2,7 @@ import { useState } from "react"
 
 import { Bell, Check } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 
 import type { CatalogImage } from "./images.catalog"
 

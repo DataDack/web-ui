@@ -15,7 +15,7 @@ import {
   ResourceTable,
   textColumn,
 } from "@/components/console"
-import { Button } from "@/components/ui/button"
+import { Button } from "@datadack/common-ui"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useScreen } from "@/services/api/screen"
 
