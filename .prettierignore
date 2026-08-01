@@ -1,3 +1,16 @@
 # Build output. apps/serverless-web/dist is committed for go:embed, so it is
 # re-included by .gitignore and has to be excluded here explicitly.
 dist/
+dist-ssr/
+apps/serverless-web/dist/
+
+node_modules/
+
+# Static assets are served byte-for-byte, and minified files are generated.
+public/
+*.min.js
+*.min.css
+
+# Generated: reformatting these only creates noise and merge conflicts.
+bun.lock
+package-lock.json

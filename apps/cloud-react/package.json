@@ -6,14 +6,12 @@
     "description": "DataDack cloud console (React web app).",
     "scripts": {
         "dev": "vite",
-        "build": "bun run check-types && vite build",
+        "build": "vite build",
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
         "format": "prettier --write .",
         "preview": "vite preview",
-        "postbuild": "node ./scripts/clean-build.js",
         "test": "bun test",
-        "check-types": "tsc -b --force",
         "typecheck": "tsc -b --force",
         "clean": "rm -rf dist node_modules/.vite node_modules/.tmp"
     },

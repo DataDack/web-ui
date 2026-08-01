@@ -5,6 +5,7 @@ node_modules/
 
 # Build output
 dist/
+dist-ssr/
 build/
 *.tsbuildinfo
 
@@ -41,14 +42,30 @@ coverage/
 *.local
 
 # Logs
+logs
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 bun-debug.log*
 
 # Editor / OS
 .DS_Store
 Thumbs.db
+.idea
+.vscode/*
+!.vscode/extensions.json
 *.swp
+*.sw?
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
 *~
+
+# design-sync working directories (cloud-react)
+.ds-sync/
+ds-bundle/
+.design-sync/
