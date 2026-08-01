@@ -7,7 +7,7 @@ import { ConfirmDialog, EmptyState, PageHeader, StatGrid } from "@/components/co
 import { Button } from "@/components/ui/button"
 import { useScreen } from "@/services/api/screen"
 
-import { Skeleton } from "@datadack/common-ui"
+import { Skeleton } from "@DataDack/common-ui"
 
 import { EMPTY_SELECTION, summarize, toggle, toggleGroup, type Selection } from "./cache-selection"
 import { ClearBar } from "./ClearBar"

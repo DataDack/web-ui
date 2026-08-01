@@ -1,5 +1,5 @@
 {
-  "name": "@datadack/serverless-ui",
+  "name": "@DataDack/serverless-ui",
   "version": "1.0.0",
   "description": "Shared console kit for DataDack web surfaces: status tones, badges, list/detail building blocks, charts, and the shadcn-style primitives they stand on.",
   "license": "UNLICENSED",
@@ -47,7 +47,7 @@
     "react-icons": ">=5.0.0"
   },
   "devDependencies": {
-    "@datadack/common-ui": "workspace:*",
+    "@DataDack/common-ui": "workspace:*",
     "tsup": "^8.5.0"
   },
   "nx": {

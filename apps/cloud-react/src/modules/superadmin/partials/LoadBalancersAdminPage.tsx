@@ -35,7 +35,7 @@ import {
 import { cn } from "@/lib/utils"
 import { useScreen } from "@/services/api/screen"
 
-import { Badge } from "@datadack/common-ui"
+import { Badge } from "@DataDack/common-ui"
 
 import { Field } from "../components/form-fields"
 import { SUPERADMIN_QUERY_KEYS } from "../superadmin.constants"

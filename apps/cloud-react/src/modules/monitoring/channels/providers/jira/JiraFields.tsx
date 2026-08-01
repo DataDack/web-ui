@@ -24,7 +24,7 @@ import {
   useStartJiraOAuth,
 } from "@/modules/monitoring/monitoring.hooks"
 
-import { Badge, Skeleton } from "@datadack/common-ui"
+import { Badge, Skeleton } from "@DataDack/common-ui"
 
 import type { JiraConnection } from "../../../monitoring.types"
 import { splitJiraLabels, type ChannelFormValues } from "../../channels.form"

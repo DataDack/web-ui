@@ -71,7 +71,7 @@ import { InviteMemberDialog } from "@/modules/iam/partials/InviteMemberDialog"
 import { useOnboardingStatus } from "@/modules/onboarding/onboarding.hooks"
 import { useScreen } from "@/services/api/screen"
 
-import { Skeleton } from "@datadack/common-ui"
+import { Skeleton } from "@DataDack/common-ui"
 
 import { useOrganization, useUpdateOrganization } from "../organizations.hooks"
 import type { BillingAddress, Organization } from "../organizations.types"

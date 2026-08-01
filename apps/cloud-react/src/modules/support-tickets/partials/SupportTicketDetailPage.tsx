@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { useScreen } from "@/services/api/screen"
 
-import { Skeleton } from "@datadack/common-ui"
+import { Skeleton } from "@DataDack/common-ui"
 
 import { PriorityBadge } from "../components/PriorityBadge"
 import { formatTicketDateTime, formatTicketPerson } from "../components/ticket-format"

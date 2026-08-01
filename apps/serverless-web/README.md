@@ -6,7 +6,7 @@ This is the console served at `http://localhost:8080/admin`. Views live under
 `src/features/`, the shell and shared pieces under `src/components/`, and the
 data layer — axios client, zod schemas, react-query hooks — under `src/lib/`.
 Function authoring is not implemented here: it comes from
-[`@datadack/function-studio`](../../packages/function-studio).
+[`@DataDack/function-studio`](../../packages/function-studio).
 
 ## Run
 

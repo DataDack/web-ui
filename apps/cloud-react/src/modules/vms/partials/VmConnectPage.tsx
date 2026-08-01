@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils"
 import { useSSHKeys } from "@/modules/ssh-keys/ssh-keys.hooks"
 import { useScreen } from "@/services/api/screen"
 
-import { Skeleton } from "@datadack/common-ui"
+import { Skeleton } from "@DataDack/common-ui"
 
 import { VMS_ROUTES } from "../vms.constants"
 import { useInstance } from "../vms.hooks"

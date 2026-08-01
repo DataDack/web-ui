@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label"
 import { useAuth } from "@/modules/auth/auth.context"
 import { useScreen } from "@/services/api/screen"
 
-import { Skeleton } from "@datadack/common-ui"
+import { Skeleton } from "@DataDack/common-ui"
 
 import { ACCOUNT_MANAGER_ROLES, ACCOUNT_ROUTES } from "../accounts.constants"
 import {

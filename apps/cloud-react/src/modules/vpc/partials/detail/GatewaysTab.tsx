@@ -14,7 +14,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-import { Skeleton } from "@datadack/common-ui"
+import { Skeleton } from "@DataDack/common-ui"
 
 import {
   useAttachIGW,

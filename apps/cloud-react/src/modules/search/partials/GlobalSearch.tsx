@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
-import { Skeleton } from "@datadack/common-ui"
+import { Skeleton } from "@DataDack/common-ui"
 
 import { useSearch, useSearchInput, useSearchNavigation } from "../search.hooks"
 import type { SearchResult } from "../search.types"

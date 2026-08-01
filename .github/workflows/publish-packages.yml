@@ -11,7 +11,7 @@ name: Publish packages
 on:
   push:
     tags:
-      - 'serverless-ui-v*'
+      - "serverless-ui-v*"
   workflow_dispatch:
     inputs:
       package:
@@ -36,15 +36,15 @@ jobs:
 
       - uses: oven-sh/setup-bun@v2
         with:
-          bun-version: '1.3.14'
+          bun-version: "1.3.14"
 
       # setup-node is here only for the authenticated .npmrc it writes; the
       # build itself runs on bun.
       - uses: actions/setup-node@v7
         with:
-          node-version: '20'
-          registry-url: 'https://npm.pkg.github.com'
-          scope: '@datadack'
+          node-version: "20"
+          registry-url: "https://npm.pkg.github.com"
+          scope: "@datadack"
 
       - name: Resolve package
         id: pkg
@@ -79,9 +79,9 @@ jobs:
 
       - name: Build
         env:
-          NX_DAEMON: 'false'
-          NX_TUI: 'false'
-        run: bunx nx build '@datadack/${{ steps.pkg.outputs.name }}'
+          NX_DAEMON: "false"
+          NX_TUI: "false"
+        run: bunx nx build '@DataDack/${{ steps.pkg.outputs.name }}'
 
       - name: Verify build output
         run: |
@@ -107,7 +107,7 @@ jobs:
         run: |
           npm pack
           gh release create "$GITHUB_REF_NAME" ./*.tgz \
-            --title "@datadack/${{ steps.pkg.outputs.name }} ${{ steps.pkg.outputs.version }}" \
+            --title "@DataDack/${{ steps.pkg.outputs.name }} ${{ steps.pkg.outputs.version }}" \
             --notes "Token-free install: bun add https://github.com/${{ github.repository }}/releases/download/$GITHUB_REF_NAME/datadack-${{ steps.pkg.outputs.name }}-${{ steps.pkg.outputs.version }}.tgz"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

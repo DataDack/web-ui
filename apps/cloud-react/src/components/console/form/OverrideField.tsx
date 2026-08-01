@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import { cn } from "@/lib/utils"
 
-import { Badge } from "@datadack/common-ui"
+import { Badge } from "@DataDack/common-ui"
 
 import { FieldRow } from "./FieldRow"
 

@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { useScreen } from "@/services/api/screen"
 
-import { Badge } from "@datadack/common-ui"
+import { Badge } from "@DataDack/common-ui"
 
 import { ActiveBadge } from "../components/ActiveBadge"
 import { useAdminPlatformOverview } from "../superadmin.hooks"

@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next"
 
 import { cn } from "@/lib/utils"
 
-import { Skeleton } from "@datadack/common-ui"
+import { Skeleton } from "@DataDack/common-ui"
 
 import type { ComputeZoneStatus } from "../../vms.types"
 

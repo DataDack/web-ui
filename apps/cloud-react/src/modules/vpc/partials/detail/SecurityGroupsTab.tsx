@@ -22,7 +22,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-import { Badge, Skeleton } from "@datadack/common-ui"
+import { Badge, Skeleton } from "@DataDack/common-ui"
 
 import { CreateSecurityGroupSheet } from "./CreateSecurityGroupSheet"
 import { sgProtocolUsesPorts } from "../../api/shared"

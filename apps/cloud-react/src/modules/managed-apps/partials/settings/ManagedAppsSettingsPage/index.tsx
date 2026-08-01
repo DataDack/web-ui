@@ -7,7 +7,7 @@ import { ConfirmDialog, PageHeader, Section } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 import { useConsoleBroadcast } from "@/services/broadcast"
 
-import { Skeleton } from "@datadack/common-ui"
+import { Skeleton } from "@DataDack/common-ui"
 
 import { CustomPlanCard } from "./CustomPlanCard"
 import { CustomPlanDialog } from "./CustomPlanDialog"

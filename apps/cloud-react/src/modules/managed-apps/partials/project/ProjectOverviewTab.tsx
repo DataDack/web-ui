@@ -4,7 +4,7 @@ import { Link } from "react-router-dom"
 import { KeyValueGrid, Section } from "@/components/console"
 import { Button } from "@/components/ui/button"
 
-import { Badge } from "@datadack/common-ui"
+import { Badge } from "@DataDack/common-ui"
 
 import { CurrentDeploymentHero } from "./CurrentDeploymentHero"
 import { RuntimePanel } from "./RuntimePanel"

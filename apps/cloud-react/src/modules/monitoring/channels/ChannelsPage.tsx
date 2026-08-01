@@ -16,7 +16,7 @@ import { Switch } from "@/components/ui/switch"
 import { cn } from "@/lib/utils"
 import { useScreen } from "@/services/api/screen"
 
-import { Badge } from "@datadack/common-ui"
+import { Badge } from "@DataDack/common-ui"
 
 import {
   useChannels,

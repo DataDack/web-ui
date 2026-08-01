@@ -9,7 +9,7 @@ import { MobileNumberPrompt } from "@/modules/auth/components/MobileNumberPrompt
 import { GlobalSearch } from "@/modules/search/partials/GlobalSearch"
 import { useConsoleBroadcastSync } from "@/services/broadcast"
 
-import { Skeleton } from "@datadack/common-ui"
+import { Skeleton } from "@DataDack/common-ui"
 
 import { Sidebar } from "./Sidebar"
 import { Topbar } from "./Topbar"

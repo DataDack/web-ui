@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
 
-import { Badge } from "@datadack/common-ui"
+import { Badge } from "@DataDack/common-ui"
 
 import { simulateAlarm, windowCount } from "./backtest"
 import { numeric, type FormValues, type PeriodSeconds } from "./schema"

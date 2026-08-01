@@ -3,7 +3,7 @@ import { Loader2 } from "lucide-react"
 import { TONE_CLASSES, type StatusTone } from "@/components/console/status-config"
 import { cn } from "@/lib/utils"
 
-import { Badge } from "@datadack/common-ui"
+import { Badge } from "@DataDack/common-ui"
 
 import { type BuildStatus, isBuildTransitional } from "../managed-apps.types"
 

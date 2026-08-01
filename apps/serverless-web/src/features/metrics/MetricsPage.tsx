@@ -20,7 +20,7 @@ import {
   cn,
   formatTick,
   type ChartPoint,
-} from "@datadack/common-ui"
+} from "@DataDack/common-ui"
 /** The windows the control plane's relative `since` parameter accepts. */
 const RANGES = [
   { label: "15m", since: "-15m", step: "30s" },

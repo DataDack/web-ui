@@ -1,4 +1,4 @@
-# @datadack/serverless-ui
+# @DataDack/serverless-ui
 
 Shared console kit for DataDack web surfaces — the single source of truth for
 the pieces the serverless-web console (this repo) and the cloud-react
@@ -23,7 +23,7 @@ The package lives on GitHub Packages (auth required even for reads — see
 `.npmrc.example` at the repo root):
 
 ```bash
-bun add @datadack/serverless-ui
+bun add @DataDack/serverless-ui
 ```
 
 ## Consumer requirements

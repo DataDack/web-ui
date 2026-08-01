@@ -13,7 +13,7 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { useResourceGroup } from "@/modules/resource-groups/resource-group.context"
 
-import { Badge } from "@datadack/common-ui"
+import { Badge } from "@DataDack/common-ui"
 
 import { RG_ROUTES } from "../resource-groups.constants"
 import { useDeleteResourceGroup, useSwitchResourceGroup } from "../resource-groups.hooks"

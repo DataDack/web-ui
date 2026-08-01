@@ -1,4 +1,4 @@
-import { Skeleton } from "@datadack/common-ui"
+import { Skeleton } from "@DataDack/common-ui"
 /** Full-screen placeholder shown while the auth session resolves. Prevents the
  *  gate from flashing login → home. */
 export function AuthCardSkeleton() {

@@ -17,7 +17,7 @@
 
 - [ ] apps/serverless-web (admin console served by faas-server)
 - [ ] apps/cloud-react (cloud console served by cloud-be)
-- [ ] packages/serverless-ui (publishable `@datadack/serverless-ui`)
+- [ ] packages/serverless-ui (publishable `@DataDack/serverless-ui`)
 - [ ] config (eslint-config / typescript-config)
 - [ ] CI / tooling / docs
 

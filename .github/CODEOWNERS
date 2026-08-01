@@ -5,7 +5,7 @@
 # here ships inside that service's image.
 /apps/serverless-admin/     @ishansingla
 
-# Published to GitHub Packages as @datadack/function-studio — a change here is
+# Published to GitHub Packages as @DataDack/function-studio — a change here is
 # a change to a public API surface other repos consume.
 /packages/function-studio/  @ishansingla
 

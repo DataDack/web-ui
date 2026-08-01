@@ -21,7 +21,7 @@ import { ORG_MANAGER_ROLES } from "@/modules/organizations/organizations.constan
 import { useActiveOrganization } from "@/modules/organizations/organizations.hooks"
 import { useScreen } from "@/services/api/screen"
 
-import { Badge, Skeleton } from "@datadack/common-ui"
+import { Badge, Skeleton } from "@DataDack/common-ui"
 
 import { useNamingPolicy, useUpdateNamingPolicy } from "../governance.hooks"
 import {

@@ -11,7 +11,7 @@ import {
   cellText,
   formatBytes,
   timeAgo,
-} from "@datadack/common-ui"
+} from "@DataDack/common-ui"
 
 import { useServerlessLayers } from "../serverless.hooks"
 import type { LayerVersion } from "../serverless.types"

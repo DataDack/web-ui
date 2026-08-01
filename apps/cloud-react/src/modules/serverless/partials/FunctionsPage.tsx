@@ -13,14 +13,14 @@ import {
   cellMono,
   cellText,
   timeAgo,
-} from "@datadack/common-ui"
+} from "@DataDack/common-ui"
 
 import { useServerlessFunctions } from "../serverless.hooks"
 import type { FunctionEntity } from "../serverless.types"
 
 /**
  * Serverless landing: the account's functions. Built from the shared
- * @datadack/serverless-ui kit — the same components the serverless-web
+ * @DataDack/serverless-ui kit — the same components the serverless-web
  * console renders this list with, so the two surfaces stay visually and
  * behaviorally identical.
  */

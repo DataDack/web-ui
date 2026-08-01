@@ -3,7 +3,7 @@ import { ExternalLink } from "lucide-react"
 import { SmartSelect, type SmartSelectOption } from "@/components/console"
 import { Button } from "@/components/ui/button"
 
-import { Badge } from "@datadack/common-ui"
+import { Badge } from "@DataDack/common-ui"
 
 import { GitHubAvatar } from "./GitHubAvatar"
 import { GITHUB_INSTALLATIONS_URL } from "../managed-apps.constants"

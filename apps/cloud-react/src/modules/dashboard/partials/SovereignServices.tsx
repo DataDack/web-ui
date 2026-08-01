@@ -7,7 +7,8 @@ import { useCatalogServices } from "@/modules/services/catalog.hooks"
 import type { CatalogMetric, CatalogService, CatalogStatus } from "@/modules/services/catalog.types"
 import { ServiceIcon } from "@/modules/services/ServiceIcon"
 
-import { Skeleton } from "@datadack/common-ui"
+import { Skeleton } from "@DataDack/common-ui"
+
 // Health-dot colour per operational status.
 const STATUS_DOT: Record<CatalogStatus, string> = {
   operational: "bg-[var(--success-pulse)]",

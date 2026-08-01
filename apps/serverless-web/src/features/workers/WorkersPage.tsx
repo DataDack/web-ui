@@ -16,7 +16,7 @@ import {
   cellMono,
   cellText,
   timeAgo,
-} from "@datadack/common-ui"
+} from "@DataDack/common-ui"
 const LIVE_STATES = ["ready", "active"]
 
 export function WorkersPage() {

@@ -23,7 +23,7 @@ import { Input } from "@/components/ui/input"
 import { useAvailabilityZoneMap } from "@/modules/catalog/catalog.hooks"
 import { useScreen } from "@/services/api/screen"
 
-import { Badge } from "@datadack/common-ui"
+import { Badge } from "@DataDack/common-ui"
 
 import { VPC_ROUTES } from "../vpc.constants"
 import { useAllSubnets, useDeleteSubnet, useVPCs } from "../vpc.hooks"

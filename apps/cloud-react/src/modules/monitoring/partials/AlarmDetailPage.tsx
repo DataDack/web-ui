@@ -49,7 +49,7 @@ import { useLoadBalancers } from "@/modules/load-balancers/load-balancers.hooks"
 import { useInstances } from "@/modules/vms/vms.hooks"
 import { useScreen } from "@/services/api/screen"
 
-import { Badge, Skeleton } from "@datadack/common-ui"
+import { Badge, Skeleton } from "@DataDack/common-ui"
 
 import { TYPE_META } from "../channels/channels.meta"
 import { AlarmStateChip, SeverityChip } from "../components/StateChips"

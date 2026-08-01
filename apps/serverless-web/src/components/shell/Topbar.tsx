@@ -4,7 +4,7 @@ import { Link } from "react-router-dom"
 import { ConnectionSettings } from "@/components/shell/ConnectionSettings"
 import { ScopeSwitcher } from "@/components/shell/ScopeSwitcher"
 
-import { Button, Logo, ThemeToggle, cn } from "@datadack/common-ui"
+import { Button, Logo, ThemeToggle, cn } from "@DataDack/common-ui"
 interface TopbarProps {
   onRefresh: () => void
   refreshing?: boolean

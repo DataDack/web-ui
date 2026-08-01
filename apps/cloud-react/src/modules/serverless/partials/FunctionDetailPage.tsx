@@ -18,7 +18,7 @@ import {
   cellMono,
   cellText,
   timeAgo,
-} from "@datadack/common-ui"
+} from "@DataDack/common-ui"
 
 import { useFunctionAliases, useFunctionVersions, useServerlessFunction } from "../serverless.hooks"
 import type { FunctionAlias, FunctionVersion } from "../serverless.types"

@@ -18,8 +18,8 @@ import {
   TabsList,
   TabsTrigger,
   timeAgo,
-} from "@datadack/common-ui"
-import { CodeEditorPlaceholder } from "@datadack/serverless-ui"
+} from "@DataDack/common-ui"
+import { CodeEditorPlaceholder } from "@DataDack/serverless-ui"
 const TABS = [
   { value: "code", label: "Code", icon: Code2 },
   { value: "configuration", label: "Configuration", icon: Settings2 },

@@ -5,7 +5,7 @@ import { KeyRound } from "lucide-react"
 
 import { connection } from "@/lib/api"
 
-import { Button, Input } from "@datadack/common-ui"
+import { Button, Input } from "@DataDack/common-ui"
 /**
  * Where the operator token is entered.
  *

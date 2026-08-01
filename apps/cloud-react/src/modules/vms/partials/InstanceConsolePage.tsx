@@ -6,7 +6,7 @@ import { ConsoleTerminal } from "@/modules/console/components/ConsoleTerminal"
 import type { ConsoleTarget } from "@/modules/console/console.api"
 import { useScreen } from "@/services/api/screen"
 
-import { Skeleton } from "@datadack/common-ui"
+import { Skeleton } from "@DataDack/common-ui"
 
 import { useInstance } from "../vms.hooks"
 

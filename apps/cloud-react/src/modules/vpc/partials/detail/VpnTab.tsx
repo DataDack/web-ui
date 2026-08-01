@@ -13,7 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-import { Skeleton } from "@datadack/common-ui"
+import { Skeleton } from "@DataDack/common-ui"
 
 import { useRouters, useVPNConnections } from "../../vpc.hooks"
 import type { VPCNetwork } from "../../vpc.types"

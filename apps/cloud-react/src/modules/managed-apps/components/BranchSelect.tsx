@@ -2,7 +2,7 @@ import { GitBranch } from "lucide-react"
 
 import { SmartSelect, type SmartSelectOption } from "@/components/console"
 
-import { Badge } from "@datadack/common-ui"
+import { Badge } from "@DataDack/common-ui"
 
 import { useGitHubBranches } from "../managed-apps.hooks"
 import type { GitHubBranch } from "../managed-apps.types"

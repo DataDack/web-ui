@@ -6,7 +6,7 @@ import { Link } from "react-router-dom"
 import { FieldRow, KeyValueGrid, Section } from "@/components/console"
 import { Button } from "@/components/ui/button"
 
-import { Badge } from "@datadack/common-ui"
+import { Badge } from "@DataDack/common-ui"
 
 import { BranchSelect } from "../../../components"
 import { MANAGED_APPS_ROUTES } from "../../../managed-apps.constants"

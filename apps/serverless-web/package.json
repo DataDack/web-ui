@@ -24,7 +24,7 @@
     ]
   },
   "dependencies": {
-    "@datadack/common-ui": "workspace:*",
-    "@datadack/serverless-ui": "workspace:*"
+    "@DataDack/common-ui": "workspace:*",
+    "@DataDack/serverless-ui": "workspace:*"
   }
 }

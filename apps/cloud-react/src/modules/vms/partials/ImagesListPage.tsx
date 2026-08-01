@@ -31,7 +31,7 @@ import type { ImageCatalogFamily } from "@/modules/catalog/catalog.types"
 import { OSIcon } from "@/modules/catalog/os-icons"
 import { useScreen } from "@/services/api/screen"
 
-import { Badge } from "@datadack/common-ui"
+import { Badge } from "@DataDack/common-ui"
 
 import { VMS_ROUTES } from "../vms.constants"
 

@@ -33,7 +33,8 @@ import {
 } from "@/modules/support-tickets/support-tickets.hooks"
 import { useScreen } from "@/services/api/screen"
 
-import { Skeleton } from "@datadack/common-ui"
+import { Skeleton } from "@DataDack/common-ui"
+
 const ADMIN_SUPPORT_ROOT = "/admin/support"
 
 // Super-admin ticket detail: full triage + thread. The admin panel is gated by
