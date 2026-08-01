@@ -48,11 +48,14 @@ function useWidth(): [React.RefObject<HTMLDivElement | null>, number] {
   return [ref, width]
 }
 
+// Rounds an axis maximum up to the next visually "nice" number.
+const NICE_STEPS = [1, 2, 5]
+
 function niceCeiling(value: number): number {
   if (value <= 0) return 1
   const magnitude = 10 ** Math.floor(Math.log10(value))
   const normalized = value / magnitude
-  const step = normalized <= 1 ? 1 : normalized <= 2 ? 2 : normalized <= 5 ? 5 : 10
+  const step = NICE_STEPS.find((candidate) => normalized <= candidate) ?? 10
   return step * magnitude
 }
 
@@ -158,7 +161,7 @@ function ChartFrame({
             width={width}
             height={height}
             role="img"
-            aria-label={`${title}${unit ? ` in ${unit}` : ''}`}
+            aria-label={unit ? `${title} in ${unit}` : title}
             onPointerMove={handleMove}
             onPointerLeave={() => {
               setHovered(null)

@@ -134,29 +134,31 @@ export const base = defineConfig([
       'sonarjs/no-collapsible-if': 'error',
       'sonarjs/prefer-immediate-return': 'error',
 
-      // --- Adoption baseline ---
+      // Errors: the codebase is clean against these, so any new hit is a
+      // regression introduced by the change under review.
+      'sonarjs/no-nested-conditional': 'error',
+      'sonarjs/no-undefined-argument': 'error',
+      'sonarjs/prefer-read-only-props': 'error',
+      'sonarjs/no-nested-template-literals': 'error',
+      'sonarjs/deprecation': 'error',
+      'promise/always-return': 'error',
+      'promise/param-names': 'error',
+      '@typescript-eslint/no-deprecated': 'error',
+      '@typescript-eslint/no-unnecessary-condition': 'error',
+
+      // Warnings, deliberately and for different reasons:
       //
-      // These rules arrived with this config and each already fires somewhere
-      // in existing code. Landing them as errors would have made CI red on the
-      // commit that introduced them, which teaches everyone to bypass the
-      // linter rather than to fix anything.
+      // function-return-type is unsatisfiable here without violating
+      // react/jsx-no-useless-fragment. A component branching between
+      // `children` and an element returns ReactNode either way, and the only
+      // way to make the two branches structurally identical is to wrap the
+      // bare child in a fragment — which the React rule then flags. Warning
+      // rather than picking a winner and contorting the code.
       //
-      // They are warnings so the backlog is visible and does not grow: new
-      // violations show up in review, and each rule gets promoted to 'error'
-      // once its existing hits are cleared. Rules that catch outright defects
-      // — no-floating-promises, no-misused-promises, await-thenable — are
-      // errors above and already pass, so nothing real is being deferred.
-      'sonarjs/no-nested-conditional': 'warn',
-      'sonarjs/no-undefined-argument': 'warn',
-      'sonarjs/prefer-read-only-props': 'warn',
-      'sonarjs/no-nested-template-literals': 'warn',
-      'sonarjs/no-nested-functions': 'warn',
+      // no-nested-functions fires on one chart callback whose nesting is
+      // inherent to the plotting API's shape.
       'sonarjs/function-return-type': 'warn',
-      'sonarjs/deprecation': 'warn',
-      'promise/always-return': 'warn',
-      'promise/param-names': 'warn',
-      '@typescript-eslint/no-deprecated': 'warn',
-      '@typescript-eslint/no-unnecessary-condition': 'warn',
+      'sonarjs/no-nested-functions': 'warn',
     },
   },
 

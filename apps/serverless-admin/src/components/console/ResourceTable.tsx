@@ -96,9 +96,13 @@ export function ResourceTable<T>({
                 {group.headers.map((header) => {
                   const canSort = header.column.getCanSort()
                   const dir = header.column.getIsSorted()
+                  if (header.isPlaceholder) {
+                    return <TableHead key={header.id} />
+                  }
+
                   return (
                     <TableHead key={header.id}>
-                      {header.isPlaceholder ? null : canSort ? (
+                      {canSort ? (
                         <button
                           type="button"
                           onClick={header.column.getToggleSortingHandler()}

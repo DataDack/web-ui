@@ -110,7 +110,7 @@ export function AuditPage() {
               {row.original.error}
             </span>
           ) : (
-            cellText(undefined)
+            cellText()
           ),
       },
     ],

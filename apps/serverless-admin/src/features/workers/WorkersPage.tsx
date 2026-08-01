@@ -61,7 +61,7 @@ export function WorkersPage() {
               {row.original.backend}
             </Badge>
           ) : (
-            cellText(undefined)
+            cellText()
           ),
       },
       {

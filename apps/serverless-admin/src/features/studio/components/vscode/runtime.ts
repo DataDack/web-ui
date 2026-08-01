@@ -93,7 +93,7 @@ function setStage(next: Stage) {
 function withTimeout<T>(work: Promise<T>, ms: number, what: Stage): Promise<T> {
   return Promise.race([
     work,
-    new Promise<never>((_, reject) => {
+    new Promise<never>((_resolve, reject) => {
       setTimeout(() => {
         reject(new Error(`timed out after ${String(ms / 1000)}s during "${what}"`))
       }, ms)
@@ -199,6 +199,7 @@ export function onFileWritten(
       if (!relative) continue
       void readFile(change.resource).then((content) => {
         if (content !== undefined) handler(relative, content)
+        return undefined
       })
     }
   })

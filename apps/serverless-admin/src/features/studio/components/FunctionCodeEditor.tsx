@@ -144,7 +144,7 @@ function CodeEditorView({
           {apiErrorMessage(save.error ?? deploy.error ?? discard.error)}
         </div>
       )}
-      {deploy.isSuccess && !deploy.isPending && (
+      {deploy.isSuccess && (
         <div className="fs-alert fs-alert-ok fs-alert-flat">
           Deployed version {deploy.data.version?.version ?? '?'}
         </div>

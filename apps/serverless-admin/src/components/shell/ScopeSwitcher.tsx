@@ -39,7 +39,7 @@ export function ScopeSwitcher() {
     return (
       <span className="text-muted-foreground hidden items-center gap-1.5 font-mono text-[11px] lg:flex">
         <Building2 className="size-3.5" />
-        {data?.current || accounts[0]?.accountId}
+        {data?.current ?? accounts[0]?.accountId}
       </span>
     )
   }

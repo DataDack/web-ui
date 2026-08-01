@@ -58,9 +58,9 @@ export function StatCard({
 export function StatGrid({
   children,
   className,
-}: {
+}: Readonly<{
   children: React.ReactNode
   className?: string
-}) {
+}>) {
   return <div className={cn('grid grid-cols-2 gap-3 lg:grid-cols-4', className)}>{children}</div>
 }

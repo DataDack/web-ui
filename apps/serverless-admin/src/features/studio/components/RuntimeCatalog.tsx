@@ -140,7 +140,7 @@ function RuntimeCatalogView({
                     )}
                     title={
                       disabled
-                        ? `Deprecated — use ${runtime.successorRuntime || 'a supported runtime'}`
+                        ? `Deprecated — use ${runtime.successorRuntime ?? 'a supported runtime'}`
                         : runtime.handlerFormat
                     }
                   >

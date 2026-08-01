@@ -43,7 +43,7 @@ export function LayersPage() {
         header: 'Compatible runtimes',
         cell: ({ row }) => {
           const runtimes = row.original.compatibleRuntimes ?? []
-          if (runtimes.length === 0) return cellText(undefined)
+          if (runtimes.length === 0) return cellText()
           return (
             <div className="flex flex-wrap gap-1">
               {/* Capped: one over-broad layer must not blow out the row height. */}

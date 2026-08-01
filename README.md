@@ -1,18 +1,35 @@
-# serverless-ui
+# web-ui
 
 Monorepo for the serverless-faas web surfaces and the publishable UI packages
 they share. Managed with [bun](https://bun.sh) workspaces and
 [Nx](https://nx.dev).
 
+## How this repo is consumed
+
+`DataDack/serverless_faas` carries this repository as a git submodule mounted at
+`web/`, so paths in that repo's `Makefile` and `Dockerfile` are `web/...` while
+paths here are relative to this root.
+
+```
+serverless_faas/
+└── web/          ← this repository (submodule "web-ui", branch main)
+```
+
+Clone the parent with `--recurse-submodules`, or run
+`git submodule update --init` afterwards; otherwise `web/` is empty and the Go
+build fails on a missing embed.
+
 > `apps/serverless-admin` **is** the admin console served at `/admin`. Its
 > `dist/` is embedded into the Go binary via `assets.go` but is **not**
-> committed — build it with `make admin-ui-build` from the repository root, or
-> `nx build serverless-admin` here, before building a release binary.
+> committed — build it with `make admin-ui-build` from the `serverless_faas`
+> root, or `nx build serverless-admin` here, before building a release binary.
+> CI asserts the bundle exists, so a broken admin build fails here with a clear
+> message rather than as an opaque `go:embed` error downstream.
 
 ## Layout
 
 ```
-serverless-ui/
+web-ui/
 ├── config/                    # shared presets, never published
 │   ├── typescript-config/     # base / react-library / vite-app tsconfigs
 │   └── eslint-config/         # flat configs: base and react
@@ -25,17 +42,25 @@ serverless-ui/
 `config/*` packages are `private` — they are consumed through workspace links
 and never hit a registry. `packages/*` are versioned and publishable.
 
+> **`packages/` is not present in this repository yet.** `package.json` still
+> declares `workspaces: ["apps/*", "packages/*", "config/*"]`, and
+> `.github/workflows/publish-packages.yml` publishes
+> `packages/function-studio` — but the directory did not come across when this
+> workspace was split out of `serverless_faas`. Until it does, the publish
+> workflow fails fast with a clear message. The sources are still recoverable
+> from `serverless_faas` history under `serverless-ui/packages/function-studio/`.
+
 ## Getting started
 
 ```bash
-cd serverless-ui
 bun install
 bun run dev          # builds packages, then serves the app on :3000/admin/
 ```
 
 The dev server proxies `/v1`, `/function`, `/async-function`, `/system` and
 `/metrics` to `http://127.0.0.1:8080`, so run `make run-server` from the
-repository root alongside it. Override the target with `CONTROL_PLANE_URL`.
+`serverless_faas` root alongside it. Override the target with
+`CONTROL_PLANE_URL`.
 
 ## Tasks
 
@@ -133,6 +158,39 @@ Internal dependencies use the `workspace:*` protocol. A package that depends on
 another workspace package should declare it as a **peer** with a plain semver
 range as well, so the published artifact does not carry a `workspace:` specifier
 into a consumer's `node_modules`.
+
+## Repository standards
+
+| Gate                   | Where                    | What it enforces                                                                     |
+| ---------------------- | ------------------------ | ------------------------------------------------------------------------------------ |
+| `ci.yml`               | PR + push to `main`      | ESLint, `tsc --noEmit`, Prettier check, full build, and that the admin bundle exists |
+| `security.yml`         | PR, push, weekly cron    | `bun audit` (high+), CodeQL, TruffleHog secret scan                                  |
+| `pr-validate.yml`      | PR                       | Conventional-commit title, auto-labels, size label                                   |
+| `publish-packages.yml` | `function-studio-v*` tag | Publishes to GitHub Packages; refuses if tag ≠ package version                       |
+| `.husky/pre-commit`    | local commit             | `lint-staged`: ESLint `--fix` + Prettier on staged files                             |
+
+The weekly security cron matters: it surfaces a CVE published against a
+dependency nobody has touched, which a PR-only trigger never would.
+
+### Linting
+
+`config/eslint-config` is type-aware — `strictTypeChecked` plus
+`stylisticTypeChecked`, with jsx-a11y, SonarJS, import ordering, promise rules
+and the React Compiler check. It resolves types through the TypeScript Project
+Service rather than a static `project` array, which keeps editor diagnostics in
+sync as sibling files change.
+
+Severity is deliberate, not accidental:
+
+- **error** — latent defects (`no-floating-promises`, `no-misused-promises`,
+  `await-thenable`) and every rule the codebase is currently clean against, so a
+  new hit is a regression in the change under review.
+- **warn** — code-health signals (`no-explicit-any`, the `no-unsafe-*` family),
+  plus `react-refresh/only-export-components` and `react-compiler`, which are
+  advisory upstream, and two SonarJS rules noted inline where satisfying them
+  would violate a React rule.
+
+Run `bun run lint` before pushing; the pre-commit hook only covers staged files.
 
 ## Styling
 

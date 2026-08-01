@@ -21,7 +21,7 @@ export default function VscodeWorkbench({
   files,
   theme,
   onSave,
-}: VscodeWorkbenchProps) {
+}: Readonly<VscodeWorkbenchProps>) {
   const container = useRef<HTMLDivElement | null>(null)
   const [ready, setReady] = useState(false)
   const [error, setError] = useState('')
@@ -52,6 +52,7 @@ export default function VscodeWorkbench({
         unsubscribe = onFileWritten(functionName, (path, content) => {
           saveRef.current(path, content)
         })
+        return undefined
         setReady(true)
       })
       .catch((err: unknown) => {

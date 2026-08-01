@@ -67,8 +67,8 @@ function Group({
   description?: string
   divided?: boolean
   children: ReactNode
-}>) {
-  if (layout === 'compact') return <>{children}</>
+}>): ReactNode {
+  if (layout === 'compact') return children
   return (
     <section className={cn('fs-block', divided && 'fs-block-divided')}>
       <header className="fs-block-head">
@@ -114,7 +114,7 @@ function CreateFunctionFormView({
   const handlerValid = !runtime?.handlerRequired || handler.trim().length > 0
   const canSubmit = nameValid && handlerValid && Boolean(runtime) && !create.isPending
 
-  function submit(event: React.FormEvent) {
+  function submit(event: React.SyntheticEvent) {
     event.preventDefault()
     if (!runtime || !canSubmit) return
     create.mutate(

@@ -26,7 +26,7 @@ export class WorkbenchBoundary extends Component<Props, State> {
     console.error('Function Studio: the VS Code workbench failed to start', error, info)
   }
 
-  override render() {
+  override render(): ReactNode {
     if (this.state.message) {
       return (
         <div className="fs-wb-loading fs-wb-failed">
