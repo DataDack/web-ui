@@ -5,11 +5,11 @@ import { useTranslation } from "react-i18next"
 
 import { Button } from "@/components/ui/button"
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog"
 import { extractError } from "@/services/api/client"
 
@@ -32,106 +32,106 @@ const THROTTLE_MS = 60 * 60 * 1000 // 60 minutes
  * defers to the next window. Mounted once in the app shell.
  */
 export function MobileNumberPrompt() {
-    const { t } = useTranslation()
-    const { user } = useAuth()
-    const { mutate, isPending } = useUpdatePhone()
+  const { t } = useTranslation()
+  const { user } = useAuth()
+  const { mutate, isPending } = useUpdatePhone()
 
-    const [open, setOpen] = useState(false)
-    const [error, setError] = useState<string | null>(null)
-    const [locallySavedUserId, setLocallySavedUserId] = useState<string | null>(null)
+  const [open, setOpen] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [locallySavedUserId, setLocallySavedUserId] = useState<string | null>(null)
 
-    const phone = usePhoneInput(user?.country ?? "IN")
+  const phone = usePhoneInput(user?.country ?? "IN")
 
-    const savedKey = user ? `${SAVED_KEY_PREFIX}:${user.id}` : ""
-    const savedForUser =
-        !!user && (locallySavedUserId === user.id || localStorage.getItem(savedKey) === "true")
-    const needsPhone = !!user && !user.phone && !savedForUser
+  const savedKey = user ? `${SAVED_KEY_PREFIX}:${user.id}` : ""
+  const savedForUser =
+    !!user && (locallySavedUserId === user.id || localStorage.getItem(savedKey) === "true")
+  const needsPhone = !!user && !user.phone && !savedForUser
 
-    useEffect(() => {
-        // When the number is already present the dialog is unmounted below, so
-        // there is nothing to close here.
-        if (!needsPhone) return
-        // Show at most once per throttle window. Record the moment we decide to
-        // show so the next reminder is a full window away.
-        const last = Number(localStorage.getItem(THROTTLE_KEY) ?? 0)
-        const now = Date.now()
-        if (now - last < THROTTLE_MS) return
-        localStorage.setItem(THROTTLE_KEY, String(now))
-        setOpen(true)
-    }, [needsPhone])
+  useEffect(() => {
+    // When the number is already present the dialog is unmounted below, so
+    // there is nothing to close here.
+    if (!needsPhone) return
+    // Show at most once per throttle window. Record the moment we decide to
+    // show so the next reminder is a full window away.
+    const last = Number(localStorage.getItem(THROTTLE_KEY) ?? 0)
+    const now = Date.now()
+    if (now - last < THROTTLE_MS) return
+    localStorage.setItem(THROTTLE_KEY, String(now))
+    setOpen(true)
+  }, [needsPhone])
 
-    if (!needsPhone) return null
+  if (!needsPhone) return null
 
-    const submit = () => {
-        if (!phone.selectedCountry) {
-            setError(t("auth.mobilePrompt.countriesUnavailable"))
-            return
-        }
-        if (!phone.e164) {
-            setError(t("auth.mobilePrompt.invalid"))
-            return
-        }
-        setError(null)
-        mutate(phone.e164, {
-            onSuccess: () => {
-                localStorage.setItem(`${SAVED_KEY_PREFIX}:${user.id}`, "true")
-                setLocallySavedUserId(user.id)
-                setOpen(false)
-            },
-            onError: (e) => {
-                setError(extractError(e, t("auth.mobilePrompt.invalid")))
-            },
-        })
+  const submit = () => {
+    if (!phone.selectedCountry) {
+      setError(t("auth.mobilePrompt.countriesUnavailable"))
+      return
     }
-
-    // Editing the number clears a stale validation message.
-    const field = {
-        ...phone,
-        setRaw: (v: string) => {
-            phone.setRaw(v)
-            if (error) setError(null)
-        },
-        setCountryIso: (v: string) => {
-            phone.setCountryIso(v)
-            if (error) setError(null)
-        },
+    if (!phone.e164) {
+      setError(t("auth.mobilePrompt.invalid"))
+      return
     }
+    setError(null)
+    mutate(phone.e164, {
+      onSuccess: () => {
+        localStorage.setItem(`${SAVED_KEY_PREFIX}:${user.id}`, "true")
+        setLocallySavedUserId(user.id)
+        setOpen(false)
+      },
+      onError: (e) => {
+        setError(extractError(e, t("auth.mobilePrompt.invalid")))
+      },
+    })
+  }
 
-    return (
-        <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent className="sm:max-w-md glass-3">
-                <DialogHeader>
-                    <div className="mb-1 flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary">
-                        <ShieldCheck className="size-5" />
-                    </div>
-                    <DialogTitle>{t("auth.mobilePrompt.title")}</DialogTitle>
-                    <DialogDescription>{t("auth.mobilePrompt.description")}</DialogDescription>
-                </DialogHeader>
+  // Editing the number clears a stale validation message.
+  const field = {
+    ...phone,
+    setRaw: (v: string) => {
+      phone.setRaw(v)
+      if (error) setError(null)
+    },
+    setCountryIso: (v: string) => {
+      phone.setCountryIso(v)
+      if (error) setError(null)
+    },
+  }
 
-                <PhoneField
-                    input={field}
-                    error={error}
-                    disabled={isPending}
-                    onEnter={submit}
-                    idPrefix="mobile"
-                />
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogContent className="sm:max-w-md glass-3">
+        <DialogHeader>
+          <div className="mb-1 flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+            <ShieldCheck className="size-5" />
+          </div>
+          <DialogTitle>{t("auth.mobilePrompt.title")}</DialogTitle>
+          <DialogDescription>{t("auth.mobilePrompt.description")}</DialogDescription>
+        </DialogHeader>
 
-                <div className="mt-2 flex items-center justify-end gap-2">
-                    <Button
-                        variant="ghost"
-                        onClick={() => {
-                            setOpen(false)
-                        }}
-                        disabled={isPending}
-                    >
-                        {t("auth.mobilePrompt.later")}
-                    </Button>
-                    <Button variant="gold" onClick={submit} disabled={isPending}>
-                        {isPending && <Loader2 className="size-4 animate-spin" />}
-                        {t("auth.mobilePrompt.save")}
-                    </Button>
-                </div>
-            </DialogContent>
-        </Dialog>
-    )
+        <PhoneField
+          input={field}
+          error={error}
+          disabled={isPending}
+          onEnter={submit}
+          idPrefix="mobile"
+        />
+
+        <div className="mt-2 flex items-center justify-end gap-2">
+          <Button
+            variant="ghost"
+            onClick={() => {
+              setOpen(false)
+            }}
+            disabled={isPending}
+          >
+            {t("auth.mobilePrompt.later")}
+          </Button>
+          <Button variant="gold" onClick={submit} disabled={isPending}>
+            {isPending && <Loader2 className="size-4 animate-spin" />}
+            {t("auth.mobilePrompt.save")}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
 }

@@ -18,95 +18,95 @@ import userEvent from "@testing-library/user-event"
 
 /** The shape the bug had: no stopPropagation, no target guard. */
 function Unguarded({ onOuter, onInner }: Readonly<{ onOuter: () => void; onInner: () => void }>) {
-    return (
-        <form
-            onSubmit={(e) => {
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault()
+        onOuter()
+      }}
+    >
+      <Dialog.Root defaultOpen>
+        <Dialog.Portal>
+          <Dialog.Content>
+            <Dialog.Title>Add channel</Dialog.Title>
+            <form
+              onSubmit={(e) => {
                 e.preventDefault()
-                onOuter()
-            }}
-        >
-            <Dialog.Root defaultOpen>
-                <Dialog.Portal>
-                    <Dialog.Content>
-                        <Dialog.Title>Add channel</Dialog.Title>
-                        <form
-                            onSubmit={(e) => {
-                                e.preventDefault()
-                                onInner()
-                            }}
-                        >
-                            <button type="submit">Save channel</button>
-                        </form>
-                    </Dialog.Content>
-                </Dialog.Portal>
-            </Dialog.Root>
-        </form>
-    )
+                onInner()
+              }}
+            >
+              <button type="submit">Save channel</button>
+            </form>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
+    </form>
+  )
 }
 
 /** Both fixes as shipped: inner stops propagation, outer checks the target. */
 function Guarded({ onOuter, onInner }: Readonly<{ onOuter: () => void; onInner: () => void }>) {
-    return (
-        <form
-            onSubmit={(e) => {
-                if (e.target !== e.currentTarget) return
+  return (
+    <form
+      onSubmit={(e) => {
+        if (e.target !== e.currentTarget) return
+        e.preventDefault()
+        onOuter()
+      }}
+    >
+      <Dialog.Root defaultOpen>
+        <Dialog.Portal>
+          <Dialog.Content>
+            <Dialog.Title>Add channel</Dialog.Title>
+            <form
+              onSubmit={(e) => {
+                e.stopPropagation()
                 e.preventDefault()
-                onOuter()
-            }}
-        >
-            <Dialog.Root defaultOpen>
-                <Dialog.Portal>
-                    <Dialog.Content>
-                        <Dialog.Title>Add channel</Dialog.Title>
-                        <form
-                            onSubmit={(e) => {
-                                e.stopPropagation()
-                                e.preventDefault()
-                                onInner()
-                            }}
-                        >
-                            <button type="submit">Save channel</button>
-                        </form>
-                    </Dialog.Content>
-                </Dialog.Portal>
-            </Dialog.Root>
-        </form>
-    )
+                onInner()
+              }}
+            >
+              <button type="submit">Save channel</button>
+            </form>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
+    </form>
+  )
 }
 
 test("the bug is real: a portaled form's submit reaches the enclosing form", async () => {
-    let outer = 0
-    let inner = 0
-    render(
-        <Unguarded
-            onOuter={() => {
-                outer += 1
-            }}
-            onInner={() => {
-                inner += 1
-            }}
-        />
-    )
-    await userEvent.click(screen.getByRole("button", { name: "Save channel" }))
-    expect(inner).toBe(1)
-    // This is what created the unwanted alarm.
-    expect(outer).toBe(1)
+  let outer = 0
+  let inner = 0
+  render(
+    <Unguarded
+      onOuter={() => {
+        outer += 1
+      }}
+      onInner={() => {
+        inner += 1
+      }}
+    />,
+  )
+  await userEvent.click(screen.getByRole("button", { name: "Save channel" }))
+  expect(inner).toBe(1)
+  // This is what created the unwanted alarm.
+  expect(outer).toBe(1)
 })
 
 test("guarded: saving in the dialog does not submit the enclosing form", async () => {
-    let outer = 0
-    let inner = 0
-    render(
-        <Guarded
-            onOuter={() => {
-                outer += 1
-            }}
-            onInner={() => {
-                inner += 1
-            }}
-        />
-    )
-    await userEvent.click(screen.getByRole("button", { name: "Save channel" }))
-    expect(inner).toBe(1)
-    expect(outer).toBe(0)
+  let outer = 0
+  let inner = 0
+  render(
+    <Guarded
+      onOuter={() => {
+        outer += 1
+      }}
+      onInner={() => {
+        inner += 1
+      }}
+    />,
+  )
+  await userEvent.click(screen.getByRole("button", { name: "Save channel" }))
+  expect(inner).toBe(1)
+  expect(outer).toBe(0)
 })

@@ -1,20 +1,20 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useState, type ReactNode } from "react"
 
-import { AlertTriangle, Boxes, Loader2, Rocket } from 'lucide-react'
+import { AlertTriangle, Boxes, Loader2, Rocket } from "lucide-react"
 
-import { apiErrorMessage } from '@/lib/api'
+import { apiErrorMessage } from "@/lib/api"
 
-import { cn, RuntimeCatalog, RuntimeIcon } from '@datadack/serverless-ui'
+import { cn, RuntimeCatalog, RuntimeIcon } from "@datadack/serverless-ui"
 
-import { useCreateFunction, useRuntimes } from '../lib/queries'
-import type { Runtime } from '../lib/schemas'
-import { templateFor } from '../lib/templates'
+import { useCreateFunction, useRuntimes } from "../lib/queries"
+import type { Runtime } from "../lib/schemas"
+import { templateFor } from "../lib/templates"
 
 export interface CreateFunctionFormProps {
   onCreated?: (functionName: string) => void
   onCancel?: () => void
-  layout?: 'compact' | 'page'
-  theme?: 'light' | 'dark'
+  layout?: "compact" | "page"
+  theme?: "light" | "dark"
   className?: string
 }
 
@@ -27,13 +27,13 @@ const NAME_PATTERN = /^[a-zA-Z0-9-_]{1,64}$/
 export function CreateFunctionForm({
   onCreated,
   onCancel,
-  layout = 'compact',
-  theme = 'light',
+  layout = "compact",
+  theme = "light",
   className,
 }: Readonly<CreateFunctionFormProps>) {
   // .fs-root carries the design tokens every fs- class below reads.
   return (
-    <div className={cn('fs-root', theme === 'dark' && 'fs-dark')}>
+    <div className={cn("fs-root", theme === "dark" && "fs-dark")}>
       <CreateFunctionFormView
         onCreated={onCreated}
         onCancel={onCancel}
@@ -56,15 +56,15 @@ function Group({
   divided = true,
   children,
 }: Readonly<{
-  layout: 'compact' | 'page'
+  layout: "compact" | "page"
   title: string
   description?: string
   divided?: boolean
   children: ReactNode
 }>): ReactNode {
-  if (layout === 'compact') return children
+  if (layout === "compact") return children
   return (
-    <section className={cn('fs-block', divided && 'fs-block-divided')}>
+    <section className={cn("fs-block", divided && "fs-block-divided")}>
       <header className="fs-block-head">
         <h3>{title}</h3>
         {description && <p>{description}</p>}
@@ -77,20 +77,20 @@ function Group({
 function CreateFunctionFormView({
   onCreated,
   onCancel,
-  layout = 'compact',
+  layout = "compact",
   className,
-}: Readonly<Omit<CreateFunctionFormProps, 'theme'>>) {
-  const [name, setName] = useState('')
+}: Readonly<Omit<CreateFunctionFormProps, "theme">>) {
+  const [name, setName] = useState("")
   const [runtime, setRuntime] = useState<Runtime | undefined>()
   const runtimes = useRuntimes()
-  const [handler, setHandler] = useState('')
-  const [architecture, setArchitecture] = useState('x86_64')
+  const [handler, setHandler] = useState("")
+  const [architecture, setArchitecture] = useState("x86_64")
   const [memorySize, setMemorySize] = useState(128)
   const [timeout, setTimeout] = useState(3)
 
   const create = useCreateFunction()
   const template = useMemo(() => templateFor(runtime), [runtime])
-  const isPage = layout === 'page'
+  const isPage = layout === "page"
 
   // The handler default follows the runtime, but only until the operator edits
   // it — retyping their handler on every runtime click would be hostile.
@@ -101,7 +101,7 @@ function CreateFunctionFormView({
 
   useEffect(() => {
     if (runtime && !runtime.architectures.includes(architecture)) {
-      setArchitecture(runtime.architectures[0] ?? 'x86_64')
+      setArchitecture(runtime.architectures[0] ?? "x86_64")
     }
   }, [runtime, architecture])
 
@@ -146,9 +146,9 @@ function CreateFunctionFormView({
             placeholder="my-function"
             className="fs-input"
             autoComplete="off"
-            aria-invalid={name !== '' && !nameValid}
+            aria-invalid={name !== "" && !nameValid}
           />
-          <p className={cn('fs-hint', name !== '' && !nameValid && 'fs-hint-danger')}>
+          <p className={cn("fs-hint", name !== "" && !nameValid && "fs-hint-danger")}>
             Letters, numbers, hyphens and underscores. Up to 64 characters.
           </p>
         </div>
@@ -174,7 +174,7 @@ function CreateFunctionFormView({
         <div className="fs-alert fs-alert-warn">
           <AlertTriangle className="fs-size-4" />
           <span>
-            <strong>{runtime.name}</strong> needs its own runtime interface client and an executable{' '}
+            <strong>{runtime.name}</strong> needs its own runtime interface client and an executable{" "}
             <code>bootstrap</code> at the package root. The starter file is a placeholder — upload a
             real build before invoking.
           </span>
@@ -205,7 +205,7 @@ function CreateFunctionFormView({
                 autoComplete="off"
               />
               <p className="fs-hint">
-                {runtime.handlerRequired ? runtime.handlerFormat : 'Not used by this runtime'}
+                {runtime.handlerRequired ? runtime.handlerFormat : "Not used by this runtime"}
               </p>
             </div>
 
@@ -274,7 +274,7 @@ function CreateFunctionFormView({
         </div>
       )}
 
-      <div className={cn('fs-actions', isPage && 'fs-actions-foot')}>
+      <div className={cn("fs-actions", isPage && "fs-actions-foot")}>
         {onCancel && (
           <button type="button" className="fs-btn fs-btn-quiet" onClick={onCancel}>
             Cancel
@@ -294,14 +294,14 @@ function CreateFunctionFormView({
 
   if (!isPage) {
     return (
-      <form onSubmit={submit} className={cn('fs-stack-lg', className)} noValidate>
+      <form onSubmit={submit} className={cn("fs-stack-lg", className)} noValidate>
         {body}
       </form>
     )
   }
 
   return (
-    <div className={cn('fs-page', className)}>
+    <div className={cn("fs-page", className)}>
       <form onSubmit={submit} className="fs-page-main" noValidate>
         {body}
       </form>

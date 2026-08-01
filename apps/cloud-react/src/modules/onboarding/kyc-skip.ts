@@ -16,32 +16,32 @@ const key = (userId: string) => `${KEY_PREFIX}${userId}`
 
 /** True when this user pressed "Skip for now" earlier in this session. */
 export function isKycSkipped(userId: string): boolean {
-    if (!userId) return false
-    try {
-        return sessionStorage.getItem(key(userId)) === "1"
-    } catch {
-        // Storage disabled (private mode / blocked cookies) — treat as not
-        // skipped; the user can still skip, they just get re-prompted.
-        return false
-    }
+  if (!userId) return false
+  try {
+    return sessionStorage.getItem(key(userId)) === "1"
+  } catch {
+    // Storage disabled (private mode / blocked cookies) — treat as not
+    // skipped; the user can still skip, they just get re-prompted.
+    return false
+  }
 }
 
 /** Record the skip so the gate lets this user through for the rest of the session. */
 export function skipKycForNow(userId: string): void {
-    if (!userId) return
-    try {
-        sessionStorage.setItem(key(userId), "1")
-    } catch {
-        // ignore — worst case the gate re-prompts on the next navigation
-    }
+  if (!userId) return
+  try {
+    sessionStorage.setItem(key(userId), "1")
+  } catch {
+    // ignore — worst case the gate re-prompts on the next navigation
+  }
 }
 
 /** Drop the skip (e.g. once verification completes) so the gate re-evaluates. */
 export function clearKycSkip(userId: string): void {
-    if (!userId) return
-    try {
-        sessionStorage.removeItem(key(userId))
-    } catch {
-        // ignore
-    }
+  if (!userId) return
+  try {
+    sessionStorage.removeItem(key(userId))
+  } catch {
+    // ignore
+  }
 }

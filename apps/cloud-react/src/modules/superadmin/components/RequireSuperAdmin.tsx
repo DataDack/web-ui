@@ -12,11 +12,11 @@ import { useAuth } from "@/modules/auth/auth.context"
  * (is_super_admin), so this is UX only — not the security boundary.
  */
 export function RequireSuperAdmin({ children }: Readonly<{ children: ReactNode }>): ReactElement {
-    const { isLoading, isAuthenticated, user } = useAuth()
+  const { isLoading, isAuthenticated, user } = useAuth()
 
-    if (isLoading) return <AuthCardSkeleton />
-    if (!isAuthenticated || !user) return <Navigate to="/login" replace />
-    if (!user.is_super_admin) return <Navigate to="/" replace />
+  if (isLoading) return <AuthCardSkeleton />
+  if (!isAuthenticated || !user) return <Navigate to="/login" replace />
+  if (!user.is_super_admin) return <Navigate to="/" replace />
 
-    return children as ReactElement
+  return children as ReactElement
 }

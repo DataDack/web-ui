@@ -1,10 +1,10 @@
-import { useMemo } from 'react'
+import { useMemo } from "react"
 
-import type { ColumnDef } from '@tanstack/react-table'
-import { Layers, Package } from 'lucide-react'
+import type { ColumnDef } from "@tanstack/react-table"
+import { Layers, Package } from "lucide-react"
 
-import { useDashboard } from '@/lib/queries'
-import type { LayerVersion } from '@/lib/schemas'
+import { useDashboard } from "@/lib/queries"
+import type { LayerVersion } from "@/lib/schemas"
 
 import {
   Badge,
@@ -16,7 +16,7 @@ import {
   StatCard,
   StatGrid,
   timeAgo,
-} from '@datadack/serverless-ui'
+} from "@datadack/serverless-ui"
 
 export function LayersPage() {
   const { data, isLoading } = useDashboard()
@@ -25,15 +25,15 @@ export function LayersPage() {
   const columns = useMemo<ColumnDef<LayerVersion>[]>(
     () => [
       {
-        accessorKey: 'name',
-        header: 'Name',
+        accessorKey: "name",
+        header: "Name",
         cell: ({ row }) => (
           <span className="font-mono text-[13px] font-medium">{row.original.name}</span>
         ),
       },
       {
-        accessorKey: 'version',
-        header: 'Version',
+        accessorKey: "version",
+        header: "Version",
         cell: ({ row }) => (
           <Badge variant="outline" className="font-mono text-[11px]">
             v{row.original.version}
@@ -41,13 +41,13 @@ export function LayersPage() {
         ),
       },
       {
-        accessorKey: 'description',
-        header: 'Description',
+        accessorKey: "description",
+        header: "Description",
         cell: ({ row }) => cellText(row.original.description),
       },
       {
-        id: 'runtimes',
-        header: 'Compatible runtimes',
+        id: "runtimes",
+        header: "Compatible runtimes",
         cell: ({ row }) => {
           const runtimes = row.original.compatibleRuntimes ?? []
           if (runtimes.length === 0) return cellText()
@@ -67,13 +67,13 @@ export function LayersPage() {
         },
       },
       {
-        id: 'size',
-        header: 'Size',
+        id: "size",
+        header: "Size",
         cell: ({ row }) => cellMono(formatBytes(row.original.codeArtifact?.sizeBytes ?? 0)),
       },
       {
-        accessorKey: 'createdAt',
-        header: 'Created',
+        accessorKey: "createdAt",
+        header: "Created",
         cell: ({ row }) => cellMono(timeAgo(row.original.createdAt)),
       },
     ],

@@ -7,22 +7,22 @@ import { useScreen } from "@/services/api/screen"
 import { TargetGroupsPanel } from "./TargetGroupsPanel"
 
 export function TargetGroupsListPage() {
-    useScreen("target-groups.target-groups-list")
-    const { t } = useTranslation()
+  useScreen("target-groups.target-groups-list")
+  const { t } = useTranslation()
 
-    return (
-        <div className="space-y-5">
-            <PageHeader
-                icon={Crosshair}
-                breadcrumbs={[
-                    { label: t("console.nav.groups.compute") },
-                    { label: t("targetGroups.title") },
-                ]}
-                title={t("targetGroups.title")}
-                description={t("targetGroups.subtitle")}
-            />
+  return (
+    <div className="space-y-5">
+      <PageHeader
+        icon={Crosshair}
+        breadcrumbs={[
+          { label: t("console.nav.groups.compute") },
+          { label: t("targetGroups.title") },
+        ]}
+        title={t("targetGroups.title")}
+        description={t("targetGroups.subtitle")}
+      />
 
-            <TargetGroupsPanel />
-        </div>
-    )
+      <TargetGroupsPanel />
+    </div>
+  )
 }

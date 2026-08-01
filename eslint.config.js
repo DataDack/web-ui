@@ -5,4 +5,4 @@
 //
 // Workspaces still carry their own eslint.config.js for their `lint` target;
 // this re-exports the same shared preset, so both entry points agree.
-export { default } from '@serverless-ui/eslint-config/react'
+export { default } from "@serverless-ui/eslint-config/react"

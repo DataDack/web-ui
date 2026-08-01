@@ -1,11 +1,11 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState } from "react"
 
-import { css, cx } from '@emotion/css'
-import { AlertTriangle, Check, PackageOpen, Search } from 'lucide-react'
+import { css, cx } from "@emotion/css"
+import { AlertTriangle, Check, PackageOpen, Search } from "lucide-react"
 
-import { familyLabel, RuntimeIcon } from './RuntimeIcon'
-import { fontMono } from '../lib/styles'
-import { Input } from '../ui/input'
+import { familyLabel, RuntimeIcon } from "./RuntimeIcon"
+import { fontMono } from "../lib/styles"
+import { Input } from "../ui/input"
 
 /**
  * One runtime catalog entry as served by the control plane's GET /v1/runtimes.
@@ -40,7 +40,7 @@ export interface RuntimeCatalogProps {
   className?: string
 }
 
-const FAMILY_ORDER = ['nodejs', 'python', 'ruby', 'java', 'dotnet', 'provided', 'go']
+const FAMILY_ORDER = ["nodejs", "python", "ruby", "java", "dotnet", "provided", "go"]
 
 const stack = css`
   display: flex;
@@ -228,7 +228,7 @@ export function RuntimeCatalog({
   hideDeprecated = false,
   className,
 }: Readonly<RuntimeCatalogProps>) {
-  const [filter, setFilter] = useState('')
+  const [filter, setFilter] = useState("")
 
   const groups = useMemo(() => {
     const visible = runtimes.filter((runtime) => {
@@ -303,7 +303,7 @@ export function RuntimeCatalog({
                     className={cx(card, selected && cardSelected, disabled && cardDisabled)}
                     title={
                       disabled
-                        ? `Deprecated — use ${runtime.successorRuntime ?? 'a supported runtime'}`
+                        ? `Deprecated — use ${runtime.successorRuntime ?? "a supported runtime"}`
                         : runtime.handlerFormat
                     }
                   >

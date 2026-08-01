@@ -11,11 +11,11 @@ import { extractError } from "@/services/api/client"
 import { accountsApi } from "./accounts.api"
 import { ACCOUNT_QUERY_KEYS } from "./accounts.constants"
 import type {
-    ConvertToBusinessPayload,
-    MyAccount,
-    ProvisionAccountPayload,
-    UpdateAccountPayload,
-    UpdateAddressPayload,
+  ConvertToBusinessPayload,
+  MyAccount,
+  ProvisionAccountPayload,
+  UpdateAccountPayload,
+  UpdateAddressPayload,
 } from "./accounts.types"
 
 // Region and resource-group selections are scoped to the active account; clear
@@ -25,20 +25,20 @@ const SCOPED_STORAGE_KEYS = ["console-active-region", "bsc-active-rg"]
 
 /** Accounts the signed-in user can act in — their own plus any invited into. */
 export function useMyAccounts() {
-    return useQuery({
-        queryKey: ACCOUNT_QUERY_KEYS.mine,
-        queryFn: accountsApi.listMine,
-        staleTime: 60_000,
-    })
+  return useQuery({
+    queryKey: ACCOUNT_QUERY_KEYS.mine,
+    queryFn: accountsApi.listMine,
+    staleTime: 60_000,
+  })
 }
 
 /** Members (with role) of a single account. */
 export function useAccountMembers(id: string | undefined) {
-    return useQuery({
-        queryKey: ACCOUNT_QUERY_KEYS.members(id ?? ""),
-        queryFn: () => accountsApi.listMembers(id ?? ""),
-        enabled: !!id,
-    })
+  return useQuery({
+    queryKey: ACCOUNT_QUERY_KEYS.members(id ?? ""),
+    queryFn: () => accountsApi.listMembers(id ?? ""),
+    enabled: !!id,
+  })
 }
 
 // Re-export the client-held active scope (memory + IndexedDB) so callers keep
@@ -52,15 +52,15 @@ export { useActiveScope }
  * first entry.
  */
 export function resolveActiveAccount(
-    accounts: MyAccount[],
-    activeId: string | null
+  accounts: MyAccount[],
+  activeId: string | null,
 ): MyAccount | null {
-    if (accounts.length === 0) return null
-    return (
-        (activeId ? accounts.find((a) => a.id === activeId) : undefined) ??
-        accounts.find((a) => a.is_owner) ??
-        accounts[0]
-    )
+  if (accounts.length === 0) return null
+  return (
+    (activeId ? accounts.find((a) => a.id === activeId) : undefined) ??
+    accounts.find((a) => a.is_owner) ??
+    accounts[0]
+  )
 }
 
 /**
@@ -71,38 +71,38 @@ export function resolveActiveAccount(
  * re-authorizes every request regardless — this just keeps the UI honest.
  */
 export function useActiveAccount() {
-    const { data, isLoading } = useMyAccounts()
-    const scope = useActiveScope()
-    const accounts = data ?? []
+  const { data, isLoading } = useMyAccounts()
+  const scope = useActiveScope()
+  const accounts = data ?? []
 
-    useEffect(() => {
-        if (!data || data.length === 0) return
-        const id = activeScope.getAccountId()
-        // Stored id no longer valid (membership revoked / account transferred) —
-        // drop it so we re-pin a live one below.
-        if (id && !data.some((a) => a.id === id)) activeScope.clear()
-        // Pin the resolved home account when no valid scope is set yet. Without
-        // this, a fresh login (empty IndexedDB, user never switched accounts)
-        // sends X-Account-Id as "" → the backend scopes writes to uuid.Nil,
-        // where TenantBaseEntity.BeforeCreate skips the tenant_serial assignment
-        // and every resource shows up as vpc-0 / vm-0. The header must always
-        // carry a real account id.
-        if (!activeScope.getAccountId()) {
-            const home = resolveActiveAccount(data, null)
-            if (home) {
-                activeScope.set({
-                    accountId: home.id,
-                    organizationId: home.organization?.id ?? null,
-                })
-            }
-        }
-    }, [data])
-
-    return {
-        accounts,
-        activeAccount: resolveActiveAccount(accounts, scope.accountId),
-        isLoading,
+  useEffect(() => {
+    if (!data || data.length === 0) return
+    const id = activeScope.getAccountId()
+    // Stored id no longer valid (membership revoked / account transferred) —
+    // drop it so we re-pin a live one below.
+    if (id && !data.some((a) => a.id === id)) activeScope.clear()
+    // Pin the resolved home account when no valid scope is set yet. Without
+    // this, a fresh login (empty IndexedDB, user never switched accounts)
+    // sends X-Account-Id as "" → the backend scopes writes to uuid.Nil,
+    // where TenantBaseEntity.BeforeCreate skips the tenant_serial assignment
+    // and every resource shows up as vpc-0 / vm-0. The header must always
+    // carry a real account id.
+    if (!activeScope.getAccountId()) {
+      const home = resolveActiveAccount(data, null)
+      if (home) {
+        activeScope.set({
+          accountId: home.id,
+          organizationId: home.organization?.id ?? null,
+        })
+      }
     }
+  }, [data])
+
+  return {
+    accounts,
+    activeAccount: resolveActiveAccount(accounts, scope.accountId),
+    isLoading,
+  }
 }
 
 /**
@@ -112,11 +112,11 @@ export function useActiveAccount() {
  * re-bootstraps cleanly under the new scope.
  */
 export function useSwitchAccount() {
-    return useCallback((account: MyAccount) => {
-        activeScope.set({ accountId: account.id, organizationId: account.organization?.id ?? null })
-        for (const key of SCOPED_STORAGE_KEYS) localStorage.removeItem(key)
-        window.location.assign("/")
-    }, [])
+  return useCallback((account: MyAccount) => {
+    activeScope.set({ accountId: account.id, organizationId: account.organization?.id ?? null })
+    for (const key of SCOPED_STORAGE_KEYS) localStorage.removeItem(key)
+    window.location.assign("/")
+  }, [])
 }
 
 /**
@@ -125,84 +125,83 @@ export function useSwitchAccount() {
  * user in their current account.
  */
 export function useProvisionAccount() {
-    const queryClient = useQueryClient()
-    const { t } = useTranslation()
-    return useMutation({
-        mutationFn: (payload: ProvisionAccountPayload) => accountsApi.provision(payload),
-        onSuccess: (account) => {
-            void queryClient.invalidateQueries({ queryKey: ACCOUNT_QUERY_KEYS.mine })
-            toast.success(t("accounts.toasts.created", { name: account.name }))
-        },
-        onError: (err) => {
-            if (!handleQuotaGateError(err)) {
-                toast.error(extractError(err, t("accounts.toasts.createFailed")))
-            }
-        },
-    })
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (payload: ProvisionAccountPayload) => accountsApi.provision(payload),
+    onSuccess: (account) => {
+      void queryClient.invalidateQueries({ queryKey: ACCOUNT_QUERY_KEYS.mine })
+      toast.success(t("accounts.toasts.created", { name: account.name }))
+    },
+    onError: (err) => {
+      if (!handleQuotaGateError(err)) {
+        toast.error(extractError(err, t("accounts.toasts.createFailed")))
+      }
+    },
+  })
 }
 
 /** Rename and/or change an account's lifecycle status. */
 export function useUpdateAccount() {
-    const queryClient = useQueryClient()
-    const { t } = useTranslation()
-    return useMutation({
-        mutationFn: ({ id, payload }: { id: string; payload: UpdateAccountPayload }) =>
-            accountsApi.update(id, payload),
-        onSuccess: () => {
-            void queryClient.invalidateQueries({ queryKey: ACCOUNT_QUERY_KEYS.mine })
-            toast.success(t("accounts.toasts.saved"))
-        },
-        onError: (err) => {
-            toast.error(extractError(err, t("accounts.toasts.saveFailed")))
-        },
-    })
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: UpdateAccountPayload }) =>
+      accountsApi.update(id, payload),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ACCOUNT_QUERY_KEYS.mine })
+      toast.success(t("accounts.toasts.saved"))
+    },
+    onError: (err) => {
+      toast.error(extractError(err, t("accounts.toasts.saveFailed")))
+    },
+  })
 }
 
 /** An account's contact/verification profile (address + KYC status). */
 export function useAccountProfile(id: string | undefined) {
-    return useQuery({
-        queryKey: ACCOUNT_QUERY_KEYS.profile(id ?? ""),
-        queryFn: () => accountsApi.getProfile(id ?? ""),
-        enabled: !!id,
-    })
+  return useQuery({
+    queryKey: ACCOUNT_QUERY_KEYS.profile(id ?? ""),
+    queryFn: () => accountsApi.getProfile(id ?? ""),
+    enabled: !!id,
+  })
 }
 
 /** Upsert an account's contact address (owner/admin). */
 export function useUpdateAddress(id: string) {
-    const queryClient = useQueryClient()
-    const { t } = useTranslation()
-    return useMutation({
-        mutationFn: (payload: UpdateAddressPayload) => accountsApi.updateAddress(id, payload),
-        onSuccess: () => {
-            void queryClient.invalidateQueries({ queryKey: ACCOUNT_QUERY_KEYS.profile(id) })
-            toast.success(t("accounts.toasts.saved"))
-        },
-        onError: (err) => {
-            toast.error(extractError(err, t("accounts.toasts.saveFailed")))
-        },
-    })
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (payload: UpdateAddressPayload) => accountsApi.updateAddress(id, payload),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ACCOUNT_QUERY_KEYS.profile(id) })
+      toast.success(t("accounts.toasts.saved"))
+    },
+    onError: (err) => {
+      toast.error(extractError(err, t("accounts.toasts.saveFailed")))
+    },
+  })
 }
 
 /** Convert an individual account into a business account (owner/admin). */
 export function useConvertToBusiness(id: string) {
-    const queryClient = useQueryClient()
-    const { t } = useTranslation()
-    return useMutation({
-        mutationFn: (payload: ConvertToBusinessPayload) =>
-            accountsApi.convertToBusiness(id, payload),
-        onSuccess: () => {
-            void queryClient.invalidateQueries({ queryKey: ACCOUNT_QUERY_KEYS.profile(id) })
-            void queryClient.invalidateQueries({ queryKey: ACCOUNT_QUERY_KEYS.mine })
-            toast.success(
-                t("account.settings.convert.success", {
-                    defaultValue: "Account converted to business. Please complete verification.",
-                })
-            )
-        },
-        onError: (err) => {
-            toast.error(extractError(err, t("accounts.toasts.saveFailed")))
-        },
-    })
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (payload: ConvertToBusinessPayload) => accountsApi.convertToBusiness(id, payload),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ACCOUNT_QUERY_KEYS.profile(id) })
+      void queryClient.invalidateQueries({ queryKey: ACCOUNT_QUERY_KEYS.mine })
+      toast.success(
+        t("account.settings.convert.success", {
+          defaultValue: "Account converted to business. Please complete verification.",
+        }),
+      )
+    },
+    onError: (err) => {
+      toast.error(extractError(err, t("accounts.toasts.saveFailed")))
+    },
+  })
 }
 
 /**
@@ -211,85 +210,85 @@ export function useConvertToBusiness(id: string) {
  * dialog no longer strands the flow. Enabled only for the account owner.
  */
 export function usePendingTransfer(id: string, enabled: boolean) {
-    return useQuery({
-        queryKey: ACCOUNT_QUERY_KEYS.transferPending(id),
-        queryFn: () => accountsApi.pendingTransfer(id),
-        enabled,
-    })
+  return useQuery({
+    queryKey: ACCOUNT_QUERY_KEYS.transferPending(id),
+    queryFn: () => accountsApi.pendingTransfer(id),
+    enabled,
+  })
 }
 
 /** Start an ownership transfer — emails an OTP to the current owner. */
 export function useInitiateTransfer(id: string) {
-    const queryClient = useQueryClient()
-    const { t } = useTranslation()
-    return useMutation({
-        mutationFn: (targetEmail: string) => accountsApi.initiateTransfer(id, targetEmail),
-        onSuccess: () => {
-            void queryClient.invalidateQueries({
-                queryKey: ACCOUNT_QUERY_KEYS.transferPending(id),
-            })
-        },
-        onError: (err) => {
-            toast.error(extractError(err, t("accounts.toasts.saveFailed")))
-        },
-    })
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (targetEmail: string) => accountsApi.initiateTransfer(id, targetEmail),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: ACCOUNT_QUERY_KEYS.transferPending(id),
+      })
+    },
+    onError: (err) => {
+      toast.error(extractError(err, t("accounts.toasts.saveFailed")))
+    },
+  })
 }
 
 /** Confirm an ownership transfer with the OTP the owner received. */
 export function useConfirmTransfer(id: string) {
-    const queryClient = useQueryClient()
-    const { t } = useTranslation()
-    return useMutation({
-        mutationFn: (otp: string) => accountsApi.confirmTransfer(id, otp),
-        onSuccess: () => {
-            void queryClient.invalidateQueries({ queryKey: ACCOUNT_QUERY_KEYS.mine })
-            void queryClient.invalidateQueries({
-                queryKey: ACCOUNT_QUERY_KEYS.transferPending(id),
-            })
-            toast.success(
-                t("account.settings.transfer.success", {
-                    defaultValue: "Ownership transferred.",
-                })
-            )
-        },
-        onError: (err) => {
-            toast.error(extractError(err, t("accounts.toasts.saveFailed")))
-        },
-    })
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (otp: string) => accountsApi.confirmTransfer(id, otp),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ACCOUNT_QUERY_KEYS.mine })
+      void queryClient.invalidateQueries({
+        queryKey: ACCOUNT_QUERY_KEYS.transferPending(id),
+      })
+      toast.success(
+        t("account.settings.transfer.success", {
+          defaultValue: "Ownership transferred.",
+        }),
+      )
+    },
+    onError: (err) => {
+      toast.error(extractError(err, t("accounts.toasts.saveFailed")))
+    },
+  })
 }
 
 /** Abandon an in-flight ownership transfer, clearing the pending code. */
 export function useCancelTransfer(id: string) {
-    const queryClient = useQueryClient()
-    const { t } = useTranslation()
-    return useMutation({
-        mutationFn: () => accountsApi.cancelTransfer(id),
-        onSuccess: () => {
-            void queryClient.invalidateQueries({
-                queryKey: ACCOUNT_QUERY_KEYS.transferPending(id),
-            })
-            toast.success(
-                t("account.settings.transfer.cancelled", { defaultValue: "Transfer cancelled." })
-            )
-        },
-        onError: (err) => {
-            toast.error(extractError(err, t("accounts.toasts.saveFailed")))
-        },
-    })
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: () => accountsApi.cancelTransfer(id),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: ACCOUNT_QUERY_KEYS.transferPending(id),
+      })
+      toast.success(
+        t("account.settings.transfer.cancelled", { defaultValue: "Transfer cancelled." }),
+      )
+    },
+    onError: (err) => {
+      toast.error(extractError(err, t("accounts.toasts.saveFailed")))
+    },
+  })
 }
 
 /** Make an account the caller's home/primary account (the switcher default). */
 export function useSetDefaultAccount() {
-    const queryClient = useQueryClient()
-    const { t } = useTranslation()
-    return useMutation({
-        mutationFn: (id: string) => accountsApi.setDefault(id),
-        onSuccess: () => {
-            void queryClient.invalidateQueries({ queryKey: ACCOUNT_QUERY_KEYS.mine })
-            toast.success(t("accounts.toasts.defaultSet"))
-        },
-        onError: (err) => {
-            toast.error(extractError(err, t("accounts.toasts.defaultFailed")))
-        },
-    })
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (id: string) => accountsApi.setDefault(id),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ACCOUNT_QUERY_KEYS.mine })
+      toast.success(t("accounts.toasts.defaultSet"))
+    },
+    onError: (err) => {
+      toast.error(extractError(err, t("accounts.toasts.defaultFailed")))
+    },
+  })
 }

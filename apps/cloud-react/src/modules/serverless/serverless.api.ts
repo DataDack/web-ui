@@ -1,11 +1,11 @@
 import { apiDelete, apiGet } from "@/services/api/client"
 
 import type {
-    ActivityEvent,
-    FunctionAlias,
-    FunctionEntity,
-    FunctionVersion,
-    LayerVersion,
+  ActivityEvent,
+  FunctionAlias,
+  FunctionEntity,
+  FunctionVersion,
+  LayerVersion,
 } from "./serverless.types"
 
 // cloud-be-go: app "serverless" — a guarded pass-through to the regional FaaS
@@ -25,8 +25,8 @@ import type {
 
 /** Appends the region selector; omitted when the console has none yet. */
 function withRegion(path: string, region: string | null): string {
-    if (!region) return path
-    return `${path}${path.includes("?") ? "&" : "?"}region=${encodeURIComponent(region)}`
+  if (!region) return path
+  return `${path}${path.includes("?") ? "&" : "?"}region=${encodeURIComponent(region)}`
 }
 
 /**
@@ -35,48 +35,48 @@ function withRegion(path: string, region: string | null): string {
  * control-plane version drift degrades to an empty list, not a crash.
  */
 function pickList<T>(data: unknown, key: string): T[] {
-    if (Array.isArray(data)) return data as T[]
-    const value = (data as Record<string, unknown> | null)?.[key]
-    return Array.isArray(value) ? (value as T[]) : []
+  if (Array.isArray(data)) return data as T[]
+  const value = (data as Record<string, unknown> | null)?.[key]
+  return Array.isArray(value) ? (value as T[]) : []
 }
 
 export const serverlessApi = {
-    listFunctions: async (region: string | null): Promise<FunctionEntity[]> =>
-        pickList(await apiGet<unknown>(withRegion("/serverless/functions", region)), "functions"),
+  listFunctions: async (region: string | null): Promise<FunctionEntity[]> =>
+    pickList(await apiGet<unknown>(withRegion("/serverless/functions", region)), "functions"),
 
-    getFunction: async (region: string | null, name: string): Promise<FunctionEntity> => {
-        const data = await apiGet<Record<string, unknown>>(
-            withRegion(`/serverless/functions/${encodeURIComponent(name)}`, region)
-        )
-        // Tolerate both a bare object and a {"function": {...}} wrapper.
-        return (data.function ?? data) as unknown as FunctionEntity
-    },
+  getFunction: async (region: string | null, name: string): Promise<FunctionEntity> => {
+    const data = await apiGet<Record<string, unknown>>(
+      withRegion(`/serverless/functions/${encodeURIComponent(name)}`, region),
+    )
+    // Tolerate both a bare object and a {"function": {...}} wrapper.
+    return (data.function ?? data) as unknown as FunctionEntity
+  },
 
-    deleteFunction: (region: string | null, name: string) =>
-        apiDelete<unknown>(withRegion(`/serverless/functions/${encodeURIComponent(name)}`, region)),
+  deleteFunction: (region: string | null, name: string) =>
+    apiDelete<unknown>(withRegion(`/serverless/functions/${encodeURIComponent(name)}`, region)),
 
-    listVersions: async (region: string | null, name: string): Promise<FunctionVersion[]> =>
-        pickList(
-            await apiGet<unknown>(
-                withRegion(`/serverless/functions/${encodeURIComponent(name)}/versions`, region)
-            ),
-            "versions"
-        ),
+  listVersions: async (region: string | null, name: string): Promise<FunctionVersion[]> =>
+    pickList(
+      await apiGet<unknown>(
+        withRegion(`/serverless/functions/${encodeURIComponent(name)}/versions`, region),
+      ),
+      "versions",
+    ),
 
-    listAliases: async (region: string | null, name: string): Promise<FunctionAlias[]> =>
-        pickList(
-            await apiGet<unknown>(
-                withRegion(`/serverless/functions/${encodeURIComponent(name)}/aliases`, region)
-            ),
-            "aliases"
-        ),
+  listAliases: async (region: string | null, name: string): Promise<FunctionAlias[]> =>
+    pickList(
+      await apiGet<unknown>(
+        withRegion(`/serverless/functions/${encodeURIComponent(name)}/aliases`, region),
+      ),
+      "aliases",
+    ),
 
-    listLayers: async (region: string | null): Promise<LayerVersion[]> =>
-        pickList(await apiGet<unknown>(withRegion("/serverless/layers", region)), "layers"),
+  listLayers: async (region: string | null): Promise<LayerVersion[]> =>
+    pickList(await apiGet<unknown>(withRegion("/serverless/layers", region)), "layers"),
 
-    activity: async (): Promise<ActivityEvent[]> => {
-        // Account-scoped feed, aggregated across regions — no selector.
-        const data = await apiGet<unknown>("/serverless/functions/activity")
-        return Array.isArray(data) ? (data as ActivityEvent[]) : []
-    },
+  activity: async (): Promise<ActivityEvent[]> => {
+    // Account-scoped feed, aggregated across regions — no selector.
+    const data = await apiGet<unknown>("/serverless/functions/activity")
+    return Array.isArray(data) ? (data as ActivityEvent[]) : []
+  },
 }

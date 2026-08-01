@@ -1,9 +1,9 @@
-import { css, cx } from '@emotion/css'
-import { Loader2 } from 'lucide-react'
+import { css, cx } from "@emotion/css"
+import { Loader2 } from "lucide-react"
 
-import { getStatusConfig, TONE_CLASSES, TONE_DOT_CLASSES } from './status-config'
-import { animatePulse, animateSpin, fontMono } from '../lib/styles'
-import { Badge } from '../ui/badge'
+import { getStatusConfig, TONE_CLASSES, TONE_DOT_CLASSES } from "./status-config"
+import { animatePulse, animateSpin, fontMono } from "../lib/styles"
+import { Badge } from "../ui/badge"
 
 const badge = css`
   gap: 6px;

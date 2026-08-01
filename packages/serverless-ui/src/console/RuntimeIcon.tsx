@@ -1,7 +1,7 @@
-import { css, cx } from '@emotion/css'
-import { Terminal } from 'lucide-react'
-import type { IconType } from 'react-icons'
-import { SiDotnet, SiGo, SiNodedotjs, SiOpenjdk, SiPython, SiRuby } from 'react-icons/si'
+import { css, cx } from "@emotion/css"
+import { Terminal } from "lucide-react"
+import type { IconType } from "react-icons"
+import { SiDotnet, SiGo, SiNodedotjs, SiOpenjdk, SiPython, SiRuby } from "react-icons/si"
 
 interface FamilyBrand {
   Icon: IconType
@@ -12,15 +12,15 @@ interface FamilyBrand {
 
 // `provided` doubles as the fallback for any family the catalog adds later, so
 // a new runtime renders with a sane icon instead of crashing.
-const FALLBACK: FamilyBrand = { Icon: Terminal, color: '#8A8A94', label: 'Custom runtime' }
+const FALLBACK: FamilyBrand = { Icon: Terminal, color: "#8A8A94", label: "Custom runtime" }
 
 const BRANDS: Record<string, FamilyBrand> = {
-  nodejs: { Icon: SiNodedotjs, color: '#5FA04E', label: 'Node.js' },
-  python: { Icon: SiPython, color: '#3776AB', label: 'Python' },
-  ruby: { Icon: SiRuby, color: '#CC342D', label: 'Ruby' },
-  java: { Icon: SiOpenjdk, color: '#F89820', label: 'Java' },
-  dotnet: { Icon: SiDotnet, color: '#512BD4', label: '.NET' },
-  go: { Icon: SiGo, color: '#00ADD8', label: 'Go' },
+  nodejs: { Icon: SiNodedotjs, color: "#5FA04E", label: "Node.js" },
+  python: { Icon: SiPython, color: "#3776AB", label: "Python" },
+  ruby: { Icon: SiRuby, color: "#CC342D", label: "Ruby" },
+  java: { Icon: SiOpenjdk, color: "#F89820", label: "Java" },
+  dotnet: { Icon: SiDotnet, color: "#512BD4", label: ".NET" },
+  go: { Icon: SiGo, color: "#00ADD8", label: "Go" },
   // `provided.*` has no language of its own — the artifact brings its own
   // runtime, so a terminal reads truer than any language mark.
   provided: FALLBACK,

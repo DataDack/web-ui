@@ -1,9 +1,9 @@
-import type * as React from 'react'
+import type * as React from "react"
 
-import { css, cx } from '@emotion/css'
-import { Slot } from 'radix-ui'
+import { css, cx } from "@emotion/css"
+import { Slot } from "radix-ui"
 
-import { mix } from '../lib/styles'
+import { mix } from "../lib/styles"
 
 const base = css`
   display: inline-flex;
@@ -22,7 +22,7 @@ const base = css`
 
   &:focus-visible {
     border-color: var(--ring);
-    box-shadow: 0 0 0 3px ${mix('--ring', 50)};
+    box-shadow: 0 0 0 3px ${mix("--ring", 50)};
   }
 
   &:disabled {
@@ -35,7 +35,7 @@ const base = css`
     flex-shrink: 0;
   }
 
-  & svg:not([class*='size-']) {
+  & svg:not([class*="size-"]) {
     width: 16px;
     height: 16px;
   }
@@ -47,7 +47,7 @@ const variants = {
     color: var(--primary-foreground);
 
     &:hover {
-      background: ${mix('--primary', 90)};
+      background: ${mix("--primary", 90)};
     }
   `,
   gold: css`
@@ -60,7 +60,7 @@ const variants = {
     }
 
     &:focus-visible {
-      box-shadow: 0 0 0 3px ${mix('--brand-gold', 40)};
+      box-shadow: 0 0 0 3px ${mix("--brand-gold", 40)};
     }
   `,
   destructive: css`
@@ -68,7 +68,7 @@ const variants = {
     color: #fff;
 
     &:hover {
-      background: ${mix('--destructive', 90)};
+      background: ${mix("--destructive", 90)};
     }
   `,
   outline: css`
@@ -83,11 +83,11 @@ const variants = {
 
     .dark & {
       border-color: var(--input);
-      background: ${mix('--input', 30)};
+      background: ${mix("--input", 30)};
     }
 
     .dark &:hover {
-      background: ${mix('--input', 50)};
+      background: ${mix("--input", 50)};
     }
   `,
   secondary: css`
@@ -95,7 +95,7 @@ const variants = {
     color: var(--secondary-foreground);
 
     &:hover {
-      background: ${mix('--secondary', 80)};
+      background: ${mix("--secondary", 80)};
     }
   `,
   ghost: css`
@@ -105,7 +105,7 @@ const variants = {
     }
 
     .dark &:hover {
-      background: ${mix('--accent', 50)};
+      background: ${mix("--accent", 50)};
     }
   `,
   link: css`
@@ -141,7 +141,7 @@ const sizes = {
       padding-right: 6px;
     }
 
-    & svg:not([class*='size-']) {
+    & svg:not([class*="size-"]) {
       width: 12px;
       height: 12px;
     }
@@ -171,7 +171,7 @@ const sizes = {
     width: 36px;
     height: 36px;
   `,
-  'icon-sm': css`
+  "icon-sm": css`
     width: 32px;
     height: 32px;
   `,
@@ -188,24 +188,24 @@ function buttonVariants(options?: {
 }) {
   return cx(
     base,
-    variants[options?.variant ?? 'default'],
-    sizes[options?.size ?? 'default'],
+    variants[options?.variant ?? "default"],
+    sizes[options?.size ?? "default"],
     options?.className,
   )
 }
 
 function Button({
   className,
-  variant = 'default',
-  size = 'default',
+  variant = "default",
+  size = "default",
   asChild = false,
   ...props
-}: React.ComponentProps<'button'> & {
+}: React.ComponentProps<"button"> & {
   variant?: ButtonVariant | null
   size?: ButtonSize | null
   asChild?: boolean
 }) {
-  const Comp = asChild ? Slot.Root : 'button'
+  const Comp = asChild ? Slot.Root : "button"
   return (
     <Comp
       data-slot="button"

@@ -1,9 +1,9 @@
-import type { ReactNode } from 'react'
+import type { ReactNode } from "react"
 
-import { css, cx } from '@emotion/css'
-import type { LucideIcon } from 'lucide-react'
+import { css, cx } from "@emotion/css"
+import type { LucideIcon } from "lucide-react"
 
-import { glass1, media } from '../lib/styles'
+import { glass1, media } from "../lib/styles"
 
 const wrap = css`
   margin-bottom: 24px;

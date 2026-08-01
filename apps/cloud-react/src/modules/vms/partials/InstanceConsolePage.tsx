@@ -12,34 +12,34 @@ import { useInstance } from "../vms.hooks"
 // Standalone terminal tab: nothing but the terminal itself, edge to edge. The
 // tab title carries the instance name so the window stays identifiable.
 export function InstanceConsolePage() {
-    useScreen("vms.vm-console")
-    const { id = "" } = useParams()
-    const [params] = useSearchParams()
-    const rawTarget = params.get("target")
-    const target: ConsoleTarget = rawTarget === "host" || rawTarget === "guest" ? rawTarget : "ssh"
-    // Guest login account for target=ssh, from the Connect page's username field.
-    const username = params.get("user") ?? undefined
-    const { data: instance, isLoading } = useInstance(id)
+  useScreen("vms.vm-console")
+  const { id = "" } = useParams()
+  const [params] = useSearchParams()
+  const rawTarget = params.get("target")
+  const target: ConsoleTarget = rawTarget === "host" || rawTarget === "guest" ? rawTarget : "ssh"
+  // Guest login account for target=ssh, from the Connect page's username field.
+  const username = params.get("user") ?? undefined
+  const { data: instance, isLoading } = useInstance(id)
 
-    useEffect(() => {
-        if (instance) {
-            document.title = `${instance.name} — ${target === "guest" ? "Serial console" : "SSH"}`
-        }
-    }, [instance, target])
+  useEffect(() => {
+    if (instance) {
+      document.title = `${instance.name} — ${target === "guest" ? "Serial console" : "SSH"}`
+    }
+  }, [instance, target])
 
-    return (
-        <div className="h-dvh bg-background">
-            {isLoading ? (
-                <Skeleton className="h-full w-full" />
-            ) : (
-                <ConsoleTerminal
-                    key={`${id}:${target}:${username ?? ""}`}
-                    instanceId={id}
-                    target={target}
-                    username={username}
-                    className="rounded-none border-0"
-                />
-            )}
-        </div>
-    )
+  return (
+    <div className="h-dvh bg-background">
+      {isLoading ? (
+        <Skeleton className="h-full w-full" />
+      ) : (
+        <ConsoleTerminal
+          key={`${id}:${target}:${username ?? ""}`}
+          instanceId={id}
+          target={target}
+          username={username}
+          className="rounded-none border-0"
+        />
+      )}
+    </div>
+  )
 }

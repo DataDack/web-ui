@@ -14,29 +14,29 @@ import { useSearchParams } from "react-router-dom"
  * keeps a clean URL.
  */
 export function useQueryParamState<T extends string>(
-    key: string,
-    allowed: readonly T[],
-    fallback: T
+  key: string,
+  allowed: readonly T[],
+  fallback: T,
 ): [T, (value: T) => void] {
-    const [searchParams, setSearchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
 
-    const raw = searchParams.get(key)
-    const value = allowed.includes(raw as T) ? (raw as T) : fallback
+  const raw = searchParams.get(key)
+  const value = allowed.includes(raw as T) ? (raw as T) : fallback
 
-    const setValue = useCallback(
-        (next: T) => {
-            setSearchParams(
-                (prev) => {
-                    const params = new URLSearchParams(prev)
-                    if (next === fallback) params.delete(key)
-                    else params.set(key, next)
-                    return params
-                },
-                { replace: true }
-            )
+  const setValue = useCallback(
+    (next: T) => {
+      setSearchParams(
+        (prev) => {
+          const params = new URLSearchParams(prev)
+          if (next === fallback) params.delete(key)
+          else params.set(key, next)
+          return params
         },
-        [setSearchParams, key, fallback]
-    )
+        { replace: true },
+      )
+    },
+    [setSearchParams, key, fallback],
+  )
 
-    return [value, setValue]
+  return [value, setValue]
 }

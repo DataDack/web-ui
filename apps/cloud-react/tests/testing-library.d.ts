@@ -3,8 +3,8 @@
 import type { TestingLibraryMatchers } from "@testing-library/jest-dom/matchers"
 
 declare module "bun:test" {
-    // eslint-disable-next-line @typescript-eslint/no-empty-object-type -- declaration merging: the empty extends IS the mechanism
-    interface Matchers<T> extends TestingLibraryMatchers<unknown, T> {}
-    // eslint-disable-next-line @typescript-eslint/no-empty-object-type -- declaration merging: the empty extends IS the mechanism
-    interface AsymmetricMatchers extends TestingLibraryMatchers<unknown, void> {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type -- declaration merging: the empty extends IS the mechanism
+  interface Matchers<T> extends TestingLibraryMatchers<unknown, T> {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type -- declaration merging: the empty extends IS the mechanism
+  interface AsymmetricMatchers extends TestingLibraryMatchers<unknown, void> {}
 }

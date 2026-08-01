@@ -8,13 +8,13 @@ import { ComingSoon } from "@/components/console"
  * ready. Mirrors the networking placeholder pages.
  */
 export function AutoscalingComingSoon() {
-    const { t } = useTranslation()
-    return (
-        <ComingSoon
-            icon={Activity}
-            title={t("console.nav.items.autoscaling")}
-            description={t("autoscaling.subtitle")}
-            breadcrumbs={[{ label: t("console.nav.groups.compute") }]}
-        />
-    )
+  const { t } = useTranslation()
+  return (
+    <ComingSoon
+      icon={Activity}
+      title={t("console.nav.items.autoscaling")}
+      description={t("autoscaling.subtitle")}
+      breadcrumbs={[{ label: t("console.nav.groups.compute") }]}
+    />
+  )
 }

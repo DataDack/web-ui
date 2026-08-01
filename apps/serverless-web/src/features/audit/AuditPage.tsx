@@ -1,11 +1,11 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState } from "react"
 
-import type { ColumnDef } from '@tanstack/react-table'
-import { ScrollText, ShieldCheck, ShieldX, UserCheck } from 'lucide-react'
+import type { ColumnDef } from "@tanstack/react-table"
+import { ScrollText, ShieldCheck, ShieldX, UserCheck } from "lucide-react"
 
-import { apiErrorMessage } from '@/lib/api'
-import { useAuditEvents } from '@/lib/queries'
-import type { AuditEvent } from '@/lib/schemas'
+import { apiErrorMessage } from "@/lib/api"
+import { useAuditEvents } from "@/lib/queries"
+import type { AuditEvent } from "@/lib/schemas"
 
 import {
   Badge,
@@ -17,19 +17,19 @@ import {
   StatCard,
   StatGrid,
   timeAgo,
-} from '@datadack/serverless-ui'
+} from "@datadack/serverless-ui"
 
 const RANGES = [
-  { label: '1h', since: '-1h' },
-  { label: '24h', since: '-24h' },
-  { label: '7d', since: '-168h' },
-  { label: 'All', since: '' },
+  { label: "1h", since: "-1h" },
+  { label: "24h", since: "-24h" },
+  { label: "7d", since: "-168h" },
+  { label: "All", since: "" },
 ] as const
 
 const OUTCOME_CLASSES: Record<string, string> = {
-  success: 'text-status-success',
-  failure: 'text-status-danger',
-  denied: 'text-status-warning',
+  success: "text-status-success",
+  failure: "text-status-danger",
+  denied: "text-status-warning",
 }
 
 export function AuditPage() {
@@ -47,8 +47,8 @@ export function AuditPage() {
   const columns = useMemo<ColumnDef<AuditEvent>[]>(
     () => [
       {
-        accessorKey: 'occurredAt',
-        header: 'When',
+        accessorKey: "occurredAt",
+        header: "When",
         cell: ({ row }) => (
           <span className="text-muted-foreground text-[12px] whitespace-nowrap">
             {timeAgo(row.original.occurredAt)}
@@ -56,27 +56,27 @@ export function AuditPage() {
         ),
       },
       {
-        accessorKey: 'action',
-        header: 'Action',
+        accessorKey: "action",
+        header: "Action",
         cell: ({ row }) => (
           <span className="font-mono text-[12px] font-medium">{row.original.action}</span>
         ),
       },
       {
-        accessorKey: 'resourceName',
-        header: 'Resource',
+        accessorKey: "resourceName",
+        header: "Resource",
         cell: ({ row }) => cellMono(row.original.resourceName),
       },
       {
-        accessorKey: 'principalId',
-        header: 'Principal',
+        accessorKey: "principalId",
+        header: "Principal",
         cell: ({ row }) => (
           <span
             className={cn(
-              'font-mono text-[12px]',
+              "font-mono text-[12px]",
               // An unauthenticated call is shown as such rather than blending in
               // with signed ones.
-              row.original.principalId === 'anonymous' && 'text-muted-foreground italic',
+              row.original.principalId === "anonymous" && "text-muted-foreground italic",
             )}
           >
             {row.original.principalId}
@@ -84,11 +84,11 @@ export function AuditPage() {
         ),
       },
       {
-        accessorKey: 'outcome',
-        header: 'Outcome',
+        accessorKey: "outcome",
+        header: "Outcome",
         cell: ({ row }) => (
           <Badge variant="outline" className="gap-1 font-mono text-[11px]">
-            <span className={OUTCOME_CLASSES[row.original.outcome] ?? ''}>
+            <span className={OUTCOME_CLASSES[row.original.outcome] ?? ""}>
               {row.original.outcome}
             </span>
             <span className="text-muted-foreground">{row.original.statusCode}</span>
@@ -96,18 +96,18 @@ export function AuditPage() {
         ),
       },
       {
-        accessorKey: 'durationMs',
-        header: 'Took',
+        accessorKey: "durationMs",
+        header: "Took",
         cell: ({ row }) => cellMono(`${String(row.original.durationMs)} ms`),
       },
       {
-        accessorKey: 'sourceIp',
-        header: 'Source',
+        accessorKey: "sourceIp",
+        header: "Source",
         cell: ({ row }) => cellText(row.original.sourceIp),
       },
       {
-        accessorKey: 'error',
-        header: 'Detail',
+        accessorKey: "error",
+        header: "Detail",
         cell: ({ row }) =>
           row.original.error ? (
             <span
@@ -124,7 +124,7 @@ export function AuditPage() {
     [],
   )
 
-  const failures = events.filter((event) => event.outcome !== 'success').length
+  const failures = events.filter((event) => event.outcome !== "success").length
   const principals = new Set(events.map((event) => event.principalId)).size
 
   return (
@@ -145,10 +145,10 @@ export function AuditPage() {
                 setRangeIndex(index)
               }}
               className={cn(
-                'px-2.5 py-1 font-mono text-[11px] transition-colors',
+                "px-2.5 py-1 font-mono text-[11px] transition-colors",
                 index === rangeIndex
-                  ? 'bg-accent text-foreground'
-                  : 'text-muted-foreground hover:text-foreground',
+                  ? "bg-accent text-foreground"
+                  : "text-muted-foreground hover:text-foreground",
               )}
             >
               {option.label}
@@ -181,13 +181,13 @@ export function AuditPage() {
           label="Failed or denied"
           value={failures}
           icon={ShieldX}
-          color={failures > 0 ? 'danger' : 'default'}
+          color={failures > 0 ? "danger" : "default"}
           loading={isLoading}
         />
         <StatCard label="Principals" value={principals} icon={UserCheck} loading={isLoading} />
         <StatCard
           label="Window"
-          value={range.label === 'All' ? 'All time' : range.label}
+          value={range.label === "All" ? "All time" : range.label}
           loading={isLoading}
         />
       </StatGrid>

@@ -4,10 +4,10 @@ import { FieldRow } from "@/components/console"
 import { Input } from "@/components/ui/input"
 
 interface RootDirectoryInputProps {
-    value: string
-    onChange: (value: string) => void
-    id?: string
-    error?: string
+  value: string
+  onChange: (value: string) => void
+  id?: string
+  error?: string
 }
 
 /**
@@ -20,30 +20,30 @@ interface RootDirectoryInputProps {
  * with a real placeholder.
  */
 export function RootDirectoryInput({
-    value,
-    onChange,
-    id = "root-dir",
-    error,
+  value,
+  onChange,
+  id = "root-dir",
+  error,
 }: Readonly<RootDirectoryInputProps>) {
-    return (
-        <FieldRow
-            label="Root directory"
-            htmlFor={id}
-            error={error}
-            description="Leave empty for the repository root. Set this for a monorepo — for example apps/web."
-        >
-            <div className="relative">
-                <FolderTree className="absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                    id={id}
-                    value={value}
-                    placeholder="./"
-                    className="pl-8 font-mono"
-                    onChange={(event) => {
-                        onChange(event.target.value)
-                    }}
-                />
-            </div>
-        </FieldRow>
-    )
+  return (
+    <FieldRow
+      label="Root directory"
+      htmlFor={id}
+      error={error}
+      description="Leave empty for the repository root. Set this for a monorepo — for example apps/web."
+    >
+      <div className="relative">
+        <FolderTree className="absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          id={id}
+          value={value}
+          placeholder="./"
+          className="pl-8 font-mono"
+          onChange={(event) => {
+            onChange(event.target.value)
+          }}
+        />
+      </div>
+    </FieldRow>
+  )
 }

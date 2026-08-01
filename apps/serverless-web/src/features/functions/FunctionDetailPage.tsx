@@ -1,10 +1,10 @@
-import { useQuery } from '@tanstack/react-query'
-import { ArrowLeft, Code2, Container, GitBranch, History, Package, Settings2 } from 'lucide-react'
-import { Link, useParams, useSearchParams } from 'react-router-dom'
+import { useQuery } from "@tanstack/react-query"
+import { ArrowLeft, Code2, Container, GitBranch, History, Package, Settings2 } from "lucide-react"
+import { Link, useParams, useSearchParams } from "react-router-dom"
 
-import { http } from '@/lib/api'
-import { useDashboard } from '@/lib/queries'
-import { functionVersionSchema, type FunctionEntity } from '@/lib/schemas'
+import { http } from "@/lib/api"
+import { useDashboard } from "@/lib/queries"
+import { functionVersionSchema, type FunctionEntity } from "@/lib/schemas"
 
 import {
   Badge,
@@ -19,13 +19,13 @@ import {
   TabsList,
   TabsTrigger,
   timeAgo,
-} from '@datadack/serverless-ui'
+} from "@datadack/serverless-ui"
 
 const TABS = [
-  { value: 'code', label: 'Code', icon: Code2 },
-  { value: 'configuration', label: 'Configuration', icon: Settings2 },
-  { value: 'versions', label: 'Versions', icon: History },
-  { value: 'aliases', label: 'Aliases', icon: GitBranch },
+  { value: "code", label: "Code", icon: Code2 },
+  { value: "configuration", label: "Configuration", icon: Settings2 },
+  { value: "versions", label: "Versions", icon: History },
+  { value: "aliases", label: "Aliases", icon: GitBranch },
 ]
 
 /**
@@ -33,15 +33,15 @@ const TABS = [
  * everything else behind tabs — with the code editor as the first of them.
  */
 export function FunctionDetailPage() {
-  const { name = '' } = useParams()
+  const { name = "" } = useParams()
   const { data, isLoading } = useDashboard()
   const fn = data?.detail.functions.find((candidate) => candidate.name === name)
 
   // The active tab lives in the URL, so a specific tab is linkable and survives
   // a reload.
   const [searchParams, setSearchParams] = useSearchParams()
-  const requested = searchParams.get('tab') ?? 'code'
-  const activeTab = TABS.some((tab) => tab.value === requested) ? requested : 'code'
+  const requested = searchParams.get("tab") ?? "code"
+  const activeTab = TABS.some((tab) => tab.value === requested) ? requested : "code"
 
   if (isLoading && !fn) {
     return (
@@ -66,7 +66,7 @@ export function FunctionDetailPage() {
     )
   }
 
-  const isImage = fn.packageType === 'image'
+  const isImage = fn.packageType === "image"
 
   return (
     <>
@@ -83,7 +83,7 @@ export function FunctionDetailPage() {
               )}
             </div>
             <h1 className="truncate font-mono text-xl font-bold tracking-tight">{fn.name}</h1>
-            <StatusBadge status={fn.state} pulse={fn.state.toLowerCase() === 'active'} />
+            <StatusBadge status={fn.state} pulse={fn.state.toLowerCase() === "active"} />
             <Badge variant="outline" className="font-mono text-[11px]">
               {fn.runtime ?? fn.packageType}
             </Badge>
@@ -102,8 +102,8 @@ export function FunctionDetailPage() {
           setSearchParams(
             (prev) => {
               const params = new URLSearchParams(prev)
-              if (next === 'code') params.delete('tab')
-              else params.set('tab', next)
+              if (next === "code") params.delete("tab")
+              else params.set("tab", next)
               return params
             },
             { replace: true },
@@ -167,23 +167,23 @@ function ConfigurationTab({ fn }: Readonly<{ fn: FunctionEntity }>) {
         <h3 className="mb-4 text-sm font-semibold">General</h3>
         <KeyValueGrid
           items={[
-            { label: 'Runtime', value: fn.runtime ?? fn.runtimeMode, mono: true },
-            { label: 'Handler', value: fn.handler, mono: true },
-            { label: 'Architecture', value: fn.architecture, mono: true },
+            { label: "Runtime", value: fn.runtime ?? fn.runtimeMode, mono: true },
+            { label: "Handler", value: fn.handler, mono: true },
+            { label: "Architecture", value: fn.architecture, mono: true },
             {
-              label: 'Memory',
+              label: "Memory",
               value: fn.memorySize ? `${String(fn.memorySize)} MB` : undefined,
               mono: true,
             },
             {
-              label: 'Timeout',
+              label: "Timeout",
               value: fn.timeout ? `${String(fn.timeout)}s` : undefined,
               mono: true,
             },
-            { label: 'Package type', value: fn.packageType, mono: true },
-            { label: 'Namespace', value: fn.namespace, mono: true },
-            { label: 'Region', value: fn.region, mono: true },
-            { label: 'Last modified', value: timeAgo(fn.updatedAt), mono: true },
+            { label: "Package type", value: fn.packageType, mono: true },
+            { label: "Namespace", value: fn.namespace, mono: true },
+            { label: "Region", value: fn.region, mono: true },
+            { label: "Last modified", value: timeAgo(fn.updatedAt), mono: true },
           ]}
         />
       </section>
@@ -209,7 +209,7 @@ function ConfigurationTab({ fn }: Readonly<{ fn: FunctionEntity }>) {
 
 function VersionsTab({ functionName }: Readonly<{ functionName: string }>) {
   const { data, isLoading } = useQuery({
-    queryKey: ['function-versions', functionName],
+    queryKey: ["function-versions", functionName],
     queryFn: async () => {
       const { data: body } = await http.get<{ versions?: unknown[] }>(
         `/v1/functions/${encodeURIComponent(functionName)}/versions`,
@@ -232,7 +232,7 @@ function VersionsTab({ functionName }: Readonly<{ functionName: string }>) {
               v{version.version}
             </Badge>
             <span className="text-muted-foreground font-mono text-[11px]">
-              {version.codeSha256?.slice(0, 12) ?? '—'}
+              {version.codeSha256?.slice(0, 12) ?? "—"}
             </span>
             {version.codeArtifact?.source && (
               <Badge variant="secondary" className="font-mono text-[10px]">
@@ -251,7 +251,7 @@ function VersionsTab({ functionName }: Readonly<{ functionName: string }>) {
 
 function AliasesTab({ functionName }: Readonly<{ functionName: string }>) {
   const { data, isLoading } = useQuery({
-    queryKey: ['function-aliases', functionName],
+    queryKey: ["function-aliases", functionName],
     queryFn: async () => {
       const { data: body } = await http.get<{
         aliases?: { name: string; functionVersion: string }[]

@@ -1,24 +1,24 @@
 {
-    "extends": "@serverless-ui/typescript-config/vite-app.json",
-    "compilerOptions": {
-        "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+  "extends": "@serverless-ui/typescript-config/vite-app.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
 
-        /* Bundler mode beyond the shared base. */
-        "useDefineForClassFields": true,
-        "allowImportingTsExtensions": true,
-        "erasableSyntaxOnly": true,
-        "noUncheckedSideEffectImports": true,
+    /* Bundler mode beyond the shared base. */
+    "useDefineForClassFields": true,
+    "allowImportingTsExtensions": true,
+    "erasableSyntaxOnly": true,
+    "noUncheckedSideEffectImports": true,
 
-        /* Relaxations against the shared base, to be removed as the code is
+    /* Relaxations against the shared base, to be removed as the code is
            brought up to it. noUncheckedIndexedAccess in particular turns every
            array and record read into T | undefined, which this app is not yet
            written for. */
-        "noUncheckedIndexedAccess": false,
-        "noImplicitOverride": false,
+    "noUncheckedIndexedAccess": false,
+    "noImplicitOverride": false,
 
-        "paths": {
-            "@/*": ["./src/*"]
-        }
-    },
-    "include": ["src", "env.d.ts"]
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["src", "env.d.ts"]
 }

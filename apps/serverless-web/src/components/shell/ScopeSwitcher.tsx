@@ -1,10 +1,10 @@
-import { useState } from 'react'
+import { useState } from "react"
 
-import { useQueryClient } from '@tanstack/react-query'
-import { Building2, Layers3 } from 'lucide-react'
+import { useQueryClient } from "@tanstack/react-query"
+import { Building2, Layers3 } from "lucide-react"
 
-import { connection } from '@/lib/api'
-import { useTenants } from '@/lib/queries'
+import { connection } from "@/lib/api"
+import { useTenants } from "@/lib/queries"
 
 /**
  * Tenant and namespace selection.
@@ -54,7 +54,7 @@ export function ScopeSwitcher() {
           onChange={(event) => {
             // Namespaces belong to an account, so a stale one must not carry
             // across the switch.
-            apply(event.target.value, '')
+            apply(event.target.value, "")
           }}
           className="border-border bg-card text-foreground h-7 rounded-md border px-1.5 font-mono text-[11px]"
         >

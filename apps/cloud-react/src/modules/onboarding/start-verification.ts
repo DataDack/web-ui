@@ -20,11 +20,11 @@ import { onboardingApi } from "./onboarding.api"
  * rather than assuming success.
  */
 export type StartVerificationResult =
-    /** Redirect issued — the browser is on its way to the provider. */
-    | { outcome: "redirecting" }
-    /** Backend reconciled a lost verdict: already verified, nothing to do but
-     *  refresh the status. */
-    | { outcome: "already-verified" }
+  /** Redirect issued — the browser is on its way to the provider. */
+  | { outcome: "redirecting" }
+  /** Backend reconciled a lost verdict: already verified, nothing to do but
+   *  refresh the status. */
+  | { outcome: "already-verified" }
 
 /**
  * Start (or resume) verification and send the user to the provider.
@@ -34,27 +34,27 @@ export type StartVerificationResult =
  * to turn the thrown error into user-facing copy.
  */
 export async function startVerification(): Promise<StartVerificationResult> {
-    const session = await onboardingApi.startKyc()
+  const session = await onboardingApi.startKyc()
 
-    // No URL means the backend applied an already-VERIFIED verification whose
-    // webhook was lost, rather than opening a session. Nothing to redirect to.
-    if (!session.authorization_url) return { outcome: "already-verified" }
+  // No URL means the backend applied an already-VERIFIED verification whose
+  // webhook was lost, rather than opening a session. Nothing to redirect to.
+  if (!session.authorization_url) return { outcome: "already-verified" }
 
-    // assign(), not replace(): the console page stays in history so a user who
-    // abandons the provider flow can come back with the browser's back button.
-    window.location.assign(session.authorization_url)
-    return { outcome: "redirecting" }
+  // assign(), not replace(): the console page stays in history so a user who
+  // abandons the provider flow can come back with the browser's back button.
+  window.location.assign(session.authorization_url)
+  return { outcome: "redirecting" }
 }
 
 /** User-facing copy for a failed startVerification(), by why it failed. */
 export function verificationErrorMessage(e: unknown): string {
-    // 503 is the backend's sentinel for an upstream KYC-service outage — not the
-    // user's fault and worth retrying, unlike the 400s (not enabled, already
-    // completed) which mean this request will never succeed as-is.
-    if (axios.isAxiosError(e) && e.response?.status === 503) {
-        return i18n.t("onboarding.verification.serviceUnavailable")
-    }
-    return i18n.t("onboarding.verification.startFailed")
+  // 503 is the backend's sentinel for an upstream KYC-service outage — not the
+  // user's fault and worth retrying, unlike the 400s (not enabled, already
+  // completed) which mean this request will never succeed as-is.
+  if (axios.isAxiosError(e) && e.response?.status === 503) {
+    return i18n.t("onboarding.verification.serviceUnavailable")
+  }
+  return i18n.t("onboarding.verification.startFailed")
 }
 
 /**
@@ -64,12 +64,12 @@ export function verificationErrorMessage(e: unknown): string {
  * status instead of leaving a stale gate on screen.
  */
 export function startVerificationFromToast(): void {
-    startVerification()
-        .then((r) => {
-            if (r.outcome === "already-verified") window.location.reload()
-            return r
-        })
-        .catch((e: unknown) => {
-            toast.error(verificationErrorMessage(e))
-        })
+  startVerification()
+    .then((r) => {
+      if (r.outcome === "already-verified") window.location.reload()
+      return r
+    })
+    .catch((e: unknown) => {
+      toast.error(verificationErrorMessage(e))
+    })
 }

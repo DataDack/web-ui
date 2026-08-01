@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button"
 
 /** What a Custom tier answers, in the same four slots the priced tiers use. */
 const CUSTOM_HIGHLIGHTS = [
-    { label: "Projects", value: "As many as you need" },
-    { label: "Bandwidth", value: "Negotiated" },
-    { label: "Build minutes", value: "Negotiated" },
-    { label: "Support", value: "Direct line" },
+  { label: "Projects", value: "As many as you need" },
+  { label: "Bandwidth", value: "Negotiated" },
+  { label: "Build minutes", value: "Negotiated" },
+  { label: "Support", value: "Direct line" },
 ]
 
 /**
@@ -23,52 +23,52 @@ const CUSTOM_HIGHLIGHTS = [
  * quotas would break every consumer that reads those fields as numbers.
  */
 export function CustomPlanCard({
-    disabled,
-    onContact,
+  disabled,
+  onContact,
 }: Readonly<{ disabled?: boolean; onContact: () => void }>) {
-    return (
-        <div className="relative flex flex-col gap-4 rounded-xl border border-dashed border-brand-gold/40 bg-brand-gold-soft/40 p-4">
-            <div className="flex items-start justify-between gap-3">
-                <span
-                    className="flex size-9 items-center justify-center rounded-lg border border-brand-gold/40 bg-brand-gold/10 text-brand-gold"
-                    aria-hidden
-                >
-                    <Sparkles className="size-5" />
-                </span>
-            </div>
+  return (
+    <div className="relative flex flex-col gap-4 rounded-xl border border-dashed border-brand-gold/40 bg-brand-gold-soft/40 p-4">
+      <div className="flex items-start justify-between gap-3">
+        <span
+          className="flex size-9 items-center justify-center rounded-lg border border-brand-gold/40 bg-brand-gold/10 text-brand-gold"
+          aria-hidden
+        >
+          <Sparkles className="size-5" />
+        </span>
+      </div>
 
-            <div className="space-y-1">
-                <p className="text-sm font-semibold">Custom</p>
-                <p className="text-xl font-semibold tracking-tight">Let&apos;s talk</p>
-            </div>
+      <div className="space-y-1">
+        <p className="text-sm font-semibold">Custom</p>
+        <p className="text-xl font-semibold tracking-tight">Let&apos;s talk</p>
+      </div>
 
-            <dl className="grid grid-cols-2 gap-x-3 gap-y-2 border-t border-brand-gold/20 pt-3">
-                {CUSTOM_HIGHLIGHTS.map((row) => (
-                    <div key={row.label} className="min-w-0">
-                        <dt className="truncate text-[10px] tracking-wide text-muted-foreground uppercase">
-                            {row.label}
-                        </dt>
-                        <dd className="truncate text-[13px] font-medium">{row.value}</dd>
-                    </div>
-                ))}
-            </dl>
+      <dl className="grid grid-cols-2 gap-x-3 gap-y-2 border-t border-brand-gold/20 pt-3">
+        {CUSTOM_HIGHLIGHTS.map((row) => (
+          <div key={row.label} className="min-w-0">
+            <dt className="truncate text-[10px] tracking-wide text-muted-foreground uppercase">
+              {row.label}
+            </dt>
+            <dd className="truncate text-[13px] font-medium">{row.value}</dd>
+          </div>
+        ))}
+      </dl>
 
-            <div className="mt-auto space-y-1.5 pt-1">
-                <Button
-                    type="button"
-                    variant="gold"
-                    size="sm"
-                    className="w-full gap-1.5"
-                    disabled={disabled}
-                    onClick={onContact}
-                >
-                    <MessagesSquare className="size-3.5" />
-                    Contact us
-                </Button>
-                <p className="text-[11px] text-muted-foreground">
-                    Opens a support ticket — we reply in the thread.
-                </p>
-            </div>
-        </div>
-    )
+      <div className="mt-auto space-y-1.5 pt-1">
+        <Button
+          type="button"
+          variant="gold"
+          size="sm"
+          className="w-full gap-1.5"
+          disabled={disabled}
+          onClick={onContact}
+        >
+          <MessagesSquare className="size-3.5" />
+          Contact us
+        </Button>
+        <p className="text-[11px] text-muted-foreground">
+          Opens a support ticket — we reply in the thread.
+        </p>
+      </div>
+    </div>
+  )
 }

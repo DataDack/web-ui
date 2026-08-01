@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
 
-import { css, cx } from '@emotion/css'
+import { css, cx } from "@emotion/css"
 
-import { fontMono, glass1 } from '../lib/styles'
+import { fontMono, glass1 } from "../lib/styles"
 
 /**
  * The console's two chart forms, hand-rolled in SVG.
@@ -183,8 +183,8 @@ export function formatTick(value: number): string {
 
 function formatClock(iso: string): string {
   const date = new Date(iso)
-  if (Number.isNaN(date.getTime())) return ''
-  return date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })
+  if (Number.isNaN(date.getTime())) return ""
+  return date.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })
 }
 
 interface ChartFrameProps {
@@ -330,7 +330,7 @@ function ChartFrame({
         )}
 
         {isEmpty && width > 0 && (
-          <div className={emptyOverlay}>{emptyLabel ?? 'No data in this window'}</div>
+          <div className={emptyOverlay}>{emptyLabel ?? "No data in this window"}</div>
         )}
 
         {hovered !== null && !isEmpty && (
@@ -343,7 +343,7 @@ function ChartFrame({
               right: x(hovered) >= width / 2 ? width - x(hovered) + 10 : undefined,
             }}
           >
-            <div className={tooltipTime}>{formatClock(points[hovered]?.timestamp ?? '')}</div>
+            <div className={tooltipTime}>{formatClock(points[hovered]?.timestamp ?? "")}</div>
             {tooltip(hovered)}
           </div>
         )}
@@ -444,8 +444,8 @@ function barPath(x: number, y: number, width: number, height: number, roundTop: 
     `h${String(width - radius * 2)}`,
     `a${String(radius)},${String(radius)} 0 0 1 ${String(radius)},${String(radius)}`,
     `V${String(y + height)}`,
-    'z',
-  ].join('')
+    "z",
+  ].join("")
 }
 
 export interface LineTimeChartProps {
@@ -493,7 +493,7 @@ export function LineTimeChart({
               <span className={tooltipLabel}>{entry.label}</span>
               <span className={tooltipValue}>
                 {formatTick(points[index]?.values[seriesIndex] ?? 0)}
-                {unit ? ` ${unit}` : ''}
+                {unit ? ` ${unit}` : ""}
               </span>
             </li>
           ))}
@@ -506,9 +506,9 @@ export function LineTimeChart({
             const path = points
               .map((point, index) => {
                 const value = point.values[seriesIndex] ?? 0
-                return `${index === 0 ? 'M' : 'L'}${String(chartFrame.x(index))},${String(chartFrame.y(value))}`
+                return `${index === 0 ? "M" : "L"}${String(chartFrame.x(index))},${String(chartFrame.y(value))}`
               })
-              .join('')
+              .join("")
             const lastIndex = points.length - 1
             const lastValue = points[lastIndex]?.values[seriesIndex] ?? 0
 

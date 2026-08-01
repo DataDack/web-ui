@@ -35,10 +35,10 @@ export { SmartSelect } from "./select/SmartSelect"
 export { SmartSelectRow } from "./select/SmartSelect/SmartSelectRow"
 export { SmartSelectField } from "./select/SmartSelectField"
 export type {
-    SmartSelectMode,
-    SmartSelectOption,
-    SmartSelectProps,
-    SmartSelectRowProps,
+  SmartSelectMode,
+  SmartSelectOption,
+  SmartSelectProps,
+  SmartSelectRowProps,
 } from "./select/SmartSelect/smart-select.types"
 
 // Form
@@ -56,13 +56,13 @@ export type { ColumnMeta } from "./table/ResourceTable"
 export { BulkActionsBar } from "./table/BulkActionsBar"
 export type { BulkAction } from "./table/BulkActionsBar"
 export {
-    actionsColumn,
-    copyColumn,
-    dateColumn,
-    nameColumn,
-    statusColumn,
-    tagsColumn,
-    textColumn,
+  actionsColumn,
+  copyColumn,
+  dateColumn,
+  nameColumn,
+  statusColumn,
+  tagsColumn,
+  textColumn,
 } from "./table/resource-table-columns"
 export type { RowAction } from "./table/resource-table-columns"
 

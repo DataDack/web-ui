@@ -10,13 +10,13 @@ import { managedAppsApi } from "./managed-apps.api"
 import { MANAGED_APPS_QUERY_KEYS } from "./managed-apps.constants"
 import { isProjectBusy, projectPollInterval } from "./managed-apps.state"
 import {
-    type CreateProjectRequest,
-    type GitHubCallbackRequest,
-    type Plan,
-    type ProjectType,
-    type UpdateProjectEnvRequest,
-    type UpdateProjectRequest,
-    isBuildTransitional,
+  type CreateProjectRequest,
+  type GitHubCallbackRequest,
+  type Plan,
+  type ProjectType,
+  type UpdateProjectEnvRequest,
+  type UpdateProjectRequest,
+  isBuildTransitional,
 } from "./managed-apps.types"
 
 // ---------------------------------------------------------------------------
@@ -25,11 +25,11 @@ import {
 
 /** Section landing stats, kept fresh while builds run server-side. */
 export function useManagedAppsOverview() {
-    return useQuery({
-        queryKey: MANAGED_APPS_QUERY_KEYS.overview,
-        queryFn: managedAppsApi.overview,
-        refetchInterval: 30_000,
-    })
+  return useQuery({
+    queryKey: MANAGED_APPS_QUERY_KEYS.overview,
+    queryFn: managedAppsApi.overview,
+    refetchInterval: 30_000,
+  })
 }
 
 // ---------------------------------------------------------------------------
@@ -45,11 +45,11 @@ export function useManagedAppsOverview() {
  * than refetched on every mount of the composer.
  */
 export function usePlans() {
-    return useQuery({
-        queryKey: MANAGED_APPS_QUERY_KEYS.plans,
-        queryFn: () => managedAppsApi.plans(),
-        staleTime: 10 * 60 * 1000,
-    })
+  return useQuery({
+    queryKey: MANAGED_APPS_QUERY_KEYS.plans,
+    queryFn: () => managedAppsApi.plans(),
+    staleTime: 10 * 60 * 1000,
+  })
 }
 
 /**
@@ -62,9 +62,9 @@ export function usePlans() {
  * user has to cover.
  */
 function paymentShortfall(e: unknown): number | null {
-    if (!axios.isAxiosError(e) || e.response?.status !== 402) return null
-    const body = e.response.data as { data?: { shortfall?: number; required?: number } } | undefined
-    return Math.ceil(body?.data?.shortfall ?? body?.data?.required ?? 0)
+  if (!axios.isAxiosError(e) || e.response?.status !== 402) return null
+  const body = e.response.data as { data?: { shortfall?: number; required?: number } } | undefined
+  return Math.ceil(body?.data?.shortfall ?? body?.data?.required ?? 0)
 }
 
 /**
@@ -75,10 +75,10 @@ function paymentShortfall(e: unknown): number | null {
  * it is not cached the way pricing is.
  */
 export function useAccountPlan() {
-    return useQuery({
-        queryKey: MANAGED_APPS_QUERY_KEYS.accountPlan,
-        queryFn: () => managedAppsApi.accountPlan(),
-    })
+  return useQuery({
+    queryKey: MANAGED_APPS_QUERY_KEYS.accountPlan,
+    queryFn: () => managedAppsApi.accountPlan(),
+  })
 }
 
 /**
@@ -92,92 +92,92 @@ export function useAccountPlan() {
  * top-up shortcut, since that is the only way out of it.
  */
 export function useChangeAccountPlan() {
-    const queryClient = useQueryClient()
-    return useMutation({
-        // The whole tier, not just its code: the failure path needs its price to
-        // tell the user what the wallet is short of.
-        mutationFn: (plan: Plan) => managedAppsApi.changeAccountPlan(plan.code),
-        onSuccess: (account) => {
-            queryClient.setQueryData(MANAGED_APPS_QUERY_KEYS.accountPlan, account)
-            // The tier writes account_quota overrides server-side, so anything
-            // rendering a Managed Apps quota is now stale.
-            void queryClient.invalidateQueries({ queryKey: ["quotas"] })
-            // It is billed as a subscription, so the wallet moved too.
-            void queryClient.invalidateQueries({ queryKey: ["billing"] })
-            // Any other tab of this console is now showing the old tier.
-            publishConsoleEvent({ type: "managed-apps:plan-changed", code: account.plan.code })
-            toast.success(`Now on the ${account.plan.name} plan`)
-        },
-        onError: (e, plan) => {
-            const message = extractError(e, "Could not change the plan")
-            const shortfall = paymentShortfall(e)
-            if (shortfall !== null) {
-                // Straight to the top-up, in a new tab — the upgrade dialog
-                // behind it stays open and ready to retry the moment the
-                // payment lands. Only the amount-less refusal is opened here:
-                // when the 402 carried figures the api client already opened
-                // that tab, and doing it again would open two.
-                if (shortfall === 0) openTopupTab(plan.price_minor / 100)
-                toast.error(message, {
-                    description: "Billing is open in a new tab — top up, then try again.",
-                })
-                return
-            }
-            toast.error(message)
-        },
-    })
+  const queryClient = useQueryClient()
+  return useMutation({
+    // The whole tier, not just its code: the failure path needs its price to
+    // tell the user what the wallet is short of.
+    mutationFn: (plan: Plan) => managedAppsApi.changeAccountPlan(plan.code),
+    onSuccess: (account) => {
+      queryClient.setQueryData(MANAGED_APPS_QUERY_KEYS.accountPlan, account)
+      // The tier writes account_quota overrides server-side, so anything
+      // rendering a Managed Apps quota is now stale.
+      void queryClient.invalidateQueries({ queryKey: ["quotas"] })
+      // It is billed as a subscription, so the wallet moved too.
+      void queryClient.invalidateQueries({ queryKey: ["billing"] })
+      // Any other tab of this console is now showing the old tier.
+      publishConsoleEvent({ type: "managed-apps:plan-changed", code: account.plan.code })
+      toast.success(`Now on the ${account.plan.name} plan`)
+    },
+    onError: (e, plan) => {
+      const message = extractError(e, "Could not change the plan")
+      const shortfall = paymentShortfall(e)
+      if (shortfall !== null) {
+        // Straight to the top-up, in a new tab — the upgrade dialog
+        // behind it stays open and ready to retry the moment the
+        // payment lands. Only the amount-less refusal is opened here:
+        // when the 402 carried figures the api client already opened
+        // that tab, and doing it again would open two.
+        if (shortfall === 0) openTopupTab(plan.price_minor / 100)
+        toast.error(message, {
+          description: "Billing is open in a new tab — top up, then try again.",
+        })
+        return
+      }
+      toast.error(message)
+    },
+  })
 }
 
 export function useGitHubConnections() {
-    return useQuery({
-        queryKey: MANAGED_APPS_QUERY_KEYS.githubConnections,
-        queryFn: managedAppsApi.githubConnections,
-    })
+  return useQuery({
+    queryKey: MANAGED_APPS_QUERY_KEYS.githubConnections,
+    queryFn: managedAppsApi.githubConnections,
+  })
 }
 
 /** Fetch the GitHub App install URL, then hand off the browser to it. */
 export function useGitHubInstallUrl() {
-    return useMutation({
-        mutationFn: () => managedAppsApi.githubInstallUrl(),
-        onError: (e) => toast.error(extractError(e, "Could not start GitHub connect")),
-    })
+  return useMutation({
+    mutationFn: () => managedAppsApi.githubInstallUrl(),
+    onError: (e) => toast.error(extractError(e, "Could not start GitHub connect")),
+  })
 }
 
 /** Complete the post-install redirect (installation_id+state) → stores the connection. */
 export function useGitHubCallback() {
-    const queryClient = useQueryClient()
-    return useMutation({
-        mutationFn: (payload: GitHubCallbackRequest) => managedAppsApi.githubCallback(payload),
-        onSuccess: () => {
-            void queryClient.invalidateQueries({
-                queryKey: MANAGED_APPS_QUERY_KEYS.githubConnections,
-            })
-        },
-    })
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (payload: GitHubCallbackRequest) => managedAppsApi.githubCallback(payload),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: MANAGED_APPS_QUERY_KEYS.githubConnections,
+      })
+    },
+  })
 }
 
 export function useDeleteGitHubConnection() {
-    const queryClient = useQueryClient()
-    return useMutation({
-        mutationFn: ({
-            installationId,
-            uninstall = false,
-        }: {
-            installationId: number
-            uninstall?: boolean
-        }) => managedAppsApi.deleteGithubConnection(installationId, uninstall),
-        onSuccess: (_data, { uninstall }) => {
-            void queryClient.invalidateQueries({
-                queryKey: MANAGED_APPS_QUERY_KEYS.githubConnections,
-            })
-            toast.success(
-                uninstall
-                    ? "GitHub connection removed and the app was uninstalled from GitHub"
-                    : "GitHub connection removed"
-            )
-        },
-        onError: (e) => toast.error(extractError(e, "Failed to remove GitHub connection")),
-    })
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({
+      installationId,
+      uninstall = false,
+    }: {
+      installationId: number
+      uninstall?: boolean
+    }) => managedAppsApi.deleteGithubConnection(installationId, uninstall),
+    onSuccess: (_data, { uninstall }) => {
+      void queryClient.invalidateQueries({
+        queryKey: MANAGED_APPS_QUERY_KEYS.githubConnections,
+      })
+      toast.success(
+        uninstall
+          ? "GitHub connection removed and the app was uninstalled from GitHub"
+          : "GitHub connection removed",
+      )
+    },
+    onError: (e) => toast.error(extractError(e, "Failed to remove GitHub connection")),
+  })
 }
 
 /**
@@ -190,12 +190,12 @@ export function useDeleteGitHubConnection() {
  * in flight, so typing does not flash the list empty between keystrokes.
  */
 export function useGitHubRepos(installationId: number | undefined, query = "") {
-    return useQuery({
-        queryKey: MANAGED_APPS_QUERY_KEYS.githubRepos(installationId ?? 0, query),
-        queryFn: () => managedAppsApi.githubRepos(installationId ?? 0, query),
-        enabled: installationId != null,
-        placeholderData: (previous) => previous,
-    })
+  return useQuery({
+    queryKey: MANAGED_APPS_QUERY_KEYS.githubRepos(installationId ?? 0, query),
+    queryFn: () => managedAppsApi.githubRepos(installationId ?? 0, query),
+    enabled: installationId != null,
+    placeholderData: (previous) => previous,
+  })
 }
 
 /**
@@ -207,37 +207,33 @@ export function useGitHubRepos(installationId: number | undefined, query = "") {
  * and the previous answer stays valid for the previous root.
  */
 export function useDetectFramework(
-    installationId: number | undefined,
-    owner: string,
-    repo: string,
-    ref: string,
-    root: string
+  installationId: number | undefined,
+  owner: string,
+  repo: string,
+  ref: string,
+  root: string,
 ) {
-    return useQuery({
-        queryKey: MANAGED_APPS_QUERY_KEYS.detect(installationId ?? 0, owner, repo, ref, root),
-        queryFn: () => managedAppsApi.detectFramework(installationId ?? 0, owner, repo, ref, root),
-        enabled: installationId != null && owner !== "" && repo !== "",
-        staleTime: 5 * 60_000,
-        // A repository we cannot read is a normal outcome, not a fault worth
-        // hammering: the composer falls back to asking the user.
-        retry: false,
-    })
+  return useQuery({
+    queryKey: MANAGED_APPS_QUERY_KEYS.detect(installationId ?? 0, owner, repo, ref, root),
+    queryFn: () => managedAppsApi.detectFramework(installationId ?? 0, owner, repo, ref, root),
+    enabled: installationId != null && owner !== "" && repo !== "",
+    staleTime: 5 * 60_000,
+    // A repository we cannot read is a normal outcome, not a fault worth
+    // hammering: the composer falls back to asking the user.
+    retry: false,
+  })
 }
 
 export function useGitHubBranches(
-    installationId: number | undefined,
-    owner: string | undefined,
-    repo: string | undefined
+  installationId: number | undefined,
+  owner: string | undefined,
+  repo: string | undefined,
 ) {
-    return useQuery({
-        queryKey: MANAGED_APPS_QUERY_KEYS.githubBranches(
-            installationId ?? 0,
-            owner ?? "",
-            repo ?? ""
-        ),
-        queryFn: () => managedAppsApi.githubBranches(installationId ?? 0, owner ?? "", repo ?? ""),
-        enabled: installationId != null && !!owner && !!repo,
-    })
+  return useQuery({
+    queryKey: MANAGED_APPS_QUERY_KEYS.githubBranches(installationId ?? 0, owner ?? "", repo ?? ""),
+    queryFn: () => managedAppsApi.githubBranches(installationId ?? 0, owner ?? "", repo ?? ""),
+    enabled: installationId != null && !!owner && !!repo,
+  })
 }
 
 // ---------------------------------------------------------------------------
@@ -252,12 +248,11 @@ export function useGitHubBranches(
  * timer against a stage that could be half a minute out of date.
  */
 export function useProjects(type?: ProjectType) {
-    return useQuery({
-        queryKey: MANAGED_APPS_QUERY_KEYS.projects(type),
-        queryFn: () => managedAppsApi.listProjects(type),
-        refetchInterval: (query) =>
-            projectPollInterval(query.state.data?.some(isProjectBusy) ?? false),
-    })
+  return useQuery({
+    queryKey: MANAGED_APPS_QUERY_KEYS.projects(type),
+    queryFn: () => managedAppsApi.listProjects(type),
+    refetchInterval: (query) => projectPollInterval(query.state.data?.some(isProjectBusy) ?? false),
+  })
 }
 
 /**
@@ -266,94 +261,93 @@ export function useProjects(type?: ProjectType) {
  * `container_ip` and `active_build_id` when a deploy settles.
  */
 export function useProject(id: string, refetchInterval = 30_000) {
-    return useQuery({
-        queryKey: MANAGED_APPS_QUERY_KEYS.project(id),
-        queryFn: () => managedAppsApi.getProject(id),
-        enabled: !!id,
-        refetchInterval,
-    })
+  return useQuery({
+    queryKey: MANAGED_APPS_QUERY_KEYS.project(id),
+    queryFn: () => managedAppsApi.getProject(id),
+    enabled: !!id,
+    refetchInterval,
+  })
 }
 
 export function useCreateProject() {
-    const queryClient = useQueryClient()
-    return useMutation({
-        mutationFn: (payload: CreateProjectRequest) => managedAppsApi.createProject(payload),
-        onSuccess: (project) => {
-            void queryClient.invalidateQueries({
-                queryKey: ["managed-apps", "projects"],
-            })
-            void queryClient.invalidateQueries({
-                queryKey: MANAGED_APPS_QUERY_KEYS.overview,
-            })
-            // "1 of 2 projects" just moved.
-            void queryClient.invalidateQueries({
-                queryKey: MANAGED_APPS_QUERY_KEYS.accountPlan,
-            })
-            toast.success(`Project "${project.name}" created`)
-        },
-        onError: (e) => {
-            if (!handleQuotaGateError(e)) toast.error(extractError(e, "Failed to create project"))
-        },
-    })
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (payload: CreateProjectRequest) => managedAppsApi.createProject(payload),
+    onSuccess: (project) => {
+      void queryClient.invalidateQueries({
+        queryKey: ["managed-apps", "projects"],
+      })
+      void queryClient.invalidateQueries({
+        queryKey: MANAGED_APPS_QUERY_KEYS.overview,
+      })
+      // "1 of 2 projects" just moved.
+      void queryClient.invalidateQueries({
+        queryKey: MANAGED_APPS_QUERY_KEYS.accountPlan,
+      })
+      toast.success(`Project "${project.name}" created`)
+    },
+    onError: (e) => {
+      if (!handleQuotaGateError(e)) toast.error(extractError(e, "Failed to create project"))
+    },
+  })
 }
 
 export function useUpdateProject(id: string) {
-    const queryClient = useQueryClient()
-    return useMutation({
-        mutationFn: (payload: UpdateProjectRequest) => managedAppsApi.updateProject(id, payload),
-        onSuccess: () => {
-            void queryClient.invalidateQueries({
-                queryKey: ["managed-apps", "projects"],
-            })
-            toast.success("Project updated")
-        },
-        onError: (e) => toast.error(extractError(e, "Failed to update project")),
-    })
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (payload: UpdateProjectRequest) => managedAppsApi.updateProject(id, payload),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: ["managed-apps", "projects"],
+      })
+      toast.success("Project updated")
+    },
+    onError: (e) => toast.error(extractError(e, "Failed to update project")),
+  })
 }
 
 export function useDeleteProject() {
-    const queryClient = useQueryClient()
-    return useMutation({
-        mutationFn: (id: string) => managedAppsApi.deleteProject(id),
-        onSuccess: () => {
-            void queryClient.invalidateQueries({
-                queryKey: ["managed-apps", "projects"],
-            })
-            void queryClient.invalidateQueries({
-                queryKey: MANAGED_APPS_QUERY_KEYS.overview,
-            })
-            // Frees a slot against the account's project quota.
-            void queryClient.invalidateQueries({
-                queryKey: MANAGED_APPS_QUERY_KEYS.accountPlan,
-            })
-            toast.success("Project deleted")
-        },
-        onError: (e) => toast.error(extractError(e, "Failed to delete project")),
-    })
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => managedAppsApi.deleteProject(id),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: ["managed-apps", "projects"],
+      })
+      void queryClient.invalidateQueries({
+        queryKey: MANAGED_APPS_QUERY_KEYS.overview,
+      })
+      // Frees a slot against the account's project quota.
+      void queryClient.invalidateQueries({
+        queryKey: MANAGED_APPS_QUERY_KEYS.accountPlan,
+      })
+      toast.success("Project deleted")
+    },
+    onError: (e) => toast.error(extractError(e, "Failed to delete project")),
+  })
 }
 
 /** Env variable NAMES only — values never leave the backend. */
 export function useProjectEnv(id: string) {
-    return useQuery({
-        queryKey: MANAGED_APPS_QUERY_KEYS.projectEnv(id),
-        queryFn: () => managedAppsApi.projectEnv(id),
-        enabled: !!id,
-    })
+  return useQuery({
+    queryKey: MANAGED_APPS_QUERY_KEYS.projectEnv(id),
+    queryFn: () => managedAppsApi.projectEnv(id),
+    enabled: !!id,
+  })
 }
 
 export function useUpdateProjectEnv(id: string) {
-    const queryClient = useQueryClient()
-    return useMutation({
-        mutationFn: (payload: UpdateProjectEnvRequest) =>
-            managedAppsApi.updateProjectEnv(id, payload),
-        onSuccess: () => {
-            void queryClient.invalidateQueries({
-                queryKey: MANAGED_APPS_QUERY_KEYS.projectEnv(id),
-            })
-            toast.success("Environment variables updated")
-        },
-        onError: (e) => toast.error(extractError(e, "Failed to update environment")),
-    })
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (payload: UpdateProjectEnvRequest) => managedAppsApi.updateProjectEnv(id, payload),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: MANAGED_APPS_QUERY_KEYS.projectEnv(id),
+      })
+      toast.success("Environment variables updated")
+    },
+    onError: (e) => toast.error(extractError(e, "Failed to update environment")),
+  })
 }
 
 /**
@@ -362,13 +356,13 @@ export function useUpdateProjectEnv(id: string) {
  * depends on them being there before the user starts typing.
  */
 export function useBuildDefaults(type: ProjectType | undefined) {
-    return useQuery({
-        queryKey: MANAGED_APPS_QUERY_KEYS.buildDefaults(type ?? "react"),
-        queryFn: () => managedAppsApi.buildDefaults(type ?? "react"),
-        // n8n has no build pipeline, so there is nothing to ask for.
-        enabled: type != null && type !== "n8n",
-        staleTime: 30 * 60_000,
-    })
+  return useQuery({
+    queryKey: MANAGED_APPS_QUERY_KEYS.buildDefaults(type ?? "react"),
+    queryFn: () => managedAppsApi.buildDefaults(type ?? "react"),
+    // n8n has no build pipeline, so there is nothing to ask for.
+    enabled: type != null && type !== "n8n",
+    staleTime: 30 * 60_000,
+  })
 }
 
 /**
@@ -377,14 +371,13 @@ export function useBuildDefaults(type: ProjectType | undefined) {
  * merge, and it has to notice when they do.
  */
 export function useProjectSetup(id: string, poll = true) {
-    return useQuery({
-        queryKey: MANAGED_APPS_QUERY_KEYS.projectSetup(id),
-        queryFn: () => managedAppsApi.projectSetup(id),
-        enabled: !!id,
-        // Stop as soon as builds are unblocked — there is nothing left to watch.
-        refetchInterval: (query) =>
-            poll && query.state.data?.builds_enabled !== true ? 8_000 : false,
-    })
+  return useQuery({
+    queryKey: MANAGED_APPS_QUERY_KEYS.projectSetup(id),
+    queryFn: () => managedAppsApi.projectSetup(id),
+    enabled: !!id,
+    // Stop as soon as builds are unblocked — there is nothing left to watch.
+    refetchInterval: (query) => (poll && query.state.data?.builds_enabled !== true ? 8_000 : false),
+  })
 }
 
 /**
@@ -395,27 +388,27 @@ export function useProjectSetup(id: string, poll = true) {
  * pull request.
  */
 export function useRetryProjectSetup(id: string) {
-    const queryClient = useQueryClient()
-    return useMutation({
-        mutationFn: () => managedAppsApi.retryProjectSetup(id),
-        onSuccess: (setup) => {
-            queryClient.setQueryData(MANAGED_APPS_QUERY_KEYS.projectSetup(id), setup)
-            void queryClient.invalidateQueries({ queryKey: MANAGED_APPS_QUERY_KEYS.project(id) })
-            // `workflow_outdated` can only be true for a project that is already
-            // set up, which is exactly the refresh case — the repository stays
-            // outdated until the pull request is merged.
-            if (setup.workflow_outdated) {
-                toast.success("Workflow update pull request opened")
-                return
-            }
-            toast.success(
-                setup.state === "failed"
-                    ? "Still could not open the pull request"
-                    : "Setup pull request opened"
-            )
-        },
-        onError: (e) => toast.error(extractError(e, "Could not open the setup pull request")),
-    })
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: () => managedAppsApi.retryProjectSetup(id),
+    onSuccess: (setup) => {
+      queryClient.setQueryData(MANAGED_APPS_QUERY_KEYS.projectSetup(id), setup)
+      void queryClient.invalidateQueries({ queryKey: MANAGED_APPS_QUERY_KEYS.project(id) })
+      // `workflow_outdated` can only be true for a project that is already
+      // set up, which is exactly the refresh case — the repository stays
+      // outdated until the pull request is merged.
+      if (setup.workflow_outdated) {
+        toast.success("Workflow update pull request opened")
+        return
+      }
+      toast.success(
+        setup.state === "failed"
+          ? "Still could not open the pull request"
+          : "Setup pull request opened",
+      )
+    },
+    onError: (e) => toast.error(extractError(e, "Could not open the setup pull request")),
+  })
 }
 
 /**
@@ -424,14 +417,14 @@ export function useRetryProjectSetup(id: string) {
  * than a string duplicated here.
  */
 export function useDeployProject(id: string) {
-    const queryClient = useQueryClient()
-    return useMutation({
-        mutationFn: () => managedAppsApi.deployProject(id),
-        onSuccess: () => {
-            void queryClient.invalidateQueries({ queryKey: MANAGED_APPS_QUERY_KEYS.project(id) })
-        },
-        onError: (e) => toast.error(extractError(e, "Could not deploy this project")),
-    })
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: () => managedAppsApi.deployProject(id),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: MANAGED_APPS_QUERY_KEYS.project(id) })
+    },
+    onError: (e) => toast.error(extractError(e, "Could not deploy this project")),
+  })
 }
 
 // ---------------------------------------------------------------------------
@@ -440,13 +433,13 @@ export function useDeployProject(id: string) {
 
 /** Build history for a project, kept fresh while any build is in flight. */
 export function useProjectBuilds(projectId: string) {
-    return useQuery({
-        queryKey: MANAGED_APPS_QUERY_KEYS.projectBuilds(projectId),
-        queryFn: () => managedAppsApi.listBuilds(projectId),
-        enabled: !!projectId,
-        refetchInterval: (query) =>
-            query.state.data?.some((b) => isBuildTransitional(b.status)) ? 5_000 : 30_000,
-    })
+  return useQuery({
+    queryKey: MANAGED_APPS_QUERY_KEYS.projectBuilds(projectId),
+    queryFn: () => managedAppsApi.listBuilds(projectId),
+    enabled: !!projectId,
+    refetchInterval: (query) =>
+      query.state.data?.some((b) => isBuildTransitional(b.status)) ? 5_000 : 30_000,
+  })
 }
 
 /**
@@ -454,36 +447,36 @@ export function useProjectBuilds(projectId: string) {
  * `{ projectId, commitSha }` to redeploy that exact commit.
  */
 export function useCreateBuild() {
-    const queryClient = useQueryClient()
-    return useMutation({
-        mutationFn: (input: string | { projectId: string; commitSha?: string }) =>
-            typeof input === "string"
-                ? managedAppsApi.createBuild(input)
-                : managedAppsApi.createBuild(input.projectId, input.commitSha),
-        onSuccess: (build) => {
-            void queryClient.invalidateQueries({
-                queryKey: MANAGED_APPS_QUERY_KEYS.projectBuilds(build.project_id),
-            })
-            void queryClient.invalidateQueries({
-                queryKey: MANAGED_APPS_QUERY_KEYS.project(build.project_id),
-            })
-            void queryClient.invalidateQueries({
-                queryKey: MANAGED_APPS_QUERY_KEYS.overview,
-            })
-            toast.success("Deploy queued")
-        },
-        onError: (e) => toast.error(extractError(e, "Failed to start deploy")),
-    })
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (input: string | { projectId: string; commitSha?: string }) =>
+      typeof input === "string"
+        ? managedAppsApi.createBuild(input)
+        : managedAppsApi.createBuild(input.projectId, input.commitSha),
+    onSuccess: (build) => {
+      void queryClient.invalidateQueries({
+        queryKey: MANAGED_APPS_QUERY_KEYS.projectBuilds(build.project_id),
+      })
+      void queryClient.invalidateQueries({
+        queryKey: MANAGED_APPS_QUERY_KEYS.project(build.project_id),
+      })
+      void queryClient.invalidateQueries({
+        queryKey: MANAGED_APPS_QUERY_KEYS.overview,
+      })
+      toast.success("Deploy queued")
+    },
+    onError: (e) => toast.error(extractError(e, "Failed to start deploy")),
+  })
 }
 
 /** A single build, polling while it is still in flight. */
 export function useBuild(id: string) {
-    return useQuery({
-        queryKey: MANAGED_APPS_QUERY_KEYS.build(id),
-        queryFn: () => managedAppsApi.getBuild(id),
-        enabled: !!id,
-        refetchInterval: (query) => (isBuildTransitional(query.state.data?.status) ? 3_000 : false),
-    })
+  return useQuery({
+    queryKey: MANAGED_APPS_QUERY_KEYS.build(id),
+    queryFn: () => managedAppsApi.getBuild(id),
+    enabled: !!id,
+    refetchInterval: (query) => (isBuildTransitional(query.state.data?.status) ? 3_000 : false),
+  })
 }
 
 /**
@@ -492,48 +485,48 @@ export function useBuild(id: string) {
  * caller flips it off and the last fetch stands.
  */
 export function useBuildLogs(id: string, active: boolean) {
-    const queryClient = useQueryClient()
-    return useQuery({
-        queryKey: MANAGED_APPS_QUERY_KEYS.buildLogs(id),
-        queryFn: async () => {
-            // Read the accumulated text back out of the cache and ask only for
-            // what has been appended since. Re-sending the whole blob every 3s
-            // grows quadratically with build length — the longer the build, the
-            // more there is to resend, which is exactly backwards.
-            //
-            // Reading `prev` from the cache rather than a ref keeps this correct
-            // under retries: a failed attempt never wrote, so the next one asks
-            // from the same offset instead of skipping a chunk.
-            const prev = queryClient.getQueryData<{ text: string; offset: number }>(
-                MANAGED_APPS_QUERY_KEYS.buildLogs(id)
-            )
-            const chunk = await managedAppsApi.buildLogs(id, prev?.offset ?? 0)
-            return { text: (prev?.text ?? "") + chunk.log, offset: chunk.offset }
-        },
-        enabled: !!id,
-        refetchInterval: active ? 3_000 : false,
-    })
+  const queryClient = useQueryClient()
+  return useQuery({
+    queryKey: MANAGED_APPS_QUERY_KEYS.buildLogs(id),
+    queryFn: async () => {
+      // Read the accumulated text back out of the cache and ask only for
+      // what has been appended since. Re-sending the whole blob every 3s
+      // grows quadratically with build length — the longer the build, the
+      // more there is to resend, which is exactly backwards.
+      //
+      // Reading `prev` from the cache rather than a ref keeps this correct
+      // under retries: a failed attempt never wrote, so the next one asks
+      // from the same offset instead of skipping a chunk.
+      const prev = queryClient.getQueryData<{ text: string; offset: number }>(
+        MANAGED_APPS_QUERY_KEYS.buildLogs(id),
+      )
+      const chunk = await managedAppsApi.buildLogs(id, prev?.offset ?? 0)
+      return { text: (prev?.text ?? "") + chunk.log, offset: chunk.offset }
+    },
+    enabled: !!id,
+    refetchInterval: active ? 3_000 : false,
+  })
 }
 
 export function useCancelBuild() {
-    const queryClient = useQueryClient()
-    return useMutation({
-        mutationFn: (id: string) => managedAppsApi.cancelBuild(id),
-        onSuccess: (_data, id) => {
-            void queryClient.invalidateQueries({
-                queryKey: MANAGED_APPS_QUERY_KEYS.build(id),
-            })
-            // The cancel response has no body, so the project id isn't known
-            // here — refresh every per-project builds list instead.
-            void queryClient.invalidateQueries({
-                predicate: (query) =>
-                    query.queryKey[0] === "managed-apps" && query.queryKey.at(-1) === "builds",
-            })
-            void queryClient.invalidateQueries({
-                queryKey: MANAGED_APPS_QUERY_KEYS.overview,
-            })
-            toast.success("Build canceled")
-        },
-        onError: (e) => toast.error(extractError(e, "Failed to cancel build")),
-    })
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => managedAppsApi.cancelBuild(id),
+    onSuccess: (_data, id) => {
+      void queryClient.invalidateQueries({
+        queryKey: MANAGED_APPS_QUERY_KEYS.build(id),
+      })
+      // The cancel response has no body, so the project id isn't known
+      // here — refresh every per-project builds list instead.
+      void queryClient.invalidateQueries({
+        predicate: (query) =>
+          query.queryKey[0] === "managed-apps" && query.queryKey.at(-1) === "builds",
+      })
+      void queryClient.invalidateQueries({
+        queryKey: MANAGED_APPS_QUERY_KEYS.overview,
+      })
+      toast.success("Build canceled")
+    },
+    onError: (e) => toast.error(extractError(e, "Failed to cancel build")),
+  })
 }

@@ -1,8 +1,8 @@
-import type * as React from 'react'
+import type * as React from "react"
 
-import { css, cx } from '@emotion/css'
+import { css, cx } from "@emotion/css"
 
-import { mix } from '../lib/styles'
+import { mix } from "../lib/styles"
 
 const input = css`
   display: flex;
@@ -41,11 +41,11 @@ const input = css`
 
   &:focus-visible {
     border-color: var(--ring);
-    box-shadow: 0 0 0 3px ${mix('--ring', 50)};
+    box-shadow: 0 0 0 3px ${mix("--ring", 50)};
   }
 `
 
-function Input({ className, type, ...props }: React.ComponentProps<'input'>) {
+function Input({ className, type, ...props }: React.ComponentProps<"input">) {
   return <input type={type} data-slot="input" className={cx(input, className)} {...props} />
 }
 

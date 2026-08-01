@@ -23,21 +23,21 @@ import { useOnboardingStatus } from "../onboarding.hooks"
  * be worse than the 403 the backend still enforces.
  */
 export function RequireKyc({ children }: Readonly<{ children: ReactNode }>): ReactElement {
-    const { user } = useAuth()
-    const { data: status, isLoading, isError } = useOnboardingStatus()
-    const location = useLocation()
+  const { user } = useAuth()
+  const { data: status, isLoading, isError } = useOnboardingStatus()
+  const location = useLocation()
 
-    if (isLoading) return <AuthCardSkeleton />
+  if (isLoading) return <AuthCardSkeleton />
 
-    const kyc = status?.kyc
-    // Nothing to enforce: lookup failed, or the platform runs without a KYC
-    // service (kycguard is open too in that case).
-    if (isError || !kyc?.enabled) return children as ReactElement
+  const kyc = status?.kyc
+  // Nothing to enforce: lookup failed, or the platform runs without a KYC
+  // service (kycguard is open too in that case).
+  if (isError || !kyc?.enabled) return children as ReactElement
 
-    const verified = kyc.completed && !kyc.need_actions
-    if (verified || isKycSkipped(user?.id ?? "")) return children as ReactElement
+  const verified = kyc.completed && !kyc.need_actions
+  if (verified || isKycSkipped(user?.id ?? "")) return children as ReactElement
 
-    // `from` lets the verification page send the user back where they were
-    // aiming once they verify or skip.
-    return <Navigate to="/onboarding/kyc" replace state={{ from: location.pathname }} />
+  // `from` lets the verification page send the user back where they were
+  // aiming once they verify or skip.
+  return <Navigate to="/onboarding/kyc" replace state={{ from: location.pathname }} />
 }

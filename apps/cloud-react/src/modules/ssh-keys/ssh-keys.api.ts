@@ -15,22 +15,22 @@ const BASE = "/compute/sshkeys"
 // and `===` lookups all assume strings. Normalize at the API boundary so the
 // SSH-key picker renders and selects correctly.
 interface RawSSHKey extends Omit<SSHKey, "id" | "user_id"> {
-    id: number | string
-    user_id: number | string
+  id: number | string
+  user_id: number | string
 }
 
 function toSSHKey(raw: RawSSHKey): SSHKey {
-    return { ...raw, id: String(raw.id), user_id: String(raw.user_id) }
+  return { ...raw, id: String(raw.id), user_id: String(raw.user_id) }
 }
 
 export const sshKeysApi = {
-    list: async (): Promise<SSHKey[]> => {
-        const rows = await apiGet<RawSSHKey[]>(`${BASE}${LIST_QUERY}`)
-        return rows.map(toSSHKey)
-    },
+  list: async (): Promise<SSHKey[]> => {
+    const rows = await apiGet<RawSSHKey[]>(`${BASE}${LIST_QUERY}`)
+    return rows.map(toSSHKey)
+  },
 
-    create: async (payload: CreateSSHKeyRequest): Promise<SSHKey> =>
-        toSSHKey(await apiPost<RawSSHKey>(BASE, payload)),
+  create: async (payload: CreateSSHKeyRequest): Promise<SSHKey> =>
+    toSSHKey(await apiPost<RawSSHKey>(BASE, payload)),
 
-    delete: (id: string): Promise<void> => apiDelete(`${BASE}/${id}`),
+  delete: (id: string): Promise<void> => apiDelete(`${BASE}/${id}`),
 }

@@ -1,8 +1,8 @@
-import type * as React from 'react'
+import type * as React from "react"
 
-import { css, cx } from '@emotion/css'
+import { css, cx } from "@emotion/css"
 
-import { fontMono, mix } from '../lib/styles'
+import { fontMono, mix } from "../lib/styles"
 
 const container = css`
   position: relative;
@@ -37,12 +37,12 @@ const row = css`
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 
   &:hover {
-    background: ${mix('--muted', 40)};
+    background: ${mix("--muted", 40)};
   }
 `
 
 const head = css`
-  color: ${mix('--muted-foreground', 80)};
+  color: ${mix("--muted-foreground", 80)};
   height: 36px;
   padding: 0 12px;
   text-align: left;
@@ -61,7 +61,7 @@ const cell = css`
   white-space: nowrap;
 `
 
-function Table({ className, ...props }: React.ComponentProps<'table'>) {
+function Table({ className, ...props }: React.ComponentProps<"table">) {
   return (
     // Wide tables scroll inside their own container so the page body never
     // scrolls horizontally.
@@ -71,23 +71,23 @@ function Table({ className, ...props }: React.ComponentProps<'table'>) {
   )
 }
 
-function TableHeader({ className, ...props }: React.ComponentProps<'thead'>) {
+function TableHeader({ className, ...props }: React.ComponentProps<"thead">) {
   return <thead data-slot="table-header" className={cx(header, className)} {...props} />
 }
 
-function TableBody({ className, ...props }: React.ComponentProps<'tbody'>) {
+function TableBody({ className, ...props }: React.ComponentProps<"tbody">) {
   return <tbody data-slot="table-body" className={cx(body, className)} {...props} />
 }
 
-function TableRow({ className, ...props }: React.ComponentProps<'tr'>) {
+function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
   return <tr data-slot="table-row" className={cx(row, className)} {...props} />
 }
 
-function TableHead({ className, ...props }: React.ComponentProps<'th'>) {
+function TableHead({ className, ...props }: React.ComponentProps<"th">) {
   return <th data-slot="table-head" className={cx(head, className)} {...props} />
 }
 
-function TableCell({ className, ...props }: React.ComponentProps<'td'>) {
+function TableCell({ className, ...props }: React.ComponentProps<"td">) {
   return <td data-slot="table-cell" className={cx(cell, className)} {...props} />
 }
 

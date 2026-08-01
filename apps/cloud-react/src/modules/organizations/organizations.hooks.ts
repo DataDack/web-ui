@@ -12,9 +12,9 @@ import { extractError } from "@/services/api/client"
 import { organizationsApi } from "./organizations.api"
 import { ORG_QUERY_KEYS } from "./organizations.constants"
 import type {
-    MyOrganization,
-    ProvisionOrganizationPayload,
-    UpdateOrganizationPayload,
+  MyOrganization,
+  ProvisionOrganizationPayload,
+  UpdateOrganizationPayload,
 } from "./organizations.types"
 
 // Region and resource-group selections are scoped to the active account; clear
@@ -23,39 +23,39 @@ const SCOPED_STORAGE_KEYS = ["console-active-region", "bsc-active-rg"]
 
 /** Organizations the signed-in user can switch between (with resolved account). */
 export function useMyOrganizations() {
-    return useQuery({
-        queryKey: ORG_QUERY_KEYS.mine,
-        queryFn: organizationsApi.listMine,
-        staleTime: 60_000,
-    })
+  return useQuery({
+    queryKey: ORG_QUERY_KEYS.mine,
+    queryFn: organizationsApi.listMine,
+    staleTime: 60_000,
+  })
 }
 
 /** A single organization's full record (name, slug, billing email, status). */
 export function useOrganization(id: string | undefined) {
-    return useQuery({
-        queryKey: ORG_QUERY_KEYS.detail(id ?? ""),
-        queryFn: () => organizationsApi.get(id ?? ""),
-        enabled: !!id,
-    })
+  return useQuery({
+    queryKey: ORG_QUERY_KEYS.detail(id ?? ""),
+    queryFn: () => organizationsApi.get(id ?? ""),
+    enabled: !!id,
+  })
 }
 
 /** Update an organization's details, refreshing both the record and the switcher. */
 export function useUpdateOrganization() {
-    const queryClient = useQueryClient()
-    const { t } = useTranslation()
-    return useMutation({
-        mutationFn: ({ id, payload }: { id: string; payload: UpdateOrganizationPayload }) =>
-            organizationsApi.update(id, payload),
-        onSuccess: (org) => {
-            queryClient.setQueryData(ORG_QUERY_KEYS.detail(org.id), org)
-            // The org name surfaces in the switcher/topbar — keep them in sync.
-            void queryClient.invalidateQueries({ queryKey: ORG_QUERY_KEYS.mine })
-            toast.success(t("org.settings.toasts.saved"))
-        },
-        onError: (err) => {
-            toast.error(extractError(err, t("org.settings.toasts.saveFailed")))
-        },
-    })
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: UpdateOrganizationPayload }) =>
+      organizationsApi.update(id, payload),
+    onSuccess: (org) => {
+      queryClient.setQueryData(ORG_QUERY_KEYS.detail(org.id), org)
+      // The org name surfaces in the switcher/topbar — keep them in sync.
+      void queryClient.invalidateQueries({ queryKey: ORG_QUERY_KEYS.mine })
+      toast.success(t("org.settings.toasts.saved"))
+    },
+    onError: (err) => {
+      toast.error(extractError(err, t("org.settings.toasts.saveFailed")))
+    },
+  })
 }
 
 /**
@@ -65,39 +65,39 @@ export function useUpdateOrganization() {
  * (same handoff useSwitchOrganization performs).
  */
 export function useCreateOrganization() {
-    const { t } = useTranslation()
-    return useMutation({
-        mutationFn: (payload: ProvisionOrganizationPayload) => organizationsApi.provision(payload),
-        onSuccess: (org) => {
-            toast.success(t("org.switcher.created", { name: org.organization_name }))
-            activeScope.set({
-                accountId: org.account_id || null,
-                organizationId: org.organization_id,
-            })
-            for (const key of SCOPED_STORAGE_KEYS) localStorage.removeItem(key)
-            window.location.assign("/")
-        },
-        onError: (err) => {
-            toast.error(extractError(err, t("org.switcher.createFailed")))
-        },
-    })
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (payload: ProvisionOrganizationPayload) => organizationsApi.provision(payload),
+    onSuccess: (org) => {
+      toast.success(t("org.switcher.created", { name: org.organization_name }))
+      activeScope.set({
+        accountId: org.account_id || null,
+        organizationId: org.organization_id,
+      })
+      for (const key of SCOPED_STORAGE_KEYS) localStorage.removeItem(key)
+      window.location.assign("/")
+    },
+    onError: (err) => {
+      toast.error(extractError(err, t("org.switcher.createFailed")))
+    },
+  })
 }
 
 /** Update the signed-in user's own profile (display name), then refresh the session. */
 export function useUpdateProfile() {
-    const queryClient = useQueryClient()
-    const { t } = useTranslation()
-    return useMutation({
-        mutationFn: (name: string) => authApi.updateProfile(name),
-        onSuccess: (user) => {
-            queryClient.setQueryData(AUTH_QUERY_KEYS.session, user)
-            void queryClient.invalidateQueries({ queryKey: AUTH_QUERY_KEYS.session })
-            toast.success(t("profile.toasts.saved"))
-        },
-        onError: (err) => {
-            toast.error(extractError(err, t("profile.toasts.saveFailed")))
-        },
-    })
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (name: string) => authApi.updateProfile(name),
+    onSuccess: (user) => {
+      queryClient.setQueryData(AUTH_QUERY_KEYS.session, user)
+      void queryClient.invalidateQueries({ queryKey: AUTH_QUERY_KEYS.session })
+      toast.success(t("profile.toasts.saved"))
+    },
+    onError: (err) => {
+      toast.error(extractError(err, t("profile.toasts.saveFailed")))
+    },
+  })
 }
 
 /**
@@ -107,15 +107,15 @@ export function useUpdateProfile() {
  * backend serves the home org by default — so the home-org fallback stays in sync.
  */
 export function resolveActiveOrg(
-    orgs: MyOrganization[],
-    activeAccountId: string | null
+  orgs: MyOrganization[],
+  activeAccountId: string | null,
 ): MyOrganization | null {
-    if (orgs.length === 0) return null
-    return (
-        (activeAccountId ? orgs.find((o) => o.account_id === activeAccountId) : undefined) ??
-        orgs.find((o) => o.is_home) ??
-        orgs[0]
-    )
+  if (orgs.length === 0) return null
+  return (
+    (activeAccountId ? orgs.find((o) => o.account_id === activeAccountId) : undefined) ??
+    orgs.find((o) => o.is_home) ??
+    orgs[0]
+  )
 }
 
 /**
@@ -126,14 +126,14 @@ export function resolveActiveOrg(
  * to reconcile anymore.
  */
 export function useActiveOrganization() {
-    const { data, isLoading } = useMyOrganizations()
-    const scope = useActiveScope()
-    const orgs = data ?? []
-    return {
-        orgs,
-        activeOrg: resolveActiveOrg(orgs, scope.accountId),
-        isLoading,
-    }
+  const { data, isLoading } = useMyOrganizations()
+  const scope = useActiveScope()
+  const orgs = data ?? []
+  return {
+    orgs,
+    activeOrg: resolveActiveOrg(orgs, scope.accountId),
+    isLoading,
+  }
 }
 
 /**
@@ -144,9 +144,9 @@ export function useActiveOrganization() {
  * re-bootstraps cleanly for it.
  */
 export function useSwitchOrganization() {
-    return useCallback((org: MyOrganization) => {
-        activeScope.set({ accountId: org.account_id || null, organizationId: org.organization_id })
-        for (const key of SCOPED_STORAGE_KEYS) localStorage.removeItem(key)
-        window.location.assign("/")
-    }, [])
+  return useCallback((org: MyOrganization) => {
+    activeScope.set({ accountId: org.account_id || null, organizationId: org.organization_id })
+    for (const key of SCOPED_STORAGE_KEYS) localStorage.removeItem(key)
+    window.location.assign("/")
+  }, [])
 }

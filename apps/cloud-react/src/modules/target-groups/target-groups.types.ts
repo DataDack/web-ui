@@ -13,20 +13,20 @@ export type TargetGroupProtocol = "HTTP" | "TCP" | "UDP"
 export type TargetGroupAlgorithm = "round_robin" | "least_connections" | "ip_hash"
 
 export interface TargetGroup {
-    id: string
-    tenant_serial: number
-    created_at: string
-    updated_at: string
-    account_id: string
-    vpc_id: string
-    name: string
-    protocol: TargetGroupProtocol
-    port: number
-    algorithm: TargetGroupAlgorithm
-    health_check_path: string
-    health_check_interval_s: number
-    healthy_threshold: number
-    unhealthy_threshold: number
+  id: string
+  tenant_serial: number
+  created_at: string
+  updated_at: string
+  account_id: string
+  vpc_id: string
+  name: string
+  protocol: TargetGroupProtocol
+  port: number
+  algorithm: TargetGroupAlgorithm
+  health_check_path: string
+  health_check_interval_s: number
+  healthy_threshold: number
+  unhealthy_threshold: number
 }
 
 /**
@@ -42,37 +42,37 @@ export interface TargetGroup {
 export type TargetHealth = "initial" | "healthy" | "unhealthy" | "draining" | "unused"
 
 export interface Target {
-    id: string
-    created_at: string
-    target_group_id: string
-    instance_id: string
-    port: number
-    health_status: TargetHealth
+  id: string
+  created_at: string
+  target_group_id: string
+  instance_id: string
+  port: number
+  health_status: TargetHealth
 }
 
 export interface CreateTargetGroupRequest {
-    name: string
-    vpc_id: string
-    protocol?: TargetGroupProtocol
-    port: number
-    algorithm?: TargetGroupAlgorithm
-    health_check_path?: string
-    health_check_interval_s?: number
-    healthy_threshold?: number
-    unhealthy_threshold?: number
+  name: string
+  vpc_id: string
+  protocol?: TargetGroupProtocol
+  port: number
+  algorithm?: TargetGroupAlgorithm
+  health_check_path?: string
+  health_check_interval_s?: number
+  healthy_threshold?: number
+  unhealthy_threshold?: number
 }
 
 export interface UpdateTargetGroupRequest {
-    name?: string
-    algorithm?: TargetGroupAlgorithm
-    health_check_path?: string
-    health_check_interval_s?: number
-    healthy_threshold?: number
-    unhealthy_threshold?: number
+  name?: string
+  algorithm?: TargetGroupAlgorithm
+  health_check_path?: string
+  health_check_interval_s?: number
+  healthy_threshold?: number
+  unhealthy_threshold?: number
 }
 
 /** Port defaults to the target group's own port when omitted. */
 export interface RegisterTargetRequest {
-    instance_id: string
-    port?: number
+  instance_id: string
+  port?: number
 }

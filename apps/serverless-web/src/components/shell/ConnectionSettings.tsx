@@ -1,11 +1,11 @@
-import { useState } from 'react'
+import { useState } from "react"
 
-import { useQueryClient } from '@tanstack/react-query'
-import { KeyRound } from 'lucide-react'
+import { useQueryClient } from "@tanstack/react-query"
+import { KeyRound } from "lucide-react"
 
-import { connection } from '@/lib/api'
+import { connection } from "@/lib/api"
 
-import { Button, Input } from '@datadack/serverless-ui'
+import { Button, Input } from "@datadack/serverless-ui"
 
 /**
  * Where the operator token is entered.
@@ -41,7 +41,7 @@ export function ConnectionSettings() {
         aria-label="Connection settings"
         aria-expanded={open}
       >
-        <KeyRound className={connection.token() ? 'size-4' : 'text-status-warning size-4'} />
+        <KeyRound className={connection.token() ? "size-4" : "text-status-warning size-4"} />
       </Button>
 
       {open && (

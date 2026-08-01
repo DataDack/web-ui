@@ -1,10 +1,10 @@
-import { useMemo } from 'react'
+import { useMemo } from "react"
 
-import type { ColumnDef } from '@tanstack/react-table'
-import { Cpu, HardDrive, Server, ServerOff } from 'lucide-react'
+import type { ColumnDef } from "@tanstack/react-table"
+import { Cpu, HardDrive, Server, ServerOff } from "lucide-react"
 
-import { useDashboard } from '@/lib/queries'
-import type { Worker } from '@/lib/schemas'
+import { useDashboard } from "@/lib/queries"
+import type { Worker } from "@/lib/schemas"
 
 import {
   Badge,
@@ -16,9 +16,9 @@ import {
   StatGrid,
   StatusBadge,
   timeAgo,
-} from '@datadack/serverless-ui'
+} from "@datadack/serverless-ui"
 
-const LIVE_STATES = ['ready', 'active']
+const LIVE_STATES = ["ready", "active"]
 
 export function WorkersPage() {
   const { data, isLoading } = useDashboard()
@@ -27,15 +27,15 @@ export function WorkersPage() {
   const columns = useMemo<ColumnDef<Worker>[]>(
     () => [
       {
-        accessorKey: 'hostname',
-        header: 'Hostname',
+        accessorKey: "hostname",
+        header: "Hostname",
         cell: ({ row }) => (
           <span className="font-mono text-[13px] font-medium">{row.original.hostname}</span>
         ),
       },
       {
-        accessorKey: 'state',
-        header: 'State',
+        accessorKey: "state",
+        header: "State",
         cell: ({ row }) => (
           <StatusBadge
             status={row.original.state}
@@ -44,8 +44,8 @@ export function WorkersPage() {
         ),
       },
       {
-        accessorKey: 'region',
-        header: 'Region',
+        accessorKey: "region",
+        header: "Region",
         cell: ({ row }) =>
           cellText(
             row.original.zone
@@ -54,13 +54,13 @@ export function WorkersPage() {
           ),
       },
       {
-        accessorKey: 'internalIp',
-        header: 'Internal IP',
+        accessorKey: "internalIp",
+        header: "Internal IP",
         cell: ({ row }) => cellMono(row.original.internalIp),
       },
       {
-        accessorKey: 'backend',
-        header: 'Backend',
+        accessorKey: "backend",
+        header: "Backend",
         cell: ({ row }) =>
           row.original.backend ? (
             <Badge variant="outline" className="font-mono text-[11px]">
@@ -71,8 +71,8 @@ export function WorkersPage() {
           ),
       },
       {
-        accessorKey: 'capacityMemoryMb',
-        header: 'Memory',
+        accessorKey: "capacityMemoryMb",
+        header: "Memory",
         cell: ({ row }) =>
           cellMono(
             row.original.capacityMemoryMb
@@ -81,13 +81,13 @@ export function WorkersPage() {
           ),
       },
       {
-        accessorKey: 'capacityMaxSandboxes',
-        header: 'Slots',
+        accessorKey: "capacityMaxSandboxes",
+        header: "Slots",
         cell: ({ row }) => cellMono(row.original.capacityMaxSandboxes),
       },
       {
-        accessorKey: 'lastHeartbeatAt',
-        header: 'Heartbeat',
+        accessorKey: "lastHeartbeatAt",
+        header: "Heartbeat",
         cell: ({ row }) => cellMono(timeAgo(row.original.lastHeartbeatAt)),
       },
     ],

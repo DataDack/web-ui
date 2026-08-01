@@ -1,6 +1,6 @@
-import { css, cx } from '@emotion/css'
+import { css, cx } from "@emotion/css"
 
-import { fontMono, mix } from '../lib/styles'
+import { fontMono, mix } from "../lib/styles"
 
 const lockup = css`
   display: flex;
@@ -22,7 +22,7 @@ const gold = css`
 `
 
 const badge = css`
-  border: 1px solid ${mix('--brand-gold', 50)};
+  border: 1px solid ${mix("--brand-gold", 50)};
   background: var(--brand-gold-soft);
   color: var(--brand-gold);
   margin-left: 6px;
@@ -49,7 +49,7 @@ const badge = css`
  * console serves it from its own public/ under its own base path.
  */
 export function Logo({
-  iconSrc = '/datadack-icon.png',
+  iconSrc = "/datadack-icon.png",
   className,
   iconClassName,
   wordmarkClassName,

@@ -11,21 +11,21 @@ import { CIDR_REGEX } from "./vpc.constants"
  * not the usable-host count.
  */
 export function cidrAddressCount(cidr: string): number | null {
-    if (!CIDR_REGEX.test(cidr)) return null
-    const prefix = Number.parseInt(cidr.split("/")[1] ?? "", 10)
-    if (Number.isNaN(prefix) || prefix < 0 || prefix > 32) return null
-    return 2 ** (32 - prefix)
+  if (!CIDR_REGEX.test(cidr)) return null
+  const prefix = Number.parseInt(cidr.split("/")[1] ?? "", 10)
+  if (Number.isNaN(prefix) || prefix < 0 || prefix > 32) return null
+  return 2 ** (32 - prefix)
 }
 
 /** A grouped count like "65,536". Falls back to "—" for invalid CIDRs. */
 export function formatIpCount(cidr: string): string {
-    const n = cidrAddressCount(cidr)
-    return n === null ? "—" : n.toLocaleString("en-US")
+  const n = cidrAddressCount(cidr)
+  return n === null ? "—" : n.toLocaleString("en-US")
 }
 
 /** Sum of addresses across many CIDRs, ignoring the invalid ones. */
 export function totalIpCount(cidrs: string[]): number {
-    return cidrs.reduce((sum, cidr) => sum + (cidrAddressCount(cidr) ?? 0), 0)
+  return cidrs.reduce((sum, cidr) => sum + (cidrAddressCount(cidr) ?? 0), 0)
 }
 
 // A subnet can't use every address in its range — the network/broadcast pair
@@ -38,38 +38,36 @@ const RESERVED_PER_SUBNET = 5
  * AWS way (total − 5 reserved). Returns "—" when the CIDR is unusable.
  */
 export function formatAvailableIps(cidr: string, backendValue?: number): string {
-    if (backendValue && backendValue > 0) return backendValue.toLocaleString("en-US")
-    const total = cidrAddressCount(cidr)
-    if (total === null) return "—"
-    return Math.max(0, total - RESERVED_PER_SUBNET).toLocaleString("en-US")
+  if (backendValue && backendValue > 0) return backendValue.toLocaleString("en-US")
+  const total = cidrAddressCount(cidr)
+  if (total === null) return "—"
+  return Math.max(0, total - RESERVED_PER_SUBNET).toLocaleString("en-US")
 }
 
 /* ── IPv4 address math ─────────────────────────────────────────────────── */
 
 /** Dotted-quad → unsigned 32-bit integer. Assumes a valid IPv4 string. */
 export function ipToInt(ip: string): number {
-    return (
-        ip
-            .split(".")
-            .reduce((acc, octet) => (acc << 8) + (Number.parseInt(octet, 10) & 0xff), 0) >>> 0
-    )
+  return (
+    ip.split(".").reduce((acc, octet) => (acc << 8) + (Number.parseInt(octet, 10) & 0xff), 0) >>> 0
+  )
 }
 
 /** Unsigned 32-bit integer → dotted-quad. */
 export function intToIp(n: number): string {
-    const v = n >>> 0
-    return [(v >>> 24) & 0xff, (v >>> 16) & 0xff, (v >>> 8) & 0xff, v & 0xff].join(".")
+  const v = n >>> 0
+  return [(v >>> 24) & 0xff, (v >>> 16) & 0xff, (v >>> 8) & 0xff, v & 0xff].join(".")
 }
 
 export interface CidrRange {
-    /** First address in the block (the network address). */
-    network: string
-    /** First address an instance can use (network + 1, AWS-style). */
-    firstUsable: string
-    /** Last address an instance can use (broadcast − 1). */
-    lastUsable: string
-    /** Last address in the block (the broadcast address). */
-    broadcast: string
+  /** First address in the block (the network address). */
+  network: string
+  /** First address an instance can use (network + 1, AWS-style). */
+  firstUsable: string
+  /** Last address an instance can use (broadcast − 1). */
+  lastUsable: string
+  /** Last address in the block (the broadcast address). */
+  broadcast: string
 }
 
 /**
@@ -79,39 +77,39 @@ export interface CidrRange {
  * network address for both usable bounds. Null for malformed CIDRs.
  */
 export function cidrRange(cidr: string): CidrRange | null {
-    if (!CIDR_REGEX.test(cidr)) return null
-    const [ip, prefixStr] = cidr.split("/")
-    const prefix = Number.parseInt(prefixStr, 10)
-    if (Number.isNaN(prefix) || prefix < 0 || prefix > 32) return null
+  if (!CIDR_REGEX.test(cidr)) return null
+  const [ip, prefixStr] = cidr.split("/")
+  const prefix = Number.parseInt(prefixStr, 10)
+  if (Number.isNaN(prefix) || prefix < 0 || prefix > 32) return null
 
-    const base = ipToInt(ip)
-    const hostBits = 32 - prefix
-    const mask = hostBits === 32 ? 0 : (0xffffffff << hostBits) >>> 0
-    const network = (base & mask) >>> 0
-    const broadcast = (network + 2 ** hostBits - 1) >>> 0
+  const base = ipToInt(ip)
+  const hostBits = 32 - prefix
+  const mask = hostBits === 32 ? 0 : (0xffffffff << hostBits) >>> 0
+  const network = (base & mask) >>> 0
+  const broadcast = (network + 2 ** hostBits - 1) >>> 0
 
-    // /31 and /32 have no room for a reserved network/broadcast pair.
-    const hasHosts = hostBits >= 2
-    return {
-        network: intToIp(network),
-        firstUsable: intToIp(hasHosts ? network + 1 : network),
-        lastUsable: intToIp(hasHosts ? broadcast - 1 : broadcast),
-        broadcast: intToIp(broadcast),
-    }
+  // /31 and /32 have no room for a reserved network/broadcast pair.
+  const hasHosts = hostBits >= 2
+  return {
+    network: intToIp(network),
+    firstUsable: intToIp(hasHosts ? network + 1 : network),
+    lastUsable: intToIp(hasHosts ? broadcast - 1 : broadcast),
+    broadcast: intToIp(broadcast),
+  }
 }
 
 /** True when `subnetCidr` falls entirely inside `vpcCidr`'s address range. */
 export function cidrContains(vpcCidr: string, subnetCidr: string): boolean {
-    if (!CIDR_REGEX.test(vpcCidr) || !CIDR_REGEX.test(subnetCidr)) return false
-    const vpcPrefix = Number.parseInt(vpcCidr.split("/")[1] ?? "", 10)
-    const subPrefix = Number.parseInt(subnetCidr.split("/")[1] ?? "", 10)
-    // A subnet can't be larger than (smaller prefix than) its parent.
-    if (subPrefix < vpcPrefix) return false
+  if (!CIDR_REGEX.test(vpcCidr) || !CIDR_REGEX.test(subnetCidr)) return false
+  const vpcPrefix = Number.parseInt(vpcCidr.split("/")[1] ?? "", 10)
+  const subPrefix = Number.parseInt(subnetCidr.split("/")[1] ?? "", 10)
+  // A subnet can't be larger than (smaller prefix than) its parent.
+  if (subPrefix < vpcPrefix) return false
 
-    const vpcBase = ipToInt(vpcCidr.split("/")[0])
-    const subBase = ipToInt(subnetCidr.split("/")[0])
-    const vpcMask = vpcPrefix === 0 ? 0 : (0xffffffff << (32 - vpcPrefix)) >>> 0
-    return (vpcBase & vpcMask) >>> 0 === (subBase & vpcMask) >>> 0
+  const vpcBase = ipToInt(vpcCidr.split("/")[0])
+  const subBase = ipToInt(subnetCidr.split("/")[0])
+  const vpcMask = vpcPrefix === 0 ? 0 : (0xffffffff << (32 - vpcPrefix)) >>> 0
+  return (vpcBase & vpcMask) >>> 0 === (subBase & vpcMask) >>> 0
 }
 
 /* ── Allowed prefix lengths (per VPC creation rules) ───────────────────────
@@ -134,29 +132,29 @@ const RFC1918_BLOCKS = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
 
 /** True when an IPv4 address sits inside one of the RFC1918 private blocks. */
 export function isPrivateIp(ip: string): boolean {
-    return RFC1918_BLOCKS.some((block) => cidrContains(block, `${ip}/32`))
+  return RFC1918_BLOCKS.some((block) => cidrContains(block, `${ip}/32`))
 }
 
 /** The integer [network, broadcast] bounds of a CIDR, or null if malformed. */
 function cidrBounds(cidr: string): [number, number] | null {
-    if (!CIDR_REGEX.test(cidr)) return null
-    const [ip, prefixStr] = cidr.split("/")
-    const prefix = Number.parseInt(prefixStr, 10)
-    if (Number.isNaN(prefix) || prefix < 0 || prefix > 32) return null
-    const base = ipToInt(ip)
-    const hostBits = 32 - prefix
-    const mask = hostBits === 32 ? 0 : (0xffffffff << hostBits) >>> 0
-    const network = (base & mask) >>> 0
-    const broadcast = (network + 2 ** hostBits - 1) >>> 0
-    return [network, broadcast]
+  if (!CIDR_REGEX.test(cidr)) return null
+  const [ip, prefixStr] = cidr.split("/")
+  const prefix = Number.parseInt(prefixStr, 10)
+  if (Number.isNaN(prefix) || prefix < 0 || prefix > 32) return null
+  const base = ipToInt(ip)
+  const hostBits = 32 - prefix
+  const mask = hostBits === 32 ? 0 : (0xffffffff << hostBits) >>> 0
+  const network = (base & mask) >>> 0
+  const broadcast = (network + 2 ** hostBits - 1) >>> 0
+  return [network, broadcast]
 }
 
 /** True when two CIDR blocks share any address. */
 export function cidrsOverlap(a: string, b: string): boolean {
-    const ba = cidrBounds(a)
-    const bb = cidrBounds(b)
-    if (!ba || !bb) return false
-    return ba[0] <= bb[1] && bb[0] <= ba[1]
+  const ba = cidrBounds(a)
+  const bb = cidrBounds(b)
+  if (!ba || !bb) return false
+  return ba[0] <= bb[1] && bb[0] <= ba[1]
 }
 
 /**
@@ -166,11 +164,11 @@ export function cidrsOverlap(a: string, b: string): boolean {
  */
 export type VpcCidrIssue = "format" | "private" | "prefix"
 export function vpcCidrIssue(cidr: string): VpcCidrIssue | null {
-    if (!CIDR_REGEX.test(cidr)) return "format"
-    const prefix = Number.parseInt(cidr.split("/")[1] ?? "", 10)
-    if (Number.isNaN(prefix) || prefix < VPC_PREFIX_MIN || prefix > VPC_PREFIX_MAX) return "prefix"
-    if (!isPrivateIp(cidr.split("/")[0])) return "private"
-    return null
+  if (!CIDR_REGEX.test(cidr)) return "format"
+  const prefix = Number.parseInt(cidr.split("/")[1] ?? "", 10)
+  if (Number.isNaN(prefix) || prefix < VPC_PREFIX_MIN || prefix > VPC_PREFIX_MAX) return "prefix"
+  if (!isPrivateIp(cidr.split("/")[0])) return "private"
+  return null
 }
 
 /**
@@ -180,25 +178,25 @@ export function vpcCidrIssue(cidr: string): VpcCidrIssue | null {
  */
 export type SubnetCidrIssue = "format" | "prefix" | "outside" | "overlap"
 export function subnetCidrIssue(
-    vpcCidr: string,
-    subnetCidr: string,
-    siblingCidrs: string[]
+  vpcCidr: string,
+  subnetCidr: string,
+  siblingCidrs: string[],
 ): SubnetCidrIssue | null {
-    if (!CIDR_REGEX.test(subnetCidr)) return "format"
-    const prefix = Number.parseInt(subnetCidr.split("/")[1] ?? "", 10)
-    if (Number.isNaN(prefix) || prefix < SUBNET_PREFIX_MIN || prefix > SUBNET_PREFIX_MAX) {
-        return "prefix"
-    }
-    if (!cidrContains(vpcCidr, subnetCidr)) return "outside"
-    if (siblingCidrs.some((other) => cidrsOverlap(subnetCidr, other))) return "overlap"
-    return null
+  if (!CIDR_REGEX.test(subnetCidr)) return "format"
+  const prefix = Number.parseInt(subnetCidr.split("/")[1] ?? "", 10)
+  if (Number.isNaN(prefix) || prefix < SUBNET_PREFIX_MIN || prefix > SUBNET_PREFIX_MAX) {
+    return "prefix"
+  }
+  if (!cidrContains(vpcCidr, subnetCidr)) return "outside"
+  if (siblingCidrs.some((other) => cidrsOverlap(subnetCidr, other))) return "overlap"
+  return null
 }
 
 /** A sensible default subnet prefix for a VPC: four bits smaller, clamped to the
  *  allowed /20–/28 band (and never wider than the VPC itself). */
 function defaultSubnetPrefix(vpcPrefix: number): number {
-    const target = vpcPrefix + 4
-    return Math.min(SUBNET_PREFIX_MAX, Math.max(SUBNET_PREFIX_MIN, vpcPrefix, target))
+  const target = vpcPrefix + 4
+  return Math.min(SUBNET_PREFIX_MAX, Math.max(SUBNET_PREFIX_MIN, vpcPrefix, target))
 }
 
 /**
@@ -209,43 +207,43 @@ function defaultSubnetPrefix(vpcPrefix: number): number {
  * the inputs are malformed.
  */
 export function nextFreeSubnetCidr(
-    vpcCidr: string,
-    existingCidrs: string[],
-    prefix?: number
+  vpcCidr: string,
+  existingCidrs: string[],
+  prefix?: number,
 ): string | null {
-    const bounds = cidrBounds(vpcCidr)
-    if (!bounds) return null
-    const vpcPrefix = Number.parseInt(vpcCidr.split("/")[1] ?? "", 10)
+  const bounds = cidrBounds(vpcCidr)
+  if (!bounds) return null
+  const vpcPrefix = Number.parseInt(vpcCidr.split("/")[1] ?? "", 10)
 
-    let p = prefix
-    if (p == null || Number.isNaN(p) || p < SUBNET_PREFIX_MIN || p > SUBNET_PREFIX_MAX) {
-        p = defaultSubnetPrefix(vpcPrefix)
-    }
-    if (p < vpcPrefix) return null
+  let p = prefix
+  if (p == null || Number.isNaN(p) || p < SUBNET_PREFIX_MIN || p > SUBNET_PREFIX_MAX) {
+    p = defaultSubnetPrefix(vpcPrefix)
+  }
+  if (p < vpcPrefix) return null
 
-    const size = 2 ** (32 - p)
-    const [vpcNet, vpcBroadcast] = bounds
-    for (let base = vpcNet; base + size - 1 <= vpcBroadcast; base += size) {
-        const candidate = `${intToIp(base >>> 0)}/${String(p)}`
-        if (!existingCidrs.some((other) => cidrsOverlap(candidate, other))) return candidate
-    }
-    return null
+  const size = 2 ** (32 - p)
+  const [vpcNet, vpcBroadcast] = bounds
+  for (let base = vpcNet; base + size - 1 <= vpcBroadcast; base += size) {
+    const candidate = `${intToIp(base >>> 0)}/${String(p)}`
+    if (!existingCidrs.some((other) => cidrsOverlap(candidate, other))) return candidate
+  }
+  return null
 }
 
 export interface CarveInput {
-    vpcCidr: string
-    /** Availability-zone codes the subnets are spread across, in order. */
-    azCodes: string[]
-    publicPerAz: number
-    privatePerAz: number
+  vpcCidr: string
+  /** Availability-zone codes the subnets are spread across, in order. */
+  azCodes: string[]
+  publicPerAz: number
+  privatePerAz: number
 }
 
 export interface CarvedSubnet {
-    name: string
-    cidr: string
-    /** AZ code this block is assigned to. */
-    zone: string
-    is_public: boolean
+  name: string
+  cidr: string
+  /** AZ code this block is assigned to. */
+  zone: string
+  is_public: boolean
 }
 
 /**
@@ -256,69 +254,69 @@ export interface CarvedSubnet {
  * the VPC block can't be divided that finely.
  */
 export function carveSubnets({
-    vpcCidr,
-    azCodes,
-    publicPerAz,
-    privatePerAz,
+  vpcCidr,
+  azCodes,
+  publicPerAz,
+  privatePerAz,
 }: CarveInput): CarvedSubnet[] {
-    if (!CIDR_REGEX.test(vpcCidr) || azCodes.length === 0) return []
-    const vpcPrefix = Number.parseInt(vpcCidr.split("/")[1] ?? "", 10)
-    if (Number.isNaN(vpcPrefix) || vpcPrefix > 30) return []
+  if (!CIDR_REGEX.test(vpcCidr) || azCodes.length === 0) return []
+  const vpcPrefix = Number.parseInt(vpcCidr.split("/")[1] ?? "", 10)
+  if (Number.isNaN(vpcPrefix) || vpcPrefix > 30) return []
 
-    const total = azCodes.length * (publicPerAz + privatePerAz)
-    if (total === 0) return []
+  const total = azCodes.length * (publicPerAz + privatePerAz)
+  if (total === 0) return []
 
-    // Smallest prefix that yields enough non-overlapping blocks, then snapped up
-    // to the first ALLOWED subnet prefix (/20–/28) so every carved block obeys
-    // the subnet rules. Returns [] when the requested subnets can't fit.
-    const minPrefix = vpcPrefix + Math.ceil(Math.log2(total))
-    const newPrefix = SUBNET_PREFIX_OPTIONS.find((p) => p >= minPrefix && p >= vpcPrefix)
-    if (newPrefix === undefined) return []
+  // Smallest prefix that yields enough non-overlapping blocks, then snapped up
+  // to the first ALLOWED subnet prefix (/20–/28) so every carved block obeys
+  // the subnet rules. Returns [] when the requested subnets can't fit.
+  const minPrefix = vpcPrefix + Math.ceil(Math.log2(total))
+  const newPrefix = SUBNET_PREFIX_OPTIONS.find((p) => p >= minPrefix && p >= vpcPrefix)
+  if (newPrefix === undefined) return []
 
-    const blockSize = 2 ** (32 - newPrefix)
-    const vpcBase = ipToInt(vpcCidr.split("/")[0]) >>> 0
+  const blockSize = 2 ** (32 - newPrefix)
+  const vpcBase = ipToInt(vpcCidr.split("/")[0]) >>> 0
 
-    const carved: CarvedSubnet[] = []
-    let slot = 0
-    // Name is left blank so the page derives it from the real VPC name at submit
-    // (or shows a placeholder in the map); the customize panel can override it.
-    const push = (azCode: string, isPublic: boolean) => {
-        const base = (vpcBase + slot * blockSize) >>> 0
-        carved.push({
-            name: "",
-            cidr: `${intToIp(base)}/${String(newPrefix)}`,
-            zone: azCode,
-            is_public: isPublic,
-        })
-        slot += 1
-    }
+  const carved: CarvedSubnet[] = []
+  let slot = 0
+  // Name is left blank so the page derives it from the real VPC name at submit
+  // (or shows a placeholder in the map); the customize panel can override it.
+  const push = (azCode: string, isPublic: boolean) => {
+    const base = (vpcBase + slot * blockSize) >>> 0
+    carved.push({
+      name: "",
+      cidr: `${intToIp(base)}/${String(newPrefix)}`,
+      zone: azCode,
+      is_public: isPublic,
+    })
+    slot += 1
+  }
 
-    // Public tier first (column-by-AZ), then private — matches the map layout.
-    for (let i = 0; i < publicPerAz; i++) {
-        azCodes.forEach((code) => {
-            push(code, true)
-        })
-    }
-    for (let i = 0; i < privatePerAz; i++) {
-        azCodes.forEach((code) => {
-            push(code, false)
-        })
-    }
-    return carved
+  // Public tier first (column-by-AZ), then private — matches the map layout.
+  for (let i = 0; i < publicPerAz; i++) {
+    azCodes.forEach((code) => {
+      push(code, true)
+    })
+  }
+  for (let i = 0; i < privatePerAz; i++) {
+    azCodes.forEach((code) => {
+      push(code, false)
+    })
+  }
+  return carved
 }
 
 /** A short, lowercase, naming-convention-safe random suffix, e.g. "k3p9zq". */
 function randomSuffix(): string {
-    // eslint-disable-next-line sonarjs/pseudo-random -- cosmetic name suffix, not security-sensitive
-    return Math.random()
-        .toString(36)
-        .slice(2, 8)
-        .replace(/[^a-z0-9]/g, "0")
+  // eslint-disable-next-line sonarjs/pseudo-random -- cosmetic name suffix, not security-sensitive
+  return Math.random()
+    .toString(36)
+    .slice(2, 8)
+    .replace(/[^a-z0-9]/g, "0")
 }
 
 /** Auto-generate a VPC name when the user leaves the field blank (AWS-style). */
 export function autoVpcName(): string {
-    return `vpc-${randomSuffix()}`
+  return `vpc-${randomSuffix()}`
 }
 
 /**
@@ -326,6 +324,6 @@ export function autoVpcName(): string {
  * "vpc-k3p9zq-subnet-public-1". Used when a subnet row is left unnamed.
  */
 export function autoSubnetName(vpcName: string, isPublic: boolean, index: number): string {
-    const base = vpcName.length >= 2 ? vpcName : "vpc"
-    return `${base}-subnet-${isPublic ? "public" : "private"}-${String(index + 1)}`
+  const base = vpcName.length >= 2 ? vpcName : "vpc"
+  return `${base}-subnet-${isPublic ? "public" : "private"}-${String(index + 1)}`
 }

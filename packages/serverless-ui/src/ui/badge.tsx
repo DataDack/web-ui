@@ -1,7 +1,7 @@
-import type * as React from 'react'
+import type * as React from "react"
 
-import { css, cx } from '@emotion/css'
-import { Slot } from 'radix-ui'
+import { css, cx } from "@emotion/css"
+import { Slot } from "radix-ui"
 
 const base = css`
   display: inline-flex;
@@ -52,16 +52,16 @@ type BadgeVariant = keyof typeof variants
 
 /** Class-string form, kept for consumers that composed `badgeVariants()`. */
 function badgeVariants(options?: { variant?: BadgeVariant | null; className?: string }) {
-  return cx(base, variants[options?.variant ?? 'default'], options?.className)
+  return cx(base, variants[options?.variant ?? "default"], options?.className)
 }
 
 function Badge({
   className,
-  variant = 'default',
+  variant = "default",
   asChild = false,
   ...props
-}: React.ComponentProps<'span'> & { variant?: BadgeVariant | null; asChild?: boolean }) {
-  const Comp = asChild ? Slot.Root : 'span'
+}: React.ComponentProps<"span"> & { variant?: BadgeVariant | null; asChild?: boolean }) {
+  const Comp = asChild ? Slot.Root : "span"
   return <Comp data-slot="badge" className={badgeVariants({ variant, className })} {...props} />
 }
 

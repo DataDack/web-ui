@@ -15,28 +15,28 @@ import { idbDel, idbGet, idbSet } from "./active-scope"
 const REFRESH_KEY = "refresh-token"
 
 interface RefreshTokenResponse {
-    access_token?: string
-    refresh_token?: string
+  access_token?: string
+  refresh_token?: string
 }
 
 // ── In-memory access token ──────────────────────────────────────────────────
 let accessToken: string | null = null
 
 export const authToken = {
-    get: () => accessToken,
-    set: (t: string | null) => {
-        accessToken = t
-    },
-    clear: () => {
-        accessToken = null
-    },
+  get: () => accessToken,
+  set: (t: string | null) => {
+    accessToken = t
+  },
+  clear: () => {
+    accessToken = null
+  },
 }
 
 // ── Refresh token (IndexedDB) ───────────────────────────────────────────────
 export const refreshToken = {
-    get: () => idbGet<string>(REFRESH_KEY),
-    set: (t: string) => idbSet(REFRESH_KEY, t),
-    clear: () => idbDel(REFRESH_KEY),
+  get: () => idbGet<string>(REFRESH_KEY),
+  set: (t: string) => idbSet(REFRESH_KEY, t),
+  clear: () => idbDel(REFRESH_KEY),
 }
 
 // ── Single-flight silent refresh ────────────────────────────────────────────
@@ -54,35 +54,35 @@ let inflight: Promise<string | null> | null = null
  * body plus X-Requested-With so it clears the backend's app-header guard.
  */
 export function refreshAccessToken(): Promise<string | null> {
-    if (inflight) return inflight
-    inflight = (async () => {
-        const stored = await refreshToken.get()
-        if (!stored) {
-            accessToken = null
-            return null
-        }
-        try {
-            const body = new URLSearchParams()
-            body.set("grant_type", "refresh_token")
-            body.set("refresh_token", stored)
-            const res = await axios.post<RefreshTokenResponse>("/api/v1/auth/users/token", body, {
-                withCredentials: true,
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                    "X-Requested-With": "XMLHttpRequest",
-                },
-            })
-            accessToken = res.data.access_token ?? null
-            if (res.data.refresh_token) await refreshToken.set(res.data.refresh_token)
-            return accessToken
-        } catch {
-            // Refresh token is invalid/expired — drop it so we don't retry it.
-            accessToken = null
-            await refreshToken.clear()
-            return null
-        }
-    })().finally(() => {
-        inflight = null
-    })
-    return inflight
+  if (inflight) return inflight
+  inflight = (async () => {
+    const stored = await refreshToken.get()
+    if (!stored) {
+      accessToken = null
+      return null
+    }
+    try {
+      const body = new URLSearchParams()
+      body.set("grant_type", "refresh_token")
+      body.set("refresh_token", stored)
+      const res = await axios.post<RefreshTokenResponse>("/api/v1/auth/users/token", body, {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "X-Requested-With": "XMLHttpRequest",
+        },
+      })
+      accessToken = res.data.access_token ?? null
+      if (res.data.refresh_token) await refreshToken.set(res.data.refresh_token)
+      return accessToken
+    } catch {
+      // Refresh token is invalid/expired — drop it so we don't retry it.
+      accessToken = null
+      await refreshToken.clear()
+      return null
+    }
+  })().finally(() => {
+    inflight = null
+  })
+  return inflight
 }

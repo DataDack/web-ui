@@ -14,8 +14,8 @@ import { validatePattern } from "./naming-convention"
  *   const schema = useMemo(() => makeSchema(rule), [rule])
  */
 export function namingNameSchema(rule: NamingRule) {
-    return z.string().superRefine((value, ctx) => {
-        const err = validatePattern(rule.pattern, value)
-        if (err) ctx.addIssue({ code: "custom", message: err })
-    })
+  return z.string().superRefine((value, ctx) => {
+    const err = validatePattern(rule.pattern, value)
+    if (err) ctx.addIssue({ code: "custom", message: err })
+  })
 }

@@ -1,8 +1,8 @@
-import type { ReactNode } from 'react'
+import type { ReactNode } from "react"
 
-import { css, cx } from '@emotion/css'
+import { css, cx } from "@emotion/css"
 
-import { fontMono, media, mix } from '../lib/styles'
+import { fontMono, media, mix } from "../lib/styles"
 
 const grid = css`
   display: grid;
@@ -39,7 +39,7 @@ const item = css`
 `
 
 const term = css`
-  color: ${mix('--muted-foreground', 80)};
+  color: ${mix("--muted-foreground", 80)};
   margin-bottom: 4px;
   font-family: ${fontMono};
   font-size: 10px;

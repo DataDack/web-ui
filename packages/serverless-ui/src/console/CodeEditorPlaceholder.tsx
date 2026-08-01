@@ -1,13 +1,13 @@
-import { css, cx } from '@emotion/css'
-import { Code2, FileCode2, FileJson, FileText, Rocket, Search, type LucideIcon } from 'lucide-react'
+import { css, cx } from "@emotion/css"
+import { Code2, FileCode2, FileJson, FileText, Rocket, Search, type LucideIcon } from "lucide-react"
 
-import { formatBytes } from '../lib/cn'
-import { contentEnter, fontMono, glass1, glass2, glass3, media, mix } from '../lib/styles'
+import { formatBytes } from "../lib/cn"
+import { contentEnter, fontMono, glass1, glass2, glass3, media, mix } from "../lib/styles"
 
 const root = css`
   position: relative;
   overflow: hidden;
-  box-shadow: 0 0 0 1px ${mix('--border', 60)};
+  box-shadow: 0 0 0 1px ${mix("--border", 60)};
 `
 
 const mock = css`
@@ -25,9 +25,9 @@ const overlay = css`
   padding: 0 24px;
   background: linear-gradient(
     to bottom,
-    ${mix('--background', 40)},
-    ${mix('--background', 70)},
-    ${mix('--background', 85)}
+    ${mix("--background", 40)},
+    ${mix("--background", 70)},
+    ${mix("--background", 85)}
   );
   backdrop-filter: blur(3px);
 `
@@ -37,7 +37,7 @@ const card = css`
   padding: 20px 24px;
   text-align: center;
   box-shadow:
-    0 0 0 1px ${mix('--border', 70)},
+    0 0 0 1px ${mix("--border", 70)},
     0 10px 15px -3px rgb(0 0 0 / 0.1),
     0 4px 6px -4px rgb(0 0 0 / 0.1);
 `
@@ -118,10 +118,10 @@ export function CodeEditorPlaceholder({
           <div className={cx(glass1, cardIconTile)}>
             <Code2 className={cardIcon} />
           </div>
-          <h3 className={cardTitle}>{title ?? 'Coming soon'}</h3>
+          <h3 className={cardTitle}>{title ?? "Coming soon"}</h3>
           <p className={cardBlurb}>
             {message ??
-              'Inline code editing isn’t available yet. Deploy updates through the API or CLI in the meantime.'}
+              "Inline code editing isn’t available yet. Deploy updates through the API or CLI in the meantime."}
           </p>
         </div>
       </div>
@@ -137,7 +137,7 @@ const chromeHeader = css`
   display: flex;
   align-items: center;
   gap: 10px;
-  border-bottom: 1px solid ${mix('--border', 60)};
+  border-bottom: 1px solid ${mix("--border", 60)};
   padding: 10px 16px;
 `
 
@@ -167,7 +167,7 @@ const headerActions = css`
 `
 
 const discardChip = css`
-  border: 1px solid ${mix('--border', 70)};
+  border: 1px solid ${mix("--border", 70)};
   color: var(--muted-foreground);
   border-radius: 0.375rem;
   padding: 4px 8px;
@@ -176,7 +176,7 @@ const discardChip = css`
 `
 
 const deployChip = css`
-  background: ${mix('--brand-gold', 85)};
+  background: ${mix("--brand-gold", 85)};
   color: var(--brand-gold-foreground);
   display: flex;
   align-items: center;
@@ -202,7 +202,7 @@ const sidebar = css`
   display: none;
   width: 208px;
   flex-shrink: 0;
-  border-right: 1px solid ${mix('--border', 60)};
+  border-right: 1px solid ${mix("--border", 60)};
   padding: 12px;
 
   ${media.sm} {
@@ -211,8 +211,8 @@ const sidebar = css`
 `
 
 const searchBox = css`
-  border: 1px solid ${mix('--border', 60)};
-  color: ${mix('--muted-foreground', 70)};
+  border: 1px solid ${mix("--border", 60)};
+  color: ${mix("--muted-foreground", 70)};
   margin-bottom: 12px;
   display: flex;
   align-items: center;
@@ -248,7 +248,7 @@ const fileRow = css`
 `
 
 const fileRowActive = css`
-  background: ${mix('--accent', 70)};
+  background: ${mix("--accent", 70)};
   color: var(--foreground);
 `
 
@@ -281,7 +281,7 @@ const codeLine = css`
 `
 
 const lineNumber = css`
-  color: ${mix('--muted-foreground', 45)};
+  color: ${mix("--muted-foreground", 45)};
   width: 36px;
   flex-shrink: 0;
   padding-right: 12px;
@@ -299,13 +299,13 @@ function EditorChrome({
   sizeBytes,
   version,
 }: Readonly<
-  Pick<CodeEditorPlaceholderProps, 'functionName' | 'runtime' | 'sizeBytes' | 'version'>
+  Pick<CodeEditorPlaceholderProps, "functionName" | "runtime" | "sizeBytes" | "version">
 >) {
   const meta = [
-    runtime ?? 'nodejs20.x',
-    sizeBytes === undefined ? '4.2 KB' : formatBytes(sizeBytes),
-    version === undefined ? 'v3' : `v${String(version)}`,
-  ].join(' · ')
+    runtime ?? "nodejs20.x",
+    sizeBytes === undefined ? "4.2 KB" : formatBytes(sizeBytes),
+    version === undefined ? "v3" : `v${String(version)}`,
+  ].join(" · ")
 
   return (
     <div className={chrome}>
@@ -377,12 +377,12 @@ interface MockFile {
 }
 
 const FILES: MockFile[] = [
-  { name: 'handler.js', icon: FileCode2, active: true, depth: 0 },
-  { name: 'lib/', icon: FileText, active: false, depth: 0 },
-  { name: 'transform.js', icon: FileCode2, active: false, depth: 1 },
-  { name: 'client.js', icon: FileCode2, active: false, depth: 1 },
-  { name: 'package.json', icon: FileJson, active: false, depth: 0 },
-  { name: 'README.md', icon: FileText, active: false, depth: 0 },
+  { name: "handler.js", icon: FileCode2, active: true, depth: 0 },
+  { name: "lib/", icon: FileText, active: false, depth: 0 },
+  { name: "transform.js", icon: FileCode2, active: false, depth: 1 },
+  { name: "client.js", icon: FileCode2, active: false, depth: 1 },
+  { name: "package.json", icon: FileJson, active: false, depth: 0 },
+  { name: "README.md", icon: FileText, active: false, depth: 0 },
 ]
 
 interface Token {
@@ -401,14 +401,14 @@ const fnStyle = css`
   color: var(--chart-1);
 `
 const comStyle = css`
-  color: ${mix('--muted-foreground', 60)};
+  color: ${mix("--muted-foreground", 60)};
   font-style: italic;
 `
 const puncStyle = css`
   color: var(--muted-foreground);
 `
 const txtStyle = css`
-  color: ${mix('--foreground', 75)};
+  color: ${mix("--foreground", 75)};
 `
 
 const kw = (text: string): Token => ({ text, className: kwStyle })
@@ -419,56 +419,56 @@ const punc = (text: string): Token => ({ text, className: puncStyle })
 const txt = (text: string): Token => ({ text, className: txtStyle })
 
 const CODE: Token[][] = [
-  [com('// handler.js — invoked once per request')],
+  [com("// handler.js — invoked once per request")],
   [],
-  [kw('import'), txt(' { transform } '), kw('from'), str(" './lib/transform.js'")],
+  [kw("import"), txt(" { transform } "), kw("from"), str(" './lib/transform.js'")],
   [],
-  [kw('export async function '), fnName('handler'), punc('('), txt('event, context'), punc(') {')],
+  [kw("export async function "), fnName("handler"), punc("("), txt("event, context"), punc(") {")],
   [
-    txt('  '),
-    kw('const'),
-    txt(' body = '),
-    fnName('JSON.parse'),
-    punc('('),
-    txt('event.body ?? '),
+    txt("  "),
+    kw("const"),
+    txt(" body = "),
+    fnName("JSON.parse"),
+    punc("("),
+    txt("event.body ?? "),
     str("'{}'"),
-    punc(')'),
+    punc(")"),
   ],
-  [txt('  '), kw('const'), txt(' items = body.items ?? '), punc('[]')],
+  [txt("  "), kw("const"), txt(" items = body.items ?? "), punc("[]")],
   [],
   [
-    txt('  '),
-    kw('const'),
-    txt(' result = '),
-    kw('await'),
-    txt(' Promise.'),
-    fnName('all'),
-    punc('('),
+    txt("  "),
+    kw("const"),
+    txt(" result = "),
+    kw("await"),
+    txt(" Promise."),
+    fnName("all"),
+    punc("("),
   ],
   [
-    txt('    items.'),
-    fnName('map'),
-    punc('(('),
-    txt('item'),
-    punc(') => '),
-    fnName('transform'),
-    punc('('),
-    txt('item'),
-    punc(')),'),
+    txt("    items."),
+    fnName("map"),
+    punc("(("),
+    txt("item"),
+    punc(") => "),
+    fnName("transform"),
+    punc("("),
+    txt("item"),
+    punc(")),"),
   ],
-  [txt('  '), punc(')')],
+  [txt("  "), punc(")")],
   [],
-  [txt('  '), kw('return'), txt(' '), punc('{')],
-  [txt('    statusCode: '), fnName('200'), punc(',')],
+  [txt("  "), kw("return"), txt(" "), punc("{")],
+  [txt("    statusCode: "), fnName("200"), punc(",")],
   [
-    txt('    body: '),
-    fnName('JSON.stringify'),
-    punc('({'),
-    txt(' ok: '),
-    kw('true'),
-    txt(', result '),
-    punc('}),'),
+    txt("    body: "),
+    fnName("JSON.stringify"),
+    punc("({"),
+    txt(" ok: "),
+    kw("true"),
+    txt(", result "),
+    punc("}),"),
   ],
-  [txt('  '), punc('}')],
-  [punc('}')],
+  [txt("  "), punc("}")],
+  [punc("}")],
 ]

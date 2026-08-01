@@ -6,10 +6,10 @@ import { Button } from "@/components/ui/button"
 import type { CardAction } from "./card-action"
 
 interface CardActionButtonProps {
-    action: NonNullable<CardAction>
-    deploying: boolean
-    onDeploy: () => void
-    onReconnect: () => void
+  action: NonNullable<CardAction>
+  deploying: boolean
+  onDeploy: () => void
+  onReconnect: () => void
 }
 
 /**
@@ -21,39 +21,39 @@ interface CardActionButtonProps {
  * action does not exist on a touch screen.
  */
 export function CardActionButton({
-    action,
-    deploying,
-    onDeploy,
-    onReconnect,
+  action,
+  deploying,
+  onDeploy,
+  onReconnect,
 }: Readonly<CardActionButtonProps>) {
-    if (action.kind === "internal") {
-        return (
-            <Button asChild variant="outline" size="sm" className="w-full">
-                <Link to={action.to}>{action.label}</Link>
-            </Button>
-        )
-    }
-
-    if (action.kind === "external") {
-        return (
-            <Button asChild variant="outline" size="sm" className="w-full gap-1.5">
-                <a href={action.href} target="_blank" rel="noreferrer">
-                    {action.label}
-                    <ExternalLink className="size-3" />
-                </a>
-            </Button>
-        )
-    }
-
+  if (action.kind === "internal") {
     return (
-        <Button
-            variant="outline"
-            size="sm"
-            className="w-full"
-            disabled={action.kind === "deploy" && deploying}
-            onClick={action.kind === "deploy" ? onDeploy : onReconnect}
-        >
-            {action.kind === "deploy" && deploying ? "Queueing…" : action.label}
-        </Button>
+      <Button asChild variant="outline" size="sm" className="w-full">
+        <Link to={action.to}>{action.label}</Link>
+      </Button>
     )
+  }
+
+  if (action.kind === "external") {
+    return (
+      <Button asChild variant="outline" size="sm" className="w-full gap-1.5">
+        <a href={action.href} target="_blank" rel="noreferrer">
+          {action.label}
+          <ExternalLink className="size-3" />
+        </a>
+      </Button>
+    )
+  }
+
+  return (
+    <Button
+      variant="outline"
+      size="sm"
+      className="w-full"
+      disabled={action.kind === "deploy" && deploying}
+      onClick={action.kind === "deploy" ? onDeploy : onReconnect}
+    >
+      {action.kind === "deploy" && deploying ? "Queueing…" : action.label}
+    </Button>
+  )
 }

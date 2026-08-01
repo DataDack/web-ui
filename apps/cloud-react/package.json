@@ -1,30 +1,30 @@
 {
-    "name": "cloud-react",
-    "private": true,
-    "version": "0.0.0",
-    "type": "module",
-    "description": "DataDack cloud console (React web app).",
-    "scripts": {
-        "dev": "vite",
-        "build": "vite build",
-        "lint": "eslint .",
-        "lint:fix": "eslint . --fix",
-        "format": "prettier --write .",
-        "preview": "vite preview",
-        "test": "bun test",
-        "typecheck": "tsc -b --force",
-        "clean": "rm -rf dist node_modules/.vite node_modules/.tmp"
-    },
-    "dependencies": {
-        "@datadack/serverless-ui": "workspace:*"
-    },
-    "nx": {
-        "tags": [
-            "scope:app"
-        ],
-        "implicitDependencies": [
-            "@serverless-ui/eslint-config",
-            "@serverless-ui/typescript-config"
-        ]
-    }
+  "name": "cloud-react",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "DataDack cloud console (React web app).",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "preview": "vite preview",
+    "test": "bun test",
+    "typecheck": "tsc -b --force",
+    "clean": "rm -rf dist node_modules/.vite node_modules/.tmp"
+  },
+  "dependencies": {
+    "@datadack/serverless-ui": "workspace:*"
+  },
+  "nx": {
+    "tags": [
+      "scope:app"
+    ],
+    "implicitDependencies": [
+      "@serverless-ui/eslint-config",
+      "@serverless-ui/typescript-config"
+    ]
+  }
 }

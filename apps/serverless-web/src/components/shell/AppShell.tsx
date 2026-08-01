@@ -1,8 +1,8 @@
-import { Outlet } from 'react-router-dom'
+import { Outlet } from "react-router-dom"
 
-import { Sidebar } from '@/components/shell/Sidebar'
-import { Topbar } from '@/components/shell/Topbar'
-import { useDashboard } from '@/lib/queries'
+import { Sidebar } from "@/components/shell/Sidebar"
+import { Topbar } from "@/components/shell/Topbar"
+import { useDashboard } from "@/lib/queries"
 
 /**
  * Google-Cloud-style shell: a dividerless blurred topbar and sidebar sitting on

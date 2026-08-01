@@ -1,15 +1,15 @@
-import React from 'react'
+import React from "react"
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import ReactDOM from 'react-dom/client'
-import { BrowserRouter } from 'react-router-dom'
-import { Toaster } from 'sonner'
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import ReactDOM from "react-dom/client"
+import { BrowserRouter } from "react-router-dom"
+import { Toaster } from "sonner"
 
-import { App } from '@/App'
+import { App } from "@/App"
 
-import { ThemeProvider } from '@datadack/serverless-ui'
+import { ThemeProvider } from "@datadack/serverless-ui"
 
-import './index.css'
+import "./index.css"
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -24,9 +24,9 @@ const queryClient = new QueryClient({
 // Fail loudly rather than with a non-null assertion: if index.html ever ships
 // without #root, "Cannot read properties of null" at a React internal is far
 // harder to diagnose than this.
-const rootElement = document.getElementById('root')
+const rootElement = document.getElementById("root")
 if (!rootElement) {
-  throw new Error('Root element #root not found — index.html is missing its mount point')
+  throw new Error("Root element #root not found — index.html is missing its mount point")
 }
 
 ReactDOM.createRoot(rootElement).render(

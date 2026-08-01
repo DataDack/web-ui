@@ -7,8 +7,8 @@ import { ActivityEventRow } from "./ActivityEventRow"
 import type { Build } from "../../managed-apps.types"
 
 interface ActivityTimelineProps {
-    builds: readonly Build[]
-    className?: string
+  builds: readonly Build[]
+  className?: string
 }
 
 /**
@@ -26,20 +26,20 @@ interface ActivityTimelineProps {
  * "nothing yet" card on the same screen would just repeat it.
  */
 export function ActivityTimeline({ builds, className }: Readonly<ActivityTimelineProps>) {
-    const events = useMemo(() => deriveActivityEvents(builds), [builds])
+  const events = useMemo(() => deriveActivityEvents(builds), [builds])
 
-    if (events.length === 0) return null
+  if (events.length === 0) return null
 
-    return (
-        <ol className={cn("glass-1 rounded-xl border border-border/60 p-4", className)}>
-            {events.map((event, index) => (
-                <ActivityEventRow
-                    key={event.id}
-                    event={event}
-                    index={index}
-                    isLast={index === events.length - 1}
-                />
-            ))}
-        </ol>
-    )
+  return (
+    <ol className={cn("glass-1 rounded-xl border border-border/60 p-4", className)}>
+      {events.map((event, index) => (
+        <ActivityEventRow
+          key={event.id}
+          event={event}
+          index={index}
+          isLast={index === events.length - 1}
+        />
+      ))}
+    </ol>
+  )
 }

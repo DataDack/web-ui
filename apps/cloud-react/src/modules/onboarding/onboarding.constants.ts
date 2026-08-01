@@ -4,39 +4,39 @@ export const ONBOARDING_ROUTE = "/onboarding"
 // consumed via `useCountries()` — see modules/countries.
 
 export const INDIAN_STATES = [
-    "Andhra Pradesh",
-    "Arunachal Pradesh",
-    "Assam",
-    "Bihar",
-    "Chhattisgarh",
-    "Goa",
-    "Gujarat",
-    "Haryana",
-    "Himachal Pradesh",
-    "Jharkhand",
-    "Karnataka",
-    "Kerala",
-    "Madhya Pradesh",
-    "Maharashtra",
-    "Manipur",
-    "Meghalaya",
-    "Mizoram",
-    "Nagaland",
-    "Odisha",
-    "Punjab",
-    "Rajasthan",
-    "Sikkim",
-    "Tamil Nadu",
-    "Telangana",
-    "Tripura",
-    "Uttar Pradesh",
-    "Uttarakhand",
-    "West Bengal",
-    "Delhi",
-    "Jammu and Kashmir",
-    "Ladakh",
-    "Puducherry",
-    "Chandigarh",
+  "Andhra Pradesh",
+  "Arunachal Pradesh",
+  "Assam",
+  "Bihar",
+  "Chhattisgarh",
+  "Goa",
+  "Gujarat",
+  "Haryana",
+  "Himachal Pradesh",
+  "Jharkhand",
+  "Karnataka",
+  "Kerala",
+  "Madhya Pradesh",
+  "Maharashtra",
+  "Manipur",
+  "Meghalaya",
+  "Mizoram",
+  "Nagaland",
+  "Odisha",
+  "Punjab",
+  "Rajasthan",
+  "Sikkim",
+  "Tamil Nadu",
+  "Telangana",
+  "Tripura",
+  "Uttar Pradesh",
+  "Uttarakhand",
+  "West Bengal",
+  "Delhi",
+  "Jammu and Kashmir",
+  "Ladakh",
+  "Puducherry",
+  "Chandigarh",
 ] as const
 
 // Client-side mirrors of the backend Indian-format validators (instant feedback).
@@ -58,8 +58,8 @@ export const maxBirthYear = (today = new Date()) => today.getFullYear() - MIN_AG
  * as of `today` (calendar-accurate, accounts for the birthday not yet passed).
  */
 export const isOldEnough = (iso: string, today = new Date()): boolean => {
-    const [y, m, d] = iso.split("-").map(Number)
-    if (!y || !m || !d) return false
-    const eighteenth = new Date(y + MIN_AGE_YEARS, m - 1, d)
-    return eighteenth <= today
+  const [y, m, d] = iso.split("-").map(Number)
+  if (!y || !m || !d) return false
+  const eighteenth = new Date(y + MIN_AGE_YEARS, m - 1, d)
+  return eighteenth <= today
 }

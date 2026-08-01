@@ -1,18 +1,18 @@
 import { Label } from "@/components/ui/label"
 
 export function FieldError({ message }: Readonly<{ message?: string }>) {
-    if (!message) return null
-    return <p className="text-[11px] text-destructive">{message}</p>
+  if (!message) return null
+  return <p className="text-[11px] text-destructive">{message}</p>
 }
 
 export function FieldLabel({
-    children,
-    required = true,
+  children,
+  required = true,
 }: Readonly<{ children: string; required?: boolean }>) {
-    return (
-        <Label className="text-xs font-semibold tracking-wide uppercase text-muted-foreground">
-            {children}
-            {required && <span className="text-destructive ml-0.5">*</span>}
-        </Label>
-    )
+  return (
+    <Label className="text-xs font-semibold tracking-wide uppercase text-muted-foreground">
+      {children}
+      {required && <span className="text-destructive ml-0.5">*</span>}
+    </Label>
+  )
 }

@@ -5,7 +5,7 @@ import { apiGet } from "@/services/api/client"
 import type { CountriesResponse, Country } from "./countries.types"
 
 export const COUNTRIES_QUERY_KEYS = {
-    list: ["countries", "list"] as const,
+  list: ["countries", "list"] as const,
 }
 
 // The dataset only changes when borders move; the backend serves it with a
@@ -13,11 +13,11 @@ export const COUNTRIES_QUERY_KEYS = {
 const STALE = 24 * 60 * 60 * 1000
 
 export function useCountries() {
-    return useQuery({
-        queryKey: COUNTRIES_QUERY_KEYS.list,
-        queryFn: () => apiGet<CountriesResponse>("/countries").then((r) => r.countries),
-        staleTime: STALE,
-    })
+  return useQuery({
+    queryKey: COUNTRIES_QUERY_KEYS.list,
+    queryFn: () => apiGet<CountriesResponse>("/countries").then((r) => r.countries),
+    staleTime: STALE,
+  })
 }
 
 export type { Country }

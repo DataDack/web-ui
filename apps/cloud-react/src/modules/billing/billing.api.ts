@@ -1,14 +1,14 @@
 import { api, apiGet, apiPost, LIST_QUERY } from "@/services/api/client"
 
 import type {
-    CreditBalance,
-    CreditPurchase,
-    Invoice,
-    LedgerApiEntry,
-    PurchaseCreditsRequest,
-    PurchaseCreditsResponse,
-    SubscriptionApi,
-    UsageRecordApi,
+  CreditBalance,
+  CreditPurchase,
+  Invoice,
+  LedgerApiEntry,
+  PurchaseCreditsRequest,
+  PurchaseCreditsResponse,
+  SubscriptionApi,
+  UsageRecordApi,
 } from "./billing.types"
 
 // Live cloud-be-go endpoints (mounted under /api/v1 by the axios baseURL):
@@ -22,18 +22,18 @@ import type {
 // The credit ledger (apps/billing/ledger) is account-scoped by path param; the
 // account id comes from the balance response.
 export const billingApi = {
-    getBalance: () => apiGet<CreditBalance>("/billing/credits/balance"),
-    listPurchases: () => apiGet<CreditPurchase[]>("/billing/credits/purchases"),
-    purchaseCredits: (payload: PurchaseCreditsRequest) =>
-        apiPost<PurchaseCreditsResponse>("/billing/credits/purchase", payload),
-    listLedger: (accountId: string) => apiGet<LedgerApiEntry[]>(`/billing/ledger/${accountId}`),
-    listInvoices: () => apiGet<Invoice[]>(`/billing/invoices${LIST_QUERY}`),
-    listUsage: () => apiGet<UsageRecordApi[]>("/billing/charge/usage"),
-    listSubscriptions: () => apiGet<SubscriptionApi[]>("/billing/charge/subscriptions"),
-    // Invoice PDF is binary; fetch it via the raw axios instance (carries the
-    // Bearer token + X-Account-Id) as a blob so the browser can download it.
-    downloadInvoicePdf: async (id: string): Promise<Blob> => {
-        const res = await api.get(`/billing/charge/invoices/${id}/pdf`, { responseType: "blob" })
-        return res.data as Blob
-    },
+  getBalance: () => apiGet<CreditBalance>("/billing/credits/balance"),
+  listPurchases: () => apiGet<CreditPurchase[]>("/billing/credits/purchases"),
+  purchaseCredits: (payload: PurchaseCreditsRequest) =>
+    apiPost<PurchaseCreditsResponse>("/billing/credits/purchase", payload),
+  listLedger: (accountId: string) => apiGet<LedgerApiEntry[]>(`/billing/ledger/${accountId}`),
+  listInvoices: () => apiGet<Invoice[]>(`/billing/invoices${LIST_QUERY}`),
+  listUsage: () => apiGet<UsageRecordApi[]>("/billing/charge/usage"),
+  listSubscriptions: () => apiGet<SubscriptionApi[]>("/billing/charge/subscriptions"),
+  // Invoice PDF is binary; fetch it via the raw axios instance (carries the
+  // Bearer token + X-Account-Id) as a blob so the browser can download it.
+  downloadInvoicePdf: async (id: string): Promise<Blob> => {
+    const res = await api.get(`/billing/charge/invoices/${id}/pdf`, { responseType: "blob" })
+    return res.data as Blob
+  },
 }

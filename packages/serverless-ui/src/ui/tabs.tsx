@@ -1,9 +1,9 @@
-import type * as React from 'react'
+import type * as React from "react"
 
-import { css, cx } from '@emotion/css'
-import { Tabs as TabsPrimitive } from 'radix-ui'
+import { css, cx } from "@emotion/css"
+import { Tabs as TabsPrimitive } from "radix-ui"
 
-import { contentEnter, mix } from '../lib/styles'
+import { contentEnter, mix } from "../lib/styles"
 
 const root = css`
   display: flex;
@@ -19,7 +19,7 @@ const list = css`
   align-items: center;
   gap: 4px;
   overflow-x: auto;
-  border-bottom: 1px solid ${mix('--border', 60)};
+  border-bottom: 1px solid ${mix("--border", 60)};
 `
 
 const trigger = css`
@@ -44,15 +44,15 @@ const trigger = css`
   }
 
   &:focus-visible {
-    box-shadow: 0 0 0 2px ${mix('--ring', 50)};
+    box-shadow: 0 0 0 2px ${mix("--ring", 50)};
   }
 
-  &[data-state='active'] {
+  &[data-state="active"] {
     color: var(--foreground);
   }
 
-  &[data-state='active']::after {
-    content: '';
+  &[data-state="active"]::after {
+    content: "";
     position: absolute;
     left: 8px;
     right: 8px;

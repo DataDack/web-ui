@@ -1,9 +1,9 @@
 ---
 name: Bug report
 about: Report a bug or unexpected behaviour
-title: 'fix: '
-labels: ['bug', 'triage']
-assignees: ''
+title: "fix: "
+labels: ["bug", "triage"]
+assignees: ""
 ---
 
 ## Describe the bug

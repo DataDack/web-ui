@@ -29,58 +29,58 @@ import "./index.css"
 // the new index.html; the time guard stops a reload loop if the failure
 // persists (real outage, not a stale hash).
 window.addEventListener("vite:preloadError", (event) => {
-    const RELOAD_AT = "chunk-reload-at"
-    const last = Number(sessionStorage.getItem(RELOAD_AT) ?? "0")
-    if (Date.now() - last < 30_000) return // just reloaded; let the error surface
-    sessionStorage.setItem(RELOAD_AT, String(Date.now()))
-    event.preventDefault()
-    window.location.reload()
+  const RELOAD_AT = "chunk-reload-at"
+  const last = Number(sessionStorage.getItem(RELOAD_AT) ?? "0")
+  if (Date.now() - last < 30_000) return // just reloaded; let the error surface
+  sessionStorage.setItem(RELOAD_AT, String(Date.now()))
+  event.preventDefault()
+  window.location.reload()
 })
 
 Sentry.init({
-    dsn: env.VITE_SENTRY_DSN,
-    integrations: [Sentry.browserTracingIntegration(), Sentry.replayIntegration()],
-    tracesSampleRate: 1.0,
-    replaysSessionSampleRate: 0.1,
-    replaysOnErrorSampleRate: 1.0,
-    enabled: !!env.VITE_SENTRY_DSN,
+  dsn: env.VITE_SENTRY_DSN,
+  integrations: [Sentry.browserTracingIntegration(), Sentry.replayIntegration()],
+  tracesSampleRate: 1.0,
+  replaysSessionSampleRate: 0.1,
+  replaysOnErrorSampleRate: 1.0,
+  enabled: !!env.VITE_SENTRY_DSN,
 })
 
 const queryClient = new QueryClient({
-    defaultOptions: {
-        queries: {
-            retry: 1,
-            refetchOnWindowFocus: false,
-            // Treat data as fresh for 1 min so navigating between pages doesn't
-            // refire the same query on every mount (each refetch pays the remote
-            // round trip + auth tax). Hooks that need tighter freshness override
-            // staleTime locally; mutations still invalidate to force a refetch.
-            staleTime: 60 * 1000,
-        },
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+      // Treat data as fresh for 1 min so navigating between pages doesn't
+      // refire the same query on every mount (each refetch pays the remote
+      // round trip + auth tax). Hooks that need tighter freshness override
+      // staleTime locally; mutations still invalidate to force a refetch.
+      staleTime: 60 * 1000,
     },
+  },
 })
 
 function mount() {
-    createRoot(document.getElementById("root")!).render(
-        <StrictMode>
-            <QueryClientProvider client={queryClient}>
-                <ThemeProvider>
-                    <LanguageProvider>
-                        <TooltipProvider delayDuration={300}>
-                            <AuthProvider>
-                                <RegionProvider>
-                                    <ResourceGroupProvider>
-                                        <App />
-                                        <Toaster richColors position="top-right" />
-                                    </ResourceGroupProvider>
-                                </RegionProvider>
-                            </AuthProvider>
-                        </TooltipProvider>
-                    </LanguageProvider>
-                </ThemeProvider>
-            </QueryClientProvider>
-        </StrictMode>
-    )
+  createRoot(document.getElementById("root")!).render(
+    <StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider>
+          <LanguageProvider>
+            <TooltipProvider delayDuration={300}>
+              <AuthProvider>
+                <RegionProvider>
+                  <ResourceGroupProvider>
+                    <App />
+                    <Toaster richColors position="top-right" />
+                  </ResourceGroupProvider>
+                </RegionProvider>
+              </AuthProvider>
+            </TooltipProvider>
+          </LanguageProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </StrictMode>,
+  )
 }
 
 // Rehydrate the active-account scope from IndexedDB before the first render so

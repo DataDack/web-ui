@@ -1,4 +1,4 @@
-import type { Runtime } from './schemas'
+import type { Runtime } from "./schemas"
 
 /** Starter source for a new function, keyed by runtime family. */
 export interface Template {
@@ -7,10 +7,10 @@ export interface Template {
 }
 
 const NODE: Template = {
-  handler: 'index.handler',
+  handler: "index.handler",
   files: [
     {
-      path: 'index.js',
+      path: "index.js",
       content: `exports.handler = async (event) => {
   console.log('event:', JSON.stringify(event))
   return {
@@ -24,10 +24,10 @@ const NODE: Template = {
 }
 
 const PYTHON: Template = {
-  handler: 'lambda_function.lambda_handler',
+  handler: "lambda_function.lambda_handler",
   files: [
     {
-      path: 'lambda_function.py',
+      path: "lambda_function.py",
       content: `import json
 
 
@@ -43,10 +43,10 @@ def lambda_handler(event, context):
 }
 
 const RUBY: Template = {
-  handler: 'lambda_function.lambda_handler',
+  handler: "lambda_function.lambda_handler",
   files: [
     {
-      path: 'lambda_function.rb',
+      path: "lambda_function.rb",
       content: `require 'json'
 
 def lambda_handler(event:, context:)
@@ -64,10 +64,10 @@ end
  * the requirement explicit rather than producing a function that fails at invoke.
  */
 const PROVIDED: Template = {
-  handler: '',
+  handler: "",
   files: [
     {
-      path: 'bootstrap',
+      path: "bootstrap",
       content: `#!/bin/sh
 # Replace this with your compiled runtime interface client.
 # It must poll $AWS_LAMBDA_RUNTIME_API for invocations.

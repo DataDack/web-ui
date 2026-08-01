@@ -5,15 +5,15 @@ import { Navigate, type RouteObject } from "react-router-dom"
 // stays at /accounts/:id and is kept on the Governance sidebar via the service's
 // `extraMatch` (see sidebar-nav).
 export const accountsRoutes: RouteObject[] = [
-    {
-        path: "accounts",
-        element: <Navigate to="/governance/account" replace />,
+  {
+    path: "accounts",
+    element: <Navigate to="/governance/account" replace />,
+  },
+  {
+    path: "accounts/:id",
+    lazy: async () => {
+      const { AccountDetailPage } = await import("./partials/AccountDetailPage")
+      return { Component: AccountDetailPage }
     },
-    {
-        path: "accounts/:id",
-        lazy: async () => {
-            const { AccountDetailPage } = await import("./partials/AccountDetailPage")
-            return { Component: AccountDetailPage }
-        },
-    },
+  },
 ]

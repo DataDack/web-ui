@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useState } from "react"
 
-import { css, cx } from '@emotion/css'
+import { css, cx } from "@emotion/css"
 import {
   flexRender,
   getCoreRowModel,
@@ -9,14 +9,14 @@ import {
   useReactTable,
   type ColumnDef,
   type SortingState,
-} from '@tanstack/react-table'
-import { ArrowDown, ArrowUp, ArrowUpDown, type LucideIcon, Search } from 'lucide-react'
+} from "@tanstack/react-table"
+import { ArrowDown, ArrowUp, ArrowUpDown, type LucideIcon, Search } from "lucide-react"
 
-import { EmptyState } from './EmptyState'
-import { contentEnter, fontMono, glass2, mix } from '../lib/styles'
-import { Input } from '../ui/input'
-import { Skeleton } from '../ui/skeleton'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table'
+import { EmptyState } from "./EmptyState"
+import { contentEnter, fontMono, glass2, mix } from "../lib/styles"
+import { Input } from "../ui/input"
+import { Skeleton } from "../ui/skeleton"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table"
 
 const toolbar = css`
   margin-bottom: 12px;
@@ -73,7 +73,7 @@ const sortButton = css`
   }
 
   &:focus-visible {
-    box-shadow: 0 0 0 2px ${mix('--ring', 50)};
+    box-shadow: 0 0 0 2px ${mix("--ring", 50)};
   }
 `
 
@@ -143,7 +143,7 @@ export function ResourceTable<T>({
   className,
 }: Readonly<ResourceTableProps<T>>) {
   const [sorting, setSorting] = useState<SortingState>([])
-  const [globalFilter, setGlobalFilter] = useState('')
+  const [globalFilter, setGlobalFilter] = useState("")
 
   const table = useReactTable({
     data,
@@ -200,8 +200,8 @@ export function ResourceTable<T>({
                           className={sortButton}
                         >
                           {flexRender(header.column.columnDef.header, header.getContext())}
-                          {dir === 'asc' && <ArrowUp className={sortIcon} />}
-                          {dir === 'desc' && <ArrowDown className={sortIcon} />}
+                          {dir === "asc" && <ArrowUp className={sortIcon} />}
+                          {dir === "desc" && <ArrowDown className={sortIcon} />}
                           {!dir && <ArrowUpDown className={cx(sortIcon, sortIconIdle)} />}
                         </button>
                       ) : (
@@ -248,9 +248,9 @@ export function ResourceTable<T>({
                 <TableCell colSpan={table.getAllLeafColumns().length} className={emptyCell}>
                   <EmptyState
                     icon={emptyIcon}
-                    title={data.length === 0 ? emptyTitle : 'No matches'}
+                    title={data.length === 0 ? emptyTitle : "No matches"}
                     description={
-                      data.length === 0 ? emptyDescription : 'No rows match the current filter.'
+                      data.length === 0 ? emptyDescription : "No rows match the current filter."
                     }
                   />
                 </TableCell>
@@ -265,7 +265,7 @@ export function ResourceTable<T>({
 
 /** Shared cell helpers so every list renders the same value the same way. */
 export const cellText = (value?: string | number | null, className?: string) =>
-  value === undefined || value === null || value === '' ? (
+  value === undefined || value === null || value === "" ? (
     <span className={missing}>—</span>
   ) : (
     <span className={cx(cellTextStyle, className)}>{value}</span>

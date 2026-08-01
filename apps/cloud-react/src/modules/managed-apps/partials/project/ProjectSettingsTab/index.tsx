@@ -15,16 +15,16 @@ import type { Project } from "../../../managed-apps.types"
  * absent rather than rendered empty.
  */
 export function ProjectSettingsTab({ project }: Readonly<{ project: Project }>) {
-    const isN8n = project.project_type === "n8n"
+  const isN8n = project.project_type === "n8n"
 
-    return (
-        <div className="space-y-5">
-            <GeneralSection project={project} />
-            <PlanSection />
-            {!isN8n && <GitSection project={project} />}
-            {!isN8n && <BuildOutputSection project={project} />}
-            <EnvSection project={project} />
-            <DangerZone project={project} />
-        </div>
-    )
+  return (
+    <div className="space-y-5">
+      <GeneralSection project={project} />
+      <PlanSection />
+      {!isN8n && <GitSection project={project} />}
+      {!isN8n && <BuildOutputSection project={project} />}
+      <EnvSection project={project} />
+      <DangerZone project={project} />
+    </div>
+  )
 }

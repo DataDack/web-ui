@@ -1,25 +1,25 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
 
-type Theme = 'light' | 'dark' | 'system'
+type Theme = "light" | "dark" | "system"
 
 interface ThemeContextValue {
   theme: Theme
-  resolvedTheme: 'light' | 'dark'
+  resolvedTheme: "light" | "dark"
   setTheme: (theme: Theme) => void
 }
 
 const ThemeContext = createContext<ThemeContextValue | null>(null)
 
-function systemTheme(): 'light' | 'dark' {
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+function systemTheme(): "light" | "dark" {
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
 }
 
 function storedTheme(storageKey: string): Theme {
   const stored = localStorage.getItem(storageKey)
-  if (stored === 'light' || stored === 'dark' || stored === 'system') return stored
+  if (stored === "light" || stored === "dark" || stored === "system") return stored
   // Default to the OS preference so the console honours it before anyone
   // touches the toggle.
-  return 'system'
+  return "system"
 }
 
 /**
@@ -32,11 +32,11 @@ function storedTheme(storageKey: string): Theme {
  */
 export function ThemeProvider({
   children,
-  storageKey = 'datadack.theme',
+  storageKey = "datadack.theme",
 }: Readonly<{ children: ReactNode; storageKey?: string }>) {
   const [theme, setThemeState] = useState<Theme>(() => storedTheme(storageKey))
-  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>(() =>
-    theme === 'system' ? systemTheme() : theme,
+  const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">(() =>
+    theme === "system" ? systemTheme() : theme,
   )
 
   const setTheme = (next: Theme) => {
@@ -47,20 +47,20 @@ export function ThemeProvider({
   // Applies the .dark class and tracks OS preference changes while on "system".
   useEffect(() => {
     const root = document.documentElement
-    const apply = (resolved: 'light' | 'dark') => {
+    const apply = (resolved: "light" | "dark") => {
       setResolvedTheme(resolved)
-      root.classList.toggle('dark', resolved === 'dark')
+      root.classList.toggle("dark", resolved === "dark")
     }
 
-    if (theme === 'system') {
+    if (theme === "system") {
       apply(systemTheme())
-      const mq = window.matchMedia('(prefers-color-scheme: dark)')
+      const mq = window.matchMedia("(prefers-color-scheme: dark)")
       const handler = (event: MediaQueryListEvent) => {
-        apply(event.matches ? 'dark' : 'light')
+        apply(event.matches ? "dark" : "light")
       }
-      mq.addEventListener('change', handler)
+      mq.addEventListener("change", handler)
       return () => {
-        mq.removeEventListener('change', handler)
+        mq.removeEventListener("change", handler)
       }
     }
     apply(theme)
@@ -76,6 +76,6 @@ export function ThemeProvider({
 
 export function useTheme() {
   const ctx = useContext(ThemeContext)
-  if (!ctx) throw new Error('useTheme must be used within a ThemeProvider')
+  if (!ctx) throw new Error("useTheme must be used within a ThemeProvider")
   return ctx
 }

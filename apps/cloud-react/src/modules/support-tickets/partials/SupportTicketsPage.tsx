@@ -6,20 +6,20 @@ import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
 import {
-    EmptyState,
-    PageHeader,
-    ResourceTable,
-    dateColumn,
-    statusColumn,
-    textColumn,
+  EmptyState,
+  PageHeader,
+  ResourceTable,
+  dateColumn,
+  statusColumn,
+  textColumn,
 } from "@/components/console"
 import { Button } from "@/components/ui/button"
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select"
 import { useScreen } from "@/services/api/screen"
 
@@ -31,129 +31,126 @@ import type { SupportTicket, TicketStatus } from "../support-tickets.types"
 type StatusFilter = TicketStatus | "all"
 
 export function SupportTicketsPage() {
-    useScreen("support-tickets")
-    const { t } = useTranslation()
-    const navigate = useNavigate()
-    const { data: tickets = [], isLoading, isError, refetch, isFetching } = useSupportTickets()
-    const [statusFilter, setStatusFilter] = useState<StatusFilter>("all")
+  useScreen("support-tickets")
+  const { t } = useTranslation()
+  const navigate = useNavigate()
+  const { data: tickets = [], isLoading, isError, refetch, isFetching } = useSupportTickets()
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all")
 
-    const visible = useMemo(
-        () =>
-            statusFilter === "all" ? tickets : tickets.filter((tk) => tk.status === statusFilter),
-        [tickets, statusFilter]
-    )
+  const visible = useMemo(
+    () => (statusFilter === "all" ? tickets : tickets.filter((tk) => tk.status === statusFilter)),
+    [tickets, statusFilter],
+  )
 
-    const columns = useMemo<ColumnDef<SupportTicket>[]>(
-        () => [
-            {
-                id: "subject",
-                accessorFn: (row) => row.subject,
-                header: () => t("supportTickets.columns.subject"),
-                cell: ({ row }) => (
-                    <span className="font-medium text-foreground line-clamp-1">
-                        {row.original.subject}
-                    </span>
-                ),
-            },
-            textColumn<SupportTicket>({
-                id: "category",
-                header: t("supportTickets.columns.category"),
-                accessor: (row) => t(categoryLabelKey(row.category)),
-                responsive: "md",
-            }),
-            {
-                id: "priority",
-                accessorFn: (row) => row.priority,
-                header: () => t("supportTickets.columns.priority"),
-                cell: ({ row }) => <PriorityBadge priority={row.original.priority} />,
-            },
-            statusColumn<SupportTicket>({
-                header: t("supportTickets.columns.status"),
-                accessor: (row) => row.status,
-            }),
-            dateColumn<SupportTicket>({
-                header: t("common.created"),
-                accessor: (row) => row.createdAt,
-                responsive: "lg",
-            }),
-        ],
-        [t]
-    )
+  const columns = useMemo<ColumnDef<SupportTicket>[]>(
+    () => [
+      {
+        id: "subject",
+        accessorFn: (row) => row.subject,
+        header: () => t("supportTickets.columns.subject"),
+        cell: ({ row }) => (
+          <span className="font-medium text-foreground line-clamp-1">{row.original.subject}</span>
+        ),
+      },
+      textColumn<SupportTicket>({
+        id: "category",
+        header: t("supportTickets.columns.category"),
+        accessor: (row) => t(categoryLabelKey(row.category)),
+        responsive: "md",
+      }),
+      {
+        id: "priority",
+        accessorFn: (row) => row.priority,
+        header: () => t("supportTickets.columns.priority"),
+        cell: ({ row }) => <PriorityBadge priority={row.original.priority} />,
+      },
+      statusColumn<SupportTicket>({
+        header: t("supportTickets.columns.status"),
+        accessor: (row) => row.status,
+      }),
+      dateColumn<SupportTicket>({
+        header: t("common.created"),
+        accessor: (row) => row.createdAt,
+        responsive: "lg",
+      }),
+    ],
+    [t],
+  )
 
-    const toolbar = (
-        <Select
-            value={statusFilter}
-            onValueChange={(v) => {
-                setStatusFilter(v as StatusFilter)
+  const toolbar = (
+    <Select
+      value={statusFilter}
+      onValueChange={(v) => {
+        setStatusFilter(v as StatusFilter)
+      }}
+    >
+      <SelectTrigger className="w-44">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="all">{t("supportTickets.filter.allStatuses")}</SelectItem>
+        {TICKET_STATUSES.map((s) => (
+          <SelectItem key={s} value={s}>
+            {t(`status.${s}`, { defaultValue: s })}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  )
+
+  return (
+    <div className="max-w-[1440px] mx-auto px-5 lg:px-8 py-2">
+      <PageHeader
+        icon={LifeBuoy}
+        breadcrumbs={[
+          { label: t("console.nav.groups.support") },
+          { label: t("supportTickets.title") },
+        ]}
+        title={t("supportTickets.title")}
+        description={t("supportTickets.subtitle")}
+        actions={
+          <>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => void refetch()}
+              title={t("common.refresh")}
+            >
+              <RefreshCw className={`w-4 h-4 ${isFetching ? "animate-spin" : ""}`} />
+            </Button>
+            <Button
+              variant="gold"
+              className="gap-2"
+              onClick={() => void navigate(SUPPORT_ROUTES.CREATE)}
+            >
+              <Plus className="w-4 h-4" />
+              {t("supportTickets.create")}
+            </Button>
+          </>
+        }
+      />
+
+      <ResourceTable<SupportTicket>
+        data={visible}
+        columns={columns}
+        isLoading={isLoading}
+        isError={isError}
+        onRetry={() => void refetch()}
+        getRowId={(row) => row.id}
+        onRowClick={(row) => void navigate(SUPPORT_ROUTES.detail(row.id))}
+        toolbar={toolbar}
+        emptyState={
+          <EmptyState
+            icon={LifeBuoy}
+            title={t("supportTickets.empty")}
+            description={t("supportTickets.emptySubtitle")}
+            action={{
+              label: t("supportTickets.create"),
+              onClick: () => void navigate(SUPPORT_ROUTES.CREATE),
             }}
-        >
-            <SelectTrigger className="w-44">
-                <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-                <SelectItem value="all">{t("supportTickets.filter.allStatuses")}</SelectItem>
-                {TICKET_STATUSES.map((s) => (
-                    <SelectItem key={s} value={s}>
-                        {t(`status.${s}`, { defaultValue: s })}
-                    </SelectItem>
-                ))}
-            </SelectContent>
-        </Select>
-    )
-
-    return (
-        <div className="max-w-[1440px] mx-auto px-5 lg:px-8 py-2">
-            <PageHeader
-                icon={LifeBuoy}
-                breadcrumbs={[
-                    { label: t("console.nav.groups.support") },
-                    { label: t("supportTickets.title") },
-                ]}
-                title={t("supportTickets.title")}
-                description={t("supportTickets.subtitle")}
-                actions={
-                    <>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => void refetch()}
-                            title={t("common.refresh")}
-                        >
-                            <RefreshCw className={`w-4 h-4 ${isFetching ? "animate-spin" : ""}`} />
-                        </Button>
-                        <Button
-                            variant="gold"
-                            className="gap-2"
-                            onClick={() => void navigate(SUPPORT_ROUTES.CREATE)}
-                        >
-                            <Plus className="w-4 h-4" />
-                            {t("supportTickets.create")}
-                        </Button>
-                    </>
-                }
-            />
-
-            <ResourceTable<SupportTicket>
-                data={visible}
-                columns={columns}
-                isLoading={isLoading}
-                isError={isError}
-                onRetry={() => void refetch()}
-                getRowId={(row) => row.id}
-                onRowClick={(row) => void navigate(SUPPORT_ROUTES.detail(row.id))}
-                toolbar={toolbar}
-                emptyState={
-                    <EmptyState
-                        icon={LifeBuoy}
-                        title={t("supportTickets.empty")}
-                        description={t("supportTickets.emptySubtitle")}
-                        action={{
-                            label: t("supportTickets.create"),
-                            onClick: () => void navigate(SUPPORT_ROUTES.CREATE),
-                        }}
-                    />
-                }
-            />
-        </div>
-    )
+          />
+        }
+      />
+    </div>
+  )
 }

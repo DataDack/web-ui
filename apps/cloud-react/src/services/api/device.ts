@@ -15,20 +15,20 @@ let cachedDeviceId: string | null = null
 // network request to show for it. The id is a non-secret browser tag, so a
 // non-cryptographic fallback is fine.
 function randomId(): string {
-    if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
-        return crypto.randomUUID()
-    }
-    // eslint-disable-next-line sonarjs/pseudo-random -- fallback path only; the id is a non-secret browser tag, as the comment above spells out
-    return `dev-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID()
+  }
+  // eslint-disable-next-line sonarjs/pseudo-random -- fallback path only; the id is a non-secret browser tag, as the comment above spells out
+  return `dev-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`
 }
 
 export function getDeviceId(): string {
-    if (cachedDeviceId) return cachedDeviceId
-    let id = localStorage.getItem(DEVICE_KEY)
-    if (!id) {
-        id = randomId()
-        localStorage.setItem(DEVICE_KEY, id)
-    }
-    cachedDeviceId = id
-    return id
+  if (cachedDeviceId) return cachedDeviceId
+  let id = localStorage.getItem(DEVICE_KEY)
+  if (!id) {
+    id = randomId()
+    localStorage.setItem(DEVICE_KEY, id)
+  }
+  cachedDeviceId = id
+  return id
 }

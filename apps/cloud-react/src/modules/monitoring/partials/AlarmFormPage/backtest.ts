@@ -12,37 +12,37 @@
 import type { AlarmComparisonOperator, TreatMissingData } from "../../monitoring.types"
 
 const COMPARATORS: Record<AlarmComparisonOperator, (value: number, threshold: number) => boolean> =
-    {
-        gt: (value, threshold) => value > threshold,
-        gte: (value, threshold) => value >= threshold,
-        lt: (value, threshold) => value < threshold,
-        lte: (value, threshold) => value <= threshold,
-    }
+  {
+    gt: (value, threshold) => value > threshold,
+    gte: (value, threshold) => value >= threshold,
+    lt: (value, threshold) => value < threshold,
+    lte: (value, threshold) => value <= threshold,
+  }
 
 /** Does one datapoint breach the threshold? Mirrors `breachesThreshold` in Go. */
 export function breaches(
-    operator: AlarmComparisonOperator,
-    value: number,
-    threshold: number
+  operator: AlarmComparisonOperator,
+  value: number,
+  threshold: number,
 ): boolean {
-    return COMPARATORS[operator](value, threshold)
+  return COMPARATORS[operator](value, threshold)
 }
 
 export interface BacktestRule {
-    operator: AlarmComparisonOperator
-    threshold: number
-    datapointsToAlarm: number
-    evaluationPeriods: number
-    treatMissingData: TreatMissingData
+  operator: AlarmComparisonOperator
+  threshold: number
+  datapointsToAlarm: number
+  evaluationPeriods: number
+  treatMissingData: TreatMissingData
 }
 
 export interface BacktestResult {
-    /** OK -> ALARM edges across the replayed range. */
-    firings: number
-    /** Verdict of the most recent full window. */
-    wouldBeInAlarm: boolean
-    /** Bucket indexes that count as breaching, for highlighting. */
-    breachingIndexes: number[]
+  /** OK -> ALARM edges across the replayed range. */
+  firings: number
+  /** Verdict of the most recent full window. */
+  wouldBeInAlarm: boolean
+  /** Bucket indexes that count as breaching, for highlighting. */
+  breachingIndexes: number[]
 }
 
 /**
@@ -53,38 +53,38 @@ export interface BacktestResult {
  * ComputeState does.
  */
 export function simulateAlarm(
-    buckets: readonly (number | null)[],
-    rule: BacktestRule
+  buckets: readonly (number | null)[],
+  rule: BacktestRule,
 ): BacktestResult {
-    const gapBreaches = rule.treatMissingData === "breaching"
-    const breaching = buckets.map((value) =>
-        value === null ? gapBreaches : breaches(rule.operator, value, rule.threshold)
-    )
-    const breachingIndexes = breaching.flatMap((hit, index) => (hit ? [index] : []))
+  const gapBreaches = rule.treatMissingData === "breaching"
+  const breaching = buckets.map((value) =>
+    value === null ? gapBreaches : breaches(rule.operator, value, rule.threshold),
+  )
+  const breachingIndexes = breaching.flatMap((hit, index) => (hit ? [index] : []))
 
-    const window = Math.max(1, Math.trunc(rule.evaluationPeriods))
-    const needed = Math.max(1, Math.trunc(rule.datapointsToAlarm))
+  const window = Math.max(1, Math.trunc(rule.evaluationPeriods))
+  const needed = Math.max(1, Math.trunc(rule.datapointsToAlarm))
 
-    let firings = 0
-    let inAlarm = false
-    let wouldBeInAlarm = false
+  let firings = 0
+  let inAlarm = false
+  let wouldBeInAlarm = false
 
-    for (let start = 0; start + window <= breaching.length; start += 1) {
-        let count = 0
-        for (let offset = 0; offset < window; offset += 1) {
-            if (breaching[start + offset]) count += 1
-        }
-        const alarming = count >= needed
-        if (alarming && !inAlarm) firings += 1
-        inAlarm = alarming
-        wouldBeInAlarm = alarming
+  for (let start = 0; start + window <= breaching.length; start += 1) {
+    let count = 0
+    for (let offset = 0; offset < window; offset += 1) {
+      if (breaching[start + offset]) count += 1
     }
+    const alarming = count >= needed
+    if (alarming && !inAlarm) firings += 1
+    inAlarm = alarming
+    wouldBeInAlarm = alarming
+  }
 
-    return { firings, wouldBeInAlarm, breachingIndexes }
+  return { firings, wouldBeInAlarm, breachingIndexes }
 }
 
 /** How many full windows the range supports — 0 means "not enough history". */
 export function windowCount(bucketCount: number, evaluationPeriods: number): number {
-    const window = Math.max(1, Math.trunc(evaluationPeriods))
-    return Math.max(0, bucketCount - window + 1)
+  const window = Math.max(1, Math.trunc(evaluationPeriods))
+  return Math.max(0, bucketCount - window + 1)
 }

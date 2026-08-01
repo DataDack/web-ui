@@ -12,17 +12,17 @@ import { useAuth } from "../auth.context"
  * with incomplete onboarding into the wizard.
  */
 export function RequireAuth({
-    children,
-    requireOnboarded = true,
+  children,
+  requireOnboarded = true,
 }: Readonly<{ children: ReactNode; requireOnboarded?: boolean }>): ReactElement {
-    const { isLoading, isAuthenticated, user } = useAuth()
+  const { isLoading, isAuthenticated, user } = useAuth()
 
-    if (isLoading) return <AuthCardSkeleton />
-    if (!isAuthenticated || !user) return <Navigate to="/login" replace />
+  if (isLoading) return <AuthCardSkeleton />
+  if (!isAuthenticated || !user) return <Navigate to="/login" replace />
 
-    if (requireOnboarded && user.onboarding_status !== "completed") {
-        return <Navigate to="/onboarding" replace />
-    }
+  if (requireOnboarded && user.onboarding_status !== "completed") {
+    return <Navigate to="/onboarding" replace />
+  }
 
-    return children as ReactElement
+  return children as ReactElement
 }

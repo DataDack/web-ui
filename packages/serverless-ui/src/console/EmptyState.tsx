@@ -1,7 +1,7 @@
-import { css, cx } from '@emotion/css'
-import type { LucideIcon } from 'lucide-react'
+import { css, cx } from "@emotion/css"
+import type { LucideIcon } from "lucide-react"
 
-import { contentEnter, glass1 } from '../lib/styles'
+import { contentEnter, glass1 } from "../lib/styles"
 
 const wrap = css`
   display: flex;

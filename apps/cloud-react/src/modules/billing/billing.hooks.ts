@@ -7,17 +7,17 @@ import { billingService } from "./billing.service"
 import type { PurchaseCreditsRequest } from "./billing.types"
 
 export function useCreditBalance() {
-    return useQuery({
-        queryKey: BILLING_QUERY_KEYS.balance,
-        queryFn: billingService.fetchBalance,
-    })
+  return useQuery({
+    queryKey: BILLING_QUERY_KEYS.balance,
+    queryFn: billingService.fetchBalance,
+  })
 }
 
 export function useCreditPurchases() {
-    return useQuery({
-        queryKey: BILLING_QUERY_KEYS.purchases,
-        queryFn: billingService.fetchPurchases,
-    })
+  return useQuery({
+    queryKey: BILLING_QUERY_KEYS.purchases,
+    queryFn: billingService.fetchPurchases,
+  })
 }
 
 /**
@@ -25,32 +25,32 @@ export function useCreditPurchases() {
  * (it comes from the balance response), since the endpoint is account-scoped.
  */
 export function useLedger(accountId: string | undefined) {
-    return useQuery({
-        queryKey: BILLING_QUERY_KEYS.ledger(accountId ?? ""),
-        queryFn: () => billingService.fetchLedger(accountId!),
-        enabled: typeof accountId === "string" && accountId !== "",
-    })
+  return useQuery({
+    queryKey: BILLING_QUERY_KEYS.ledger(accountId ?? ""),
+    queryFn: () => billingService.fetchLedger(accountId!),
+    enabled: typeof accountId === "string" && accountId !== "",
+  })
 }
 
 export function useInvoices() {
-    return useQuery({
-        queryKey: BILLING_QUERY_KEYS.invoices,
-        queryFn: billingService.fetchInvoices,
-    })
+  return useQuery({
+    queryKey: BILLING_QUERY_KEYS.invoices,
+    queryFn: billingService.fetchInvoices,
+  })
 }
 
 export function useUsage() {
-    return useQuery({
-        queryKey: BILLING_QUERY_KEYS.usage,
-        queryFn: billingService.fetchUsage,
-    })
+  return useQuery({
+    queryKey: BILLING_QUERY_KEYS.usage,
+    queryFn: billingService.fetchUsage,
+  })
 }
 
 export function useSubscriptions() {
-    return useQuery({
-        queryKey: BILLING_QUERY_KEYS.subscriptions,
-        queryFn: billingService.fetchSubscriptions,
-    })
+  return useQuery({
+    queryKey: BILLING_QUERY_KEYS.subscriptions,
+    queryFn: billingService.fetchSubscriptions,
+  })
 }
 
 /**
@@ -59,12 +59,12 @@ export function useSubscriptions() {
  * webhook, and the gateway returns the customer to redirect_url afterward.
  */
 export function useBuyCredits() {
-    const { t } = useTranslation()
-    return useMutation({
-        mutationFn: (payload: PurchaseCreditsRequest) => billingService.purchaseCredits(payload),
-        onSuccess: (res) => {
-            window.location.assign(res.payment_url)
-        },
-        onError: () => toast.error(t("billing.toasts.purchaseFailed")),
-    })
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (payload: PurchaseCreditsRequest) => billingService.purchaseCredits(payload),
+    onSuccess: (res) => {
+      window.location.assign(res.payment_url)
+    },
+    onError: () => toast.error(t("billing.toasts.purchaseFailed")),
+  })
 }

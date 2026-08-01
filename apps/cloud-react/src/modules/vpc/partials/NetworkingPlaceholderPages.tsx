@@ -13,53 +13,53 @@ import { useScreen } from "@/services/api/screen"
 const NETWORKING_GROUP_KEY = "console.nav.groups.networking"
 
 export function RoutersPage() {
-    useScreen("vpc.routers")
-    const { t } = useTranslation()
-    return (
-        <ComingSoon
-            icon={Router}
-            title={t("console.nav.items.routers")}
-            description={t("vpc.detail.routersDescription")}
-            breadcrumbs={[{ label: t(NETWORKING_GROUP_KEY) }]}
-        />
-    )
+  useScreen("vpc.routers")
+  const { t } = useTranslation()
+  return (
+    <ComingSoon
+      icon={Router}
+      title={t("console.nav.items.routers")}
+      description={t("vpc.detail.routersDescription")}
+      breadcrumbs={[{ label: t(NETWORKING_GROUP_KEY) }]}
+    />
+  )
 }
 
 export function InternetGatewaysPage() {
-    useScreen("vpc.internet-gateways")
-    const { t } = useTranslation()
-    return (
-        <ComingSoon
-            icon={Waypoints}
-            title={t("console.nav.items.internetGateways")}
-            description={t("vpc.detail.internetGatewaysDescription")}
-            breadcrumbs={[{ label: t(NETWORKING_GROUP_KEY) }]}
-        />
-    )
+  useScreen("vpc.internet-gateways")
+  const { t } = useTranslation()
+  return (
+    <ComingSoon
+      icon={Waypoints}
+      title={t("console.nav.items.internetGateways")}
+      description={t("vpc.detail.internetGatewaysDescription")}
+      breadcrumbs={[{ label: t(NETWORKING_GROUP_KEY) }]}
+    />
+  )
 }
 
 export function NatGatewaysPage() {
-    useScreen("vpc.nat-gateways")
-    const { t } = useTranslation()
-    return (
-        <ComingSoon
-            icon={ArrowRightLeft}
-            title={t("console.nav.items.natGateways")}
-            description={t("vpc.detail.natGatewaysDescription")}
-            breadcrumbs={[{ label: t(NETWORKING_GROUP_KEY) }]}
-        />
-    )
+  useScreen("vpc.nat-gateways")
+  const { t } = useTranslation()
+  return (
+    <ComingSoon
+      icon={ArrowRightLeft}
+      title={t("console.nav.items.natGateways")}
+      description={t("vpc.detail.natGatewaysDescription")}
+      breadcrumbs={[{ label: t(NETWORKING_GROUP_KEY) }]}
+    />
+  )
 }
 
 export function VpnPage() {
-    useScreen("vpc.vpn")
-    const { t } = useTranslation()
-    return (
-        <ComingSoon
-            icon={Cable}
-            title={t("console.nav.items.vpn")}
-            description={t("vpc.detail.vpnDescription")}
-            breadcrumbs={[{ label: t(NETWORKING_GROUP_KEY) }]}
-        />
-    )
+  useScreen("vpc.vpn")
+  const { t } = useTranslation()
+  return (
+    <ComingSoon
+      icon={Cable}
+      title={t("console.nav.items.vpn")}
+      description={t("vpc.detail.vpnDescription")}
+      breadcrumbs={[{ label: t(NETWORKING_GROUP_KEY) }]}
+    />
+  )
 }

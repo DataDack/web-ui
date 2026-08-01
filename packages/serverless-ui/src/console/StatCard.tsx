@@ -1,10 +1,10 @@
-import { css, cx } from '@emotion/css'
-import type { LucideIcon } from 'lucide-react'
+import { css, cx } from "@emotion/css"
+import type { LucideIcon } from "lucide-react"
 
-import { contentEnter, glass1, media } from '../lib/styles'
-import { Skeleton } from '../ui/skeleton'
+import { contentEnter, glass1, media } from "../lib/styles"
+import { Skeleton } from "../ui/skeleton"
 
-export type StatColor = 'default' | 'success' | 'warning' | 'danger' | 'info'
+export type StatColor = "default" | "success" | "warning" | "danger" | "info"
 
 const VALUE_CLASSES: Record<StatColor, string> = {
   default: css`
@@ -82,7 +82,7 @@ export function StatCard({
   label: labelText,
   value,
   icon: Icon,
-  color = 'default',
+  color = "default",
   loading = false,
   className,
 }: Readonly<StatCardProps>) {

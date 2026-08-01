@@ -7,22 +7,22 @@ import { createContext, useContext, type ReactNode } from "react"
  * refreshing its own queries.
  */
 export interface OnboardingFlow {
-    setAccountType: (userType: "individual" | "business") => Promise<unknown>
+  setAccountType: (userType: "individual" | "business") => Promise<unknown>
 }
 
 const FlowContext = createContext<OnboardingFlow | null>(null)
 
 export function OnboardingFlowProvider({
-    value,
-    children,
+  value,
+  children,
 }: Readonly<{ value: OnboardingFlow; children: ReactNode }>) {
-    return <FlowContext.Provider value={value}>{children}</FlowContext.Provider>
+  return <FlowContext.Provider value={value}>{children}</FlowContext.Provider>
 }
 
 export function useOnboardingFlow(): OnboardingFlow {
-    const ctx = useContext(FlowContext)
-    if (!ctx) {
-        throw new Error("useOnboardingFlow must be used within an OnboardingFlowProvider")
-    }
-    return ctx
+  const ctx = useContext(FlowContext)
+  if (!ctx) {
+    throw new Error("useOnboardingFlow must be used within an OnboardingFlowProvider")
+  }
+  return ctx
 }

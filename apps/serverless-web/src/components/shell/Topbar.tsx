@@ -1,10 +1,10 @@
-import { RefreshCw } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { RefreshCw } from "lucide-react"
+import { Link } from "react-router-dom"
 
-import { ConnectionSettings } from '@/components/shell/ConnectionSettings'
-import { ScopeSwitcher } from '@/components/shell/ScopeSwitcher'
+import { ConnectionSettings } from "@/components/shell/ConnectionSettings"
+import { ScopeSwitcher } from "@/components/shell/ScopeSwitcher"
 
-import { Button, cn, Logo, ThemeToggle } from '@datadack/serverless-ui'
+import { Button, cn, Logo, ThemeToggle } from "@datadack/serverless-ui"
 
 interface TopbarProps {
   onRefresh: () => void
@@ -39,7 +39,7 @@ export function Topbar({ onRefresh, refreshing = false, status }: Readonly<Topba
           <ScopeSwitcher />
           <div className="bg-border mx-0.5 hidden h-5 w-px lg:block" />
           <Button variant="ghost" size="icon-sm" onClick={onRefresh} aria-label="Refresh">
-            <RefreshCw className={cn('size-4', refreshing && 'animate-spin')} />
+            <RefreshCw className={cn("size-4", refreshing && "animate-spin")} />
           </Button>
           <ConnectionSettings />
           <ThemeToggle />

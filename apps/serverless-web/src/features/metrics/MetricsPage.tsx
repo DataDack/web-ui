@@ -1,11 +1,11 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState } from "react"
 
-import type { ColumnDef } from '@tanstack/react-table'
-import { Activity, AlertTriangle, Gauge, Snowflake, Timer } from 'lucide-react'
+import type { ColumnDef } from "@tanstack/react-table"
+import { Activity, AlertTriangle, Gauge, Snowflake, Timer } from "lucide-react"
 
-import { apiErrorMessage } from '@/lib/api'
-import { useDashboard, useMetricSeries } from '@/lib/queries'
-import type { MetricSeries } from '@/lib/schemas'
+import { apiErrorMessage } from "@/lib/api"
+import { useDashboard, useMetricSeries } from "@/lib/queries"
+import type { MetricSeries } from "@/lib/schemas"
 
 import {
   BarTimeChart,
@@ -20,21 +20,21 @@ import {
   ResourceTable,
   StatCard,
   StatGrid,
-} from '@datadack/serverless-ui'
+} from "@datadack/serverless-ui"
 
 /** The windows the control plane's relative `since` parameter accepts. */
 const RANGES = [
-  { label: '15m', since: '-15m', step: '30s' },
-  { label: '1h', since: '-1h', step: '60s' },
-  { label: '6h', since: '-6h', step: '5m' },
-  { label: '24h', since: '-24h', step: '15m' },
+  { label: "15m", since: "-15m", step: "30s" },
+  { label: "1h", since: "-1h", step: "60s" },
+  { label: "6h", since: "-6h", step: "5m" },
+  { label: "24h", since: "-24h", step: "15m" },
 ] as const
 
-type FunctionTotal = MetricSeries['topFunctions'][number]
+type FunctionTotal = MetricSeries["topFunctions"][number]
 
 export function MetricsPage() {
   const [rangeIndex, setRangeIndex] = useState(1)
-  const [functionName, setFunctionName] = useState('')
+  const [functionName, setFunctionName] = useState("")
   const range = RANGES[rangeIndex] ?? RANGES[1]
 
   const { data: dashboard } = useDashboard()
@@ -78,8 +78,8 @@ export function MetricsPage() {
   const columns = useMemo<ColumnDef<FunctionTotal>[]>(
     () => [
       {
-        accessorKey: 'functionName',
-        header: 'Function',
+        accessorKey: "functionName",
+        header: "Function",
         cell: ({ row }) => (
           <button
             type="button"
@@ -93,13 +93,13 @@ export function MetricsPage() {
         ),
       },
       {
-        accessorKey: 'invocations',
-        header: 'Invocations',
+        accessorKey: "invocations",
+        header: "Invocations",
         cell: ({ row }) => cellMono(row.original.invocations),
       },
       {
-        accessorKey: 'errors',
-        header: 'Errors',
+        accessorKey: "errors",
+        header: "Errors",
         cell: ({ row }) =>
           row.original.errors > 0 ? (
             <span className="text-status-danger font-mono text-[12px]">{row.original.errors}</span>
@@ -108,18 +108,18 @@ export function MetricsPage() {
           ),
       },
       {
-        accessorKey: 'avgDurationMs',
-        header: 'Avg',
+        accessorKey: "avgDurationMs",
+        header: "Avg",
         cell: ({ row }) => cellMono(`${formatTick(row.original.avgDurationMs)} ms`),
       },
       {
-        accessorKey: 'p95DurationMs',
-        header: 'p95',
+        accessorKey: "p95DurationMs",
+        header: "p95",
         cell: ({ row }) => cellMono(`${formatTick(row.original.p95DurationMs)} ms`),
       },
       {
-        accessorKey: 'gbSeconds',
-        header: 'GB-seconds',
+        accessorKey: "gbSeconds",
+        header: "GB-seconds",
         cell: ({ row }) => cellText(row.original.gbSeconds.toFixed(4)),
       },
     ],
@@ -146,10 +146,10 @@ export function MetricsPage() {
                 setRangeIndex(index)
               }}
               className={cn(
-                'px-2.5 py-1 font-mono text-[11px] transition-colors',
+                "px-2.5 py-1 font-mono text-[11px] transition-colors",
                 index === rangeIndex
-                  ? 'bg-accent text-foreground'
-                  : 'text-muted-foreground hover:text-foreground',
+                  ? "bg-accent text-foreground"
+                  : "text-muted-foreground hover:text-foreground",
               )}
             >
               {option.label}
@@ -175,7 +175,7 @@ export function MetricsPage() {
 
         {data?.truncated && (
           <span className="text-status-warning text-[11px]">
-            Window truncated — the control plane hit its row cap, so this covers less than{' '}
+            Window truncated — the control plane hit its row cap, so this covers less than{" "}
             {range.label}.
           </span>
         )}
@@ -196,14 +196,14 @@ export function MetricsPage() {
         />
         <StatCard
           label="Error rate"
-          value={totals ? `${(totals.errorRate * 100).toFixed(1)}%` : '0%'}
+          value={totals ? `${(totals.errorRate * 100).toFixed(1)}%` : "0%"}
           icon={AlertTriangle}
-          color={totals && totals.errorRate > 0 ? 'danger' : 'default'}
+          color={totals && totals.errorRate > 0 ? "danger" : "default"}
           loading={isLoading}
         />
         <StatCard
           label="p95 duration"
-          value={totals ? `${formatTick(totals.p95DurationMs)} ms` : '—'}
+          value={totals ? `${formatTick(totals.p95DurationMs)} ms` : "—"}
           icon={Timer}
           loading={isLoading}
         />
@@ -221,8 +221,8 @@ export function MetricsPage() {
             title="Invocations"
             points={invocationPoints}
             series={[
-              { label: 'Succeeded', color: 'var(--chart-1)' },
-              { label: 'Failed', color: 'var(--chart-error)' },
+              { label: "Succeeded", color: "var(--chart-1)" },
+              { label: "Failed", color: "var(--chart-error)" },
             ]}
           />
           <ChartNote>
@@ -237,9 +237,9 @@ export function MetricsPage() {
             unit="ms"
             points={latencyPoints}
             series={[
-              { label: 'p50', color: 'var(--chart-1)' },
-              { label: 'p95', color: 'var(--chart-2)' },
-              { label: 'p99', color: 'var(--chart-3)' },
+              { label: "p50", color: "var(--chart-1)" },
+              { label: "p95", color: "var(--chart-2)" },
+              { label: "p99", color: "var(--chart-3)" },
             ]}
           />
           <ChartNote>
@@ -255,8 +255,8 @@ export function MetricsPage() {
           unit="MB"
           points={resourcePoints}
           series={[
-            { label: 'Mean', color: 'var(--chart-1)' },
-            { label: 'Peak', color: 'var(--chart-2)' },
+            { label: "Mean", color: "var(--chart-1)" },
+            { label: "Peak", color: "var(--chart-2)" },
           ]}
           emptyLabel="No worker samples in this window"
         />

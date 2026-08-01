@@ -29,66 +29,66 @@ const NAME_PATTERN = /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/
  * different project.
  */
 export function GeneralSection({ project }: Readonly<{ project: Project }>) {
-    const isN8n = project.project_type === "n8n"
-    const [name, setName] = useState(project.name)
-    const update = useUpdateProject(project.id)
+  const isN8n = project.project_type === "n8n"
+  const [name, setName] = useState(project.name)
+  const update = useUpdateProject(project.id)
 
-    let nameError: string | undefined
-    if (name.trim() === "") nameError = "Name is required"
-    else if (!NAME_PATTERN.test(name)) nameError = "Lowercase letters, digits and hyphens only"
+  let nameError: string | undefined
+  if (name.trim() === "") nameError = "Name is required"
+  else if (!NAME_PATTERN.test(name)) nameError = "Lowercase letters, digits and hyphens only"
 
-    const dirty = name !== project.name
+  const dirty = name !== project.name
 
-    const runtime = PROJECT_TYPE_META[project.project_type]
-    const RuntimeIcon = runtime.icon
+  const runtime = PROJECT_TYPE_META[project.project_type]
+  const RuntimeIcon = runtime.icon
 
-    return (
-        <Section
-            variant="panel"
-            title="General"
-            description="How this project is identified in the console."
+  return (
+    <Section
+      variant="panel"
+      title="General"
+      description="How this project is identified in the console."
+    >
+      <div className="space-y-5">
+        <FieldRow
+          label="Name"
+          htmlFor="settings-name"
+          error={nameError}
+          description={`The public address stays ${project.subdomain} — it was allocated when the project was created and does not follow a rename.`}
         >
-            <div className="space-y-5">
-                <FieldRow
-                    label="Name"
-                    htmlFor="settings-name"
-                    error={nameError}
-                    description={`The public address stays ${project.subdomain} — it was allocated when the project was created and does not follow a rename.`}
-                >
-                    <Input
-                        id="settings-name"
-                        value={name}
-                        className="font-mono sm:w-80"
-                        onChange={(event) => {
-                            setName(event.target.value)
-                        }}
-                    />
-                </FieldRow>
+          <Input
+            id="settings-name"
+            value={name}
+            className="font-mono sm:w-80"
+            onChange={(event) => {
+              setName(event.target.value)
+            }}
+          />
+        </FieldRow>
 
-                {!isN8n && (
-                    <FieldRow
-                        label="Runtime"
-                        description="Set when the project was created. It determines the build workflow in your repository, so it cannot be changed here — create a new project to build this repository a different way."
-                    >
-                        <div className="flex h-9 items-center gap-2 rounded-md border border-dashed bg-muted/40 px-3 sm:w-80">
-                            <RuntimeIcon className="size-4 shrink-0 text-muted-foreground" />
-                            <span className="text-sm">{runtime.label}</span>
-                        </div>
-                    </FieldRow>
-                )}
-
-                <Button
-                    size="sm"
-                    className="gap-1.5"
-                    disabled={!dirty || Boolean(nameError) || update.isPending}
-                    onClick={() => {
-                        update.mutate({ name })
-                    }}
-                >
-                    {update.isPending && <Loader2 className="size-3.5 animate-spin" />}
-                    Save changes
-                </Button>
+        {!isN8n && (
+          <FieldRow
+            label="Runtime"
+            description="Set when the project was created. It determines the build workflow in your repository, so it cannot be changed here — create a new project to build this repository a different way."
+          >
+            <div className="flex h-9 items-center gap-2 rounded-md border border-dashed bg-muted/40 px-3 sm:w-80">
+              <RuntimeIcon className="size-4 shrink-0 text-muted-foreground" />
+              <span className="text-sm">{runtime.label}</span>
             </div>
-        </Section>
-    )
+          </FieldRow>
+        )}
+
+        <Button
+          size="sm"
+          className="gap-1.5"
+          disabled={!dirty || Boolean(nameError) || update.isPending}
+          onClick={() => {
+            update.mutate({ name })
+          }}
+        >
+          {update.isPending && <Loader2 className="size-3.5 animate-spin" />}
+          Save changes
+        </Button>
+      </div>
+    </Section>
+  )
 }

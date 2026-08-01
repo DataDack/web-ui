@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery } from "@tanstack/react-query"
 
 import {
   connection,
@@ -10,14 +10,14 @@ import {
   type AuditQuery,
   type LogQuery,
   type MetricQuery,
-} from './api'
+} from "./api"
 
 export const queryKeys = {
-  dashboard: ['dashboard'] as const,
-  tenants: ['tenants'] as const,
-  logs: (query: LogQuery, scope: string) => ['logs', query, scope] as const,
-  metrics: (query: MetricQuery, scope: string) => ['metrics', query, scope] as const,
-  audit: (query: AuditQuery, scope: string) => ['audit', query, scope] as const,
+  dashboard: ["dashboard"] as const,
+  tenants: ["tenants"] as const,
+  logs: (query: LogQuery, scope: string) => ["logs", query, scope] as const,
+  metrics: (query: MetricQuery, scope: string) => ["metrics", query, scope] as const,
+  audit: (query: AuditQuery, scope: string) => ["audit", query, scope] as const,
 }
 
 /**

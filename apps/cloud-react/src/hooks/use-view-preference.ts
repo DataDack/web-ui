@@ -20,41 +20,41 @@ import { useSearchParams } from "react-router-dom"
  * touched.
  */
 export function useViewPreference<T extends string>(
-    paramKey: string,
-    allowed: readonly T[],
-    fallback: T,
-    storageKey: string
+  paramKey: string,
+  allowed: readonly T[],
+  fallback: T,
+  storageKey: string,
 ): [T, (value: T) => void] {
-    const [searchParams, setSearchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
 
-    const isAllowed = (raw: string | null): raw is T => allowed.includes(raw as T)
+  const isAllowed = (raw: string | null): raw is T => allowed.includes(raw as T)
 
-    // Read once per mount, via a lazy initialiser: storage is a side channel, and
-    // re-reading it every render would let a write race its own read.
-    const [stored, setStored] = useState<T>(() => readStored(storageKey, isAllowed) ?? fallback)
+  // Read once per mount, via a lazy initialiser: storage is a side channel, and
+  // re-reading it every render would let a write race its own read.
+  const [stored, setStored] = useState<T>(() => readStored(storageKey, isAllowed) ?? fallback)
 
-    const fromUrl = searchParams.get(paramKey)
-    const value = isAllowed(fromUrl) ? fromUrl : stored
+  const fromUrl = searchParams.get(paramKey)
+  const value = isAllowed(fromUrl) ? fromUrl : stored
 
-    const setValue = useCallback(
-        (next: T) => {
-            setStored(next)
-            writeStored(storageKey, next)
-            setSearchParams(
-                (prev) => {
-                    const params = new URLSearchParams(prev)
-                    params.set(paramKey, next)
-                    return params
-                },
-                // Flipping a view is not a navigation; stacking history entries
-                // would make Back feel broken.
-                { replace: true }
-            )
+  const setValue = useCallback(
+    (next: T) => {
+      setStored(next)
+      writeStored(storageKey, next)
+      setSearchParams(
+        (prev) => {
+          const params = new URLSearchParams(prev)
+          params.set(paramKey, next)
+          return params
         },
-        [paramKey, storageKey, setSearchParams]
-    )
+        // Flipping a view is not a navigation; stacking history entries
+        // would make Back feel broken.
+        { replace: true },
+      )
+    },
+    [paramKey, storageKey, setSearchParams],
+  )
 
-    return [value, setValue]
+  return [value, setValue]
 }
 
 /**
@@ -64,21 +64,21 @@ export function useViewPreference<T extends string>(
  * down.
  */
 function readStored<T extends string>(
-    key: string,
-    isAllowed: (raw: string | null) => raw is T
+  key: string,
+  isAllowed: (raw: string | null) => raw is T,
 ): T | null {
-    try {
-        const raw = window.localStorage.getItem(key)
-        return isAllowed(raw) ? raw : null
-    } catch {
-        return null
-    }
+  try {
+    const raw = window.localStorage.getItem(key)
+    return isAllowed(raw) ? raw : null
+  } catch {
+    return null
+  }
 }
 
 function writeStored(key: string, value: string): void {
-    try {
-        window.localStorage.setItem(key, value)
-    } catch {
-        // A preference that cannot be persisted still applies for this session.
-    }
+  try {
+    window.localStorage.setItem(key, value)
+  } catch {
+    // A preference that cannot be persisted still applies for this session.
+  }
 }

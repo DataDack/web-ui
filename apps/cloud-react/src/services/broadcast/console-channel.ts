@@ -14,10 +14,10 @@
  */
 
 export type ConsoleBroadcastEvent =
-    /** The wallet was funded (gateway return, or a top-up settled). */
-    | { type: "billing:credited" }
-    /** The account moved to another Managed Apps tier. */
-    | { type: "managed-apps:plan-changed"; code: string }
+  /** The wallet was funded (gateway return, or a top-up settled). */
+  | { type: "billing:credited" }
+  /** The account moved to another Managed Apps tier. */
+  | { type: "managed-apps:plan-changed"; code: string }
 
 const CHANNEL_NAME = "datadack-console"
 
@@ -30,25 +30,25 @@ const CHANNEL_NAME = "datadack-console"
  * behaviour the console had before.
  */
 function channel(): BroadcastChannel | null {
-    if (typeof BroadcastChannel === "undefined") return null
-    try {
-        return new BroadcastChannel(CHANNEL_NAME)
-    } catch {
-        return null
-    }
+  if (typeof BroadcastChannel === "undefined") return null
+  try {
+    return new BroadcastChannel(CHANNEL_NAME)
+  } catch {
+    return null
+  }
 }
 
 /** Tell every other tab that something happened. */
 export function publishConsoleEvent(event: ConsoleBroadcastEvent): void {
-    const bus = channel()
-    if (!bus) return
-    try {
-        bus.postMessage(event)
-    } finally {
-        // One channel per message: holding a long-lived publisher open would
-        // keep a port alive in every tab that has ever published.
-        bus.close()
-    }
+  const bus = channel()
+  if (!bus) return
+  try {
+    bus.postMessage(event)
+  } finally {
+    // One channel per message: holding a long-lived publisher open would
+    // keep a port alive in every tab that has ever published.
+    bus.close()
+  }
 }
 
 /**
@@ -58,28 +58,28 @@ export function publishConsoleEvent(event: ConsoleBroadcastEvent): void {
  * document and is `unknown` as far as this tab is concerned.
  */
 export function subscribeConsoleEvents(
-    onEvent: (event: ConsoleBroadcastEvent) => void
+  onEvent: (event: ConsoleBroadcastEvent) => void,
 ): () => void {
-    const bus = channel()
-    if (!bus) return () => undefined
+  const bus = channel()
+  if (!bus) return () => undefined
 
-    const handler = (message: MessageEvent<unknown>) => {
-        const data = message.data
-        if (typeof data !== "object" || data === null || !("type" in data)) return
-        const { type } = data
-        if (type === "billing:credited") {
-            onEvent({ type: "billing:credited" })
-            return
-        }
-        if (type === "managed-apps:plan-changed") {
-            const code = (data as { code?: unknown }).code
-            onEvent({ type, code: typeof code === "string" ? code : "" })
-        }
+  const handler = (message: MessageEvent<unknown>) => {
+    const data = message.data
+    if (typeof data !== "object" || data === null || !("type" in data)) return
+    const { type } = data
+    if (type === "billing:credited") {
+      onEvent({ type: "billing:credited" })
+      return
     }
+    if (type === "managed-apps:plan-changed") {
+      const code = (data as { code?: unknown }).code
+      onEvent({ type, code: typeof code === "string" ? code : "" })
+    }
+  }
 
-    bus.addEventListener("message", handler)
-    return () => {
-        bus.removeEventListener("message", handler)
-        bus.close()
-    }
+  bus.addEventListener("message", handler)
+  return () => {
+    bus.removeEventListener("message", handler)
+    bus.close()
+  }
 }

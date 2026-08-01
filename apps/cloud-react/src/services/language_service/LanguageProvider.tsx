@@ -10,36 +10,36 @@ import hi from "./locales/hi.json"
 /* ── Init (runs once at module load) ───────────────────────────────────── */
 
 if (!i18n.isInitialized) {
-    void i18n
-        .use(LanguageDetector)
-        .use(initReactI18next)
-        .init({
-            resources: {
-                en: { translation: en },
-                hi: { translation: hi },
-            },
-            fallbackLng: "en",
-            interpolation: { escapeValue: false },
-            detection: {
-                order: ["localStorage", "navigator"],
-                caches: ["localStorage"],
-                lookupLocalStorage: "bsc-language",
-            },
-        })
+  void i18n
+    .use(LanguageDetector)
+    .use(initReactI18next)
+    .init({
+      resources: {
+        en: { translation: en },
+        hi: { translation: hi },
+      },
+      fallbackLng: "en",
+      interpolation: { escapeValue: false },
+      detection: {
+        order: ["localStorage", "navigator"],
+        caches: ["localStorage"],
+        lookupLocalStorage: "bsc-language",
+      },
+    })
 }
 
 /* ── Provider ──────────────────────────────────────────────────────────── */
 
 export function LanguageProvider({ children }: Readonly<{ children: ReactNode }>) {
-    return <I18nextProvider i18n={i18n}>{children}</I18nextProvider>
+  return <I18nextProvider i18n={i18n}>{children}</I18nextProvider>
 }
 
 /* ── Hook ──────────────────────────────────────────────────────────────── */
 
 export function useLanguage() {
-    const { i18n: instance } = useTranslation()
-    return {
-        language: instance.resolvedLanguage ?? "en",
-        changeLanguage: (code: string) => instance.changeLanguage(code),
-    }
+  const { i18n: instance } = useTranslation()
+  return {
+    language: instance.resolvedLanguage ?? "en",
+    changeLanguage: (code: string) => instance.changeLanguage(code),
+  }
 }

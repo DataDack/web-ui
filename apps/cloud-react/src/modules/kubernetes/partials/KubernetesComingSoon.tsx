@@ -8,13 +8,13 @@ import { ComingSoon } from "@/components/console"
  * cluster service ships. Mirrors the Auto Scaling / networking placeholders.
  */
 export function KubernetesComingSoon() {
-    const { t } = useTranslation()
-    return (
-        <ComingSoon
-            icon={Ship}
-            title={t("console.nav.items.kubernetes")}
-            description={t("kubernetes.subtitle")}
-            breadcrumbs={[{ label: t("console.nav.groups.compute") }]}
-        />
-    )
+  const { t } = useTranslation()
+  return (
+    <ComingSoon
+      icon={Ship}
+      title={t("console.nav.items.kubernetes")}
+      description={t("kubernetes.subtitle")}
+      breadcrumbs={[{ label: t("console.nav.groups.compute") }]}
+    />
+  )
 }

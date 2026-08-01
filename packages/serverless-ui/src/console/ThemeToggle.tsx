@@ -1,7 +1,7 @@
-import { css, cx } from '@emotion/css'
-import { Moon, Sun } from 'lucide-react'
+import { css, cx } from "@emotion/css"
+import { Moon, Sun } from "lucide-react"
 
-import { useTheme } from './ThemeProvider'
+import { useTheme } from "./ThemeProvider"
 
 const group = css`
   display: flex;
@@ -40,7 +40,7 @@ const buttonActive = css`
 
 export function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme()
-  const isDark = resolvedTheme === 'dark'
+  const isDark = resolvedTheme === "dark"
 
   return (
     <div role="group" aria-label="Toggle theme" className={group}>
@@ -49,7 +49,7 @@ export function ThemeToggle() {
         aria-pressed={isDark}
         aria-label="Dark"
         onClick={() => {
-          setTheme('dark')
+          setTheme("dark")
         }}
         className={cx(button, isDark && buttonActive)}
       >
@@ -60,7 +60,7 @@ export function ThemeToggle() {
         aria-pressed={!isDark}
         aria-label="Light"
         onClick={() => {
-          setTheme('light')
+          setTheme("light")
         }}
         className={cx(button, !isDark && buttonActive)}
       >

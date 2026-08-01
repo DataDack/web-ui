@@ -1,6 +1,6 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
-import { http } from '@/lib/api'
+import { http } from "@/lib/api"
 
 import {
   codeFileSchema,
@@ -12,13 +12,13 @@ import {
   type CodeTree,
   type FunctionSummary,
   type Runtime,
-} from './schemas'
+} from "./schemas"
 
 const keys = {
-  runtimes: ['fs', 'runtimes'] as const,
-  functions: ['fs', 'functions'] as const,
-  code: (fn: string) => ['fs', 'code', fn] as const,
-  file: (fn: string, path: string) => ['fs', 'code', fn, 'file', path] as const,
+  runtimes: ["fs", "runtimes"] as const,
+  functions: ["fs", "functions"] as const,
+  code: (fn: string) => ["fs", "code", fn] as const,
+  file: (fn: string, path: string) => ["fs", "code", fn, "file", path] as const,
 }
 
 const codePath = (fn: string) => `/v1/functions/${encodeURIComponent(fn)}/code`
@@ -28,7 +28,7 @@ export function useRuntimes() {
   return useQuery({
     queryKey: keys.runtimes,
     queryFn: async (): Promise<Runtime[]> => {
-      const { data } = await http.get<unknown>('/v1/runtimes')
+      const { data } = await http.get<unknown>("/v1/runtimes")
       return runtimeListSchema.parse(data).runtimes
     },
     // The catalog only changes on a control-plane release.
@@ -40,7 +40,7 @@ export function useFunctions() {
   return useQuery({
     queryKey: keys.functions,
     queryFn: async (): Promise<FunctionSummary[]> => {
-      const { data } = await http.get<unknown>('/v1/functions')
+      const { data } = await http.get<unknown>("/v1/functions")
       return functionListSchema.parse(data).functions
     },
     refetchInterval: 5000,
@@ -89,7 +89,7 @@ export function useCreateFunction() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (input: CreateFunctionInput) => {
-      const { data } = await http.post<unknown>('/v1/functions/source', input)
+      const { data } = await http.post<unknown>("/v1/functions/source", input)
       return data
     },
     onSuccess: () => {
@@ -116,7 +116,7 @@ export function useDeployFunction() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (input: DeployFunctionInput) => {
-      const { data } = await http.post<unknown>('/v1/functions', input)
+      const { data } = await http.post<unknown>("/v1/functions", input)
       return data
     },
     onSuccess: () => {
@@ -146,7 +146,7 @@ export function useDeployDraft(functionName: string) {
   return useMutation({
     mutationFn: async (baseSha256?: string) => {
       const { data } = await http.post<unknown>(`${codePath(functionName)}/deploy`, {
-        baseSha256: baseSha256 ?? '',
+        baseSha256: baseSha256 ?? "",
       })
       return data as { version?: { version?: string } }
     },
@@ -166,7 +166,7 @@ export function useDiscardDraft(functionName: string) {
     },
     onSuccess: (tree) => {
       queryClient.setQueryData(keys.code(functionName), tree)
-      void queryClient.invalidateQueries({ queryKey: ['fs', 'code', functionName, 'file'] })
+      void queryClient.invalidateQueries({ queryKey: ["fs", "code", functionName, "file"] })
     },
   })
 }
@@ -182,7 +182,7 @@ export function useCodeSources(functionName: string, files: CodeEntry[]) {
   const paths = files.filter((entry) => !entry.binary).map((entry) => entry.path)
 
   return useQuery({
-    queryKey: ['fs', 'code', functionName, 'sources', paths.join(' ')],
+    queryKey: ["fs", "code", functionName, "sources", paths.join(" ")],
     queryFn: async (): Promise<{ path: string; content: string }[]> =>
       Promise.all(
         paths.map(async (path) => {

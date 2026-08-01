@@ -1,9 +1,9 @@
 ---
 name: Feature request
 about: Suggest a new feature or sub-module
-title: 'feat: '
-labels: ['enhancement']
-assignees: ''
+title: "feat: "
+labels: ["enhancement"]
+assignees: ""
 ---
 
 ## Problem / motivation

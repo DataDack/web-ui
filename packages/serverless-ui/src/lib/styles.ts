@@ -1,4 +1,4 @@
-import { css, keyframes } from '@emotion/css'
+import { css, keyframes } from "@emotion/css"
 
 // Shared emotion building blocks. Every component styles itself through
 // @emotion/css at runtime, reading the console theme's bare tokens
@@ -8,9 +8,9 @@ import { css, keyframes } from '@emotion/css'
 
 /** Tailwind's default breakpoints, which the consoles' layouts were built on. */
 export const media = {
-  sm: '@media (min-width: 640px)',
-  md: '@media (min-width: 768px)',
-  lg: '@media (min-width: 1024px)',
+  sm: "@media (min-width: 640px)",
+  md: "@media (min-width: 768px)",
+  lg: "@media (min-width: 1024px)",
 } as const
 
 /** The console's mono stack, with a fallback when the consumer sets no token. */

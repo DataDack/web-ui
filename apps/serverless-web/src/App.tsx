@@ -1,14 +1,14 @@
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes } from "react-router-dom"
 
-import { AppShell } from '@/components/shell/AppShell'
-import { AuditPage } from '@/features/audit/AuditPage'
-import { CreateFunctionPage } from '@/features/functions/CreateFunctionPage'
-import { FunctionDetailPage } from '@/features/functions/FunctionDetailPage'
-import { FunctionsPage } from '@/features/functions/FunctionsPage'
-import { LayersPage } from '@/features/layers/LayersPage'
-import { LogsPage } from '@/features/logs/LogsPage'
-import { MetricsPage } from '@/features/metrics/MetricsPage'
-import { WorkersPage } from '@/features/workers/WorkersPage'
+import { AppShell } from "@/components/shell/AppShell"
+import { AuditPage } from "@/features/audit/AuditPage"
+import { CreateFunctionPage } from "@/features/functions/CreateFunctionPage"
+import { FunctionDetailPage } from "@/features/functions/FunctionDetailPage"
+import { FunctionsPage } from "@/features/functions/FunctionsPage"
+import { LayersPage } from "@/features/layers/LayersPage"
+import { LogsPage } from "@/features/logs/LogsPage"
+import { MetricsPage } from "@/features/metrics/MetricsPage"
+import { WorkersPage } from "@/features/workers/WorkersPage"
 
 export function App() {
   return (

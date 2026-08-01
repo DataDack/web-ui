@@ -5,9 +5,9 @@ import { cn } from "@/lib/utils"
 import { GitHubMark } from "./GitHubMark"
 
 interface GitHubAvatarProps {
-    /** Avatar URL. GitHub serves one per login at github.com/<login>.png. */
-    src?: string
-    className?: string
+  /** Avatar URL. GitHub serves one per login at github.com/<login>.png. */
+  src?: string
+  className?: string
 }
 
 /**
@@ -23,30 +23,27 @@ interface GitHubAvatarProps {
  * a GitHub account" and keeps the text aligned with every other row.
  */
 export function GitHubAvatar({ src, className }: Readonly<GitHubAvatarProps>) {
-    const [failed, setFailed] = useState(false)
+  const [failed, setFailed] = useState(false)
 
-    if (!src || failed) {
-        return (
-            <span
-                className={cn(
-                    "grid size-5 shrink-0 place-items-center rounded-full bg-muted",
-                    className
-                )}
-            >
-                <GitHubMark className="size-3 text-muted-foreground" />
-            </span>
-        )
-    }
-
+  if (!src || failed) {
     return (
-        <img
-            src={src}
-            alt=""
-            loading="lazy"
-            className={cn("size-5 shrink-0 rounded-full bg-muted ring-1 ring-border/50", className)}
-            onError={() => {
-                setFailed(true)
-            }}
-        />
+      <span
+        className={cn("grid size-5 shrink-0 place-items-center rounded-full bg-muted", className)}
+      >
+        <GitHubMark className="size-3 text-muted-foreground" />
+      </span>
     )
+  }
+
+  return (
+    <img
+      src={src}
+      alt=""
+      loading="lazy"
+      className={cn("size-5 shrink-0 rounded-full bg-muted ring-1 ring-border/50", className)}
+      onError={() => {
+        setFailed(true)
+      }}
+    />
+  )
 }

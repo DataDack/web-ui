@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from "zod"
 
 // Zod schemas mirror the control plane's native /v1 responses. Every field the
 // console reads is validated at the boundary, so a backend change surfaces as a
@@ -208,7 +208,7 @@ export const tenantSchema = z.object({
 
 export const tenantListSchema = z.object({
   accounts: z.array(tenantSchema).default([]),
-  current: z.string().default(''),
+  current: z.string().default(""),
   // switchable is false when the credential is pinned to one account, in which
   // case the console hides the switcher rather than offering a no-op control.
   switchable: z.boolean().default(false),

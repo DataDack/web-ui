@@ -7,10 +7,10 @@ import { useEffect } from "react"
 let current = ""
 
 export const screenName = {
-    get: () => current,
-    set: (name: string) => {
-        current = name
-    },
+  get: () => current,
+  set: (name: string) => {
+    current = name
+  },
 }
 
 /**
@@ -21,7 +21,7 @@ export const screenName = {
  * it on its own mount, so there is never an unnamed gap between screens.
  */
 export function useScreen(name: string): void {
-    useEffect(() => {
-        screenName.set(name)
-    }, [name])
+  useEffect(() => {
+    screenName.set(name)
+  }, [name])
 }

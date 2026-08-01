@@ -6,15 +6,15 @@ import type { AutoScalingGroup, CreateASGRequest, UpdateASGRequest } from "./aut
 const BASE = "/compute/autoscaling"
 
 export const asgApi = {
-    list: (): Promise<AutoScalingGroup[]> => apiGet<AutoScalingGroup[]>(`${BASE}${LIST_QUERY}`),
+  list: (): Promise<AutoScalingGroup[]> => apiGet<AutoScalingGroup[]>(`${BASE}${LIST_QUERY}`),
 
-    get: (id: string): Promise<AutoScalingGroup> => apiGet<AutoScalingGroup>(`${BASE}/${id}`),
+  get: (id: string): Promise<AutoScalingGroup> => apiGet<AutoScalingGroup>(`${BASE}/${id}`),
 
-    create: (payload: CreateASGRequest): Promise<AutoScalingGroup> =>
-        apiPost<AutoScalingGroup>(BASE, payload),
+  create: (payload: CreateASGRequest): Promise<AutoScalingGroup> =>
+    apiPost<AutoScalingGroup>(BASE, payload),
 
-    update: (id: string, payload: UpdateASGRequest): Promise<AutoScalingGroup> =>
-        apiPut<AutoScalingGroup>(`${BASE}/${id}`, payload),
+  update: (id: string, payload: UpdateASGRequest): Promise<AutoScalingGroup> =>
+    apiPut<AutoScalingGroup>(`${BASE}/${id}`, payload),
 
-    delete: (id: string): Promise<void> => apiDelete(`${BASE}/${id}`),
+  delete: (id: string): Promise<void> => apiDelete(`${BASE}/${id}`),
 }
