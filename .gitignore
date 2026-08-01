@@ -12,9 +12,9 @@ build/
 # directory is, because assets.go embeds it at compile time and go:embed fails on
 # a missing directory. The negation must stay below the `dist/` rule above to
 # take effect, and the re-exclusion below it, or the bundle comes back.
-!apps/serverless-admin/dist/
-apps/serverless-admin/dist/*
-!apps/serverless-admin/dist/.gitkeep
+!apps/serverless-web/dist/
+apps/serverless-web/dist/*
+!apps/serverless-web/dist/.gitkeep
 
 # Nx
 .nx/

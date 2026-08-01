@@ -1,3 +1,3 @@
-# Build output. apps/serverless-admin/dist is committed for go:embed, so it is
+# Build output. apps/serverless-web/dist is committed for go:embed, so it is
 # re-included by .gitignore and has to be excluded here explicitly.
 dist/
