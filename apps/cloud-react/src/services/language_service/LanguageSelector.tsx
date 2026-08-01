@@ -9,7 +9,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@datadack/common-ui"
 
 const LANGUAGES = [
   { code: "en", label: "English", native: "English", script: "EN" },

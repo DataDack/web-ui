@@ -11,7 +11,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 import { ACCOUNT_ROUTES } from "@/modules/accounts/accounts.constants"
 import { useActiveAccount, useSwitchAccount } from "@/modules/accounts/accounts.hooks"

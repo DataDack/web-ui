@@ -12,7 +12,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 
 import { useActiveAccount, useSwitchAccount } from "../accounts.hooks"

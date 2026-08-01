@@ -11,7 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 import { useActiveRegion } from "@/modules/region/region.context"
 import { usePlatformRegions } from "@/modules/superadmin/superadmin.hooks"

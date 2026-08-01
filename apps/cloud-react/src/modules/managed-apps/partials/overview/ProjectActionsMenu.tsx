@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 
 import { MANAGED_APPS_ROUTES } from "../../managed-apps.constants"

@@ -10,7 +10,7 @@ import {
   ContextMenuItem,
   ContextMenuSeparator,
   ContextMenuTrigger,
-} from "@/components/ui/context-menu"
+} from "@datadack/common-ui"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@DataDack/common-ui"
 import { useResourceGroup } from "@/modules/resource-groups/resource-group.context"
 

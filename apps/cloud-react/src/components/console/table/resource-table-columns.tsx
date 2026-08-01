@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@datadack/common-ui"
 import { parseTags } from "@/lib/tags"
 
 import type { ColumnMeta } from "./ResourceTable"
