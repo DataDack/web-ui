@@ -13,13 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@datadack/common-ui"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@datadack/common-ui"
 import { useInstances } from "@/modules/vms/vms.hooks"
 
 import { useAttachDisk } from "../disks.hooks"

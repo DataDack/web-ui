@@ -14,7 +14,7 @@ import {
   SheetFooter,
   SheetHeader,
   SheetTitle,
-} from "@/components/ui/sheet"
+} from "@datadack/common-ui"
 import { useAllSubnets, useCreateSubnet, useVPC } from "@/modules/vpc/vpc.hooks"
 import { nextFreeSubnetCidr, subnetCidrIssue } from "@/modules/vpc/vpc.utils"
 

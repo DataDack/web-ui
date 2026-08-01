@@ -31,20 +31,8 @@ import {
 } from "@datadack/common-ui"
 import { Input } from "@/components/ui/input"
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@datadack/common-ui"
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@datadack/common-ui"
 import { ACCOUNT_MANAGER_ROLES } from "@/modules/accounts/accounts.constants"
 import {
   useAccountMembers,

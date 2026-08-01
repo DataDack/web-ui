@@ -16,13 +16,7 @@ import {
 } from "@/components/console"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@datadack/common-ui"
 import { useActiveScope } from "@/modules/accounts/accounts.hooks"
 import { useAuth } from "@/modules/auth/auth.context"
 import { useActiveOrganization } from "@/modules/organizations/organizations.hooks"

@@ -3,13 +3,7 @@ import type { UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 
 import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@datadack/common-ui"
 import type { StoragePriceOption } from "@/modules/catalog/catalog.types"
 
 import { formatPrice } from "./wizard.format"

@@ -16,13 +16,7 @@ import {
 } from "@datadack/common-ui"
 import { Input } from "@/components/ui/input"
 import { Label } from "@datadack/common-ui"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@datadack/common-ui"
 import {
   Table,
   TableBody,

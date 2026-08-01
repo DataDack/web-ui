@@ -11,13 +11,7 @@ import { z } from "zod/v4"
 import { PageHeader, Section } from "@/components/console"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 import { useScreen } from "@/services/api/screen"
 

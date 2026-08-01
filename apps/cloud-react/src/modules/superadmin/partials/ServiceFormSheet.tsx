@@ -9,13 +9,7 @@ import { z } from "zod/v4"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@datadack/common-ui"
 import { SERVICE_ICON_NAMES } from "@/modules/services/service-icons"
 
 import { Field, FormSheet } from "../components/form-fields"

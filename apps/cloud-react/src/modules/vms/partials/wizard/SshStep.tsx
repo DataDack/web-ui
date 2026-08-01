@@ -8,20 +8,8 @@ import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@datadack/common-ui"
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@datadack/common-ui"
 import { canGenerateKeyPair, generateEd25519KeyPair } from "@/lib/ssh-keygen"
 import { cn } from "@/lib/utils"
 import { useNamingRule } from "@/modules/governance/governance.hooks"

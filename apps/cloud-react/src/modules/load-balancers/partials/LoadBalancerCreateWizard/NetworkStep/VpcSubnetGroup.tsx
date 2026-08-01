@@ -4,13 +4,7 @@ import type { UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 
 import { Button } from "@/components/ui/button"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@datadack/common-ui"
 import type { Subnet, VPCNetwork } from "@/modules/vpc/vpc.types"
 
 import type { FormValues } from "../schema"

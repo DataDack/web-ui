@@ -10,7 +10,7 @@ import { z } from "zod/v4"
 
 import { CreateWizard, PageHeader, type WizardStep } from "@/components/console"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger } from "@datadack/common-ui"
 import { CurrencySelect } from "@/modules/countries/CurrencySelect"
 import { useScreen } from "@/services/api/screen"
 

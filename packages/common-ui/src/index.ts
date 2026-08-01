@@ -86,7 +86,29 @@ export { Input } from "./ui/input"
 export { Label } from "./ui/label"
 export { Popover, PopoverAnchor, PopoverContent, PopoverTrigger } from "./ui/popover"
 export { ScrollArea, ScrollBar } from "./ui/scroll-area"
+export {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectScrollDownButton,
+  SelectScrollUpButton,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select"
 export { Separator } from "./ui/separator"
+export {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "./ui/sheet"
 export { Skeleton } from "./ui/skeleton"
 export { Switch } from "./ui/switch"
 export { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table"

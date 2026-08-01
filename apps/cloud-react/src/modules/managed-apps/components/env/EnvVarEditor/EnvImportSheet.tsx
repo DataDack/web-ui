@@ -11,7 +11,7 @@ import {
   SheetFooter,
   SheetHeader,
   SheetTitle,
-} from "@/components/ui/sheet"
+} from "@datadack/common-ui"
 
 import { parseDotEnv } from "./env-parse"
 

@@ -17,13 +17,7 @@ import {
   DialogTitle,
 } from "@datadack/common-ui"
 import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 
 import { Field } from "../components/form-fields"

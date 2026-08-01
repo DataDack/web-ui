@@ -15,13 +15,7 @@ import {
   DialogTitle,
 } from "@datadack/common-ui"
 import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@datadack/common-ui"
 
 import { useCreateInvitation, useIAMGroups, useIAMRoles } from "../iam.hooks"
 import type { InvitationResult } from "../iam.types"

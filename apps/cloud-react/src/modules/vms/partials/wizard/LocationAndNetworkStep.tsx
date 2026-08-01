@@ -21,13 +21,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@d
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@DataDack/common-ui"
 import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 import type { RegionCatalog, StaticIPPriceOption } from "@/modules/catalog/catalog.types"
 import { VPC_ROUTES } from "@/modules/vpc/vpc.constants"

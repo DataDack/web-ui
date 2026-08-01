@@ -15,7 +15,7 @@ import {
   SelectSeparator,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@datadack/common-ui"
 import { useCountries } from "@/modules/countries/countries.hooks"
 
 import { Field, FormSheet } from "../components/form-fields"

@@ -7,13 +7,7 @@ import { Link } from "react-router-dom"
 
 import { Section, StatusBadge } from "@/components/console"
 import { Button } from "@/components/ui/button"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@datadack/common-ui"
 import { VPC_ROUTES } from "@/modules/vpc/vpc.constants"
 import {
   useAllSecurityGroups,

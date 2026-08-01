@@ -8,13 +8,7 @@ import { SiJira } from "react-icons/si"
 import { Button } from "@/components/ui/button"
 import { ComboboxInput } from "@/components/ui/combobox-input"
 import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 import {
   useDisconnectJira,
