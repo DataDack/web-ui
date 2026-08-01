@@ -23,7 +23,6 @@ export class WorkbenchBoundary extends Component<Props, State> {
   }
 
   override componentDidCatch(error: unknown, info: ErrorInfo) {
-     
     console.error('Function Studio: the VS Code workbench failed to start', error, info)
   }
 

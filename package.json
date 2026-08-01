@@ -25,15 +25,27 @@
     "clean": "nx run-many -t clean && nx reset",
     "changeset": "changeset",
     "version-packages": "changeset version",
-    "release": "nx run-many -t build --projects=tag:publishable && changeset publish"
+    "release": "nx run-many -t build --projects=tag:publishable && changeset publish",
+    "prepare": "husky"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.11",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.2",
     "nx": "^23.1.0",
     "prettier": "^3.4.2",
     "typescript": "^5.7.2"
   },
   "engines": {
     "node": ">=20"
+  },
+  "lint-staged": {
+    "*.{js,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,css}": [
+      "prettier --write"
+    ]
   }
 }

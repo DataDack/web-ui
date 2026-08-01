@@ -1,0 +1,14 @@
+# Default owner for everything not matched below.
+*                           @ishansingla
+
+# The admin console is embedded into the serverless_faas Go binary, so a change
+# here ships inside that service's image.
+/apps/serverless-admin/     @ishansingla
+
+# Published to GitHub Packages as @datadack/function-studio — a change here is
+# a change to a public API surface other repos consume.
+/packages/function-studio/  @ishansingla
+
+# Toolchain and release plumbing.
+/.github/                   @ishansingla
+/config/                    @ishansingla
