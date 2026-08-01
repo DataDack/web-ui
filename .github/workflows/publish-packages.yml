@@ -83,7 +83,8 @@ jobs:
       - name: Verify build output
         run: |
           cd "${{ steps.pkg.outputs.dir }}"
-          for f in dist/index.js dist/index.cjs dist/index.d.ts dist/styles.css; do
+          # No styles.css: the kit styles itself at runtime via @emotion/css.
+          for f in dist/index.js dist/index.cjs dist/index.d.ts; do
             [ -s "$f" ] || { echo "::error::missing or empty $f"; exit 1; }
           done
 
