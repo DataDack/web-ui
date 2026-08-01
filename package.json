@@ -18,6 +18,9 @@
     "build:admin": "nx build serverless-admin",
     "dev:admin": "nx dev serverless-admin",
     "preview:admin": "nx preview serverless-admin",
+    "build:cloud": "nx build cloud-react",
+    "dev:cloud": "nx dev cloud-react",
+    "preview:cloud": "nx preview cloud-react",
     "affected": "nx affected -t lint typecheck build",
     "graph": "nx graph",
     "format": "prettier --write \"**/*.{ts,tsx,js,json,md}\" --ignore-path .gitignore --ignore-path .prettierignore",
@@ -81,5 +84,11 @@
     "*.{json,md,css}": [
       "prettier --write"
     ]
+  },
+  "patchedDependencies": {
+    "eslint-plugin-react@7.37.5": "patches/eslint-plugin-react@7.37.5.patch"
+  },
+  "overrides": {
+    "zod-validation-error": "^4.0.2"
   }
 }

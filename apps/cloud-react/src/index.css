@@ -1,0 +1,588 @@
+@import "tailwindcss";
+
+/* The shared @datadack/serverless-ui kit ships class names in compiled JS —
+   point Tailwind's scanner at it so those utilities are generated here. */
+@source "../node_modules/@datadack/serverless-ui/dist";
+@import "tw-animate-css";
+@plugin "@tailwindcss/typography";
+
+/* ─── Hide number input spinners ─────────────────────────────────────── */
+@layer base {
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        appearance: none;
+        margin: 0;
+    }
+    input[type="number"] {
+        -moz-appearance: textfield;
+        appearance: textfield;
+    }
+}
+
+@custom-variant dark (&:is(.dark *));
+
+/* ─── Theme ───────────────────────────────────────────────────────────── */
+@theme inline {
+    /* Radius */
+    --radius-sm: calc(var(--radius) - 4px);
+    --radius-md: calc(var(--radius) - 2px);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) + 4px);
+    --radius-2xl: calc(var(--radius) + 8px);
+    --radius-3xl: calc(var(--radius) + 12px);
+    --radius-4xl: calc(var(--radius) + 16px);
+
+    /* shadcn semantic colors */
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-destructive: var(--destructive);
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+    --color-chart-1: var(--chart-1);
+    --color-chart-2: var(--chart-2);
+    --color-chart-3: var(--chart-3);
+    --color-chart-4: var(--chart-4);
+    --color-chart-5: var(--chart-5);
+    --color-sidebar: var(--sidebar);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-ring: var(--sidebar-ring);
+
+    /* Ena brand palette */
+    --color-ena-50: var(--ena-50);
+    --color-ena-100: var(--ena-100);
+    --color-ena-200: var(--ena-200);
+    --color-ena-300: var(--ena-300);
+    --color-ena-400: var(--ena-400);
+    --color-ena-500: var(--ena-500);
+    --color-ena-600: var(--ena-600);
+    --color-ena-700: var(--ena-700);
+    --color-ena-800: var(--ena-800);
+    --color-ena-900: var(--ena-900);
+    --color-ena-950: var(--ena-950);
+
+    /* BSC design tokens */
+    --color-surface-glass: var(--surface-glass);
+    --color-border-glass: var(--border-glass);
+    --color-surface: var(--background);
+    --color-on-surface: var(--foreground);
+    --color-on-background: var(--foreground);
+    --color-surface-variant: var(--surface-variant);
+    --color-on-surface-variant: var(--on-surface-variant);
+    --color-surface-container: var(--surface-container);
+    --color-surface-container-high: var(--surface-container-high);
+    --color-tertiary: var(--bsc-tertiary);
+    --color-tertiary-container: var(--bsc-tertiary-container);
+    --color-success-pulse: var(--success-pulse);
+    --color-outline: var(--bsc-outline);
+    --color-outline-variant: var(--bsc-outline-variant);
+
+    /* Datadack Cloud brand gold — CTA, links, brand accents */
+    --color-brand-gold: var(--brand-gold);
+    --color-brand-gold-hover: var(--brand-gold-hover);
+    --color-brand-gold-foreground: var(--brand-gold-foreground);
+    --color-brand-gold-soft: var(--brand-gold-soft);
+
+    /* Status tones — consumed via StatusBadge/status-config only */
+    --color-status-success: var(--status-success);
+    --color-status-success-bg: var(--status-success-bg);
+    --color-status-warning: var(--status-warning);
+    --color-status-warning-bg: var(--status-warning-bg);
+    --color-status-danger: var(--status-danger);
+    --color-status-danger-bg: var(--status-danger-bg);
+    --color-status-info: var(--status-info);
+    --color-status-info-bg: var(--status-info-bg);
+    --color-status-neutral: var(--status-neutral);
+    --color-status-neutral-bg: var(--status-neutral-bg);
+
+    /* Typography — families */
+    --font-sans: "Geist Variable", "Hanken Grotesk", system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", monospace;
+    --font-display-lg: "Geist Variable", "Hanken Grotesk", system-ui, sans-serif;
+    --font-display-xl: "Geist Variable", "Hanken Grotesk", system-ui, sans-serif;
+    --font-body-md: "Geist Variable", "Hanken Grotesk", system-ui, sans-serif;
+    --font-body-lg: "Geist Variable", "Hanken Grotesk", system-ui, sans-serif;
+    --font-headline-lg: "Geist Variable", "Hanken Grotesk", system-ui, sans-serif;
+    --font-headline-lg-mobile: "Geist Variable", "Hanken Grotesk", system-ui, sans-serif;
+    --font-label-caps: "Geist Variable", "Hanken Grotesk", system-ui, sans-serif;
+    --font-mono-data: "JetBrains Mono", monospace;
+
+    /* Typography — sizes */
+    --text-display-xl: 4.5rem;
+    --text-display-xl--line-height: 5rem;
+    --text-display-xl--letter-spacing: -0.04em;
+    --text-display-lg: 3rem;
+    --text-display-lg--line-height: 3.5rem;
+    --text-display-lg--letter-spacing: -0.02em;
+    --text-headline-lg: 2rem;
+    --text-headline-lg--line-height: 2.5rem;
+    --text-headline-lg--letter-spacing: 0.02em;
+    --text-headline-lg-mobile: 1.75rem;
+    --text-headline-lg-mobile--line-height: 2.25rem;
+    --text-body-lg: 1.125rem;
+    --text-body-lg--line-height: 1.75rem;
+    --text-body-md: 1rem;
+    --text-body-md--line-height: 1.5rem;
+    --text-mono-data: 0.875rem;
+    --text-mono-data--line-height: 1.25rem;
+    --text-label-caps: 0.75rem;
+    --text-label-caps--line-height: 1rem;
+    --text-label-caps--letter-spacing: 0.15em;
+
+    /* Accordion (radix) collapse/expand */
+    --animate-accordion-down: accordion-down 0.2s ease-out;
+    --animate-accordion-up: accordion-up 0.2s ease-out;
+}
+
+@keyframes accordion-down {
+    from {
+        height: 0;
+    }
+    to {
+        height: var(--radix-accordion-content-height);
+    }
+}
+
+@keyframes accordion-up {
+    from {
+        height: var(--radix-accordion-content-height);
+    }
+    to {
+        height: 0;
+    }
+}
+
+/* ─── Light mode ──────────────────────────────────────────────────────── */
+:root {
+    --radius: 0.375rem;
+
+    /* Ena brand palette */
+    --ena-50: #f0fafe;
+    --ena-100: #e0f4fd;
+    --ena-200: #b9e8fa;
+    --ena-300: #8ed9f5;
+    --ena-400: #6ed0f1;
+    --ena-500: #45bde5;
+    --ena-600: #28a3d0;
+    --ena-700: #2387ad;
+    --ena-800: #226e8e;
+    --ena-900: #215b75;
+    --ena-950: #153c4f;
+
+    /* shadcn semantic */
+    --background: #f5f5f6;
+    --foreground: #1a1a1b;
+    --card: #ffffff;
+    --card-foreground: #1a1a1b;
+    --popover: #ffffff;
+    --popover-foreground: #1a1a1b;
+    --primary: #c9971b;
+    --primary-foreground: #221a03;
+    --secondary: #c96000;
+    --secondary-foreground: #ffffff;
+    --muted: #e5e5e7;
+    --muted-foreground: #717177;
+    --accent: #e5e5e7;
+    --accent-foreground: #1a1a1b;
+    --destructive: #ba1a1a;
+    --border: rgba(0, 0, 0, 0.08);
+    --input: rgba(0, 0, 0, 0.06);
+    --ring: #909096;
+    --chart-1: oklch(0.646 0.222 41.116);
+    --chart-2: oklch(0.6 0.118 184.704);
+    --chart-3: oklch(0.398 0.07 227.392);
+    --chart-4: oklch(0.828 0.189 84.429);
+    --chart-5: oklch(0.769 0.188 70.08);
+    --sidebar: #ffffff;
+    --sidebar-foreground: #1a1a1b;
+    --sidebar-primary: #434750;
+    --sidebar-primary-foreground: #ffffff;
+    --sidebar-accent: #e5e5e7;
+    --sidebar-accent-foreground: #1a1a1b;
+    --sidebar-border: rgba(0, 0, 0, 0.08);
+    --sidebar-ring: #909096;
+
+    /* BSC design tokens — light */
+    --surface-glass: rgba(255, 255, 255, 0.65);
+    --border-glass: rgba(0, 0, 0, 0.08);
+    --surface-variant: #e4e4e6;
+    --on-surface-variant: #45474b;
+    --bsc-tertiary: #4a4c9e;
+    --bsc-tertiary-container: #7072c0;
+    --success-pulse: #7072c0;
+    --bsc-outline: #717177;
+    --bsc-outline-variant: #c6c6cc;
+    --surface-container: #eeeef0;
+    --surface-container-high: #e8e8ea;
+
+    /* Status tones — light */
+    --status-success: #5d5fae;
+    --status-success-bg: rgba(112, 114, 192, 0.13);
+    --status-warning: #c96000;
+    --status-warning-bg: rgba(201, 96, 0, 0.12);
+    --status-danger: #ba1a1a;
+    --status-danger-bg: rgba(186, 26, 26, 0.1);
+    --status-info: #2387ad;
+    --status-info-bg: rgba(40, 163, 208, 0.12);
+    --status-neutral: #717177;
+    --status-neutral-bg: rgba(113, 113, 119, 0.12);
+
+    /* Datadack Cloud brand gold — light (from Datadack Cloud Console v2 design) */
+    --brand-gold: #c9971b;
+    --brand-gold-hover: #d9ac33;
+    --brand-gold-foreground: #221a03;
+    --brand-gold-soft: rgba(201, 151, 27, 0.12);
+    --brand-gold-glow: rgba(201, 151, 27, 0.2);
+
+    /* Console chrome — light */
+    --topbar: rgba(255, 255, 255, 0.6);
+    --card-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85), 0 2px 10px rgba(20, 22, 30, 0.045);
+
+    /* Glass tiers — light */
+    --glass-1-bg: rgba(255, 255, 255, 0.55);
+    --glass-2-bg: rgba(255, 255, 255, 0.65);
+    --glass-3-bg: rgba(255, 255, 255, 0.78);
+
+    /* Gradients — light */
+    --gradient-brand: linear-gradient(135deg, var(--ena-600), var(--bsc-tertiary-container));
+    --gradient-surface: radial-gradient(
+        ellipse 80% 50% at 20% -10%,
+        rgba(69, 189, 229, 0.06),
+        transparent
+    );
+
+    /* Motion tokens — mirrored in src/components/console/motion/motion-config.ts */
+    --dur-fast: 150ms;
+    --dur-base: 250ms;
+    --dur-slow: 400ms;
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ─── Rose date-selector skin ─────────────────────────────────────────────
+   Scoped palette + Rubik type from the date-selector design spec. Remaps the
+   shadcn semantic tokens so the token-driven date components (BirthdateField,
+   DayGridPicker, MonthYearPicker) render in the pink theme without affecting
+   the rest of the app. Wrap any subtree in `.theme-rose` to opt in. */
+.theme-rose {
+    font-family: "Rubik Variable", system-ui, sans-serif;
+
+    --background: #fef4f9; /* pale pink */
+    --foreground: #444444; /* dark text */
+    --card: #ffffff;
+    --card-foreground: #444444;
+    --popover: #ffffff;
+    --popover-foreground: #444444;
+    --primary: #d06396; /* deep rose — selected state */
+    --primary-foreground: #ffffff;
+    --secondary: #f9c3dd; /* light pink */
+    --secondary-foreground: #444444;
+    --muted: #fef4f9;
+    --muted-foreground: #8a8a8a; /* neutral gray label */
+    --accent: #f9c3dd; /* light pink — hover / range */
+    --accent-foreground: #444444;
+    --border: rgba(208, 99, 150, 0.18);
+    --input: rgba(208, 99, 150, 0.14);
+    --ring: #d06396;
+}
+
+/* ─── Dark mode ───────────────────────────────────────────────────────── */
+.dark {
+    /* shadcn semantic */
+    --background: #0a0a0d;
+    --foreground: #f2f2f5;
+    --card: #18181c;
+    --card-foreground: #e5e2e3;
+    --popover: #201f20;
+    --popover-foreground: #e5e2e3;
+    --primary: #e9b94f;
+    --primary-foreground: #1f1604;
+    --secondary: #ffb77b;
+    --secondary-foreground: #4c2700;
+    --muted: #353436;
+    --muted-foreground: #c6c6cc;
+    --accent: #353436;
+    --accent-foreground: #e5e2e3;
+    --destructive: #dc2626;
+    --border: rgba(255, 255, 255, 0.1);
+    --input: rgba(255, 255, 255, 0.08);
+    --ring: #c3c6d2;
+    --chart-1: oklch(0.488 0.243 264.376);
+    --chart-2: oklch(0.696 0.17 162.48);
+    --chart-3: oklch(0.769 0.188 70.08);
+    --chart-4: oklch(0.627 0.265 303.9);
+    --chart-5: oklch(0.645 0.246 16.439);
+    --sidebar: #201f20;
+    --sidebar-foreground: #e5e2e3;
+    --sidebar-primary: #dfe2ee;
+    --sidebar-primary-foreground: #2c303a;
+    --sidebar-accent: #353436;
+    --sidebar-accent-foreground: #e5e2e3;
+    --sidebar-border: rgba(255, 255, 255, 0.1);
+    --sidebar-ring: #c3c6d2;
+
+    /* BSC design tokens — dark */
+    --surface-glass: rgba(255, 255, 255, 0.03);
+    --border-glass: rgba(255, 255, 255, 0.1);
+    --surface-variant: #353436;
+    --on-surface-variant: #c6c6cc;
+    --bsc-tertiary: #e1dfff;
+    --bsc-tertiary-container: #c0c1ff;
+    --success-pulse: #c0c1ff;
+    --bsc-outline: #909096;
+    --bsc-outline-variant: #45474b;
+    --surface-container: #201f20;
+    --surface-container-high: #2a2a2b;
+
+    /* Status tones — dark */
+    --status-success: #c0c1ff;
+    --status-success-bg: rgba(192, 193, 255, 0.13);
+    --status-warning: #ffb77b;
+    --status-warning-bg: rgba(255, 183, 123, 0.13);
+    --status-danger: #ffb4ab;
+    --status-danger-bg: rgba(255, 180, 171, 0.12);
+    --status-info: #8ed9f5;
+    --status-info-bg: rgba(142, 217, 245, 0.12);
+    --status-neutral: #909096;
+    --status-neutral-bg: rgba(144, 144, 150, 0.14);
+
+    /* Datadack Cloud brand gold — dark (from Datadack Cloud Console v2 design) */
+    --brand-gold: #e9b94f;
+    --brand-gold-hover: #f4cd6f;
+    --brand-gold-foreground: #1f1604;
+    --brand-gold-soft: rgba(233, 185, 79, 0.12);
+    --brand-gold-glow: rgba(233, 185, 79, 0.3);
+
+    /* Console chrome — dark */
+    --topbar: rgba(13, 13, 17, 0.55);
+    --card-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 36px rgba(0, 0, 0, 0.32);
+
+    /* Glass tiers — dark */
+    --glass-1-bg: rgba(255, 255, 255, 0.02);
+    --glass-2-bg: rgba(255, 255, 255, 0.03);
+    --glass-3-bg: rgba(32, 31, 32, 0.72);
+
+    /* Gradients — dark */
+    --gradient-brand: linear-gradient(135deg, var(--ena-500), var(--bsc-tertiary-container));
+    --gradient-surface: radial-gradient(
+        ellipse 80% 50% at 20% -10%,
+        rgba(69, 189, 229, 0.07),
+        transparent
+    );
+}
+
+/* ─── Base ────────────────────────────────────────────────────────────── */
+@layer base {
+    * {
+        @apply border-border outline-ring/50;
+    }
+    body {
+        @apply bg-background text-foreground;
+        font-family: "Geist Variable", "Hanken Grotesk", system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+}
+
+/* ─── Glass tiers ─────────────────────────────────────────────────────── */
+/* glass-1: subtle (toolbars, stat cards) · glass-2: standard panel (cards,
+   sidebar) · glass-3: overlay (topbar, bulk bars, floating chrome) */
+.glass-1 {
+    background: var(--glass-1-bg);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-xl);
+}
+
+.glass-2 {
+    background: var(--glass-2-bg);
+    -webkit-backdrop-filter: blur(28px);
+    backdrop-filter: blur(28px);
+    border-top: 1px solid var(--border-glass);
+    border-left: 1px solid var(--border-glass);
+    border-right: none;
+    border-bottom: none;
+    border-radius: var(--radius-xl);
+}
+
+.glass-3 {
+    background: var(--glass-3-bg);
+    -webkit-backdrop-filter: blur(48px) saturate(1.4);
+    backdrop-filter: blur(48px) saturate(1.4);
+    border: 1px solid var(--border-glass);
+}
+
+/* ─── Gradient utilities ──────────────────────────────────────────────── */
+.bg-gradient-brand {
+    background-image: var(--gradient-brand);
+}
+
+.text-gradient-brand {
+    background-image: var(--gradient-brand);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+.bg-gradient-surface {
+    background-image: var(--gradient-surface);
+}
+
+/* Datadack Cloud gold CTA — glowing gradient pill */
+.btn-gold {
+    background-image: linear-gradient(180deg, var(--brand-gold-hover), var(--brand-gold));
+    color: var(--brand-gold-foreground);
+    box-shadow:
+        0 0 22px var(--brand-gold-glow),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    transition: filter var(--dur-fast) ease;
+}
+.btn-gold:hover {
+    filter: brightness(1.07);
+}
+.btn-gold:disabled {
+    /* Drop the glow so a not-yet-actionable CTA reads as inert, not pending */
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    filter: grayscale(0.35);
+}
+
+/* Subtle elevated card surface (inset top highlight + soft drop shadow) */
+.console-card {
+    box-shadow: var(--card-shadow);
+}
+
+/* 1px gradient border ring (mask trick keeps the inside transparent) */
+.gradient-ring {
+    position: relative;
+}
+.gradient-ring::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: var(--gradient-brand);
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+}
+
+/* ─── Pulse glow (used on status indicators) ──────────────────────────── */
+.pulse-glow {
+    animation: pulse-glow-anim 2s infinite alternate;
+}
+
+@keyframes pulse-glow-anim {
+    0% {
+        box-shadow: 0 0 5px rgba(192, 193, 255, 0.2);
+    }
+    100% {
+        box-shadow: 0 0 20px rgba(192, 193, 255, 0.6);
+    }
+}
+
+/* ─── Content enter (skeleton → data swap) ────────────────────────────── */
+.animate-content-enter {
+    animation: content-enter var(--dur-base) var(--ease-out-expo) both;
+}
+
+@keyframes content-enter {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ─── Selection ───────────────────────────────────────────────────────── */
+::selection {
+    background: rgba(195, 198, 210, 0.3);
+    color: var(--primary);
+}
+
+/* ─── Form utilities ──────────────────────────────────────────────────── */
+.input-base {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    background: var(--input);
+    border: 1px solid var(--border);
+    color: var(--foreground);
+    outline: none;
+    transition: border-color 0.15s;
+}
+.input-base::placeholder {
+    color: var(--muted-foreground);
+}
+.input-base:focus {
+    border-color: var(--ring);
+    box-shadow: 0 0 0 2px rgba(195, 198, 210, 0.15);
+}
+
+.field-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: var(--muted-foreground);
+    text-transform: uppercase;
+}
+
+/* ─── Reduced motion ──────────────────────────────────────────────────── */
+/* JS-driven motion is handled by <MotionConfig reducedMotion="user"> */
+@media (prefers-reduced-motion: reduce) {
+    .pulse-glow {
+        animation: none;
+    }
+    *,
+    *::before,
+    *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+    }
+}
+
+/* ─── Scrollbar ───────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: var(--surface-variant);
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--bsc-outline-variant);
+}

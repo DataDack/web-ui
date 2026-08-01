@@ -13,11 +13,6 @@ import { templateFor } from '../lib/templates'
 export interface CreateFunctionFormProps {
   onCreated?: (functionName: string) => void
   onCancel?: () => void
-  /**
-   * `compact` stacks the fields — right for a panel or a drawer.
-   * `page` groups them into titled sections with a sticky action bar, for a
-   * dedicated full-screen route.
-   */
   layout?: 'compact' | 'page'
   theme?: 'light' | 'dark'
   className?: string
