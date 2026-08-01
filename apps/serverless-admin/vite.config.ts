@@ -12,7 +12,8 @@ const CONTROL_PLANE = process.env.CONTROL_PLANE_URL ?? 'http://127.0.0.1:8080'
 const proxied = ['/v1', '/function', '/async-function', '/system', '/metrics']
 
 /**
- * Every @codingame/* dependency, read from this app's own manifest.
+ * Every @codingame/* dependency, read from the workspace root manifest —
+ * dependencies are declared globally there, not per app.
  *
  * These must all be pre-bundled TOGETHER. monaco-vscode-api is ~2,300 ES
  * modules; served unbundled the browser walks a request waterfall thousands
@@ -27,7 +28,7 @@ const proxied = ['/v1', '/function', '/async-function', '/system', '/metrics']
  * cannot silently drop it out of the set.
  */
 const require = createRequire(import.meta.url)
-const manifest = require('./package.json') as { dependencies?: Record<string, string> }
+const manifest = require('../../package.json') as { dependencies?: Record<string, string> }
 const vscodePackages = Object.keys(manifest.dependencies ?? {}).filter((name) =>
   name.startsWith('@codingame/'),
 )
