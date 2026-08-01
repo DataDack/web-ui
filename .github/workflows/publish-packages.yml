@@ -20,7 +20,10 @@ on:
         default: serverless-ui
 
 permissions:
-  contents: read
+  # write: tag pushes also attach the packed tarball to a GitHub Release, the
+  # token-free install path (GitHub Packages needs auth even for public
+  # packages; a public repo's release assets do not).
+  contents: write
   # Required for publishing to GitHub Packages with GITHUB_TOKEN.
   packages: write
 
@@ -95,3 +98,16 @@ jobs:
         run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # The same artifact, token-free: consumers that don't want a GitHub
+      # Packages token install the release tarball URL directly.
+      - name: Attach tarball to a GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        working-directory: ${{ steps.pkg.outputs.dir }}
+        run: |
+          npm pack
+          gh release create "$GITHUB_REF_NAME" ./*.tgz \
+            --title "@datadack/${{ steps.pkg.outputs.name }} ${{ steps.pkg.outputs.version }}" \
+            --notes "Token-free install: bun add https://github.com/${{ github.repository }}/releases/download/$GITHUB_REF_NAME/datadack-${{ steps.pkg.outputs.name }}-${{ steps.pkg.outputs.version }}.tgz"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
