@@ -1,17 +1,73 @@
+import { css, cx } from '@emotion/css'
 import type { LucideIcon } from 'lucide-react'
 
-import { cn } from '../lib/cn'
+import { contentEnter, glass1, media } from '../lib/styles'
 import { Skeleton } from '../ui/skeleton'
 
 export type StatColor = 'default' | 'success' | 'warning' | 'danger' | 'info'
 
 const VALUE_CLASSES: Record<StatColor, string> = {
-  default: 'text-foreground',
-  success: 'text-status-success',
-  warning: 'text-status-warning',
-  danger: 'text-status-danger',
-  info: 'text-status-info',
+  default: css`
+    color: var(--foreground);
+  `,
+  success: css`
+    color: var(--status-success);
+  `,
+  warning: css`
+    color: var(--status-warning);
+  `,
+  danger: css`
+    color: var(--status-danger);
+  `,
+  info: css`
+    color: var(--status-info);
+  `,
 }
+
+const card = css`
+  padding: 16px;
+`
+
+const skeletonValue = css`
+  margin-bottom: 4px;
+  height: 32px;
+  width: 64px;
+`
+
+const skeletonLabel = css`
+  height: 16px;
+  width: 96px;
+`
+
+const rowTop = css`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`
+
+const valueText = css`
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  font-variant-numeric: tabular-nums;
+`
+
+const icon = css`
+  color: color-mix(in oklab, var(--muted-foreground) 70%, transparent);
+  width: 16px;
+  height: 16px;
+`
+
+const label = css`
+  color: var(--muted-foreground);
+  margin-top: 4px;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+`
 
 export interface StatCardProps {
   label: string
@@ -23,7 +79,7 @@ export interface StatCardProps {
 }
 
 export function StatCard({
-  label,
+  label: labelText,
   value,
   icon: Icon,
   color = 'default',
@@ -31,29 +87,35 @@ export function StatCard({
   className,
 }: Readonly<StatCardProps>) {
   return (
-    <div className={cn('glass-1 px-4 py-4', className)}>
+    <div className={cx(glass1, card, className)}>
       {loading ? (
         // Mirrors the loaded layout (h-8 value line, h-4 label line).
         <>
-          <Skeleton className="mb-1 h-8 w-16" />
-          <Skeleton className="h-4 w-24" />
+          <Skeleton className={skeletonValue} />
+          <Skeleton className={skeletonLabel} />
         </>
       ) : (
-        <div className="animate-content-enter">
-          <div className="flex items-center justify-between">
-            <span
-              className={cn('text-2xl font-bold tracking-tight tabular-nums', VALUE_CLASSES[color])}
-            >
-              {value}
-            </span>
-            {Icon && <Icon className="text-muted-foreground/70 size-4" />}
+        <div className={contentEnter}>
+          <div className={rowTop}>
+            <span className={cx(valueText, VALUE_CLASSES[color])}>{value}</span>
+            {Icon && <Icon className={icon} />}
           </div>
-          <span className="text-muted-foreground mt-1 block truncate text-[13px]">{label}</span>
+          <span className={label}>{labelText}</span>
         </div>
       )}
     </div>
   )
 }
+
+const statGrid = css`
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+
+  ${media.lg} {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+`
 
 export function StatGrid({
   children,
@@ -62,5 +124,5 @@ export function StatGrid({
   children: React.ReactNode
   className?: string
 }>) {
-  return <div className={cn('grid grid-cols-2 gap-3 lg:grid-cols-4', className)}>{children}</div>
+  return <div className={cx(statGrid, className)}>{children}</div>
 }

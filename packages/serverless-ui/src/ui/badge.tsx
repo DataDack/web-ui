@@ -1,33 +1,68 @@
 import type * as React from 'react'
 
-import { cva, type VariantProps } from 'class-variance-authority'
+import { css, cx } from '@emotion/css'
 import { Slot } from 'radix-ui'
 
-import { cn } from '../lib/cn'
+const base = css`
+  display: inline-flex;
+  width: fit-content;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  overflow: hidden;
+  border-radius: 9999px;
+  border: 1px solid transparent;
+  padding: 2px 8px;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition-property: color, box-shadow;
+  transition-duration: 150ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 
-const badgeVariants = cva(
-  'inline-flex w-fit shrink-0 items-center justify-center gap-1 overflow-hidden rounded-full border border-transparent px-2 py-0.5 text-xs font-medium whitespace-nowrap transition-[color,box-shadow] [&>svg]:pointer-events-none [&>svg]:size-3',
-  {
-    variants: {
-      variant: {
-        default: 'bg-primary text-primary-foreground',
-        secondary: 'bg-secondary text-secondary-foreground',
-        destructive: 'bg-destructive text-white',
-        outline: 'border-border text-foreground',
-      },
-    },
-    defaultVariants: { variant: 'default' },
-  },
-)
+  & > svg {
+    pointer-events: none;
+    width: 12px;
+    height: 12px;
+  }
+`
+
+const variants = {
+  default: css`
+    background: var(--primary);
+    color: var(--primary-foreground);
+  `,
+  secondary: css`
+    background: var(--secondary);
+    color: var(--secondary-foreground);
+  `,
+  destructive: css`
+    background: var(--destructive);
+    color: #fff;
+  `,
+  outline: css`
+    border-color: var(--border);
+    color: var(--foreground);
+  `,
+} as const
+
+type BadgeVariant = keyof typeof variants
+
+/** Class-string form, kept for consumers that composed `badgeVariants()`. */
+function badgeVariants(options?: { variant?: BadgeVariant | null; className?: string }) {
+  return cx(base, variants[options?.variant ?? 'default'], options?.className)
+}
 
 function Badge({
   className,
   variant = 'default',
   asChild = false,
   ...props
-}: React.ComponentProps<'span'> & VariantProps<typeof badgeVariants> & { asChild?: boolean }) {
+}: React.ComponentProps<'span'> & { variant?: BadgeVariant | null; asChild?: boolean }) {
   const Comp = asChild ? Slot.Root : 'span'
-  return <Comp data-slot="badge" className={cn(badgeVariants({ variant }), className)} {...props} />
+  return <Comp data-slot="badge" className={badgeVariants({ variant, className })} {...props} />
 }
 
 export { Badge, badgeVariants }

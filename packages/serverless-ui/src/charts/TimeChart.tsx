@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 
-import { cn } from '../lib/cn'
+import { css, cx } from '@emotion/css'
+
+import { fontMono, glass1 } from '../lib/styles'
 
 /**
  * The console's two chart forms, hand-rolled in SVG.
@@ -26,6 +28,119 @@ const PADDING = { top: 10, right: 14, bottom: 22, left: 46 }
 /** Gap between adjacent bars and between stacked segments, in px. */
 const MARK_GAP = 2
 const CORNER = 4
+
+const frame = css`
+  padding: 12px 16px;
+`
+
+const headerRow = css`
+  margin-bottom: 4px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+`
+
+const title = css`
+  font-size: 13px;
+  font-weight: 500;
+`
+
+const legend = css`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 12px;
+  row-gap: 4px;
+`
+
+const legendItem = css`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+`
+
+const swatch = css`
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border-radius: 2px;
+`
+
+const swatchRound = css`
+  border-radius: 9999px;
+`
+
+const legendLabel = css`
+  color: var(--muted-foreground);
+  font-size: 11px;
+`
+
+const plotArea = css`
+  position: relative;
+`
+
+const axisText = css`
+  fill: var(--muted-foreground);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+`
+
+const emptyOverlay = css`
+  color: var(--muted-foreground);
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+`
+
+const tooltipBox = css`
+  pointer-events: none;
+  position: absolute;
+  top: 4px;
+  z-index: 10;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  background: var(--popover);
+  color: var(--popover-foreground);
+  padding: 6px 10px;
+  font-size: 11px;
+  box-shadow:
+    0 10px 15px -3px rgb(0 0 0 / 0.1),
+    0 4px 6px -4px rgb(0 0 0 / 0.1);
+`
+
+const tooltipTime = css`
+  color: var(--muted-foreground);
+  margin-bottom: 4px;
+  font-family: ${fontMono};
+  font-size: 10px;
+`
+
+const tooltipList = css`
+  & > * + * {
+    margin-top: 2px;
+  }
+`
+
+const tooltipRow = css`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`
+
+const tooltipLabel = css`
+  color: var(--muted-foreground);
+`
+
+const tooltipValue = css`
+  margin-left: auto;
+  font-family: ${fontMono};
+  font-variant-numeric: tabular-nums;
+`
 
 /** Measures the container so the SVG renders at real pixel size — scaling a
  *  viewBox to fit would stretch the labels along with the marks. */
@@ -101,7 +216,7 @@ function ChartFrame({
   points,
   series,
   height,
-  title,
+  title: titleText,
   unit,
   emptyLabel,
   children,
@@ -134,34 +249,30 @@ function ChartFrame({
   const isEmpty = maxValue <= 0
 
   return (
-    <div className="glass-1 px-4 py-3">
-      <div className="mb-1 flex items-baseline justify-between gap-3">
-        <h3 className="text-[13px] font-medium">{title}</h3>
+    <div className={cx(glass1, frame)}>
+      <div className={headerRow}>
+        <h3 className={title}>{titleText}</h3>
         {/* A legend is always present for two or more series, so the reader
             never has to infer identity from colour alone. */}
         {series.length > 1 && (
-          <ul className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <ul className={legend}>
             {series.map((entry) => (
-              <li key={entry.label} className="flex items-center gap-1.5">
-                <span
-                  aria-hidden
-                  className="size-2 rounded-[2px]"
-                  style={{ backgroundColor: entry.color }}
-                />
-                <span className="text-muted-foreground text-[11px]">{entry.label}</span>
+              <li key={entry.label} className={legendItem}>
+                <span aria-hidden className={swatch} style={{ backgroundColor: entry.color }} />
+                <span className={legendLabel}>{entry.label}</span>
               </li>
             ))}
           </ul>
         )}
       </div>
 
-      <div ref={ref} className="relative">
+      <div ref={ref} className={plotArea}>
         {width > 0 && (
           <svg
             width={width}
             height={height}
             role="img"
-            aria-label={unit ? `${title} in ${unit}` : title}
+            aria-label={unit ? `${titleText} in ${unit}` : titleText}
             onPointerMove={handleMove}
             onPointerLeave={() => {
               setHovered(null)
@@ -179,12 +290,7 @@ function ChartFrame({
                   stroke="var(--chart-grid)"
                   strokeWidth={1}
                 />
-                <text
-                  x={PADDING.left - 8}
-                  y={y(tick) + 3}
-                  textAnchor="end"
-                  className="fill-muted-foreground text-[10px] tabular-nums"
-                >
+                <text x={PADDING.left - 8} y={y(tick) + 3} textAnchor="end" className={axisText}>
                   {formatTick(tick)}
                 </text>
               </g>
@@ -200,7 +306,7 @@ function ChartFrame({
                   x={x(index)}
                   y={height - 6}
                   textAnchor="middle"
-                  className="fill-muted-foreground text-[10px] tabular-nums"
+                  className={axisText}
                 >
                   {formatClock(point.timestamp)}
                 </text>
@@ -224,14 +330,12 @@ function ChartFrame({
         )}
 
         {isEmpty && width > 0 && (
-          <div className="text-muted-foreground pointer-events-none absolute inset-0 flex items-center justify-center text-[12px]">
-            {emptyLabel ?? 'No data in this window'}
-          </div>
+          <div className={emptyOverlay}>{emptyLabel ?? 'No data in this window'}</div>
         )}
 
         {hovered !== null && !isEmpty && (
           <div
-            className="bg-popover text-popover-foreground border-border pointer-events-none absolute top-1 z-10 rounded-lg border px-2.5 py-1.5 text-[11px] shadow-lg"
+            className={tooltipBox}
             style={{
               // Flip the tooltip to the left half once the cursor passes the
               // midpoint, so it never runs off the panel.
@@ -239,9 +343,7 @@ function ChartFrame({
               right: x(hovered) >= width / 2 ? width - x(hovered) + 10 : undefined,
             }}
           >
-            <div className="text-muted-foreground mb-1 font-mono text-[10px]">
-              {formatClock(points[hovered]?.timestamp ?? '')}
-            </div>
+            <div className={tooltipTime}>{formatClock(points[hovered]?.timestamp ?? '')}</div>
             {tooltip(hovered)}
           </div>
         )}
@@ -281,16 +383,12 @@ export function BarTimeChart({
       maxValue={max}
       emptyLabel={emptyLabel}
       tooltip={(index) => (
-        <ul className="space-y-0.5">
+        <ul className={tooltipList}>
           {series.map((entry, seriesIndex) => (
-            <li key={entry.label} className="flex items-center gap-2">
-              <span
-                aria-hidden
-                className="size-2 shrink-0 rounded-[2px]"
-                style={{ backgroundColor: entry.color }}
-              />
-              <span className="text-muted-foreground">{entry.label}</span>
-              <span className="ml-auto font-mono tabular-nums">
+            <li key={entry.label} className={tooltipRow}>
+              <span aria-hidden className={swatch} style={{ backgroundColor: entry.color }} />
+              <span className={tooltipLabel}>{entry.label}</span>
+              <span className={tooltipValue}>
                 {formatTick(points[index]?.values[seriesIndex] ?? 0)}
               </span>
             </li>
@@ -298,21 +396,21 @@ export function BarTimeChart({
         </ul>
       )}
     >
-      {(frame) => (
+      {(chartFrame) => (
         <g>
           {points.map((point, index) => {
-            const barWidth = Math.max(1, frame.band - MARK_GAP)
-            const left = frame.x(index) - barWidth / 2
-            let cursor = PADDING.top + frame.plotHeight
+            const barWidth = Math.max(1, chartFrame.band - MARK_GAP)
+            const left = chartFrame.x(index) - barWidth / 2
+            let cursor = PADDING.top + chartFrame.plotHeight
 
             return (
               <g
                 key={point.timestamp}
-                opacity={frame.hovered === null || frame.hovered === index ? 1 : 0.55}
+                opacity={chartFrame.hovered === null || chartFrame.hovered === index ? 1 : 0.55}
               >
                 {point.values.map((value, seriesIndex) => {
                   if (value <= 0) return null
-                  const barHeight = (value / frame.max) * frame.plotHeight
+                  const barHeight = (value / chartFrame.max) * chartFrame.plotHeight
                   const top = cursor - barHeight
                   cursor = top - MARK_GAP
                   const isTop = point.values.slice(seriesIndex + 1).every((rest) => rest <= 0)
@@ -384,16 +482,16 @@ export function LineTimeChart({
       maxValue={max}
       emptyLabel={emptyLabel}
       tooltip={(index) => (
-        <ul className="space-y-0.5">
+        <ul className={tooltipList}>
           {series.map((entry, seriesIndex) => (
-            <li key={entry.label} className="flex items-center gap-2">
+            <li key={entry.label} className={tooltipRow}>
               <span
                 aria-hidden
-                className="size-2 shrink-0 rounded-full"
+                className={cx(swatch, swatchRound)}
                 style={{ backgroundColor: entry.color }}
               />
-              <span className="text-muted-foreground">{entry.label}</span>
-              <span className="ml-auto font-mono tabular-nums">
+              <span className={tooltipLabel}>{entry.label}</span>
+              <span className={tooltipValue}>
                 {formatTick(points[index]?.values[seriesIndex] ?? 0)}
                 {unit ? ` ${unit}` : ''}
               </span>
@@ -402,13 +500,13 @@ export function LineTimeChart({
         </ul>
       )}
     >
-      {(frame) => (
+      {(chartFrame) => (
         <g>
           {series.map((entry, seriesIndex) => {
             const path = points
               .map((point, index) => {
                 const value = point.values[seriesIndex] ?? 0
-                return `${index === 0 ? 'M' : 'L'}${String(frame.x(index))},${String(frame.y(value))}`
+                return `${index === 0 ? 'M' : 'L'}${String(chartFrame.x(index))},${String(chartFrame.y(value))}`
               })
               .join('')
             const lastIndex = points.length - 1
@@ -428,18 +526,18 @@ export function LineTimeChart({
                     identity should not depend on crossing to the legend. */}
                 {lastIndex >= 0 && lastValue > 0 && (
                   <text
-                    x={frame.x(lastIndex) + 4}
-                    y={frame.y(lastValue) - 5}
+                    x={chartFrame.x(lastIndex) + 4}
+                    y={chartFrame.y(lastValue) - 5}
                     textAnchor="end"
-                    className="fill-muted-foreground text-[10px] tabular-nums"
+                    className={axisText}
                   >
                     {entry.label}
                   </text>
                 )}
-                {frame.hovered !== null && (
+                {chartFrame.hovered !== null && (
                   <circle
-                    cx={frame.x(frame.hovered)}
-                    cy={frame.y(points[frame.hovered]?.values[seriesIndex] ?? 0)}
+                    cx={chartFrame.x(chartFrame.hovered)}
+                    cy={chartFrame.y(points[chartFrame.hovered]?.values[seriesIndex] ?? 0)}
                     r={4}
                     fill={entry.color}
                     // A surface ring keeps overlapping markers separable.
@@ -456,10 +554,16 @@ export function LineTimeChart({
   )
 }
 
+const note = css`
+  color: var(--muted-foreground);
+  margin-top: 8px;
+  font-size: 11px;
+`
+
 /** A compact caption under a chart, for the notes that qualify what it shows. */
 export function ChartNote({
   children,
   className,
 }: Readonly<{ children: ReactNode; className?: string }>) {
-  return <p className={cn('text-muted-foreground mt-2 text-[11px]', className)}>{children}</p>
+  return <p className={cx(note, className)}>{children}</p>
 }

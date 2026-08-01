@@ -1,22 +1,37 @@
 // Single source of truth mapping backend status strings to visual tones.
 // Every status badge in the console renders through this config.
 
+import { css } from '@emotion/css'
+
 export type StatusTone = 'success' | 'neutral' | 'warning' | 'danger' | 'info'
 
+// The values are emotion-generated class names, so injecting one into any
+// `className` works with no Tailwind build behind it. The 25% border mix is
+// the border-status-*/25 recipe the Tailwind version used.
+const toneClass = (name: StatusTone) => css`
+  color: var(--status-${name});
+  background: var(--status-${name}-bg);
+  border-color: color-mix(in oklab, var(--status-${name}) 25%, transparent);
+`
+
+const toneDotClass = (name: StatusTone) => css`
+  background: var(--status-${name});
+`
+
 export const TONE_CLASSES: Record<StatusTone, string> = {
-  success: 'text-status-success bg-status-success-bg border-status-success/25',
-  neutral: 'text-status-neutral bg-status-neutral-bg border-status-neutral/25',
-  warning: 'text-status-warning bg-status-warning-bg border-status-warning/25',
-  danger: 'text-status-danger bg-status-danger-bg border-status-danger/25',
-  info: 'text-status-info bg-status-info-bg border-status-info/25',
+  success: toneClass('success'),
+  neutral: toneClass('neutral'),
+  warning: toneClass('warning'),
+  danger: toneClass('danger'),
+  info: toneClass('info'),
 }
 
 export const TONE_DOT_CLASSES: Record<StatusTone, string> = {
-  success: 'bg-status-success',
-  neutral: 'bg-status-neutral',
-  warning: 'bg-status-warning',
-  danger: 'bg-status-danger',
-  info: 'bg-status-info',
+  success: toneDotClass('success'),
+  neutral: toneDotClass('neutral'),
+  warning: toneDotClass('warning'),
+  danger: toneDotClass('danger'),
+  info: toneDotClass('info'),
 }
 
 const STATUS_TONES: Record<string, StatusTone> = {

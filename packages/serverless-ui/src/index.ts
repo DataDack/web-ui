@@ -5,15 +5,16 @@
 // the status→tone mapping, the badge that renders it, the list/detail
 // building blocks, and the small shadcn-style primitives they stand on.
 //
-// The kit is Tailwind-styled but ships no compiled CSS for its classes — the
-// CONSUMER's Tailwind build generates them. Two requirements on the consumer:
-//
-//   1. Scan this package for class names, e.g. in the app's CSS entry:
-//        @source "../node_modules/@datadack/serverless-ui/dist";
-//   2. Define the design tokens the classes reference (--status-*, glass
-//      tiers, animate-content-enter). Both existing consoles already do; a
-//      fresh consumer can `@import "@datadack/serverless-ui/styles.css";`
-//      for a working default set instead.
+// Styling is @emotion/css at runtime: importing the kit is the whole setup.
+// No Tailwind build, no `@source` scan, no CSS file to import. Components
+// read the console theme's tokens (--muted-foreground, --status-*, glass
+// tiers), and ship zero-specificity defaults for all of them (lib/tokens.ts)
+// — so a consumer that defines its own tokens wins automatically, and a
+// consumer that defines nothing still renders the default theme, light and
+// dark both.
+
+// Zero-specificity token defaults — imported for its injectGlobal side effect.
+import './lib/tokens'
 
 // Design language
 export {

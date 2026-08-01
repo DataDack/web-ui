@@ -28,22 +28,26 @@ bun add @datadack/serverless-ui
 
 ## Consumer requirements
 
-The kit is Tailwind-styled and ships **no compiled utility CSS** — the
-consumer's Tailwind v4 build generates the classes. In the app's CSS entry:
+None. The kit styles itself with `@emotion/css` at runtime — importing a
+component is the whole setup. There is no Tailwind build to configure, no
+`@source` scan, and no CSS file to import.
 
-```css
-@source "../node_modules/@datadack/serverless-ui/dist";
-```
+### Theming
 
-The components also reference the console theme's tokens (`--status-*`, glass
-tiers, `animate-content-enter`). Both DataDack consoles already define them.
-A fresh consumer can pull a working default set instead:
+Components read the console theme's design tokens (`--muted-foreground`,
+`--brand-gold`, `--status-*`, glass tiers) as plain CSS custom properties, and
+ship defaults for every one of them at **zero specificity** (`:where(:root)` /
+`:where(.dark)`):
 
-```css
-@import '@datadack/serverless-ui/styles.css';
-```
+- A consumer that defines its own tokens — as both DataDack consoles do —
+  overrides the defaults automatically, whatever the stylesheet order.
+- A consumer that defines nothing renders the default console theme, in both
+  light and dark (toggle by putting `.dark` on any ancestor, typically
+  `<html>`).
 
-Do **not** import `styles.css` in an app that already defines the tokens.
+`TONE_CLASSES` / `TONE_DOT_CLASSES` remain plain class-name strings, so
+injecting them into any `className` keeps working — they are emotion-generated
+now rather than Tailwind utilities.
 
 ## Release
 

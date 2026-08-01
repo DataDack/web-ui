@@ -4,9 +4,9 @@
 @import '@fontsource-variable/geist';
 @import '@fontsource/jetbrains-mono';
 
-/* The shared console kit ships class names in compiled JS — point Tailwind's
-   scanner at it so those utilities are generated in this app's build. */
-@source '../../../node_modules/@datadack/serverless-ui/dist';
+/* The shared console kit (@datadack/serverless-ui) styles itself with
+   @emotion/css at runtime and needs no Tailwind scan — it reads this file's
+   design tokens (--muted-foreground, --status-*, glass tiers) directly. */
 
 @custom-variant dark (&:is(.dark *));
 

@@ -1,6 +1,67 @@
 import type { ReactNode } from 'react'
 
-import { cn } from '../lib/cn'
+import { css, cx } from '@emotion/css'
+
+import { fontMono, media, mix } from '../lib/styles'
+
+const grid = css`
+  display: grid;
+  column-gap: 32px;
+  row-gap: 16px;
+`
+
+const COLUMN_CLASSES: Record<1 | 2 | 3, string> = {
+  1: css`
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  `,
+  2: css`
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+
+    ${media.sm} {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  `,
+  3: css`
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+
+    ${media.sm} {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    ${media.lg} {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  `,
+}
+
+const item = css`
+  min-width: 0;
+`
+
+const term = css`
+  color: ${mix('--muted-foreground', 80)};
+  margin-bottom: 4px;
+  font-family: ${fontMono};
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+`
+
+const value = css`
+  font-size: 14px;
+  line-height: 20px;
+  overflow-wrap: break-word;
+`
+
+const valueMono = css`
+  font-family: ${fontMono};
+  font-size: 13px;
+`
+
+const missing = css`
+  color: var(--muted-foreground);
+`
 
 export interface KeyValueItem {
   label: string
@@ -14,22 +75,14 @@ interface KeyValueGridProps {
   className?: string
 }
 
-const COLUMN_CLASSES: Record<1 | 2 | 3, string> = {
-  1: 'grid-cols-1',
-  2: 'grid-cols-1 sm:grid-cols-2',
-  3: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
-}
-
 export function KeyValueGrid({ items, columns = 3, className }: Readonly<KeyValueGridProps>) {
   return (
-    <dl className={cn('grid gap-x-8 gap-y-4', COLUMN_CLASSES[columns], className)}>
-      {items.map((item) => (
-        <div key={item.label} className="min-w-0">
-          <dt className="text-muted-foreground/80 mb-1 font-mono text-[10px] font-medium tracking-[0.15em] uppercase">
-            {item.label}
-          </dt>
-          <dd className={cn('text-sm break-words', item.mono && 'font-mono text-[13px]')}>
-            {item.value ?? <span className="text-muted-foreground">—</span>}
+    <dl className={cx(grid, COLUMN_CLASSES[columns], className)}>
+      {items.map((entry) => (
+        <div key={entry.label} className={item}>
+          <dt className={term}>{entry.label}</dt>
+          <dd className={cx(value, entry.mono && valueMono)}>
+            {entry.value ?? <span className={missing}>—</span>}
           </dd>
         </div>
       ))}

@@ -1,15 +1,16 @@
 import type * as React from 'react'
 
-import { cn } from '../lib/cn'
+import { css, cx } from '@emotion/css'
+
+import { animatePulse } from '../lib/styles'
+
+const skeleton = css`
+  background: var(--muted);
+  border-radius: 0.375rem;
+`
 
 function Skeleton({ className, ...props }: React.ComponentProps<'div'>) {
-  return (
-    <div
-      data-slot="skeleton"
-      className={cn('bg-muted animate-pulse rounded-md', className)}
-      {...props}
-    />
-  )
+  return <div data-slot="skeleton" className={cx(skeleton, animatePulse, className)} {...props} />
 }
 
 export { Skeleton }

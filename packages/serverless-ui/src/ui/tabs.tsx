@@ -1,46 +1,89 @@
 import type * as React from 'react'
 
+import { css, cx } from '@emotion/css'
 import { Tabs as TabsPrimitive } from 'radix-ui'
 
-import { cn } from '../lib/cn'
+import { contentEnter, mix } from '../lib/styles'
+
+const root = css`
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+`
+
+/* Underline tabs rather than a pill group: this is page-level navigation, and
+   it needs to read as part of the page chrome. */
+const list = css`
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 4px;
+  overflow-x: auto;
+  border-bottom: 1px solid ${mix('--border', 60)};
+`
+
+const trigger = css`
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 0.375rem 0.375rem 0 0;
+  padding: 8px 12px;
+  color: var(--muted-foreground);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition-property: color, background-color, border-color;
+  transition-duration: 150ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+
+  &:hover {
+    color: var(--foreground);
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px ${mix('--ring', 50)};
+  }
+
+  &[data-state='active'] {
+    color: var(--foreground);
+  }
+
+  &[data-state='active']::after {
+    content: '';
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    bottom: -1px;
+    height: 2px;
+    border-radius: 9999px;
+    background: var(--brand-gold);
+  }
+
+  & svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+`
+
+const content = css`
+  outline: none;
+`
 
 function Tabs({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Root>) {
-  return (
-    <TabsPrimitive.Root
-      data-slot="tabs"
-      className={cn('flex flex-col gap-5', className)}
-      {...props}
-    />
-  )
+  return <TabsPrimitive.Root data-slot="tabs" className={cx(root, className)} {...props} />
 }
 
 function TabsList({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.List>) {
-  return (
-    <TabsPrimitive.List
-      data-slot="tabs-list"
-      className={cn(
-        // Underline tabs rather than a pill group: this is page-level
-        // navigation, and it needs to read as part of the page chrome.
-        'border-border/60 flex w-full items-center gap-1 overflow-x-auto border-b',
-        className,
-      )}
-      {...props}
-    />
-  )
+  return <TabsPrimitive.List data-slot="tabs-list" className={cx(list, className)} {...props} />
 }
 
 function TabsTrigger({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Trigger>) {
   return (
-    <TabsPrimitive.Trigger
-      data-slot="tabs-trigger"
-      className={cn(
-        'text-muted-foreground hover:text-foreground focus-visible:ring-ring/50 relative inline-flex items-center gap-1.5 rounded-t-md px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors outline-none focus-visible:ring-2',
-        "data-[state=active]:text-foreground data-[state=active]:after:bg-brand-gold data-[state=active]:after:absolute data-[state=active]:after:inset-x-2 data-[state=active]:after:-bottom-px data-[state=active]:after:h-0.5 data-[state=active]:after:rounded-full data-[state=active]:after:content-['']",
-        '[&_svg]:size-4 [&_svg]:shrink-0',
-        className,
-      )}
-      {...props}
-    />
+    <TabsPrimitive.Trigger data-slot="tabs-trigger" className={cx(trigger, className)} {...props} />
   )
 }
 
@@ -48,7 +91,7 @@ function TabsContent({ className, ...props }: React.ComponentProps<typeof TabsPr
   return (
     <TabsPrimitive.Content
       data-slot="tabs-content"
-      className={cn('animate-content-enter outline-none', className)}
+      className={cx(contentEnter, content, className)}
       {...props}
     />
   )
