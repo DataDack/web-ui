@@ -4,8 +4,7 @@ import { EmptyState, PageHeader } from "@/components/console"
 import { Button } from "@/components/ui/button"
 import { useScreen } from "@/services/api/screen"
 
-import { Badge } from "@datadack/serverless-ui"
-
+import { Badge } from "@datadack/common-ui"
 export function LogsPage() {
   useScreen("monitoring.logs")
 

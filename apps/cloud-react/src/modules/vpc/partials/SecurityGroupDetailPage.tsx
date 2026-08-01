@@ -35,7 +35,7 @@ import {
 } from "@/components/ui/table"
 import { useScreen } from "@/services/api/screen"
 
-import { Badge, Skeleton } from "@datadack/serverless-ui"
+import { Badge, Skeleton } from "@datadack/common-ui"
 
 import { sgProtocolUsesPorts } from "../api/shared"
 import { SG_PROTOCOLS, SG_RULE_ACTIONS, VPC_ROUTES } from "../vpc.constants"

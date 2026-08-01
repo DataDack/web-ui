@@ -6,8 +6,7 @@ import { useTranslation } from "react-i18next"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
-import { Badge } from "@datadack/serverless-ui"
-
+import { Badge } from "@datadack/common-ui"
 interface CustomPatternCardProps {
   patterns: string[]
   onChange: (patterns: string[]) => void

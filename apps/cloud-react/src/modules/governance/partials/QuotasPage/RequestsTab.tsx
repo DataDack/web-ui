@@ -5,7 +5,7 @@ import { EmptyState } from "@/components/console"
 import { cn } from "@/lib/utils"
 import { timeAgo } from "@/modules/monitoring/monitoring.meta"
 
-import { Badge, Skeleton } from "@datadack/serverless-ui"
+import { Badge, Skeleton } from "@datadack/common-ui"
 
 import type { QuotaRequest, QuotaRequestStatus } from "../../quotas.types"
 

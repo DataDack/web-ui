@@ -8,16 +8,15 @@ import type { LayerVersion } from "@/lib/schemas"
 
 import {
   Badge,
-  cellMono,
-  cellText,
-  formatBytes,
   PageHeader,
   ResourceTable,
   StatCard,
   StatGrid,
+  cellMono,
+  cellText,
+  formatBytes,
   timeAgo,
-} from "@datadack/serverless-ui"
-
+} from "@datadack/common-ui"
 export function LayersPage() {
   const { data, isLoading } = useDashboard()
   const layers = data?.detail.layers ?? []

@@ -2,7 +2,7 @@ import { type LucideIcon, AlertTriangle, Construction, Plus, Settings } from "lu
 
 import { Button } from "@/components/ui/button"
 
-import { Badge } from "@datadack/serverless-ui"
+import { Badge } from "@datadack/common-ui"
 
 import type { ServiceStatus, SubServiceDefinition } from "../services.types"
 

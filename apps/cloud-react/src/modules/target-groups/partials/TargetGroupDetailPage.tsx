@@ -43,7 +43,7 @@ import { VMS_ROUTES } from "@/modules/vms/vms.constants"
 import { useInstances } from "@/modules/vms/vms.hooks"
 import { useScreen } from "@/services/api/screen"
 
-import { Skeleton } from "@datadack/serverless-ui"
+import { Skeleton } from "@datadack/common-ui"
 
 import { TG_ROUTES } from "../target-groups.constants"
 import {

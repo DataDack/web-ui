@@ -36,7 +36,7 @@ import {
 } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
 
-import { Skeleton } from "@datadack/serverless-ui"
+import { Skeleton } from "@datadack/common-ui"
 
 import { type BulkAction, BulkActionsBar } from "./BulkActionsBar"
 import { staggerDelay } from "../motion/motion-config"

@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/select"
 import { useScreen } from "@/services/api/screen"
 
-import { Skeleton } from "@datadack/serverless-ui"
+import { Skeleton } from "@datadack/common-ui"
 
 import { IAM_ROUTES } from "../iam.constants"
 import {

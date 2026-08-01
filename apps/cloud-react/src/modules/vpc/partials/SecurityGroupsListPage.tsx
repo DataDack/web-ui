@@ -22,7 +22,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useScreen } from "@/services/api/screen"
 
-import { Badge } from "@datadack/serverless-ui"
+import { Badge } from "@datadack/common-ui"
 
 import { VPC_ROUTES } from "../vpc.constants"
 import { useAllSecurityGroups, useDeleteSecurityGroup, useVPCs } from "../vpc.hooks"

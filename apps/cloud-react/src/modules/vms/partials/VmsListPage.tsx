@@ -34,7 +34,7 @@ import { Input } from "@/components/ui/input"
 import { OSIcon } from "@/modules/catalog/os-icons"
 import { useScreen } from "@/services/api/screen"
 
-import { Badge } from "@datadack/serverless-ui"
+import { Badge } from "@datadack/common-ui"
 
 import { VMS_ROUTES, vmDisplayStatus } from "../vms.constants"
 import { useDeleteInstance, useInstanceAction, useInstances } from "../vms.hooks"

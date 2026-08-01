@@ -3,10 +3,9 @@ import { useMemo, useState } from "react"
 import { css, cx } from "@emotion/css"
 import { AlertTriangle, Check, PackageOpen, Search } from "lucide-react"
 
-import { familyLabel, RuntimeIcon } from "./RuntimeIcon"
-import { fontMono } from "../lib/styles"
-import { Input } from "../ui/input"
+import { Input, fontMono } from "@datadack/common-ui"
 
+import { familyLabel, RuntimeIcon } from "./RuntimeIcon"
 /**
  * One runtime catalog entry as served by the control plane's GET /v1/runtimes.
  * A plain interface rather than a schema: the consumer owns fetching and

@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next"
 import type { StatusTone } from "@/components/console"
 import { cn } from "@/lib/utils"
 
-import { Badge } from "@datadack/serverless-ui"
+import { Badge } from "@datadack/common-ui"
 
 import { priorityMeta } from "../support-tickets.constants"
 import type { TicketPriority } from "../support-tickets.types"

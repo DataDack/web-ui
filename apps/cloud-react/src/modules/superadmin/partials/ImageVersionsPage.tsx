@@ -39,7 +39,7 @@ import { useQueryParamState } from "@/hooks/use-query-param-state"
 import { cn } from "@/lib/utils"
 import { useScreen } from "@/services/api/screen"
 
-import { Badge, Skeleton } from "@datadack/serverless-ui"
+import { Badge, Skeleton } from "@datadack/common-ui"
 
 import { ActiveBadge } from "../components/ActiveBadge"
 import { useAdminImages, useDeleteImageVersion, useSaveImageVersion } from "../superadmin.hooks"

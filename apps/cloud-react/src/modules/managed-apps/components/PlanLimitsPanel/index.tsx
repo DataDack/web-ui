@@ -4,7 +4,7 @@ import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
-import { Skeleton } from "@datadack/serverless-ui"
+import { Skeleton } from "@datadack/common-ui"
 
 import { QuotaMeter } from "./QuotaMeter"
 import { MANAGED_APPS_ROUTES } from "../../managed-apps.constants"

@@ -9,16 +9,15 @@ import type { AuditEvent } from "@/lib/schemas"
 
 import {
   Badge,
-  cellMono,
-  cellText,
-  cn,
   PageHeader,
   ResourceTable,
   StatCard,
   StatGrid,
+  cellMono,
+  cellText,
+  cn,
   timeAgo,
-} from "@datadack/serverless-ui"
-
+} from "@datadack/common-ui"
 const RANGES = [
   { label: "1h", since: "-1h" },
   { label: "24h", since: "-24h" },

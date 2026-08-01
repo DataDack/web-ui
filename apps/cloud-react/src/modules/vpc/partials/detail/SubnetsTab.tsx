@@ -17,7 +17,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { useAvailabilityZoneMap } from "@/modules/catalog/catalog.hooks"
 
-import { Badge } from "@datadack/serverless-ui"
+import { Badge } from "@datadack/common-ui"
 
 import { AddSubnetSheet } from "./AddSubnetSheet"
 import { useDeleteSubnet, useVPCSubnets } from "../../vpc.hooks"

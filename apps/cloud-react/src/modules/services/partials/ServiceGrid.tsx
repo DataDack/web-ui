@@ -2,7 +2,7 @@ import { LayoutGrid } from "lucide-react"
 
 import { staggerDelay } from "@/components/console"
 
-import { Skeleton } from "@datadack/serverless-ui"
+import { Skeleton } from "@datadack/common-ui"
 
 import { useServices } from "../services.hooks"
 import { ServiceCard } from "./ServiceCard"

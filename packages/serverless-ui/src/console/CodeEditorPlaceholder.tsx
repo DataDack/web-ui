@@ -1,9 +1,16 @@
 import { css, cx } from "@emotion/css"
 import { Code2, FileCode2, FileJson, FileText, Rocket, Search, type LucideIcon } from "lucide-react"
 
-import { formatBytes } from "../lib/cn"
-import { contentEnter, fontMono, glass1, glass2, glass3, media, mix } from "../lib/styles"
-
+import {
+  contentEnter,
+  fontMono,
+  formatBytes,
+  glass1,
+  glass2,
+  glass3,
+  media,
+  mix,
+} from "@datadack/common-ui"
 const root = css`
   position: relative;
   overflow: hidden;

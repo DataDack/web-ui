@@ -20,7 +20,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 
-import { Badge } from "@datadack/serverless-ui"
+import { Badge } from "@datadack/common-ui"
 
 import type { ChannelBinding } from "./schema"
 import { ChannelCreateDialog } from "../../channels/ChannelCreateDialog"

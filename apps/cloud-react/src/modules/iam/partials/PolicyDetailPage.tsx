@@ -8,7 +8,7 @@ import { ConfirmDialog, CopyButton, DetailPage, KeyValueGrid, Section } from "@/
 import { Button } from "@/components/ui/button"
 import { useScreen } from "@/services/api/screen"
 
-import { Skeleton } from "@datadack/serverless-ui"
+import { Skeleton } from "@datadack/common-ui"
 
 import { IAM_ROUTES } from "../iam.constants"
 import { useDeleteIAMPolicy, useIAMPolicy } from "../iam.hooks"

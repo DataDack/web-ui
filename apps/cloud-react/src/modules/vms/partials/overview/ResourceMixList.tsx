@@ -3,8 +3,7 @@ import { Link } from "react-router-dom"
 
 import { AnimatedNumber } from "@/components/console/motion/AnimatedNumber"
 
-import { Skeleton } from "@datadack/serverless-ui"
-
+import { Skeleton } from "@datadack/common-ui"
 export interface ResourceMixItem {
   icon: LucideIcon
   label: string

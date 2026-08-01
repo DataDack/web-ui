@@ -59,7 +59,7 @@ import { useSSHKeys } from "@/modules/ssh-keys/ssh-keys.hooks"
 import { useVPC, useVPCSubnets } from "@/modules/vpc/vpc.hooks"
 import { useScreen } from "@/services/api/screen"
 
-import { Badge, Skeleton } from "@datadack/serverless-ui"
+import { Badge, Skeleton } from "@datadack/common-ui"
 
 import { isVmTransitional, VMS_ROUTES, vmDisplayStatus } from "../vms.constants"
 import { InstanceSecurityGroupsSection } from "./InstanceSecurityGroupsSection"

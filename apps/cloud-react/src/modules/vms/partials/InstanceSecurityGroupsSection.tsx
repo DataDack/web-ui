@@ -21,8 +21,7 @@ import {
   useInstanceSecurityGroups,
 } from "@/modules/vpc/vpc.hooks"
 
-import { Skeleton } from "@datadack/serverless-ui"
-
+import { Skeleton } from "@datadack/common-ui"
 /** "Security groups" panel on the VM detail Networking tab: lists the groups
  *  attached to the instance and lets the user attach/detach. */
 export function InstanceSecurityGroupsSection({ instanceId }: Readonly<{ instanceId: string }>) {

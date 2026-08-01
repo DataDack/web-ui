@@ -14,7 +14,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-import { Skeleton } from "@datadack/serverless-ui"
+import { Skeleton } from "@datadack/common-ui"
 
 import { formatDuration, isTimeSet, shortSha, timeSince, triggerLabel } from "./build-format"
 import { BuildLogConsole } from "./BuildLogConsole"

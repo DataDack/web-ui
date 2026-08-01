@@ -1,18 +1,19 @@
 import { useMemo } from "react"
 
+import type { ColumnDef } from "@tanstack/react-table"
+import { Activity, Boxes, Container, Package, Zap } from "lucide-react"
+import { Link } from "react-router-dom"
+
 import {
-  cellMono,
-  cellText,
   PageHeader,
   ResourceTable,
   StatCard,
   StatGrid,
   StatusBadge,
+  cellMono,
+  cellText,
   timeAgo,
-} from "@datadack/serverless-ui"
-import type { ColumnDef } from "@tanstack/react-table"
-import { Activity, Boxes, Container, Package, Zap } from "lucide-react"
-import { Link } from "react-router-dom"
+} from "@datadack/common-ui"
 
 import { useServerlessFunctions } from "../serverless.hooks"
 import type { FunctionEntity } from "../serverless.types"

@@ -1,7 +1,8 @@
 {
-  "name": "@datadack/serverless-ui",
-  "version": "1.0.0",
-  "description": "Shared console kit for DataDack web surfaces: status tones, badges, list/detail building blocks, charts, and the shadcn-style primitives they stand on.",
+  "name": "@datadack/common-ui",
+  "version": "0.0.0",
+  "private": true,
+  "description": "DataDack design system: emotion-styled shadcn-derived primitives, console building blocks, charts and theme, shared by every web surface.",
   "license": "UNLICENSED",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -17,14 +18,10 @@
   "files": [
     "dist"
   ],
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com",
-    "access": "restricted"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/DataDack/web-ui.git",
-    "directory": "packages/serverless-ui"
+    "directory": "packages/common-ui"
   },
   "scripts": {
     "build": "tsup",
@@ -47,13 +44,11 @@
     "react-icons": ">=5.0.0"
   },
   "devDependencies": {
-    "@datadack/common-ui": "workspace:*",
     "tsup": "^8.5.0"
   },
   "nx": {
     "tags": [
-      "scope:package",
-      "publishable"
+      "scope:package"
     ],
     "implicitDependencies": [
       "@serverless-ui/eslint-config",

@@ -14,7 +14,7 @@ import { EmptyState } from "@/components/console"
 import { Button } from "@/components/ui/button"
 import { useScreen } from "@/services/api/screen"
 
-import { Skeleton } from "@datadack/serverless-ui"
+import { Skeleton } from "@datadack/common-ui"
 
 import { SetupFlowGraphic } from "./SetupFlowGraphic"
 import { SetupWorkPanel } from "./SetupWorkPanel"

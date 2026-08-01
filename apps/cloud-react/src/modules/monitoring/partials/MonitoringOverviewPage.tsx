@@ -22,7 +22,7 @@ import { useLoadBalancers } from "@/modules/load-balancers/load-balancers.hooks"
 import { useInstances } from "@/modules/vms/vms.hooks"
 import { useScreen } from "@/services/api/screen"
 
-import { Badge } from "@datadack/serverless-ui"
+import { Badge } from "@datadack/common-ui"
 
 import { TYPE_META } from "../channels/channels.meta"
 import { AlarmStateChip } from "../components/StateChips"

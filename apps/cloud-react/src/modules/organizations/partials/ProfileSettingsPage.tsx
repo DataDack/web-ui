@@ -15,7 +15,7 @@ import { useAuth } from "@/modules/auth/auth.context"
 import { useCountries } from "@/modules/countries/countries.hooks"
 import { useScreen } from "@/services/api/screen"
 
-import { Badge, Skeleton } from "@datadack/serverless-ui"
+import { Badge, Skeleton } from "@datadack/common-ui"
 
 import { useUpdateProfile } from "../organizations.hooks"
 

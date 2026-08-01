@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from "motion/react"
 
 import { cn } from "@/lib/utils"
 
-import { Skeleton } from "@datadack/serverless-ui"
+import { Skeleton } from "@datadack/common-ui"
 
 import { AnimatedNumber } from "./motion/AnimatedNumber"
 import { DUR, EASE } from "./motion/motion-config"

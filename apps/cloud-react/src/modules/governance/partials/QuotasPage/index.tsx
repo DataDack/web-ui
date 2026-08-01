@@ -8,7 +8,7 @@ import { AnimatedTabs, PageHeader, StatGrid } from "@/components/console"
 import { Button } from "@/components/ui/button"
 import { useScreen } from "@/services/api/screen"
 
-import { Skeleton } from "@datadack/serverless-ui"
+import { Skeleton } from "@datadack/common-ui"
 
 import { MODULE_ORDER } from "./modules-meta"
 import { ModuleSection } from "./ModuleSection"

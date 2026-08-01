@@ -8,16 +8,15 @@ import type { Worker } from "@/lib/schemas"
 
 import {
   Badge,
-  cellMono,
-  cellText,
   PageHeader,
   ResourceTable,
   StatCard,
   StatGrid,
   StatusBadge,
+  cellMono,
+  cellText,
   timeAgo,
-} from "@datadack/serverless-ui"
-
+} from "@datadack/common-ui"
 const LIVE_STATES = ["ready", "active"]
 
 export function WorkersPage() {

@@ -17,8 +17,7 @@ import {
   StatusBadge,
   cellMono,
   cellText,
-} from "@datadack/serverless-ui"
-
+} from "@datadack/common-ui"
 export function FunctionsPage() {
   const { data, isLoading } = useDashboard()
   const functions = data?.detail.functions ?? []

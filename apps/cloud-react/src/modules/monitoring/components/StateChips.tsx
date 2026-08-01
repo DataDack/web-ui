@@ -5,7 +5,7 @@
 
 import { cn } from "@/lib/utils"
 
-import { Badge } from "@datadack/serverless-ui"
+import { Badge } from "@datadack/common-ui"
 
 import { SEVERITY_BADGE_CLASS } from "../channels/channels.meta"
 import { ALARM_STATE_META } from "../monitoring.meta"

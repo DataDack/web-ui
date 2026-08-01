@@ -26,7 +26,7 @@ import { parseTags } from "@/lib/tags"
 import { useAvailabilityZoneMap } from "@/modules/catalog/catalog.hooks"
 import { useScreen } from "@/services/api/screen"
 
-import { Badge, Skeleton } from "@datadack/serverless-ui"
+import { Badge, Skeleton } from "@datadack/common-ui"
 
 import { VPC_ROUTES } from "../vpc.constants"
 import {

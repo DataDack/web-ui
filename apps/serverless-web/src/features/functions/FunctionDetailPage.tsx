@@ -9,7 +9,6 @@ import { functionVersionSchema, type FunctionEntity } from "@/lib/schemas"
 import {
   Badge,
   Button,
-  CodeEditorPlaceholder,
   EmptyState,
   KeyValueGrid,
   Skeleton,
@@ -19,8 +18,8 @@ import {
   TabsList,
   TabsTrigger,
   timeAgo,
-} from "@datadack/serverless-ui"
-
+} from "@datadack/common-ui"
+import { CodeEditorPlaceholder } from "@datadack/serverless-ui"
 const TABS = [
   { value: "code", label: "Code", icon: Code2 },
   { value: "configuration", label: "Configuration", icon: Settings2 },

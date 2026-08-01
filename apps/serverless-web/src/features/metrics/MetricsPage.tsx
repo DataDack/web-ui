@@ -9,19 +9,18 @@ import type { MetricSeries } from "@/lib/schemas"
 
 import {
   BarTimeChart,
-  cellMono,
-  cellText,
   ChartNote,
-  type ChartPoint,
-  cn,
-  formatTick,
   LineTimeChart,
   PageHeader,
   ResourceTable,
   StatCard,
   StatGrid,
-} from "@datadack/serverless-ui"
-
+  cellMono,
+  cellText,
+  cn,
+  formatTick,
+  type ChartPoint,
+} from "@datadack/common-ui"
 /** The windows the control plane's relative `since` parameter accepts. */
 const RANGES = [
   { label: "15m", since: "-15m", step: "30s" },

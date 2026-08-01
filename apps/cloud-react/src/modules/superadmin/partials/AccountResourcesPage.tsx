@@ -19,7 +19,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { useScreen } from "@/services/api/screen"
 
-import { Badge } from "@datadack/serverless-ui"
+import { Badge } from "@datadack/common-ui"
 
 import {
   useAdminAccountResources,

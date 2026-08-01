@@ -14,7 +14,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { useScreen } from "@/services/api/screen"
 
-import { Skeleton } from "@datadack/serverless-ui"
+import { Skeleton } from "@datadack/common-ui"
 
 import { RG_ROUTES } from "../resource-groups.constants"
 import { useResourceGroups } from "../resource-groups.hooks"

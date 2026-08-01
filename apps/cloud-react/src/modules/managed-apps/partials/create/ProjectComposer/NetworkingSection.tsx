@@ -11,8 +11,7 @@ import { Button } from "@/components/ui/button"
 import { useVPCs, useVPCSubnets } from "@/modules/vpc/vpc.hooks"
 import type { Subnet, VPCNetwork } from "@/modules/vpc/vpc.types"
 
-import { Badge } from "@datadack/serverless-ui"
-
+import { Badge } from "@datadack/common-ui"
 interface NetworkingSectionProps {
   vpcId: string
   subnetId: string

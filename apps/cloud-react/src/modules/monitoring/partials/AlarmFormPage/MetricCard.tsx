@@ -9,7 +9,7 @@ import { useMemo } from "react"
 import { Sparkline } from "@/components/console"
 import { cn } from "@/lib/utils"
 
-import { Badge } from "@datadack/serverless-ui"
+import { Badge } from "@datadack/common-ui"
 
 import { useMetricsQuery } from "../../monitoring.hooks"
 import { SERIES_COLOR_OK } from "../../monitoring.meta"

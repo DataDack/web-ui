@@ -13,11 +13,6 @@ import { defineConfig, type Options } from "tsup"
 // tsup's nested install path and report TS2883 ("likely not portable").
 const options: Options = {
   entry: ["src/index.ts"],
-  // @datadack/common-ui is private to this workspace, so a published dist that
-  // merely referenced it would be uninstallable. It is a devDependency (tsup
-  // externalises `dependencies`) and force-bundled here so the published package
-  // stays self-contained.
-  noExternal: [/^@datadack\/common-ui$/],
   format: ["esm", "cjs"],
   dts: true,
   sourcemap: true,

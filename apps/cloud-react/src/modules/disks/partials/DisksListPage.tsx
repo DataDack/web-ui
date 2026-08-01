@@ -20,7 +20,7 @@ import { VMS_ROUTES } from "@/modules/vms/vms.constants"
 import { useInstances } from "@/modules/vms/vms.hooks"
 import { useScreen } from "@/services/api/screen"
 
-import { Badge } from "@datadack/serverless-ui"
+import { Badge } from "@datadack/common-ui"
 
 import { useDeleteDisk, useDetachDisk, useDisks } from "../disks.hooks"
 import type { Disk } from "../disks.types"

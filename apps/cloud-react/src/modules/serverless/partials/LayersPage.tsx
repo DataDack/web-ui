@@ -1,16 +1,17 @@
 import { useMemo } from "react"
 
+import type { ColumnDef } from "@tanstack/react-table"
+import { Layers } from "lucide-react"
+
 import {
   Badge,
+  PageHeader,
+  ResourceTable,
   cellMono,
   cellText,
   formatBytes,
-  PageHeader,
-  ResourceTable,
   timeAgo,
-} from "@datadack/serverless-ui"
-import type { ColumnDef } from "@tanstack/react-table"
-import { Layers } from "lucide-react"
+} from "@datadack/common-ui"
 
 import { useServerlessLayers } from "../serverless.hooks"
 import type { LayerVersion } from "../serverless.types"

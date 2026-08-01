@@ -6,8 +6,7 @@ import { toast } from "sonner"
 import { CreateFunctionForm } from "@/features/studio/components/CreateFunctionForm"
 import { queryKeys } from "@/lib/queries"
 
-import { Button, PageHeader, useTheme } from "@datadack/serverless-ui"
-
+import { Button, PageHeader, useTheme } from "@datadack/common-ui"
 import "@/features/studio/studio.css"
 
 /**

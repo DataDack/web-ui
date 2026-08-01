@@ -33,7 +33,7 @@ import {
 import { TG_ROUTES } from "@/modules/target-groups/target-groups.constants"
 import { useTargetGroups } from "@/modules/target-groups/target-groups.hooks"
 
-import { Skeleton } from "@datadack/serverless-ui"
+import { Skeleton } from "@datadack/common-ui"
 
 import {
   useCreateListener,

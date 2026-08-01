@@ -2,7 +2,7 @@ import { AlertTriangle, Clock, X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 
-import { Badge } from "@datadack/serverless-ui"
+import { Badge } from "@datadack/common-ui"
 
 import type { ServiceMaintenance } from "../services.types"
 

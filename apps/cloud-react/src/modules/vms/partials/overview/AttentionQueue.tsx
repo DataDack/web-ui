@@ -4,8 +4,7 @@ import { Link } from "react-router-dom"
 
 import { StatusBadge } from "@/components/console"
 
-import { Skeleton } from "@datadack/serverless-ui"
-
+import { Skeleton } from "@datadack/common-ui"
 export interface AttentionItem {
   id: string
   name: string

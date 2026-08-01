@@ -5,7 +5,7 @@ import { DetailPage, EmptyState } from "@/components/console"
 import { Button } from "@/components/ui/button"
 import { useScreen } from "@/services/api/screen"
 
-import { Skeleton } from "@datadack/serverless-ui"
+import { Skeleton } from "@datadack/common-ui"
 
 import { ProjectBuildsTab } from "./ProjectBuildsTab"
 import { ProjectOverviewTab } from "./ProjectOverviewTab"

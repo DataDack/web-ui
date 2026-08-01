@@ -9,8 +9,7 @@ import {
 } from "lucide-react"
 import { NavLink } from "react-router-dom"
 
-import { cn } from "@datadack/serverless-ui"
-
+import { cn } from "@datadack/common-ui"
 interface NavItem {
   to: string
   label: string

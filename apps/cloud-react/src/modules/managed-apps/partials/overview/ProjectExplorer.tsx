@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { useQueryParamState } from "@/hooks/use-query-param-state"
 import { useViewPreference } from "@/hooks/use-view-preference"
 
-import { Skeleton } from "@datadack/serverless-ui"
+import { Skeleton } from "@datadack/common-ui"
 
 import { OverviewToolbar } from "./OverviewToolbar"
 import {
