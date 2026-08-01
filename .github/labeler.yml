@@ -1,16 +1,20 @@
-# Automatically applied by actions/labeler
+# Automatically applied by actions/labeler.
+#
+# One entry per workspace project, named after the directory, so a renamed or
+# added project is a visible one-line change here rather than a label that
+# silently stops matching.
 
-"app: serverless-admin":
+"app: serverless-web":
   - changed-files:
-      - any-glob-to-any-file: "apps/serverless-admin/**"
+      - any-glob-to-any-file: "apps/serverless-web/**"
 
-"pkg: function-studio":
+"app: cloud-react":
   - changed-files:
-      - any-glob-to-any-file: "packages/function-studio/**"
+      - any-glob-to-any-file: "apps/cloud-react/**"
 
-"area: components":
+"pkg: serverless-ui":
   - changed-files:
-      - any-glob-to-any-file: "src/components/**"
+      - any-glob-to-any-file: "packages/serverless-ui/**"
 
 "area: config":
   - changed-files:

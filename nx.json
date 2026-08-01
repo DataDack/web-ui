@@ -29,6 +29,12 @@
       "inputs": ["production", "^production"],
       "outputs": []
     },
+    "test": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["default", "^production"],
+      "outputs": []
+    },
     "lint": {
       "cache": true,
       "dependsOn": ["^build"],

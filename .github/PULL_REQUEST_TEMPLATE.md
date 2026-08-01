@@ -15,9 +15,9 @@
 
 <!-- List the workspace projects touched. -->
 
-- [ ] apps/serverless-admin (admin console embedded in the faas-server binary)
-- [ ] packages/function-studio (publishable `@datadack/function-studio`)
-- [ ] src/components (shared UI)
+- [ ] apps/serverless-web (admin console served by faas-server)
+- [ ] apps/cloud-react (cloud console served by cloud-be)
+- [ ] packages/serverless-ui (publishable `@datadack/serverless-ui`)
 - [ ] config (eslint-config / typescript-config)
 - [ ] CI / tooling / docs
 
@@ -27,17 +27,19 @@
 - [ ] `bun run typecheck` passes
 - [ ] `bun run format:check` passes
 - [ ] `bun run build` passes
+- [ ] `bun run test` passes
 - [ ] No secrets or credentials committed
 
 ## Downstream impact
 
-The admin console bundle is embedded into the `serverless_faas` Go binary
-(`apps/serverless-admin/assets.go`), and this repo is consumed there as the
-`web` submodule.
+This repo is the `web` submodule of two Go services, each copying one app's
+`dist/` into its image as `views/`: `serverless_faas` takes
+`apps/serverless-web`, `cloud-be-go` takes `apps/cloud-react`.
 
-- [ ] `apps/serverless-admin/dist` still builds (CI asserts this)
-- [ ] If the published package version changed, a `function-studio-v*` tag is needed to release it
-- [ ] `serverless_faas` submodule pointer needs bumping after merge
+- [ ] Both `apps/*/dist` still build (CI asserts this)
+- [ ] If the published package version changed, a `serverless-ui-v*` tag is needed to release it
+- [ ] Submodule pointers in `serverless_faas` and `cloud-be-go` need bumping after merge —
+      push this repo first, or their checkouts cannot resolve the new commit
 
 ## How to test
 

@@ -7,5 +7,5 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["serverless-admin", "cloud-react"]
+  "ignore": ["serverless-web", "cloud-react"]
 }

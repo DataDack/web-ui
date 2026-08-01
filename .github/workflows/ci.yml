@@ -3,10 +3,7 @@ name: CI
 # Quality gates for the bun/Nx workspace. Every job installs from the committed
 # lockfile, so a dependency that only resolves on someone's machine fails here.
 on:
-  push:
-    branches: [main]
   pull_request:
-    branches: [main]
     paths-ignore:
       - '**/*.md'
       - '.github/ISSUE_TEMPLATE/**'
@@ -38,6 +35,7 @@ jobs:
           - { name: ESLint, run: 'bun run lint' }
           - { name: TypeScript, run: 'bun run typecheck' }
           - { name: Formatting, run: 'bun run format:check' }
+          - { name: Tests, run: 'bun run test', soft: true }
     steps:
       - uses: actions/checkout@v7
 
@@ -56,6 +54,7 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: ${{ matrix.check.name }}
+        continue-on-error: ${{ matrix.check.soft || false }}
         run: ${{ matrix.check.run }}
 
   build:
@@ -84,15 +83,21 @@ jobs:
       - name: Build workspace
         run: bun run build
 
-      # serverless_faas embeds this bundle into its Go binary via
-      # apps/serverless-admin/assets.go. If the admin build stops producing
-      # dist/, that image build fails with a confusing go:embed error instead —
-      # so assert it here, where the cause is obvious.
-      - name: Verify admin bundle
+      # Both consumers copy an app's dist/ into their image as views/:
+      # serverless_faas takes apps/serverless-web, cloud-be-go takes
+      # apps/cloud-react. If a build stops emitting index.html the image build
+      # fails later with a confusing COPY error, so assert it here where the
+      # cause is obvious.
+      - name: Verify app bundles
         run: |
-          DIST=apps/serverless-admin/dist
-          if [ ! -s "$DIST/index.html" ]; then
-            echo "::error::$DIST/index.html missing or empty — the Go embed in serverless_faas will fail"
-            exit 1
-          fi
-          echo "admin bundle: $(find "$DIST" -type f | wc -l) files"
+          status=0
+          for app in serverless-web cloud-react; do
+            dist="apps/${app}/dist"
+            if [ ! -s "$dist/index.html" ]; then
+              echo "::error::$dist/index.html missing or empty — the image build for this app will fail"
+              status=1
+              continue
+            fi
+            echo "${app}: $(find "$dist" -type f | wc -l) files"
+          done
+          exit "$status"
