@@ -2,7 +2,7 @@ import { Badge } from "@DataDack/common-ui"
 import { useTranslation } from "react-i18next"
 
 import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Checkbox } from "@DataDack/common-ui"
 import { cn } from "@/lib/utils"
 
 import { groupState, type Selection } from "./cache-selection"

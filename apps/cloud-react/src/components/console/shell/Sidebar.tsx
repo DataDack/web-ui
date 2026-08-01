@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from "motion/react"
 import { useTranslation } from "react-i18next"
 import { NavLink, useLocation } from "react-router-dom"
 
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@DataDack/common-ui"
 import { cn } from "@/lib/utils"
 
 import {

@@ -75,3 +75,72 @@ export const glass3 = css`
   border: 1px solid var(--border-glass, rgb(0 0 0 / 0.08));
   border-radius: 0.75rem;
 `
+
+// tw-animate-css's animate-in / animate-out, reproduced for Radix's data-state
+// pattern. Tailwind composed those utilities by writing CSS variables that one
+// pair of keyframes reads; the same trick is used here, so a component sets only
+// the variables it cares about and the shared keyframes do the rest.
+const enterFrames = keyframes`
+  from {
+    opacity: var(--enter-opacity, 1);
+    transform: translate3d(var(--enter-translate-x, 0), var(--enter-translate-y, 0), 0)
+      scale3d(var(--enter-scale, 1), var(--enter-scale, 1), 1);
+  }
+`
+
+const exitFrames = keyframes`
+  to {
+    opacity: var(--exit-opacity, 1);
+    transform: translate3d(var(--exit-translate-x, 0), var(--exit-translate-y, 0), 0)
+      scale3d(var(--exit-scale, 1), var(--exit-scale, 1), 1);
+  }
+`
+
+/**
+ * The fade + zoom + directional slide every Radix popper surface used
+ * (popover, tooltip, select, dropdown/context menu): fade-in-0, zoom-in-95 and
+ * slide-in-from-<side>-2, keyed on data-state and data-side.
+ */
+export const popperAnimation = css`
+  &[data-state="open"] {
+    --enter-opacity: 0;
+    --enter-scale: 0.95;
+    animation: ${enterFrames} 150ms cubic-bezier(0, 0, 0.2, 1);
+  }
+
+  &[data-state="closed"] {
+    --exit-opacity: 0;
+    --exit-scale: 0.95;
+    animation: ${exitFrames} 150ms cubic-bezier(0.4, 0, 1, 1);
+  }
+
+  /* Slide toward the trigger: a surface on the bottom enters from above it. */
+  &[data-side="bottom"] {
+    --enter-translate-y: -0.5rem;
+  }
+
+  &[data-side="top"] {
+    --enter-translate-y: 0.5rem;
+  }
+
+  &[data-side="left"] {
+    --enter-translate-x: 0.5rem;
+  }
+
+  &[data-side="right"] {
+    --enter-translate-x: -0.5rem;
+  }
+`
+
+/** Plain fade for full-screen overlays, which neither zoom nor slide. */
+export const overlayAnimation = css`
+  &[data-state="open"] {
+    --enter-opacity: 0;
+    animation: ${enterFrames} 150ms cubic-bezier(0, 0, 0.2, 1);
+  }
+
+  &[data-state="closed"] {
+    --exit-opacity: 0;
+    animation: ${exitFrames} 150ms cubic-bezier(0.4, 0, 1, 1);
+  }
+`

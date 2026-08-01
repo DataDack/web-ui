@@ -25,8 +25,8 @@ import {
 import { useTranslation } from "react-i18next"
 
 import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Checkbox } from "@DataDack/common-ui"
+import { Popover, PopoverContent, PopoverTrigger } from "@DataDack/common-ui"
 import {
   Table,
   TableBody,

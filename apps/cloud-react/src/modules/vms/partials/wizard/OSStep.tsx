@@ -6,7 +6,7 @@ import type { UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@DataDack/common-ui"
 import { cn } from "@/lib/utils"
 import type { ImageCatalogFamily } from "@/modules/catalog/catalog.types"
 import { OSIcon } from "@/modules/catalog/os-icons"

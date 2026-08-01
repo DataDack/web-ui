@@ -3,7 +3,7 @@ import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Checkbox } from "@DataDack/common-ui"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 import type { Instance } from "@/modules/vms/vms.types"

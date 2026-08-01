@@ -1,8 +1,24 @@
 import type * as React from "react"
 
+import { css, cx } from "@emotion/css"
 import { Popover as PopoverPrimitive } from "radix-ui"
 
-import { cn } from "@/lib/utils"
+import { popperAnimation } from "../lib/styles"
+
+const content = css`
+  z-index: 50;
+  width: 18rem;
+  transform-origin: var(--radix-popover-content-transform-origin);
+  border-radius: 0.375rem;
+  border: 1px solid var(--border);
+  background: var(--popover);
+  padding: 16px;
+  color: var(--popover-foreground);
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -2px rgb(0 0 0 / 0.1);
+  outline: none;
+`
 
 function Popover({ ...props }: Readonly<React.ComponentProps<typeof PopoverPrimitive.Root>>) {
   return <PopoverPrimitive.Root data-slot="popover" {...props} />
@@ -25,22 +41,19 @@ function PopoverContent({
 }: React.ComponentProps<typeof PopoverPrimitive.Content> & {
   portalled?: boolean
 }) {
-  const content = (
+  const node = (
     <PopoverPrimitive.Content
       data-slot="popover-content"
       align={align}
       sideOffset={sideOffset}
-      className={cn(
-        "z-50 w-72 origin-(--radix-popover-content-transform-origin) rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-hidden data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
-        className,
-      )}
+      className={cx(content, popperAnimation, className)}
       {...props}
     />
   )
 
-  if (!portalled) return content
+  if (!portalled) return node
 
-  return <PopoverPrimitive.Portal>{content}</PopoverPrimitive.Portal>
+  return <PopoverPrimitive.Portal>{node}</PopoverPrimitive.Portal>
 }
 
 export { Popover, PopoverAnchor, PopoverContent, PopoverTrigger }

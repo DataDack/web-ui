@@ -11,7 +11,7 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@DataDack/common-ui"
 import { useResourceGroup } from "@/modules/resource-groups/resource-group.context"
 
 import { RG_ROUTES } from "../resource-groups.constants"

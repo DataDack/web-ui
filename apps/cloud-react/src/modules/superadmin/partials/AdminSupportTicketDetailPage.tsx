@@ -15,7 +15,7 @@ import {
   StatusBadge,
 } from "@/components/console"
 import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Checkbox } from "@DataDack/common-ui"
 import { PriorityBadge } from "@/modules/support-tickets/components/PriorityBadge"
 import {
   formatTicketAccount,

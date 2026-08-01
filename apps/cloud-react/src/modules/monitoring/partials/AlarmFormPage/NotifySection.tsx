@@ -18,7 +18,7 @@ import { Badge } from "@DataDack/common-ui"
 import { AlertTriangle, Plus } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Checkbox } from "@DataDack/common-ui"
 import { cn } from "@/lib/utils"
 
 import type { ChannelBinding } from "./schema"

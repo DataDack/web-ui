@@ -1,10 +1,31 @@
-"use client"
-
 import type * as React from "react"
 
+import { css, cx } from "@emotion/css"
 import { Tooltip as TooltipPrimitive } from "radix-ui"
 
-import { cn } from "@/lib/utils"
+import { popperAnimation } from "../lib/styles"
+
+const content = css`
+  z-index: 50;
+  width: fit-content;
+  transform-origin: var(--radix-tooltip-content-transform-origin);
+  border-radius: 0.375rem;
+  border: 1px solid var(--border);
+  background: var(--popover);
+  padding: 6px 12px;
+  font-size: 12px;
+  line-height: 16px;
+  text-wrap: balance;
+  color: var(--popover-foreground);
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -2px rgb(0 0 0 / 0.1);
+`
+
+const arrow = css`
+  z-index: 50;
+  fill: var(--popover);
+`
 
 function TooltipProvider({
   delayDuration = 0,
@@ -38,19 +59,16 @@ function TooltipContent({
       <TooltipPrimitive.Content
         data-slot="tooltip-content"
         sideOffset={sideOffset}
-        className={cn(
-          "z-50 w-fit origin-(--radix-tooltip-content-transform-origin) animate-in rounded-md border border-border bg-popover px-3 py-1.5 text-xs text-balance text-popover-foreground shadow-md fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95",
-          className,
-        )}
+        className={cx(content, popperAnimation, className)}
         {...props}
       >
         {children}
         {/* Radix auto-orients and positions the arrow flush per side, so it
             stays visible whether the tooltip opens above or below the trigger. */}
-        <TooltipPrimitive.Arrow width={12} height={6} className="z-50 fill-popover" />
+        <TooltipPrimitive.Arrow width={12} height={6} className={arrow} />
       </TooltipPrimitive.Content>
     </TooltipPrimitive.Portal>
   )
 }
 
-export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider }
+export { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger }

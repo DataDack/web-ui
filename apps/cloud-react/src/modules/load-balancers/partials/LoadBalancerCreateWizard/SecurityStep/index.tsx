@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next"
 
 import { Section } from "@/components/console"
 import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Checkbox } from "@DataDack/common-ui"
 import { useAllSecurityGroups, useCreateDefaultSecurityGroup } from "@/modules/vpc/vpc.hooks"
 
 import type { FormValues } from "../schema"

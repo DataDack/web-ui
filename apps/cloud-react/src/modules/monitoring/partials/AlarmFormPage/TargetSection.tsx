@@ -10,7 +10,7 @@ import { Label } from "@DataDack/common-ui"
 import { Check, Search } from "lucide-react"
 
 import { getStatusConfig, StatusBadge } from "@/components/console"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Checkbox } from "@DataDack/common-ui"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 

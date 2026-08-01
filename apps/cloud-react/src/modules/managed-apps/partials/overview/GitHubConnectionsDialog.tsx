@@ -6,7 +6,7 @@ import { ExternalLink, Loader2, Plus, Unlink } from "lucide-react"
 
 import { ConfirmDialog } from "@/components/console"
 import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Checkbox } from "@DataDack/common-ui"
 import {
   Dialog,
   DialogContent,

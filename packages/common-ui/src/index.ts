@@ -68,14 +68,17 @@ export {
   CardHeader,
   CardTitle,
 } from "./ui/card"
+export { Checkbox } from "./ui/checkbox"
 export { Input } from "./ui/input"
 export { Label } from "./ui/label"
+export { Popover, PopoverAnchor, PopoverContent, PopoverTrigger } from "./ui/popover"
 export { Separator } from "./ui/separator"
 export { Skeleton } from "./ui/skeleton"
 export { Switch } from "./ui/switch"
 export { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table"
 export { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs"
 export { Textarea } from "./ui/textarea"
+export { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip"
 
 // Style primitives — the tokens and helpers components are built from, exported
 // so domain kits can style consistently instead of re-deriving them.
@@ -89,6 +92,8 @@ export {
   glass3,
   media,
   mix,
+  overlayAnimation,
+  popperAnimation,
 } from "./lib/styles"
 
 // Utilities

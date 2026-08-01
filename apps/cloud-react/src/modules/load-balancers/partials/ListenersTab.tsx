@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react"
 
-import { Skeleton } fro@DataDack/ck/common-ui"
-import { ArrowRight, Ear, @DataDack/h2 } from "lucide-react"
+import { Skeleton } from "@DataDack/common-ui"
+import { ArrowRight, Ear, Plus, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
@@ -15,7 +15,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { Label } from "@datadack/common-ui"
 import {
   Select,
   SelectContent,
@@ -33,7 +33,6 @@ import {
 } from "@/components/ui/table"
 import { TG_ROUTES } from "@/modules/target-groups/target-groups.constants"
 import { useTargetGroups } from "@/modules/target-groups/target-groups.hooks"
-
 
 import {
   useCreateListener,
