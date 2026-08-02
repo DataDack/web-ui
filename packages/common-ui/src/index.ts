@@ -26,6 +26,7 @@ export {
 } from "./console/status-config"
 
 // Console building blocks
+export { DataTable, type DataTableProps } from "./console/DataTable"
 export { EmptyState } from "./console/EmptyState"
 export { KeyValueGrid, type KeyValueItem } from "./console/KeyValueGrid"
 export { Logo } from "./console/Logo"
