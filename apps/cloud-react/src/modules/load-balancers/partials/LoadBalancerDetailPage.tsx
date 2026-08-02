@@ -413,6 +413,7 @@ function TargetGroupTargets({ groupId }: Readonly<{ groupId: string }>) {
       <DataTable<Target>
         data={targets}
         columns={targetColumns}
+        loading={isLoading}
         getRowId={(target) => target.id}
         empty={
           <EmptyState

@@ -519,7 +519,12 @@ function NetworkingTab({ instance }: Readonly<{ instance: Instance }>) {
 
 function DisksTab({ instance }: Readonly<{ instance: Instance }>) {
   const { t } = useTranslation()
-  const { data: disks = [], isError: disksError, refetch: refetchDisks } = useDisks()
+  const {
+    data: disks = [],
+    isLoading: disksLoading,
+    isError: disksError,
+    refetch: refetchDisks,
+  } = useDisks()
   const { mutate: detachDisk } = useDetachDisk()
   // Boot disk first, then by name; the boot volume can't be detached while the
   // instance is running (matches the backend guard).
@@ -612,6 +617,7 @@ function DisksTab({ instance }: Readonly<{ instance: Instance }>) {
       <DataTable<Disk>
         data={attached}
         columns={columns}
+        loading={disksLoading}
         getRowId={(disk) => disk.id}
         // Boot disk first, then by name — already sorted above, so the table must
         // not impose an order of its own.

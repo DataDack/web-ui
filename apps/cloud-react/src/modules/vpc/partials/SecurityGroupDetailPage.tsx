@@ -269,16 +269,6 @@ function RulesPanel({
 
   const directional = rules.filter((r) => r.direction === direction)
 
-  if (isLoading) {
-    return (
-      <div className="glass-1 p-4 space-y-2">
-        {["a", "b", "c"].map((k) => (
-          <Skeleton key={k} className="h-8 rounded" />
-        ))}
-      </div>
-    )
-  }
-
   const submitAdd = (draft: RuleDraft, reset: () => void) => {
     addRule(
       {
@@ -403,6 +393,8 @@ function RulesPanel({
         <DataTable<SGRule>
           data={directional}
           columns={columns}
+          loading={isLoading}
+          skeletonRows={3}
           getRowId={(rule) => rule.id}
           // Editing swaps the row for the same form used to add one.
           renderRow={(rule) =>

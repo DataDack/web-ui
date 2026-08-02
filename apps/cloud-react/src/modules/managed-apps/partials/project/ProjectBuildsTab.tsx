@@ -1,11 +1,6 @@
 import { useMemo } from "react"
 
-import {
-  Button,
-  DataTable,
-  EmptyState,
-  type DataTableColumnMeta,
-} from "@datadack/common-ui"
+import { Button, DataTable, EmptyState, type DataTableColumnMeta } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Hammer, Loader2, RotateCcw, X } from "lucide-react"
 import { useSearchParams } from "react-router-dom"
@@ -61,7 +56,9 @@ export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
     [builds],
   )
 
-  if (sortedBuilds.length === 0) {
+  // Guarded on isLoading: `builds` is empty on the first render too, and without
+  // this the tab claims there are no builds while the request is still in flight.
+  if (!isLoading && sortedBuilds.length === 0) {
     return (
       <EmptyState
         icon={Hammer}
@@ -218,11 +215,12 @@ export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
           // The Redeploy control only appears on the hovered row, which needs a
           // named hover group on the row itself.
           rowClassName="group/row"
+          empty={<EmptyState icon={Hammer} title="No builds yet" />}
           error={buildsError ? "Failed to load" : undefined}
           onRetry={() => void refetchBuilds()}
           retryLabel={"Try again"}
-                  loading={isLoading}
-/>
+          loading={isLoading}
+        />
       </Section>
 
       <Section

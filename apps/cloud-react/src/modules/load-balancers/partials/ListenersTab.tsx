@@ -146,8 +146,8 @@ export function ListenersTab({ lb }: Readonly<{ lb: LoadBalancer }>) {
           error={listenersError ? t("console.table.error") : undefined}
           onRetry={() => void refetchListeners()}
           retryLabel={t("console.table.retry")}
-                  loading={isLoading}
-/>
+          loading={isLoading}
+        />
       </Section>
 
       <AddListenerDialog lb={lb} open={addOpen} onOpenChange={setAddOpen} />

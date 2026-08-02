@@ -281,8 +281,8 @@ function TargetsTab({ group }: Readonly<{ group: TargetGroup }>) {
           error={targetsError ? t("console.table.error") : undefined}
           onRetry={() => void refetchTargets()}
           retryLabel={t("console.table.retry")}
-                  loading={isLoading}
-/>
+          loading={isLoading}
+        />
       </Section>
 
       <RegisterTargetDialog
