@@ -38,7 +38,12 @@ function Note({ children }: Readonly<{ children: string }>) {
 
 function RoutersSection({ network }: Readonly<{ network: VPCNetwork }>) {
   const { t } = useTranslation()
-  const { data: routers = [], isLoading } = useRouters()
+  const {
+    data: routers = [],
+    isLoading,
+    isError: routersError,
+    refetch: refetchRouters,
+  } = useRouters()
   const networkRouters = routers.filter((r) => r.network_id === network.id)
 
   const columns = useMemo<ColumnDef<Router>[]>(
@@ -67,6 +72,9 @@ function RoutersSection({ network }: Readonly<{ network: VPCNetwork }>) {
         skeletonRows={2}
         getRowId={(router) => router.id}
         empty={<Note>{t("vpc.detail.noRouters")}</Note>}
+        error={routersError ? t("console.table.error") : undefined}
+        onRetry={() => void refetchRouters()}
+        retryLabel={t("console.table.retry")}
       />
     </Section>
   )
@@ -76,7 +84,12 @@ function RoutersSection({ network }: Readonly<{ network: VPCNetwork }>) {
 
 function InternetGatewaysSection({ network }: Readonly<{ network: VPCNetwork }>) {
   const { t } = useTranslation()
-  const { data: gateways = [], isLoading } = useInternetGateways()
+  const {
+    data: gateways = [],
+    isLoading,
+    isError: internetGatewaysError,
+    refetch: refetchInternetGateways,
+  } = useInternetGateways()
   const { mutate: attach, isPending: isAttaching } = useAttachIGW()
   const { mutate: detach, isPending: isDetaching } = useDetachIGW()
   const [toDetach, setToDetach] = useState<InternetGateway | null>(null)
@@ -149,6 +162,9 @@ function InternetGatewaysSection({ network }: Readonly<{ network: VPCNetwork }>)
         skeletonRows={2}
         getRowId={(gateway) => gateway.id}
         empty={<Note>{t("vpc.detail.noInternetGateways")}</Note>}
+        error={internetGatewaysError ? t("console.table.error") : undefined}
+        onRetry={() => void refetchInternetGateways()}
+        retryLabel={t("console.table.retry")}
       />
 
       <ConfirmDialog
@@ -181,7 +197,12 @@ function InternetGatewaysSection({ network }: Readonly<{ network: VPCNetwork }>)
 
 function NatGatewaysSection({ network }: Readonly<{ network: VPCNetwork }>) {
   const { t } = useTranslation()
-  const { data: natGateways = [], isLoading } = useNATGateways()
+  const {
+    data: natGateways = [],
+    isLoading,
+    isError: natGatewaysError,
+    refetch: refetchNatGateways,
+  } = useNATGateways()
   const { data: subnets = [] } = useVPCSubnets(network.id)
 
   const networkNats = natGateways.filter((n) => n.network_id === network.id)
@@ -227,6 +248,9 @@ function NatGatewaysSection({ network }: Readonly<{ network: VPCNetwork }>) {
         skeletonRows={2}
         getRowId={(nat) => nat.id}
         empty={<Note>{t("vpc.detail.noNatGateways")}</Note>}
+        error={natGatewaysError ? t("console.table.error") : undefined}
+        onRetry={() => void refetchNatGateways()}
+        retryLabel={t("console.table.retry")}
       />
     </Section>
   )

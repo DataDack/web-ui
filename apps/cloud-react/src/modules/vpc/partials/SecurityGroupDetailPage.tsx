@@ -256,7 +256,12 @@ function RulesPanel({
   direction,
 }: Readonly<{ group: SecurityGroup; direction: SGDirection }>) {
   const { t } = useTranslation()
-  const { data: rules = [], isLoading } = useSGRules(group.id)
+  const {
+    data: rules = [],
+    isLoading,
+    isError: rulesError,
+    refetch: refetchRules,
+  } = useSGRules(group.id)
   const { mutate: addRule, isPending: isAdding } = useAddSGRule()
   const { mutate: updateRule, isPending: isUpdating } = useUpdateSGRule()
   const { mutate: removeRule, isPending: isRemoving } = useRemoveSGRule()
@@ -422,6 +427,9 @@ function RulesPanel({
           footerRow={<RuleFormRow pending={isAdding} onSubmit={submitAdd} />}
           empty={<span className="text-[13px] text-muted-foreground">{t("vpc.rules.empty")}</span>}
           bordered={false}
+          error={rulesError ? t("console.table.error") : undefined}
+          onRetry={() => void refetchRules()}
+          retryLabel={t("console.table.retry")}
         />
       </div>
     </div>

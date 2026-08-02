@@ -13,13 +13,10 @@ import {
   Button,
   EmptyState,
   Skeleton,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+  DataTable,
+  type DataTableColumnMeta,
 } from "@datadack/common-ui"
+import type { ColumnDef } from "@tanstack/react-table"
 import {
   Activity,
   BellOff,
@@ -111,7 +108,6 @@ const TAB_CONFIG = "configuration"
 
 const CELL = "px-3 align-top font-mono text-[12px]"
 const CELL_MUTED = "px-3 align-top font-mono text-[12px] text-muted-foreground"
-const HEAD_CELL = "px-3 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground"
 const META_LINE = "text-[12px] text-muted-foreground"
 
 /** Jira issue keys look like ABC-123 — anything else is not linkable. */
@@ -444,72 +440,123 @@ function DeliveryReference({
 
 function DeliveriesTable({
   rows,
+  loading,
+  error,
+  onRetry,
   bindings,
   hasJiraChannel,
   jiraSiteUrl,
 }: Readonly<{
   rows: AlarmNotification[]
+  loading: boolean
+  error: boolean
+  onRetry: () => void
   bindings: Map<string, AlarmChannelBinding>
   hasJiraChannel: boolean
   jiraSiteUrl: string
 }>) {
+  const columns = useMemo<ColumnDef<AlarmNotification>[]>(
+    () => [
+      {
+        id: "when",
+        header: "When",
+        accessorFn: (row) => row.created_at,
+        cell: ({ row }) => (
+          <span
+            className={cn(CELL_MUTED, "whitespace-nowrap")}
+            title={formatDateTime(row.original.created_at)}
+          >
+            {timeAgo(row.original.created_at)}
+          </span>
+        ),
+      },
+      {
+        id: "result",
+        header: "Result",
+        accessorFn: (row) => row.status,
+        cell: ({ row }) => <DeliveryResultChip status={row.original.status} />,
+      },
+      {
+        id: "channel",
+        header: "Channel",
+        // Falls back to a short id: a delivery to a channel since deleted still
+        // has to say where it went.
+        accessorFn: (row) =>
+          (row.channel_id ? bindings.get(row.channel_id)?.channel_name : undefined) ??
+          shortId(row.channel_id ?? ""),
+        cell: ({ getValue }) => <span className={CELL}>{String(getValue())}</span>,
+      },
+      {
+        id: "response",
+        header: "Response",
+        accessorFn: (row) => row.http_status ?? DASH,
+        cell: ({ getValue }) => <span className={CELL_MUTED}>{String(getValue())}</span>,
+      },
+      {
+        id: "reference",
+        header: "Reference",
+        // Holds a link out to the Jira issue.
+        meta: { interactive: true } satisfies DataTableColumnMeta,
+        cell: ({ row }) => (
+          <span className={CELL}>
+            <DeliveryReference
+              reference={row.original.external_ref}
+              href={jiraIssueUrl(
+                row.original.external_ref,
+                row.original.channel_id ? bindings.get(row.original.channel_id) : undefined,
+                hasJiraChannel,
+                jiraSiteUrl,
+              )}
+            />
+          </span>
+        ),
+      },
+      {
+        id: "detail",
+        header: "Detail",
+        accessorFn: (row) => row.error || DASH,
+        cell: ({ getValue }) => (
+          <span className={cn(CELL_MUTED, "max-w-[22rem] break-words")}>{String(getValue())}</span>
+        ),
+      },
+    ],
+    [bindings, hasJiraChannel, jiraSiteUrl],
+  )
+
   return (
-    <div className="glass-1 overflow-hidden rounded-lg">
-      <Table>
-        <TableHeader>
-          <TableRow className="hover:bg-transparent">
-            {["When", "Result", "Channel", "Response", "Reference", "Detail"].map((header) => (
-              <TableHead key={header} className={HEAD_CELL}>
-                {header}
-              </TableHead>
-            ))}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {rows.map((row) => {
-            const binding = row.channel_id ? bindings.get(row.channel_id) : undefined
-            return (
-              <TableRow key={row.id}>
-                <TableCell
-                  className={cn(CELL_MUTED, "whitespace-nowrap")}
-                  title={formatDateTime(row.created_at)}
-                >
-                  {timeAgo(row.created_at)}
-                </TableCell>
-                <TableCell className="px-3 align-top">
-                  <DeliveryResultChip status={row.status} />
-                </TableCell>
-                <TableCell className={CELL}>
-                  {binding?.channel_name ?? shortId(row.channel_id ?? "")}
-                </TableCell>
-                <TableCell className={CELL_MUTED}>{row.http_status ?? DASH}</TableCell>
-                <TableCell className={CELL}>
-                  <DeliveryReference
-                    reference={row.external_ref}
-                    href={jiraIssueUrl(row.external_ref, binding, hasJiraChannel, jiraSiteUrl)}
-                  />
-                </TableCell>
-                <TableCell className={cn(CELL_MUTED, "max-w-[22rem] break-words")}>
-                  {row.error || DASH}
-                </TableCell>
-              </TableRow>
-            )
-          })}
-        </TableBody>
-      </Table>
-    </div>
+    <DataTable<AlarmNotification>
+      data={rows}
+      columns={columns}
+      loading={loading}
+      error={error ? "Could not read the delivery log." : undefined}
+      onRetry={onRetry}
+      getRowId={(row) => row.id}
+      // Newest delivery first is the only order that makes sense here.
+      defaultSorting={[{ id: "when", desc: true }]}
+      empty={
+        <EmptyState
+          icon={Send}
+          title="No deliveries listed for this alarm"
+          description="This reads your account's recent delivery log and picks out this alarm's rows. On a busy account older deliveries fall off the end of that log, so an empty list here is not proof that nothing was ever sent."
+        />
+      }
+    />
   )
 }
 
 function DeliveriesTab({
   rows,
   isLoading,
+  isError,
+  onRetry,
   bindings,
   hasJiraChannel,
   jiraSiteUrl,
 }: Readonly<{
   rows: AlarmNotification[]
   isLoading: boolean
+  isError: boolean
+  onRetry: () => void
   bindings: Map<string, AlarmChannelBinding>
   hasJiraChannel: boolean
   jiraSiteUrl: string
@@ -520,27 +567,22 @@ function DeliveriesTab({
       title="Deliveries"
       description="Recent notification attempts for this alarm, and what each channel answered."
     >
-      {isLoading && <Skeleton className="h-40 rounded-lg" />}
-      {!isLoading && rows.length === 0 && (
-        <EmptyState
-          icon={Send}
-          title="No deliveries listed for this alarm"
-          description="This reads your account's recent delivery log and picks out this alarm's rows. On a busy account older deliveries fall off the end of that log, so an empty list here is not proof that nothing was ever sent."
-        />
-      )}
+      {/* Loading, empty and failure all render inside the table, so this panel
+          looks the same in every state instead of swapping its whole body. */}
+      <DeliveriesTable
+        rows={rows}
+        loading={isLoading}
+        error={isError}
+        onRetry={onRetry}
+        bindings={bindings}
+        hasJiraChannel={hasJiraChannel}
+        jiraSiteUrl={jiraSiteUrl}
+      />
       {!isLoading && rows.length > 0 && (
-        <>
-          <DeliveriesTable
-            rows={rows}
-            bindings={bindings}
-            hasJiraChannel={hasJiraChannel}
-            jiraSiteUrl={jiraSiteUrl}
-          />
-          <p className="mt-2 text-[11px] text-muted-foreground">
-            Taken from your account&apos;s recent delivery log, so older attempts for this alarm may
-            have fallen off the end of it.
-          </p>
-        </>
+        <p className="mt-2 text-[11px] text-muted-foreground">
+          Taken from your account&apos;s recent delivery log, so older attempts for this alarm may
+          have fallen off the end of it.
+        </p>
       )}
     </Section>
   )
@@ -902,6 +944,8 @@ export function AlarmDetailPage() {
         <DeliveriesTab
           rows={deliveries.data}
           isLoading={deliveries.isLoading}
+          isError={deliveries.isError}
+          onRetry={() => void deliveries.refetch()}
           bindings={bindings}
           hasJiraChannel={hasJiraChannel}
           jiraSiteUrl={jiraConnections[0]?.site_url ?? ""}

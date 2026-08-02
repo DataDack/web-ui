@@ -217,7 +217,12 @@ function OverviewTab({ lb }: Readonly<{ lb: LoadBalancer }>) {
  */
 function NetworksSection({ lb }: Readonly<{ lb: LoadBalancer }>) {
   const { t } = useTranslation()
-  const { data: subnets = [], isLoading } = useLBSubnets(lb.id, isLbTransitional(lb.status))
+  const {
+    data: subnets = [],
+    isLoading,
+    isError: lbSubnetsError,
+    refetch: refetchLbSubnets,
+  } = useLBSubnets(lb.id, isLbTransitional(lb.status))
   const { data: vpcs = [] } = useVPCs()
   const { data: allSubnets = [] } = useAllSubnets()
 
@@ -282,6 +287,9 @@ function NetworksSection({ lb }: Readonly<{ lb: LoadBalancer }>) {
           description={t("loadBalancers.detail.noNetworksSubtitle")}
         />
       }
+      error={lbSubnetsError ? t("console.table.error") : undefined}
+      onRetry={() => void refetchLbSubnets()}
+      retryLabel={t("console.table.retry")}
     />
   )
 
@@ -335,7 +343,12 @@ function TargetsTab({ lb }: Readonly<{ lb: LoadBalancer }>) {
 function TargetGroupTargets({ groupId }: Readonly<{ groupId: string }>) {
   const { t } = useTranslation()
   const { data: groups = [] } = useTargetGroups()
-  const { data: targets = [], isLoading } = useTargets(groupId)
+  const {
+    data: targets = [],
+    isLoading,
+    isError: targetsError,
+    refetch: refetchTargets,
+  } = useTargets(groupId)
   const { data: instances = [] } = useInstances()
 
   const group = groups.find((g) => g.id === groupId)
@@ -408,6 +421,9 @@ function TargetGroupTargets({ groupId }: Readonly<{ groupId: string }>) {
             description={t("targetGroups.targets.emptySubtitle")}
           />
         }
+        error={targetsError ? t("console.table.error") : undefined}
+        onRetry={() => void refetchTargets()}
+        retryLabel={t("console.table.retry")}
       />
     </Section>
   )

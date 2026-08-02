@@ -25,7 +25,12 @@ import type { FunctionEntity } from "../serverless.types"
  * behaviorally identical.
  */
 export function ServerlessFunctionsPage() {
-  const { data, isLoading } = useServerlessFunctions()
+  const {
+    data,
+    isLoading,
+    isError: serverlessFunctionsError,
+    refetch: refetchServerlessFunctions,
+  } = useServerlessFunctions()
   const functions = data ?? []
 
   const columns = useMemo<ColumnDef<FunctionEntity>[]>(
@@ -114,6 +119,9 @@ export function ServerlessFunctionsPage() {
             description="Deploy your first function to see it here."
           />
         }
+        error={serverlessFunctionsError ? "Failed to load" : undefined}
+        onRetry={() => void refetchServerlessFunctions()}
+        retryLabel={"Try again"}
       />
     </div>
   )

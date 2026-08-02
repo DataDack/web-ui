@@ -4,7 +4,6 @@ import {
   Button,
   DataTable,
   EmptyState,
-  Skeleton,
   type DataTableColumnMeta,
 } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
@@ -28,7 +27,12 @@ import { isBuildTransitional, type Build, type Project } from "../../managed-app
  * and a refresh keeps it open.
  */
 export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
-  const { data: builds = [], isLoading } = useProjectBuilds(project.id)
+  const {
+    data: builds = [],
+    isLoading,
+    isError: buildsError,
+    refetch: refetchBuilds,
+  } = useProjectBuilds(project.id)
   const cancelBuild = useCancelBuild()
   const createBuild = useCreateBuild()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -56,8 +60,6 @@ export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
       ),
     [builds],
   )
-
-  if (isLoading) return <Skeleton className="h-64 rounded-xl" />
 
   if (sortedBuilds.length === 0) {
     return (
@@ -216,7 +218,11 @@ export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
           // The Redeploy control only appears on the hovered row, which needs a
           // named hover group on the row itself.
           rowClassName="group/row"
-        />
+          error={buildsError ? "Failed to load" : undefined}
+          onRetry={() => void refetchBuilds()}
+          retryLabel={"Try again"}
+                  loading={isLoading}
+/>
       </Section>
 
       <Section

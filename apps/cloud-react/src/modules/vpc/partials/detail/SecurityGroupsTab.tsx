@@ -217,7 +217,12 @@ function SecurityGroupPanel({
   onDelete: (group: SecurityGroup) => void
 }>) {
   const { t } = useTranslation()
-  const { data: rules = [], isLoading } = useSGRules(group.id)
+  const {
+    data: rules = [],
+    isLoading,
+    isError: sGRulesError,
+    refetch: refetchSGRules,
+  } = useSGRules(group.id)
   const { mutate: removeRule, isPending: isRemoving } = useRemoveSGRule()
 
   const columns = useMemo<ColumnDef<SGRule>[]>(
@@ -314,6 +319,9 @@ function SecurityGroupPanel({
         // The add form is part of the grid, so it belongs in the body — and it
         // has to survive the empty state, or there is no way to add the first rule.
         footerRow={<AddRuleRow sgId={group.id} />}
+        error={sGRulesError ? t("console.table.error") : undefined}
+        onRetry={() => void refetchSGRules()}
+        retryLabel={t("console.table.retry")}
       />
     </div>
   )

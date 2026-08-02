@@ -20,7 +20,12 @@ interface VPNRow {
 
 export function VpnTab({ network }: Readonly<{ network: VPCNetwork }>) {
   const { t } = useTranslation()
-  const { data: connections = [], isLoading } = useVPNConnections()
+  const {
+    data: connections = [],
+    isLoading,
+    isError: vPNConnectionsError,
+    refetch: refetchVPNConnections,
+  } = useVPNConnections()
   const { data: routers = [] } = useRouters()
 
   const networkRouterIds = useMemo(
@@ -71,6 +76,9 @@ export function VpnTab({ network }: Readonly<{ network: VPCNetwork }>) {
         columns={columns}
         loading={isLoading}
         empty={<EmptyState icon={Cable} title={t("vpc.detail.noVpn")} />}
+        error={vPNConnectionsError ? t("console.table.error") : undefined}
+        onRetry={() => void refetchVPNConnections()}
+        retryLabel={t("console.table.retry")}
       />
     </Section>
   )

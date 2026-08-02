@@ -16,7 +16,6 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-  Skeleton,
   textColumn,
   type DataTableColumnMeta,
 } from "@datadack/common-ui"
@@ -44,7 +43,12 @@ import {
 
 export function ListenersTab({ lb }: Readonly<{ lb: LoadBalancer }>) {
   const { t } = useTranslation()
-  const { data: listeners = [], isLoading } = useLBListeners(lb.id)
+  const {
+    data: listeners = [],
+    isLoading,
+    isError: listenersError,
+    refetch: refetchListeners,
+  } = useLBListeners(lb.id)
   const { data: groups = [] } = useTargetGroups()
   const { mutate: remove, isPending: isDeleting } = useDeleteListener(lb.id)
 
@@ -108,8 +112,6 @@ export function ListenersTab({ lb }: Readonly<{ lb: LoadBalancer }>) {
     [groups, t],
   )
 
-  if (isLoading) return <Skeleton className="h-48 rounded-xl" />
-
   return (
     <>
       <Section
@@ -141,7 +143,11 @@ export function ListenersTab({ lb }: Readonly<{ lb: LoadBalancer }>) {
               description={t("loadBalancers.listeners.emptySubtitle")}
             />
           }
-        />
+          error={listenersError ? t("console.table.error") : undefined}
+          onRetry={() => void refetchListeners()}
+          retryLabel={t("console.table.retry")}
+                  loading={isLoading}
+/>
       </Section>
 
       <AddListenerDialog lb={lb} open={addOpen} onOpenChange={setAddOpen} />

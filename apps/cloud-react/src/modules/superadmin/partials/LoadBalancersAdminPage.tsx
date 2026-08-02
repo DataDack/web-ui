@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react"
+import { Fragment, useMemo, useState } from "react"
 
 import {
   Badge,
@@ -6,13 +6,11 @@ import {
   CopyButton,
   Input,
   Switch,
-  Table,
-  TableBody,
+  DataTable,
   TableCell,
-  TableHead,
-  TableHeader,
   TableRow,
 } from "@datadack/common-ui"
+import type { ColumnDef } from "@tanstack/react-table"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQueryClient } from "@tanstack/react-query"
 import {
@@ -434,62 +432,55 @@ function NodeManagerRow({ node }: Readonly<{ node: PVENode }>) {
 function NodeManagers() {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
-  const { data: nodes = [], isLoading } = useAdminPVENodes()
+  const {
+    data: nodes = [],
+    isLoading,
+    isError: adminPVENodesError,
+    refetch: refetchAdminPVENodes,
+  } = useAdminPVENodes()
 
   // Refetch every mounted row's manager-status query at once.
   const recheckAll = () =>
     void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.managerStatus })
+
+  // Headers only — renderRow below supplies every cell.
+  const columns = useMemo<ColumnDef<PVENode>[]>(
+    () => [
+      { id: "node", header: t("superAdmin.loadBalancers.table.node") },
+      { id: "manager", header: t("superAdmin.loadBalancers.table.manager") },
+      { id: "clientId", header: t("superAdmin.loadBalancers.table.clientId") },
+      { id: "secret", header: t("superAdmin.loadBalancers.table.secret") },
+      { id: "actions", header: t("superAdmin.loadBalancers.table.actions") },
+    ],
+    [t],
+  )
 
   return (
     <Section
       variant="panel"
       title={t("superAdmin.loadBalancers.nodes.title")}
       description={t("superAdmin.loadBalancers.nodes.subtitle")}
-      actions={
-        <Button type="button" variant="outline" size="sm" onClick={recheckAll}>
-          <RefreshCw className="size-4" />
-          {t("superAdmin.loadBalancers.actions.recheckAll")}
-        </Button>
-      }
     >
-      {(() => {
-        if (isLoading) {
-          return (
-            <div className="grid place-items-center py-12 text-muted-foreground">
-              <Loader2 className="size-5 animate-spin" />
-            </div>
-          )
+      <DataTable<PVENode>
+        data={nodes}
+        columns={columns}
+        loading={isLoading}
+        getRowId={(node) => node.id}
+        // Every row is a NodeManagerRow: it runs its own manager-status query and
+        // holds the credentials it just issued, so it has to be a component. The
+        // columns above exist for their headers.
+        renderRow={(node) => <NodeManagerRow node={node} />}
+        empty={
+          <span className="text-[13px] text-muted-foreground">
+            {t("superAdmin.loadBalancers.nodes.empty")}
+          </span>
         }
-        if (nodes.length === 0) {
-          return (
-            <p className="py-8 text-center text-[13px] text-muted-foreground">
-              {t("superAdmin.loadBalancers.nodes.empty")}
-            </p>
-          )
-        }
-        return (
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>{t("superAdmin.loadBalancers.table.node")}</TableHead>
-                  <TableHead>{t("superAdmin.loadBalancers.table.manager")}</TableHead>
-                  <TableHead>{t("superAdmin.loadBalancers.table.clientId")}</TableHead>
-                  <TableHead>{t("superAdmin.loadBalancers.table.secret")}</TableHead>
-                  <TableHead className="text-right">
-                    {t("superAdmin.loadBalancers.table.actions")}
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {nodes.map((node) => (
-                  <NodeManagerRow key={node.id} node={node} />
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        )
-      })()}
+        onRefresh={recheckAll}
+        refreshLabel={t("superAdmin.loadBalancers.actions.recheckAll")}
+        error={adminPVENodesError ? t("console.table.error") : undefined}
+        onRetry={() => void refetchAdminPVENodes()}
+        retryLabel={t("console.table.retry")}
+      />
     </Section>
   )
 }

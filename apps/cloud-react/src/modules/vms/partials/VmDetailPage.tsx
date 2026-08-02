@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useMemo, useState } from "react"
 
 import {
   Badge,
@@ -11,14 +11,12 @@ import {
   EmptyState,
   Skeleton,
   Switch,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
   TagList,
+  DataTable,
+  textColumn,
+  type DataTableColumnMeta,
 } from "@datadack/common-ui"
+import type { ColumnDef } from "@tanstack/react-table"
 import {
   Activity,
   Cpu,
@@ -55,6 +53,7 @@ import {
 import { parseTags } from "@/lib/tags"
 import { cn } from "@/lib/utils"
 import { useDetachDisk, useDisks } from "@/modules/disks/disks.hooks"
+import type { Disk } from "@/modules/disks/disks.types"
 import { useSSHKeys } from "@/modules/ssh-keys/ssh-keys.hooks"
 import { useVPC, useVPCSubnets } from "@/modules/vpc/vpc.hooks"
 import { useScreen } from "@/services/api/screen"
@@ -520,7 +519,7 @@ function NetworkingTab({ instance }: Readonly<{ instance: Instance }>) {
 
 function DisksTab({ instance }: Readonly<{ instance: Instance }>) {
   const { t } = useTranslation()
-  const { data: disks = [] } = useDisks()
+  const { data: disks = [], isError: disksError, refetch: refetchDisks } = useDisks()
   const { mutate: detachDisk } = useDetachDisk()
   // Boot disk first, then by name; the boot volume can't be detached while the
   // instance is running (matches the backend guard).
@@ -529,88 +528,99 @@ function DisksTab({ instance }: Readonly<{ instance: Instance }>) {
     .sort((a, b) => Number(b.is_boot) - Number(a.is_boot) || a.name.localeCompare(b.name))
   const instanceActive = instance.status === "running"
 
+  const columns = useMemo<ColumnDef<Disk>[]>(
+    () => [
+      {
+        id: "name",
+        header: t("vms.columns.name"),
+        accessorFn: (disk) => disk.name,
+        cell: ({ row }) => (
+          <div className="font-mono text-[13px] font-medium">
+            <span className="flex items-center gap-2">
+              {row.original.name}
+              {row.original.is_boot && (
+                <Badge variant="outline" className="font-mono text-[10px]">
+                  {t("vms.detail.bootDisk")}
+                </Badge>
+              )}
+            </span>
+            {row.original.device_name && (
+              <span className="text-[11px] text-muted-foreground">{row.original.device_name}</span>
+            )}
+          </div>
+        ),
+      },
+      {
+        id: "type",
+        header: t("vms.detail.diskType"),
+        accessorFn: (disk) => disk.disk_type,
+        cell: ({ row }) => (
+          <span className="text-sm text-muted-foreground">
+            {t("disks.title")} · {row.original.disk_type.toUpperCase()}
+          </span>
+        ),
+      },
+      textColumn({
+        id: "size",
+        header: t("vms.detail.diskSize"),
+        accessor: (disk) => `${String(disk.size_gb)} GB`,
+        mono: true,
+      }),
+      {
+        id: "status",
+        header: t("vms.columns.status"),
+        accessorFn: (disk) => disk.status,
+        cell: ({ row }) => <StatusBadge status={row.original.status} />,
+      },
+      {
+        id: "detach",
+        header: "",
+        meta: { interactive: true } satisfies DataTableColumnMeta,
+        cell: ({ row }) => {
+          // The backend refuses to detach the boot volume of a running
+          // instance, so the button says why rather than failing on click.
+          const detachBlocked = row.original.is_boot && instanceActive
+          return (
+            <div className="text-right">
+              <Button
+                size="sm"
+                variant="ghost"
+                disabled={detachBlocked}
+                title={detachBlocked ? t("vms.detail.bootDetachBlocked") : undefined}
+                className="h-7 gap-1.5 text-muted-foreground"
+                onClick={() => {
+                  detachDisk(row.original.id)
+                }}
+              >
+                <Unlink className="size-3" />
+                {t("disks.actions.detach")}
+              </Button>
+            </div>
+          )
+        },
+      },
+    ],
+    [detachDisk, instanceActive, t],
+  )
+
   return (
     <Section
       variant="panel"
       title={t("vms.tabs.disks")}
       description={t("vms.detail.disksDescription")}
     >
-      <div className="glass-1 overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow className="hover:bg-transparent">
-              {[
-                t("vms.columns.name"),
-                t("vms.detail.diskType"),
-                t("vms.detail.diskSize"),
-                t("vms.columns.status"),
-                "",
-              ].map((header) => (
-                <TableHead
-                  key={`index-${header}`}
-                  className="px-3 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground"
-                >
-                  {header}
-                </TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {attached.length === 0 && (
-              <TableRow className="hover:bg-transparent">
-                <TableCell
-                  colSpan={5}
-                  className="px-3 py-6 text-center text-sm text-muted-foreground"
-                >
-                  {t("vms.detail.disksEmpty")}
-                </TableCell>
-              </TableRow>
-            )}
-            {attached.map((disk) => {
-              const detachBlocked = disk.is_boot && instanceActive
-              return (
-                <TableRow key={disk.id}>
-                  <TableCell className="px-3 font-mono text-[13px] font-medium">
-                    <span className="flex items-center gap-2">
-                      {disk.name}
-                      {disk.is_boot && (
-                        <Badge variant="outline" className="font-mono text-[10px]">
-                          {t("vms.detail.bootDisk")}
-                        </Badge>
-                      )}
-                    </span>
-                    {disk.device_name && (
-                      <span className="text-[11px] text-muted-foreground">{disk.device_name}</span>
-                    )}
-                  </TableCell>
-                  <TableCell className="px-3 text-sm text-muted-foreground">
-                    {t("disks.title")} · {disk.disk_type.toUpperCase()}
-                  </TableCell>
-                  <TableCell className="px-3 font-mono text-[13px]">{disk.size_gb} GB</TableCell>
-                  <TableCell className="px-3">
-                    <StatusBadge status={disk.status} />
-                  </TableCell>
-                  <TableCell className="px-3 text-right">
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      disabled={detachBlocked}
-                      title={detachBlocked ? t("vms.detail.bootDetachBlocked") : undefined}
-                      className="h-7 gap-1.5 text-muted-foreground"
-                      onClick={() => {
-                        detachDisk(disk.id)
-                      }}
-                    >
-                      <Unlink className="size-3" />
-                      {t("disks.actions.detach")}
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              )
-            })}
-          </TableBody>
-        </Table>
-      </div>
+      <DataTable<Disk>
+        data={attached}
+        columns={columns}
+        getRowId={(disk) => disk.id}
+        // Boot disk first, then by name — already sorted above, so the table must
+        // not impose an order of its own.
+        pagination={false}
+        empty={<span className="text-sm text-muted-foreground">{t("vms.detail.disksEmpty")}</span>}
+        error={disksError ? t("console.table.error") : undefined}
+        onRetry={() => void refetchDisks()}
+        retryLabel={t("console.table.retry")}
+      />
       <p className="mt-3 text-[12px] text-muted-foreground flex items-center gap-1.5">
         <Cpu className="size-3.5" />
         {t("vms.detail.disksHint")}

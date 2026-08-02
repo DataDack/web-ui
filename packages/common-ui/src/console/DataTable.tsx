@@ -26,6 +26,7 @@ import {
   ChevronRight,
   ChevronsUpDown,
   Columns3,
+  AlertTriangle,
   Inbox,
   Search,
   SearchX,
@@ -266,17 +267,63 @@ const spinning = css`
   animation: ${spinFrames} 1s linear infinite;
 `
 
-const errorCell = css`
-  padding-top: 48px;
-  padding-bottom: 48px;
+/* The three body states have to be told apart at a glance, because they mean
+   very different things: a failure the user can retry, a genuinely empty
+   account, and data on its way. Error is the only one that carries the
+   destructive tone — an empty list is not a problem. */
+const stateCell = css`
+  padding: 48px 24px;
   text-align: center;
 `
 
-const errorText = css`
+const stateBlock = css`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+`
+
+const errorTile = css`
+  display: flex;
+  width: 48px;
+  height: 48px;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 12px;
+  border-radius: 0.75rem;
+  border: 1px solid ${mix("--destructive", 25)};
+  background: ${mix("--destructive", 10)};
+  color: var(--destructive);
+
+  & svg {
+    width: 20px;
+    height: 20px;
+  }
+`
+
+const errorTitle = css`
   font-size: 14px;
   line-height: 20px;
+  font-weight: 600;
+  color: var(--foreground);
+`
+
+const errorDetail = css`
+  max-width: 26rem;
+  font-size: 13px;
   color: var(--muted-foreground);
+`
+
+const retryButton = css`
+  margin-top: 16px;
+`
+
+/* Skeleton widths vary per column so a loading table reads like a table of
+   content rather than a block of identical bars. */
+const SKELETON_WIDTHS = ["72%", "44%", "58%", "36%", "64%", "48%"] as const
+
+const skeletonBar = css`
+  height: 12px;
 `
 
 const bulkBar = css`
@@ -437,6 +484,8 @@ export interface DataTableProps<T> {
    * must never be reported as "nothing here yet".
    */
   error?: ReactNode
+  /** Headline above the message. Defaults to "Could not load this list". */
+  errorTitle?: string
   onRetry?: () => void
   retryLabel?: string
 
@@ -568,6 +617,7 @@ export function DataTable<T>({
   loading = false,
   skeletonRows = 5,
   error,
+  errorTitle: errorTitleText = "Could not load this list",
   onRetry,
   retryLabel = "Retry",
   empty,
@@ -845,14 +895,27 @@ export function DataTable<T>({
               in fact nothing is known about it. */}
           {hasError && !loading && (
             <TableRow>
-              <TableCell colSpan={visibleColumnCount} className={errorCell}>
-                <p className={errorText}>{error}</p>
-                {onRetry && (
-                  <Button size="sm" variant="outline" onClick={onRetry}>
-                    <RotateCw />
-                    {retryLabel}
-                  </Button>
-                )}
+              <TableCell colSpan={visibleColumnCount} className={stateCell}>
+                <div className={stateBlock}>
+                  <span className={errorTile}>
+                    <AlertTriangle />
+                  </span>
+                  <span className={errorTitle}>{errorTitleText}</span>
+                  {/* The caller's message is the detail, not the headline: an API
+                      error string is rarely a good title. */}
+                  <span className={errorDetail}>{error}</span>
+                  {onRetry && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className={retryButton}
+                      onClick={onRetry}
+                    >
+                      <RotateCw />
+                      {retryLabel}
+                    </Button>
+                  )}
+                </div>
               </TableCell>
             </TableRow>
           )}
@@ -862,7 +925,14 @@ export function DataTable<T>({
               <TableRow key={`skeleton-${String(i)}`}>
                 {Array.from({ length: visibleColumnCount }, (_, c) => (
                   <TableCell key={`skeleton-${String(i)}-${String(c)}`}>
-                    <Skeleton style={{ height: 14 }} />
+                    <Skeleton
+                      className={skeletonBar}
+                      // Stagger the widths across rows and columns so the
+                      // placeholder does not look like a grid of equal blocks.
+                      style={{
+                        width: SKELETON_WIDTHS[(c + i) % SKELETON_WIDTHS.length],
+                      }}
+                    />
                   </TableCell>
                 ))}
               </TableRow>

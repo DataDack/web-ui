@@ -18,7 +18,12 @@ import type { LayerVersion } from "../serverless.types"
 
 /** Published layer versions — shared dependency archives functions reference. */
 export function ServerlessLayersPage() {
-  const { data, isLoading } = useServerlessLayers()
+  const {
+    data,
+    isLoading,
+    isError: serverlessLayersError,
+    refetch: refetchServerlessLayers,
+  } = useServerlessLayers()
   const layers = data ?? []
 
   const columns = useMemo<ColumnDef<LayerVersion>[]>(
@@ -94,6 +99,9 @@ export function ServerlessLayersPage() {
             description="Publish a layer to share dependencies across functions."
           />
         }
+        error={serverlessLayersError ? "Failed to load" : undefined}
+        onRetry={() => void refetchServerlessLayers()}
+        retryLabel={"Try again"}
       />
     </div>
   )

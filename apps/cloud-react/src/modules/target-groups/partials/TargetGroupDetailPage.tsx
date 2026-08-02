@@ -166,14 +166,17 @@ function HealthTab({ group }: Readonly<{ group: TargetGroup }>) {
 
 function TargetsTab({ group }: Readonly<{ group: TargetGroup }>) {
   const { t } = useTranslation()
-  const { data: targets = [], isLoading } = useTargets(group.id)
+  const {
+    data: targets = [],
+    isLoading,
+    isError: targetsError,
+    refetch: refetchTargets,
+  } = useTargets(group.id)
   const { data: instances = [] } = useInstances()
   const { mutate: deregister, isPending: isDeregistering } = useDeregisterTarget(group.id)
 
   const [registerOpen, setRegisterOpen] = useState(false)
   const [pendingRemove, setPendingRemove] = useState<Target | null>(null)
-
-  if (isLoading) return <Skeleton className="h-48 rounded-xl" />
 
   const columns = useMemo<ColumnDef<Target>[]>(
     () => [
@@ -275,7 +278,11 @@ function TargetsTab({ group }: Readonly<{ group: TargetGroup }>) {
               description={t("targetGroups.targets.emptySubtitle")}
             />
           }
-        />
+          error={targetsError ? t("console.table.error") : undefined}
+          onRetry={() => void refetchTargets()}
+          retryLabel={t("console.table.retry")}
+                  loading={isLoading}
+/>
       </Section>
 
       <RegisterTargetDialog

@@ -148,7 +148,12 @@ export function ServerlessFunctionDetailPage() {
 }
 
 function FunctionVersions({ name }: Readonly<{ name: string }>) {
-  const { data, isLoading } = useFunctionVersions(name)
+  const {
+    data,
+    isLoading,
+    isError: functionVersionsError,
+    refetch: refetchFunctionVersions,
+  } = useFunctionVersions(name)
   const columns = useMemo<ColumnDef<FunctionVersion>[]>(
     () => [
       {
@@ -185,12 +190,20 @@ function FunctionVersions({ name }: Readonly<{ name: string }>) {
           description="Publishing a version freezes the current code and configuration."
         />
       }
+      error={functionVersionsError ? "Failed to load" : undefined}
+      onRetry={() => void refetchFunctionVersions()}
+      retryLabel={"Try again"}
     />
   )
 }
 
 function FunctionAliases({ name }: Readonly<{ name: string }>) {
-  const { data, isLoading } = useFunctionAliases(name)
+  const {
+    data,
+    isLoading,
+    isError: functionAliasesError,
+    refetch: refetchFunctionAliases,
+  } = useFunctionAliases(name)
   const columns = useMemo<ColumnDef<FunctionAlias>[]>(
     () => [
       {
@@ -240,6 +253,9 @@ function FunctionAliases({ name }: Readonly<{ name: string }>) {
           description="Aliases give a stable name (prod, staging) to a published version."
         />
       }
+      error={functionAliasesError ? "Failed to load" : undefined}
+      onRetry={() => void refetchFunctionAliases()}
+      retryLabel={"Try again"}
     />
   )
 }

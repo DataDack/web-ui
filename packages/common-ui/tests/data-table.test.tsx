@@ -949,3 +949,65 @@ describe("renderRow", () => {
     expect(onRowClick).not.toHaveBeenCalled()
   })
 })
+
+describe("the three body states are distinguishable", () => {
+  const nothing = { data: [] as Row[], columns }
+
+  test("error carries a headline, the message as detail, and a retry", () => {
+    render(<DataTable {...nothing} error="Request timed out" onRetry={() => undefined} />)
+
+    expect(screen.getByText("Could not load this list")).toBeInTheDocument()
+    // The API message is the detail, not the headline — an error string makes a
+    // poor title.
+    expect(screen.getByText("Request timed out")).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: /retry/i })).toBeInTheDocument()
+  })
+
+  test("the error headline is overridable for a translated app", () => {
+    render(<DataTable {...nothing} error="boom" errorTitle="Chargement impossible" />)
+    expect(screen.getByText("Chargement impossible")).toBeInTheDocument()
+  })
+
+  test("empty says nothing is here and offers no retry", () => {
+    render(<DataTable {...nothing} empty="No images yet" />)
+
+    expect(screen.getByText("No images yet")).toBeInTheDocument()
+    // Retrying an empty list is meaningless, and offering it implies a failure.
+    expect(screen.queryByRole("button", { name: /retry/i })).toBeNull()
+    expect(screen.queryByText("Could not load this list")).toBeNull()
+  })
+
+  test("error and empty never render together", () => {
+    render(<DataTable {...nothing} error="Request failed" empty="No images yet" />)
+    expect(screen.getByText("Request failed")).toBeInTheDocument()
+    expect(screen.queryByText("No images yet")).toBeNull()
+  })
+
+  test("loading shows skeleton rows and neither of the other two", () => {
+    render(<DataTable {...nothing} loading error="Request failed" empty="No images yet" />)
+
+    expect(screen.queryByText("Request failed")).toBeNull()
+    expect(screen.queryByText("No images yet")).toBeNull()
+    expect(document.querySelectorAll('[data-slot="skeleton"]').length).toBeGreaterThan(0)
+  })
+
+  test("skeleton bars vary in width so loading does not read as a block grid", () => {
+    render(<DataTable data={[]} columns={columns} loading skeletonRows={3} />)
+
+    const widths = Array.from(document.querySelectorAll('[data-slot="skeleton"]')).map(
+      (el) => (el as HTMLElement).style.width,
+    )
+    expect(widths.length).toBeGreaterThan(2)
+    expect(new Set(widths).size).toBeGreaterThan(1)
+  })
+
+  test("only the error state uses the destructive tone", () => {
+    const { unmount } = render(<DataTable {...nothing} error="Request failed" />)
+    const errorCss = Array.from(document.head.querySelectorAll("style[data-emotion]"))
+      .map((t) => t.textContent ?? "")
+      .join("")
+    // An empty list is not a problem, so it must not look like one.
+    expect(errorCss).toContain("--destructive")
+    unmount()
+  })
+})
