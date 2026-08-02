@@ -1,8 +1,5 @@
-import { Skeleton } from "@datadack/common-ui"
+import { Button, CommandGroup, CommandItem, CommandList, Skeleton } from "@datadack/common-ui"
 import { AlertTriangle, Loader2 } from "lucide-react"
-
-import { Button } from "@datadack/common-ui"
-import { CommandGroup, CommandItem, CommandList } from "@/components/ui/command"
 
 import type { SmartSelectOption, SmartSelectProps } from "./smart-select.types"
 import { SmartSelectRow } from "./SmartSelectRow"

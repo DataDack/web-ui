@@ -1,12 +1,5 @@
 import { useEffect } from "react"
 
-import { Switch, Textarea } from "@datadack/common-ui"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Plus, Trash2 } from "lucide-react"
-import { Controller, useFieldArray, useForm } from "react-hook-form"
-import { useTranslation } from "react-i18next"
-import { z } from "zod/v4"
-
 import {
   Button,
   Input,
@@ -15,7 +8,15 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Switch,
+  Textarea,
 } from "@datadack/common-ui"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Plus, Trash2 } from "lucide-react"
+import { Controller, useFieldArray, useForm } from "react-hook-form"
+import { useTranslation } from "react-i18next"
+import { z } from "zod/v4"
+
 import { SERVICE_ICON_NAMES } from "@/modules/services/service-icons"
 
 import { Field, FormSheet } from "../components/form-fields"

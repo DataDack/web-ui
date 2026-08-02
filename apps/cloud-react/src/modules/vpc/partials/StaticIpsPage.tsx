@@ -1,6 +1,21 @@
 import { useMemo, useState } from "react"
 
-import { Label } from "@datadack/common-ui"
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  Input,
+  Label,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Globe, Link2, Plus, RefreshCw, Search, Trash2, Unlink } from "lucide-react"
@@ -19,21 +34,6 @@ import {
   StatGrid,
   statusColumn,
 } from "@/components/console"
-import {
-  Button,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  Input,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@datadack/common-ui"
 import { QuotaNotice, useQuotaBlocked } from "@/modules/governance/components/QuotaNotice"
 import { useNamingRule } from "@/modules/governance/governance.hooks"
 import type { NamingRule } from "@/modules/governance/governance.types"

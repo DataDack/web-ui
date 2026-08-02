@@ -1,12 +1,11 @@
 import { useState } from "react"
 
-import { Label } from "@datadack/common-ui"
+import { Button, Input, InputOTP, InputOTPGroup, InputOTPSlot, Label } from "@datadack/common-ui"
 import { useQueryClient } from "@tanstack/react-query"
 import { Loader2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
-import { Button, Input, InputOTP, InputOTPGroup, InputOTPSlot } from "@datadack/common-ui"
 import { useAuth } from "@/modules/auth/auth.context"
 import { useUpdateProfile } from "@/modules/auth/auth.hooks"
 import { PhoneField } from "@/modules/auth/components/PhoneField"

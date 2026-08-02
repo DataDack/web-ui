@@ -1,9 +1,5 @@
 import { useMemo, useState } from "react"
 
-import { Label, Textarea } from "@datadack/common-ui"
-import { Loader2, Minus, Plus } from "lucide-react"
-import { useTranslation } from "react-i18next"
-
 import {
   Button,
   Dialog,
@@ -13,12 +9,17 @@ import {
   DialogHeader,
   DialogTitle,
   Input,
+  Label,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Textarea,
 } from "@datadack/common-ui"
+import { Loader2, Minus, Plus } from "lucide-react"
+import { useTranslation } from "react-i18next"
+
 import { cn } from "@/lib/utils"
 
 import { QuotaRing } from "../../components/QuotaRing"

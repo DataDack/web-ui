@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-import { Skeleton } from "@datadack/common-ui"
+import { Button, Skeleton } from "@datadack/common-ui"
 import { AlertTriangle, Boxes, Crosshair, Ear, Info, Layers, Network, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link, useNavigate, useParams } from "react-router-dom"
@@ -16,7 +16,6 @@ import {
   StatusBadge,
   TagList,
 } from "@/components/console"
-import { Button } from "@datadack/common-ui"
 import {
   Table,
   TableBody,

@@ -1,12 +1,11 @@
 import { useMemo, useState } from "react"
 
-import { Badge } from "@datadack/common-ui"
+import { Badge, Button } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { HardDrive, Pencil, Plus, RefreshCw, Globe } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { actionsColumn, EmptyState, PageHeader, ResourceTable } from "@/components/console"
-import { Button } from "@datadack/common-ui"
 import { useScreen } from "@/services/api/screen"
 
 import { ActiveBadge } from "../components/ActiveBadge"

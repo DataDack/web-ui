@@ -1,17 +1,19 @@
-import { Badge } from "@datadack/common-ui"
-import { Check, Eye, Hash, Pencil, Trash2 } from "lucide-react"
-import { useTranslation } from "react-i18next"
-import { useNavigate } from "react-router-dom"
-
 import {
+  Badge,
   Button,
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuSeparator,
   ContextMenuTrigger,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
 } from "@datadack/common-ui"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@datadack/common-ui"
+import { Check, Eye, Hash, Pencil, Trash2 } from "lucide-react"
+import { useTranslation } from "react-i18next"
+import { useNavigate } from "react-router-dom"
+
 import { useResourceGroup } from "@/modules/resource-groups/resource-group.context"
 
 import { RG_ROUTES } from "../resource-groups.constants"

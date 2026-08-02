@@ -1,12 +1,5 @@
 import { useMemo } from "react"
 
-import { Textarea } from "@datadack/common-ui"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Loader2, Wallet } from "lucide-react"
-import { Controller, useForm, useWatch } from "react-hook-form"
-import { useTranslation } from "react-i18next"
-import { z } from "zod/v4"
-
 import {
   Button,
   Dialog,
@@ -20,7 +13,14 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Textarea,
 } from "@datadack/common-ui"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Loader2, Wallet } from "lucide-react"
+import { Controller, useForm, useWatch } from "react-hook-form"
+import { useTranslation } from "react-i18next"
+import { z } from "zod/v4"
+
 import { Field } from "../components/form-fields"
 import { useAdjustAccountBalance } from "../superadmin.hooks"
 import type { AdjustBalanceRequest, OverviewAccount } from "../superadmin.types"

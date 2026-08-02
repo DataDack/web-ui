@@ -1,9 +1,5 @@
 import { useState } from "react"
 
-import { Textarea } from "@datadack/common-ui"
-import { ArrowRight, Check, Loader2 } from "lucide-react"
-import { useTranslation } from "react-i18next"
-
 import {
   Button,
   Dialog,
@@ -12,7 +8,11 @@ import {
   DialogHeader,
   DialogTitle,
   Input,
+  Textarea,
 } from "@datadack/common-ui"
+import { ArrowRight, Check, Loader2 } from "lucide-react"
+import { useTranslation } from "react-i18next"
+
 import { Field } from "../../components/form-fields"
 import { useApproveQuotaRequest } from "../../superadmin.hooks"
 import type { AdminQuotaRequest } from "../../superadmin.types"

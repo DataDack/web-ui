@@ -1,7 +1,6 @@
 import { useEffect } from "react"
 
-import { Avatar, AvatarFallback, Label } from "@datadack/common-ui"
-import { Badge, Skeleton } from "@datadack/common-ui"
+import { Avatar, AvatarFallback, Badge, Button, Input, Label, Skeleton } from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { BadgeCheck, Save, ShieldCheck, UserCog } from "lucide-react"
 import { useForm, useWatch } from "react-hook-form"
@@ -9,7 +8,6 @@ import { useTranslation } from "react-i18next"
 import { z } from "zod/v4"
 
 import { KeyValueGrid, PageHeader, Section } from "@/components/console"
-import { Button, Input } from "@datadack/common-ui"
 import { useAuth } from "@/modules/auth/auth.context"
 import { useCountries } from "@/modules/countries/countries.hooks"
 import { useScreen } from "@/services/api/screen"

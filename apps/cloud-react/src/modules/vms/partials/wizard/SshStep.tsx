@@ -1,11 +1,5 @@
 import { useState, useMemo, useRef } from "react"
 
-import { Textarea } from "@datadack/common-ui"
-import { KeyRound, Sparkles, Upload, Loader2, Plus } from "lucide-react"
-import type { UseFormReturn } from "react-hook-form"
-import { useTranslation } from "react-i18next"
-import { toast } from "sonner"
-
 import {
   Button,
   Input,
@@ -19,7 +13,13 @@ import {
   SheetDescription,
   SheetHeader,
   SheetTitle,
+  Textarea,
 } from "@datadack/common-ui"
+import { KeyRound, Sparkles, Upload, Loader2, Plus } from "lucide-react"
+import type { UseFormReturn } from "react-hook-form"
+import { useTranslation } from "react-i18next"
+import { toast } from "sonner"
+
 import { canGenerateKeyPair, generateEd25519KeyPair } from "@/lib/ssh-keygen"
 import { cn } from "@/lib/utils"
 import { useNamingRule } from "@/modules/governance/governance.hooks"

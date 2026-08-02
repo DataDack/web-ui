@@ -1,7 +1,6 @@
 import { Fragment, useState } from "react"
 
-import { Switch } from "@datadack/common-ui"
-import { Badge } from "@datadack/common-ui"
+import { Badge, Button, Input, Switch } from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQueryClient } from "@tanstack/react-query"
 import {
@@ -23,7 +22,6 @@ import { z } from "zod/v4"
 
 import { CopyButton, PageHeader, Section } from "@/components/console"
 import { TONE_CLASSES, TONE_DOT_CLASSES, type StatusTone } from "@/components/console/status-config"
-import { Button, Input } from "@datadack/common-ui"
 import {
   Table,
   TableBody,

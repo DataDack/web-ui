@@ -1,7 +1,18 @@
 import { useMemo, useState, type ReactNode } from "react"
 
-import { Label, Switch, Textarea } from "@datadack/common-ui"
-import { Badge, Skeleton } from "@datadack/common-ui"
+import {
+  Badge,
+  Button,
+  Input,
+  Label,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  Skeleton,
+  Switch,
+  Textarea,
+} from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
   ArrowLeft,
@@ -30,14 +41,6 @@ import {
   StatusBadge,
   type WizardStep,
 } from "@/components/console"
-import {
-  Button,
-  Input,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-} from "@datadack/common-ui"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useQueryParamState } from "@/hooks/use-query-param-state"
 import { cn } from "@/lib/utils"

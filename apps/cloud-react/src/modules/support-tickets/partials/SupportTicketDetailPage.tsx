@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react"
 
-import { Textarea } from "@datadack/common-ui"
-import { Skeleton } from "@datadack/common-ui"
+import { Button, Skeleton, Textarea } from "@datadack/common-ui"
 import { ArrowLeft, LifeBuoy, Send } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
@@ -13,7 +12,6 @@ import {
   Section,
   StatusBadge,
 } from "@/components/console"
-import { Button } from "@datadack/common-ui"
 import { useScreen } from "@/services/api/screen"
 
 import { PriorityBadge } from "../components/PriorityBadge"

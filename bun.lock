@@ -123,6 +123,7 @@
       "dependencies": {
         "@emotion/css": "^11.13.5",
         "clsx": "^2.1.1",
+        "cmdk": "^1.1.1",
         "radix-ui": "^1.6.7",
         "tailwind-merge": "^3.6.0",
       },

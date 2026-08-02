@@ -1,6 +1,6 @@
 import { useId } from "react"
 
-import { Skeleton } from "@datadack/common-ui"
+import { Button, Skeleton } from "@datadack/common-ui"
 import { FolderTree, Plus, RefreshCw } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
@@ -12,7 +12,6 @@ import {
   StatGrid,
   staggerDelay,
 } from "@/components/console"
-import { Button } from "@datadack/common-ui"
 import { useScreen } from "@/services/api/screen"
 
 import { RG_ROUTES } from "../resource-groups.constants"

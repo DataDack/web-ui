@@ -1,6 +1,16 @@
 import { useState } from "react"
 
-import { Badge, Skeleton } from "@datadack/common-ui"
+import {
+  Badge,
+  Button,
+  Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Skeleton,
+} from "@datadack/common-ui"
 import {
   AlertTriangle,
   ArrowDownToLine,
@@ -17,15 +27,6 @@ import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
 
 import { ConfirmDialog, DetailPage, EmptyState, staggerDelay } from "@/components/console"
-import {
-  Button,
-  Input,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@datadack/common-ui"
 import {
   Table,
   TableBody,

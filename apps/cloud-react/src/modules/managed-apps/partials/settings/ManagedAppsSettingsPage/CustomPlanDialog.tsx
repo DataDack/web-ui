@@ -1,9 +1,5 @@
 import { useState } from "react"
 
-import { Label, Textarea } from "@datadack/common-ui"
-import { Loader2, MessageSquare } from "lucide-react"
-import { useNavigate } from "react-router-dom"
-
 import {
   Button,
   Dialog,
@@ -13,7 +9,12 @@ import {
   DialogHeader,
   DialogTitle,
   Input,
+  Label,
+  Textarea,
 } from "@datadack/common-ui"
+import { Loader2, MessageSquare } from "lucide-react"
+import { useNavigate } from "react-router-dom"
+
 import { SUPPORT_ROUTES } from "@/modules/support-tickets/support-tickets.constants"
 import { useCreateSupportTicket } from "@/modules/support-tickets/support-tickets.hooks"
 

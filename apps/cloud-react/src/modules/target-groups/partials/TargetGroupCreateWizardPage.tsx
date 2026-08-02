@@ -1,6 +1,14 @@
 import { useMemo } from "react"
 
-import { Label } from "@datadack/common-ui"
+import {
+  Input,
+  Label,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm, type UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
@@ -8,14 +16,6 @@ import { useNavigate } from "react-router-dom"
 import { z } from "zod/v4"
 
 import { CreateWizard, PageHeader, type WizardStep } from "@/components/console"
-import {
-  Input,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@datadack/common-ui"
 import { useNamingRule } from "@/modules/governance/governance.hooks"
 import type { NamingRule } from "@/modules/governance/governance.types"
 import { namingNameSchema } from "@/modules/governance/governance.validation"

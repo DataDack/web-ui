@@ -1,11 +1,7 @@
 import { useEffect } from "react"
 
-import { Badge, Skeleton } from "@datadack/common-ui"
-import { CheckCircle2, Loader2, Plus, Unlink } from "lucide-react"
-import { useWatch, type UseFormReturn } from "react-hook-form"
-import { SiJira } from "react-icons/si"
-
 import {
+  Badge,
   Button,
   Input,
   Select,
@@ -13,7 +9,12 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Skeleton,
 } from "@datadack/common-ui"
+import { CheckCircle2, Loader2, Plus, Unlink } from "lucide-react"
+import { useWatch, type UseFormReturn } from "react-hook-form"
+import { SiJira } from "react-icons/si"
+
 import { ComboboxInput } from "@/components/ui/combobox-input"
 import { cn } from "@/lib/utils"
 import {

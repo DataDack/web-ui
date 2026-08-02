@@ -1,19 +1,20 @@
 import { useState } from "react"
 
-import { Label } from "@datadack/common-ui"
-import { Badge, Skeleton } from "@datadack/common-ui"
-import { ExternalLink, Loader2, Plus, Unlink } from "lucide-react"
-
-import { ConfirmDialog } from "@/components/console"
 import {
+  Badge,
   Button,
+  Checkbox,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  Label,
+  Skeleton,
 } from "@datadack/common-ui"
-import { Checkbox } from "@datadack/common-ui"
+import { ExternalLink, Loader2, Plus, Unlink } from "lucide-react"
+
+import { ConfirmDialog } from "@/components/console"
 import { GitHubMark } from "../../components/GitHubMark"
 import { GITHUB_INSTALLATIONS_URL } from "../../managed-apps.constants"
 import {

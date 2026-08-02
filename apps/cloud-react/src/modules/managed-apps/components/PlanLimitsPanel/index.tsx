@@ -1,8 +1,7 @@
-import { Skeleton } from "@datadack/common-ui"
+import { Button, Skeleton } from "@datadack/common-ui"
 import { AlertCircle, ArrowRight, Sparkles } from "lucide-react"
 import { Link } from "react-router-dom"
 
-import { Button } from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 
 import { QuotaMeter } from "./QuotaMeter"

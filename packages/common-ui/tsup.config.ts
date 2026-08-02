@@ -28,6 +28,7 @@ const options: Options = {
     "radix-ui",
     "@emotion/css",
     "clsx",
+    "cmdk",
     "tailwind-merge",
   ],
 }

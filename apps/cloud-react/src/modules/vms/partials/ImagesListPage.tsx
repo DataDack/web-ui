@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react"
 
-import { Badge } from "@datadack/common-ui"
+import { Badge, Button, Input } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import {
   Cpu,
@@ -24,7 +24,6 @@ import {
   ResourceTable,
   StatGrid,
 } from "@/components/console"
-import { Button, Input } from "@datadack/common-ui"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useImageCatalog } from "@/modules/catalog/catalog.hooks"
 import type { ImageCatalogFamily } from "@/modules/catalog/catalog.types"

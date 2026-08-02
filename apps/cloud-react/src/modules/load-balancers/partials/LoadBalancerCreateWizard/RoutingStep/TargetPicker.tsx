@@ -2,8 +2,7 @@ import { useMemo, useState } from "react"
 
 import { useTranslation } from "react-i18next"
 
-import { Button, Input } from "@datadack/common-ui"
-import { Checkbox } from "@datadack/common-ui"
+import { Button, Checkbox, Input } from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 import type { Instance } from "@/modules/vms/vms.types"
 

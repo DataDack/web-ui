@@ -1,11 +1,10 @@
 import { useMemo, useState } from "react"
 
-import { Skeleton } from "@datadack/common-ui"
+import { Button, Skeleton } from "@datadack/common-ui"
 import { Link2, Loader2, Unlink } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { ConfirmDialog, CopyButton, Section, staggerDelay, StatusBadge } from "@/components/console"
-import { Button } from "@datadack/common-ui"
 import {
   Table,
   TableBody,

@@ -1,9 +1,8 @@
 import { useState } from "react"
 
-import { Badge } from "@datadack/common-ui"
+import { Badge, Button, Input } from "@datadack/common-ui"
 import { Eye, EyeOff, Trash2 } from "lucide-react"
 
-import { Button, Input } from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 
 import type { EnvRow } from "./env-types"

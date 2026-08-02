@@ -1,22 +1,24 @@
 import { useMemo, useState } from "react"
 
-import { Label, Separator, Textarea } from "@datadack/common-ui"
+import {
+  Button,
+  Input,
+  Label,
+  ScrollArea,
+  Separator,
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  Textarea,
+} from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Plus, Tag, Trash2 } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { z } from "zod/v4"
 
-import {
-  Button,
-  Input,
-  ScrollArea,
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@datadack/common-ui"
 import { useNamingRule } from "@/modules/governance/governance.hooks"
 import type { NamingRule } from "@/modules/governance/governance.types"
 import { namingNameSchema } from "@/modules/governance/governance.validation"

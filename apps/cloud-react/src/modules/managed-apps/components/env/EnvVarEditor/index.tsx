@@ -1,9 +1,7 @@
 import { useMemo, useState } from "react"
 
-import { Label } from "@datadack/common-ui"
+import { Button, Label } from "@datadack/common-ui"
 import { FileUp, Plus } from "lucide-react"
-
-import { Button } from "@datadack/common-ui"
 
 import { duplicateKeys, newEnvRow, type EnvRow } from "./env-types"
 import { EnvImportSheet } from "./EnvImportSheet"

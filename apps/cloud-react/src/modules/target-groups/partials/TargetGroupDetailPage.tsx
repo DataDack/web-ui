@@ -1,7 +1,21 @@
 import { useState } from "react"
 
-import { Label } from "@datadack/common-ui"
-import { Skeleton } from "@datadack/common-ui"
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  Input,
+  Label,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Skeleton,
+} from "@datadack/common-ui"
 import { Activity, Crosshair, Plus, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link, useNavigate, useParams } from "react-router-dom"
@@ -16,20 +30,6 @@ import {
   staggerDelay,
   StatusBadge,
 } from "@/components/console"
-import {
-  Button,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  Input,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@datadack/common-ui"
 import {
   Table,
   TableBody,

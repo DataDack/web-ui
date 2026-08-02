@@ -1,11 +1,5 @@
 import { useMemo, useState } from "react"
 
-import { Skeleton } from "@datadack/common-ui"
-import { ArrowRight, Ear, Plus, Trash2 } from "lucide-react"
-import { useTranslation } from "react-i18next"
-import { Link } from "react-router-dom"
-
-import { ConfirmDialog, EmptyState, Section, staggerDelay } from "@/components/console"
 import {
   Button,
   Dialog,
@@ -20,7 +14,13 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Skeleton,
 } from "@datadack/common-ui"
+import { ArrowRight, Ear, Plus, Trash2 } from "lucide-react"
+import { useTranslation } from "react-i18next"
+import { Link } from "react-router-dom"
+
+import { ConfirmDialog, EmptyState, Section, staggerDelay } from "@/components/console"
 import {
   Table,
   TableBody,

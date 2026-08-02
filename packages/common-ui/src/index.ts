@@ -71,6 +71,17 @@ export {
 } from "./ui/card"
 export { Checkbox } from "./ui/checkbox"
 export {
+  Command,
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+  CommandShortcut,
+} from "./ui/command"
+export {
   ContextMenu,
   ContextMenuCheckboxItem,
   ContextMenuContent,

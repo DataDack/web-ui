@@ -1,11 +1,10 @@
 import { useState } from "react"
 
-import { Label } from "@datadack/common-ui"
+import { Button, Input, Label } from "@datadack/common-ui"
 import { ChevronDown } from "lucide-react"
 import type { UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 
-import { Button, Input } from "@datadack/common-ui"
 import type { FormValues } from "../schema"
 
 /**

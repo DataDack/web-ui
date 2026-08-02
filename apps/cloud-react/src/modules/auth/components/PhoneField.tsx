@@ -1,7 +1,6 @@
-import { Label } from "@datadack/common-ui"
+import { Input, Label } from "@datadack/common-ui"
 import { useTranslation } from "react-i18next"
 
-import { Input } from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 import { CountrySelect } from "@/modules/countries/CountrySelect"
 

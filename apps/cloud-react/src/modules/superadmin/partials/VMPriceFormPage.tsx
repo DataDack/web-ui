@@ -1,6 +1,15 @@
 import { useEffect, useMemo } from "react"
 
-import { Label, Switch, Textarea } from "@datadack/common-ui"
+import {
+  Input,
+  Label,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  Switch,
+  Textarea,
+} from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Cpu } from "lucide-react"
 import { Controller, useForm, type UseFormReturn } from "react-hook-form"
@@ -9,7 +18,6 @@ import { useNavigate, useParams } from "react-router-dom"
 import { z } from "zod/v4"
 
 import { CreateWizard, PageHeader, type WizardStep } from "@/components/console"
-import { Input, Select, SelectContent, SelectItem, SelectTrigger } from "@datadack/common-ui"
 import { CurrencySelect } from "@/modules/countries/CurrencySelect"
 import { useScreen } from "@/services/api/screen"
 

@@ -8,12 +8,8 @@
 
 import { useMemo, useState } from "react"
 
-import { Badge } from "@datadack/common-ui"
-import { ChevronDown } from "lucide-react"
-import type { UseFormRegister } from "react-hook-form"
-
-import { MetricChart } from "@/components/console"
 import {
+  Badge,
   Input,
   Select,
   SelectContent,
@@ -21,6 +17,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@datadack/common-ui"
+import { ChevronDown } from "lucide-react"
+import type { UseFormRegister } from "react-hook-form"
+
+import { MetricChart } from "@/components/console"
 import { cn } from "@/lib/utils"
 
 import { simulateAlarm, windowCount } from "./backtest"

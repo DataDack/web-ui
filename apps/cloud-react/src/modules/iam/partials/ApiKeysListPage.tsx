@@ -1,6 +1,21 @@
 import { useMemo, useState } from "react"
 
-import { Label } from "@datadack/common-ui"
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  Input,
+  Label,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { KeySquare, Loader2, Plus, RefreshCw, Trash2, TriangleAlert } from "lucide-react"
 import { useTranslation } from "react-i18next"
@@ -16,21 +31,6 @@ import {
   ResourceTable,
   statusColumn,
 } from "@/components/console"
-import {
-  Button,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  Input,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@datadack/common-ui"
 import { useScreen } from "@/services/api/screen"
 
 import { useAPIKeys, useCreateAPIKey, useDeleteAPIKey } from "../iam.hooks"

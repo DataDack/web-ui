@@ -1,6 +1,6 @@
 import { useMemo } from "react"
 
-import { Label, Textarea } from "@datadack/common-ui"
+import { Button, Input, Label, Textarea } from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ArrowLeft, Users } from "lucide-react"
 import { useForm } from "react-hook-form"
@@ -9,7 +9,6 @@ import { useNavigate } from "react-router-dom"
 import { z } from "zod/v4"
 
 import { PageHeader, Section } from "@/components/console"
-import { Button, Input } from "@datadack/common-ui"
 import { useNamingRule } from "@/modules/governance/governance.hooks"
 import type { NamingRule } from "@/modules/governance/governance.types"
 import { namingNameSchema } from "@/modules/governance/governance.validation"

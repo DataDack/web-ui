@@ -1,8 +1,5 @@
 import { useMemo, useState } from "react"
 
-import { Textarea } from "@datadack/common-ui"
-import { AlertTriangle } from "lucide-react"
-
 import {
   Button,
   Sheet,
@@ -11,7 +8,10 @@ import {
   SheetFooter,
   SheetHeader,
   SheetTitle,
+  Textarea,
 } from "@datadack/common-ui"
+import { AlertTriangle } from "lucide-react"
+
 import { parseDotEnv } from "./env-parse"
 
 interface EnvImportSheetProps {

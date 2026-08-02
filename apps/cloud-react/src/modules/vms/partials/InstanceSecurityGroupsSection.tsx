@@ -1,11 +1,5 @@
 import { useMemo, useState } from "react"
 
-import { Skeleton } from "@datadack/common-ui"
-import { Link2, Loader2, ShieldCheck, Unlink } from "lucide-react"
-import { useTranslation } from "react-i18next"
-import { Link } from "react-router-dom"
-
-import { Section, StatusBadge } from "@/components/console"
 import {
   Button,
   Select,
@@ -13,7 +7,13 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Skeleton,
 } from "@datadack/common-ui"
+import { Link2, Loader2, ShieldCheck, Unlink } from "lucide-react"
+import { useTranslation } from "react-i18next"
+import { Link } from "react-router-dom"
+
+import { Section, StatusBadge } from "@/components/console"
 import { VPC_ROUTES } from "@/modules/vpc/vpc.constants"
 import {
   useAllSecurityGroups,

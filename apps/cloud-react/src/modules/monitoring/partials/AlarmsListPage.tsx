@@ -12,7 +12,16 @@
 
 import { useMemo, useState } from "react"
 
-import { Badge } from "@datadack/common-ui"
+import {
+  Badge,
+  Button,
+  Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { BellOff, BellRing, Pencil, Plus, RefreshCw, Search, SearchX, Trash2 } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
@@ -24,15 +33,6 @@ import {
   PageHeader,
   ResourceTable,
 } from "@/components/console"
-import {
-  Button,
-  Input,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 import { useDisks } from "@/modules/disks/disks.hooks"
 import { useLoadBalancers } from "@/modules/load-balancers/load-balancers.hooks"

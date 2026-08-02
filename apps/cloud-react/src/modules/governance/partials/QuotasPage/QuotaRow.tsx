@@ -1,8 +1,7 @@
-import { Badge } from "@datadack/common-ui"
+import { Badge, Button } from "@datadack/common-ui"
 import { ArrowUpRight } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { Button } from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 
 import { QuotaRing } from "../../components/QuotaRing"

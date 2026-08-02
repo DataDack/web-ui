@@ -1,6 +1,14 @@
 import { useState } from "react"
 
-import { Skeleton } from "@datadack/common-ui"
+import {
+  Button,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Skeleton,
+} from "@datadack/common-ui"
 import { FileText, Info, Loader2, Plus, Trash2, Users, X } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link, useNavigate, useParams } from "react-router-dom"
@@ -13,14 +21,6 @@ import {
   Section,
   staggerDelay,
 } from "@/components/console"
-import {
-  Button,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@datadack/common-ui"
 import { useScreen } from "@/services/api/screen"
 
 import { IAM_ROUTES } from "../iam.constants"

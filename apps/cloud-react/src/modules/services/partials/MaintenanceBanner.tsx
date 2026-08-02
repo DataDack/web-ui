@@ -1,7 +1,5 @@
-import { Badge } from "@datadack/common-ui"
+import { Badge, Button } from "@datadack/common-ui"
 import { AlertTriangle, Clock, X } from "lucide-react"
-
-import { Button } from "@datadack/common-ui"
 
 import type { ServiceMaintenance } from "../services.types"
 

@@ -1,4 +1,4 @@
-import { Skeleton } from "@datadack/common-ui"
+import { Button, Skeleton } from "@datadack/common-ui"
 import {
   AlertTriangle,
   ArrowLeft,
@@ -12,7 +12,6 @@ import {
 import { Link, useNavigate, useParams } from "react-router-dom"
 
 import { EmptyState } from "@/components/console"
-import { Button } from "@datadack/common-ui"
 import { useScreen } from "@/services/api/screen"
 
 import { SetupFlowGraphic } from "./SetupFlowGraphic"

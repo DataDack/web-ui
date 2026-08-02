@@ -1,11 +1,10 @@
 import { useMemo, useState } from "react"
 
-import { Skeleton } from "@datadack/common-ui"
+import { Button, Skeleton } from "@datadack/common-ui"
 import { Database, Flame, RefreshCw, ShieldAlert, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { ConfirmDialog, EmptyState, PageHeader, StatGrid } from "@/components/console"
-import { Button } from "@datadack/common-ui"
 import { useScreen } from "@/services/api/screen"
 
 import { EMPTY_SELECTION, summarize, toggle, toggleGroup, type Selection } from "./cache-selection"

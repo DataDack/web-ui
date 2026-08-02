@@ -1,7 +1,16 @@
 import { useState } from "react"
 
-import { Switch } from "@datadack/common-ui"
-import { Badge, Skeleton } from "@datadack/common-ui"
+import {
+  Badge,
+  Button,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  Skeleton,
+  Switch,
+} from "@datadack/common-ui"
 import {
   Activity,
   Cpu,
@@ -37,14 +46,6 @@ import {
   TagList,
   type KeyValueItem,
 } from "@/components/console"
-import {
-  Button,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@datadack/common-ui"
 import {
   Table,
   TableBody,

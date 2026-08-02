@@ -1,9 +1,7 @@
-import { Badge } from "@datadack/common-ui"
+import { Badge, Button } from "@datadack/common-ui"
 import { ExternalLink } from "lucide-react"
 
 import { SmartSelect, type SmartSelectOption } from "@/components/console"
-import { Button } from "@datadack/common-ui"
-
 import { GitHubAvatar } from "./GitHubAvatar"
 import { GITHUB_INSTALLATIONS_URL } from "../managed-apps.constants"
 import { useGitHubConnections } from "../managed-apps.hooks"

@@ -1,9 +1,6 @@
 import type { ReactNode } from "react"
 
-import { Switch } from "@datadack/common-ui"
-import { Badge } from "@datadack/common-ui"
-
-import { Input } from "@datadack/common-ui"
+import { Badge, Input, Switch } from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 
 import { FieldRow } from "./FieldRow"

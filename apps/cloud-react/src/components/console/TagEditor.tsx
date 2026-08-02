@@ -1,8 +1,7 @@
-import { Label } from "@datadack/common-ui"
+import { Button, Input, Label } from "@datadack/common-ui"
 import { Plus, Tag, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { Button, Input } from "@datadack/common-ui"
 import type { TagRow } from "@/lib/tags"
 
 interface TagEditorProps {

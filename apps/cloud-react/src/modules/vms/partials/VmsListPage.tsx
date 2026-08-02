@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react"
 
-import { Badge } from "@datadack/common-ui"
+import { Badge, Button, Input } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import {
   Cpu,
@@ -30,7 +30,6 @@ import {
   StatGrid,
   statusColumn,
 } from "@/components/console"
-import { Button, Input } from "@datadack/common-ui"
 import { OSIcon } from "@/modules/catalog/os-icons"
 import { useScreen } from "@/services/api/screen"
 

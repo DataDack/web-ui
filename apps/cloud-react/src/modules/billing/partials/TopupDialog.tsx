@@ -1,8 +1,5 @@
 import { useState } from "react"
 
-import { Label } from "@datadack/common-ui"
-import { useTranslation } from "react-i18next"
-
 import {
   Button,
   Dialog,
@@ -12,7 +9,10 @@ import {
   DialogHeader,
   DialogTitle,
   Input,
+  Label,
 } from "@datadack/common-ui"
+import { useTranslation } from "react-i18next"
+
 import { useBuyCredits } from "../billing.hooks"
 import { inr } from "../billing.utils"
 

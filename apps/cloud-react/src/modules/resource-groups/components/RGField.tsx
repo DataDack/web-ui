@@ -1,11 +1,17 @@
 import { useEffect, useMemo, useState } from "react"
 
-import { Label, Textarea } from "@datadack/common-ui"
+import {
+  Button,
+  Input,
+  Label,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  Textarea,
+} from "@datadack/common-ui"
 import { Check, ChevronsUpDown, FolderTree, Loader2, Plus } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { Button, Input } from "@datadack/common-ui"
-import { Popover, PopoverContent, PopoverTrigger } from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 import { useNamingRule } from "@/modules/governance/governance.hooks"
 import { namingNameSchema } from "@/modules/governance/governance.validation"

@@ -1,5 +1,4 @@
-import { Card, CardContent, CardFooter, CardHeader, Separator } from "@datadack/common-ui"
-import { Badge } from "@datadack/common-ui"
+import { Badge, Card, CardContent, CardFooter, CardHeader, Separator } from "@datadack/common-ui"
 import { ArrowUpRight } from "lucide-react"
 import { Link } from "react-router-dom"
 

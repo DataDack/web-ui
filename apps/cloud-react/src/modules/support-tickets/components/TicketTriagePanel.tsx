@@ -1,18 +1,18 @@
 import { useState } from "react"
 
-import { Label } from "@datadack/common-ui"
-import { useTranslation } from "react-i18next"
-
-import { Section } from "@/components/console"
 import {
   Button,
   Input,
+  Label,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@datadack/common-ui"
+import { useTranslation } from "react-i18next"
+
+import { Section } from "@/components/console"
 import { TICKET_PRIORITIES, TICKET_STATUSES } from "../support-tickets.constants"
 import type { SupportTicket, UpdateTicketPayload } from "../support-tickets.types"
 

@@ -1,10 +1,9 @@
-import { Skeleton } from "@datadack/common-ui"
+import { Button, Skeleton } from "@datadack/common-ui"
 import { FolderKanban, Info, Layers, Pencil } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useParams, useSearchParams } from "react-router-dom"
 
 import { DetailPage, KeyValueGrid, Section, TagList } from "@/components/console"
-import { Button } from "@datadack/common-ui"
 import { useScreen } from "@/services/api/screen"
 
 import { useResourceGroup$ } from "../resource-groups.hooks"

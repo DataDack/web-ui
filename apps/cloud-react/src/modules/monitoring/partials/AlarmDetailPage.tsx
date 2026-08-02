@@ -8,7 +8,7 @@
 
 import { useMemo, useState } from "react"
 
-import { Badge, Skeleton } from "@datadack/common-ui"
+import { Badge, Button, Skeleton } from "@datadack/common-ui"
 import {
   Activity,
   BellOff,
@@ -35,7 +35,6 @@ import {
   PageHeader,
   Section,
 } from "@/components/console"
-import { Button } from "@datadack/common-ui"
 import {
   Table,
   TableBody,

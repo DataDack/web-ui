@@ -1,6 +1,14 @@
 import { useMemo, useState } from "react"
 
-import { Label } from "@datadack/common-ui"
+import {
+  Button,
+  Input,
+  Label,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+} from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { AlertTriangle, KeyRound, Loader2, Server, ShieldCheck } from "lucide-react"
 import { Controller, useForm, type UseFormReturn } from "react-hook-form"
@@ -15,14 +23,6 @@ import {
   Section,
   type WizardStep,
 } from "@/components/console"
-import {
-  Button,
-  Input,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-} from "@datadack/common-ui"
 import { useScreen } from "@/services/api/screen"
 
 import {

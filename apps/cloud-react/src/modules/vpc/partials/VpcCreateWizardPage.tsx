@@ -1,6 +1,15 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 
-import { Label } from "@datadack/common-ui"
+import {
+  Button,
+  Input,
+  Label,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
   AlertTriangle,
@@ -25,15 +34,6 @@ import {
   TagEditor,
   type WizardStep,
 } from "@/components/console"
-import {
-  Button,
-  Input,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@datadack/common-ui"
 import { tagRowsToRecord, type TagRow } from "@/lib/tags"
 import { cn } from "@/lib/utils"
 import { useRegionCatalog } from "@/modules/catalog/catalog.hooks"

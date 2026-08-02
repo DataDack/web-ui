@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from "react"
 
-import { Badge } from "@datadack/common-ui"
+import { Badge, Button, Input } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { GitBranch, RefreshCw, Search, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
@@ -19,7 +19,6 @@ import {
   statusColumn,
   textColumn,
 } from "@/components/console"
-import { Button, Input } from "@datadack/common-ui"
 import { useAvailabilityZoneMap } from "@/modules/catalog/catalog.hooks"
 import { useScreen } from "@/services/api/screen"
 

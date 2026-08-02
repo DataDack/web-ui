@@ -4,10 +4,7 @@
 // each with the statistic, direction and starting threshold that make sense for
 // it. Picking one fills the condition in below, so the rule starts out sane.
 
-import { Label } from "@datadack/common-ui"
-
-import { Input } from "@datadack/common-ui"
-
+import { Input, Label } from "@datadack/common-ui"
 import { MetricCard } from "./MetricCard"
 import { metricsFor, type AlarmTargetType } from "../../monitoring.targets"
 import type { MetricDescriptor } from "../../monitoring.types"

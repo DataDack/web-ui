@@ -1,9 +1,5 @@
 import { useState } from "react"
 
-import { Label } from "@datadack/common-ui"
-import { Loader2 } from "lucide-react"
-import { useTranslation } from "react-i18next"
-
 import {
   Button,
   Dialog,
@@ -12,12 +8,16 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  Label,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@datadack/common-ui"
+import { Loader2 } from "lucide-react"
+import { useTranslation } from "react-i18next"
+
 import { useInstances } from "@/modules/vms/vms.hooks"
 
 import { useAttachDisk } from "../disks.hooks"

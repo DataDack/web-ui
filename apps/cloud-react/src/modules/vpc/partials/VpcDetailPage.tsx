@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-import { Badge, Skeleton } from "@datadack/common-ui"
+import { Badge, Button, Skeleton } from "@datadack/common-ui"
 import {
   GitBranch,
   Globe,
@@ -22,7 +22,6 @@ import {
   TONE_DOT_CLASSES,
   type StatusTone,
 } from "@/components/console/status-config"
-import { Button } from "@datadack/common-ui"
 import { parseTags } from "@/lib/tags"
 import { useAvailabilityZoneMap } from "@/modules/catalog/catalog.hooks"
 import { useScreen } from "@/services/api/screen"

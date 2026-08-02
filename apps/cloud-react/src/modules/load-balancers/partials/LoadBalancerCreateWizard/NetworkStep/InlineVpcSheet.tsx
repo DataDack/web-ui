@@ -1,13 +1,9 @@
 import { useMemo, useState } from "react"
 
-import { Label } from "@datadack/common-ui"
-import { Loader2 } from "lucide-react"
-import { useTranslation } from "react-i18next"
-
-import { CidrInput } from "@/components/console"
 import {
   Button,
   Input,
+  Label,
   Select,
   SelectContent,
   SelectItem,
@@ -20,6 +16,10 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@datadack/common-ui"
+import { Loader2 } from "lucide-react"
+import { useTranslation } from "react-i18next"
+
+import { CidrInput } from "@/components/console"
 import { RGField } from "@/modules/resource-groups/components/RGField"
 import { useCreateVPC, useRegions, useVPCs } from "@/modules/vpc/vpc.hooks"
 import { nextFreeSubnetCidr, subnetCidrIssue, vpcCidrIssue } from "@/modules/vpc/vpc.utils"

@@ -1,13 +1,11 @@
 import { useState } from "react"
 
-import { Label } from "@datadack/common-ui"
-import { Skeleton } from "@datadack/common-ui"
+import { Button, Input, Label, Skeleton } from "@datadack/common-ui"
 import { Info, MonitorDot, Terminal as TerminalIcon, KeyRound } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
 
 import { CopyButton, PageHeader, Section } from "@/components/console"
-import { Button, Input } from "@datadack/common-ui"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
 import { useSSHKeys } from "@/modules/ssh-keys/ssh-keys.hooks"

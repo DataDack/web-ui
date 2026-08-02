@@ -1,13 +1,9 @@
 import { useMemo, useState } from "react"
 
-import { Label } from "@datadack/common-ui"
-import { Loader2 } from "lucide-react"
-import { useTranslation } from "react-i18next"
-
-import { CidrInput } from "@/components/console"
 import {
   Button,
   Input,
+  Label,
   Sheet,
   SheetContent,
   SheetDescription,
@@ -15,6 +11,10 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@datadack/common-ui"
+import { Loader2 } from "lucide-react"
+import { useTranslation } from "react-i18next"
+
+import { CidrInput } from "@/components/console"
 import { useAllSubnets, useCreateSubnet, useVPC } from "@/modules/vpc/vpc.hooks"
 import { nextFreeSubnetCidr, subnetCidrIssue } from "@/modules/vpc/vpc.utils"
 

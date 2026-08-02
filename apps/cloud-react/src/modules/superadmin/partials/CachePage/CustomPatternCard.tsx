@@ -1,10 +1,9 @@
 import { useState } from "react"
 
-import { Badge } from "@datadack/common-ui"
+import { Badge, Button, Input } from "@datadack/common-ui"
 import { Plus, Terminal, X } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { Button, Input } from "@datadack/common-ui"
 interface CustomPatternCardProps {
   patterns: string[]
   onChange: (patterns: string[]) => void

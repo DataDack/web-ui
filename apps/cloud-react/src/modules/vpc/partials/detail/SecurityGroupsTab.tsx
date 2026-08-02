@@ -1,11 +1,7 @@
 import { useState } from "react"
 
-import { Badge, Skeleton } from "@datadack/common-ui"
-import { Loader2, Lock, Plus, Trash2 } from "lucide-react"
-import { useTranslation } from "react-i18next"
-
-import { ConfirmDialog, EmptyState, staggerDelay } from "@/components/console"
 import {
+  Badge,
   Button,
   Input,
   Select,
@@ -13,7 +9,12 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Skeleton,
 } from "@datadack/common-ui"
+import { Loader2, Lock, Plus, Trash2 } from "lucide-react"
+import { useTranslation } from "react-i18next"
+
+import { ConfirmDialog, EmptyState, staggerDelay } from "@/components/console"
 import {
   Table,
   TableBody,

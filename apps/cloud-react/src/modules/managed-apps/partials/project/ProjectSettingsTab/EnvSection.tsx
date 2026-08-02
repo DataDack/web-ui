@@ -1,11 +1,9 @@
 import { useMemo, useState } from "react"
 
-import { Skeleton } from "@datadack/common-ui"
+import { Button, Skeleton } from "@datadack/common-ui"
 import { Loader2 } from "lucide-react"
 
 import { ConfirmDialog, Section } from "@/components/console"
-import { Button } from "@datadack/common-ui"
-
 import { EnvVarEditor, storedEnvRows, toEnvMap, type EnvRow } from "../../../components"
 import { useProjectEnv, useUpdateProjectEnv } from "../../../managed-apps.hooks"
 import type { Project } from "../../../managed-apps.types"

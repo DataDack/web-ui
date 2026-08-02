@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react"
 
-import { Label, Textarea } from "@datadack/common-ui"
+import { Button, Input, Label, Textarea } from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { AlertTriangle, Download, KeyRound, Loader2, Sparkles, Upload } from "lucide-react"
 import { motion } from "motion/react"
@@ -11,7 +11,6 @@ import { toast } from "sonner"
 import { z } from "zod/v4"
 
 import { CreateWizard, PageHeader, type WizardStep } from "@/components/console"
-import { Button, Input } from "@datadack/common-ui"
 import { canGenerateKeyPair, generateEd25519KeyPair } from "@/lib/ssh-keygen"
 import { cn } from "@/lib/utils"
 import { useNamingRule } from "@/modules/governance/governance.hooks"

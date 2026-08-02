@@ -1,17 +1,18 @@
 import { useState } from "react"
 
-import { Avatar, AvatarFallback } from "@datadack/common-ui"
-import { Check, LifeBuoy, LogOut, Plus, Settings, ShieldCheck, Star, Wallet } from "lucide-react"
-import { useTranslation } from "react-i18next"
-import { useNavigate } from "react-router-dom"
-
 import {
+  Avatar,
+  AvatarFallback,
   Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@datadack/common-ui"
+import { Check, LifeBuoy, LogOut, Plus, Settings, ShieldCheck, Star, Wallet } from "lucide-react"
+import { useTranslation } from "react-i18next"
+import { useNavigate } from "react-router-dom"
+
 import { cn } from "@/lib/utils"
 import { ACCOUNT_ROUTES } from "@/modules/accounts/accounts.constants"
 import { useActiveAccount, useSwitchAccount } from "@/modules/accounts/accounts.hooks"

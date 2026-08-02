@@ -1,8 +1,11 @@
-import { Skeleton } from "@datadack/common-ui"
-
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+  Skeleton,
+} from "@datadack/common-ui"
 import { OverrideField } from "@/components/console"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@datadack/common-ui"
-
 import { RootDirectoryInput } from "./RootDirectoryInput"
 import { useBuildDefaults } from "../managed-apps.hooks"
 import type { ProjectType } from "../managed-apps.types"

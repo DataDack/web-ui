@@ -1,11 +1,5 @@
 import { useEffect } from "react"
 
-import { Switch, Textarea } from "@datadack/common-ui"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Controller, useForm } from "react-hook-form"
-import { useTranslation } from "react-i18next"
-import { z } from "zod/v4"
-
 import {
   Input,
   Select,
@@ -13,7 +7,14 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Switch,
+  Textarea,
 } from "@datadack/common-ui"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Controller, useForm } from "react-hook-form"
+import { useTranslation } from "react-i18next"
+import { z } from "zod/v4"
+
 import { CurrencySelect } from "@/modules/countries/CurrencySelect"
 
 import { Field, FormSheet } from "../components/form-fields"
