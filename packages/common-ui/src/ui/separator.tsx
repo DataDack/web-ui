@@ -1,7 +1,8 @@
 import type * as React from "react"
 
-import { css, cx } from "../lib/emotion"
 import { Separator as SeparatorPrimitive } from "radix-ui"
+
+import { css, cx } from "../lib/emotion"
 
 // Radix sets data-orientation, so the two axes are attribute selectors rather
 // than a prop-driven variant — same as the Tailwind data-[orientation=*] rules.

@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react"
 
-import { css, cx } from "@datadack/common-ui"
 import { AlertTriangle, Check, PackageOpen, Search } from "lucide-react"
 
+import { css, cx } from "@datadack/common-ui"
 import { Input, fontMono } from "@datadack/common-ui"
 
 import { familyLabel, RuntimeIcon } from "./RuntimeIcon"

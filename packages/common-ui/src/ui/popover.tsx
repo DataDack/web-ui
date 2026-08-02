@@ -1,8 +1,8 @@
 import type * as React from "react"
 
-import { css, cx } from "../lib/emotion"
 import { Popover as PopoverPrimitive } from "radix-ui"
 
+import { css, cx } from "../lib/emotion"
 import { popperAnimation } from "../lib/styles"
 
 const content = css`

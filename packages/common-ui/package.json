@@ -28,7 +28,8 @@
     "dev": "tsup --watch",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "clean": "rm -rf dist node_modules/.cache"
+    "clean": "rm -rf dist node_modules/.cache",
+    "test": "bun test"
   },
   "dependencies": {
     "@emotion/css": "^11.13.5",

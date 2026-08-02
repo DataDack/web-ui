@@ -1,6 +1,5 @@
 import * as React from "react"
 
-import { css, cx } from "../lib/emotion"
 import { Slot } from "radix-ui"
 import {
   Controller,
@@ -13,6 +12,7 @@ import {
 } from "react-hook-form"
 
 import { Label } from "./label"
+import { css, cx } from "../lib/emotion"
 
 const item = css`
   display: grid;

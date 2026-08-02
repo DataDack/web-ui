@@ -1,8 +1,8 @@
 import type * as React from "react"
 
-import { css, cx } from "../lib/emotion"
 import { Tabs as TabsPrimitive } from "radix-ui"
 
+import { css, cx } from "../lib/emotion"
 import { contentEnter, mix } from "../lib/styles"
 
 const root = css`

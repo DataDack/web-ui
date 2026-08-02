@@ -1,7 +1,8 @@
 import type * as React from "react"
 
-import { css, cx } from "../lib/emotion"
 import { Avatar as AvatarPrimitive } from "radix-ui"
+
+import { css, cx } from "../lib/emotion"
 
 // The Tailwind original drove the size-dependent rules through named group
 // variants (`group/avatar` + `group-data-[size=sm]/avatar:`), which depend on

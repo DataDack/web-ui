@@ -1,7 +1,7 @@
-import { css, cx } from "../lib/emotion"
 import { Moon, Sun } from "lucide-react"
 
 import { useTheme } from "./ThemeProvider"
+import { css, cx } from "../lib/emotion"
 
 const group = css`
   display: flex;

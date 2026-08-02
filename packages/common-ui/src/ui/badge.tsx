@@ -1,7 +1,8 @@
 import type * as React from "react"
 
-import { css, cx } from "../lib/emotion"
 import { Slot } from "radix-ui"
+
+import { css, cx } from "../lib/emotion"
 
 const base = css`
   display: inline-flex;

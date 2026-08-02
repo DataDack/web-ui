@@ -1,9 +1,7 @@
 import { useState } from "react"
 
-import { css, cx } from "../lib/emotion"
 import { Check, ChevronDown } from "lucide-react"
 
-import { mix } from "../lib/styles"
 import {
   Command,
   CommandEmpty,
@@ -13,6 +11,8 @@ import {
   CommandList,
 } from "./command"
 import { Popover, PopoverContent, PopoverTrigger } from "./popover"
+import { css, cx } from "../lib/emotion"
+import { mix } from "../lib/styles"
 
 export interface ComboboxOption {
   value: string

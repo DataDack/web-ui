@@ -1,7 +1,8 @@
 import type * as React from "react"
 
-import { css, cx } from "../lib/emotion"
 import { Label as LabelPrimitive } from "radix-ui"
+
+import { css, cx } from "../lib/emotion"
 
 // The two disabled rules were Tailwind group-*/peer-* variants, which compile to
 // ancestor and sibling selectors keyed on those marker classes. Kept literally so

@@ -1,9 +1,9 @@
 import * as React from "react"
 
-import { css, cx } from "../lib/emotion"
 import { OTPInput, OTPInputContext } from "input-otp"
 import { MinusIcon } from "lucide-react"
 
+import { css, cx } from "../lib/emotion"
 import { caretBlink, mix } from "../lib/styles"
 
 // input-otp takes plain class strings for its wrapper and input, so emotion's

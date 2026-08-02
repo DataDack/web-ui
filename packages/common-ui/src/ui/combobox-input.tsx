@@ -2,10 +2,9 @@ import { useId, useMemo, useRef, useState } from "react"
 
 import { Check, ChevronDown, Loader2 } from "lucide-react"
 
-import { css, cx } from "../lib/emotion"
-
-import { animateSpin, fontMono, mix } from "../lib/styles"
 import { Popover, PopoverAnchor, PopoverContent } from "./popover"
+import { css, cx } from "../lib/emotion"
+import { animateSpin, fontMono, mix } from "../lib/styles"
 
 // Matches Input's box, but the focus ring lives on the wrapper (focus-within)
 // because the chevron button sits inside the same field.

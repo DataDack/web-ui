@@ -1,8 +1,8 @@
 import type * as React from "react"
 
-import { css, cx } from "../lib/emotion"
 import { ScrollArea as ScrollAreaPrimitive } from "radix-ui"
 
+import { css, cx } from "../lib/emotion"
 import { mix } from "../lib/styles"
 
 const root = css`

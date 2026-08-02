@@ -1,10 +1,10 @@
 import type * as React from "react"
 
-import { css, cx } from "../lib/emotion"
 import { Command as CommandPrimitive } from "cmdk"
 import { SearchIcon } from "lucide-react"
 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "./dialog"
+import { css, cx } from "../lib/emotion"
 
 // cmdk tags the elements it renders with [cmdk-*] attributes, which is the only
 // handle a consumer gets on its internals — the Tailwind original reached them

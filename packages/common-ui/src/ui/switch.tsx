@@ -1,8 +1,8 @@
 import type * as React from "react"
 
-import { css, cx } from "../lib/emotion"
 import { Switch as SwitchPrimitive } from "radix-ui"
 
+import { css, cx } from "../lib/emotion"
 import { mix } from "../lib/styles"
 
 // `peer` is kept as a class alongside the emotion one: Label's peer-disabled rule

@@ -1,9 +1,9 @@
 import type * as React from "react"
 
-import { css, cx } from "../lib/emotion"
 import { CheckIcon, MinusIcon } from "lucide-react"
 import { Checkbox as CheckboxPrimitive } from "radix-ui"
 
+import { css, cx } from "../lib/emotion"
 import { mix } from "../lib/styles"
 
 // `peer` stays alongside the emotion class: Label's peer-disabled rule pairs with

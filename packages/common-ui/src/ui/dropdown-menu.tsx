@@ -1,10 +1,8 @@
 import type * as React from "react"
 
-import { cx } from "../lib/emotion"
 import { CheckIcon, ChevronRightIcon, CircleIcon } from "lucide-react"
 import { DropdownMenu as DropdownMenuPrimitive } from "radix-ui"
 
-import { popperAnimation } from "../lib/styles"
 import {
   menuIndicatorItem,
   menuItem,
@@ -18,6 +16,8 @@ import {
   menuSubTriggerChevron,
   menuSurface,
 } from "./menu-styles"
+import { cx } from "../lib/emotion"
+import { popperAnimation } from "../lib/styles"
 
 const ORIGIN = "--radix-dropdown-menu-content"
 const surface = menuSurface(ORIGIN)

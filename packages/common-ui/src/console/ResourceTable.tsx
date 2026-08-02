@@ -1,6 +1,5 @@
 import { useState } from "react"
 
-import { css, cx } from "../lib/emotion"
 import {
   flexRender,
   getCoreRowModel,
@@ -13,6 +12,7 @@ import {
 import { ArrowDown, ArrowUp, ArrowUpDown, type LucideIcon, Search } from "lucide-react"
 
 import { EmptyState } from "./EmptyState"
+import { css, cx } from "../lib/emotion"
 import { contentEnter, fontMono, glass2, mix } from "../lib/styles"
 import { Input } from "../ui/input"
 import { Skeleton } from "../ui/skeleton"

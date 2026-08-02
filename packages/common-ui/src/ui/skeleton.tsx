@@ -1,7 +1,6 @@
 import type * as React from "react"
 
 import { css, cx } from "../lib/emotion"
-
 import { animatePulse } from "../lib/styles"
 
 const skeleton = css`

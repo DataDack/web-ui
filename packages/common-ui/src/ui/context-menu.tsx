@@ -1,10 +1,8 @@
 import type * as React from "react"
 
-import { css, cx } from "../lib/emotion"
 import { CheckIcon, ChevronRightIcon, CircleIcon } from "lucide-react"
 import { ContextMenu as ContextMenuPrimitive } from "radix-ui"
 
-import { popperAnimation } from "../lib/styles"
 import {
   menuIndicatorItem,
   menuItem,
@@ -18,6 +16,8 @@ import {
   menuSubTriggerChevron,
   menuSurface,
 } from "./menu-styles"
+import { css, cx } from "../lib/emotion"
+import { popperAnimation } from "../lib/styles"
 
 const ORIGIN = "--radix-context-menu-content"
 const surface = menuSurface(ORIGIN)

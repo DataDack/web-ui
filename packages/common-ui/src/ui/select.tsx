@@ -1,9 +1,9 @@
 import type * as React from "react"
 
-import { css, cx } from "../lib/emotion"
 import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from "lucide-react"
 import { Select as SelectPrimitive } from "radix-ui"
 
+import { css, cx } from "../lib/emotion"
 import { mix, popperAnimation } from "../lib/styles"
 
 const trigger = css`

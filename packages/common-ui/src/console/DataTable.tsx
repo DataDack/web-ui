@@ -1,6 +1,5 @@
 import { Fragment, useMemo, useState, type ReactNode } from "react"
 
-import { css, cx } from "../lib/emotion"
 import {
   flexRender,
   getCoreRowModel,
@@ -35,6 +34,7 @@ import {
 } from "lucide-react"
 
 import { EmptyState } from "./EmptyState"
+import { css, cx } from "../lib/emotion"
 import { fontMono, mix } from "../lib/styles"
 import { Button } from "../ui/button"
 import { Checkbox } from "../ui/checkbox"
@@ -179,7 +179,7 @@ const expanderOpen = css`
 `
 
 const subRowCell = css`
-  background: ${'${mix("--muted", 30)}'};
+  background: ${mix("--muted", 30)};
 `
 
 const footer = css`
@@ -460,6 +460,12 @@ export function DataTable<T>({
             <div className={search}>
               <Search className={searchIcon} />
               <Input
+                type="search"
+                // A placeholder is not an accessible name: it disappears on
+                // input and screen readers may skip it entirely, leaving an
+                // unlabelled box. The visible affordance is the magnifier icon,
+                // which is decorative, so the name has to be supplied here.
+                aria-label={searchPlaceholder}
                 className={searchInput}
                 value={filterValue}
                 placeholder={searchPlaceholder}
