@@ -13,8 +13,11 @@
 import { useMemo, useState } from "react"
 
 import {
+  actionsColumn,
   Badge,
   Button,
+  DataTable,
+  EmptyState,
   Input,
   Select,
   SelectContent,
@@ -26,13 +29,7 @@ import type { ColumnDef } from "@tanstack/react-table"
 import { BellOff, BellRing, Pencil, Plus, RefreshCw, Search, SearchX, Trash2 } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
 
-import {
-  actionsColumn,
-  ConfirmDialog,
-  EmptyState,
-  PageHeader,
-  ResourceTable,
-} from "@/components/console"
+import { ConfirmDialog, PageHeader } from "@/components/console"
 import { cn } from "@/lib/utils"
 import { useDisks } from "@/modules/disks/disks.hooks"
 import { useLoadBalancers } from "@/modules/load-balancers/load-balancers.hooks"
@@ -528,15 +525,19 @@ export function AlarmsListPage() {
         )}
       </div>
 
-      <ResourceTable<AlarmRow>
+      <DataTable<AlarmRow>
         data={visibleRows}
         columns={columns}
-        isLoading={isLoading}
-        isError={isError}
+        loading={isLoading}
+        error={isError ? "Failed to load" : undefined}
         onRetry={() => void refetch()}
+        retryLabel={"Try again"}
         getRowId={(row) => row.alarm.id}
         onRowClick={(row) => void navigate(MONITORING_ROUTES.alarm(row.alarm.id))}
-        emptyState={filtersActive && rows.length > 0 ? noMatchState : noAlarmsState}
+        empty={filtersActive && rows.length > 0 ? noMatchState : noAlarmsState}
+        onRefresh={() => void refetch()}
+        refreshLabel={"Refresh"}
+        refreshing={isFetching}
       />
 
       <ConfirmDialog

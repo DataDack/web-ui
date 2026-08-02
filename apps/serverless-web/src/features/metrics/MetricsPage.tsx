@@ -40,7 +40,7 @@ export function MetricsPage() {
   const { data: dashboard } = useDashboard()
   const functions = dashboard?.detail.functions ?? []
 
-  const { data, isLoading, error } = useMetricSeries({
+  const { data, isFetching, isLoading, refetch, error } = useMetricSeries({
     since: range.since,
     step: range.step,
     function: functionName || undefined,
@@ -281,6 +281,8 @@ export function MetricsPage() {
             description="Invoke a function and its totals appear here."
           />
         }
+        onRefresh={() => void refetch()}
+        refreshing={isFetching}
       />
     </>
   )

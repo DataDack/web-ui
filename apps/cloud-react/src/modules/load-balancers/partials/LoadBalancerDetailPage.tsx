@@ -1,33 +1,26 @@
-import { useState } from "react"
+import { useMemo, useState } from "react"
 
 import {
   Button,
+  CopyButton,
+  DataTable,
+  EmptyState,
   Skeleton,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+  TagList,
+  copyColumn,
+  textColumn,
+  type DataTableColumnMeta,
 } from "@datadack/common-ui"
+import type { ColumnDef } from "@tanstack/react-table"
 import { AlertTriangle, Boxes, Crosshair, Ear, Info, Layers, Network, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link, useNavigate, useParams } from "react-router-dom"
 
-import {
-  ConfirmDialog,
-  CopyButton,
-  DetailPage,
-  EmptyState,
-  KeyValueGrid,
-  Section,
-  staggerDelay,
-  StatusBadge,
-  TagList,
-} from "@/components/console"
+import { ConfirmDialog, DetailPage, KeyValueGrid, Section, StatusBadge } from "@/components/console"
 import { parseTags } from "@/lib/tags"
 import { TargetGroupsPanel } from "@/modules/target-groups/partials/TargetGroupsPanel"
 import { TG_ROUTES } from "@/modules/target-groups/target-groups.constants"
+import type { Target } from "@/modules/target-groups/target-groups.types"
 import { useTargetGroups, useTargets } from "@/modules/target-groups/target-groups.hooks"
 import { VMS_ROUTES } from "@/modules/vms/vms.constants"
 import { useInstances } from "@/modules/vms/vms.hooks"
@@ -41,7 +34,7 @@ import {
   useLBSubnets,
   useLoadBalancer,
 } from "../load-balancers.hooks"
-import type { LoadBalancer } from "../load-balancers.types"
+import type { LBSubnet, LoadBalancer } from "../load-balancers.types"
 import { ListenersTab } from "./ListenersTab"
 
 export function LoadBalancerDetailPage() {
@@ -234,69 +227,63 @@ function NetworksSection({ lb }: Readonly<{ lb: LoadBalancer }>) {
     return s ? `${s.name} (${s.cidr})` : id
   }
 
-  let content
-  if (isLoading) {
-    content = <Skeleton className="h-32 rounded-xl" />
-  } else if (subnets.length === 0) {
-    content = (
-      <EmptyState
-        icon={Network}
-        title={t("loadBalancers.detail.noNetworks")}
-        description={t("loadBalancers.detail.noNetworksSubtitle")}
-      />
-    )
-  } else {
-    content = (
-      <div className="glass-1 overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow className="hover:bg-transparent">
-              {[
-                t("loadBalancers.detail.nic"),
-                t("vms.detail.vpc"),
-                t("loadBalancers.wizard.subnet"),
-                t("loadBalancers.detail.privateIp"),
-              ].map((header) => (
-                <TableHead
-                  key={header}
-                  className="px-3 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground"
-                >
-                  {header}
-                </TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {[...subnets]
-              .sort((a, b) => a.nic_index - b.nic_index)
-              .map((s, index) => (
-                <TableRow key={s.id} className="animate-content-enter" style={staggerDelay(index)}>
-                  <TableCell className="px-3 font-mono text-[13px]">eth{s.nic_index}</TableCell>
-                  <TableCell className="px-3">
-                    <Link
-                      to={`/networking/${s.vpc_id}`}
-                      className="font-mono text-[13px] text-status-info hover:underline"
-                    >
-                      {vpcName(s.vpc_id)}
-                    </Link>
-                  </TableCell>
-                  <TableCell className="px-3 font-mono text-[13px]">
-                    {subnetLabel(s.subnet_id)}
-                  </TableCell>
-                  <TableCell className="px-3">
-                    {s.private_ip ? (
-                      <CopyButton value={s.private_ip} />
-                    ) : (
-                      <span className="text-muted-foreground">—</span>
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))}
-          </TableBody>
-        </Table>
-      </div>
-    )
-  }
+  const columns = useMemo<ColumnDef<LBSubnet>[]>(
+    () => [
+      textColumn({
+        id: "nic",
+        header: t("loadBalancers.detail.nic"),
+        accessor: (subnet) => `eth${String(subnet.nic_index)}`,
+        mono: true,
+      }),
+      {
+        id: "vpc",
+        header: t("vms.detail.vpc"),
+        meta: { interactive: true } satisfies DataTableColumnMeta,
+        cell: ({ row }) => (
+          <Link
+            to={`/networking/${row.original.vpc_id}`}
+            className="font-mono text-[13px] text-status-info hover:underline"
+          >
+            {vpcName(row.original.vpc_id)}
+          </Link>
+        ),
+      },
+      textColumn({
+        id: "subnet",
+        header: t("loadBalancers.wizard.subnet"),
+        accessor: (subnet) => subnetLabel(subnet.subnet_id),
+        mono: true,
+      }),
+      copyColumn({
+        id: "privateIp",
+        header: t("loadBalancers.detail.privateIp"),
+        accessor: (subnet) => subnet.private_ip,
+        copiedLabel: t("console.copy.copied"),
+      }),
+    ],
+    // vpcName and subnetLabel close over these lists.
+    [allSubnets, t, vpcs],
+  )
+
+  // NIC order is the meaningful order here, so it is the default sort rather
+  // than something the user has to ask for.
+  const content = (
+    <DataTable<LBSubnet>
+      data={subnets}
+      columns={columns}
+      loading={isLoading}
+      skeletonRows={3}
+      getRowId={(subnet) => subnet.id}
+      defaultSorting={[{ id: "nic", desc: false }]}
+      empty={
+        <EmptyState
+          icon={Network}
+          title={t("loadBalancers.detail.noNetworks")}
+          description={t("loadBalancers.detail.noNetworksSubtitle")}
+        />
+      }
+    />
+  )
 
   return (
     <Section
@@ -355,6 +342,47 @@ function TargetGroupTargets({ groupId }: Readonly<{ groupId: string }>) {
 
   if (isLoading) return <Skeleton className="h-40 rounded-xl" />
 
+  const targetColumns = useMemo<ColumnDef<Target>[]>(
+    () => [
+      {
+        id: "instance",
+        header: t("loadBalancers.targets.instance"),
+        meta: { interactive: true } satisfies DataTableColumnMeta,
+        cell: ({ row }) => {
+          const instance = instances.find((i) => i.id === row.original.instance_id)
+          // An instance this view has not loaded still has to be identifiable.
+          if (!instance) return <CopyButton value={row.original.instance_id} />
+          return (
+            <Link
+              to={VMS_ROUTES.detail(instance.id)}
+              className="font-mono text-[13px] text-status-info hover:underline"
+            >
+              {instance.name}
+            </Link>
+          )
+        },
+      },
+      textColumn({
+        id: "port",
+        header: t("loadBalancers.targets.port"),
+        accessor: (target) => target.port,
+        mono: true,
+      }),
+      {
+        id: "health",
+        header: t("loadBalancers.targets.health"),
+        accessorFn: (target) => target.health_status,
+        cell: ({ row }) => (
+          <StatusBadge
+            status={row.original.health_status}
+            pulse={row.original.health_status === "healthy"}
+          />
+        ),
+      },
+    ],
+    [instances, t],
+  )
+
   return (
     <Section
       variant="panel"
@@ -369,66 +397,18 @@ function TargetGroupTargets({ groupId }: Readonly<{ groupId: string }>) {
         </Link>
       }
     >
-      {targets.length === 0 ? (
-        <EmptyState
-          icon={Crosshair}
-          title={t("targetGroups.targets.empty")}
-          description={t("targetGroups.targets.emptySubtitle")}
-        />
-      ) : (
-        <div className="glass-1 overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow className="hover:bg-transparent">
-                {[
-                  t("loadBalancers.targets.instance"),
-                  t("loadBalancers.targets.port"),
-                  t("loadBalancers.targets.health"),
-                ].map((header) => (
-                  <TableHead
-                    key={header}
-                    className="px-3 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground"
-                  >
-                    {header}
-                  </TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {targets.map((target, index) => {
-                const instance = instances.find((i) => i.id === target.instance_id)
-                return (
-                  <TableRow
-                    key={target.id}
-                    className="animate-content-enter"
-                    style={staggerDelay(index)}
-                  >
-                    <TableCell className="px-3">
-                      {instance ? (
-                        <Link
-                          to={VMS_ROUTES.detail(instance.id)}
-                          className="font-mono text-[13px] text-status-info hover:underline"
-                        >
-                          {instance.name}
-                        </Link>
-                      ) : (
-                        <CopyButton value={target.instance_id} />
-                      )}
-                    </TableCell>
-                    <TableCell className="px-3 font-mono text-[13px]">{target.port}</TableCell>
-                    <TableCell className="px-3">
-                      <StatusBadge
-                        status={target.health_status}
-                        pulse={target.health_status === "healthy"}
-                      />
-                    </TableCell>
-                  </TableRow>
-                )
-              })}
-            </TableBody>
-          </Table>
-        </div>
-      )}
+      <DataTable<Target>
+        data={targets}
+        columns={targetColumns}
+        getRowId={(target) => target.id}
+        empty={
+          <EmptyState
+            icon={Crosshair}
+            title={t("targetGroups.targets.empty")}
+            description={t("targetGroups.targets.emptySubtitle")}
+          />
+        }
+      />
     </Section>
   )
 }

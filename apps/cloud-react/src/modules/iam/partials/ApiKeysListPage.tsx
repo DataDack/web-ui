@@ -1,36 +1,33 @@
 import { useMemo, useState } from "react"
 
 import {
+  actionsColumn,
   Button,
+  CopyButton,
+  DataTable,
+  dateColumn,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  EmptyState,
   Input,
   Label,
+  nameColumn,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
+  statusColumn,
 } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { KeySquare, Loader2, Plus, RefreshCw, Trash2, TriangleAlert } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import {
-  actionsColumn,
-  ConfirmDialog,
-  CopyButton,
-  dateColumn,
-  EmptyState,
-  nameColumn,
-  PageHeader,
-  ResourceTable,
-  statusColumn,
-} from "@/components/console"
+import { ConfirmDialog, PageHeader } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
 import { useAPIKeys, useCreateAPIKey, useDeleteAPIKey } from "../iam.hooks"
@@ -138,14 +135,15 @@ export function ApiKeysListPage() {
         }
       />
 
-      <ResourceTable<APIKey>
+      <DataTable<APIKey>
         data={keys}
         columns={columns}
-        isLoading={isLoading}
-        isError={isError}
+        loading={isLoading}
+        error={isError ? t("console.table.error") : undefined}
         onRetry={() => void refetch()}
+        retryLabel={t("console.table.retry")}
         getRowId={(key) => key.id}
-        emptyState={
+        empty={
           <EmptyState
             icon={KeySquare}
             title={t("iam.apiKeys.empty")}
@@ -158,6 +156,9 @@ export function ApiKeysListPage() {
             }}
           />
         }
+        onRefresh={() => void refetch()}
+        refreshLabel={t("console.table.refresh")}
+        refreshing={isFetching}
       />
 
       <CreateApiKeyDialog

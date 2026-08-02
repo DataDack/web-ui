@@ -1,7 +1,7 @@
-import { Badge, Button } from "@datadack/common-ui"
+import { Badge, Button, EmptyState } from "@datadack/common-ui"
 import { Radio, ScrollText } from "lucide-react"
 
-import { EmptyState, PageHeader } from "@/components/console"
+import { PageHeader } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
 export function LogsPage() {

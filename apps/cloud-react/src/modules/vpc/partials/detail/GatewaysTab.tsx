@@ -2,18 +2,18 @@ import { useMemo, useState } from "react"
 
 import {
   Button,
-  Skeleton,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+  DataTable,
+  copyColumn,
+  nameColumn,
+  statusColumn,
+  textColumn,
+  type DataTableColumnMeta,
 } from "@datadack/common-ui"
+import type { ColumnDef } from "@tanstack/react-table"
 import { Link2, Loader2, Unlink } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { ConfirmDialog, CopyButton, Section, staggerDelay, StatusBadge } from "@/components/console"
+import { ConfirmDialog, Section } from "@/components/console"
 
 import {
   useAttachIGW,
@@ -23,31 +23,15 @@ import {
   useRouters,
   useVPCSubnets,
 } from "../../vpc.hooks"
-import type { InternetGateway, VPCNetwork } from "../../vpc.types"
+import type { InternetGateway, NATGateway, Router, VPCNetwork } from "../../vpc.types"
 
-const HEAD_CLASS = "px-3 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground"
-
-function LoadingRows() {
-  return (
-    <div className="p-4 space-y-2">
-      {["a", "b"].map((k) => (
-        <Skeleton key={k} className="h-8 rounded" />
-      ))}
-    </div>
-  )
-}
-
-function EmptyRow({ label, colSpan }: Readonly<{ label: string; colSpan: number }>) {
-  return (
-    <TableRow className="hover:bg-transparent">
-      <TableCell
-        colSpan={colSpan}
-        className="px-3 py-6 text-center text-[13px] text-muted-foreground"
-      >
-        {label}
-      </TableCell>
-    </TableRow>
-  )
+/**
+ * The gateway panels are three small read-mostly tables, so they use DataTable's
+ * plain note for "nothing here" rather than the full icon-and-blurb empty state —
+ * a panel this size reads better with one quiet line.
+ */
+function Note({ children }: Readonly<{ children: string }>) {
+  return <span className="text-[13px] text-muted-foreground">{children}</span>
 }
 
 /* ── Routers ───────────────────────────────────────────────────────────── */
@@ -57,49 +41,33 @@ function RoutersSection({ network }: Readonly<{ network: VPCNetwork }>) {
   const { data: routers = [], isLoading } = useRouters()
   const networkRouters = routers.filter((r) => r.network_id === network.id)
 
+  const columns = useMemo<ColumnDef<Router>[]>(
+    () => [
+      nameColumn({ header: t("vpc.columns.name"), accessor: (r) => r.name }),
+      textColumn({ id: "region", header: t("vpc.columns.region"), accessor: (r) => r.region }),
+      statusColumn({
+        header: t("vpc.columns.status"),
+        accessor: (r) => r.status,
+        pulse: (r) => r.status === "active",
+      }),
+    ],
+    [t],
+  )
+
   return (
     <Section
       variant="panel"
       title={t("vpc.detail.routers")}
       description={t("vpc.detail.routersDescription")}
     >
-      {isLoading ? (
-        <LoadingRows />
-      ) : (
-        <div className="glass-1 overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow className="hover:bg-transparent">
-                <TableHead className={HEAD_CLASS}>{t("vpc.columns.name")}</TableHead>
-                <TableHead className={HEAD_CLASS}>{t("vpc.columns.region")}</TableHead>
-                <TableHead className={HEAD_CLASS}>{t("vpc.columns.status")}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {networkRouters.map((router, index) => (
-                <TableRow
-                  key={router.id}
-                  className="animate-content-enter"
-                  style={staggerDelay(index)}
-                >
-                  <TableCell className="px-3 font-mono text-[13px] font-medium">
-                    {router.name}
-                  </TableCell>
-                  <TableCell className="px-3 text-sm text-muted-foreground">
-                    {router.region}
-                  </TableCell>
-                  <TableCell className="px-3">
-                    <StatusBadge status={router.status} pulse={router.status === "active"} />
-                  </TableCell>
-                </TableRow>
-              ))}
-              {networkRouters.length === 0 && (
-                <EmptyRow label={t("vpc.detail.noRouters")} colSpan={3} />
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      )}
+      <DataTable<Router>
+        data={networkRouters}
+        columns={columns}
+        loading={isLoading}
+        skeletonRows={2}
+        getRowId={(router) => router.id}
+        empty={<Note>{t("vpc.detail.noRouters")}</Note>}
+      />
     </Section>
   )
 }
@@ -116,82 +84,72 @@ function InternetGatewaysSection({ network }: Readonly<{ network: VPCNetwork }>)
   // Show gateways attached to this network plus detached ones available to attach.
   const visible = gateways.filter((g) => g.network_id === network.id || g.status === "detached")
 
+  const columns = useMemo<ColumnDef<InternetGateway>[]>(
+    () => [
+      nameColumn({ header: t("vpc.columns.name"), accessor: (g) => g.name }),
+      statusColumn({ header: t("vpc.columns.status"), accessor: (g) => g.status }),
+      {
+        id: "attach",
+        header: "",
+        // The attach/detach buttons live here.
+        meta: { interactive: true } satisfies DataTableColumnMeta,
+        cell: ({ row }) => {
+          const gateway = row.original
+          return (
+            <div className="text-right">
+              {gateway.status === "detached" ? (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-7 gap-1.5"
+                  disabled={isAttaching}
+                  onClick={() => {
+                    attach({ id: gateway.id, networkId: network.id })
+                  }}
+                >
+                  {isAttaching ? (
+                    <Loader2 className="size-3 animate-spin" />
+                  ) : (
+                    <Link2 className="size-3" />
+                  )}
+                  {t("vpc.actions.attach")}
+                </Button>
+              ) : (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-7 gap-1.5 text-muted-foreground hover:text-destructive"
+                  disabled={isDetaching}
+                  onClick={() => {
+                    setToDetach(gateway)
+                  }}
+                >
+                  <Unlink className="size-3" />
+                  {t("vpc.actions.detach")}
+                </Button>
+              )}
+            </div>
+          )
+        },
+      },
+    ],
+    [attach, isAttaching, isDetaching, network.id, t],
+  )
+
   return (
     <Section
       variant="panel"
       title={t("vpc.detail.internetGateways")}
       description={t("vpc.detail.internetGatewaysDescription")}
     >
-      {isLoading ? (
-        <LoadingRows />
-      ) : (
-        <div className="glass-1 overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow className="hover:bg-transparent">
-                <TableHead className={HEAD_CLASS}>{t("vpc.columns.name")}</TableHead>
-                <TableHead className={HEAD_CLASS}>{t("vpc.columns.status")}</TableHead>
-                <TableHead className={HEAD_CLASS} />
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {visible.map((gateway, index) => (
-                <TableRow
-                  key={gateway.id}
-                  className="animate-content-enter"
-                  style={staggerDelay(index)}
-                >
-                  <TableCell className="px-3 font-mono text-[13px] font-medium">
-                    {gateway.name}
-                  </TableCell>
-                  <TableCell className="px-3">
-                    <StatusBadge status={gateway.status} />
-                  </TableCell>
-                  <TableCell className="px-3 text-right">
-                    {gateway.status === "detached" ? (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="h-7 gap-1.5"
-                        disabled={isAttaching}
-                        onClick={() => {
-                          attach({
-                            id: gateway.id,
-                            networkId: network.id,
-                          })
-                        }}
-                      >
-                        {isAttaching ? (
-                          <Loader2 className="size-3 animate-spin" />
-                        ) : (
-                          <Link2 className="size-3" />
-                        )}
-                        {t("vpc.actions.attach")}
-                      </Button>
-                    ) : (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="h-7 gap-1.5 text-muted-foreground hover:text-destructive"
-                        disabled={isDetaching}
-                        onClick={() => {
-                          setToDetach(gateway)
-                        }}
-                      >
-                        <Unlink className="size-3" />
-                        {t("vpc.actions.detach")}
-                      </Button>
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))}
-              {visible.length === 0 && (
-                <EmptyRow label={t("vpc.detail.noInternetGateways")} colSpan={3} />
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      )}
+      <DataTable<InternetGateway>
+        data={visible}
+        columns={columns}
+        loading={isLoading}
+        skeletonRows={2}
+        getRowId={(gateway) => gateway.id}
+        empty={<Note>{t("vpc.detail.noInternetGateways")}</Note>}
+      />
 
       <ConfirmDialog
         open={toDetach !== null}
@@ -229,53 +187,47 @@ function NatGatewaysSection({ network }: Readonly<{ network: VPCNetwork }>) {
   const networkNats = natGateways.filter((n) => n.network_id === network.id)
   const subnetNames = useMemo(() => new Map(subnets.map((s) => [s.id, s.name])), [subnets])
 
+  const columns = useMemo<ColumnDef<NATGateway>[]>(
+    () => [
+      nameColumn({ header: t("vpc.columns.name"), accessor: (n) => n.name }),
+      textColumn({
+        id: "subnet",
+        header: t("vpc.columns.subnet"),
+        // Falls back to the id: a NAT on a subnet this view has not loaded still
+        // has to identify it somehow.
+        accessor: (n) => subnetNames.get(n.subnet_id) ?? n.subnet_id,
+        mono: true,
+        muted: true,
+      }),
+      copyColumn({
+        id: "publicIp",
+        header: t("vpc.columns.publicIp"),
+        accessor: (n) => n.public_ip,
+        copiedLabel: t("console.copy.copied"),
+      }),
+      statusColumn({
+        header: t("vpc.columns.status"),
+        accessor: (n) => n.status,
+        pulse: (n) => n.status === "active",
+      }),
+    ],
+    [subnetNames, t],
+  )
+
   return (
     <Section
       variant="panel"
       title={t("vpc.detail.natGateways")}
       description={t("vpc.detail.natGatewaysDescription")}
     >
-      {isLoading ? (
-        <LoadingRows />
-      ) : (
-        <div className="glass-1 overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow className="hover:bg-transparent">
-                <TableHead className={HEAD_CLASS}>{t("vpc.columns.name")}</TableHead>
-                <TableHead className={HEAD_CLASS}>{t("vpc.columns.subnet")}</TableHead>
-                <TableHead className={HEAD_CLASS}>{t("vpc.columns.publicIp")}</TableHead>
-                <TableHead className={HEAD_CLASS}>{t("vpc.columns.status")}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {networkNats.map((nat, index) => (
-                <TableRow
-                  key={nat.id}
-                  className="animate-content-enter"
-                  style={staggerDelay(index)}
-                >
-                  <TableCell className="px-3 font-mono text-[13px] font-medium">
-                    {nat.name}
-                  </TableCell>
-                  <TableCell className="px-3 font-mono text-[12px] text-muted-foreground">
-                    {subnetNames.get(nat.subnet_id) ?? nat.subnet_id}
-                  </TableCell>
-                  <TableCell className="px-3">
-                    <CopyButton value={nat.public_ip} />
-                  </TableCell>
-                  <TableCell className="px-3">
-                    <StatusBadge status={nat.status} pulse={nat.status === "active"} />
-                  </TableCell>
-                </TableRow>
-              ))}
-              {networkNats.length === 0 && (
-                <EmptyRow label={t("vpc.detail.noNatGateways")} colSpan={4} />
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      )}
+      <DataTable<NATGateway>
+        data={networkNats}
+        columns={columns}
+        loading={isLoading}
+        skeletonRows={2}
+        getRowId={(nat) => nat.id}
+        empty={<Note>{t("vpc.detail.noNatGateways")}</Note>}
+      />
     </Section>
   )
 }

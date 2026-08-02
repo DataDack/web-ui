@@ -2,6 +2,7 @@ import type { LucideIcon } from "lucide-react"
 
 import { css, cx } from "../lib/emotion"
 import { contentEnter, glass1 } from "../lib/styles"
+import { Button } from "../ui/button"
 
 const wrap = css`
   display: flex;
@@ -40,10 +41,16 @@ const blurb = css`
   font-size: 13px;
 `
 
+const cta = css`
+  margin-top: 16px;
+`
+
 interface EmptyStateProps {
   icon: LucideIcon
   title: string
   description?: string
+  /** The one thing to do from here — "Create your first VPC". */
+  action?: { label: string; onClick: () => void }
   className?: string
 }
 
@@ -51,6 +58,7 @@ export function EmptyState({
   icon: Icon,
   title,
   description,
+  action,
   className,
 }: Readonly<EmptyStateProps>) {
   return (
@@ -60,6 +68,11 @@ export function EmptyState({
       </div>
       <h3 className={heading}>{title}</h3>
       {description && <p className={blurb}>{description}</p>}
+      {action && (
+        <Button size="sm" className={cta} onClick={action.onClick}>
+          {action.label}
+        </Button>
+      )}
     </div>
   )
 }

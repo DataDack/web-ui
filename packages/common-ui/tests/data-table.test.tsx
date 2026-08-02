@@ -271,9 +271,33 @@ describe("pagination", () => {
     expect(cellText(0, 0)).toBe("row-10")
   })
 
-  test("renders every row when pagination is off", () => {
-    render(<DataTable data={many} columns={columns} />)
+  test("renders every row when pagination is explicitly off", () => {
+    render(<DataTable data={many} columns={columns} pagination={false} />)
     expect(bodyRows()).toHaveLength(25)
+  })
+
+  test("pages by default, because that is right for nearly every list", () => {
+    render(<DataTable data={many} columns={columns} />)
+    // 25 rows at the default page size of 25 still fits one page…
+    expect(bodyRows()).toHaveLength(25)
+    expect(screen.queryByRole("button", { name: /next page/i })).toBeNull()
+  })
+
+  test("the default page size is 25", () => {
+    const fifty: Row[] = Array.from({ length: 50 }, (_, i) => ({
+      id: String(i),
+      name: `row-${i}`,
+      size: i,
+    }))
+    render(<DataTable data={fifty} columns={columns} />)
+    expect(bodyRows()).toHaveLength(25)
+    expect(screen.getByRole("button", { name: /next page/i })).toBeEnabled()
+  })
+
+  test("the footer hides when everything fits on one page", () => {
+    // A three-row table showing pager controls is noise.
+    render(<DataTable data={rows} columns={columns} />)
+    expect(screen.queryByRole("button", { name: /next page/i })).toBeNull()
   })
 })
 
@@ -556,5 +580,372 @@ describe("server-side pagination", () => {
       />,
     )
     expect(screen.queryByRole("combobox")).toBeNull()
+  })
+})
+
+describe("column meta", () => {
+  /** Every emitted rule for every generated class on an element, concatenated. */
+  function rulesFor(el: Element | null | undefined) {
+    const classes = (el?.getAttribute("class") ?? "").split(" ").filter((c) => c.startsWith("ddui-"))
+    const all = Array.from(document.head.querySelectorAll("style[data-emotion]")).map(
+      (t) => t.textContent ?? "",
+    )
+    return all.filter((text) => classes.some((c) => text.includes(`.${c}{`))).join("")
+  }
+
+  test("a responsive column is hidden by default and shown at its breakpoint", () => {
+    render(
+      <DataTable
+        data={rows}
+        columns={[
+          { accessorKey: "name", header: "Name" },
+          { accessorKey: "size", header: "Size", meta: { responsive: "md" } },
+        ]}
+      />,
+    )
+
+    const rule = rulesFor(screen.getByText("Size").closest("th"))
+
+    // Hidden below the breakpoint, restored at it — so a narrow screen drops the
+    // column instead of squeezing every other one.
+    expect(rule).toContain("display:none")
+    expect(rule).toContain("@media (min-width: 768px)")
+    expect(rule).toContain("display:table-cell")
+  })
+
+  test("each breakpoint maps to its own min-width", () => {
+    const widths = { md: "768px", lg: "1024px", xl: "1280px" } as const
+
+    for (const [bp, width] of Object.entries(widths)) {
+      const { unmount } = render(
+        <DataTable
+          data={rows}
+          columns={[
+            { accessorKey: "name", header: "Name" },
+            {
+              accessorKey: "size",
+              header: `Size-${bp}`,
+              meta: { responsive: bp as "md" | "lg" | "xl" },
+            },
+          ]}
+        />,
+      )
+      const rule = rulesFor(screen.getByText(`Size-${bp}`).closest("th"))
+      expect(rule).toContain(`@media (min-width: ${width})`)
+      unmount()
+    }
+  })
+
+  test("a plain column carries no responsive rule", () => {
+    render(<DataTable data={rows} columns={columns} />)
+    // Nothing hides it, so no display:none rule reaches the header cell.
+    expect(rulesFor(screen.getByText("Size").closest("th"))).not.toContain("display:none")
+  })
+
+  test("clicks inside an interactive cell do not trigger onRowClick", async () => {
+    const user = userEvent.setup()
+    const onRowClick = mock((_: Row) => {})
+    const onButton = mock(() => {})
+
+    render(
+      <DataTable
+        data={rows}
+        columns={[
+          { accessorKey: "name", header: "Name" },
+          {
+            id: "actions",
+            header: "",
+            meta: { interactive: true },
+            cell: () => <button onClick={onButton}>Menu</button>,
+          },
+        ]}
+        onRowClick={onRowClick}
+      />,
+    )
+
+    // The control still works…
+    await user.click(screen.getAllByRole("button", { name: "Menu" })[0]!)
+    expect(onButton).toHaveBeenCalledTimes(1)
+    // …but the row must not also navigate.
+    expect(onRowClick).not.toHaveBeenCalled()
+  })
+
+  test("clicks outside an interactive cell still trigger onRowClick", async () => {
+    const user = userEvent.setup()
+    const onRowClick = mock((_: Row) => {})
+
+    render(
+      <DataTable
+        data={rows}
+        columns={[
+          { accessorKey: "name", header: "Name" },
+          { id: "actions", header: "", meta: { interactive: true }, cell: () => <button>M</button> },
+        ]}
+        onRowClick={onRowClick}
+      />,
+    )
+
+    await user.click(screen.getByText("charlie"))
+    expect(onRowClick).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe("row entrance", () => {
+  function rowStyles() {
+    return bodyRows().map((row) => row.getAttribute("style") ?? "")
+  }
+
+  test("rows fade in with a staggered delay by default", () => {
+    render(<DataTable data={rows} columns={columns} />)
+
+    // This is how every console list has always appeared; the table it replaced
+    // staggered rows the same way, so losing it is a visible regression.
+    const styles = rowStyles()
+    expect(styles[0]).toContain("animation-delay: 0ms")
+    expect(styles[1]).toContain("animation-delay: 30ms")
+    expect(styles[2]).toContain("animation-delay: 60ms")
+  })
+
+  test("the stagger is capped so long pages do not animate for seconds", () => {
+    const many: Row[] = Array.from({ length: 20 }, (_, i) => ({
+      id: String(i),
+      name: `row-${i}`,
+      size: i,
+    }))
+    render(<DataTable data={many} columns={columns} />)
+
+    const styles = rowStyles()
+    // Capped at 8 × 30ms; every later row shares that delay.
+    expect(styles[8]).toContain("animation-delay: 240ms")
+    expect(styles[19]).toContain("animation-delay: 240ms")
+  })
+
+  test("rows carry the entrance animation class", () => {
+    render(<DataTable data={rows} columns={columns} />)
+    const cls = bodyRows()[0]?.getAttribute("class") ?? ""
+    const rule = Array.from(document.head.querySelectorAll("style[data-emotion]"))
+      .map((t) => t.textContent ?? "")
+      .filter((text) => cls.split(" ").some((c) => c.startsWith("ddui-") && text.includes(`.${c}{`)))
+      .join("")
+    expect(rule).toContain("animation")
+  })
+
+  test("animateRows={false} drops both the class and the delay", () => {
+    render(<DataTable data={rows} columns={columns} animateRows={false} />)
+    for (const style of rowStyles()) expect(style).not.toContain("animation-delay")
+  })
+})
+
+describe("rowClassName", () => {
+  test("a string is applied to every body row", () => {
+    render(<DataTable data={rows} columns={columns} rowClassName="group/row" />)
+    for (const row of bodyRows()) expect(row.className).toContain("group/row")
+  })
+
+  test("a function is called per row and may return nothing", () => {
+    render(
+      <DataTable
+        data={rows}
+        columns={columns}
+        rowClassName={(row) => (row.name === "alpha" ? "is-alpha" : undefined)}
+      />,
+    )
+    const marked = bodyRows().filter((row) => row.className.includes("is-alpha"))
+    expect(marked).toHaveLength(1)
+  })
+
+  test("it does not displace the row's own generated classes", () => {
+    render(<DataTable data={rows} columns={columns} onRowClick={() => undefined} rowClassName="x" />)
+    const cls = bodyRows()[0]?.className ?? ""
+    // The entrance animation and the pointer cursor must survive the merge.
+    expect(cls).toContain("x")
+    expect(cls).toMatch(/ddui-\w+/)
+  })
+})
+
+describe("footerRow", () => {
+  test("renders inside the table body after the data rows", () => {
+    render(
+      <DataTable
+        data={rows}
+        columns={columns}
+        footerRow={
+          <tr data-testid="add-row">
+            <td>add</td>
+          </tr>
+        }
+      />,
+    )
+
+    const all = screen.getAllByRole("row")
+    // Header + 3 data rows + the footer row, in that order.
+    expect(all).toHaveLength(5)
+    expect(all.at(-1)).toHaveAttribute("data-testid", "add-row")
+  })
+
+  test("stays visible when there are no rows at all", () => {
+    render(
+      <DataTable
+        data={[]}
+        columns={columns}
+        empty="Nothing yet"
+        footerRow={
+          <tr data-testid="add-row">
+            <td>add</td>
+          </tr>
+        }
+      />,
+    )
+    // Otherwise the only way to add the first entry vanishes exactly when it is
+    // needed most.
+    expect(screen.getByTestId("add-row")).toBeInTheDocument()
+    expect(screen.getByText("Nothing yet")).toBeInTheDocument()
+  })
+
+  test("stays visible while loading", () => {
+    render(
+      <DataTable
+        data={[]}
+        columns={columns}
+        loading
+        footerRow={
+          <tr data-testid="add-row">
+            <td>add</td>
+          </tr>
+        }
+      />,
+    )
+    expect(screen.getByTestId("add-row")).toBeInTheDocument()
+  })
+})
+
+describe("frame", () => {
+  function containerOf() {
+    return document.querySelector('[data-slot="table-container"]')
+  }
+
+  test("the table draws its own border by default", () => {
+    render(<DataTable data={rows} columns={columns} />)
+    const cls = containerOf()?.getAttribute("class") ?? ""
+    const rule = Array.from(document.head.querySelectorAll("style[data-emotion]"))
+      .map((t) => t.textContent ?? "")
+      .filter((text) => cls.split(" ").some((c) => c.startsWith("ddui-") && text.includes(`.${c}{`)))
+      .join("")
+
+    // Pages used to hand-wrap every table in `glass-1 overflow-hidden`; the
+    // frame belongs to the component so the two consoles cannot drift.
+    expect(rule).toContain("border")
+    expect(rule).toContain("border-radius")
+  })
+
+  test("bordered={false} leaves the frame off", () => {
+    render(<DataTable data={rows} columns={columns} bordered={false} />)
+    const cls = containerOf()?.getAttribute("class") ?? ""
+    const rule = Array.from(document.head.querySelectorAll("style[data-emotion]"))
+      .map((t) => t.textContent ?? "")
+      .filter((text) => cls.split(" ").some((c) => c.startsWith("ddui-") && text.includes(`.${c}{`)))
+      .join("")
+    expect(rule).not.toContain("border-radius")
+  })
+
+  test("the frame sits on the scroll container, not the table element", () => {
+    // A border on <table> would be clipped by the container's own overflow.
+    render(<DataTable data={rows} columns={columns} />)
+    const table = document.querySelector('[data-slot="table"]')
+    expect(containerOf()).not.toBeNull()
+    expect(containerOf()).not.toBe(table)
+  })
+})
+
+describe("refresh", () => {
+  test("no refresh button unless a handler is given", () => {
+    render(<DataTable data={rows} columns={columns} />)
+    expect(screen.queryByRole("button", { name: /refresh/i })).toBeNull()
+  })
+
+  test("a handler adds the button and invokes it", async () => {
+    const user = userEvent.setup()
+    const onRefresh = mock(() => {})
+    render(<DataTable data={rows} columns={columns} onRefresh={onRefresh} />)
+
+    await user.click(screen.getByRole("button", { name: /refresh/i }))
+    expect(onRefresh).toHaveBeenCalledTimes(1)
+  })
+
+  test("refreshing disables the button so a refetch cannot be double-fired", async () => {
+    const user = userEvent.setup()
+    const onRefresh = mock(() => {})
+    render(<DataTable data={rows} columns={columns} onRefresh={onRefresh} refreshing />)
+
+    const button = screen.getByRole("button", { name: /refresh/i })
+    expect(button).toBeDisabled()
+    await user.click(button)
+    expect(onRefresh).not.toHaveBeenCalled()
+  })
+
+  test("the label is a prop so a translated app can pass its own", () => {
+    render(
+      <DataTable data={rows} columns={columns} onRefresh={() => undefined} refreshLabel="Actualiser" />,
+    )
+    expect(screen.getByRole("button", { name: "Actualiser" })).toBeInTheDocument()
+  })
+
+  test("the button appears even with nothing else in the toolbar", () => {
+    render(<DataTable data={rows} columns={columns} onRefresh={() => undefined} />)
+    expect(screen.getByRole("button", { name: /refresh/i })).toBeInTheDocument()
+  })
+})
+
+describe("renderRow", () => {
+  test("replaces a row when it returns a node", () => {
+    render(
+      <DataTable
+        data={rows}
+        columns={columns}
+        renderRow={(row) =>
+          row.name === "alpha" ? (
+            <tr data-testid="editing">
+              <td>editing alpha</td>
+            </tr>
+          ) : null
+        }
+      />,
+    )
+
+    // The replaced row is gone and the editor stands in its place.
+    expect(screen.getByTestId("editing")).toBeInTheDocument()
+    expect(screen.queryByText("alpha")).toBeNull()
+    // The other rows are untouched.
+    expect(screen.getByText("charlie")).toBeInTheDocument()
+    expect(bodyRows()).toHaveLength(3)
+  })
+
+  test("returning null everywhere leaves the table alone", () => {
+    render(<DataTable data={rows} columns={columns} renderRow={() => null} />)
+    expect(bodyRows()).toHaveLength(3)
+    expect(screen.getByText("alpha")).toBeInTheDocument()
+  })
+
+  test("a replaced row does not fire onRowClick", async () => {
+    const user = userEvent.setup()
+    const onRowClick = mock((_: Row) => {})
+    render(
+      <DataTable
+        data={rows}
+        columns={columns}
+        onRowClick={onRowClick}
+        renderRow={(row) =>
+          row.name === "alpha" ? (
+            <tr>
+              <td>editing</td>
+            </tr>
+          ) : null
+        }
+      />,
+    )
+
+    // Clicking inside an inline editor must not navigate away from it.
+    await user.click(screen.getByText("editing"))
+    expect(onRowClick).not.toHaveBeenCalled()
   })
 })

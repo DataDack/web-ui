@@ -1,18 +1,11 @@
 import { useMemo, useState } from "react"
 
-import { Button } from "@datadack/common-ui"
+import { actionsColumn, Button, DataTable, EmptyState, textColumn } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Network, Plus, RefreshCw, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import {
-  actionsColumn,
-  ConfirmDialog,
-  EmptyState,
-  ResourceTable,
-  StatGrid,
-  textColumn,
-} from "@/components/console"
+import { ConfirmDialog, StatGrid } from "@/components/console"
 
 import { ActiveBadge } from "../components/ActiveBadge"
 import { useAdminAvailabilityZones, useAdminIPPools, useDeleteIPPool } from "../superadmin.hooks"
@@ -161,14 +154,15 @@ export function IPPoolsTab() {
         </Button>
       </div>
 
-      <ResourceTable<IpPool>
+      <DataTable<IpPool>
         data={pools}
         columns={columns}
-        isLoading={isLoading}
-        isError={isError}
+        loading={isLoading}
+        error={isError ? t("console.table.error") : undefined}
         onRetry={() => void refetch()}
+        retryLabel={t("console.table.retry")}
         getRowId={(p) => p.id}
-        emptyState={
+        empty={
           <EmptyState
             icon={Network}
             title={t("superAdmin.staticIps.pools.empty")}
@@ -181,6 +175,9 @@ export function IPPoolsTab() {
             }}
           />
         }
+        onRefresh={() => void refetch()}
+        refreshLabel={t("console.table.refresh")}
+        refreshing={isFetching}
       />
 
       <AddIPPoolDialog open={addOpen} onOpenChange={setAddOpen} />

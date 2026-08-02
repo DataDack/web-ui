@@ -1,22 +1,23 @@
-import { useState } from "react"
+import { useMemo, useState } from "react"
 
 import {
   Badge,
   Button,
+  EmptyState,
   Input,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
+  DataTable,
   Skeleton,
-  Table,
-  TableBody,
   TableCell,
-  TableHead,
-  TableHeader,
   TableRow,
+  textColumn,
+  type DataTableColumnMeta,
 } from "@datadack/common-ui"
+import type { ColumnDef } from "@tanstack/react-table"
 import {
   AlertTriangle,
   ArrowDownToLine,
@@ -32,7 +33,7 @@ import {
 import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
 
-import { ConfirmDialog, DetailPage, EmptyState, staggerDelay } from "@/components/console"
+import { ConfirmDialog, DetailPage } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
 import { sgProtocolUsesPorts } from "../api/shared"
@@ -47,8 +48,6 @@ import {
   useVPCs,
 } from "../vpc.hooks"
 import type { SecurityGroup, SGDirection, SGProtocol, SGRule, SGRuleAction } from "../vpc.types"
-
-const HEAD_CLASS = "px-3 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground"
 
 function RuleActionBadge({ action }: Readonly<{ action: SGRuleAction }>) {
   const { t } = useTranslation()
@@ -314,6 +313,75 @@ function RulesPanel({
     )
   }
 
+  const columns = useMemo<ColumnDef<SGRule>[]>(
+    () => [
+      {
+        id: "protocol",
+        header: t("vpc.rules.protocol"),
+        accessorFn: (rule) => rule.protocol,
+        cell: ({ row }) => (
+          <span className="font-mono text-[12px] uppercase">{row.original.protocol}</span>
+        ),
+      },
+      textColumn({
+        id: "portRange",
+        header: t("vpc.rules.portRange"),
+        accessor: (rule) => rule.port_range,
+        mono: true,
+      }),
+      textColumn({
+        id: "source",
+        header: t("vpc.rules.source"),
+        accessor: (rule) => rule.source,
+        mono: true,
+      }),
+      {
+        id: "action",
+        header: t("vpc.rules.action"),
+        cell: ({ row }) => <RuleActionBadge action={row.original.action} />,
+      },
+      textColumn({
+        id: "description",
+        header: t("vpc.rules.description"),
+        accessor: (rule) => rule.description,
+        muted: true,
+      }),
+      {
+        id: "controls",
+        header: "",
+        meta: { interactive: true } satisfies DataTableColumnMeta,
+        cell: ({ row }) => (
+          <div className="text-right whitespace-nowrap">
+            <Button
+              size="icon"
+              variant="ghost"
+              className="size-7 text-muted-foreground hover:text-foreground"
+              aria-label={t("vpc.rules.edit")}
+              onClick={() => {
+                setEditingId(row.original.id)
+              }}
+            >
+              <Pencil className="size-3.5" />
+            </Button>
+            <Button
+              size="icon"
+              variant="ghost"
+              className="size-7 text-muted-foreground hover:text-destructive"
+              disabled={isRemoving}
+              aria-label={t("vpc.rules.remove")}
+              onClick={() => {
+                removeRule({ ruleId: row.original.id, sgId: group.id })
+              }}
+            >
+              <Trash2 className="size-3.5" />
+            </Button>
+          </div>
+        ),
+      },
+    ],
+    [group.id, isRemoving, removeRule, t],
+  )
+
   return (
     <div className="space-y-4">
       {group.status === "error" && group.provision_error && (
@@ -327,93 +395,34 @@ function RulesPanel({
       )}
 
       <div className="glass-1 overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow className="hover:bg-transparent">
-              <TableHead className={HEAD_CLASS}>{t("vpc.rules.protocol")}</TableHead>
-              <TableHead className={HEAD_CLASS}>{t("vpc.rules.portRange")}</TableHead>
-              <TableHead className={HEAD_CLASS}>{t("vpc.rules.source")}</TableHead>
-              <TableHead className={HEAD_CLASS}>{t("vpc.rules.action")}</TableHead>
-              <TableHead className={HEAD_CLASS}>{t("vpc.rules.description")}</TableHead>
-              <TableHead className={HEAD_CLASS} />
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {directional.map((rule, index) =>
-              editingId === rule.id ? (
-                <RuleFormRow
-                  key={rule.id}
-                  initial={{
-                    protocol: rule.protocol,
-                    action: rule.action,
-                    port_range: rule.port_range,
-                    source: rule.source,
-                    description: rule.description,
-                  }}
-                  pending={isUpdating}
-                  onSubmit={submitEdit(rule)}
-                  onCancel={() => {
-                    setEditingId(null)
-                  }}
-                />
-              ) : (
-                <TableRow
-                  key={rule.id}
-                  className="animate-content-enter"
-                  style={staggerDelay(index)}
-                >
-                  <TableCell className="px-3 font-mono text-[12px] uppercase">
-                    {rule.protocol}
-                  </TableCell>
-                  <TableCell className="px-3 font-mono text-[12px]">{rule.port_range}</TableCell>
-                  <TableCell className="px-3 font-mono text-[12px]">{rule.source}</TableCell>
-                  <TableCell className="px-3">
-                    <RuleActionBadge action={rule.action} />
-                  </TableCell>
-                  <TableCell className="px-3 text-[12px] text-muted-foreground">
-                    {rule.description || "—"}
-                  </TableCell>
-                  <TableCell className="px-3 text-right whitespace-nowrap">
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="size-7 text-muted-foreground hover:text-foreground"
-                      aria-label={t("vpc.rules.edit")}
-                      onClick={() => {
-                        setEditingId(rule.id)
-                      }}
-                    >
-                      <Pencil className="size-3.5" />
-                    </Button>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="size-7 text-muted-foreground hover:text-destructive"
-                      disabled={isRemoving}
-                      aria-label={t("vpc.rules.remove")}
-                      onClick={() => {
-                        removeRule({ ruleId: rule.id, sgId: group.id })
-                      }}
-                    >
-                      <Trash2 className="size-3.5" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ),
-            )}
-            {directional.length === 0 && (
-              <TableRow className="hover:bg-transparent">
-                <TableCell
-                  colSpan={6}
-                  className="px-3 py-4 text-center text-[13px] text-muted-foreground"
-                >
-                  {t("vpc.rules.empty")}
-                </TableCell>
-              </TableRow>
-            )}
-            <RuleFormRow pending={isAdding} onSubmit={submitAdd} />
-          </TableBody>
-        </Table>
+        <DataTable<SGRule>
+          data={directional}
+          columns={columns}
+          getRowId={(rule) => rule.id}
+          // Editing swaps the row for the same form used to add one.
+          renderRow={(rule) =>
+            editingId === rule.id ? (
+              <RuleFormRow
+                initial={{
+                  protocol: rule.protocol,
+                  action: rule.action,
+                  port_range: rule.port_range,
+                  source: rule.source,
+                  description: rule.description,
+                }}
+                pending={isUpdating}
+                onSubmit={submitEdit(rule)}
+                onCancel={() => {
+                  setEditingId(null)
+                }}
+              />
+            ) : null
+          }
+          // The add form belongs in the grid, and has to outlive the empty state.
+          footerRow={<RuleFormRow pending={isAdding} onSubmit={submitAdd} />}
+          empty={<span className="text-[13px] text-muted-foreground">{t("vpc.rules.empty")}</span>}
+          bordered={false}
+        />
       </div>
     </div>
   )

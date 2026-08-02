@@ -1,11 +1,11 @@
 import { useMemo } from "react"
 
-import { cellMono, cellText, DataTable } from "@datadack/common-ui"
+import { cellMono, cellText, CopyButton, DataTable, EmptyState } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Cable } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { CopyButton, EmptyState, Section, StatusBadge } from "@/components/console"
+import { Section, StatusBadge } from "@/components/console"
 
 import { useRouters, useVPNConnections } from "../../vpc.hooks"
 import type { VPCNetwork } from "../../vpc.types"

@@ -1,8 +1,10 @@
-import { useState } from "react"
+import { useMemo, useState } from "react"
 
 import {
   Badge,
   Button,
+  DataTable,
+  EmptyState,
   Input,
   Select,
   SelectContent,
@@ -10,17 +12,16 @@ import {
   SelectTrigger,
   SelectValue,
   Skeleton,
-  Table,
-  TableBody,
   TableCell,
-  TableHead,
-  TableHeader,
   TableRow,
+  textColumn,
+  type DataTableColumnMeta,
 } from "@datadack/common-ui"
+import type { ColumnDef } from "@tanstack/react-table"
 import { Loader2, Lock, Plus, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { ConfirmDialog, EmptyState, staggerDelay } from "@/components/console"
+import { ConfirmDialog, staggerDelay } from "@/components/console"
 
 import { CreateSecurityGroupSheet } from "./CreateSecurityGroupSheet"
 import { sgProtocolUsesPorts } from "../../api/shared"
@@ -36,11 +37,10 @@ import type {
   SecurityGroup,
   SGDirection,
   SGProtocol,
+  SGRule,
   SGRuleAction,
   VPCNetwork,
 } from "../../vpc.types"
-
-const HEAD_CLASS = "px-3 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground"
 
 function RuleActionBadge({ action }: Readonly<{ action: SGRuleAction }>) {
   const { t } = useTranslation()
@@ -220,6 +220,64 @@ function SecurityGroupPanel({
   const { data: rules = [], isLoading } = useSGRules(group.id)
   const { mutate: removeRule, isPending: isRemoving } = useRemoveSGRule()
 
+  const columns = useMemo<ColumnDef<SGRule>[]>(
+    () => [
+      textColumn({
+        id: "direction",
+        header: t("vpc.rules.direction"),
+        accessor: (rule) => t(`vpc.rules.${rule.direction}`),
+        mono: true,
+      }),
+      {
+        id: "protocol",
+        header: t("vpc.rules.protocol"),
+        accessorFn: (rule) => rule.protocol,
+        cell: ({ row }) => (
+          <span className="font-mono text-[12px] uppercase">{row.original.protocol}</span>
+        ),
+      },
+      textColumn({
+        id: "portRange",
+        header: t("vpc.rules.portRange"),
+        accessor: (rule) => rule.port_range,
+        mono: true,
+      }),
+      textColumn({
+        id: "source",
+        header: t("vpc.rules.source"),
+        accessor: (rule) => rule.source,
+        mono: true,
+      }),
+      {
+        id: "action",
+        header: t("vpc.rules.action"),
+        cell: ({ row }) => <RuleActionBadge action={row.original.action} />,
+      },
+      {
+        id: "remove",
+        header: "",
+        meta: { interactive: true } satisfies DataTableColumnMeta,
+        cell: ({ row }) => (
+          <div className="text-right">
+            <Button
+              size="icon"
+              variant="ghost"
+              className="size-7 text-muted-foreground hover:text-destructive"
+              disabled={isRemoving}
+              aria-label={t("vpc.rules.remove")}
+              onClick={() => {
+                removeRule({ ruleId: row.original.id, sgId: group.id })
+              }}
+            >
+              <Trash2 className="size-3.5" />
+            </Button>
+          </div>
+        ),
+      },
+    ],
+    [group.id, isRemoving, removeRule, t],
+  )
+
   return (
     <div className="glass-1 overflow-hidden animate-content-enter" style={staggerDelay(index)}>
       <div className="flex flex-wrap items-start justify-between gap-2 px-4 py-3.5 border-b border-border-glass">
@@ -246,72 +304,17 @@ function SecurityGroupPanel({
         </Button>
       </div>
 
-      {isLoading ? (
-        <div className="p-4 space-y-2">
-          {["a", "b", "c"].map((k) => (
-            <Skeleton key={k} className="h-8 rounded" />
-          ))}
-        </div>
-      ) : (
-        <Table>
-          <TableHeader>
-            <TableRow className="hover:bg-transparent">
-              <TableHead className={HEAD_CLASS}>{t("vpc.rules.direction")}</TableHead>
-              <TableHead className={HEAD_CLASS}>{t("vpc.rules.protocol")}</TableHead>
-              <TableHead className={HEAD_CLASS}>{t("vpc.rules.portRange")}</TableHead>
-              <TableHead className={HEAD_CLASS}>{t("vpc.rules.source")}</TableHead>
-              <TableHead className={HEAD_CLASS}>{t("vpc.rules.action")}</TableHead>
-              <TableHead className={HEAD_CLASS} />
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {rules.map((rule, ruleIndex) => (
-              <TableRow
-                key={rule.id}
-                className="animate-content-enter"
-                style={staggerDelay(ruleIndex)}
-              >
-                <TableCell className="px-3 font-mono text-[12px]">
-                  {t(`vpc.rules.${rule.direction}`)}
-                </TableCell>
-                <TableCell className="px-3 font-mono text-[12px] uppercase">
-                  {rule.protocol}
-                </TableCell>
-                <TableCell className="px-3 font-mono text-[12px]">{rule.port_range}</TableCell>
-                <TableCell className="px-3 font-mono text-[12px]">{rule.source}</TableCell>
-                <TableCell className="px-3">
-                  <RuleActionBadge action={rule.action} />
-                </TableCell>
-                <TableCell className="px-3 text-right">
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="size-7 text-muted-foreground hover:text-destructive"
-                    disabled={isRemoving}
-                    aria-label={t("vpc.rules.remove")}
-                    onClick={() => {
-                      removeRule({ ruleId: rule.id, sgId: group.id })
-                    }}
-                  >
-                    <Trash2 className="size-3.5" />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-            {rules.length === 0 && (
-              <TableRow className="hover:bg-transparent">
-                <TableCell
-                  colSpan={6}
-                  className="px-3 py-4 text-center text-[13px] text-muted-foreground"
-                >
-                  {t("vpc.rules.empty")}
-                </TableCell>
-              </TableRow>
-            )}
-            <AddRuleRow sgId={group.id} />
-          </TableBody>
-        </Table>
-      )}
+      <DataTable<SGRule>
+        data={rules}
+        columns={columns}
+        loading={isLoading}
+        skeletonRows={3}
+        getRowId={(rule) => rule.id}
+        empty={<span className="text-[13px] text-muted-foreground">{t("vpc.rules.empty")}</span>}
+        // The add form is part of the grid, so it belongs in the body — and it
+        // has to survive the empty state, or there is no way to add the first rule.
+        footerRow={<AddRuleRow sgId={group.id} />}
+      />
     </div>
   )
 }

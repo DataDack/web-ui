@@ -2,6 +2,7 @@ import { useMemo, useState } from "react"
 
 import {
   Button,
+  CopyButton,
   Input,
   Label,
   Select,
@@ -16,13 +17,7 @@ import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
 import { z } from "zod/v4"
 
-import {
-  CopyButton,
-  CreateWizard,
-  PageHeader,
-  Section,
-  type WizardStep,
-} from "@/components/console"
+import { CreateWizard, PageHeader, Section, type WizardStep } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
 import {

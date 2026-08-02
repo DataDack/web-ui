@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-import { Badge, Button, Skeleton } from "@datadack/common-ui"
+import { Badge, Button, EmptyState, Skeleton, TagList } from "@datadack/common-ui"
 import {
   GitBranch,
   Globe,
@@ -15,7 +15,7 @@ import {
 import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
 
-import { ConfirmDialog, DetailPage, EmptyState, Section, TagList } from "@/components/console"
+import { ConfirmDialog, DetailPage, Section } from "@/components/console"
 import {
   getStatusConfig,
   TONE_CLASSES,

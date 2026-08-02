@@ -1,11 +1,11 @@
 import { useMemo, useState } from "react"
 
-import { Button, Input } from "@datadack/common-ui"
+import { Button, DataTable, dateColumn, EmptyState, Input, textColumn } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { RefreshCw, ScrollText, Search } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { dateColumn, EmptyState, PageHeader, ResourceTable, textColumn } from "@/components/console"
+import { PageHeader } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
 import { useAuditLogs } from "../iam.hooks"
@@ -125,20 +125,24 @@ export function AuditLogViewerPage() {
         />
       </div>
 
-      <ResourceTable<AuditLog>
+      <DataTable<AuditLog>
         data={filtered}
         columns={columns}
-        isLoading={isLoading}
-        isError={isError}
+        loading={isLoading}
+        error={isError ? t("console.table.error") : undefined}
         onRetry={() => void refetch()}
+        retryLabel={t("console.table.retry")}
         getRowId={(l) => l.id}
-        emptyState={
+        empty={
           <EmptyState
             icon={ScrollText}
             title={t("iam.audit.empty")}
             description={t("iam.audit.emptySubtitle")}
           />
         }
+        onRefresh={() => void refetch()}
+        refreshLabel={t("console.table.refresh")}
+        refreshing={isFetching}
       />
     </div>
   )

@@ -5,14 +5,13 @@ import { Building2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import {
+  DataTable,
   dateColumn,
   EmptyState,
   nameColumn,
-  ResourceTable,
   statusColumn,
   textColumn,
-} from "@/components/console"
-
+} from "@datadack/common-ui"
 import type { TabProps } from "./types"
 import { useAdminPlatformOverview } from "../../superadmin.hooks"
 import type { OverviewOrg } from "../../superadmin.types"
@@ -76,7 +75,7 @@ export function OrganizationsTab({ q, page, pageSize, onPageChange }: Readonly<T
   )
 
   return (
-    <ResourceTable<OverviewOrg>
+    <DataTable<OverviewOrg>
       data={organizations}
       columns={columns}
       pagination={{
@@ -85,13 +84,16 @@ export function OrganizationsTab({ q, page, pageSize, onPageChange }: Readonly<T
         total: data?.pagination?.total ?? organizations.length,
         onPageChange,
       }}
-      isLoading={isLoading}
-      isError={isError}
+      loading={isLoading}
+      error={isError ? t("console.table.error") : undefined}
       onRetry={() => void refetch()}
+      retryLabel={t("console.table.retry")}
       getRowId={(o) => o.id}
-      emptyState={
+      empty={
         <EmptyState icon={Building2} title={t("superAdmin.organizations.empty.organizations")} />
       }
+      onRefresh={() => void refetch()}
+      refreshLabel={t("console.table.refresh")}
     />
   )
 }

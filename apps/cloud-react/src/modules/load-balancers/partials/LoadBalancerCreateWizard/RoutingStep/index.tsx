@@ -1,11 +1,10 @@
 import { useMemo } from "react"
 
-import { Button } from "@datadack/common-ui"
+import { Button, EmptyState } from "@datadack/common-ui"
 import { Ear, Plus } from "lucide-react"
 import { useFieldArray, type UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 
-import { EmptyState } from "@/components/console"
 import { useTargetGroups } from "@/modules/target-groups/target-groups.hooks"
 import { useInstances } from "@/modules/vms/vms.hooks"
 

@@ -1,19 +1,19 @@
 import { useMemo, useState } from "react"
 
-import { Button } from "@datadack/common-ui"
+import {
+  actionsColumn,
+  Button,
+  DataTable,
+  EmptyState,
+  nameColumn,
+  statusColumn,
+  textColumn,
+} from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { MapPin, Pencil, Plus, RefreshCw } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import {
-  actionsColumn,
-  EmptyState,
-  nameColumn,
-  PageHeader,
-  ResourceTable,
-  statusColumn,
-  textColumn,
-} from "@/components/console"
+import { PageHeader } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
 import { ActiveBadge } from "../components/ActiveBadge"
@@ -104,15 +104,16 @@ export function AvailabilityZonesPage() {
         }
       />
 
-      <ResourceTable<AvailabilityZone>
+      <DataTable<AvailabilityZone>
         data={azs}
         columns={columns}
-        isLoading={isLoading}
-        isError={isError}
+        loading={isLoading}
+        error={isError ? t("console.table.error") : undefined}
         onRetry={() => void refetch()}
+        retryLabel={t("console.table.retry")}
         getRowId={(a) => a.id}
         onRowClick={openEdit}
-        emptyState={
+        empty={
           <EmptyState
             icon={MapPin}
             title={t("superAdmin.availabilityZones.empty")}
@@ -123,6 +124,9 @@ export function AvailabilityZonesPage() {
             }}
           />
         }
+        onRefresh={() => void refetch()}
+        refreshLabel={t("console.table.refresh")}
+        refreshing={isFetching}
       />
 
       <AvailabilityZoneFormSheet

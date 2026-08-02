@@ -19,14 +19,13 @@ import { useNavigate } from "react-router-dom"
 
 import {
   copyColumn,
+  DataTable,
   dateColumn,
   EmptyState,
-  ResourceTable,
-  type StatCardProps,
-  StatGrid,
   statusColumn,
   textColumn,
-} from "@/components/console"
+} from "@datadack/common-ui"
+import { type StatCardProps, StatGrid } from "@/components/console"
 
 import { useResourceGroupResources$ } from "../resource-groups.hooks"
 import type { GroupResource } from "../resource-groups.types"
@@ -180,24 +179,27 @@ export function ResourceGroupResourcesTab({ groupId }: Readonly<{ groupId: strin
   return (
     <div className="space-y-5">
       <StatGrid stats={stats} />
-      <ResourceTable
+      <DataTable
         data={resources}
         columns={columns}
-        isLoading={isLoading}
-        isError={isError}
+        loading={isLoading}
+        error={isError ? t("console.table.error") : undefined}
         onRetry={() => void refetch()}
+        retryLabel={t("console.table.retry")}
         getRowId={(r) => r.key}
         onRowClick={(r) => {
           if (r.path) void navigate(r.path)
         }}
-        initialSorting={[{ id: "updated", desc: true }]}
-        emptyState={
+        defaultSorting={[{ id: "updated", desc: true }]}
+        empty={
           <EmptyState
             icon={Layers}
             title={t("resourceGroups.resources.empty")}
             description={t("resourceGroups.resources.emptySubtitle")}
           />
         }
+        onRefresh={() => void refetch()}
+        refreshLabel={t("console.table.refresh")}
       />
     </div>
   )

@@ -1,11 +1,11 @@
 import { useMemo, useState } from "react"
 
-import { Button, Input } from "@datadack/common-ui"
+import { Button, DataTable, EmptyState, Input, textColumn } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { KeyRound, RefreshCw, Search } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { EmptyState, PageHeader, ResourceTable, textColumn } from "@/components/console"
+import { PageHeader } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
 import { usePermissions } from "../iam.hooks"
@@ -88,20 +88,24 @@ export function PermissionsCatalogPage() {
         />
       </div>
 
-      <ResourceTable<Permission>
+      <DataTable<Permission>
         data={filtered}
         columns={columns}
-        isLoading={isLoading}
-        isError={isError}
+        loading={isLoading}
+        error={isError ? t("console.table.error") : undefined}
         onRetry={() => void refetch()}
+        retryLabel={t("console.table.retry")}
         getRowId={(p) => p.id}
-        emptyState={
+        empty={
           <EmptyState
             icon={KeyRound}
             title={t("iam.permissions.empty")}
             description={t("iam.permissions.emptySubtitle")}
           />
         }
+        onRefresh={() => void refetch()}
+        refreshLabel={t("console.table.refresh")}
+        refreshing={isFetching}
       />
     </div>
   )

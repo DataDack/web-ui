@@ -1,11 +1,11 @@
 import { useState } from "react"
 
-import { Button, Skeleton } from "@datadack/common-ui"
+import { Button, CopyButton, Skeleton } from "@datadack/common-ui"
 import { FileText, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
 
-import { ConfirmDialog, CopyButton, DetailPage, KeyValueGrid, Section } from "@/components/console"
+import { ConfirmDialog, DetailPage, KeyValueGrid, Section } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
 import { IAM_ROUTES } from "../iam.constants"

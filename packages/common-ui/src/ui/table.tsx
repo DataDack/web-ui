@@ -60,11 +60,22 @@ const cell = css`
   white-space: nowrap;
 `
 
-function Table({ className, ...props }: React.ComponentProps<"table">) {
+function Table({
+  className,
+  containerClassName,
+  ...props
+}: React.ComponentProps<"table"> & {
+  /**
+   * Classes for the scroll container rather than the <table>. Where a frame
+   * belongs — a border and radius on the table element itself would be clipped
+   * by the container's own overflow.
+   */
+  containerClassName?: string
+}) {
   return (
     // Wide tables scroll inside their own container so the page body never
     // scrolls horizontally.
-    <div data-slot="table-container" className={container}>
+    <div data-slot="table-container" className={cx(container, containerClassName)}>
       <table data-slot="table" className={cx(table, className)} {...props} />
     </div>
   )

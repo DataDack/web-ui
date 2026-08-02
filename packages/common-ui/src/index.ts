@@ -30,11 +30,24 @@ export {
   DataTable,
   type DataTableBulkAction,
   type DataTableClientPagination,
+  type DataTableColumnMeta,
   type DataTablePagination,
   type DataTableProps,
   type DataTableServerPagination,
 } from "./console/DataTable"
 export { EmptyState } from "./console/EmptyState"
+export { CopyButton } from "./console/CopyButton"
+export { TagList } from "./console/TagList"
+export {
+  actionsColumn,
+  copyColumn,
+  dateColumn,
+  nameColumn,
+  statusColumn,
+  tagsColumn,
+  textColumn,
+  type RowAction,
+} from "./console/columns"
 export { KeyValueGrid, type KeyValueItem } from "./console/KeyValueGrid"
 export { Logo } from "./console/Logo"
 export { PageHeader } from "./console/PageHeader"
@@ -207,6 +220,14 @@ export {
 
 // Utilities
 export { cn, formatBytes, timeAgo } from "./lib/cn"
+export {
+  parseTags,
+  recordToTagRows,
+  stringifyTags,
+  tagRowsToRecord,
+  type TagRow,
+  type TagsInput,
+} from "./lib/tags"
 
 // The design system's emotion instance. Anything that styles on top of this kit
 // must use these rather than importing @emotion/css directly, so every rule

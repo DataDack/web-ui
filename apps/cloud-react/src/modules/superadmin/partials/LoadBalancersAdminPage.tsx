@@ -3,6 +3,7 @@ import { Fragment, useState } from "react"
 import {
   Badge,
   Button,
+  CopyButton,
   Input,
   Switch,
   Table,
@@ -31,7 +32,7 @@ import { Controller, useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { z } from "zod/v4"
 
-import { CopyButton, PageHeader, Section } from "@/components/console"
+import { PageHeader, Section } from "@/components/console"
 import { TONE_CLASSES, TONE_DOT_CLASSES, type StatusTone } from "@/components/console/status-config"
 import { cn } from "@/lib/utils"
 import { useScreen } from "@/services/api/screen"

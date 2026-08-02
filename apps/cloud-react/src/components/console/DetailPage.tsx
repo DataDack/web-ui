@@ -1,11 +1,13 @@
 import type { ReactNode } from "react"
 
-import { Button } from "@datadack/common-ui"
+import {
+  Button,
+  CopyButton,
+} from "@datadack/common-ui"
 import { ArrowLeft, type LucideIcon } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 import { Link, useSearchParams } from "react-router-dom"
 
-import { CopyButton } from "./CopyButton"
 import { AnimatedTabs } from "./motion/AnimatedTabs"
 import { DUR, EASE } from "./motion/motion-config"
 import { getStatusConfig } from "./status-config"

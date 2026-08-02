@@ -8,6 +8,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  EmptyState,
   Input,
   InputOTP,
   InputOTPGroup,
@@ -42,7 +43,7 @@ import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 import { z } from "zod/v4"
 
-import { EmptyState, KeyValueGrid, PageHeader, Section, StatusBadge } from "@/components/console"
+import { KeyValueGrid, PageHeader, Section, StatusBadge } from "@/components/console"
 import { ACCOUNT_MANAGER_ROLES } from "@/modules/accounts/accounts.constants"
 import {
   useAccountMembers,

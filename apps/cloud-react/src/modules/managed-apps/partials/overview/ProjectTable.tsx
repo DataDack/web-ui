@@ -4,7 +4,8 @@ import type { ColumnDef, SortingState } from "@tanstack/react-table"
 import { ExternalLink, GitBranch } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
 
-import { CopyButton, ResourceTable, type ColumnMeta } from "@/components/console"
+import { CopyButton, DataTable } from "@datadack/common-ui"
+import { type ColumnMeta } from "@/components/console"
 
 import { ProjectActionsMenu } from "./ProjectActionsMenu"
 import { cardAction } from "./ProjectCard/card-action"
@@ -39,9 +40,9 @@ interface ProjectTableProps {
  * default at the handful of projects most accounts have, but it cannot answer
  * "which of these fifty was touched most recently" — that needs columns that
  * line up and a header you can click. Sorting, responsive column hiding and the
- * loading skeleton all come from the console's ResourceTable.
+ * loading skeleton all come from the console's DataTable.
  *
- * Deliberately NOT passed `isError`: ResourceTable renders its own generic
+ * Deliberately NOT passed `isError`: DataTable renders its own generic
  * failure copy inside the table body, and flipping the view toggle during an
  * outage would then change what the failure says. The page owns one error panel
  * above both views.
@@ -211,13 +212,13 @@ export function ProjectTable({
   )
 
   return (
-    <ResourceTable
+    <DataTable
       data={entries}
       columns={columns}
       getRowId={(entry) => entry.project.id}
-      isLoading={isLoading}
-      initialSorting={initialSorting}
-      emptyState={emptyState}
+      loading={isLoading}
+      defaultSorting={initialSorting}
+      empty={emptyState}
       onRowClick={(entry) => {
         void navigate(MANAGED_APPS_ROUTES.project(entry.project.id))
       }}

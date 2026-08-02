@@ -37,7 +37,7 @@ export function AuditPage() {
   const [failuresOnly, setFailuresOnly] = useState(false)
   const range = RANGES[rangeIndex] ?? RANGES[1]
 
-  const { data, isLoading, error } = useAuditEvents({
+  const { data, isFetching, isLoading, refetch, error } = useAuditEvents({
     since: range.since || undefined,
     failuresOnly,
     limit: 500,
@@ -205,6 +205,8 @@ export function AuditPage() {
             description="Deploy, delete or invoke something and it appears here. Reads are not recorded."
           />
         }
+        onRefresh={() => void refetch()}
+        refreshing={isFetching}
       />
     </>
   )

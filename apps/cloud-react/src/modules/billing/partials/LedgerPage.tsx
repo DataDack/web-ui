@@ -5,16 +5,14 @@ import { Receipt, Wallet } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import {
-  type AnimatedTab,
-  AnimatedTabs,
+  DataTable,
   dateColumn,
   EmptyState,
   nameColumn,
-  ResourceTable,
-  StatGrid,
   statusColumn,
   textColumn,
-} from "@/components/console"
+} from "@datadack/common-ui"
+import { type AnimatedTab, AnimatedTabs, StatGrid } from "@/components/console"
 
 import { useCreditBalance, useCreditPurchases, useLedger } from "../billing.hooks"
 import type { CreditPurchase, LedgerEntry } from "../billing.types"
@@ -163,26 +161,32 @@ export function LedgerPage() {
       />
 
       {activeTab === "ledger" ? (
-        <ResourceTable<LedgerEntry>
+        <DataTable<LedgerEntry>
           data={ledger}
           columns={ledgerColumns}
-          isLoading={ledgerLoading}
-          isError={ledgerError}
+          loading={ledgerLoading}
+          error={ledgerError ? t("console.table.error") : undefined}
           onRetry={() => void refetchLedger()}
+          retryLabel={t("console.table.retry")}
           getRowId={(e) => e.id}
-          initialSorting={[{ id: "date", desc: true }]}
-          emptyState={<EmptyState icon={Wallet} title={t("billing.ledger.empty")} />}
+          defaultSorting={[{ id: "date", desc: true }]}
+          empty={<EmptyState icon={Wallet} title={t("billing.ledger.empty")} />}
+          onRefresh={() => void refetchLedger()}
+          refreshLabel={t("console.table.refresh")}
         />
       ) : (
-        <ResourceTable<CreditPurchase>
+        <DataTable<CreditPurchase>
           data={purchases}
           columns={purchaseColumns}
-          isLoading={purchasesLoading}
-          isError={purchasesError}
+          loading={purchasesLoading}
+          error={purchasesError ? t("console.table.error") : undefined}
           onRetry={() => void refetchPurchases()}
+          retryLabel={t("console.table.retry")}
           getRowId={(p) => p.id}
-          initialSorting={[{ id: "created", desc: true }]}
-          emptyState={<EmptyState icon={Wallet} title={t("billing.credits.empty")} />}
+          defaultSorting={[{ id: "created", desc: true }]}
+          empty={<EmptyState icon={Wallet} title={t("billing.credits.empty")} />}
+          onRefresh={() => void refetchPurchases()}
+          refreshLabel={t("console.table.refresh")}
         />
       )}
     </div>

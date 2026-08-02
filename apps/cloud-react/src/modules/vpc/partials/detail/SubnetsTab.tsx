@@ -1,20 +1,21 @@
 import { useMemo, useState } from "react"
 
-import { Badge, Button } from "@datadack/common-ui"
+import {
+  actionsColumn,
+  Badge,
+  Button,
+  copyColumn,
+  DataTable,
+  dateColumn,
+  EmptyState,
+  nameColumn,
+  textColumn,
+} from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { GitBranch, Plus, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import {
-  actionsColumn,
-  ConfirmDialog,
-  copyColumn,
-  dateColumn,
-  EmptyState,
-  nameColumn,
-  ResourceTable,
-  textColumn,
-} from "@/components/console"
+import { ConfirmDialog } from "@/components/console"
 import { useAvailabilityZoneMap } from "@/modules/catalog/catalog.hooks"
 
 import { AddSubnetSheet } from "./AddSubnetSheet"
@@ -105,14 +106,15 @@ export function SubnetsTab({ network }: Readonly<{ network: VPCNetwork }>) {
         </Button>
       </div>
 
-      <ResourceTable<Subnet>
+      <DataTable<Subnet>
         data={subnets}
         columns={columns}
-        isLoading={isLoading}
-        isError={isError}
+        loading={isLoading}
+        error={isError ? t("console.table.error") : undefined}
         onRetry={() => void refetch()}
+        retryLabel={t("console.table.retry")}
         getRowId={(subnet) => subnet.id}
-        emptyState={
+        empty={
           <EmptyState
             icon={GitBranch}
             title={t("vpc.detail.noSubnets")}
@@ -125,6 +127,8 @@ export function SubnetsTab({ network }: Readonly<{ network: VPCNetwork }>) {
             }}
           />
         }
+        onRefresh={() => void refetch()}
+        refreshLabel={t("console.table.refresh")}
       />
 
       <AddSubnetSheet network={network} open={sheetOpen} onOpenChange={setSheetOpen} />

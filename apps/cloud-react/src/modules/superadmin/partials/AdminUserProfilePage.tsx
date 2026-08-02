@@ -1,16 +1,10 @@
 import { useMemo } from "react"
 
-import { Badge, Button } from "@datadack/common-ui"
+import { Badge, Button, EmptyState } from "@datadack/common-ui"
 import { ArrowLeft, Boxes, Crown, ShieldCheck, Star, UserRound } from "lucide-react"
 import { useNavigate, useParams } from "react-router-dom"
 
-import {
-  EmptyState,
-  KeyValueGrid,
-  PageHeader,
-  Section,
-  type KeyValueItem,
-} from "@/components/console"
+import { KeyValueGrid, PageHeader, Section, type KeyValueItem } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
 import { ActiveBadge } from "../components/ActiveBadge"

@@ -1,13 +1,17 @@
 import { useMemo, useState } from "react"
 
 import {
+  actionsColumn,
   Button,
+  copyColumn,
+  DataTable,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  EmptyState,
   Input,
   Label,
   Select,
@@ -15,6 +19,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  statusColumn,
 } from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import type { ColumnDef } from "@tanstack/react-table"
@@ -24,16 +29,7 @@ import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 import { z } from "zod/v4"
 
-import {
-  actionsColumn,
-  ConfirmDialog,
-  copyColumn,
-  EmptyState,
-  PageHeader,
-  ResourceTable,
-  StatGrid,
-  statusColumn,
-} from "@/components/console"
+import { ConfirmDialog, PageHeader, StatGrid } from "@/components/console"
 import { QuotaNotice, useQuotaBlocked } from "@/modules/governance/components/QuotaNotice"
 import { useNamingRule } from "@/modules/governance/governance.hooks"
 import type { NamingRule } from "@/modules/governance/governance.types"
@@ -428,14 +424,15 @@ export function StaticIpsPage() {
 
       <StatGrid stats={stats} className="grid-cols-2 lg:grid-cols-3" />
 
-      <ResourceTable<StaticIP>
+      <DataTable<StaticIP>
         data={filtered}
         columns={columns}
-        isLoading={isLoading}
-        isError={isError}
+        loading={isLoading}
+        error={isError ? t("console.table.error") : undefined}
         onRetry={() => void refetch()}
+        retryLabel={t("console.table.retry")}
         getRowId={(ip) => ip.id}
-        enableColumnVisibility
+        columnToolbar
         toolbar={
           <div className="relative w-full max-w-xs">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
@@ -449,7 +446,7 @@ export function StaticIpsPage() {
             />
           </div>
         }
-        emptyState={
+        empty={
           <EmptyState
             icon={Globe}
             title={t("staticIps.empty")}
@@ -462,6 +459,9 @@ export function StaticIpsPage() {
             }}
           />
         }
+        onRefresh={() => void refetch()}
+        refreshLabel={t("console.table.refresh")}
+        refreshing={isFetching}
       />
 
       <ReserveIpDialog open={reserveOpen} onOpenChange={setReserveOpen} />

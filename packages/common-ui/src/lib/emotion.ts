@@ -3,37 +3,49 @@ import createEmotion from "@emotion/css/create-instance"
 /**
  * The design system's emotion instance, and the only one this package uses.
  *
- * Two options here carry the whole cascade contract with consuming apps, and
- * both are load-bearing.
+ * ## Why the styles are layered
  *
  * Components merge a caller's `className` with `cx()`. Unlike the `cn()` this
  * package used before, `cx()` does not run tailwind-merge, so it cannot delete a
  * conflicting base class — a caller's `<DialogContent className="sm:max-w-md" />`
- * only takes effect if it beats the component's own rule on the cascade. It does
- * not by default: both are single-class selectors, so they tie on specificity,
- * and emotion injects at runtime into the end of <head>, which means the
- * component wins on source order and the override is silently dropped.
+ * only takes effect if it beats the component's own rule on the cascade. Two
+ * single-class selectors tie on specificity, and emotion injects at runtime into
+ * the end of <head>, so by default the component wins on source order and the
+ * caller's override is silently dropped.
  *
- * Source order alone cannot fix it either. Tailwind v4 emits its utilities
- * inside `@layer utilities`, and *any* unlayered rule beats *any* layered one no
- * matter where it sits in the document. So the design system has to be layered
- * too, in a layer that sorts before Tailwind's:
+ * Being unlayered does not merely fail to fix that — it guarantees it. An
+ * unlayered rule beats every layered one, and Tailwind emits its utilities in
+ * `@layer utilities`. So `css` wraps every rule in `@layer datadack-ui`.
  *
- *   - `css` wraps every rule in `@layer datadack-ui` (below), and
- *   - `prepend` puts our <style> at the top of <head>, so `datadack-ui` is the
- *     first layer name the browser sees and therefore sorts before `theme`,
- *     `base`, `components` and `utilities`.
+ * ## Why the layer's POSITION is the whole game
  *
- * The resulting precedence, lowest to highest, is what a design system wants:
- * our base styles, then the app's Tailwind utilities, then the app's own
- * unlayered CSS (`.glass-3`, `.btn-gold`). Consumers override us by default and
- * never need `!important`.
+ * Layers are compared before specificity, which cuts both ways:
  *
- * tests/cascade.test.ts pins all of this down; drop either option and it fails.
+ *   - the layer must sort AFTER `base`, because Tailwind's preflight sets
+ *     `padding: 0` and `border: 0` on `*` in that layer. A layer below `base`
+ *     loses to it despite `*` being the weakest possible selector, and every
+ *     component silently loses its padding and borders.
+ *   - it must sort BEFORE `utilities`, or a caller's `className` cannot win.
+ *
+ * Layer order follows first appearance, and emotion injects at runtime — so the
+ * order cannot be established from here. **The consuming app declares it**, as
+ * the first line of its stylesheet:
+ *
+ *   @layer theme, base, datadack-ui, components, utilities;
+ *
+ * Both apps do (see apps/&#42;/src/index.css). Without it the layer lands wherever
+ * emotion's first insertion happens to fall, and the console renders wrong.
+ *
+ * Note there is deliberately no `prepend` here: prepending would register
+ * `datadack-ui` before the app's stylesheet is parsed, making it the FIRST and
+ * therefore lowest-priority layer — below `base`, which is the broken case
+ * above.
+ *
+ * tests/cascade.test.ts pins this down, including that both apps declare the
+ * order.
  */
 const instance = createEmotion({
   key: "ddui",
-  prepend: true,
   // Emotion's own convention, made explicit because bun resolves the
   // non-development build and would otherwise pick speedy everywhere. Speedy
   // inserts through CSSOM `insertRule`, which is faster but leaves the <style>

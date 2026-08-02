@@ -5,8 +5,7 @@ import { Building2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
-import { dateColumn, EmptyState, nameColumn, ResourceTable, textColumn } from "@/components/console"
-
+import { DataTable, dateColumn, EmptyState, nameColumn, textColumn } from "@datadack/common-ui"
 import { AccessChips } from "./AccessChips"
 import type { TabProps, UserRow } from "./types"
 import { ActiveBadge } from "../../components/ActiveBadge"
@@ -78,7 +77,7 @@ export function UsersTab({ q, page, pageSize, onPageChange }: Readonly<TabProps>
   )
 
   return (
-    <ResourceTable<UserRow>
+    <DataTable<UserRow>
       data={users}
       columns={columns}
       pagination={{
@@ -87,14 +86,17 @@ export function UsersTab({ q, page, pageSize, onPageChange }: Readonly<TabProps>
         total: data?.pagination?.total ?? users.length,
         onPageChange,
       }}
-      isLoading={isLoading}
-      isError={isError}
+      loading={isLoading}
+      error={isError ? t("console.table.error") : undefined}
       onRetry={() => void refetch()}
+      retryLabel={t("console.table.retry")}
       getRowId={(u) => u.id}
       // Every user row opens that user's admin profile — the same page the
       // Accounts tab's owner link goes to.
       onRowClick={(u) => void navigate(`/admin/users/${u.id}`)}
-      emptyState={<EmptyState icon={Building2} title={t("superAdmin.organizations.empty.users")} />}
+      empty={<EmptyState icon={Building2} title={t("superAdmin.organizations.empty.users")} />}
+      onRefresh={() => void refetch()}
+      refreshLabel={t("console.table.refresh")}
     />
   )
 }

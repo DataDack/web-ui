@@ -1,7 +1,7 @@
 import { ExternalLink, GitBranch } from "lucide-react"
 import { Link } from "react-router-dom"
 
-import { CopyButton } from "@/components/console"
+import { CopyButton } from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 
 import { cardAction } from "./card-action"

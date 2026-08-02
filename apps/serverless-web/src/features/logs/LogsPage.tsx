@@ -1,28 +1,28 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from "react"
 
-import { Pause, Play, ScrollText, Trash2 } from 'lucide-react'
+import { Pause, Play, ScrollText, Trash2 } from "lucide-react"
 
-import { streamLogs, type LogQuery } from '@/lib/api'
-import { useDashboard, useLogSnapshot } from '@/lib/queries'
-import type { LogLine } from '@/lib/schemas'
+import { streamLogs, type LogQuery } from "@/lib/api"
+import { useDashboard, useLogSnapshot } from "@/lib/queries"
+import type { LogLine } from "@/lib/schemas"
 
-import { Button, cn, EmptyState, Input, PageHeader } from '@datadack/serverless-ui'
+import { Button, cn, EmptyState, Input, PageHeader } from "@datadack/serverless-ui"
 
 /** How many lines the pane holds. Past this the oldest are dropped: the browser
  *  is a tail, and an unbounded array is how a long-lived tab runs out of memory. */
 const MAX_LINES = 2000
 
 const LEVEL_CLASSES: Record<string, string> = {
-  ERROR: 'text-status-danger',
-  WARN: 'text-status-warning',
-  INFO: 'text-muted-foreground',
+  ERROR: "text-status-danger",
+  WARN: "text-status-warning",
+  INFO: "text-muted-foreground",
 }
 
 export function LogsPage() {
   const [live, setLive] = useState(true)
-  const [functionName, setFunctionName] = useState('')
-  const [search, setSearch] = useState('')
-  const [level, setLevel] = useState('')
+  const [functionName, setFunctionName] = useState("")
+  const [search, setSearch] = useState("")
+  const [level, setLevel] = useState("")
   const [lines, setLines] = useState<LogLine[]>([])
   const [dropped, setDropped] = useState(0)
   const [streamError, setStreamError] = useState<string | null>(null)
@@ -89,14 +89,14 @@ export function LogsPage() {
 
       <div className="mb-3 flex flex-wrap items-center gap-2">
         <Button
-          variant={live ? 'default' : 'outline'}
+          variant={live ? "default" : "outline"}
           size="sm"
           onClick={() => {
             setLive((current) => !current)
           }}
         >
           {live ? <Pause className="size-3.5" /> : <Play className="size-3.5" />}
-          {live ? 'Live' : 'Paused'}
+          {live ? "Live" : "Paused"}
         </Button>
 
         <select
@@ -179,11 +179,11 @@ export function LogsPage() {
         {visible.length === 0 ? (
           <EmptyState
             icon={ScrollText}
-            title={live ? 'Waiting for output' : 'No buffered lines'}
+            title={live ? "Waiting for output" : "No buffered lines"}
             description={
               live
-                ? 'Lines appear as functions are invoked. The control plane keeps a bounded recent window, not an archive.'
-                : 'Nothing matches the current filter in the buffered window.'
+                ? "Lines appear as functions are invoked. The control plane keeps a bounded recent window, not an archive."
+                : "Nothing matches the current filter in the buffered window."
             }
           />
         ) : (
@@ -195,8 +195,8 @@ export function LogsPage() {
                 </span>
                 <span
                   className={cn(
-                    'w-14 shrink-0 truncate text-[11px]',
-                    line.stream === 'platform' ? 'text-brand-gold' : 'text-muted-foreground/70',
+                    "w-14 shrink-0 truncate text-[11px]",
+                    line.stream === "platform" ? "text-brand-gold" : "text-muted-foreground/70",
                   )}
                 >
                   {line.stream}
@@ -206,8 +206,8 @@ export function LogsPage() {
                 </span>
                 <span
                   className={cn(
-                    'min-w-0 break-all whitespace-pre-wrap',
-                    LEVEL_CLASSES[line.level ?? 'INFO'] ?? 'text-foreground',
+                    "min-w-0 break-all whitespace-pre-wrap",
+                    LEVEL_CLASSES[line.level ?? "INFO"] ?? "text-foreground",
                   )}
                 >
                   {line.message}

@@ -1,7 +1,12 @@
 import { useMemo, useState } from "react"
 
 import {
+  actionsColumn,
   Button,
+  DataTable,
+  dateColumn,
+  EmptyState,
+  type RowAction,
   Select,
   SelectContent,
   SelectItem,
@@ -12,16 +17,7 @@ import type { ColumnDef } from "@tanstack/react-table"
 import { ArrowRight, Check, Gauge, RefreshCw, X } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import {
-  actionsColumn,
-  dateColumn,
-  EmptyState,
-  PageHeader,
-  ResourceTable,
-  StatGrid,
-  type RowAction,
-  type StatCardProps,
-} from "@/components/console"
+import { PageHeader, StatGrid, type StatCardProps } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
 import { ApproveDialog } from "./ApproveDialog"
@@ -253,7 +249,7 @@ export function QuotaRequestsPage() {
 
       <StatGrid stats={stats} className="lg:grid-cols-3" />
 
-      <ResourceTable<AdminQuotaRequest>
+      <DataTable<AdminQuotaRequest>
         data={requests}
         columns={columns}
         pagination={{
@@ -262,19 +258,23 @@ export function QuotaRequestsPage() {
           total,
           onPageChange: setPage,
         }}
-        isLoading={isLoading}
-        isError={isError}
+        loading={isLoading}
+        error={isError ? t("console.table.error") : undefined}
         onRetry={() => void refetch()}
+        retryLabel={t("console.table.retry")}
         getRowId={(row) => row.id}
         onRowClick={setDetail}
         toolbar={toolbar}
-        emptyState={
+        empty={
           <EmptyState
             icon={Gauge}
             title={t("superAdmin.quotaRequests.empty")}
             description={t("superAdmin.quotaRequests.emptySubtitle")}
           />
         }
+        onRefresh={() => void refetch()}
+        refreshLabel={t("console.table.refresh")}
+        refreshing={isFetching}
       />
 
       <RequestDetailSheet

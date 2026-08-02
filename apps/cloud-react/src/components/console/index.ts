@@ -15,16 +15,14 @@ export { StatCard, StatGrid } from "./StatCard"
 export type { StatCardProps, StatColor } from "./StatCard"
 export { Sparkline } from "./Sparkline"
 export { MetricChart } from "./MetricChart"
-export { EmptyState } from "./EmptyState"
+// EmptyState, CopyButton and TagList now live in the design system.
 export { SegmentedControl } from "./SegmentedControl"
 export type { SegmentedOption } from "./SegmentedControl"
 export { ComingSoon } from "./ComingSoon"
-export { CopyButton } from "./CopyButton"
 export { KeyValueGrid } from "./KeyValueGrid"
 export type { KeyValueItem } from "./KeyValueGrid"
 export { CidrInput } from "./CidrInput"
 export type { CidrInputProps } from "./CidrInput"
-export { TagList } from "./TagList"
 export { TagEditor } from "./TagEditor"
 export { ConfirmDialog } from "./ConfirmDialog"
 export { DetailPage } from "./DetailPage"
@@ -51,32 +49,37 @@ export { getStatusConfig } from "./status-config"
 export type { StatusTone } from "./status-config"
 
 // Table
-export { ResourceTable } from "./table/ResourceTable"
-export type { ColumnMeta } from "./table/ResourceTable"
-
-// The design system's table. List pages are moving onto this from the local
-// ResourceTable above: it covers the same ground — loading, error and retry,
-// empty and no-results, selection with bulk actions, client or server paging —
-// and is shared with the other console rather than maintained twice.
+// The console's one table, from the design system. Every list page renders
+// through this; the app's own ResourceTable it replaced is gone. It covers the
+// same ground — loading, error and retry, empty and no-results, selection with
+// bulk actions, client or server paging, responsive and interactive columns —
+// and is shared with the serverless console rather than maintained twice.
 export { DataTable } from "@datadack/common-ui"
 export type {
   DataTableBulkAction,
+  DataTableColumnMeta,
   DataTablePagination,
   DataTableProps,
   DataTableServerPagination,
 } from "@datadack/common-ui"
+
+/** @deprecated Renamed to DataTableColumnMeta; kept so column factories compile. */
+export type { DataTableColumnMeta as ColumnMeta } from "@datadack/common-ui"
 export { BulkActionsBar } from "./table/BulkActionsBar"
 export type { BulkAction } from "./table/BulkActionsBar"
 export {
   actionsColumn,
   copyColumn,
+  CopyButton,
   dateColumn,
+  EmptyState,
   nameColumn,
   statusColumn,
   tagsColumn,
+  TagList,
   textColumn,
-} from "./table/resource-table-columns"
-export type { RowAction } from "./table/resource-table-columns"
+  type RowAction,
+} from "@datadack/common-ui"
 
 // Wizard
 export { CreateWizard } from "./wizard/CreateWizard"

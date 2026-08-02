@@ -37,8 +37,8 @@ import {
 } from "lucide-react"
 
 import { EmptyState } from "./EmptyState"
-import { css, cx } from "../lib/emotion"
-import { fontMono, mix } from "../lib/styles"
+import { css, cx, keyframes } from "../lib/emotion"
+import { contentEnter, fontMono, media, mix } from "../lib/styles"
 import { Button } from "../ui/button"
 import { Checkbox } from "../ui/checkbox"
 import {
@@ -58,6 +58,16 @@ const wrap = css`
   display: flex;
   flex-direction: column;
   gap: 12px;
+`
+
+/* The frame every list page was drawing by hand with `glass-1 overflow-hidden`.
+   Built in so a table looks like a table without the caller wrapping it, and so
+   the two consoles cannot drift on the surface treatment. */
+const borderedFrame = css`
+  border: 1px solid var(--border-glass, var(--border));
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background: ${mix("--card", 60)};
 `
 
 const toolbar = css`
@@ -138,6 +148,34 @@ const sortableHead = css`
   }
 `
 
+/* Columns declared `meta: { responsive: "md" }` are hidden until that width.
+   Written as display:none → table-cell rather than a utility class so the
+   behaviour travels with the package instead of relying on the consuming app
+   generating `hidden md:table-cell`. */
+const hiddenBelow = {
+  md: css`
+    display: none;
+
+    ${media.md} {
+      display: table-cell;
+    }
+  `,
+  lg: css`
+    display: none;
+
+    ${media.lg} {
+      display: table-cell;
+    }
+  `,
+  xl: css`
+    display: none;
+
+    ${media.xl} {
+      display: table-cell;
+    }
+  `,
+} as const
+
 const compactCell = css`
   padding-top: 4px;
   padding-bottom: 4px;
@@ -146,6 +184,16 @@ const compactCell = css`
 const clickableRow = css`
   cursor: pointer;
 `
+
+/* Rows fade in with a short, capped stagger. Capped because a 50-row page with
+   an uncapped stagger finishes animating long after the user has started
+   reading, which reads as lag rather than polish. */
+const ROW_STAGGER_MS = 30
+const MAX_STAGGERED_ROWS = 8
+
+function rowStagger(index: number): { animationDelay: string } {
+  return { animationDelay: `${String(Math.min(index, MAX_STAGGERED_ROWS) * ROW_STAGGER_MS)}ms` }
+}
 
 const selectedRow = css`
   background: ${mix("--muted", 60)};
@@ -208,6 +256,14 @@ const pager = css`
 
 const pageSize = css`
   width: 5rem;
+`
+
+const spinFrames = keyframes`
+  to { transform: rotate(360deg); }
+`
+
+const spinning = css`
+  animation: ${spinFrames} 1s linear infinite;
 `
 
 const errorCell = css`
@@ -290,6 +346,30 @@ function HeaderContent<T>({ header }: Readonly<{ header: Header<T, unknown> }>) 
       <SortIcon direction={header.column.getIsSorted()} />
     </button>
   )
+}
+
+/**
+ * Per-column options, set through TanStack's `meta`:
+ *
+ *   { accessorKey: "region", header: "Region", meta: { responsive: "md" } }
+ */
+export interface DataTableColumnMeta {
+  /** Hide the column below this breakpoint, to keep narrow screens readable. */
+  responsive?: "md" | "lg" | "xl"
+  /**
+   * The cell holds its own controls — a menu, a switch, a link. Clicks inside it
+   * must not also trigger `onRowClick`.
+   */
+  interactive?: boolean
+}
+
+/** TanStack types `meta` as unknown-ish, so this is the single cast point. */
+function columnMeta<T>(column: ColumnDef<T>): DataTableColumnMeta | undefined {
+  return column.meta
+}
+
+function responsiveClass(meta: DataTableColumnMeta | undefined): string | undefined {
+  return meta?.responsive ? hiddenBelow[meta.responsive] : undefined
 }
 
 /** One entry in the bar that appears while rows are selected. */
@@ -376,9 +456,15 @@ export interface DataTableProps<T> {
   onSortingChange?: (sorting: SortingState) => void
 
   /**
-   * `true` for client-side paging with defaults, an object to set the page size
-   * and its options, or a `{ page, pageSize, total, onPageChange }` object to
-   * hand paging to the server.
+   * Paging. On by default and client-side, because that is right for almost
+   * every list here: the data arrives whole, so paging in the browser costs
+   * nothing and a long list stays navigable. Pass an object to set the page size
+   * and its options, a `{ page, pageSize, total, onPageChange }` object to hand
+   * paging to the server, or `false` for a short fixed list that should never
+   * paginate.
+   *
+   * Either way the footer hides itself when everything fits on one page, so a
+   * three-row table shows no controls.
    */
   pagination?: DataTablePagination
 
@@ -404,8 +490,30 @@ export interface DataTableProps<T> {
   columnToolbar?: boolean
   columnToolbarLabel?: string
 
+  /**
+   * Draw the table's own frame. On by default: a list is a bounded surface, and
+   * every page was otherwise wrapping it in the same two utility classes.
+   */
+  bordered?: boolean
+
+  /**
+   * Refetch handler. Given one, the toolbar grows a refresh button — so every
+   * list offers the same way to reload without each page building its own.
+   */
+  onRefresh?: () => void
+  /** Spins the refresh icon and disables the button while a refetch is in flight. */
+  refreshing?: boolean
+  refreshLabel?: string
+
   density?: "default" | "compact"
   stickyHeader?: boolean
+
+  /**
+   * Fade rows in with a short staggered delay as they mount. On by default,
+   * which is how the console has always rendered a list; pass `false` for a
+   * table that re-renders often enough that the entrance becomes a flicker.
+   */
+  animateRows?: boolean
 
   /**
    * Renders an expandable detail panel under a row. Adds a chevron column, and
@@ -415,7 +523,28 @@ export interface DataTableProps<T> {
   /** Gate expansion per row — rows that cannot expand get no chevron. */
   rowCanExpand?: (row: T) => boolean
 
+  /**
+   * Render something else in place of a row — an inline edit form, typically.
+   * Return null to render the row normally. The replacement supplies its own
+   * TableRow and cells, so it can span or reshape the grid however it needs.
+   */
+  renderRow?: (row: T) => ReactNode | null
+
+  /**
+   * A row rendered inside the table body, after the data. For an inline "add"
+   * form that belongs in the grid rather than above it — it must render its own
+   * TableRow and cells, and it stays visible through the empty and loading
+   * states so the way to add the first entry never disappears.
+   */
+  footerRow?: ReactNode
+
   onRowClick?: (row: T) => void
+  /**
+   * Extra classes for every body row, or per row when given a function. The way
+   * to attach a hover group (`group/row`) so a cell can reveal a control only
+   * while its own row is hovered.
+   */
+  rowClassName?: string | ((row: T) => string | undefined)
   /** Rendered at the right of the toolbar — bulk actions, filters, buttons. */
   actions?: ReactNode
   className?: string
@@ -449,7 +578,7 @@ export function DataTable<T>({
   onGlobalFilterChange,
   defaultSorting = [],
   onSortingChange,
-  pagination = false,
+  pagination = true,
   toolbar: toolbarSlot,
   bulkActions,
   selectable = false,
@@ -457,11 +586,19 @@ export function DataTable<T>({
   getRowId,
   columnToolbar = false,
   columnToolbarLabel = "Columns",
+  bordered = true,
+  onRefresh,
+  refreshing = false,
+  refreshLabel = "Refresh",
   density = "default",
   stickyHeader = false,
+  animateRows = true,
   renderSubRow,
   rowCanExpand,
+  renderRow,
+  footerRow,
   onRowClick,
+  rowClassName,
   actions,
   className,
 }: Readonly<DataTableProps<T>>) {
@@ -585,7 +722,7 @@ export function DataTable<T>({
 
   return (
     <div className={cx(wrap, className)}>
-      {(searchable || columnToolbar || actions || toolbarSlot) && (
+      {(searchable || columnToolbar || actions || toolbarSlot || onRefresh) && (
         <div className={toolbar}>
           {searchable && (
             <div className={search}>
@@ -609,6 +746,18 @@ export function DataTable<T>({
           {toolbarSlot}
           <div className={toolbarRight}>
             {actions}
+            {onRefresh && (
+              <Button
+                variant="outline"
+                size="icon-sm"
+                aria-label={refreshLabel}
+                title={refreshLabel}
+                disabled={refreshing}
+                onClick={onRefresh}
+              >
+                <RotateCw className={refreshing ? spinning : undefined} />
+              </Button>
+            )}
             {columnToolbar && hideableColumns.length > 0 && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -668,7 +817,7 @@ export function DataTable<T>({
         </div>
       )}
 
-      <Table>
+      <Table containerClassName={bordered ? borderedFrame : undefined}>
         <TableHeader className={stickyHeader ? stickyHead : undefined}>
           {table.getHeaderGroups().map((group) => (
             <TableRow key={group.id}>
@@ -677,7 +826,10 @@ export function DataTable<T>({
                 return (
                   <TableHead
                     key={header.id}
-                    className={header.column.id === "__select" ? selectCell : undefined}
+                    className={cx(
+                      header.column.id === "__select" && selectCell,
+                      responsiveClass(columnMeta(header.column.columnDef)),
+                    )}
                     aria-sort={ariaSort(sorted)}
                   >
                     <HeaderContent header={header} />
@@ -718,11 +870,20 @@ export function DataTable<T>({
 
           {!loading &&
             !hasError &&
-            rows.map((row: Row<T>) => (
+            rows.map((row: Row<T>, rowIndex: number) => {
+              const replacement = renderRow?.(row.original)
+              if (replacement) return <Fragment key={row.id}>{replacement}</Fragment>
+              return (
               <Fragment key={row.id}>
                 <TableRow
                   data-state={row.getIsSelected() ? "selected" : undefined}
-                  className={cx(row.getIsSelected() && selectedRow, onRowClick && clickableRow)}
+                  className={cx(
+                    animateRows && contentEnter,
+                    row.getIsSelected() && selectedRow,
+                    onRowClick && clickableRow,
+                    typeof rowClassName === "function" ? rowClassName(row.original) : rowClassName,
+                  )}
+                  style={animateRows ? rowStagger(rowIndex) : undefined}
                   onClick={
                     onRowClick
                       ? () => {
@@ -731,18 +892,31 @@ export function DataTable<T>({
                       : undefined
                   }
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      className={cx(
-                        density === "compact" && compactCell,
-                        (cell.column.id === "__select" || cell.column.id === "__expander") &&
-                          selectCell,
-                      )}
-                    >
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
+                  {row.getVisibleCells().map((cell) => {
+                    const meta = columnMeta(cell.column.columnDef)
+                    return (
+                      <TableCell
+                        key={cell.id}
+                        className={cx(
+                          density === "compact" && compactCell,
+                          (cell.column.id === "__select" || cell.column.id === "__expander") &&
+                            selectCell,
+                          responsiveClass(meta),
+                        )}
+                        // A cell holding its own controls must not also fire the
+                        // row's click handler — hitting a row menu would navigate.
+                        onClick={
+                          meta?.interactive
+                            ? (event) => {
+                                event.stopPropagation()
+                              }
+                            : undefined
+                        }
+                      >
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    )
+                  })}
                 </TableRow>
                 {renderSubRow && (expanded[row.id] ?? false) && (
                   <TableRow key={`${row.id}-detail`}>
@@ -752,7 +926,8 @@ export function DataTable<T>({
                   </TableRow>
                 )}
               </Fragment>
-            ))}
+              )
+            })}
 
           {!loading && !hasError && rows.length === 0 && (
             <TableRow>
@@ -769,6 +944,7 @@ export function DataTable<T>({
               </TableCell>
             </TableRow>
           )}
+          {footerRow}
         </TableBody>
       </Table>
 
@@ -776,7 +952,7 @@ export function DataTable<T>({
         <ServerPager pagination={serverPaging} selectedCount={selectedRows.length} />
       )}
 
-      {clientPaging && !loading && !hasError && rows.length > 0 && (
+      {clientPaging && !loading && !hasError && rows.length > 0 && table.getPageCount() > 1 && (
         <div className={footer}>
           <span className={footerInfo}>
             {selectable && Object.keys(rowSelection).length > 0

@@ -1,11 +1,11 @@
 import { useMemo, useState } from "react"
 
-import { Badge, Button } from "@datadack/common-ui"
+import { actionsColumn, Badge, Button, DataTable, EmptyState } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { HardDrive, Pencil, Plus, RefreshCw, Globe } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { actionsColumn, EmptyState, PageHeader, ResourceTable } from "@/components/console"
+import { PageHeader } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
 import { ActiveBadge } from "../components/ActiveBadge"
@@ -239,15 +239,16 @@ export function StoragePricesPage() {
         ))}
       </div>
 
-      <ResourceTable<StoragePrice>
+      <DataTable<StoragePrice>
         data={visiblePrices}
         columns={columns}
-        isLoading={isLoading}
-        isError={isError}
+        loading={isLoading}
+        error={isError ? t("console.table.error") : undefined}
         onRetry={() => void refetch()}
+        retryLabel={t("console.table.retry")}
         getRowId={(p) => p.id}
         onRowClick={openEdit}
-        emptyState={
+        empty={
           <EmptyState
             icon={HardDrive}
             title={t("superAdmin.storagePrices.empty")}
@@ -255,6 +256,9 @@ export function StoragePricesPage() {
             action={{ label: t("superAdmin.storagePrices.add"), onClick: openCreate }}
           />
         }
+        onRefresh={() => void refetch()}
+        refreshLabel={t("console.table.refresh")}
+        refreshing={isFetching}
       />
 
       <StoragePriceFormSheet open={formOpen} onOpenChange={setFormOpen} price={editing} />

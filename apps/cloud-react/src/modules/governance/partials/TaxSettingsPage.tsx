@@ -1,28 +1,25 @@
 import { useCallback, useMemo, useState } from "react"
 
 import {
+  actionsColumn,
   Button,
+  DataTable,
+  EmptyState,
   Input,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
+  statusColumn,
+  textColumn,
 } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Download, Pencil, Plus, Receipt, RefreshCw, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
-import {
-  actionsColumn,
-  ConfirmDialog,
-  EmptyState,
-  PageHeader,
-  ResourceTable,
-  statusColumn,
-  textColumn,
-} from "@/components/console"
+import { ConfirmDialog, PageHeader } from "@/components/console"
 import { useActiveScope } from "@/modules/accounts/accounts.hooks"
 import { useAuth } from "@/modules/auth/auth.context"
 import { useActiveOrganization } from "@/modules/organizations/organizations.hooks"
@@ -201,12 +198,13 @@ export function TaxSettingsPage() {
         }
       />
 
-      <ResourceTable<TaxRegistration>
+      <DataTable<TaxRegistration>
         data={rows}
         columns={columns}
-        isLoading={isLoading}
-        isError={isError}
+        loading={isLoading}
+        error={isError ? t("console.table.error") : undefined}
         onRetry={() => void refetch()}
+        retryLabel={t("console.table.retry")}
         getRowId={(r) => r.id}
         onRowClick={
           canManage
@@ -245,7 +243,7 @@ export function TaxSettingsPage() {
             </Select>
           </div>
         }
-        emptyState={
+        empty={
           <EmptyState
             icon={Receipt}
             title={t("taxSettings.empty")}
@@ -260,6 +258,9 @@ export function TaxSettingsPage() {
             }
           />
         }
+        onRefresh={() => void refetch()}
+        refreshLabel={t("console.table.refresh")}
+        refreshing={isFetching}
       />
 
       <ConfirmDialog

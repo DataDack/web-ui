@@ -5,14 +5,7 @@ import { Building2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
-import {
-  dateColumn,
-  EmptyState,
-  ResourceTable,
-  statusColumn,
-  textColumn,
-} from "@/components/console"
-
+import { DataTable, dateColumn, EmptyState, statusColumn, textColumn } from "@datadack/common-ui"
 import { BalanceCell } from "./BalanceCell"
 import { DiscountCell } from "./DiscountCell"
 import type { AccountRow, TabProps } from "./types"
@@ -124,7 +117,7 @@ export function AccountsTab({
   )
 
   return (
-    <ResourceTable<AccountRow>
+    <DataTable<AccountRow>
       data={accounts}
       columns={columns}
       pagination={{
@@ -133,14 +126,15 @@ export function AccountsTab({
         total: data?.pagination?.total ?? accounts.length,
         onPageChange,
       }}
-      isLoading={isLoading}
-      isError={isError}
+      loading={isLoading}
+      error={isError ? t("console.table.error") : undefined}
       onRetry={() => void refetch()}
+      retryLabel={t("console.table.retry")}
       getRowId={(a) => a.id}
       onRowClick={(a) => void navigate(`/admin/accounts/${a.id}/resources`)}
-      emptyState={
-        <EmptyState icon={Building2} title={t("superAdmin.organizations.empty.accounts")} />
-      }
+      empty={<EmptyState icon={Building2} title={t("superAdmin.organizations.empty.accounts")} />}
+      onRefresh={() => void refetch()}
+      refreshLabel={t("console.table.refresh")}
     />
   )
 }

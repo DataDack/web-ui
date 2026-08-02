@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react"
 
-import { Button } from "@datadack/common-ui"
+import { actionsColumn, Button, DataTable, EmptyState, statusColumn } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import {
   Pencil,
@@ -16,14 +16,7 @@ import {
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
-import {
-  actionsColumn,
-  ConfirmDialog,
-  EmptyState,
-  PageHeader,
-  ResourceTable,
-  statusColumn,
-} from "@/components/console"
+import { ConfirmDialog, PageHeader } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
 import {
@@ -233,15 +226,16 @@ export function PVENodesPage() {
         }
       />
 
-      <ResourceTable<PVENode>
+      <DataTable<PVENode>
         data={nodes}
         columns={columns}
-        isLoading={isLoading}
-        isError={isError}
+        loading={isLoading}
+        error={isError ? t("console.table.error") : undefined}
         onRetry={() => void refetch()}
+        retryLabel={t("console.table.retry")}
         getRowId={(n) => n.id}
         onRowClick={openEdit}
-        emptyState={
+        empty={
           <EmptyState
             icon={Server}
             title={t("superAdmin.pveNodes.empty")}
@@ -249,6 +243,9 @@ export function PVENodesPage() {
             action={{ label: t("superAdmin.pveNodes.add"), onClick: openCreate }}
           />
         }
+        onRefresh={() => void refetch()}
+        refreshLabel={t("console.table.refresh")}
+        refreshing={isFetching}
       />
 
       <ConfirmDialog

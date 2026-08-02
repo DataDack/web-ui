@@ -11,12 +11,13 @@ import {
   Input,
   Label,
   Skeleton,
+  TagList,
 } from "@datadack/common-ui"
 import { Activity, Gauge, Info, Loader2, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
 
-import { ConfirmDialog, DetailPage, KeyValueGrid, Section, TagList } from "@/components/console"
+import { ConfirmDialog, DetailPage, KeyValueGrid, Section } from "@/components/console"
 import { parseTags } from "@/lib/tags"
 import { useScreen } from "@/services/api/screen"
 

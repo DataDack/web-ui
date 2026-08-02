@@ -1,21 +1,20 @@
 import { useMemo, useState } from "react"
 
-import { Button } from "@datadack/common-ui"
+import {
+  actionsColumn,
+  Button,
+  DataTable,
+  dateColumn,
+  EmptyState,
+  nameColumn,
+  textColumn,
+} from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { FileText, Lock, Plus, RefreshCw, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
-import {
-  actionsColumn,
-  ConfirmDialog,
-  dateColumn,
-  EmptyState,
-  nameColumn,
-  PageHeader,
-  ResourceTable,
-  textColumn,
-} from "@/components/console"
+import { ConfirmDialog, PageHeader } from "@/components/console"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useScreen } from "@/services/api/screen"
 
@@ -115,15 +114,16 @@ export function PoliciesListPage() {
         </TabsList>
 
         <TabsContent value="organization">
-          <ResourceTable<IAMPolicy>
+          <DataTable<IAMPolicy>
             data={organization}
             columns={orgColumns}
-            isLoading={isLoading}
-            isError={isError}
+            loading={isLoading}
+            error={isError ? t("console.table.error") : undefined}
             onRetry={() => void refetch()}
+            retryLabel={t("console.table.retry")}
             getRowId={(policy) => policy.id}
             onRowClick={(policy) => void navigate(IAM_ROUTES.policyDetail(policy.id))}
-            emptyState={
+            empty={
               <EmptyState
                 icon={FileText}
                 title={t("iam.policies.orgEmpty")}
@@ -134,6 +134,9 @@ export function PoliciesListPage() {
                 }}
               />
             }
+            onRefresh={() => void refetch()}
+            refreshLabel={t("console.table.refresh")}
+            refreshing={isFetching}
           />
         </TabsContent>
 
@@ -142,21 +145,25 @@ export function PoliciesListPage() {
             <Lock className="size-3" />
             {t("iam.policies.systemHint")}
           </p>
-          <ResourceTable<IAMPolicy>
+          <DataTable<IAMPolicy>
             data={system}
             columns={systemColumns}
-            isLoading={isLoading}
-            isError={isError}
+            loading={isLoading}
+            error={isError ? t("console.table.error") : undefined}
             onRetry={() => void refetch()}
+            retryLabel={t("console.table.retry")}
             getRowId={(policy) => policy.id}
             onRowClick={(policy) => void navigate(IAM_ROUTES.policyDetail(policy.id))}
-            emptyState={
+            empty={
               <EmptyState
                 icon={FileText}
                 title={t("iam.policies.systemEmpty")}
                 description={t("iam.policies.systemEmptySubtitle")}
               />
             }
+            onRefresh={() => void refetch()}
+            refreshLabel={t("console.table.refresh")}
+            refreshing={isFetching}
           />
         </TabsContent>
       </Tabs>

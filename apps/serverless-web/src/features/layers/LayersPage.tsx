@@ -19,7 +19,7 @@ import {
   timeAgo,
 } from "@datadack/common-ui"
 export function LayersPage() {
-  const { data, isLoading } = useDashboard()
+  const { data, isFetching, isLoading, refetch } = useDashboard()
   const layers = data?.detail.layers ?? []
 
   const columns = useMemo<ColumnDef<LayerVersion>[]>(
@@ -108,6 +108,8 @@ export function LayersPage() {
             description="Publish one with POST /v1/layers and its versions will appear here."
           />
         }
+        onRefresh={() => void refetch()}
+        refreshing={isFetching}
       />
     </>
   )

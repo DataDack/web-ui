@@ -1,17 +1,11 @@
 import { useMemo, useState } from "react"
 
-import { Button } from "@datadack/common-ui"
+import { actionsColumn, Button, DataTable, EmptyState, textColumn } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Gauge, Pencil, Plus, RefreshCw } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import {
-  actionsColumn,
-  EmptyState,
-  PageHeader,
-  ResourceTable,
-  textColumn,
-} from "@/components/console"
+import { PageHeader } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
 import { ActiveBadge } from "../components/ActiveBadge"
@@ -120,15 +114,16 @@ export function BandwidthPricesPage() {
         }
       />
 
-      <ResourceTable<BandwidthPrice>
+      <DataTable<BandwidthPrice>
         data={prices}
         columns={columns}
-        isLoading={isLoading}
-        isError={isError}
+        loading={isLoading}
+        error={isError ? t("console.table.error") : undefined}
         onRetry={() => void refetch()}
+        retryLabel={t("console.table.retry")}
         getRowId={(p) => p.id}
         onRowClick={openEdit}
-        emptyState={
+        empty={
           <EmptyState
             icon={Gauge}
             title={t("superAdmin.bandwidthPrices.empty")}
@@ -136,6 +131,9 @@ export function BandwidthPricesPage() {
             action={{ label: t("superAdmin.bandwidthPrices.add"), onClick: openCreate }}
           />
         }
+        onRefresh={() => void refetch()}
+        refreshLabel={t("console.table.refresh")}
+        refreshing={isFetching}
       />
 
       <BandwidthPriceFormSheet open={formOpen} onOpenChange={setFormOpen} price={editing} />

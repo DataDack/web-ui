@@ -94,6 +94,7 @@
       "noResults": "No resources found",
       "error": "Failed to load resources",
       "retry": "Try again",
+      "refresh": "Refresh",
       "selected": "{{count}} selected",
       "clearSelection": "Clear selection",
       "selectAll": "Select all rows",

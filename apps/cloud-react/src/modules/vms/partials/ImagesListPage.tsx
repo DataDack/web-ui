@@ -1,6 +1,6 @@
 import { useMemo } from "react"
 
-import { Badge, Button } from "@datadack/common-ui"
+import { actionsColumn, Badge, Button, DataTable, EmptyState } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import {
   Cpu,
@@ -15,14 +15,7 @@ import {
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
-import {
-  actionsColumn,
-  EmptyState,
-  FadeIn,
-  PageHeader,
-  DataTable,
-  StatGrid,
-} from "@/components/console"
+import { FadeIn, PageHeader, StatGrid } from "@/components/console"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useImageCatalog } from "@/modules/catalog/catalog.hooks"
 import type { ImageCatalogFamily } from "@/modules/catalog/catalog.types"
@@ -259,6 +252,9 @@ export function ImagesListPage() {
                 description={t("vms.images.emptySubtitle")}
               />
             }
+            onRefresh={() => void refetch()}
+            refreshLabel={t("console.table.refresh")}
+            refreshing={isFetching}
           />
         </TabsContent>
 

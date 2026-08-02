@@ -1,21 +1,20 @@
 import { useMemo, useState } from "react"
 
-import { Button } from "@datadack/common-ui"
+import {
+  actionsColumn,
+  Button,
+  DataTable,
+  dateColumn,
+  EmptyState,
+  nameColumn,
+  textColumn,
+} from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Plus, RefreshCw, Trash2, Users } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
-import {
-  actionsColumn,
-  ConfirmDialog,
-  dateColumn,
-  EmptyState,
-  nameColumn,
-  PageHeader,
-  ResourceTable,
-  textColumn,
-} from "@/components/console"
+import { ConfirmDialog, PageHeader } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
 import { IAM_ROUTES } from "../iam.constants"
@@ -95,15 +94,16 @@ export function GroupsListPage() {
         }
       />
 
-      <ResourceTable<IAMGroup>
+      <DataTable<IAMGroup>
         data={groups}
         columns={columns}
-        isLoading={isLoading}
-        isError={isError}
+        loading={isLoading}
+        error={isError ? t("console.table.error") : undefined}
         onRetry={() => void refetch()}
+        retryLabel={t("console.table.retry")}
         getRowId={(group) => group.id}
         onRowClick={(group) => void navigate(IAM_ROUTES.groupDetail(group.id))}
-        emptyState={
+        empty={
           <EmptyState
             icon={Users}
             title={t("iam.groups.empty")}
@@ -114,6 +114,9 @@ export function GroupsListPage() {
             }}
           />
         }
+        onRefresh={() => void refetch()}
+        refreshLabel={t("console.table.refresh")}
+        refreshing={isFetching}
       />
 
       <ConfirmDialog

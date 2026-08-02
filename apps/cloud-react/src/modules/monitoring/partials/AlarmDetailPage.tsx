@@ -11,6 +11,7 @@ import { useMemo, useState } from "react"
 import {
   Badge,
   Button,
+  EmptyState,
   Skeleton,
   Table,
   TableBody,
@@ -38,7 +39,6 @@ import {
   type AnimatedTab,
   AnimatedTabs,
   ConfirmDialog,
-  EmptyState,
   KeyValueGrid,
   type KeyValueItem,
   MetricChart,

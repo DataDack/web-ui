@@ -1,17 +1,11 @@
 import { useId } from "react"
 
-import { Button, Skeleton } from "@datadack/common-ui"
+import { Button, EmptyState, Skeleton } from "@datadack/common-ui"
 import { FolderTree, Plus, RefreshCw } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
-import {
-  EmptyState,
-  PageHeader,
-  type StatCardProps,
-  StatGrid,
-  staggerDelay,
-} from "@/components/console"
+import { PageHeader, type StatCardProps, StatGrid, staggerDelay } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
 import { RG_ROUTES } from "../resource-groups.constants"

@@ -1,8 +1,8 @@
 import type { ReactNode } from "react"
 
-import { cn } from "@/lib/utils"
+import { CopyButton } from "@datadack/common-ui"
 
-import { CopyButton } from "./CopyButton"
+import { cn } from "@/lib/utils"
 
 export interface KeyValueItem {
   label: string

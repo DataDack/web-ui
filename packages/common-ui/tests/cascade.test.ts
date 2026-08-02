@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test"
 
-import { LAYER, css, cx, injectGlobal, keyframes } from "../src/lib/emotion"
+import { LAYER, cache, css, cx, injectGlobal, keyframes } from "../src/lib/emotion"
 
 // The cascade contract between this package and the apps that consume it.
 //
@@ -118,26 +118,40 @@ describe("layering", () => {
 })
 
 describe("layer ordering", () => {
-  test("the layer name sorts before Tailwind's, so app utilities win", () => {
-    // Browsers order layers by first appearance. `prepend` puts our <style> at
-    // the top of <head>, ahead of the app's stylesheet, so `datadack-ui` is
-    // registered before Tailwind declares `theme, base, components, utilities`.
-    // That makes it the LOWEST-priority layer — exactly what a base layer wants.
-    const styles = Array.from(document.head.querySelectorAll("style[data-emotion]"))
-    expect(styles.length).toBeGreaterThan(0)
+  // Layer order follows first appearance and emotion injects at runtime, so the
+  // package cannot establish it — the consuming app must. Position is not a
+  // detail: layers are compared BEFORE specificity, so a layer below `base`
+  // loses to Tailwind's preflight `* { padding: 0; border: 0 }` and every
+  // component silently loses its padding and borders.
+  const EXPECTED = `@layer theme, base, ${LAYER}, components, utilities;`
 
-    const ours = styles[0]
-    if (!ours) throw new Error("no emotion style tag was inserted")
-    expect(ours.getAttribute("data-emotion")).toStartWith("ddui")
+  test.each(["cloud-react", "serverless-web"])(
+    "%s declares the layer order in its stylesheet",
+    async (app) => {
+      const css = await Bun.file(`${import.meta.dir}/../../../apps/${app}/src/index.css`).text()
+      expect(css).toContain(EXPECTED)
+    },
+  )
 
-    // Nothing may sit above us in <head> except other emotion tags.
-    const firstNonEmotion = Array.from(document.head.children).find(
-      (el) => !el.hasAttribute("data-emotion"),
-    )
-    if (firstNonEmotion) {
-      const relation = ours.compareDocumentPosition(firstNonEmotion)
-      expect(relation & Node.DOCUMENT_POSITION_FOLLOWING).toBe(Node.DOCUMENT_POSITION_FOLLOWING)
-    }
+  test.each(["cloud-react", "serverless-web"])(
+    "%s declares it before importing Tailwind, so nothing else fixes the order first",
+    async (app) => {
+      const css = await Bun.file(`${import.meta.dir}/../../../apps/${app}/src/index.css`).text()
+      expect(css.indexOf(EXPECTED)).toBeLessThan(css.indexOf('@import "tailwindcss"'))
+    },
+  )
+
+  test("the layer sits between base and utilities in the declared order", () => {
+    const order = EXPECTED.replace("@layer ", "").replace(";", "").split(", ")
+    expect(order.indexOf(LAYER)).toBeGreaterThan(order.indexOf("base"))
+    expect(order.indexOf(LAYER)).toBeLessThan(order.indexOf("utilities"))
+  })
+
+  test("the instance does not prepend, which would force the layer to sort first", () => {
+    // Prepending registers `datadack-ui` before the app stylesheet is parsed,
+    // making it the first and therefore LOWEST layer — below `base`, the broken
+    // case above.
+    expect(cache.sheet.prepend).toBeFalsy()
   })
 
   test("the package uses exactly one emotion cache key", () => {

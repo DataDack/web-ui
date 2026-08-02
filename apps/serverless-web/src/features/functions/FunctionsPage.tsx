@@ -20,7 +20,7 @@ import {
   cellText,
 } from "@datadack/common-ui"
 export function FunctionsPage() {
-  const { data, isLoading } = useDashboard()
+  const { data, isFetching, isLoading, refetch } = useDashboard()
   const functions = data?.detail.functions ?? []
 
   const navigate = useNavigate()
@@ -145,6 +145,8 @@ export function FunctionsPage() {
             description="Deploy one with POST /v1/functions and it will appear here."
           />
         }
+        onRefresh={() => void refetch()}
+        refreshing={isFetching}
       />
     </>
   )

@@ -1,21 +1,19 @@
 import { useMemo, useState } from "react"
 
-import { Button } from "@datadack/common-ui"
+import {
+  actionsColumn,
+  Button,
+  DataTable,
+  dateColumn,
+  EmptyState,
+  statusColumn,
+} from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Activity, Globe, Plus, RefreshCw, Trash2, Users } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
-import {
-  actionsColumn,
-  ConfirmDialog,
-  dateColumn,
-  EmptyState,
-  PageHeader,
-  ResourceTable,
-  StatGrid,
-  statusColumn,
-} from "@/components/console"
+import { ConfirmDialog, PageHeader, StatGrid } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
 import { ASG_ROUTES } from "../autoscaling.constants"
@@ -182,15 +180,16 @@ export function AutoscalingListPage() {
 
       <StatGrid stats={stats} className="lg:grid-cols-3" />
 
-      <ResourceTable<AutoScalingGroup>
+      <DataTable<AutoScalingGroup>
         data={asgs}
         columns={columns}
-        isLoading={isLoading}
-        isError={isError}
+        loading={isLoading}
+        error={isError ? t("console.table.error") : undefined}
         onRetry={() => void refetch()}
+        retryLabel={t("console.table.retry")}
         getRowId={(asg) => asg.id}
         onRowClick={(asg) => void navigate(ASG_ROUTES.detail(asg.id))}
-        emptyState={
+        empty={
           <EmptyState
             icon={Activity}
             title={t("autoscaling.empty")}
@@ -203,6 +202,9 @@ export function AutoscalingListPage() {
             }}
           />
         }
+        onRefresh={() => void refetch()}
+        refreshLabel={t("console.table.refresh")}
+        refreshing={isFetching}
       />
 
       <CreateAsgSheet open={createOpen} onOpenChange={setCreateOpen} />

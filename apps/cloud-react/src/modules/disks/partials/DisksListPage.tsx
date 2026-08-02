@@ -1,21 +1,20 @@
 import { useCallback, useMemo, useState } from "react"
 
-import { Badge, Button } from "@datadack/common-ui"
+import {
+  actionsColumn,
+  Badge,
+  Button,
+  DataTable,
+  dateColumn,
+  EmptyState,
+  statusColumn,
+} from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { HardDrive, Link2, Plus, RefreshCw, Trash2, Unlink } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
-import {
-  actionsColumn,
-  ConfirmDialog,
-  dateColumn,
-  EmptyState,
-  PageHeader,
-  DataTable,
-  StatGrid,
-  statusColumn,
-} from "@/components/console"
+import { ConfirmDialog, PageHeader, StatGrid } from "@/components/console"
 import { VMS_ROUTES } from "@/modules/vms/vms.constants"
 import { useInstances } from "@/modules/vms/vms.hooks"
 import { useScreen } from "@/services/api/screen"
@@ -268,6 +267,9 @@ export function DisksListPage() {
             }}
           />
         }
+        onRefresh={() => void refetch()}
+        refreshLabel={t("console.table.refresh")}
+        refreshing={isFetching}
       />
 
       <CreateDiskSheet open={createOpen} onOpenChange={setCreateOpen} />

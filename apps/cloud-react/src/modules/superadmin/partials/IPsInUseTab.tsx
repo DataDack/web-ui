@@ -1,11 +1,18 @@
 import { useEffect, useMemo, useState } from "react"
 
-import { Button, Input } from "@datadack/common-ui"
+import {
+  Button,
+  copyColumn,
+  DataTable,
+  dateColumn,
+  EmptyState,
+  Input,
+  textColumn,
+} from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Globe, RefreshCw, Search } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { copyColumn, dateColumn, EmptyState, ResourceTable, textColumn } from "@/components/console"
 import { cn } from "@/lib/utils"
 
 import { useAdminStaticIPAllocations } from "../superadmin.hooks"
@@ -155,20 +162,24 @@ export function IPsInUseTab() {
         </Button>
       </div>
 
-      <ResourceTable<StaticIPAllocation>
+      <DataTable<StaticIPAllocation>
         data={allocations}
         columns={columns}
-        isLoading={isLoading}
-        isError={isError}
+        loading={isLoading}
+        error={isError ? t("console.table.error") : undefined}
         onRetry={() => void refetch()}
+        retryLabel={t("console.table.retry")}
         getRowId={(a) => a.id}
-        emptyState={
+        empty={
           <EmptyState
             icon={Globe}
             title={t("superAdmin.staticIps.inUse.empty")}
             description={t("superAdmin.staticIps.inUse.emptySubtitle")}
           />
         }
+        onRefresh={() => void refetch()}
+        refreshLabel={t("console.table.refresh")}
+        refreshing={isFetching}
       />
     </div>
   )

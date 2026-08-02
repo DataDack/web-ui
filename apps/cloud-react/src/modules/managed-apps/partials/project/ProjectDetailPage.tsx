@@ -1,8 +1,8 @@
-import { Button, Skeleton } from "@datadack/common-ui"
+import { Button, EmptyState, Skeleton } from "@datadack/common-ui"
 import { GitPullRequest, Hammer, Info, PackageX, Settings } from "lucide-react"
 import { Link, useNavigate, useParams } from "react-router-dom"
 
-import { DetailPage, EmptyState } from "@/components/console"
+import { DetailPage } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
 import { ProjectBuildsTab } from "./ProjectBuildsTab"

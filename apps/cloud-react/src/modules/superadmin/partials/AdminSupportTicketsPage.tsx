@@ -2,25 +2,23 @@ import { useMemo, useState } from "react"
 
 import {
   Button,
+  DataTable,
+  dateColumn,
+  EmptyState,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
+  statusColumn,
+  textColumn,
 } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { LifeBuoy, RefreshCw } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
-import {
-  EmptyState,
-  PageHeader,
-  ResourceTable,
-  dateColumn,
-  statusColumn,
-  textColumn,
-} from "@/components/console"
+import { PageHeader } from "@/components/console"
 import { PriorityBadge } from "@/modules/support-tickets/components/PriorityBadge"
 import {
   formatTicketAccount,
@@ -138,22 +136,26 @@ export function AdminSupportTicketsPage() {
         }
       />
 
-      <ResourceTable<SupportTicket>
+      <DataTable<SupportTicket>
         data={visible}
         columns={columns}
-        isLoading={isLoading}
-        isError={isError}
+        loading={isLoading}
+        error={isError ? t("console.table.error") : undefined}
         onRetry={() => void refetch()}
+        retryLabel={t("console.table.retry")}
         getRowId={(row) => row.id}
         onRowClick={(row) => void navigate(`/admin/support/${row.id}`)}
         toolbar={toolbar}
-        emptyState={
+        empty={
           <EmptyState
             icon={LifeBuoy}
             title={t("superAdmin.support.empty")}
             description={t("superAdmin.support.emptySubtitle")}
           />
         }
+        onRefresh={() => void refetch()}
+        refreshLabel={t("console.table.refresh")}
+        refreshing={isFetching}
       />
     </div>
   )

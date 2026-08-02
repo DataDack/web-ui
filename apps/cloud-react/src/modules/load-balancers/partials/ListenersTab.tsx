@@ -2,11 +2,13 @@ import { useMemo, useState } from "react"
 
 import {
   Button,
+  DataTable,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  EmptyState,
   Input,
   Label,
   Select,
@@ -15,18 +17,15 @@ import {
   SelectTrigger,
   SelectValue,
   Skeleton,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+  textColumn,
+  type DataTableColumnMeta,
 } from "@datadack/common-ui"
+import type { ColumnDef } from "@tanstack/react-table"
 import { ArrowRight, Ear, Plus, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
-import { ConfirmDialog, EmptyState, Section, staggerDelay } from "@/components/console"
+import { ConfirmDialog, Section } from "@/components/console"
 import { TG_ROUTES } from "@/modules/target-groups/target-groups.constants"
 import { useTargetGroups } from "@/modules/target-groups/target-groups.hooks"
 
@@ -54,6 +53,61 @@ export function ListenersTab({ lb }: Readonly<{ lb: LoadBalancer }>) {
 
   const groupName = (id: string) => groups.find((g) => g.id === id)?.name ?? id
 
+  const columns = useMemo<ColumnDef<LBListener>[]>(
+    () => [
+      textColumn({
+        id: "protocol",
+        header: t("loadBalancers.listeners.protocol"),
+        accessor: (listener) => listener.protocol,
+        mono: true,
+      }),
+      textColumn({
+        id: "port",
+        header: t("loadBalancers.listeners.port"),
+        accessor: (listener) => listener.port,
+        mono: true,
+      }),
+      {
+        id: "targetGroup",
+        header: t("loadBalancers.listeners.targetGroup"),
+        // Holds a link out to the target group.
+        meta: { interactive: true } satisfies DataTableColumnMeta,
+        cell: ({ row }) => (
+          <span className="inline-flex items-center gap-1.5">
+            <ArrowRight className="size-3 text-muted-foreground" />
+            <Link
+              to={TG_ROUTES.detail(row.original.default_target_group_id)}
+              className="font-mono text-[13px] text-status-info hover:underline"
+            >
+              {groupName(row.original.default_target_group_id)}
+            </Link>
+          </span>
+        ),
+      },
+      {
+        id: "actions",
+        header: "",
+        meta: { interactive: true } satisfies DataTableColumnMeta,
+        cell: ({ row }) => (
+          <div className="text-right">
+            <Button
+              size="icon"
+              variant="ghost"
+              aria-label={t("loadBalancers.listeners.remove")}
+              onClick={() => {
+                setPendingDelete(row.original)
+              }}
+            >
+              <Trash2 className="size-3.5 text-destructive" />
+            </Button>
+          </div>
+        ),
+      },
+    ],
+    // groupName closes over `groups`, so the identity of that list is the dep.
+    [groups, t],
+  )
+
   if (isLoading) return <Skeleton className="h-48 rounded-xl" />
 
   return (
@@ -76,72 +130,18 @@ export function ListenersTab({ lb }: Readonly<{ lb: LoadBalancer }>) {
           </Button>
         }
       >
-        {listeners.length === 0 ? (
-          <EmptyState
-            icon={Ear}
-            title={t("loadBalancers.listeners.empty")}
-            description={t("loadBalancers.listeners.emptySubtitle")}
-          />
-        ) : (
-          <div className="glass-1 overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow className="hover:bg-transparent">
-                  {[
-                    t("loadBalancers.listeners.protocol"),
-                    t("loadBalancers.listeners.port"),
-                    t("loadBalancers.listeners.targetGroup"),
-                    "",
-                  ].map((header, i) => (
-                    <TableHead
-                      key={header || `actions-${String(i)}`}
-                      className="px-3 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground"
-                    >
-                      {header}
-                    </TableHead>
-                  ))}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {listeners.map((listener, index) => (
-                  <TableRow
-                    key={listener.id}
-                    className="animate-content-enter"
-                    style={staggerDelay(index)}
-                  >
-                    <TableCell className="px-3 font-mono text-[13px]">
-                      {listener.protocol}
-                    </TableCell>
-                    <TableCell className="px-3 font-mono text-[13px]">{listener.port}</TableCell>
-                    <TableCell className="px-3">
-                      <span className="inline-flex items-center gap-1.5">
-                        <ArrowRight className="size-3 text-muted-foreground" />
-                        <Link
-                          to={TG_ROUTES.detail(listener.default_target_group_id)}
-                          className="font-mono text-[13px] text-status-info hover:underline"
-                        >
-                          {groupName(listener.default_target_group_id)}
-                        </Link>
-                      </span>
-                    </TableCell>
-                    <TableCell className="px-3 text-right">
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        aria-label={t("loadBalancers.listeners.remove")}
-                        onClick={() => {
-                          setPendingDelete(listener)
-                        }}
-                      >
-                        <Trash2 className="size-3.5 text-destructive" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        )}
+        <DataTable<LBListener>
+          data={listeners}
+          columns={columns}
+          getRowId={(listener) => listener.id}
+          empty={
+            <EmptyState
+              icon={Ear}
+              title={t("loadBalancers.listeners.empty")}
+              description={t("loadBalancers.listeners.emptySubtitle")}
+            />
+          }
+        />
       </Section>
 
       <AddListenerDialog lb={lb} open={addOpen} onOpenChange={setAddOpen} />

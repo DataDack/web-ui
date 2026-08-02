@@ -1,24 +1,24 @@
 import { useMemo, useState } from "react"
 
-import { Badge, Button, Input } from "@datadack/common-ui"
+import {
+  actionsColumn,
+  Badge,
+  Button,
+  copyColumn,
+  DataTable,
+  dateColumn,
+  EmptyState,
+  Input,
+  nameColumn,
+  statusColumn,
+  textColumn,
+} from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Network, Plus, RefreshCw, Search, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
-import {
-  actionsColumn,
-  ConfirmDialog,
-  copyColumn,
-  dateColumn,
-  EmptyState,
-  nameColumn,
-  PageHeader,
-  ResourceTable,
-  StatGrid,
-  statusColumn,
-  textColumn,
-} from "@/components/console"
+import { ConfirmDialog, PageHeader, StatGrid } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
 import { VPC_ROUTES } from "../vpc.constants"
@@ -205,15 +205,16 @@ export function VpcListPage() {
 
       <StatGrid stats={stats} />
 
-      <ResourceTable<VPCNetwork>
+      <DataTable<VPCNetwork>
         data={filtered}
         columns={columns}
-        isLoading={isLoading}
-        isError={isError}
+        loading={isLoading}
+        error={isError ? t("console.table.error") : undefined}
         onRetry={() => void refetch()}
+        retryLabel={t("console.table.retry")}
         getRowId={(network) => network.id}
         onRowClick={(network) => void navigate(VPC_ROUTES.detail(network.id))}
-        enableColumnVisibility
+        columnToolbar
         toolbar={
           <div className="relative w-full max-w-xs">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
@@ -227,7 +228,7 @@ export function VpcListPage() {
             />
           </div>
         }
-        emptyState={
+        empty={
           <EmptyState
             icon={Network}
             title={t("vpc.empty")}
@@ -238,6 +239,9 @@ export function VpcListPage() {
             }}
           />
         }
+        onRefresh={() => void refetch()}
+        refreshLabel={t("console.table.refresh")}
+        refreshing={isFetching}
       />
 
       <ConfirmDialog

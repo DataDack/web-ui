@@ -2,18 +2,16 @@ import { useMemo } from "react"
 
 import {
   Button,
+  DataTable,
+  EmptyState,
   Skeleton,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+  type DataTableColumnMeta,
 } from "@datadack/common-ui"
+import type { ColumnDef } from "@tanstack/react-table"
 import { Hammer, Loader2, RotateCcw, X } from "lucide-react"
 import { useSearchParams } from "react-router-dom"
 
-import { EmptyState, Section, staggerDelay } from "@/components/console"
+import { Section } from "@/components/console"
 
 import { formatDuration, isTimeSet, shortSha, timeSince, triggerLabel } from "./build-format"
 import { BuildLogConsole } from "./BuildLogConsole"
@@ -21,8 +19,6 @@ import { LatestBuildLog } from "./LatestBuildLog"
 import { ActivityTimeline, BuildStatusPill } from "../../components"
 import { useCancelBuild, useCreateBuild, useProjectBuilds } from "../../managed-apps.hooks"
 import { isBuildTransitional, type Build, type Project } from "../../managed-apps.types"
-
-const HEADERS = ["Status", "Commit", "Trigger", "Started", "Duration", ""] as const
 
 /**
  * Builds tab — deploy history, newest first.
@@ -82,6 +78,121 @@ export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
     return formatDuration(build.started_at, build.finished_at)
   }
 
+  const columns = useMemo<ColumnDef<Build>[]>(
+    () => [
+      {
+        id: "status",
+        header: "Status",
+        cell: ({ row }) => <BuildStatusPill status={row.original.status} />,
+      },
+      {
+        id: "commit",
+        header: "Commit",
+        cell: ({ row }) => (
+          <span className="flex min-w-0 max-w-72 items-baseline gap-2">
+            {row.original.commit_sha !== "" && (
+              <span className="shrink-0 font-mono text-[12px] text-muted-foreground">
+                {shortSha(row.original.commit_sha)}
+              </span>
+            )}
+            <span className="min-w-0 truncate text-[13px] text-foreground">
+              {row.original.commit_message || `${triggerLabel(row.original.triggered_by)} deploy`}
+            </span>
+          </span>
+        ),
+      },
+      {
+        id: "trigger",
+        header: "Trigger",
+        cell: ({ row }) => (
+          <span className="text-[12px] text-muted-foreground">
+            {triggerLabel(row.original.triggered_by)}
+          </span>
+        ),
+      },
+      {
+        id: "started",
+        header: "Started",
+        cell: ({ row }) => (
+          <span
+            className="font-mono text-[12px] whitespace-nowrap text-muted-foreground"
+            title={
+              isTimeSet(row.original.started_at)
+                ? new Date(row.original.started_at).toLocaleString()
+                : undefined
+            }
+          >
+            {isTimeSet(row.original.started_at) ? timeSince(row.original.started_at) : "—"}
+          </span>
+        ),
+      },
+      {
+        id: "duration",
+        header: "Duration",
+        cell: ({ row }) => (
+          <span className="font-mono text-[12px] whitespace-nowrap text-muted-foreground">
+            {durationCell(row.original)}
+          </span>
+        ),
+      },
+      {
+        id: "actions",
+        header: "",
+        // Holds its own buttons, so a click here must not open the log.
+        meta: { interactive: true } satisfies DataTableColumnMeta,
+        cell: ({ row }) => {
+          const build = row.original
+          if (build.status === "queued") {
+            return (
+              <div className="text-right">
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-7 gap-1 px-2 text-[12px] text-destructive hover:text-destructive"
+                  disabled={cancelBuild.isPending}
+                  onClick={() => {
+                    cancelBuild.mutate(build.id)
+                  }}
+                >
+                  {cancelBuild.isPending ? (
+                    <Loader2 className="size-3 animate-spin" />
+                  ) : (
+                    <X className="size-3" />
+                  )}
+                  Cancel
+                </Button>
+              </div>
+            )
+          }
+          // Rebuilding a past commit needs the commit — a build that never
+          // resolved one has nothing to redeploy.
+          if (build.commit_sha === "") return null
+          return (
+            <div className="text-right">
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-7 gap-1 px-2 text-[12px] opacity-0 transition-opacity group-hover/row:opacity-100 focus-visible:opacity-100"
+                disabled={createBuild.isPending}
+                onClick={() => {
+                  createBuild.mutate({ projectId: project.id, commitSha: build.commit_sha })
+                }}
+              >
+                {createBuild.isPending ? (
+                  <Loader2 className="size-3 animate-spin" />
+                ) : (
+                  <RotateCcw className="size-3" />
+                )}
+                Redeploy
+              </Button>
+            </div>
+          )
+        },
+      },
+    ],
+    [cancelBuild, createBuild, durationCell, project.id],
+  )
+
   // `.at()` rather than [0]: the empty history already returned above, but the
   // component must not depend on that ordering to stay type-safe.
   const latestBuild = sortedBuilds.at(0)
@@ -95,114 +206,17 @@ export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
         title="Build history"
         description="Newest first — click a row to open its log."
       >
-        <div className="glass-1 overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow className="hover:bg-transparent">
-                {HEADERS.map((header) => (
-                  <TableHead
-                    key={header || "actions"}
-                    className="px-3 font-mono text-[10px] tracking-[0.12em] text-muted-foreground uppercase"
-                  >
-                    {header}
-                  </TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {sortedBuilds.map((build, index) => (
-                <TableRow
-                  key={build.id}
-                  className="group/row animate-content-enter cursor-pointer"
-                  style={staggerDelay(index)}
-                  onClick={() => {
-                    setSelected(build.id)
-                  }}
-                >
-                  <TableCell className="px-3">
-                    <BuildStatusPill status={build.status} />
-                  </TableCell>
-                  <TableCell className="max-w-72 px-3">
-                    <span className="flex min-w-0 items-baseline gap-2">
-                      {build.commit_sha !== "" && (
-                        <span className="shrink-0 font-mono text-[12px] text-muted-foreground">
-                          {shortSha(build.commit_sha)}
-                        </span>
-                      )}
-                      <span className="min-w-0 truncate text-[13px] text-foreground">
-                        {build.commit_message || `${triggerLabel(build.triggered_by)} deploy`}
-                      </span>
-                    </span>
-                  </TableCell>
-                  <TableCell className="px-3 text-[12px] text-muted-foreground">
-                    {triggerLabel(build.triggered_by)}
-                  </TableCell>
-                  <TableCell className="px-3">
-                    <span
-                      className="font-mono text-[12px] whitespace-nowrap text-muted-foreground"
-                      title={
-                        isTimeSet(build.started_at)
-                          ? new Date(build.started_at).toLocaleString()
-                          : undefined
-                      }
-                    >
-                      {isTimeSet(build.started_at) ? timeSince(build.started_at) : "—"}
-                    </span>
-                  </TableCell>
-                  <TableCell className="px-3 font-mono text-[12px] whitespace-nowrap text-muted-foreground">
-                    {durationCell(build)}
-                  </TableCell>
-                  <TableCell className="px-3 text-right">
-                    {build.status === "queued" ? (
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-7 gap-1 px-2 text-[12px] text-destructive hover:text-destructive"
-                        disabled={cancelBuild.isPending}
-                        onClick={(event) => {
-                          event.stopPropagation()
-                          cancelBuild.mutate(build.id)
-                        }}
-                      >
-                        {cancelBuild.isPending ? (
-                          <Loader2 className="size-3 animate-spin" />
-                        ) : (
-                          <X className="size-3" />
-                        )}
-                        Cancel
-                      </Button>
-                    ) : (
-                      // Rebuilding a past commit needs the commit — a build
-                      // that never resolved one has nothing to redeploy.
-                      build.commit_sha !== "" && (
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="h-7 gap-1 px-2 text-[12px] opacity-0 transition-opacity group-hover/row:opacity-100 focus-visible:opacity-100"
-                          disabled={createBuild.isPending}
-                          onClick={(event) => {
-                            event.stopPropagation()
-                            createBuild.mutate({
-                              projectId: project.id,
-                              commitSha: build.commit_sha,
-                            })
-                          }}
-                        >
-                          {createBuild.isPending ? (
-                            <Loader2 className="size-3 animate-spin" />
-                          ) : (
-                            <RotateCcw className="size-3" />
-                          )}
-                          Redeploy
-                        </Button>
-                      )
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+        <DataTable<Build>
+          data={sortedBuilds}
+          columns={columns}
+          getRowId={(build) => build.id}
+          onRowClick={(build) => {
+            setSelected(build.id)
+          }}
+          // The Redeploy control only appears on the hovered row, which needs a
+          // named hover group on the row itself.
+          rowClassName="group/row"
+        />
       </Section>
 
       <Section

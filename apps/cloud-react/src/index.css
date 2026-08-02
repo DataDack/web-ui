@@ -1,3 +1,20 @@
+/* Where the design system sits in the cascade.
+ *
+ * @datadack/common-ui emits every rule into `@layer datadack-ui`, and this line
+ * is what puts that layer in the right place. Layers are compared BEFORE
+ * specificity, so the position decides two things at once:
+ *
+ *   - after `base`, so Tailwind's preflight — which sets `padding: 0` and
+ *     `border: 0` on `*` — cannot strip a component's own padding and borders;
+ *   - before `utilities`, so a `className="gap-2"` passed to a component still
+ *     wins, the way it did when components merged classes with tailwind-merge.
+ *
+ * Layer order follows first appearance, and emotion injects at runtime, so the
+ * order has to be declared here rather than left to whichever stylesheet the
+ * browser happens to see first. Remove this and the console renders wrong.
+ */
+@layer theme, base, datadack-ui, components, utilities;
+
 @import "tailwindcss";
 
 /* The shared @datadack/serverless-ui kit ships class names in compiled JS —

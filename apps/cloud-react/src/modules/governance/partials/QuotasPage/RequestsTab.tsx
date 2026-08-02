@@ -1,8 +1,7 @@
-import { Badge, Skeleton } from "@datadack/common-ui"
+import { Badge, EmptyState, Skeleton } from "@datadack/common-ui"
 import { ArrowRight, Check, Inbox, X } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { EmptyState } from "@/components/console"
 import { cn } from "@/lib/utils"
 import { timeAgo } from "@/modules/monitoring/monitoring.meta"
 

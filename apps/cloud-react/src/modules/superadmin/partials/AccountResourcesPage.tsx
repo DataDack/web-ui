@@ -1,22 +1,20 @@
 import { useMemo, useState } from "react"
 
-import { Badge, Button } from "@datadack/common-ui"
+import {
+  Badge,
+  Button,
+  DataTable,
+  dateColumn,
+  EmptyState,
+  nameColumn,
+  statusColumn,
+  textColumn,
+} from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { ArrowLeft, Boxes, CalendarClock, Clock, RefreshCw, Trash2, Wallet } from "lucide-react"
 import { useNavigate, useParams } from "react-router-dom"
 
-import {
-  ConfirmDialog,
-  dateColumn,
-  EmptyState,
-  nameColumn,
-  PageHeader,
-  ResourceTable,
-  StatGrid,
-  statusColumn,
-  textColumn,
-  type StatCardProps,
-} from "@/components/console"
+import { ConfirmDialog, PageHeader, StatGrid, type StatCardProps } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
 import {
@@ -291,21 +289,25 @@ export function AccountResourcesPage() {
         </div>
       )}
 
-      <ResourceTable<AccountResource>
+      <DataTable<AccountResource>
         data={resources}
         columns={columns}
-        isLoading={isLoading}
-        isError={isError}
+        loading={isLoading}
+        error={isError ? "Failed to load" : undefined}
         onRetry={() => void refetch()}
+        retryLabel={"Try again"}
         getRowId={(r) => `${r.type}:${r.id}`}
-        initialSorting={[{ id: "type", desc: false }]}
-        emptyState={
+        defaultSorting={[{ id: "type", desc: false }]}
+        empty={
           <EmptyState
             icon={Boxes}
             title="No resources"
             description="This account isn't consuming any resources right now."
           />
         }
+        onRefresh={() => void refetch()}
+        refreshLabel={"Refresh"}
+        refreshing={isFetching}
       />
 
       <ConfirmDialog

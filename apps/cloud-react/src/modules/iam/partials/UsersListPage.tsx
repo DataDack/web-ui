@@ -1,22 +1,20 @@
 import { useMemo, useState } from "react"
 
-import { Button } from "@datadack/common-ui"
+import {
+  actionsColumn,
+  Button,
+  DataTable,
+  dateColumn,
+  EmptyState,
+  statusColumn,
+  textColumn,
+} from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Mail, Plus, RefreshCw, Send, Trash2, Users, X } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate, useSearchParams } from "react-router-dom"
 
-import {
-  actionsColumn,
-  ConfirmDialog,
-  dateColumn,
-  EmptyState,
-  PageHeader,
-  ResourceTable,
-  StatGrid,
-  statusColumn,
-  textColumn,
-} from "@/components/console"
+import { ConfirmDialog, PageHeader, StatGrid } from "@/components/console"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useScreen } from "@/services/api/screen"
 
@@ -305,15 +303,16 @@ export function UsersListPage() {
         </TabsList>
 
         <TabsContent value="users">
-          <ResourceTable<IAMUser>
+          <DataTable<IAMUser>
             data={users}
             columns={userColumns}
-            isLoading={isLoading}
-            isError={isError}
+            loading={isLoading}
+            error={isError ? t("console.table.error") : undefined}
             onRetry={() => void refetch()}
+            retryLabel={t("console.table.retry")}
             getRowId={(user) => user.id}
             onRowClick={(user) => void navigate(IAM_ROUTES.userDetail(user.id))}
-            emptyState={
+            empty={
               <EmptyState
                 icon={Users}
                 title={t("iam.users.empty")}
@@ -326,18 +325,22 @@ export function UsersListPage() {
                 }}
               />
             }
+            onRefresh={() => void refetch()}
+            refreshLabel={t("console.table.refresh")}
+            refreshing={isFetching}
           />
         </TabsContent>
 
         <TabsContent value="invitations">
-          <ResourceTable<Invitation>
+          <DataTable<Invitation>
             data={invitations}
             columns={invitationColumns}
-            isLoading={invLoading}
-            isError={invError}
+            loading={invLoading}
+            error={invError ? t("console.table.error") : undefined}
             onRetry={() => void refetchInvitations()}
+            retryLabel={t("console.table.retry")}
             getRowId={(inv) => inv.id}
-            emptyState={
+            empty={
               <EmptyState
                 icon={Mail}
                 title={t("iam.invitations.empty")}
@@ -350,6 +353,9 @@ export function UsersListPage() {
                 }}
               />
             }
+            onRefresh={() => void refetch()}
+            refreshLabel={t("console.table.refresh")}
+            refreshing={isFetching}
           />
         </TabsContent>
       </Tabs>

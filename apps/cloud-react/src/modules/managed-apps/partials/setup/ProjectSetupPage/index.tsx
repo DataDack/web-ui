@@ -1,4 +1,4 @@
-import { Button, Skeleton } from "@datadack/common-ui"
+import { Button, EmptyState, Skeleton } from "@datadack/common-ui"
 import {
   AlertTriangle,
   ArrowLeft,
@@ -11,7 +11,6 @@ import {
 } from "lucide-react"
 import { Link, useNavigate, useParams } from "react-router-dom"
 
-import { EmptyState } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
 import { SetupFlowGraphic } from "./SetupFlowGraphic"

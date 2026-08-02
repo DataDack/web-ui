@@ -1,9 +1,9 @@
 import { type ReactNode, useMemo, useState } from "react"
 
-import { Button, Skeleton } from "@datadack/common-ui"
+import { Button, EmptyState, Skeleton } from "@datadack/common-ui"
 import { AlertTriangle, Search } from "lucide-react"
 
-import { EmptyState, staggerDelay } from "@/components/console"
+import { staggerDelay } from "@/components/console"
 import { useQueryParamState } from "@/hooks/use-query-param-state"
 import { useViewPreference } from "@/hooks/use-view-preference"
 

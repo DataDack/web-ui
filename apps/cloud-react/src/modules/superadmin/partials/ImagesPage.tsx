@@ -1,21 +1,20 @@
 import { useCallback, useMemo, useState } from "react"
 
-import { Button } from "@datadack/common-ui"
+import {
+  actionsColumn,
+  Button,
+  DataTable,
+  EmptyState,
+  nameColumn,
+  type RowAction,
+  textColumn,
+} from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Disc3, Layers, Pencil, Plus, RefreshCw, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
-import {
-  actionsColumn,
-  ConfirmDialog,
-  EmptyState,
-  nameColumn,
-  PageHeader,
-  ResourceTable,
-  textColumn,
-  type RowAction,
-} from "@/components/console"
+import { ConfirmDialog, PageHeader } from "@/components/console"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useQueryParamState } from "@/hooks/use-query-param-state"
 import { useScreen } from "@/services/api/screen"
@@ -216,15 +215,16 @@ export function ImagesPage() {
         </TabsList>
       </Tabs>
 
-      <ResourceTable<Image>
+      <DataTable<Image>
         data={visibleImages}
         columns={columns}
-        isLoading={isLoading}
-        isError={isError}
+        loading={isLoading}
+        error={isError ? t("console.table.error") : undefined}
         onRetry={() => void refetch()}
+        retryLabel={t("console.table.retry")}
         getRowId={(i) => i.id}
         onRowClick={openVersions}
-        emptyState={
+        empty={
           <EmptyState
             icon={Disc3}
             title={t("superAdmin.images.empty")}
@@ -232,6 +232,9 @@ export function ImagesPage() {
             action={{ label: t("superAdmin.images.add"), onClick: openCreate }}
           />
         }
+        onRefresh={() => void refetch()}
+        refreshLabel={t("console.table.refresh")}
+        refreshing={isFetching}
       />
 
       <ImageFormSheet open={formOpen} onOpenChange={setFormOpen} image={editing} />

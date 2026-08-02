@@ -1,21 +1,21 @@
 import { useMemo, useState } from "react"
 
-import { Button, Input } from "@datadack/common-ui"
+import {
+  actionsColumn,
+  Button,
+  DataTable,
+  dateColumn,
+  EmptyState,
+  Input,
+  nameColumn,
+  type RowAction,
+  textColumn,
+} from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Plus, RefreshCw, Search, ShieldCheck, ShieldOff, Users } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import {
-  actionsColumn,
-  ConfirmDialog,
-  dateColumn,
-  EmptyState,
-  nameColumn,
-  PageHeader,
-  ResourceTable,
-  textColumn,
-  type RowAction,
-} from "@/components/console"
+import { ConfirmDialog, PageHeader } from "@/components/console"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/modules/auth/auth.context"
 import { useScreen } from "@/services/api/screen"
@@ -171,20 +171,24 @@ export function UsersPage() {
         }
       />
 
-      <ResourceTable<AdminUser>
+      <DataTable<AdminUser>
         data={filtered}
         columns={columns}
-        isLoading={isLoading}
-        isError={isError}
+        loading={isLoading}
+        error={isError ? t("console.table.error") : undefined}
         onRetry={() => void refetch()}
+        retryLabel={t("console.table.retry")}
         getRowId={(u) => u.id}
-        emptyState={
+        empty={
           <EmptyState
             icon={Users}
             title={t("superAdmin.users.empty")}
             description={t("superAdmin.users.emptySubtitle")}
           />
         }
+        onRefresh={() => void refetch()}
+        refreshLabel={t("console.table.refresh")}
+        refreshing={isFetching}
       />
 
       <ConfirmDialog

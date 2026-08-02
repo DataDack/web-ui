@@ -1,24 +1,22 @@
 import { useMemo, useState } from "react"
 
-import { Button } from "@datadack/common-ui"
+import {
+  actionsColumn,
+  Button,
+  copyColumn,
+  DataTable,
+  dateColumn,
+  EmptyState,
+  nameColumn,
+  statusColumn,
+  textColumn,
+} from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Layers, Plus, RefreshCw, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
-import {
-  actionsColumn,
-  ConfirmDialog,
-  copyColumn,
-  dateColumn,
-  EmptyState,
-  nameColumn,
-  PageHeader,
-  DataTable,
-  StatGrid,
-  statusColumn,
-  textColumn,
-} from "@/components/console"
+import { ConfirmDialog, PageHeader, StatGrid } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
 import { isLbTransitional, LB_ROUTES } from "../load-balancers.constants"
@@ -167,6 +165,9 @@ export function LoadBalancersListPage() {
             }}
           />
         }
+        onRefresh={() => void refetch()}
+        refreshLabel={t("console.table.refresh")}
+        refreshing={isFetching}
       />
 
       <ConfirmDialog

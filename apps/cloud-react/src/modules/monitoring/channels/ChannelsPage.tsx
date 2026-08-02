@@ -1,17 +1,11 @@
 import { useCallback, useMemo, useState } from "react"
 
-import { Badge, Button, Switch } from "@datadack/common-ui"
+import { actionsColumn, Badge, Button, DataTable, EmptyState, Switch } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { BellRing, Plus, RefreshCw, Send, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 
-import {
-  actionsColumn,
-  ConfirmDialog,
-  EmptyState,
-  PageHeader,
-  ResourceTable,
-} from "@/components/console"
+import { ConfirmDialog, PageHeader } from "@/components/console"
 import { cn } from "@/lib/utils"
 import { useScreen } from "@/services/api/screen"
 
@@ -280,14 +274,15 @@ export function ChannelsPage() {
         }
       />
 
-      <ResourceTable<ChannelResponse>
+      <DataTable<ChannelResponse>
         data={channels}
         columns={columns}
-        isLoading={isLoading}
-        isError={isError}
+        loading={isLoading}
+        error={isError ? "Failed to load" : undefined}
         onRetry={() => void refetch()}
+        retryLabel={"Try again"}
         getRowId={(channel) => channel.id}
-        emptyState={
+        empty={
           <EmptyState
             icon={BellRing}
             title="No channels yet"
@@ -300,6 +295,9 @@ export function ChannelsPage() {
             }}
           />
         }
+        onRefresh={() => void refetch()}
+        refreshLabel={"Refresh"}
+        refreshing={isFetching}
       />
 
       <ChannelCreateDialog open={createOpen} onOpenChange={setCreateOpen} />

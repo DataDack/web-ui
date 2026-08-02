@@ -1,21 +1,20 @@
 import { useMemo, useState } from "react"
 
-import { Button } from "@datadack/common-ui"
+import {
+  actionsColumn,
+  Button,
+  copyColumn,
+  DataTable,
+  dateColumn,
+  EmptyState,
+  nameColumn,
+} from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { KeyRound, Plus, RefreshCw, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
-import {
-  actionsColumn,
-  ConfirmDialog,
-  copyColumn,
-  dateColumn,
-  EmptyState,
-  nameColumn,
-  PageHeader,
-  ResourceTable,
-} from "@/components/console"
+import { ConfirmDialog, PageHeader } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
 import { SSH_KEYS_ROUTES } from "../ssh-keys.constants"
@@ -96,14 +95,15 @@ export function SshKeysListPage() {
         }
       />
 
-      <ResourceTable<SSHKey>
+      <DataTable<SSHKey>
         data={keys}
         columns={columns}
-        isLoading={isLoading}
-        isError={isError}
+        loading={isLoading}
+        error={isError ? t("console.table.error") : undefined}
         onRetry={() => void refetch()}
+        retryLabel={t("console.table.retry")}
         getRowId={(key) => key.id}
-        emptyState={
+        empty={
           <EmptyState
             icon={KeyRound}
             title={t("sshKeys.empty")}
@@ -114,6 +114,9 @@ export function SshKeysListPage() {
             }}
           />
         }
+        onRefresh={() => void refetch()}
+        refreshLabel={t("console.table.refresh")}
+        refreshing={isFetching}
       />
 
       <ConfirmDialog

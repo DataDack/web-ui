@@ -1,22 +1,21 @@
 import { useMemo, useState } from "react"
 
-import { Button } from "@datadack/common-ui"
+import {
+  actionsColumn,
+  Button,
+  copyColumn,
+  DataTable,
+  dateColumn,
+  EmptyState,
+  nameColumn,
+  textColumn,
+} from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Crosshair, Plus, RefreshCw, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
-import {
-  actionsColumn,
-  ConfirmDialog,
-  copyColumn,
-  dateColumn,
-  EmptyState,
-  nameColumn,
-  ResourceTable,
-  StatGrid,
-  textColumn,
-} from "@/components/console"
+import { ConfirmDialog, StatGrid } from "@/components/console"
 
 import { TG_ROUTES } from "../target-groups.constants"
 import { useDeleteTargetGroup, useTargetGroups } from "../target-groups.hooks"
@@ -127,15 +126,16 @@ export function TargetGroupsPanel() {
 
       <StatGrid stats={stats} />
 
-      <ResourceTable<TargetGroup>
+      <DataTable<TargetGroup>
         data={groups}
         columns={columns}
-        isLoading={isLoading}
-        isError={isError}
+        loading={isLoading}
+        error={isError ? t("console.table.error") : undefined}
         onRetry={() => void refetch()}
+        retryLabel={t("console.table.retry")}
         getRowId={(g) => g.id}
         onRowClick={(g) => void navigate(TG_ROUTES.detail(g.id))}
-        emptyState={
+        empty={
           <EmptyState
             icon={Crosshair}
             title={t("targetGroups.empty")}
@@ -146,6 +146,9 @@ export function TargetGroupsPanel() {
             }}
           />
         }
+        onRefresh={() => void refetch()}
+        refreshLabel={t("console.table.refresh")}
+        refreshing={isFetching}
       />
 
       <ConfirmDialog

@@ -5,16 +5,14 @@ import { Activity, CreditCard, Layers } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import {
-  type AnimatedTab,
-  AnimatedTabs,
+  DataTable,
   dateColumn,
   EmptyState,
   nameColumn,
-  ResourceTable,
-  StatGrid,
   statusColumn,
   textColumn,
-} from "@/components/console"
+} from "@datadack/common-ui"
+import { type AnimatedTab, AnimatedTabs, StatGrid } from "@/components/console"
 
 import { useSubscriptions, useUsage } from "../billing.hooks"
 import type { SubscriptionApi, UsageRecordApi } from "../billing.types"
@@ -170,26 +168,32 @@ export function UsagePage() {
       />
 
       {activeTab === "usage" ? (
-        <ResourceTable<UsageRecordApi>
+        <DataTable<UsageRecordApi>
           data={usage}
           columns={usageColumns}
-          isLoading={usageLoading}
-          isError={usageError}
+          loading={usageLoading}
+          error={usageError ? t("console.table.error") : undefined}
           onRetry={() => void refetchUsage()}
+          retryLabel={t("console.table.retry")}
           getRowId={(r) => r.id}
-          initialSorting={[{ id: "period", desc: true }]}
-          emptyState={<EmptyState icon={Activity} title={t("billing.usage.empty")} />}
+          defaultSorting={[{ id: "period", desc: true }]}
+          empty={<EmptyState icon={Activity} title={t("billing.usage.empty")} />}
+          onRefresh={() => void refetchUsage()}
+          refreshLabel={t("console.table.refresh")}
         />
       ) : (
-        <ResourceTable<SubscriptionApi>
+        <DataTable<SubscriptionApi>
           data={subscriptions}
           columns={subscriptionColumns}
-          isLoading={subsLoading}
-          isError={subsError}
+          loading={subsLoading}
+          error={subsError ? t("console.table.error") : undefined}
           onRetry={() => void refetchSubs()}
+          retryLabel={t("console.table.retry")}
           getRowId={(s) => s.id}
-          initialSorting={[{ id: "renews", desc: true }]}
-          emptyState={<EmptyState icon={CreditCard} title={t("billing.monthly.empty")} />}
+          defaultSorting={[{ id: "renews", desc: true }]}
+          empty={<EmptyState icon={CreditCard} title={t("billing.monthly.empty")} />}
+          onRefresh={() => void refetchSubs()}
+          refreshLabel={t("console.table.refresh")}
         />
       )}
     </div>

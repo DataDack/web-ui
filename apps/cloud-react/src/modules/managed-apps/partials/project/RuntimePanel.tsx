@@ -1,4 +1,5 @@
-import { CopyButton, KeyValueGrid, Section } from "@/components/console"
+import { CopyButton } from "@datadack/common-ui"
+import { KeyValueGrid, Section } from "@/components/console"
 
 import type { Project } from "../../managed-apps.types"
 

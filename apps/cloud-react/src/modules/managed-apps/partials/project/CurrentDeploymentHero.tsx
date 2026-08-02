@@ -1,8 +1,6 @@
-import { Button } from "@datadack/common-ui"
+import { Button, CopyButton } from "@datadack/common-ui"
 import { ExternalLink, GitBranch, Loader2, PackageCheck, Rocket } from "lucide-react"
 import { Link } from "react-router-dom"
-
-import { CopyButton } from "@/components/console"
 
 import { hostLabel, isTimeSet, shortSha, timeSince } from "./build-format"
 import { BuildProgressBar, ProjectStateChip } from "../../components"

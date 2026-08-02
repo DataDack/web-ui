@@ -1,20 +1,19 @@
 import { useMemo, useState } from "react"
 
-import { Button } from "@datadack/common-ui"
+import {
+  actionsColumn,
+  Button,
+  DataTable,
+  EmptyState,
+  nameColumn,
+  type RowAction,
+  textColumn,
+} from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Ban, CheckCircle2, Clock, LayoutGrid, Pencil, Plus, RefreshCw, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import {
-  actionsColumn,
-  ConfirmDialog,
-  EmptyState,
-  nameColumn,
-  PageHeader,
-  ResourceTable,
-  textColumn,
-  type RowAction,
-} from "@/components/console"
+import { ConfirmDialog, PageHeader } from "@/components/console"
 import { cn } from "@/lib/utils"
 import { useScreen } from "@/services/api/screen"
 
@@ -189,15 +188,16 @@ export function ServicesPage() {
         }
       />
 
-      <ResourceTable<CatalogServiceAdmin>
+      <DataTable<CatalogServiceAdmin>
         data={services}
         columns={columns}
-        isLoading={isLoading}
-        isError={isError}
+        loading={isLoading}
+        error={isError ? t("console.table.error") : undefined}
         onRetry={() => void refetch()}
+        retryLabel={t("console.table.retry")}
         getRowId={(s) => s.id}
         onRowClick={openEdit}
-        emptyState={
+        empty={
           <EmptyState
             icon={LayoutGrid}
             title={t("superAdmin.services.empty")}
@@ -205,6 +205,9 @@ export function ServicesPage() {
             action={{ label: t("superAdmin.services.add"), onClick: openCreate }}
           />
         }
+        onRefresh={() => void refetch()}
+        refreshLabel={t("console.table.refresh")}
+        refreshing={isFetching}
       />
 
       <ServiceFormSheet open={formOpen} onOpenChange={setFormOpen} service={editing} />

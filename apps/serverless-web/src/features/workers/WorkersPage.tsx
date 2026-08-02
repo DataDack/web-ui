@@ -21,7 +21,7 @@ import {
 const LIVE_STATES = ["ready", "active"]
 
 export function WorkersPage() {
-  const { data, isLoading } = useDashboard()
+  const { data, isFetching, isLoading, refetch } = useDashboard()
   const workers = data?.detail.workers ?? []
 
   const columns = useMemo<ColumnDef<Worker>[]>(
@@ -131,6 +131,8 @@ export function WorkersPage() {
             description="Functions cannot be placed until a worker joins. Enrol one with a worker token."
           />
         }
+        onRefresh={() => void refetch()}
+        refreshing={isFetching}
       />
     </>
   )

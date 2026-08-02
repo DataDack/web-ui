@@ -1,6 +1,15 @@
 import { useMemo, useState } from "react"
 
-import { Badge, Button, Input } from "@datadack/common-ui"
+import {
+  actionsColumn,
+  Badge,
+  Button,
+  DataTable,
+  dateColumn,
+  EmptyState,
+  Input,
+  statusColumn,
+} from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import {
   Cpu,
@@ -20,16 +29,7 @@ import {
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
-import {
-  actionsColumn,
-  ConfirmDialog,
-  dateColumn,
-  EmptyState,
-  PageHeader,
-  ResourceTable,
-  StatGrid,
-  statusColumn,
-} from "@/components/console"
+import { ConfirmDialog, PageHeader, StatGrid } from "@/components/console"
 import { OSIcon } from "@/modules/catalog/os-icons"
 import { useScreen } from "@/services/api/screen"
 
@@ -308,16 +308,17 @@ export function VmsListPage() {
 
       <StatGrid stats={stats} />
 
-      <ResourceTable<Instance>
+      <DataTable<Instance>
         data={filtered}
         columns={columns}
-        isLoading={isLoading}
-        isError={isError}
+        loading={isLoading}
+        error={isError ? t("console.table.error") : undefined}
         onRetry={() => void refetch()}
+        retryLabel={t("console.table.retry")}
         getRowId={(instance) => instance.id}
         onRowClick={(instance) => void navigate(VMS_ROUTES.detail(instance.id))}
-        enableSelection
-        enableColumnVisibility
+        selectable
+        columnToolbar
         toolbar={
           <div className="relative w-full max-w-xs">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
@@ -352,7 +353,7 @@ export function VmsListPage() {
             },
           },
         ]}
-        emptyState={
+        empty={
           <EmptyState
             icon={Server}
             title={t("vms.empty")}
@@ -363,6 +364,9 @@ export function VmsListPage() {
             }}
           />
         }
+        onRefresh={() => void refetch()}
+        refreshLabel={t("console.table.refresh")}
+        refreshing={isFetching}
       />
 
       <ConfirmDialog

@@ -1,12 +1,15 @@
-import { useState } from "react"
+import { useMemo, useState } from "react"
 
 import {
   Button,
+  CopyButton,
+  DataTable,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  EmptyState,
   Input,
   Label,
   Select,
@@ -15,27 +18,15 @@ import {
   SelectTrigger,
   SelectValue,
   Skeleton,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+  textColumn,
+  type DataTableColumnMeta,
 } from "@datadack/common-ui"
+import type { ColumnDef } from "@tanstack/react-table"
 import { Activity, Crosshair, Plus, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link, useNavigate, useParams } from "react-router-dom"
 
-import {
-  ConfirmDialog,
-  CopyButton,
-  DetailPage,
-  EmptyState,
-  KeyValueGrid,
-  Section,
-  staggerDelay,
-  StatusBadge,
-} from "@/components/console"
+import { ConfirmDialog, DetailPage, KeyValueGrid, Section, StatusBadge } from "@/components/console"
 import { VMS_ROUTES } from "@/modules/vms/vms.constants"
 import { useInstances } from "@/modules/vms/vms.hooks"
 import { useScreen } from "@/services/api/screen"
@@ -184,6 +175,75 @@ function TargetsTab({ group }: Readonly<{ group: TargetGroup }>) {
 
   if (isLoading) return <Skeleton className="h-48 rounded-xl" />
 
+  const columns = useMemo<ColumnDef<Target>[]>(
+    () => [
+      {
+        id: "instance",
+        header: t("targetGroups.targets.instance"),
+        // Either a link to the instance or a copyable id — both interactive.
+        meta: { interactive: true } satisfies DataTableColumnMeta,
+        cell: ({ row }) => {
+          const instance = instances.find((i) => i.id === row.original.instance_id)
+          // An instance this view has not loaded still has to be identifiable,
+          // so fall back to a copyable id rather than an empty cell.
+          if (!instance) return <CopyButton value={row.original.instance_id} />
+          return (
+            <Link
+              to={VMS_ROUTES.detail(instance.id)}
+              className="font-mono text-[13px] text-status-info hover:underline"
+            >
+              {instance.name}
+            </Link>
+          )
+        },
+      },
+      textColumn({
+        id: "privateIp",
+        header: t("targetGroups.targets.privateIp"),
+        accessor: (target) => instances.find((i) => i.id === target.instance_id)?.private_ip,
+        mono: true,
+        muted: true,
+      }),
+      textColumn({
+        id: "port",
+        header: t("targetGroups.targets.port"),
+        accessor: (target) => target.port,
+        mono: true,
+      }),
+      {
+        id: "health",
+        header: t("targetGroups.targets.health"),
+        accessorFn: (target) => target.health_status,
+        cell: ({ row }) => (
+          <StatusBadge
+            status={row.original.health_status}
+            pulse={row.original.health_status === "healthy"}
+          />
+        ),
+      },
+      {
+        id: "deregister",
+        header: "",
+        meta: { interactive: true } satisfies DataTableColumnMeta,
+        cell: ({ row }) => (
+          <div className="text-right">
+            <Button
+              size="icon"
+              variant="ghost"
+              aria-label={t("targetGroups.targets.deregister")}
+              onClick={() => {
+                setPendingRemove(row.original)
+              }}
+            >
+              <Trash2 className="size-3.5 text-destructive" />
+            </Button>
+          </div>
+        ),
+      },
+    ],
+    [instances, t],
+  )
+
   return (
     <>
       <Section
@@ -204,83 +264,18 @@ function TargetsTab({ group }: Readonly<{ group: TargetGroup }>) {
           </Button>
         }
       >
-        {targets.length === 0 ? (
-          <EmptyState
-            icon={Crosshair}
-            title={t("targetGroups.targets.empty")}
-            description={t("targetGroups.targets.emptySubtitle")}
-          />
-        ) : (
-          <div className="glass-1 overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow className="hover:bg-transparent">
-                  {[
-                    t("targetGroups.targets.instance"),
-                    t("targetGroups.targets.privateIp"),
-                    t("targetGroups.targets.port"),
-                    t("targetGroups.targets.health"),
-                    "",
-                  ].map((header, i) => (
-                    <TableHead
-                      key={header || `actions-${String(i)}`}
-                      className="px-3 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground"
-                    >
-                      {header}
-                    </TableHead>
-                  ))}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {targets.map((target, index) => {
-                  const instance = instances.find((i) => i.id === target.instance_id)
-                  return (
-                    <TableRow
-                      key={target.id}
-                      className="animate-content-enter"
-                      style={staggerDelay(index)}
-                    >
-                      <TableCell className="px-3">
-                        {instance ? (
-                          <Link
-                            to={VMS_ROUTES.detail(instance.id)}
-                            className="font-mono text-[13px] text-status-info hover:underline"
-                          >
-                            {instance.name}
-                          </Link>
-                        ) : (
-                          <CopyButton value={target.instance_id} />
-                        )}
-                      </TableCell>
-                      <TableCell className="px-3 font-mono text-[13px] text-muted-foreground">
-                        {instance?.private_ip ?? "—"}
-                      </TableCell>
-                      <TableCell className="px-3 font-mono text-[13px]">{target.port}</TableCell>
-                      <TableCell className="px-3">
-                        <StatusBadge
-                          status={target.health_status}
-                          pulse={target.health_status === "healthy"}
-                        />
-                      </TableCell>
-                      <TableCell className="px-3 text-right">
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          aria-label={t("targetGroups.targets.deregister")}
-                          onClick={() => {
-                            setPendingRemove(target)
-                          }}
-                        >
-                          <Trash2 className="size-3.5 text-destructive" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  )
-                })}
-              </TableBody>
-            </Table>
-          </div>
-        )}
+        <DataTable<Target>
+          data={targets}
+          columns={columns}
+          getRowId={(target) => target.id}
+          empty={
+            <EmptyState
+              icon={Crosshair}
+              title={t("targetGroups.targets.empty")}
+              description={t("targetGroups.targets.emptySubtitle")}
+            />
+          }
+        />
       </Section>
 
       <RegisterTargetDialog

@@ -2,6 +2,7 @@ import { useState } from "react"
 
 import {
   Button,
+  EmptyState,
   Select,
   SelectContent,
   SelectItem,
@@ -16,7 +17,6 @@ import { Link, useNavigate, useParams } from "react-router-dom"
 import {
   ConfirmDialog,
   DetailPage,
-  EmptyState,
   KeyValueGrid,
   Section,
   staggerDelay,

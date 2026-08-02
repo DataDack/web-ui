@@ -1,19 +1,18 @@
 import { useCallback, useMemo, useState } from "react"
 
-import { Button } from "@datadack/common-ui"
+import {
+  Button,
+  DataTable,
+  dateColumn,
+  EmptyState,
+  nameColumn,
+  statusColumn,
+  textColumn,
+} from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Download, FileText } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
-
-import {
-  dateColumn,
-  EmptyState,
-  nameColumn,
-  ResourceTable,
-  statusColumn,
-  textColumn,
-} from "@/components/console"
 
 import { useInvoices } from "../billing.hooks"
 import { billingService } from "../billing.service"
@@ -96,15 +95,18 @@ export function InvoicesPage() {
   )
 
   return (
-    <ResourceTable<Invoice>
+    <DataTable<Invoice>
       data={invoices}
       columns={columns}
-      isLoading={isLoading}
-      isError={isError}
+      loading={isLoading}
+      error={isError ? t("console.table.error") : undefined}
       onRetry={() => void refetch()}
+      retryLabel={t("console.table.retry")}
       getRowId={(i) => i.id}
-      initialSorting={[{ id: "issued", desc: true }]}
-      emptyState={<EmptyState icon={FileText} title={t("billing.invoices.empty")} />}
+      defaultSorting={[{ id: "issued", desc: true }]}
+      empty={<EmptyState icon={FileText} title={t("billing.invoices.empty")} />}
+      onRefresh={() => void refetch()}
+      refreshLabel={t("console.table.refresh")}
     />
   )
 }
