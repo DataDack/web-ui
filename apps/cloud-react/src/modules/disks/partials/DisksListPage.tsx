@@ -12,7 +12,7 @@ import {
   dateColumn,
   EmptyState,
   PageHeader,
-  ResourceTable,
+  DataTable,
   StatGrid,
   statusColumn,
 } from "@/components/console"
@@ -247,14 +247,15 @@ export function DisksListPage() {
 
       <StatGrid stats={stats} />
 
-      <ResourceTable<Disk>
+      <DataTable<Disk>
         data={disks}
         columns={columns}
-        isLoading={isLoading}
-        isError={isError}
+        loading={isLoading}
+        error={isError ? t("console.table.error") : undefined}
         onRetry={() => void refetch()}
+        retryLabel={t("console.table.retry")}
         getRowId={(disk) => disk.id}
-        emptyState={
+        empty={
           <EmptyState
             icon={HardDrive}
             title={t("disks.empty")}

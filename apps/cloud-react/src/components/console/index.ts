@@ -53,6 +53,18 @@ export type { StatusTone } from "./status-config"
 // Table
 export { ResourceTable } from "./table/ResourceTable"
 export type { ColumnMeta } from "./table/ResourceTable"
+
+// The design system's table. List pages are moving onto this from the local
+// ResourceTable above: it covers the same ground — loading, error and retry,
+// empty and no-results, selection with bulk actions, client or server paging —
+// and is shared with the other console rather than maintained twice.
+export { DataTable } from "@datadack/common-ui"
+export type {
+  DataTableBulkAction,
+  DataTablePagination,
+  DataTableProps,
+  DataTableServerPagination,
+} from "@datadack/common-ui"
 export { BulkActionsBar } from "./table/BulkActionsBar"
 export type { BulkAction } from "./table/BulkActionsBar"
 export {

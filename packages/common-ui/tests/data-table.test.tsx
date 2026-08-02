@@ -339,3 +339,222 @@ describe("toolbar", () => {
     expect(screen.getByText("Name")).toBeInTheDocument()
   })
 })
+
+describe("error state", () => {
+  test("replaces the body with the failure message", () => {
+    render(<DataTable data={rows} columns={columns} error="Could not load images" />)
+
+    expect(screen.getByText("Could not load images")).toBeInTheDocument()
+    // The rows must go — showing stale data under an error message implies the
+    // data is current.
+    expect(screen.queryByText("charlie")).toBeNull()
+  })
+
+  test("takes precedence over the empty state", () => {
+    // Reporting "nothing here yet" for a failed fetch tells the user their
+    // account is empty when nothing at all is known about it.
+    render(<DataTable data={[]} columns={columns} error="Request failed" empty="No images yet" />)
+
+    expect(screen.getByText("Request failed")).toBeInTheDocument()
+    expect(screen.queryByText("No images yet")).toBeNull()
+  })
+
+  test("loading wins over error, so a retry does not flash the old failure", () => {
+    render(<DataTable data={[]} columns={columns} error="Request failed" loading />)
+    expect(screen.queryByText("Request failed")).toBeNull()
+  })
+
+  test("offers a retry button only when a handler is given", async () => {
+    const user = userEvent.setup()
+    const onRetry = mock(() => {})
+    const { rerender } = render(<DataTable data={[]} columns={columns} error="Failed" />)
+    expect(screen.queryByRole("button", { name: /retry/i })).toBeNull()
+
+    rerender(<DataTable data={[]} columns={columns} error="Failed" onRetry={onRetry} />)
+    await user.click(screen.getByRole("button", { name: /retry/i }))
+    expect(onRetry).toHaveBeenCalledTimes(1)
+  })
+
+  test("hides the pager while erroring", () => {
+    render(
+      <DataTable
+        data={[]}
+        columns={columns}
+        error="Failed"
+        pagination={{ page: 1, pageSize: 10, total: 100, onPageChange: () => undefined }}
+      />,
+    )
+    expect(screen.queryByRole("button", { name: /next page/i })).toBeNull()
+  })
+})
+
+describe("toolbar slots", () => {
+  test("renders a left-hand toolbar alongside the search box", () => {
+    render(
+      <DataTable
+        data={rows}
+        columns={columns}
+        searchable
+        toolbar={<button>Filter</button>}
+        actions={<button>Create</button>}
+      />,
+    )
+
+    expect(screen.getByRole("button", { name: "Filter" })).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: "Create" })).toBeInTheDocument()
+    expect(screen.getByRole("searchbox")).toBeInTheDocument()
+  })
+
+  test("a toolbar alone is enough to render the bar", () => {
+    render(<DataTable data={rows} columns={columns} toolbar={<button>Filter</button>} />)
+    expect(screen.getByRole("button", { name: "Filter" })).toBeInTheDocument()
+  })
+})
+
+describe("bulk actions", () => {
+  function setup(onAction = mock(() => {})) {
+    const user = userEvent.setup()
+    render(
+      <DataTable
+        data={rows}
+        columns={columns}
+        selectable
+        getRowId={(row) => row.id}
+        bulkActions={(selected) => [
+          { label: `Delete ${String(selected.length)}`, destructive: true, onAction },
+        ]}
+      />,
+    )
+    return { user, onAction }
+  }
+
+  test("the bar is hidden until something is selected", () => {
+    setup()
+    expect(screen.queryByText(/selected/i)).toBeNull()
+  })
+
+  test("selecting a row reveals the bar with a live count", async () => {
+    const { user } = setup()
+    await user.click(screen.getAllByRole("checkbox")[1]!)
+
+    expect(screen.getByText("1 selected")).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: "Delete 1" })).toBeInTheDocument()
+  })
+
+  test("the action receives the current selection", async () => {
+    const { user, onAction } = setup()
+    await user.click(screen.getAllByRole("checkbox")[0]!)
+
+    expect(screen.getByRole("button", { name: "Delete 3" })).toBeInTheDocument()
+    await user.click(screen.getByRole("button", { name: "Delete 3" }))
+    expect(onAction).toHaveBeenCalledTimes(1)
+  })
+
+  test("clearing the selection dismisses the bar", async () => {
+    const { user } = setup()
+    await user.click(screen.getAllByRole("checkbox")[1]!)
+    await user.click(screen.getByRole("button", { name: /clear selection/i }))
+
+    expect(screen.queryByText(/selected/i)).toBeNull()
+  })
+})
+
+describe("server-side pagination", () => {
+  const serverRows = rows
+  const paged = (over: Partial<Parameters<typeof DataTable<Row>>[0]> = {}) => ({
+    data: serverRows,
+    columns,
+    ...over,
+  })
+
+  test("renders the given rows without slicing them again", () => {
+    render(
+      <DataTable
+        {...paged()}
+        pagination={{ page: 2, pageSize: 3, total: 30, onPageChange: () => undefined }}
+      />,
+    )
+    // All three supplied rows show: the server already did the paging.
+    expect(bodyRows()).toHaveLength(3)
+  })
+
+  test("reports the requested page rather than paging locally", async () => {
+    const user = userEvent.setup()
+    const onPageChange = mock((_: number) => {})
+    render(
+      <DataTable
+        {...paged()}
+        pagination={{ page: 2, pageSize: 3, total: 30, onPageChange }}
+      />,
+    )
+
+    await user.click(screen.getByRole("button", { name: /next page/i }))
+    expect(onPageChange).toHaveBeenLastCalledWith(3)
+
+    await user.click(screen.getByRole("button", { name: /previous page/i }))
+    expect(onPageChange).toHaveBeenLastCalledWith(1)
+
+    await user.click(screen.getByRole("button", { name: /last page/i }))
+    expect(onPageChange).toHaveBeenLastCalledWith(10)
+  })
+
+  test("shows the range across all pages, not just the loaded rows", () => {
+    render(
+      <DataTable
+        {...paged()}
+        pagination={{ page: 2, pageSize: 3, total: 30, onPageChange: () => undefined }}
+      />,
+    )
+    expect(screen.getByText(/4–6 of 30/)).toBeInTheDocument()
+  })
+
+  test("clamps the range on a short final page", () => {
+    render(
+      <DataTable
+        {...paged()}
+        pagination={{ page: 4, pageSize: 3, total: 11, onPageChange: () => undefined }}
+      />,
+    )
+    expect(screen.getByText(/10–11 of 11/)).toBeInTheDocument()
+  })
+
+  test("disables the edges at the first and last page", () => {
+    const { unmount } = render(
+      <DataTable
+        {...paged()}
+        pagination={{ page: 1, pageSize: 3, total: 30, onPageChange: () => undefined }}
+      />,
+    )
+    expect(screen.getByRole("button", { name: /previous page/i })).toBeDisabled()
+    expect(screen.getByRole("button", { name: /next page/i })).toBeEnabled()
+    unmount()
+
+    render(
+      <DataTable
+        {...paged()}
+        pagination={{ page: 10, pageSize: 3, total: 30, onPageChange: () => undefined }}
+      />,
+    )
+    expect(screen.getByRole("button", { name: /next page/i })).toBeDisabled()
+  })
+
+  test("hides the pager when everything fits on one page", () => {
+    render(
+      <DataTable
+        {...paged()}
+        pagination={{ page: 1, pageSize: 25, total: 3, onPageChange: () => undefined }}
+      />,
+    )
+    expect(screen.queryByRole("button", { name: /next page/i })).toBeNull()
+  })
+
+  test("offers no page-size selector — the server owns the page size", () => {
+    render(
+      <DataTable
+        {...paged()}
+        pagination={{ page: 1, pageSize: 3, total: 30, onPageChange: () => undefined }}
+      />,
+    )
+    expect(screen.queryByRole("combobox")).toBeNull()
+  })
+})

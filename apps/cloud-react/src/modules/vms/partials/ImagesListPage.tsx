@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 
-import { Badge, Button, Input } from "@datadack/common-ui"
+import { Badge, Button } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import {
   Cpu,
@@ -9,7 +9,6 @@ import {
   Package,
   RefreshCw,
   Rocket,
-  Search,
   Store,
   type LucideIcon,
 } from "lucide-react"
@@ -21,7 +20,7 @@ import {
   EmptyState,
   FadeIn,
   PageHeader,
-  ResourceTable,
+  DataTable,
   StatGrid,
 } from "@/components/console"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -73,21 +72,7 @@ export function ImagesListPage() {
   const navigate = useNavigate()
   const { data: families = [], isLoading, isError, refetch, isFetching } = useImageCatalog()
 
-  const [query, setQuery] = useState("")
-
   const images = useMemo(() => flattenImages(families), [families])
-
-  const filtered = useMemo(() => {
-    if (!query.trim()) return images
-    const q = query.toLowerCase()
-    return images.filter(
-      (img) =>
-        img.name.toLowerCase().includes(q) ||
-        img.family.toLowerCase().includes(q) ||
-        img.os_version.toLowerCase().includes(q) ||
-        img.architecture.toLowerCase().includes(q),
-    )
-  }, [images, query])
 
   const stats = useMemo(
     () => [
@@ -255,28 +240,19 @@ export function ImagesListPage() {
         <TabsContent value="system" className="mt-3 space-y-5">
           <StatGrid stats={stats} />
 
-          <ResourceTable<CatalogImage>
-            data={filtered}
+          <DataTable<CatalogImage>
+            data={images}
             columns={columns}
-            isLoading={isLoading}
-            isError={isError}
+            loading={isLoading}
+            error={isError ? t("console.table.error") : undefined}
             onRetry={() => void refetch()}
+            retryLabel={t("console.table.retry")}
             getRowId={(image) => image.id}
-            enableColumnVisibility
-            toolbar={
-              <div className="relative w-full max-w-xs">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
-                <Input
-                  value={query}
-                  onChange={(e) => {
-                    setQuery(e.target.value)
-                  }}
-                  placeholder={t("vms.images.searchPlaceholder")}
-                  className="pl-8 h-8 text-[13px]"
-                />
-              </div>
-            }
-            emptyState={
+            columnToolbar
+            columnToolbarLabel={t("console.table.columns")}
+            searchable
+            searchPlaceholder={t("vms.images.searchPlaceholder")}
+            empty={
               <EmptyState
                 icon={Disc}
                 title={t("vms.images.empty")}

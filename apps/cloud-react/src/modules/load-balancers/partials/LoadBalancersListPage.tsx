@@ -14,7 +14,7 @@ import {
   EmptyState,
   nameColumn,
   PageHeader,
-  ResourceTable,
+  DataTable,
   StatGrid,
   statusColumn,
   textColumn,
@@ -147,15 +147,16 @@ export function LoadBalancersListPage() {
 
       <StatGrid stats={stats} />
 
-      <ResourceTable<LoadBalancer>
+      <DataTable<LoadBalancer>
         data={lbs}
         columns={columns}
-        isLoading={isLoading}
-        isError={isError}
+        loading={isLoading}
+        error={isError ? t("console.table.error") : undefined}
         onRetry={() => void refetch()}
+        retryLabel={t("console.table.retry")}
         getRowId={(lb) => lb.id}
         onRowClick={(lb) => void navigate(LB_ROUTES.detail(lb.id))}
-        emptyState={
+        empty={
           <EmptyState
             icon={Layers}
             title={t("loadBalancers.empty")}

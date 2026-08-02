@@ -29,8 +29,11 @@ import {
   Inbox,
   Search,
   SearchX,
+  RotateCw,
   SortAsc,
   SortDesc,
+  X,
+  type LucideIcon,
 } from "lucide-react"
 
 import { EmptyState } from "./EmptyState"
@@ -207,6 +210,45 @@ const pageSize = css`
   width: 5rem;
 `
 
+const errorCell = css`
+  padding-top: 48px;
+  padding-bottom: 48px;
+  text-align: center;
+`
+
+const errorText = css`
+  margin-bottom: 12px;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--muted-foreground);
+`
+
+const bulkBar = css`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  background: ${mix("--muted", 60)};
+  padding: 8px 12px;
+`
+
+const bulkCount = css`
+  font-family: ${fontMono};
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+`
+
+const bulkSpacer = css`
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`
+
 /** Tri-state for the select-all box: all, some, or none of the page selected. */
 function headerCheckedState<T>(table: TanstackTable<T>): boolean | "indeterminate" {
   if (table.getIsAllPageRowsSelected()) return true
@@ -250,6 +292,57 @@ function HeaderContent<T>({ header }: Readonly<{ header: Header<T, unknown> }>) 
   )
 }
 
+/** One entry in the bar that appears while rows are selected. */
+export interface DataTableBulkAction {
+  label: string
+  icon?: LucideIcon
+  /** Renders in the destructive tone — deletes, terminations, revocations. */
+  destructive?: boolean
+  onAction: () => void
+}
+
+/**
+ * Server-driven paging: the table renders exactly the rows it is given and
+ * reports the page the user asked for, rather than slicing locally.
+ */
+export interface DataTableServerPagination {
+  /** 1-based, matching the page number a user sees and an API expects. */
+  page: number
+  pageSize: number
+  /** Row count across all pages, used to work out how many pages there are. */
+  total: number
+  onPageChange: (page: number) => void
+}
+
+/** Client-side paging, with the page size the user can change. */
+export interface DataTableClientPagination {
+  pageSize?: number
+  pageSizeOptions?: readonly number[]
+}
+
+export type DataTablePagination =
+  | boolean
+  | DataTableClientPagination
+  | DataTableServerPagination
+
+function isServerPagination(
+  pagination: DataTablePagination,
+): pagination is DataTableServerPagination {
+  return typeof pagination === "object" && "total" in pagination
+}
+
+/**
+ * The client-paging config, or undefined when paging is off or handed to the
+ * server. `pagination: true` means "page it, with the defaults".
+ */
+function resolveClientPaging(
+  pagination: DataTablePagination,
+  isServer: boolean,
+): DataTableClientPagination | undefined {
+  if (isServer || !pagination) return undefined
+  return typeof pagination === "object" ? pagination : {}
+}
+
 export interface DataTableProps<T> {
   data: readonly T[]
   columns: ColumnDef<T>[]
@@ -257,6 +350,15 @@ export interface DataTableProps<T> {
   /** Swaps the body for skeleton rows without unmounting the header. */
   loading?: boolean
   skeletonRows?: number
+
+  /**
+   * Replaces the body with a failure message and, when `onRetry` is given, a
+   * retry button. Takes precedence over every other body state — a failed fetch
+   * must never be reported as "nothing here yet".
+   */
+  error?: ReactNode
+  onRetry?: () => void
+  retryLabel?: string
 
   /** Shown when there are no rows at all, as opposed to none matching a filter. */
   empty?: ReactNode
@@ -273,8 +375,24 @@ export interface DataTableProps<T> {
   defaultSorting?: SortingState
   onSortingChange?: (sorting: SortingState) => void
 
-  /** `true` for defaults, or an object to set the page size and its options. */
-  pagination?: boolean | { pageSize?: number; pageSizeOptions?: readonly number[] }
+  /**
+   * `true` for client-side paging with defaults, an object to set the page size
+   * and its options, or a `{ page, pageSize, total, onPageChange }` object to
+   * hand paging to the server.
+   */
+  pagination?: DataTablePagination
+
+  /**
+   * Rendered at the LEFT of the toolbar, beside the search box — filters and
+   * scope switches. `actions` is the right-hand slot.
+   */
+  toolbar?: ReactNode
+
+  /**
+   * Bar shown while rows are selected, built from the current selection.
+   * Requires `selectable`.
+   */
+  bulkActions?: (rows: T[]) => DataTableBulkAction[]
 
   /** Adds a leading checkbox column and reports the selection. */
   selectable?: boolean
@@ -320,6 +438,9 @@ export function DataTable<T>({
   columns,
   loading = false,
   skeletonRows = 5,
+  error,
+  onRetry,
+  retryLabel = "Retry",
   empty,
   noResults,
   searchable = false,
@@ -329,6 +450,8 @@ export function DataTable<T>({
   defaultSorting = [],
   onSortingChange,
   pagination = false,
+  toolbar: toolbarSlot,
+  bulkActions,
   selectable = false,
   onSelectionChange,
   getRowId,
@@ -350,8 +473,12 @@ export function DataTable<T>({
   const [expanded, setExpanded] = useState<Record<string, boolean>>({})
 
   const filterValue = globalFilter ?? internalFilter
-  const pageConfig = typeof pagination === "object" ? pagination : {}
-  const pageSizeOptions = pageConfig.pageSizeOptions ?? [10, 25, 50, 100]
+
+  // Server paging means the table must not slice again: it already holds one
+  // page of rows, and the row model has to leave them alone.
+  const serverPaging = isServerPagination(pagination) ? pagination : undefined
+  const clientPaging = resolveClientPaging(pagination, serverPaging !== undefined)
+  const pageSizeOptions: readonly number[] = clientPaging?.pageSizeOptions ?? [10, 25, 50, 100]
 
   // The checkbox column is prepended rather than asked for, so callers never
   // hand-roll select-all/indeterminate logic.
@@ -443,18 +570,22 @@ export function DataTable<T>({
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    ...(pagination ? { getPaginationRowModel: getPaginationRowModel() } : {}),
-    initialState: pagination ? { pagination: { pageSize: pageConfig.pageSize ?? 25 } } : undefined,
+    ...(clientPaging ? { getPaginationRowModel: getPaginationRowModel() } : {}),
+    initialState: clientPaging
+      ? { pagination: { pageSize: clientPaging.pageSize ?? 25 } }
+      : undefined,
   })
 
   const rows = table.getRowModel().rows
   const hasRows = data.length > 0
+  const hasError = error !== undefined && error !== null
+  const selectedRows = table.getSelectedRowModel().rows.map((row) => row.original)
   const visibleColumnCount = table.getVisibleLeafColumns().length
   const hideableColumns = table.getAllLeafColumns().filter((c) => c.getCanHide())
 
   return (
     <div className={cx(wrap, className)}>
-      {(searchable || columnToolbar || actions) && (
+      {(searchable || columnToolbar || actions || toolbarSlot) && (
         <div className={toolbar}>
           {searchable && (
             <div className={search}>
@@ -475,6 +606,7 @@ export function DataTable<T>({
               />
             </div>
           )}
+          {toolbarSlot}
           <div className={toolbarRight}>
             {actions}
             {columnToolbar && hideableColumns.length > 0 && (
@@ -507,6 +639,35 @@ export function DataTable<T>({
         </div>
       )}
 
+      {bulkActions && selectedRows.length > 0 && (
+        <div className={bulkBar}>
+          <span className={bulkCount}>{selectedRows.length} selected</span>
+          {bulkActions(selectedRows).map((action) => (
+            <Button
+              key={action.label}
+              size="sm"
+              variant={action.destructive ? "destructive" : "outline"}
+              onClick={action.onAction}
+            >
+              {action.icon && <action.icon />}
+              {action.label}
+            </Button>
+          ))}
+          <div className={bulkSpacer}>
+            <Button
+              size="sm"
+              variant="ghost"
+              aria-label="Clear selection"
+              onClick={() => {
+                table.resetRowSelection()
+              }}
+            >
+              <X />
+            </Button>
+          </div>
+        </div>
+      )}
+
       <Table>
         <TableHeader className={stickyHeader ? stickyHead : undefined}>
           {table.getHeaderGroups().map((group) => (
@@ -527,6 +688,23 @@ export function DataTable<T>({
           ))}
         </TableHeader>
         <TableBody>
+          {/* A failed fetch is reported as a failure. Falling through to the
+              empty state here would tell the user their account is empty when
+              in fact nothing is known about it. */}
+          {hasError && !loading && (
+            <TableRow>
+              <TableCell colSpan={visibleColumnCount} className={errorCell}>
+                <p className={errorText}>{error}</p>
+                {onRetry && (
+                  <Button size="sm" variant="outline" onClick={onRetry}>
+                    <RotateCw />
+                    {retryLabel}
+                  </Button>
+                )}
+              </TableCell>
+            </TableRow>
+          )}
+
           {loading &&
             Array.from({ length: skeletonRows }, (_, i) => (
               <TableRow key={`skeleton-${String(i)}`}>
@@ -539,6 +717,7 @@ export function DataTable<T>({
             ))}
 
           {!loading &&
+            !hasError &&
             rows.map((row: Row<T>) => (
               <Fragment key={row.id}>
                 <TableRow
@@ -575,7 +754,7 @@ export function DataTable<T>({
               </Fragment>
             ))}
 
-          {!loading && rows.length === 0 && (
+          {!loading && !hasError && rows.length === 0 && (
             <TableRow>
               <TableCell colSpan={visibleColumnCount}>
                 {hasRows
@@ -593,7 +772,11 @@ export function DataTable<T>({
         </TableBody>
       </Table>
 
-      {pagination && !loading && rows.length > 0 && (
+      {serverPaging && !loading && !hasError && rows.length > 0 && (
+        <ServerPager pagination={serverPaging} selectedCount={selectedRows.length} />
+      )}
+
+      {clientPaging && !loading && !hasError && rows.length > 0 && (
         <div className={footer}>
           <span className={footerInfo}>
             {selectable && Object.keys(rowSelection).length > 0
@@ -666,6 +849,79 @@ export function DataTable<T>({
           </div>
         </div>
       )}
+    </div>
+  )
+}
+
+/**
+ * Footer for a server-paged table: a range readout and page controls that
+ * report the requested page rather than slicing rows locally. Hidden when there
+ * is only one page, so short tables keep a clean footer.
+ */
+function ServerPager({
+  pagination,
+  selectedCount,
+}: Readonly<{ pagination: DataTableServerPagination; selectedCount: number }>) {
+  const { page, pageSize: size, total, onPageChange } = pagination
+  const pageCount = Math.max(1, Math.ceil(total / size))
+  if (pageCount <= 1) return null
+
+  // The last page is short, so clamp the upper bound to the total.
+  const first = (page - 1) * size + 1
+  const last = Math.min(page * size, total)
+
+  return (
+    <div className={footer}>
+      <span className={footerInfo}>
+        {selectedCount > 0 ? `${String(selectedCount)} selected · ` : ""}
+        {`${String(first)}–${String(last)} of ${String(total)}`}
+      </span>
+      <div className={pager}>
+        <Button
+          variant="outline"
+          size="icon-sm"
+          aria-label="First page"
+          disabled={page <= 1}
+          onClick={() => {
+            onPageChange(1)
+          }}
+        >
+          <ChevronFirst />
+        </Button>
+        <Button
+          variant="outline"
+          size="icon-sm"
+          aria-label="Previous page"
+          disabled={page <= 1}
+          onClick={() => {
+            onPageChange(page - 1)
+          }}
+        >
+          <ChevronLeft />
+        </Button>
+        <Button
+          variant="outline"
+          size="icon-sm"
+          aria-label="Next page"
+          disabled={page >= pageCount}
+          onClick={() => {
+            onPageChange(page + 1)
+          }}
+        >
+          <ChevronRight />
+        </Button>
+        <Button
+          variant="outline"
+          size="icon-sm"
+          aria-label="Last page"
+          disabled={page >= pageCount}
+          onClick={() => {
+            onPageChange(pageCount)
+          }}
+        >
+          <ChevronLast />
+        </Button>
+      </div>
     </div>
   )
 }
