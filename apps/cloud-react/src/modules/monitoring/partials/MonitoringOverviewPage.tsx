@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 // Monitoring overview — a dashboard, not a second copy of the alarms list.
 //
 // The list page already answers "what alarms exist". This page answers the four
@@ -553,6 +554,7 @@ function TransitionRow({
 // ---------------------------------------------------------------------------
 
 export function MonitoringOverviewPage() {
+  const { t } = useTranslation()
   useScreen("monitoring.overview")
 
   const { data: alarms = [], isLoading: alarmsLoading } = useAlarms()
@@ -614,7 +616,7 @@ export function MonitoringOverviewPage() {
             <Button size="sm" className="gap-1.5" asChild>
               <Link to={MONITORING_ROUTES.alarmCreate}>
                 <Plus className="size-4" />
-                Create alarm
+                {t("monitoring.monitoringOverviewPage.createAlarm")}
               </Link>
             </Button>
           </>
@@ -624,7 +626,7 @@ export function MonitoringOverviewPage() {
       <StatGrid stats={stats} className="mb-6" />
 
       <Section
-        title="Last 24 hours"
+        title={t("monitoring.monitoringOverviewPage.last24Hours")}
         description="One cell per hour. A cell turns red if the alarm breached at any point inside that hour, so flapping stands out."
         variant="panel"
         className="mb-6"
@@ -660,14 +662,14 @@ export function MonitoringOverviewPage() {
 
       <div className="grid gap-6 xl:grid-cols-3">
         <Section
-          title="Needs attention"
-          description="Grouped by the resource each alarm watches."
+          title={t("monitoring.monitoringOverviewPage.needsAttention")}
+          description={t("monitoring.monitoringOverviewPage.groupedByTheResourceEachAlarmWatches")}
           variant="panel"
           className="xl:col-span-2"
           actions={
             <Button variant="ghost" size="sm" asChild>
               <Link to={MONITORING_ROUTES.alarms}>
-                All alarms
+                {t("monitoring.monitoringOverviewPage.allAlarms")}
                 <ArrowRight className="size-3.5" />
               </Link>
             </Button>
@@ -690,7 +692,7 @@ export function MonitoringOverviewPage() {
 
         <div className="space-y-6">
           <Section
-            title="Channel health"
+            title={t("monitoring.monitoringOverviewPage.channelHealth")}
             description="A notification path that is failing is worse than an alarm that is firing — nobody hears either."
             variant="panel"
             actions={
@@ -717,9 +719,9 @@ export function MonitoringOverviewPage() {
             )}
           </Section>
 
-          <Section title="Recent state transitions" description="Newest first." variant="panel">
+          <Section title={t("monitoring.monitoringOverviewPage.recentStateTransitions")} description={t("monitoring.monitoringOverviewPage.newestFirst")} variant="panel">
             {history.length === 0 ? (
-              <p className={NOTE}>No alarm has changed state yet.</p>
+              <p className={NOTE}>{t("monitoring.monitoringOverviewPage.noAlarmHasChangedStateYet")}</p>
             ) : (
               <ul className="divide-y divide-border/60">
                 {history.slice(0, FEED_LIMIT).map((entry) => (

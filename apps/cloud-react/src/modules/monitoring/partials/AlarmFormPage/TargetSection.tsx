@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 // Section 1 — "What to watch".
 //
 // This is the question the old form never asked. Everything downstream (which
@@ -79,6 +80,7 @@ function TargetRow({
   selected: boolean
   onToggle: (id: string, next: boolean) => void
 }>) {
+  const { t } = useTranslation()
   const inputId = `alarm-target-${target.id}`
   // Resources that are not healthy stay selectable — an alarm on a stopped
   // instance is exactly how you find out it never came back. We say so instead
@@ -112,7 +114,7 @@ function TargetRow({
         )}
         {!healthy && (
           <span className="block text-[11px] text-status-warning">
-            Not healthy right now — it may report nothing until it is back.
+            {t("monitoring.targetSection.notHealthyRightNowItMayReportNothingUntilItI")}
           </span>
         )}
       </span>
@@ -151,6 +153,7 @@ export function TargetSection({
   onCustomNamespaceChange: (value: string) => void
   onCustomDimensionsChange: (value: string) => void
 }>) {
+  const { t } = useTranslation()
   const [search, setSearch] = useState("")
   const { targets, isLoading } = useAlarmTargets(targetType)
   const counts = useTargetCounts()
@@ -182,7 +185,7 @@ export function TargetSection({
     <div className="space-y-4">
       <div
         role="radiogroup"
-        aria-label="What kind of resource to watch"
+        aria-label={t("monitoring.targetSection.whatKindOfResourceToWatch")}
         className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4"
       >
         {TARGET_TYPES.map((type) => (
@@ -205,11 +208,11 @@ export function TargetSection({
               onChange={(event) => {
                 onCustomNamespaceChange(event.target.value)
               }}
-              placeholder="e.g. myapp/api"
+              placeholder={t("monitoring.targetSection.eGMyappApi")}
               className="font-mono text-[13px]"
               autoComplete="off"
             />
-            <p className={MUTED_NOTE_CLASS}>The namespace you push this metric under.</p>
+            <p className={MUTED_NOTE_CLASS}>{t("monitoring.targetSection.theNamespaceYouPushThisMetricUnder")}</p>
             {errors.customNamespace && <p className={ERROR_CLASS}>{errors.customNamespace}</p>}
           </div>
           <div className="space-y-1.5">
@@ -219,11 +222,11 @@ export function TargetSection({
               onChange={(event) => {
                 onCustomDimensionsChange(event.target.value)
               }}
-              placeholder="service=api, env=prod"
+              placeholder={t("monitoring.targetSection.serviceApiEnvProd")}
               className="font-mono text-[13px]"
               autoComplete="off"
             />
-            <p className={MUTED_NOTE_CLASS}>Leave empty to watch every series in the namespace.</p>
+            <p className={MUTED_NOTE_CLASS}>{t("monitoring.targetSection.leaveEmptyToWatchEverySeriesInTheNamespace")}</p>
             {errors.customDimensions && <p className={ERROR_CLASS}>{errors.customDimensions}</p>}
           </div>
         </div>
@@ -248,7 +251,7 @@ export function TargetSection({
                 onClick={selectAllVisible}
                 className="text-[12px] font-medium text-brand-gold hover:underline"
               >
-                Select all
+                {t("monitoring.targetSection.selectAll")}
               </button>
             )}
             <button
@@ -296,7 +299,7 @@ export function TargetSection({
 
           {singleSelect && (
             <p className={MUTED_NOTE_CLASS}>
-              An alarm watches one resource — choosing another moves this alarm to it.
+              {t("monitoring.targetSection.anAlarmWatchesOneResourceChoosingAnotherMove")}
             </p>
           )}
 

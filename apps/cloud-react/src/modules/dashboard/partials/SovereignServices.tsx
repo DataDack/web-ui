@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { Skeleton } from "@datadack/common-ui"
 import { CheckCircle2, Grip } from "lucide-react"
 import { Link } from "react-router-dom"
@@ -38,6 +39,7 @@ function MetricChip({ metric }: Readonly<{ metric: CatalogMetric }>) {
 }
 
 function ServiceCard({ service }: Readonly<{ service: CatalogService }>) {
+  const { t } = useTranslation()
   const comingSoon = service.state === "coming_soon"
 
   const cardClassName = cn(
@@ -53,7 +55,7 @@ function ServiceCard({ service }: Readonly<{ service: CatalogService }>) {
         </div>
         {comingSoon ? (
           <span className="rounded-full border border-border bg-white/[0.05] px-2 py-0.5 font-mono text-[10px] uppercase tracking-wide text-muted-foreground">
-            Coming soon
+            {t("dashboard.sovereignServices.comingSoon")}
           </span>
         ) : (
           <span
@@ -110,6 +112,7 @@ function CardSkeleton() {
 }
 
 export function SovereignServices() {
+  const { t } = useTranslation()
   const { data: services = [], isLoading } = useCatalogServices()
 
   return (
@@ -117,10 +120,10 @@ export function SovereignServices() {
       <header className="mb-8">
         <h2 className="flex items-center gap-2.5 text-2xl font-bold tracking-tight text-foreground">
           <Grip className="h-6 w-6" />
-          Sovereign Services
+          {t("dashboard.sovereignServices.sovereignServices")}
         </h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Manage infrastructure across your isolated domains.
+          {t("dashboard.sovereignServices.manageInfrastructureAcrossYourIsolatedDomain")}
         </p>
       </header>
 

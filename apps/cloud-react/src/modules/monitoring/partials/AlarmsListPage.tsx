@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 // The alarms list, readable as a sentence: what state it is in, what it is
 // called, and — the part that used to be missing — what it actually watches.
 //
@@ -252,6 +253,7 @@ function FilterSelect({
 // ---------------------------------------------------------------------------
 
 export function AlarmsListPage() {
+  const { t } = useTranslation()
   useScreen("monitoring.alarms-list")
   const navigate = useNavigate()
 
@@ -443,7 +445,7 @@ export function AlarmsListPage() {
   const noMatchState = (
     <EmptyState
       icon={SearchX}
-      title="No alarms match these filters"
+      title={t("monitoring.alarmsListPage.noAlarmsMatchTheseFilters")}
       description="Nothing in this account matches what you searched for. Widen the filters to see the rest."
       action={{ label: "Clear filters", onClick: clearFilters }}
     />
@@ -452,7 +454,7 @@ export function AlarmsListPage() {
   const noAlarmsState = (
     <EmptyState
       icon={BellRing}
-      title="No alarms yet"
+      title={t("monitoring.alarmsListPage.noAlarmsYet")}
       description="Pick a load balancer, instance or disk and get told when one of its signals crosses a line."
       action={{
         label: "Create alarm",
@@ -467,7 +469,7 @@ export function AlarmsListPage() {
         icon={BellRing}
         breadcrumbs={[{ label: "Monitoring", to: MONITORING_ROUTES.root }, { label: "Alarms" }]}
         title="Alarms"
-        description="What each alarm watches, how it is doing right now, and who hears about it."
+        description={t("monitoring.alarmsListPage.whatEachAlarmWatchesHowItIsDoingRightNowAndW")}
         actions={
           <>
             <Button
@@ -481,7 +483,7 @@ export function AlarmsListPage() {
             </Button>
             <Button className="gap-2" onClick={() => void navigate(MONITORING_ROUTES.alarmCreate)}>
               <Plus className="size-4" />
-              Create alarm
+              {t("monitoring.alarmsListPage.createAlarm")}
             </Button>
           </>
         }
@@ -495,9 +497,9 @@ export function AlarmsListPage() {
             onChange={(e) => {
               setSearch(e.target.value)
             }}
-            placeholder="Search by alarm name, resource, or signal…"
+            placeholder={t("monitoring.alarmsListPage.searchByAlarmNameResourceOrSignal")}
             className="h-8 pl-8"
-            aria-label="Search alarms"
+            aria-label={t("monitoring.alarmsListPage.searchAlarms")}
           />
         </div>
         <FilterSelect
@@ -513,7 +515,7 @@ export function AlarmsListPage() {
           onChange={setSeverityFilter}
         />
         <FilterSelect
-          label="Resource type"
+          label={t("monitoring.alarmsListPage.resourceType")}
           value={typeFilter}
           options={TYPE_FILTERS}
           onChange={setTypeFilter}
@@ -545,7 +547,7 @@ export function AlarmsListPage() {
         onOpenChange={(open) => {
           if (!open) setToDelete(null)
         }}
-        title="Delete alarm"
+        title={t("monitoring.alarmsListPage.deleteAlarm")}
         description={`Delete "${toDelete?.name ?? ""}"? Its state history and channel bindings are removed too.`}
         confirmLabel="Delete"
         loading={deleteAlarm.isPending}

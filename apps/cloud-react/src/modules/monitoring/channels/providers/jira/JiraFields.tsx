@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useEffect } from "react"
 
 import {
@@ -39,6 +40,7 @@ function JiraOAuthConnect({
   selectedCloudId: string | undefined
   onSelectCloudId: (cloudId: string) => void
 }>) {
+  const { t } = useTranslation()
   const jiraConnections = useJiraConnections()
   const startJiraOAuth = useStartJiraOAuth()
   const disconnectJira = useDisconnectJira()
@@ -88,7 +90,7 @@ function JiraOAuthConnect({
           <FieldLabel required={false}>Site</FieldLabel>
           <Select value={activeCloudId} onValueChange={onSelectCloudId}>
             <SelectTrigger className="w-full font-mono text-[13px]">
-              <SelectValue placeholder="Choose a site" />
+              <SelectValue placeholder={t("monitoring.jiraFields.chooseASite")} />
             </SelectTrigger>
             <SelectContent>
               {connections.map((conn) => (
@@ -153,6 +155,7 @@ function JiraOAuthConnect({
 }
 
 export function JiraFields({ form }: Readonly<{ form: UseFormReturn<ChannelFormValues> }>) {
+  const { t } = useTranslation()
   const {
     register,
     setValue,
@@ -201,7 +204,7 @@ export function JiraFields({ form }: Readonly<{ form: UseFormReturn<ChannelFormV
   return (
     <>
       <div className="space-y-1.5">
-        <FieldLabel>Authentication</FieldLabel>
+        <FieldLabel>{t("monitoring.jiraFields.authentication")}</FieldLabel>
         <div className="grid grid-cols-2 gap-2">
           {(
             [
@@ -247,7 +250,7 @@ export function JiraFields({ form }: Readonly<{ form: UseFormReturn<ChannelFormV
       {jiraAuthMode === "token" && (
         <>
           <div className="space-y-1.5">
-            <FieldLabel>Base URL</FieldLabel>
+            <FieldLabel>{t("monitoring.jiraFields.baseUrl")}</FieldLabel>
             <Input
               {...register("jiraBaseUrl")}
               placeholder="https://your-team.atlassian.net"
@@ -260,14 +263,14 @@ export function JiraFields({ form }: Readonly<{ form: UseFormReturn<ChannelFormV
             <FieldLabel>Email</FieldLabel>
             <Input
               {...register("jiraEmail")}
-              placeholder="ops@company.com"
+              placeholder={t("monitoring.jiraFields.opsCompanyCom")}
               className="font-mono text-[13px]"
               autoComplete="off"
             />
             <FieldError message={errors.jiraEmail?.message} />
           </div>
           <div className="space-y-1.5">
-            <FieldLabel>API token</FieldLabel>
+            <FieldLabel>{t("monitoring.jiraFields.apiToken")}</FieldLabel>
             <Input
               {...register("jiraApiToken")}
               type="password"
@@ -305,7 +308,7 @@ export function JiraFields({ form }: Readonly<{ form: UseFormReturn<ChannelFormV
           <FieldError message={errors.jiraProjectKey?.message} />
         </div>
         <div className="space-y-1.5">
-          <FieldLabel required={false}>Issue type</FieldLabel>
+          <FieldLabel required={false}>{t("monitoring.jiraFields.issueType")}</FieldLabel>
           <ComboboxInput
             value={issueTypeRaw}
             onValueChange={(next) => {
@@ -340,12 +343,12 @@ export function JiraFields({ form }: Readonly<{ form: UseFormReturn<ChannelFormV
         <FieldLabel required={false}>Labels</FieldLabel>
         <Input
           {...register("jiraLabels")}
-          placeholder="datadack-monitoring, ops"
+          placeholder={t("monitoring.jiraFields.datadackMonitoringOps")}
           className="font-mono text-[13px]"
           autoComplete="off"
         />
         <p className="text-[11px] text-muted-foreground">
-          Comma-separated Jira labels. Leave empty to use datadack-monitoring.
+          {t("monitoring.jiraFields.commaSeparatedJiraLabelsLeaveEmptyToUseDatad")}
         </p>
         {labels.data && labels.data.length > 0 && (
           <div className="flex flex-wrap gap-1.5 pt-1">

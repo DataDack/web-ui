@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { Button, CommandGroup, CommandItem, CommandList, Skeleton } from "@datadack/common-ui"
 import { AlertTriangle, Loader2 } from "lucide-react"
 
@@ -82,6 +83,7 @@ export function SmartSelectList<TItem>({
   errorText,
   groupOrder,
 }: Readonly<SmartSelectListProps<TItem>>) {
+  const { t } = useTranslation()
   if (loading) {
     return (
       <div className="space-y-1 p-2" aria-busy>
@@ -101,7 +103,7 @@ export function SmartSelectList<TItem>({
         </p>
         {onRefresh && (
           <Button type="button" size="sm" variant="outline" onClick={onRefresh}>
-            Try again
+            {t("console.smartSelectList.tryAgain")}
           </Button>
         )}
       </div>

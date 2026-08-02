@@ -369,8 +369,8 @@ export function VmCreateWizardPage() {
           { label: t("vms.title"), to: VMS_ROUTES.ROOT },
           { label: t("vms.create") },
         ]}
-        title={"Deploy Cloud Instance"}
-        description={"Configure and launch your cloud infrastructure"}
+        title={t("vms.vmCreateWizardPage.deployCloudInstance")}
+        description={t("vms.vmCreateWizardPage.configureAndLaunchYourCloudInfrastructure")}
       />
 
       <div className="mt-8 grid items-start gap-8 lg:grid-cols-[1fr_320px]">

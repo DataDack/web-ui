@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { Button } from "@datadack/common-ui"
 
 import { TONE_CLASSES, TONE_DOT_CLASSES } from "@/components/console/status-config"
@@ -34,6 +35,7 @@ export function StateFilterChips({
   value,
   onChange,
 }: Readonly<StateFilterChipsProps>) {
+  const { t } = useTranslation()
   // One state, one chip, and it is already selected — the filter would be a
   // no-op control that only ever narrows to what is already on screen.
   if (chips.length < 2) return null
@@ -41,7 +43,7 @@ export function StateFilterChips({
   return (
     <div
       role="group"
-      aria-label="Filter by state"
+      aria-label={t("managedApps.stateFilterChips.filterByState")}
       className="-mx-0.5 flex min-w-0 flex-1 items-center gap-1 overflow-x-auto px-0.5 py-0.5"
     >
       <Chip

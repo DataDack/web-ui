@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import {
   Button,
   Dialog,
@@ -78,6 +79,7 @@ export function CreditGuardDialog({
   /** Proceed despite the warning — only rendered for the low-runway verdict. */
   onContinue?: () => void
 }>) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   if (!verdict) return null
   const copy = COPY[verdict.kind]
@@ -99,15 +101,15 @@ export function CreditGuardDialog({
         {verdict.kind === "insufficient" && (
           <div className="space-y-2 rounded-lg border border-border-glass bg-muted/20 p-4">
             <AmountRow label="Required" value={formatCredits(verdict.required)} />
-            <AmountRow label="Current balance" value={formatCredits(verdict.balance)} />
+            <AmountRow label={t("billing.creditGuardDialog.currentBalance")} value={formatCredits(verdict.balance)} />
             <AmountRow label="Shortfall" value={formatCredits(verdict.shortfall)} accent />
           </div>
         )}
         {verdict.kind === "low-runway" && (
           <div className="space-y-2 rounded-lg border border-border-glass bg-muted/20 p-4">
-            <AmountRow label="Current balance" value={formatCredits(verdict.balance)} />
+            <AmountRow label={t("billing.creditGuardDialog.currentBalance2")} value={formatCredits(verdict.balance)} />
             <AmountRow
-              label="Runway left"
+              label={t("billing.creditGuardDialog.runwayLeft")}
               value={`~${verdict.runwayHours.toFixed(1)} hours`}
               accent
             />
@@ -126,12 +128,12 @@ export function CreditGuardDialog({
           </Button>
           {verdict.kind === "low-runway" && onContinue && (
             <Button type="button" variant="outline" onClick={onContinue}>
-              Continue anyway
+              {t("billing.creditGuardDialog.continueAnyway")}
             </Button>
           )}
           <Button type="button" onClick={() => void navigate(billingUrl)}>
             <Wallet className="mr-2 size-4" />
-            Add credits
+            {t("billing.creditGuardDialog.addCredits")}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useEffect } from "react"
 
 import {
@@ -59,11 +60,12 @@ function ProviderFields({
 
 /** Saved, but the notification bounced — the channel exists and is silently broken. */
 function SavedButBrokenNotice({ name }: Readonly<{ name: string }>) {
+  const { t } = useTranslation()
   return (
     <div className="flex items-start gap-2 rounded-md border border-status-warning/30 bg-status-warning-bg p-3 text-[13px]">
       <TriangleAlert className="mt-px size-4 shrink-0 text-status-warning" />
       <p className="text-muted-foreground">
-        Saved as <span className="font-mono text-foreground">{name}</span>, but the test
+        {t("monitoring.channelCreateDialog.savedAs")} <span className="font-mono text-foreground">{name}</span>, but the test
         notification never arrived — alarms sent there would reach nobody. Fix the details below and
         save again, then delete <span className="font-mono text-foreground">{name}</span> from the
         list.
@@ -82,6 +84,7 @@ export function ChannelCreateDialog({
   /** Fired after a successful save so the caller can auto-select the new channel. */
   onCreated?: (channel: ChannelResponse) => void
 }>) {
+  const { t } = useTranslation()
   const createChannel = useCreateChannel()
   const testChannel = useTestChannel()
 
@@ -165,7 +168,7 @@ export function ChannelCreateDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="glass-3 sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Add channel</DialogTitle>
+          <DialogTitle>{t("monitoring.channelCreateDialog.addChannel")}</DialogTitle>
           <DialogDescription>
             Add one for each target you want — repeat for multiple webhooks or Discord channels.
             Saving fires a real test notification.
@@ -188,7 +191,7 @@ export function ChannelCreateDialog({
         >
           <div className="-mx-1 max-h-[55vh] space-y-5 overflow-y-auto px-1">
             <div className="space-y-1.5">
-              <FieldLabel>Channel type</FieldLabel>
+              <FieldLabel>{t("monitoring.channelCreateDialog.channelType")}</FieldLabel>
               <div className="grid grid-cols-3 gap-2">
                 {CHANNEL_TYPES.map((channelType) => {
                   const meta = TYPE_META[channelType]
@@ -218,14 +221,14 @@ export function ChannelCreateDialog({
 
             <div className="space-y-1.5">
               <FieldLabel>Name</FieldLabel>
-              <Input {...register("name")} placeholder="e.g. #ops-alerts" autoComplete="off" />
+              <Input {...register("name")} placeholder={t("monitoring.channelCreateDialog.eGOpsAlerts")} autoComplete="off" />
               <FieldError message={errors.name?.message} />
             </div>
 
             <ProviderFields type={type} form={form} />
 
             <div className="space-y-1.5">
-              <FieldLabel>Minimum severity</FieldLabel>
+              <FieldLabel>{t("monitoring.channelCreateDialog.minimumSeverity")}</FieldLabel>
               <Select
                 value={severity}
                 onValueChange={(value) => {
@@ -253,7 +256,7 @@ export function ChannelCreateDialog({
                 </SelectContent>
               </Select>
               <p className="text-[11px] text-muted-foreground">
-                Anything less serious than this is not sent here.
+                {t("monitoring.channelCreateDialog.anythingLessSeriousThanThisIsNotSentHere")}
               </p>
             </div>
 

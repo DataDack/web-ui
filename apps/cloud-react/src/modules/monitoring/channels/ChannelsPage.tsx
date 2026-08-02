@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useCallback, useMemo, useState } from "react"
 
 import { actionsColumn, Badge, Button, DataTable, EmptyState, Switch } from "@datadack/common-ui"
@@ -118,6 +119,7 @@ function EnabledCell({
 }
 
 export function ChannelsPage() {
+  const { t } = useTranslation()
   useScreen("monitoring.channels")
   const { data: channels = [], isLoading, isError, refetch, isFetching } = useChannels()
   const updateChannel = useUpdateChannel()
@@ -248,14 +250,14 @@ export function ChannelsPage() {
     <div className="space-y-5">
       <PageHeader
         icon={BellRing}
-        title="Notification channels"
+        title={t("monitoring.channelsPage.notificationChannels")}
         description="Where alarm notifications land. Add as many targets as you need — Discord, Jira and webhooks can all be active, and each alarm picks which ones to notify."
         actions={
           <>
             <Button
               variant="ghost"
               size="icon"
-              aria-label="Refresh channels"
+              aria-label={t("monitoring.channelsPage.refreshChannels")}
               disabled={isFetching}
               onClick={() => void refetch()}
             >
@@ -268,7 +270,7 @@ export function ChannelsPage() {
               }}
             >
               <Plus className="size-4" />
-              Add channel
+              {t("monitoring.channelsPage.addChannel")}
             </Button>
           </>
         }
@@ -285,7 +287,7 @@ export function ChannelsPage() {
         empty={
           <EmptyState
             icon={BellRing}
-            title="No channels yet"
+            title={t("monitoring.channelsPage.noChannelsYet")}
             description="Alarms have nowhere to notify until you add a Discord, Jira or webhook target. Add as many as you like."
             action={{
               label: "Add channel",
@@ -307,7 +309,7 @@ export function ChannelsPage() {
         onOpenChange={(open) => {
           if (!open) setToDelete(null)
         }}
-        title="Delete channel?"
+        title={t("monitoring.channelsPage.deleteChannel")}
         description={
           <>
             Channel <span className="font-mono">{toDelete?.name}</span> will stop receiving alarm

@@ -131,6 +131,9 @@
       "remove": "Remove tag",
       "keyPlaceholder": "key",
       "valuePlaceholder": "value"
+    },
+    "smartSelectList": {
+      "tryAgain": "Try again"
     }
   },
   "status": {
@@ -281,6 +284,11 @@
       "securityDesc": "Threat detection, vulnerability scanning, and compliance monitoring.",
       "billing": "Billing & Costs",
       "billingDesc": "Detailed expenditure reports, budgeting, and financial governance."
+    },
+    "sovereignServices": {
+      "comingSoon": "Coming soon",
+      "sovereignServices": "Sovereign Services",
+      "manageInfrastructureAcrossYourIsolatedDomain": "Manage infrastructure across your isolated domains."
     }
   },
   "accounts": {
@@ -721,7 +729,9 @@
       "billingCycle2": "Billing Cycle",
       "selectAPlanToSeeCostDetails": "Select a plan to see cost details",
       "totalCost": "Total Cost",
-      "includesPublicIpv4AddressCharge": "Includes public IPv4 address charge."
+      "includesPublicIpv4AddressCharge": "Includes public IPv4 address charge.",
+      "deployCloudInstance": "Deploy Cloud Instance",
+      "configureAndLaunchYourCloudInfrastructure": "Configure and launch your cloud infrastructure"
     },
     "vmDetailPage": {
       "infrastructureProfile": "Infrastructure Profile",
@@ -1342,6 +1352,13 @@
       "checkoutFailed": "Couldn't open the payment window. Please try again.",
       "pdfFailed": "Couldn't download the invoice PDF. Please try again.",
       "topupNeeded": "Not enough credits — top up below to continue."
+    },
+    "creditGuardDialog": {
+      "currentBalance": "Current balance",
+      "currentBalance2": "Current balance",
+      "runwayLeft": "Runway left",
+      "continueAnyway": "Continue anyway",
+      "addCredits": "Add credits"
     }
   },
   "vpc": {
@@ -4201,6 +4218,12 @@
     "projectExplorer": {
       "couldNotLoadYourProjects": "Could not load your projects.",
       "noProjectsMatchTheseFilters": "No projects match these filters"
+    },
+    "summaryAside": {
+      "envVars": "Env vars"
+    },
+    "stateFilterChips": {
+      "filterByState": "Filter by state"
     }
   },
   "monitoring": {
@@ -4252,6 +4275,48 @@
       "searchAndFilterRecentLogEventsAcrossYourServ": "Search and filter recent log events across your services.",
       "logStreamingIsOnTheWay": "Log streaming is on the way",
       "liveTail": "Live tail"
+    },
+    "alarmsListPage": {
+      "noAlarmsMatchTheseFilters": "No alarms match these filters",
+      "noAlarmsYet": "No alarms yet",
+      "createAlarm": "Create alarm",
+      "searchByAlarmNameResourceOrSignal": "Search by alarm name, resource, or signal…",
+      "searchAlarms": "Search alarms",
+      "resourceType": "Resource type",
+      "deleteAlarm": "Delete alarm"
+    },
+    "monitoringOverviewPage": {
+      "needsAttention": "Needs attention",
+      "groupedByTheResourceEachAlarmWatches": "Grouped by the resource each alarm watches.",
+      "channelHealth": "Channel health",
+      "recentStateTransitions": "Recent state transitions",
+      "newestFirst": "Newest first."
+    },
+    "alarmDetailPage": {
+      "noDeliveriesListedForThisAlarm": "No deliveries listed for this alarm",
+      "stateHistory": "State history",
+      "noStateChangesYet": "No state changes yet",
+      "configuration": "configuration",
+      "underlyingMetricSeries": "Underlying metric series",
+      "alarmNotFound": "Alarm not found",
+      "deleteAlarm": "Delete alarm"
+    },
+    "channelsPage": {
+      "notificationChannels": "Notification channels",
+      "refreshChannels": "Refresh channels",
+      "addChannel": "Add channel",
+      "noChannelsYet": "No channels yet",
+      "deleteChannel": "Delete channel?"
+    },
+    "jiraFields": {
+      "chooseASite": "Choose a site",
+      "opsCompanyCom": "ops@company.com",
+      "apiToken": "API token",
+      "datadackMonitoringOps": "datadack-monitoring, ops"
+    },
+    "targetSection": {
+      "whatKindOfResourceToWatch": "What kind of resource to watch",
+      "serviceApiEnvProd": "service=api, env=prod"
     }
   },
   "organizations": {

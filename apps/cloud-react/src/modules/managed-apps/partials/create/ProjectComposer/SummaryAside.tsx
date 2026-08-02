@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { Button } from "@datadack/common-ui"
 import { AlertCircle, GitPullRequest, Loader2, Rocket } from "lucide-react"
 
@@ -43,6 +44,7 @@ export function SummaryAside({
   submitting,
   onDeploy,
 }: Readonly<SummaryAsideProps>) {
+  const { t } = useTranslation()
   const { data: defaults } = useBuildDefaults(values.project_type)
   // The account's tier, not a choice made in this form — the project inherits
   // it. Its NAME rather than its code: "developer_pro" is a storage key, not a
@@ -71,7 +73,7 @@ export function SummaryAside({
           <Row label="Build" value={inherited(values.build_command, defaults?.build_command)} />
           <Row label="Output" value={inherited(values.output_dir, defaults?.output_dir)} />
           <Row
-            label="Env vars"
+            label={t("managedApps.summaryAside.envVars")}
             value={envCount === 1 ? "1 variable" : `${String(envCount)} variables`}
           />
           <Row label="Networking" value={values.vpc_id ? "VPC bound" : "Public only"} />

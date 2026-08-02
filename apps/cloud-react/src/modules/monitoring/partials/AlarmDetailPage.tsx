@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 // The page someone lands on after being paged.
 //
 // It answers, in order: what is wrong, on which resource, since when, what the
@@ -226,6 +227,7 @@ function jiraIssueUrl(
 // ---------------------------------------------------------------------------
 
 function AlarmMetaChips({ alarm }: Readonly<{ alarm: Alarm }>) {
+  const { t } = useTranslation()
   return (
     <>
       <AlarmStateChip state={alarm.state} />
@@ -234,7 +236,7 @@ function AlarmMetaChips({ alarm }: Readonly<{ alarm: Alarm }>) {
         <Badge
           variant="outline"
           className="border-dashed font-mono text-[11px] text-muted-foreground"
-          title="A disabled alarm is not evaluated and sends nothing until you enable it."
+          title={t("monitoring.alarmDetailPage.aDisabledAlarmIsNotEvaluatedAndSendsNothingU")}
         >
           Disabled
         </Badge>
@@ -258,6 +260,7 @@ function ConditionPanel({ alarm }: Readonly<{ alarm: Alarm }>) {
 
 /** The two facts that make an alarm useless, said out loud. */
 function AlarmNotices({ alarm }: Readonly<{ alarm: Alarm }>) {
+  const { t } = useTranslation()
   return (
     <>
       {!alarm.enabled && (
@@ -268,7 +271,7 @@ function AlarmNotices({ alarm }: Readonly<{ alarm: Alarm }>) {
       )}
       {alarm.channels.length === 0 && (
         <p className="text-[13px] text-status-warning">
-          Nobody is notified: this alarm has no channels. Edit it to add one.
+          {t("monitoring.alarmDetailPage.nobodyIsNotifiedThisAlarmHasNoChannelsEditIt")}
         </p>
       )}
     </>
@@ -455,6 +458,7 @@ function DeliveriesTable({
   hasJiraChannel: boolean
   jiraSiteUrl: string
 }>) {
+  const { t } = useTranslation()
   const columns = useMemo<ColumnDef<AlarmNotification>[]>(
     () => [
       {
@@ -536,7 +540,7 @@ function DeliveriesTable({
       empty={
         <EmptyState
           icon={Send}
-          title="No deliveries listed for this alarm"
+          title={t("monitoring.alarmDetailPage.noDeliveriesListedForThisAlarm")}
           description="This reads your account's recent delivery log and picks out this alarm's rows. On a busy account older deliveries fall off the end of that log, so an empty list here is not proof that nothing was ever sent."
         />
       }
@@ -561,11 +565,12 @@ function DeliveriesTab({
   hasJiraChannel: boolean
   jiraSiteUrl: string
 }>) {
+  const { t } = useTranslation()
   return (
     <Section
       variant="panel"
       title="Deliveries"
-      description="Recent notification attempts for this alarm, and what each channel answered."
+      description={t("monitoring.alarmDetailPage.recentNotificationAttemptsForThisAlarmAndWha")}
     >
       {/* Loading, empty and failure all render inside the table, so this panel
           looks the same in every state instead of swapping its whole body. */}
@@ -614,16 +619,17 @@ function HistoryRow({ entry }: Readonly<{ entry: AlarmHistoryEntry }>) {
 }
 
 function HistoryTab({ entries }: Readonly<{ entries: AlarmHistoryEntry[] }>) {
+  const { t } = useTranslation()
   return (
     <Section
       variant="panel"
-      title="State history"
-      description="Most recent transition first, with the datapoints that drove each decision."
+      title={t("monitoring.alarmDetailPage.stateHistory")}
+      description={t("monitoring.alarmDetailPage.mostRecentTransitionFirstWithTheDatapointsTh")}
     >
       {entries.length === 0 ? (
         <EmptyState
           icon={History}
-          title="No state changes yet"
+          title={t("monitoring.alarmDetailPage.noStateChangesYet")}
           description="This alarm has not changed state since it was created. Transitions show up here as soon as the evaluator moves it."
         />
       ) : (
@@ -638,8 +644,9 @@ function HistoryTab({ entries }: Readonly<{ entries: AlarmHistoryEntry[] }>) {
 }
 
 function ChannelBindings({ alarm }: Readonly<{ alarm: Alarm }>) {
+  const { t } = useTranslation()
   if (alarm.channels.length === 0) {
-    return <span className="text-status-warning">No channels — nobody is notified</span>
+    return <span className="text-status-warning">{t("monitoring.alarmDetailPage.noChannelsNobodyIsNotified")}</span>
   }
   return (
     <span className="flex flex-col gap-1">
@@ -708,14 +715,15 @@ function ConfigurationTab({
   type,
   display,
 }: Readonly<{ alarm: Alarm; type: AlarmTargetType; display: string }>) {
+  const { t } = useTranslation()
   return (
     <div className="space-y-5">
-      <Section variant="panel" title="Configuration">
+      <Section variant="panel" title={t("monitoring.alarmDetailPage.configuration")}>
         <KeyValueGrid items={configItems(alarm, type, display, unitForAlarm(alarm))} columns={2} />
       </Section>
       <Section
         variant="panel"
-        title="Underlying metric series"
+        title={t("monitoring.alarmDetailPage.underlyingMetricSeries")}
         description="The address the evaluator reads. You rarely need this — it is here for debugging and for custom metrics."
       >
         <KeyValueGrid items={seriesItems(alarm)} columns={3} />
@@ -729,6 +737,7 @@ function ConfigurationTab({
 // ---------------------------------------------------------------------------
 
 export function AlarmDetailPage() {
+  const { t } = useTranslation()
   useScreen("monitoring.alarm-detail")
   const navigate = useNavigate()
   const { id = "" } = useParams<{ id: string }>()
@@ -801,7 +810,7 @@ export function AlarmDetailPage() {
     return (
       <EmptyState
         icon={BellOff}
-        title="Alarm not found"
+        title={t("monitoring.alarmDetailPage.alarmNotFound")}
         description={`No alarm with id "${id}" exists in this workspace.`}
         action={{
           label: "Back to alarms",
@@ -908,7 +917,7 @@ export function AlarmDetailPage() {
                 loading={testChannel.isPending}
               >
                 <Send className="size-3.5" />
-                Send test
+                {t("monitoring.alarmDetailPage.sendTest")}
               </Button>
             </span>
             <Button
@@ -959,9 +968,9 @@ export function AlarmDetailPage() {
       <ConfirmDialog
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
-        title="Delete alarm"
+        title={t("monitoring.alarmDetailPage.deleteAlarm")}
         description={`Delete "${alarm.name}"? Its state history and channel bindings go with it. The metric data itself is untouched.`}
-        confirmLabel="Delete alarm"
+        confirmLabel={t("monitoring.alarmDetailPage.deleteAlarm2")}
         confirmText={alarm.name}
         loading={deleteAlarm.isPending}
         onConfirm={() => {

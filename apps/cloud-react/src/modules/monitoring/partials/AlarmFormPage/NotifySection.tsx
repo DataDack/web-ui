@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 // Section 4 — "Notifications".
 //
 // Two things went wrong in the old flow and are fixed here:
@@ -98,6 +99,7 @@ function ChannelRow({
   onToggle: (channelId: string, next: boolean) => void
   onTransitionToggle: (channelId: string, state: AlarmTransition) => void
 }>) {
+  const { t } = useTranslation()
   const inputId = `alarm-channel-${channel.id}`
   const meta = TYPE_META[channel.type]
   const TypeIcon = meta.icon
@@ -158,7 +160,7 @@ function ChannelRow({
       {selected && (
         <div className="mt-2.5 space-y-1.5 border-t border-border-glass pt-2.5">
           <div className="flex flex-wrap items-center gap-1.5">
-            <span className="mr-1 text-[11px] text-muted-foreground">Notify on</span>
+            <span className="mr-1 text-[11px] text-muted-foreground">{t("monitoring.notifySection.notifyOn")}</span>
             {/*
                           Three independent toggles, not one exclusive choice —
                           each maps to its own CloudWatch action list, so any
@@ -216,6 +218,7 @@ export function NotifySection({
   onSeverityChange: (value: AlertSeverity) => void
   onChannelsChange: (next: ChannelBinding[]) => void
 }>) {
+  const { t } = useTranslation()
   const [dialogOpen, setDialogOpen] = useState(false)
   const { data: available = [], isLoading } = useChannels()
 
@@ -290,11 +293,11 @@ export function NotifySection({
             }}
           >
             <Plus className="size-3" />
-            New channel
+            {t("monitoring.notifySection.newChannel")}
           </Button>
         </div>
 
-        {isLoading && <p className="text-[13px] text-muted-foreground">Loading channels…</p>}
+        {isLoading && <p className="text-[13px] text-muted-foreground">{t("monitoring.notifySection.loadingChannels")}</p>}
 
         {!isLoading && available.length === 0 && (
           <div className="rounded-lg border border-dashed border-border p-4 text-center">
@@ -312,7 +315,7 @@ export function NotifySection({
               }}
             >
               <Plus className="size-3.5" />
-              New channel
+              {t("monitoring.notifySection.newChannel2")}
             </Button>
           </div>
         )}
