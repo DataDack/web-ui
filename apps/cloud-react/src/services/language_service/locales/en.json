@@ -1557,7 +1557,8 @@
     "save": "Save",
     "saving": "Saving…",
     "edit": "Edit",
-    "unavailable": "Unavailable"
+    "unavailable": "Unavailable",
+    "add": "Add"
   },
   "staticIps": {
     "title": "Static IPs",
@@ -3661,6 +3662,103 @@
       "updateFailed": "Could not update the target group",
       "deleted": "Target group deleted",
       "deleteFailed": "Could not delete the target group"
+    }
+  },
+  "serverless": {
+    "title": "Serverless",
+    "subtitle": "Functions that run on demand, scale to zero, and bill per invocation.",
+    "create": "Deploy function",
+    "createSubtitle": "Package, runtime and sizing for a new function.",
+    "searchPlaceholder": "Search functions…",
+    "layers": {
+      "title": "Layers",
+      "subtitle": "Shared dependency archives functions reference by name and version.",
+      "publish": "Publish layer",
+      "publishSubtitle": "A versioned archive shared across functions.",
+      "searchPlaceholder": "Search layers…",
+      "empty": "No layers yet",
+      "emptyHint": "Publish a layer to share dependencies across functions."
+    },
+    "stats": {
+      "total": "Functions",
+      "active": "Active",
+      "images": "Container images",
+      "zips": "Zip packages"
+    },
+    "columns": {
+      "name": "Name",
+      "runtime": "Runtime",
+      "memory": "Memory",
+      "state": "State",
+      "updated": "Updated",
+      "version": "Version",
+      "codeSha": "Code SHA-256",
+      "published": "Published",
+      "description": "Description",
+      "compatibleRuntimes": "Compatible runtimes",
+      "size": "Size",
+      "alias": "Alias",
+      "canary": "Canary"
+    },
+    "actions": {
+      "test": "Test",
+      "delete": "Delete",
+      "deleteConfirmTitle": "Delete {{name}}?",
+      "deleteConfirmBody": "The function, its versions and aliases are removed. In-flight invocations finish; nothing new is accepted.",
+      "deleteConfirmLabel": "Delete function"
+    },
+    "empty": "No functions yet",
+    "emptyHint": "Deploy your first function to see it here.",
+    "tabs": {
+      "configuration": "Configuration",
+      "versions": "Versions",
+      "aliases": "Aliases",
+      "test": "Test"
+    },
+    "wizard": {
+      "basics": "Basics",
+      "basicsDescription": "Name the function.",
+      "package": "Package",
+      "packageDescription": "Container image, or a zip archive uploaded to the artifact store.",
+      "runtime": "Runtime",
+      "runtimeDescription": "Execution runtime, handler and architecture for zip packages.",
+      "sizing": "Sizing & environment",
+      "sizingDescription": "Memory, timeout and environment variables.",
+      "submit": "Deploy function",
+      "layer": "Layer",
+      "layerDescription": "Name the layer and upload its archive.",
+      "compatibility": "Compatibility",
+      "compatibilityDescription": "Optionally pin the runtimes this layer supports.",
+      "layerSubmit": "Publish layer"
+    },
+    "form": {
+      "name": "Function name",
+      "packageType": "Package type",
+      "zip": "Zip archive",
+      "image": "Container image",
+      "imageUri": "Image URI",
+      "uploadZip": "Upload the .zip deployment package",
+      "uploadLayerZip": "Upload the layer .zip",
+      "uploading": "Uploading {{name}}…",
+      "handler": "Handler",
+      "architecture": "Architecture",
+      "memory": "Memory (MB)",
+      "timeout": "Timeout (seconds)",
+      "env": "Environment variables",
+      "layerName": "Layer name",
+      "layerDescription": "Description",
+      "artifact": "Artifact",
+      "artifactRequired": "Upload the archive before continuing.",
+      "blank": "Blank starter",
+      "blankHint": "We generate a minimal working function for the runtime you pick in the next step — edit the code any time after it deploys."
+    },
+    "invoke": {
+      "payload": "Request payload",
+      "response": "Response",
+      "run": "Invoke",
+      "running": "Invoking…",
+      "hint": "Run an invocation to see its response here.",
+      "empty": "(empty body)"
     }
   }
 }

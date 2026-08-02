@@ -56,7 +56,9 @@
         "logs": "Logs",
         "opennext": "OpenNext",
         "reactApps": "React",
-        "n8nAgents": "n8n Agents"
+        "n8nAgents": "n8n Agents",
+        "functions": "फ़ंक्शन",
+        "layers": "लेयर"
       },
       "soon": "जल्द आ रहा है",
       "collapse": "संकुचित करें",
@@ -1172,7 +1174,8 @@
     "selectCountry": "देश चुनें",
     "allCountries": "सभी देश",
     "allCurrencies": "सभी मुद्राएँ",
-    "cancel": "रद्द करें"
+    "cancel": "रद्द करें",
+    "add": "जोड़ें"
   },
   "staticIps": {
     "title": "स्टैटिक IP",
@@ -2644,6 +2647,104 @@
         "approved": "स्वीकृत",
         "rejected": "अस्वीकृत"
       }
+    }
+  },
+  "serverless": {
+    "title": "सर्वरलेस",
+    "subtitle": "फ़ंक्शन जो मांग पर चलते हैं, शून्य तक स्केल होते हैं, और प्रति इनवोकेशन बिल होते हैं।",
+    "create": "फ़ंक्शन डिप्लॉय करें",
+    "createSubtitle": "नए फ़ंक्शन के लिए पैकेज, रनटाइम और साइज़िंग।",
+    "searchPlaceholder": "फ़ंक्शन खोजें…",
+    "layers": {
+      "title": "लेयर",
+      "subtitle": "साझा डिपेंडेंसी आर्काइव, जिन्हें फ़ंक्शन नाम और वर्शन से संदर्भित करते हैं।",
+      "publish": "लेयर प्रकाशित करें",
+      "publishSubtitle": "फ़ंक्शनों के बीच साझा किया गया वर्शन-युक्त आर्काइव।",
+      "searchPlaceholder": "लेयर खोजें…",
+      "empty": "अभी कोई लेयर नहीं",
+      "emptyHint": "फ़ंक्शनों के बीच डिपेंडेंसी साझा करने के लिए एक लेयर प्रकाशित करें।"
+    },
+    "stats": {
+      "total": "फ़ंक्शन",
+      "active": "सक्रिय",
+      "images": "कंटेनर इमेज",
+      "zips": "ज़िप पैकेज"
+    },
+    "columns": {
+      "name": "नाम",
+      "runtime": "रनटाइम",
+      "memory": "मेमोरी",
+      "state": "स्थिति",
+      "updated": "अद्यतन",
+      "version": "वर्शन",
+      "codeSha": "कोड SHA-256",
+      "published": "प्रकाशित",
+      "description": "विवरण",
+      "compatibleRuntimes": "संगत रनटाइम",
+      "size": "आकार",
+      "alias": "एलियास",
+      "canary": "कैनरी"
+    },
+    "actions": {
+      "test": "परीक्षण",
+      "delete": "हटाएँ",
+      "deleteConfirmTitle": "{{name}} को हटाएँ?",
+      "deleteConfirmBody": "फ़ंक्शन, उसके वर्शन और एलियास हटा दिए जाएंगे। चल रहे इनवोकेशन पूरे होंगे; नए स्वीकार नहीं किए जाएंगे।",
+      "deleteConfirmLabel": "फ़ंक्शन हटाएँ"
+    },
+    "empty": "अभी कोई फ़ंक्शन नहीं",
+    "emptyHint": "यहाँ देखने के लिए अपना पहला फ़ंक्शन डिप्लॉय करें।",
+    "tabs": {
+      "configuration": "कॉन्फ़िगरेशन",
+      "versions": "वर्शन",
+      "aliases": "एलियास",
+      "test": "परीक्षण"
+    },
+    "wizard": {
+      "basics": "मूल विवरण",
+      "basicsDescription": "फ़ंक्शन का नाम और वह कोड जिसे यह चलाएगा।",
+      "package": "पैकेज",
+      "packageDescription": "कोड ज़िप के रूप में, कंटेनर इमेज के रूप में, या टेम्पलेट से शुरू करें।",
+      "runtime": "रनटाइम",
+      "runtimeDescription": "भाषा रनटाइम और हैंडलर जिसे यह कॉल करता है।",
+      "sizing": "साइज़िंग",
+      "sizingDescription": "मेमोरी, टाइमआउट और एनवायरनमेंट वेरिएबल।",
+      "submit": "फ़ंक्शन डिप्लॉय करें",
+      "layer": "लेयर",
+      "layerDescription": "लेयर का नाम और उसका आर्काइव।",
+      "compatibility": "संगतता",
+      "compatibilityDescription": "वे रनटाइम जिनके साथ यह लेयर उपयोग की जा सकती है।",
+      "layerSubmit": "लेयर प्रकाशित करें"
+    },
+    "form": {
+      "name": "नाम",
+      "packageType": "पैकेज प्रकार",
+      "zip": "ज़िप आर्काइव",
+      "image": "कंटेनर इमेज",
+      "imageUri": "इमेज URI",
+      "uploadZip": ".zip आर्काइव चुनें",
+      "uploadLayerZip": "लेयर का .zip आर्काइव चुनें",
+      "uploading": "अपलोड हो रहा है…",
+      "handler": "हैंडलर",
+      "architecture": "आर्किटेक्चर",
+      "memory": "मेमोरी",
+      "timeout": "टाइमआउट",
+      "env": "एनवायरनमेंट वेरिएबल",
+      "layerName": "लेयर का नाम",
+      "layerDescription": "विवरण",
+      "artifact": "आर्काइव",
+      "artifactRequired": "एक आर्काइव आवश्यक है",
+      "blank": "टेम्पलेट से",
+      "blankHint": "चुने गए रनटाइम के लिए एक चलने योग्य स्टार्टर फ़ंक्शन बनाया जाता है।",
+      "runtime": "रनटाइम"
+    },
+    "invoke": {
+      "payload": "पेलोड",
+      "response": "प्रतिक्रिया",
+      "run": "चलाएँ",
+      "running": "चल रहा है…",
+      "hint": "एक JSON पेलोड भेजें और फ़ंक्शन की प्रतिक्रिया देखें।",
+      "empty": "अभी तक कोई इनवोकेशन नहीं"
     }
   }
 }

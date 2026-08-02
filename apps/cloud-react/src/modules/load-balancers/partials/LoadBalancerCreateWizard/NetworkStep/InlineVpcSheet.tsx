@@ -1,4 +1,8 @@
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
+
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { z } from "zod/v4"
 
 import {
   Button,
@@ -16,7 +20,6 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@datadack/common-ui"
-import { Loader2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { CidrInput } from "@/components/console"
@@ -25,6 +28,22 @@ import { useCreateVPC, useRegions, useVPCs } from "@/modules/vpc/vpc.hooks"
 import { nextFreeSubnetCidr, subnetCidrIssue, vpcCidrIssue } from "@/modules/vpc/vpc.utils"
 
 import { SUBNET_CIDR_MESSAGES, VPC_CIDR_MESSAGES } from "./cidr-messages"
+
+/**
+ * The VPC's own fields. Both CIDRs are nullable *overrides* rather than values:
+ * null means "the suggestion still applies", which is what keeps the suggested
+ * blocks live while the existing-VPC list loads. A defaultValue would be fixed
+ * at mount, when there is nothing yet to suggest from.
+ */
+const vpcSchema = z.object({
+  name: z.string().trim().min(1, "A name is required"),
+  region: z.string().min(1, "A region is required"),
+  resourceGroupID: z.string(),
+  cidrOverride: z.string().nullable(),
+  subnetOverride: z.string().nullable(),
+})
+
+type VpcDraft = z.infer<typeof vpcSchema>
 
 /**
  * The private space VPC blocks are carved from. Only the search space — the
@@ -58,15 +77,18 @@ export function InlineVpcSheet({
   const { data: existingVpcs = [] } = useVPCs()
   const { mutateAsync: createVPC, isPending } = useCreateVPC()
 
-  const [name, setName] = useState("")
-  const [region, setRegion] = useState("")
-  const [resourceGroupID, setResourceGroupID] = useState("")
-  // null means "not touched", so the suggestion below still applies. Storing
-  // the override rather than seeding state in an effect keeps the suggestion
-  // live as the VPC list loads, with no intermediate render showing a blank
-  // or stale block.
-  const [cidrOverride, setCidrOverride] = useState<string | null>(null)
-  const [subnetOverride, setSubnetOverride] = useState<string | null>(null)
+  const form = useForm<VpcDraft>({
+    resolver: zodResolver(vpcSchema),
+    defaultValues: {
+      name: "",
+      region: "",
+      resourceGroupID: "",
+      cidrOverride: null,
+      subnetOverride: null,
+    },
+    mode: "onChange",
+  })
+  const { cidrOverride, subnetOverride, region, resourceGroupID } = form.watch()
 
   // Offer a block no existing VPC already uses. A fixed 10.0.0.0/16 collides
   // with the first VPC most accounts create, and the overlap only surfaces as
@@ -92,27 +114,23 @@ export function InlineVpcSheet({
   const cidrIssue = cidr ? vpcCidrIssue(cidr) : null
   const subnetIssue = cidr && subnetCidr ? subnetCidrIssue(cidr, subnetCidr, []) : null
 
-  const canSubmit =
-    name.trim() !== "" &&
-    region !== "" &&
-    cidr !== "" &&
-    subnetCidr !== "" &&
-    !cidrIssue &&
-    !subnetIssue &&
-    !isPending
+  // The CIDR checks stay outside the schema: whether a block is usable depends
+  // on the other VPCs on the account, which is server state, not form state.
+  const canSubmit = cidr !== "" && subnetCidr !== "" && !cidrIssue && !subnetIssue
 
-  const submit = () => {
+  const submit = form.handleSubmit((draft) => {
+    if (!canSubmit) return
     void (async () => {
       try {
         const vpc = await createVPC({
-          name: name.trim(),
+          name: draft.name.trim(),
           cidr,
-          region,
-          resource_group_id: resourceGroupID,
+          region: draft.region,
+          resource_group_id: draft.resourceGroupID,
           tags: "",
           subnets: [
             {
-              name: `${name.trim()}-subnet-1`,
+              name: `${draft.name.trim()}-subnet-1`,
               cidr: subnetCidr,
               zone: "",
               is_public: false,
@@ -121,12 +139,12 @@ export function InlineVpcSheet({
         })
         onCreated(vpc.id)
         onOpenChange(false)
-        setName("")
+        form.reset()
       } catch {
         // useCreateVPC raises its own error toast.
       }
     })()
-  }
+  })
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -145,10 +163,8 @@ export function InlineVpcSheet({
             <Input
               className="font-mono"
               placeholder="vpc-prod"
-              value={name}
-              onChange={(e) => {
-                setName(e.target.value)
-              }}
+              aria-invalid={!!form.formState.errors.name}
+              {...form.register("name")}
             />
           </div>
 
@@ -157,7 +173,12 @@ export function InlineVpcSheet({
               {t("vpc.form.region")}
               <span className="text-destructive ml-0.5">*</span>
             </Label>
-            <Select value={region} onValueChange={setRegion}>
+            <Select
+              value={region}
+              onValueChange={(value) => {
+                form.setValue("region", value, { shouldValidate: true })
+              }}
+            >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder={t("vpc.form.regionPlaceholder")} />
               </SelectTrigger>
@@ -175,7 +196,13 @@ export function InlineVpcSheet({
             <Label className="text-xs font-semibold tracking-wide uppercase text-muted-foreground">
               {t("vpc.form.cidr")}
             </Label>
-            <CidrInput value={cidr} onChange={setCidrOverride} aria-label={t("vpc.form.cidr")} />
+            <CidrInput
+              value={cidr}
+              onChange={(value) => {
+                form.setValue("cidrOverride", value, { shouldValidate: true })
+              }}
+              aria-label={t("vpc.form.cidr")}
+            />
             {cidrIssue ? (
               <p className="text-[11px] text-destructive">{VPC_CIDR_MESSAGES[cidrIssue]}</p>
             ) : (
@@ -191,7 +218,9 @@ export function InlineVpcSheet({
             </Label>
             <CidrInput
               value={subnetCidr}
-              onChange={setSubnetOverride}
+              onChange={(value) => {
+                form.setValue("subnetOverride", value, { shouldValidate: true })
+              }}
               aria-label={t("loadBalancers.wizard.firstSubnetCidr")}
             />
             {subnetIssue ? (
@@ -207,7 +236,12 @@ export function InlineVpcSheet({
             <Label className="text-xs font-semibold tracking-wide uppercase text-muted-foreground">
               {t("loadBalancers.wizard.resourceGroup")}
             </Label>
-            <RGField value={resourceGroupID} onChange={setResourceGroupID} />
+            <RGField
+              value={resourceGroupID}
+              onChange={(value) => {
+                form.setValue("resourceGroupID", value, { shouldValidate: true })
+              }}
+            />
           </div>
 
           {/* Provisioning a VPC carves an SDN vnet, which takes a moment.
@@ -224,9 +258,9 @@ export function InlineVpcSheet({
             variant="gold"
             className="gap-2"
             disabled={!canSubmit}
-            onClick={submit}
+            loading={isPending}
+            onClick={() => void submit()}
           >
-            {isPending && <Loader2 className="size-3.5 animate-spin" />}
             {t("loadBalancers.wizard.createVpc")}
           </Button>
         </SheetFooter>

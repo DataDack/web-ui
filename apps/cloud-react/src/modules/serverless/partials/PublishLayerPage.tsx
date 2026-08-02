@@ -19,11 +19,25 @@ import { useScreen } from "@/services/api/screen"
 import { SERVERLESS_ROUTES } from "../serverless.constants"
 import { usePublishLayer, useServerlessRuntimes, useUploadArtifact } from "../serverless.hooks"
 
-const makeSchema = (rule: NamingRule) =>
-  z.object({
-    name: namingNameSchema(rule),
-    description: z.string().max(500, "Maximum 500 characters"),
-  })
+const makeSchema = (rule: NamingRule, artifactRequired: string) =>
+  z
+    .object({
+      name: namingNameSchema(rule),
+      description: z.string().max(500, "Maximum 500 characters"),
+      // The archive IS the layer — POST /layers types codeArtifact as required.
+      // It lives in the form rather than beside it so a missing one fails
+      // validation with a visible message; the submit used to `return` silently,
+      // so pressing Publish with no archive did nothing at all.
+      codeArtifact: z.object({ bucket: z.string().min(1), key: z.string().min(1) }).nullable(),
+    })
+    .superRefine((values, ctx) => {
+      // superRefine rather than .refine: the latter narrows the output type to
+      // non-null, which splits react-hook-form's input and output generics for
+      // no benefit here.
+      if (values.codeArtifact === null) {
+        ctx.addIssue({ code: "custom", path: ["codeArtifact"], message: artifactRequired })
+      }
+    })
 
 type FormValues = z.infer<ReturnType<typeof makeSchema>>
 
@@ -35,15 +49,17 @@ export function PublishLayerPage() {
   const upload = useUploadArtifact()
   const { data: runtimes } = useServerlessRuntimes()
   const { rule } = useNamingRule("layer")
-  const schema = useMemo(() => makeSchema(rule), [rule])
+  const artifactRequired = t("serverless.form.artifactRequired")
+  const schema = useMemo(() => makeSchema(rule, artifactRequired), [rule, artifactRequired])
 
-  const [artifact, setArtifact] = useState<{ bucket: string; key: string } | null>(null)
+  // Only the file's display name is local state now — the artifact reference
+  // itself is a form field, so zod owns whether it is present.
   const [artifactName, setArtifactName] = useState("")
   const [compatible, setCompatible] = useState<string[]>([])
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { name: "", description: "" },
+    defaultValues: { name: "", description: "", codeArtifact: null },
     mode: "onTouched",
   })
 
@@ -54,7 +70,7 @@ export function PublishLayerPage() {
       { kind: "layers", file },
       {
         onSuccess: (ref) => {
-          setArtifact(ref)
+          form.setValue("codeArtifact", ref, { shouldValidate: true })
         },
       },
     )
@@ -75,14 +91,14 @@ export function PublishLayerPage() {
         render: (f) => (
           <LayerStep
             form={f}
-            artifact={artifact}
+            artifact={form.watch("codeArtifact")}
             artifactName={artifactName}
             uploading={upload.isPending}
             onArchive={onArchive}
           />
         ),
         validate: () => {
-          if (artifact === null) {
+          if (form.watch("codeArtifact") === null) {
             toast.error(t("serverless.form.artifactRequired"))
             return false
           }
@@ -96,7 +112,7 @@ export function PublishLayerPage() {
           },
           {
             label: t("serverless.form.artifact"),
-            value: artifact?.key ?? "—",
+            value: form.watch("codeArtifact")?.key ?? "—",
             mono: true,
           },
         ],
@@ -133,7 +149,7 @@ export function PublishLayerPage() {
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [t, artifact, artifactName, upload.isPending, compatible, runtimeNames],
+    [t, form, artifactName, upload.isPending, compatible, runtimeNames],
   )
 
   return (
@@ -156,12 +172,14 @@ export function PublishLayerPage() {
         isSubmitting={isPending || upload.isPending}
         onCancel={() => void navigate(SERVERLESS_ROUTES.LAYERS)}
         onSubmit={(values) => {
-          if (!artifact) return
+          // Non-null by the schema above; the cast documents that rather than
+          // re-checking and silently doing nothing.
+          if (!values.codeArtifact) return
           publish(
             {
               name: values.name,
               description: values.description.trim() === "" ? undefined : values.description.trim(),
-              codeArtifact: artifact,
+              codeArtifact: values.codeArtifact,
               compatibleRuntimes: compatible.length > 0 ? compatible : undefined,
             },
             { onSuccess: () => void navigate(SERVERLESS_ROUTES.LAYERS) },

@@ -33,9 +33,32 @@ import {
   useUploadArtifact,
 } from "../serverless.hooks"
 import { templateForFamily } from "../serverless.templates"
-import type { CreateFunctionRequest } from "../serverless.types"
+import type { CreateFunctionRequest, RuntimeInfo } from "../serverless.types"
 
-const makeSchema = (rule: NamingRule) =>
+/**
+ * A handler names a file and an exported symbol — "index.handler",
+ * "lambda_function.lambda_handler". Every runtime the platform offers uses that
+ * shape, and the control plane rejects anything else, so the form should too.
+ */
+const HANDLER_SHAPE = /^[\w./-]+\.[\w]+$/
+
+/**
+ * An OCI image reference: registry/repository with an optional tag or digest.
+ * Loose on purpose — the registry is the authority on whether an image exists —
+ * but it does catch the common mistakes of pasting a bare name or a URL.
+ */
+const IMAGE_URI_SHAPE = /^[\w.-]+(?::\d+)?\/[\w./-]+(?::[\w.-]+|@sha256:[a-f0-9]{64})?$/
+
+/**
+ * The form's rules, built from the naming policy AND the runtime catalog.
+ *
+ * The catalog already states what each runtime demands — whether a handler is
+ * required, which architectures it runs on, whether it may still be used for a
+ * new function — and the form used to ignore all of it, so those rules only
+ * surfaced as a rejected API call after the wizard was filled in. Passing the
+ * catalog in lets every one of them fail on the step where it can be fixed.
+ */
+const makeSchema = (rule: NamingRule, runtimes: RuntimeInfo[]) =>
   z
     .object({
       name: namingNameSchema(rule),
@@ -48,11 +71,88 @@ const makeSchema = (rule: NamingRule) =>
       timeout: z.number().min(1).max(900),
     })
     .superRefine((values, ctx) => {
-      if (values.packageType === "image" && values.imageUri.trim() === "") {
-        ctx.addIssue({ code: "custom", path: ["imageUri"], message: "Image URI is required" })
+      if (values.packageType === "image") {
+        const uri = values.imageUri.trim()
+        if (uri === "") {
+          ctx.addIssue({ code: "custom", path: ["imageUri"], message: "Image URI is required" })
+        } else if (!IMAGE_URI_SHAPE.test(uri)) {
+          ctx.addIssue({
+            code: "custom",
+            path: ["imageUri"],
+            message: "Expected registry/repository[:tag] — for example ghcr.io/acme/api:1.0",
+          })
+        }
+        // An image carries its own entrypoint, so the runtime fields below do
+        // not apply to it.
+        return
       }
-      if (values.packageType !== "image" && values.runtime === "") {
+
+      if (values.runtime === "") {
         ctx.addIssue({ code: "custom", path: ["runtime"], message: "Pick a runtime" })
+        return
+      }
+
+      const selected = runtimes.find((r) => r.name === values.runtime)
+      if (!selected) return // catalog still loading; the server is the backstop
+
+      // POST /functions/source types runtime and handler as required, and a
+      // bundled-RIC runtime has no inline source to zip in the first place. Both
+      // used to reach the server and come back as
+      // "runtime and handler are required for zip package".
+      if (values.packageType === "blank") {
+        if (selected.bundledRic) {
+          ctx.addIssue({
+            code: "custom",
+            path: ["runtime"],
+            message: `${selected.name} needs a compiled artifact — upload a .zip or use a container image instead of starting blank`,
+          })
+        }
+        if (values.handler.trim() === "") {
+          ctx.addIssue({
+            code: "custom",
+            path: ["handler"],
+            message: selected.handlerFormat
+              ? `A handler is required to start from a template — ${selected.handlerFormat}`
+              : "A handler is required to start from a template",
+          })
+        }
+      }
+
+      if (selected.deprecatedForCreate) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["runtime"],
+          message: selected.successorRuntime
+            ? `${selected.name} can no longer be used for a new function — use ${selected.successorRuntime}`
+            : `${selected.name} can no longer be used for a new function`,
+        })
+      }
+
+      if (!selected.architectures.includes(values.architecture)) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["architecture"],
+          message: `${values.runtime} runs on ${selected.architectures.join(" or ")}`,
+        })
+      }
+
+      const handler = values.handler.trim()
+      if (selected.handlerRequired) {
+        if (handler === "") {
+          ctx.addIssue({
+            code: "custom",
+            path: ["handler"],
+            message: selected.handlerFormat
+              ? `A handler is required — ${selected.handlerFormat}`
+              : "A handler is required",
+          })
+        } else if (!HANDLER_SHAPE.test(handler)) {
+          ctx.addIssue({
+            code: "custom",
+            path: ["handler"],
+            message: "Expected file.function — for example index.handler",
+          })
+        }
       }
     })
 
@@ -67,7 +167,9 @@ export function CreateFunctionPage() {
   const { data: allRuntimes } = useServerlessRuntimes()
   const upload = useUploadArtifact()
   const { rule } = useNamingRule("function")
-  const schema = useMemo(() => makeSchema(rule), [rule])
+  // Rebuilt as the catalog arrives, so a runtime's own rules apply the moment
+  // they are known rather than only after a rejected submit.
+  const schema = useMemo(() => makeSchema(rule, allRuntimes ?? []), [rule, allRuntimes])
 
   // The archive reference lives outside the form: it is produced by the
   // presigned upload, not typed by the user.
@@ -242,10 +344,22 @@ export function CreateFunctionPage() {
           if (values.packageType === "blank") {
             const family = (allRuntimes ?? []).find((info) => info.name === values.runtime)?.family
             const template = templateForFamily(family)
+            // The schema refuses Blank for a family with no inline source, so
+            // this is unreachable — but deploying a placeholder that fails at
+            // every invoke is worse than not deploying, so it stays a guard.
+            if (!template) {
+              toast.error(
+                `${values.runtime} needs a compiled artifact — upload a .zip or use a container image.`,
+              )
+              return
+            }
             createFromSource(
               {
                 name: values.name,
                 runtime: values.runtime,
+                // Required by POST /functions/source; the schema guarantees the
+                // field is filled, and the template's own handler is the
+                // fallback for the value it generated.
                 handler: values.handler.trim() || template.handler,
                 architecture: values.architecture,
                 memorySize: values.memorySize,

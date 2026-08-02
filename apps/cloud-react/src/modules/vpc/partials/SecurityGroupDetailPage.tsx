@@ -1,5 +1,9 @@
 import { useMemo, useState } from "react"
 
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { z } from "zod/v4"
+
 import {
   Badge,
   Button,
@@ -23,7 +27,6 @@ import {
   ArrowDownToLine,
   ArrowUpFromLine,
   Check,
-  Loader2,
   Lock,
   Pencil,
   Plus,
@@ -67,13 +70,34 @@ function RuleActionBadge({ action }: Readonly<{ action: SGRuleAction }>) {
 
 /* ── Editable rule row (shared by "add" and "edit") ────────────────────── */
 
-interface RuleDraft {
-  protocol: SGProtocol
-  action: SGRuleAction
-  port_range: string
-  source: string
-  description: string
-}
+/**
+ * A rule's shape, with the one piece of conditional validation the backend also
+ * enforces: a port range is required for the protocols that have ports, and
+ * meaningless for the ones that do not.
+ *
+ * Expressed here rather than as a `canSubmit` boolean so the reason a row cannot
+ * be saved is attached to the field that is wrong, and the same schema describes
+ * both the add row and the edit row.
+ */
+const ruleSchema = z
+  .object({
+    protocol: z.enum(SG_PROTOCOLS),
+    action: z.enum(SG_RULE_ACTIONS),
+    port_range: z.string(),
+    source: z.string().trim().min(1, "A source is required"),
+    description: z.string(),
+  })
+  .superRefine((draft, ctx) => {
+    if (sgProtocolUsesPorts(draft.protocol) && draft.port_range.trim() === "") {
+      ctx.addIssue({
+        code: "custom",
+        path: ["port_range"],
+        message: "A port range is required for this protocol",
+      })
+    }
+  })
+
+type RuleDraft = z.infer<typeof ruleSchema>
 
 const EMPTY_DRAFT: RuleDraft = {
   protocol: "tcp",
@@ -95,26 +119,39 @@ function RuleFormRow({
   onCancel?: () => void
 }>) {
   const { t } = useTranslation()
-  const [draft, setDraft] = useState<RuleDraft>(initial ?? EMPTY_DRAFT)
-  const patch = (p: Partial<RuleDraft>) => {
-    setDraft((d) => ({ ...d, ...p }))
-  }
+  const form = useForm<RuleDraft>({
+    resolver: zodResolver(ruleSchema),
+    defaultValues: initial ?? EMPTY_DRAFT,
+    // Validate as the user goes: this row sits inside a table, so an error has
+    // to appear next to the field rather than in a summary somewhere else.
+    mode: "onChange",
+  })
 
-  const usesPorts = sgProtocolUsesPorts(draft.protocol)
-  const canSubmit = draft.source.trim() !== "" && (!usesPorts || draft.port_range.trim() !== "")
+  const protocol = form.watch("protocol")
+  const usesPorts = sgProtocolUsesPorts(protocol)
   const isEdit = initial !== undefined
+
+  // The port range is cleared, not just disabled, when the protocol has no
+  // ports — otherwise a value typed under TCP would be submitted under ICMP.
+  const submit = form.handleSubmit((draft) => {
+    onSubmit({ ...draft, port_range: usesPorts ? draft.port_range.trim() : "" }, () => {
+      form.reset(EMPTY_DRAFT)
+    })
+  })
 
   return (
     <TableRow className="hover:bg-transparent">
       <TableCell className="px-3 py-2">
         <Select
-          value={draft.protocol}
+          value={protocol}
           onValueChange={(value) => {
-            const protocol = value as SGProtocol
-            patch({
-              protocol,
-              port_range: sgProtocolUsesPorts(protocol) ? draft.port_range : "",
-            })
+            const next = value as SGProtocol
+            form.setValue("protocol", next, { shouldValidate: true })
+            // Swapping to a portless protocol drops whatever was typed, so the
+            // field cannot carry a stale value into the submit.
+            if (!sgProtocolUsesPorts(next)) {
+              form.setValue("port_range", "", { shouldValidate: true })
+            }
           }}
         >
           <SelectTrigger
@@ -135,32 +172,28 @@ function RuleFormRow({
       </TableCell>
       <TableCell className="px-3 py-2">
         <Input
-          value={usesPorts ? draft.port_range : ""}
-          onChange={(e) => {
-            patch({ port_range: e.target.value })
-          }}
+          {...form.register("port_range")}
           placeholder={usesPorts ? t("vpc.rules.portPlaceholder") : ""}
           className="h-8 font-mono text-[12px]"
           disabled={!usesPorts}
+          aria-invalid={!!form.formState.errors.port_range}
           aria-label={t("vpc.rules.portRange")}
         />
       </TableCell>
       <TableCell className="px-3 py-2">
         <Input
-          value={draft.source}
-          onChange={(e) => {
-            patch({ source: e.target.value })
-          }}
+          {...form.register("source")}
           placeholder={t("vpc.rules.sourcePlaceholder")}
           className="h-8 font-mono text-[12px]"
+          aria-invalid={!!form.formState.errors.source}
           aria-label={t("vpc.rules.source")}
         />
       </TableCell>
       <TableCell className="px-3 py-2">
         <Select
-          value={draft.action}
+          value={form.watch("action")}
           onValueChange={(value) => {
-            patch({ action: value as SGRuleAction })
+            form.setValue("action", value as SGRuleAction, { shouldValidate: true })
           }}
         >
           <SelectTrigger
@@ -181,10 +214,7 @@ function RuleFormRow({
       </TableCell>
       <TableCell className="px-3 py-2">
         <Input
-          value={draft.description}
-          onChange={(e) => {
-            patch({ description: e.target.value })
-          }}
+          {...form.register("description")}
           placeholder={t("vpc.rules.descriptionPlaceholder")}
           className="h-8 text-[12px]"
           aria-label={t("vpc.rules.description")}
@@ -197,25 +227,11 @@ function RuleFormRow({
               size="icon"
               variant="ghost"
               className="size-7 text-muted-foreground hover:text-foreground"
-              disabled={!canSubmit || pending}
+              loading={pending}
               aria-label={t("vpc.rules.save")}
-              onClick={() => {
-                onSubmit(
-                  {
-                    ...draft,
-                    port_range: usesPorts ? draft.port_range.trim() : "",
-                  },
-                  () => {
-                    setDraft(EMPTY_DRAFT)
-                  },
-                )
-              }}
+              onClick={() => void submit()}
             >
-              {pending ? (
-                <Loader2 className="size-3.5 animate-spin" />
-              ) : (
-                <Check className="size-3.5" />
-              )}
+              <Check className="size-3.5" />
             </Button>
             <Button
               size="icon"
@@ -233,14 +249,10 @@ function RuleFormRow({
             size="sm"
             variant="outline"
             className="h-8 gap-1"
-            disabled={!canSubmit || pending}
-            onClick={() => {
-              onSubmit({ ...draft, port_range: usesPorts ? draft.port_range.trim() : "" }, () => {
-                setDraft(EMPTY_DRAFT)
-              })
-            }}
+            loading={pending}
+            onClick={() => void submit()}
           >
-            {pending ? <Loader2 className="size-3 animate-spin" /> : <Plus className="size-3" />}
+            <Plus className="size-3" />
             {t("vpc.rules.add")}
           </Button>
         )}
