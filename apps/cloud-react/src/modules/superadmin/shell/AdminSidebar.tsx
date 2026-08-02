@@ -25,34 +25,42 @@ export function AdminSidebar({ onNavigate }: Readonly<{ onNavigate?: () => void 
         </div>
       </div>
 
-      <nav className="flex-1 overflow-y-auto px-3 py-3">
-        <div className="mb-1.5 px-2 font-mono text-[10px] font-medium uppercase tracking-[0.15em] text-muted-foreground/80">
-          {t("superAdmin.catalog.title")}
-        </div>
-        <ul className="flex flex-col gap-0.5">
-          {ADMIN_NAV.map((item) => {
-            const Icon = item.icon
-            return (
-              <li key={item.path}>
-                <NavLink
-                  to={item.path}
-                  onClick={onNavigate}
-                  className={({ isActive }) =>
-                    cn(
-                      "flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
-                      isActive
-                        ? "bg-accent/70 font-medium text-foreground border border-border-glass"
-                        : "text-muted-foreground hover:bg-accent/40 hover:text-foreground",
-                    )
-                  }
-                >
-                  <Icon className="size-4 shrink-0" />
-                  <span className="truncate">{t(item.labelKey)}</span>
-                </NavLink>
-              </li>
-            )
-          })}
-        </ul>
+      {/* Grouped by what the operator is trying to do. The first group carries no
+          heading: Overview is the landing page, not a category. */}
+      <nav className="flex-1 space-y-4 overflow-y-auto px-3 py-3">
+        {ADMIN_NAV.map((group, groupIndex) => (
+          <div key={group.labelKey ?? `group-${String(groupIndex)}`}>
+            {group.labelKey && (
+              <div className="mb-1.5 px-2 font-mono text-[10px] font-medium uppercase tracking-[0.15em] text-muted-foreground/80">
+                {t(group.labelKey)}
+              </div>
+            )}
+            <ul className="flex flex-col gap-0.5">
+              {group.items.map((item) => {
+                const Icon = item.icon
+                return (
+                  <li key={item.path}>
+                    <NavLink
+                      to={item.path}
+                      onClick={onNavigate}
+                      className={({ isActive }) =>
+                        cn(
+                          "flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
+                          isActive
+                            ? "bg-accent/70 font-medium text-foreground border border-border-glass"
+                            : "text-muted-foreground hover:bg-accent/40 hover:text-foreground",
+                        )
+                      }
+                    >
+                      <Icon className="size-4 shrink-0" />
+                      <span className="truncate">{t(item.labelKey)}</span>
+                    </NavLink>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
+        ))}
       </nav>
     </aside>
   )

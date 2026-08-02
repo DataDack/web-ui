@@ -6,13 +6,13 @@ import {
   Flame,
   Gauge,
   HardDrive,
+  LayoutDashboard,
   LayoutGrid,
-  LifeBuoy,
+  Inbox,
   MapPin,
   Network,
   Scale,
   Server,
-  Users,
 } from "lucide-react"
 
 export interface AdminNavItem {
@@ -21,33 +21,88 @@ export interface AdminNavItem {
   path: string
 }
 
-// Navigation for the dedicated super-admin console. Kept separate from the
-// tenant console nav (sidebar-nav.ts) by design — this is a different shell.
-export const ADMIN_NAV: AdminNavItem[] = [
-  { labelKey: "superAdmin.organizations.title", icon: Building2, path: "/admin/organizations" },
-  { labelKey: "superAdmin.users.title", icon: Users, path: "/admin/users" },
-  { labelKey: "superAdmin.support.title", icon: LifeBuoy, path: "/admin/support" },
-  { labelKey: "superAdmin.nav.quotaRequests", icon: Gauge, path: "/admin/quota-requests" },
-  { labelKey: "superAdmin.services.title", icon: LayoutGrid, path: "/admin/services" },
+export interface AdminNavGroup {
+  /** Omitted for the item(s) pinned at the top of the sidebar. */
+  labelKey?: string
+  items: AdminNavItem[]
+}
+
+/**
+ * Navigation for the dedicated super-admin console. Kept separate from the
+ * tenant console nav (sidebar-nav.ts) by design — this is a different shell.
+ *
+ * Grouped by the question an operator is answering rather than by the API
+ * behind each page: who is on the platform, what wants my attention, what can
+ * be provisioned, what runs it, what it costs. A flat list of fifteen items
+ * made every page equally findable, which amounts to none of them being
+ * findable.
+ */
+export const ADMIN_NAV: AdminNavGroup[] = [
   {
-    labelKey: "superAdmin.availabilityZones.title",
-    icon: MapPin,
-    path: "/admin/availability-zones",
-  },
-  { labelKey: "superAdmin.pveNodes.title", icon: Server, path: "/admin/pve-nodes" },
-  { labelKey: "superAdmin.loadBalancers.title", icon: Scale, path: "/admin/load-balancers" },
-  { labelKey: "superAdmin.images.title", icon: Disc3, path: "/admin/images" },
-  { labelKey: "superAdmin.vmPrices.title", icon: Cpu, path: "/admin/vm-prices" },
-  { labelKey: "superAdmin.storagePrices.title", icon: HardDrive, path: "/admin/storage-prices" },
-  {
-    labelKey: "superAdmin.staticIps.title",
-    icon: Network,
-    path: "/admin/static-ips",
+    items: [
+      { labelKey: "superAdmin.nav.overview", icon: LayoutDashboard, path: "/admin/overview" },
+    ],
   },
   {
-    labelKey: "superAdmin.bandwidthPrices.title",
-    icon: Gauge,
-    path: "/admin/bandwidth-prices",
+    // One surface for organizations, accounts and users: they are three views of
+    // the same tenancy graph, and splitting them across pages meant the same
+    // user appeared twice, backed by two different endpoints.
+    labelKey: "superAdmin.nav.groups.tenancy",
+    items: [{ labelKey: "superAdmin.nav.tenancy", icon: Building2, path: "/admin/tenancy" }],
   },
-  { labelKey: "superAdmin.cache.title", icon: Flame, path: "/admin/cache" },
+  {
+    labelKey: "superAdmin.nav.groups.attention",
+    // One entry, because an operator wants to know "is anything waiting on me"
+    // without checking two places to find out.
+    items: [{ labelKey: "superAdmin.requests.title", icon: Inbox, path: "/admin/requests" }],
+  },
+  {
+    labelKey: "superAdmin.nav.groups.catalog",
+    items: [
+      { labelKey: "superAdmin.services.title", icon: LayoutGrid, path: "/admin/services" },
+      { labelKey: "superAdmin.images.title", icon: Disc3, path: "/admin/images" },
+    ],
+  },
+  {
+    labelKey: "superAdmin.nav.groups.infrastructure",
+    items: [
+      {
+        labelKey: "superAdmin.availabilityZones.title",
+        icon: MapPin,
+        path: "/admin/availability-zones",
+      },
+      { labelKey: "superAdmin.pveNodes.title", icon: Server, path: "/admin/pve-nodes" },
+      { labelKey: "superAdmin.loadBalancers.title", icon: Scale, path: "/admin/load-balancers" },
+      { labelKey: "superAdmin.staticIps.title", icon: Network, path: "/admin/static-ips" },
+    ],
+  },
+  {
+    labelKey: "superAdmin.nav.groups.pricing",
+    items: [
+      { labelKey: "superAdmin.vmPrices.title", icon: Cpu, path: "/admin/vm-prices" },
+      {
+        labelKey: "superAdmin.storagePrices.title",
+        icon: HardDrive,
+        path: "/admin/storage-prices",
+      },
+      // Was reachable by URL only: the page existed with nothing linking to it.
+      {
+        labelKey: "superAdmin.staticIpPrices.title",
+        icon: Network,
+        path: "/admin/static-ip-prices",
+      },
+      {
+        labelKey: "superAdmin.bandwidthPrices.title",
+        icon: Gauge,
+        path: "/admin/bandwidth-prices",
+      },
+    ],
+  },
+  {
+    labelKey: "superAdmin.nav.groups.platform",
+    items: [{ labelKey: "superAdmin.cache.title", icon: Flame, path: "/admin/cache" }],
+  },
 ]
+
+/** Every navigable admin path, flattened — for tests and breadcrumbs. */
+export const ADMIN_NAV_ITEMS: AdminNavItem[] = ADMIN_NAV.flatMap((group) => group.items)

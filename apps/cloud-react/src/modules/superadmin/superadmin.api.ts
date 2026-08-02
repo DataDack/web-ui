@@ -9,6 +9,7 @@ import {
 } from "@/services/api/client"
 
 import type {
+  KycStatusPatch,
   AddImageVersionRequest,
   AdminLedgerEntry,
   CacheNamespacesResponse,
@@ -209,6 +210,19 @@ export const superAdminApi = {
   },
   setSuperAdmin: (id: string, isSuperAdmin: boolean) =>
     apiPatch<AdminUser>(`/auth/users/${id}/super-admin`, { is_super_admin: isSuperAdmin }),
+
+  /* Override a user's KYC state. Both flags are optional so one can move without
+	   disturbing the other, which is what the two operator actions need:
+
+	     let them in without verifying -> kyc_completed: true, need_actions: false
+	     make them verify again        -> need_actions: true
+
+	   need_actions is the same flag the KYC service itself sets, so a user told to
+	   re-verify meets the normal gate on their next request. Nothing is emailed.
+	   `reason` is recorded in the server log, since bypassing identity
+	   verification without a trail is indistinguishable from a compromise. */
+  setKycStatus: (id: string, patch: KycStatusPatch) =>
+    apiPatch<AdminUser>(`/auth/users/${id}/kyc`, patch),
 
   /* platform overview — the org → account → member graph.
 	   `section` fetches ONE tab's list (the console shows one at a time), so the

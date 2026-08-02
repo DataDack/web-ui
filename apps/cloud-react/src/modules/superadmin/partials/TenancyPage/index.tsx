@@ -1,12 +1,12 @@
 import { useCallback, useState } from "react"
 
-import { Input } from "@datadack/common-ui"
+import { Input, Tabs, TabsContent, TabsList, TabsTrigger } from "@datadack/common-ui"
 import { Building2, Loader2, Search } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useSearchParams } from "react-router-dom"
 
 import { PageHeader } from "@/components/console"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
 import { useDebounce } from "@/hooks/use-debounce"
 import { cn } from "@/lib/utils"
 import { useScreen } from "@/services/api/screen"
@@ -15,11 +15,13 @@ import { useAdminPlatformOverview } from "../../superadmin.hooks"
 import { AccountBalanceDialog } from "../AccountBalanceDialog"
 import { AccountsTab } from "./AccountsTab"
 import { OrganizationsTab } from "./OrganizationsTab"
+import { OrphanUsersTab } from "./OrphanUsersTab"
 import type { AccountRow } from "./types"
 import { UsersTab } from "./UsersTab"
 
 // The tabs are also the API's sections: the active tab IS the slice fetched.
-const TABS = ["organizations", "accounts", "users"] as const
+// orphan_users has always been one of them; nothing surfaced it until now.
+const TABS = ["organizations", "accounts", "users", "orphan_users"] as const
 type TabValue = (typeof TABS)[number]
 const DEFAULT_TAB: TabValue = "organizations"
 const PAGE_SIZE = 25
@@ -36,7 +38,13 @@ function parsePage(value: string | null): number {
 }
 
 /**
- * Platform organizations, accounts and users.
+ * Platform organizations, accounts and users — one surface for the whole tenancy
+ * graph.
+ *
+ * These were three separate destinations, two of which listed users from two
+ * different endpoints, so the same person appeared twice with different
+ * capabilities attached. They are views of one graph and now share one page, one
+ * search box and one paging model.
  *
  * Both pieces of view state live in the URL — ?tab= for the active tab and ?q=
  * for the search — so a view is shareable, survives a reload, and is what the
@@ -44,8 +52,8 @@ function parsePage(value: string | null): number {
  * ?section= fetched, so each tab loads only the rows it renders instead of the
  * whole platform graph.
  */
-export function OrganizationsPage() {
-  useScreen("superadmin.organizations")
+export function TenancyPage() {
+  useScreen("superadmin.tenancy")
   const { t } = useTranslation()
   const [searchParams, setSearchParams] = useSearchParams()
   const tab = parseTab(searchParams.get("tab"))
@@ -130,12 +138,9 @@ export function OrganizationsPage() {
     <div className="space-y-5">
       <PageHeader
         icon={Building2}
-        breadcrumbs={[
-          { label: t("superAdmin.title") },
-          { label: t("superAdmin.organizations.title") },
-        ]}
-        title={t("superAdmin.organizations.title")}
-        description={t("superAdmin.organizations.subtitle")}
+        breadcrumbs={[{ label: t("superAdmin.title") }, { label: t("superAdmin.nav.tenancy") }]}
+        title={t("superAdmin.nav.tenancy")}
+        description={t("superAdmin.tenancy.subtitle")}
         actions={
           <div className="relative">
             {/* The query runs on the server, so it lands a beat after typing
@@ -185,6 +190,10 @@ export function OrganizationsPage() {
 
         <TabsContent value="users">
           <UsersTab {...tabProps} />
+        </TabsContent>
+
+        <TabsContent value="orphan_users">
+          <OrphanUsersTab {...tabProps} />
         </TabsContent>
       </Tabs>
 

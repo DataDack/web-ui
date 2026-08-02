@@ -14,14 +14,28 @@ export const superadminRoutes: RouteObject[] = [
       </RequireSuperAdmin>
     ),
     children: [
-      { index: true, element: <Navigate to="/admin/users" replace /> },
+      // Operators land on the overview, not on a user list: the console's job on
+      // arrival is to say whether anything needs attention.
+      { index: true, element: <Navigate to="/admin/overview" replace /> },
       {
-        path: "organizations",
+        path: "overview",
         lazy: async () => {
-          const { OrganizationsPage } = await import("./partials/OrganizationsPage")
-          return { Component: OrganizationsPage }
+          const { AdminOverviewPage } = await import("./partials/AdminOverviewPage")
+          return { Component: AdminOverviewPage }
         },
       },
+      {
+        // Organizations, accounts and users are three views of one graph, so they
+        // live on one page with tabs. The two old paths redirect rather than 404:
+        // they are bookmarked, and /admin/users in particular was the landing.
+        path: "tenancy",
+        lazy: async () => {
+          const { TenancyPage } = await import("./partials/TenancyPage")
+          return { Component: TenancyPage }
+        },
+      },
+      { path: "organizations", element: <Navigate to="/admin/tenancy" replace /> },
+      { path: "users", element: <Navigate to="/admin/tenancy?tab=users" replace /> },
       {
         path: "accounts/:accountId/resources",
         lazy: async () => {
@@ -34,13 +48,6 @@ export const superadminRoutes: RouteObject[] = [
         lazy: async () => {
           const { ServicesPage } = await import("./partials/ServicesPage")
           return { Component: ServicesPage }
-        },
-      },
-      {
-        path: "users",
-        lazy: async () => {
-          const { UsersPage } = await import("./partials/UsersPage")
-          return { Component: UsersPage }
         },
       },
       {
@@ -154,19 +161,16 @@ export const superadminRoutes: RouteObject[] = [
         },
       },
       {
-        path: "quota-requests",
+        // Support tickets and quota requests are one queue from the operator's
+        // side: both are somebody waiting on a decision.
+        path: "requests",
         lazy: async () => {
-          const { QuotaRequestsPage } = await import("./partials/QuotaRequestsPage")
-          return { Component: QuotaRequestsPage }
+          const { RequestsPage } = await import("./partials/RequestsPage")
+          return { Component: RequestsPage }
         },
       },
-      {
-        path: "support",
-        lazy: async () => {
-          const { AdminSupportTicketsPage } = await import("./partials/AdminSupportTicketsPage")
-          return { Component: AdminSupportTicketsPage }
-        },
-      },
+      { path: "quota-requests", element: <Navigate to="/admin/requests?tab=quota" replace /> },
+      { path: "support", element: <Navigate to="/admin/requests" replace /> },
       {
         path: "support/:id",
         lazy: async () => {

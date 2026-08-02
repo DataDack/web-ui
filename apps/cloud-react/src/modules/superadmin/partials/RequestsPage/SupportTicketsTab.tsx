@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react"
 
 import {
-  Button,
   DataTable,
   dateColumn,
   EmptyState,
@@ -14,11 +13,10 @@ import {
   textColumn,
 } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
-import { LifeBuoy, RefreshCw } from "lucide-react"
+import { LifeBuoy } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
-import { PageHeader } from "@/components/console"
 import { PriorityBadge } from "@/modules/support-tickets/components/PriorityBadge"
 import {
   formatTicketAccount,
@@ -36,7 +34,7 @@ type StatusFilter = TicketStatus | "all"
 
 // Super-admin support queue. Reuses the support-tickets data layer + cell
 // components, but lives in the /admin shell and routes to /admin/support/:id.
-export function AdminSupportTicketsPage() {
+export function SupportTicketsTab() {
   useScreen("superadmin.admin-support-tickets")
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -117,46 +115,26 @@ export function AdminSupportTicketsPage() {
   )
 
   return (
-    <div className="space-y-5">
-      <PageHeader
-        icon={LifeBuoy}
-        breadcrumbs={[{ label: t("superAdmin.title") }, { label: t("superAdmin.support.title") }]}
-        title={t("superAdmin.support.title")}
-        description={t("superAdmin.support.subtitle")}
-        actions={
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => void refetch()}
-            disabled={isFetching}
-            aria-label={t("common.refresh")}
-          >
-            <RefreshCw className={`w-4 h-4 ${isFetching ? "animate-spin" : ""}`} />
-          </Button>
-        }
-      />
-
-      <DataTable<SupportTicket>
-        data={visible}
-        columns={columns}
-        loading={isLoading}
-        error={isError ? t("console.table.error") : undefined}
-        onRetry={() => void refetch()}
-        retryLabel={t("console.table.retry")}
-        getRowId={(row) => row.id}
-        onRowClick={(row) => void navigate(`/admin/support/${row.id}`)}
-        toolbar={toolbar}
-        empty={
-          <EmptyState
-            icon={LifeBuoy}
-            title={t("superAdmin.support.empty")}
-            description={t("superAdmin.support.emptySubtitle")}
-          />
-        }
-        onRefresh={() => void refetch()}
-        refreshLabel={t("console.table.refresh")}
-        refreshing={isFetching}
-      />
-    </div>
+    <DataTable<SupportTicket>
+      data={visible}
+      columns={columns}
+      loading={isLoading}
+      error={isError ? t("console.table.error") : undefined}
+      onRetry={() => void refetch()}
+      retryLabel={t("console.table.retry")}
+      getRowId={(row) => row.id}
+      onRowClick={(row) => void navigate(`/admin/support/${row.id}`)}
+      toolbar={toolbar}
+      empty={
+        <EmptyState
+          icon={LifeBuoy}
+          title={t("superAdmin.support.empty")}
+          description={t("superAdmin.support.emptySubtitle")}
+        />
+      }
+      onRefresh={() => void refetch()}
+      refreshLabel={t("console.table.refresh")}
+      refreshing={isFetching}
+    />
   )
 }

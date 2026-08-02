@@ -8,6 +8,7 @@ import { apiGet, extractError } from "@/services/api/client"
 import { superAdminApi } from "./superadmin.api"
 import { SUPERADMIN_QUERY_KEYS } from "./superadmin.constants"
 import type {
+  KycStatusPatch,
   AddImageVersionRequest,
   AdjustBalanceRequest,
   ApproveQuotaRequestInput,
@@ -720,6 +721,32 @@ export function useSetSuperAdmin() {
 // filter/page caches independently; placeholderData keeps the previous rows on
 // screen while a filter or page switch is in flight, so the table doesn't
 // blank out.
+/**
+ * Override a user's KYC state from the admin console.
+ *
+ * Invalidates both the admin user list and the platform overview: the overview's
+ * user rows carry `need_actions` and `kyc_completed`, so leaving it stale would
+ * show the old state on the very page the operator just acted from.
+ */
+export function useSetKycStatus() {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (vars: { id: string; patch: KycStatusPatch }) =>
+      superAdminApi.setKycStatus(vars.id, vars.patch),
+    onSuccess: (_data, vars) => {
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.users })
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.platformOverview })
+      toast.success(
+        vars.patch.need_actions
+          ? t("superAdmin.kyc.toasts.reverificationRequested")
+          : t("superAdmin.kyc.toasts.bypassed"),
+      )
+    },
+    onError: (e) => toast.error(extractError(e, t("superAdmin.kyc.toasts.failed"))),
+  })
+}
+
 export function useAdminQuotaRequests(status = "", page = 1) {
   return useQuery({
     queryKey: [...SUPERADMIN_QUERY_KEYS.quotaRequests, status, page] as const,

@@ -1,28 +1,45 @@
 import { useMemo } from "react"
 
+import {
+  DataTable,
+  dateColumn,
+  EmptyState,
+  nameColumn,
+  textColumn,
+  type DataTableColumnMeta,
+} from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
-import { Building2 } from "lucide-react"
+import { UserRoundX } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
-import { DataTable, dateColumn, EmptyState, nameColumn, textColumn } from "@datadack/common-ui"
-import { AccessChips } from "./AccessChips"
 import type { TabProps, UserRow } from "./types"
 import { ActiveBadge } from "../../components/ActiveBadge"
+import { KycActions, KycBadge } from "../../components/KycCell"
 import { useAdminPlatformOverview } from "../../superadmin.hooks"
 
 /**
- * Users tab. Fetches ?section=users — the FLAT user list rather than
- * organizations[].users + orphan_users: under a search the organizations list is
- * narrowed, which would drop matching users whose org didn't match.
+ * Users attached to no organization — signups that stopped partway through
+ * onboarding, or members whose org was removed.
+ *
+ * The API has always exposed this as a section; nothing surfaced it, so these
+ * users were invisible unless someone read the raw response. They matter because
+ * they are the population most likely to be stuck: an account that never
+ * finished onboarding is exactly the case an operator resolves by hand, which is
+ * why the KYC override lives on this tab too.
  */
-export function UsersTab({ q, page, pageSize, onPageChange }: Readonly<TabProps>) {
+export function OrphanUsersTab({ q, page, pageSize, onPageChange }: Readonly<TabProps>) {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const { data, isLoading, isError, refetch } = useAdminPlatformOverview("users", q, page, pageSize)
+  const { data, isLoading, isError, refetch } = useAdminPlatformOverview(
+    "orphan_users",
+    q,
+    page,
+    pageSize,
+  )
 
   const users = useMemo<UserRow[]>(
-    () => (data?.users ?? []).map((u) => ({ ...u, orgName: u.org_name || null })),
+    () => (data?.orphan_users ?? []).map((u) => ({ ...u, orgName: null })),
     [data],
   )
 
@@ -44,34 +61,42 @@ export function UsersTab({ q, page, pageSize, onPageChange }: Readonly<TabProps>
         accessor: (u) => u.phone || "—",
         muted: true,
       }),
+      // How far they got before stopping — the reason to look at this list.
       textColumn<UserRow>({
-        id: "org",
-        header: t("superAdmin.organizations.fields.organization"),
-        accessor: (u) => u.orgName ?? "—",
-        muted: true,
+        id: "onboarding",
+        header: t("superAdmin.kyc.onboardingStatus"),
+        accessor: (u) => u.onboarding_status,
+        mono: true,
       }),
-      textColumn<UserRow>({
-        id: "role",
-        header: t("superAdmin.organizations.fields.role"),
-        accessor: (u) => u.role,
-      }),
-      {
-        id: "access",
-        header: () => t("superAdmin.organizations.fields.access"),
-        enableSorting: false,
-        cell: ({ row }) => <AccessChips user={row.original} />,
-      },
       {
         id: "status",
         header: () => t("superAdmin.organizations.fields.userStatus"),
         enableSorting: false,
         cell: ({ row }) => <ActiveBadge active={row.original.is_active} />,
       },
+      {
+        id: "kyc",
+        header: () => t("superAdmin.kyc.column"),
+        accessorFn: (u) => `${String(u.need_actions)}-${String(u.kyc_completed)}`,
+        cell: ({ row }) => <KycBadge user={row.original} />,
+      },
       dateColumn<UserRow>({
         header: t("superAdmin.organizations.fields.created"),
         accessor: (u) => u.created_at,
         responsive: "lg",
       }),
+      {
+        id: "kycActions",
+        header: () => null,
+        enableSorting: false,
+        enableHiding: false,
+        meta: { interactive: true } satisfies DataTableColumnMeta,
+        cell: ({ row }) => (
+          <div className="text-right">
+            <KycActions user={row.original} />
+          </div>
+        ),
+      },
     ],
     [t],
   )
@@ -91,10 +116,14 @@ export function UsersTab({ q, page, pageSize, onPageChange }: Readonly<TabProps>
       onRetry={() => void refetch()}
       retryLabel={t("console.table.retry")}
       getRowId={(u) => u.id}
-      // Every user row opens that user's admin profile — the same page the
-      // Accounts tab's owner link goes to.
       onRowClick={(u) => void navigate(`/admin/users/${u.id}`)}
-      empty={<EmptyState icon={Building2} title={t("superAdmin.organizations.empty.users")} />}
+      empty={
+        <EmptyState
+          icon={UserRoundX}
+          title={t("superAdmin.organizations.empty.orphanUsers")}
+          description={t("superAdmin.organizations.empty.orphanUsersHint")}
+        />
+      }
       onRefresh={() => void refetch()}
       refreshLabel={t("console.table.refresh")}
     />

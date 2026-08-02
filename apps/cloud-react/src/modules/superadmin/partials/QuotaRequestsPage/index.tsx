@@ -2,7 +2,6 @@ import { useMemo, useState } from "react"
 
 import {
   actionsColumn,
-  Button,
   DataTable,
   dateColumn,
   EmptyState,
@@ -14,10 +13,10 @@ import {
   SelectValue,
 } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
-import { ArrowRight, Check, Gauge, RefreshCw, X } from "lucide-react"
+import { ArrowRight, Check, Gauge, X } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { PageHeader, StatGrid, type StatCardProps } from "@/components/console"
+import { StatGrid, type StatCardProps } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
 import { ApproveDialog } from "./ApproveDialog"
@@ -48,8 +47,8 @@ function StackedCell({ primary, secondary }: Readonly<{ primary: string; seconda
 // The table is filtered and paged server-side; the stat tiles read the
 // platform-wide per-status totals (meta.total off limit=1 probes), so they
 // stay accurate regardless of the filter or how many pages the queue spans.
-export function QuotaRequestsPage() {
-  useScreen("superadmin.quota-requests")
+export function QuotaRequestsTab() {
+  useScreen("superadmin.requests.quota")
   const { t } = useTranslation()
 
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("pending")
@@ -226,27 +225,8 @@ export function QuotaRequestsPage() {
 
   return (
     <div className="space-y-5">
-      <PageHeader
-        icon={Gauge}
-        breadcrumbs={[
-          { label: t("superAdmin.title") },
-          { label: t("superAdmin.quotaRequests.title") },
-        ]}
-        title={t("superAdmin.quotaRequests.title")}
-        description={t("superAdmin.quotaRequests.subtitle")}
-        actions={
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => void refetch()}
-            disabled={isFetching}
-            aria-label={t("common.refresh")}
-          >
-            <RefreshCw className={`w-4 h-4 ${isFetching ? "animate-spin" : ""}`} />
-          </Button>
-        }
-      />
-
+      {/* The shared Requests page owns the header; the per-status totals stay
+          here because they describe this queue, not the page. */}
       <StatGrid stats={stats} className="lg:grid-cols-3" />
 
       <DataTable<AdminQuotaRequest>

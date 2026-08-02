@@ -973,3 +973,18 @@ export interface ApproveQuotaRequestInput {
 export interface RejectQuotaRequestInput {
   note: string
 }
+
+/**
+ * Body of PATCH /auth/users/:id/kyc — the super-admin KYC override.
+ *
+ * Both flags are optional and independent: omitting one leaves it alone. The two
+ * operator actions map onto them directly — a bypass sets `kyc_completed` true
+ * and `need_actions` false; a request to re-verify raises `need_actions` alone,
+ * leaving the earlier completion as the historical record it is.
+ */
+export interface KycStatusPatch {
+  kyc_completed?: boolean
+  need_actions?: boolean
+  /** Recorded in the server log so an override is traceable to a justification. */
+  reason?: string
+}

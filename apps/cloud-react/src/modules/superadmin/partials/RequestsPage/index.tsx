@@ -1,0 +1,106 @@
+import { useMemo } from "react"
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@datadack/common-ui"
+import { Inbox } from "lucide-react"
+import { useTranslation } from "react-i18next"
+import { useSearchParams } from "react-router-dom"
+
+import { PageHeader } from "@/components/console"
+import { useAllSupportTickets } from "@/modules/support-tickets/support-tickets.hooks"
+import { useScreen } from "@/services/api/screen"
+
+import { SupportTicketsTab } from "./SupportTicketsTab"
+import { QuotaRequestsTab } from "../QuotaRequestsPage"
+import { useAdminQuotaRequestCount } from "../../superadmin.hooks"
+
+// Two queues, one page. Both are "somebody is waiting on an operator to decide",
+// and splitting them across sidebar entries meant an operator had to remember to
+// check two places to know whether anything was outstanding.
+const TABS = ["support", "quota"] as const
+type TabValue = (typeof TABS)[number]
+const DEFAULT_TAB: TabValue = "support"
+
+function parseTab(value: string | null): TabValue {
+  return TABS.includes(value as TabValue) ? (value as TabValue) : DEFAULT_TAB
+}
+
+/**
+ * The operator's inbox: support tickets and quota-increase requests.
+ *
+ * The active tab lives in ?tab= so a view is shareable and survives a reload,
+ * and the counts on the labels are the outstanding ones — open tickets and
+ * pending requests — not the totals. A queue's label is only useful if it says
+ * how much work is in it.
+ */
+export function RequestsPage() {
+  useScreen("superadmin.requests")
+  const { t } = useTranslation()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const tab = parseTab(searchParams.get("tab"))
+
+  const tickets = useAllSupportTickets()
+  const pendingQuota = useAdminQuotaRequestCount("pending")
+
+  const openTickets = useMemo(
+    () => (tickets.data ?? []).filter((ticket) => ticket.status === "open").length,
+    [tickets.data],
+  )
+
+  // Replacing rather than pushing: flipping a tab is not a navigation, and
+  // stacking history entries would make Back feel broken.
+  const changeTab = (value: TabValue) => {
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev)
+        if (value === DEFAULT_TAB) next.delete("tab")
+        else next.set("tab", value)
+        return next
+      },
+      { replace: true },
+    )
+  }
+
+  // The count is omitted until a response lands, so a label never flashes "(0)"
+  // and reads as an empty queue before anything has been fetched.
+  const label = (value: TabValue) => {
+    const name = t(`superAdmin.requests.tabs.${value}`)
+    const count = value === "support" ? (tickets.data ? openTickets : undefined) : pendingQuota.data
+    return count === undefined ? name : `${name} (${String(count)})`
+  }
+
+  return (
+    <div className="space-y-5">
+      <PageHeader
+        icon={Inbox}
+        breadcrumbs={[{ label: t("superAdmin.title") }, { label: t("superAdmin.requests.title") }]}
+        title={t("superAdmin.requests.title")}
+        description={t("superAdmin.requests.subtitle")}
+      />
+
+      <Tabs
+        value={tab}
+        onValueChange={(value) => {
+          changeTab(value as TabValue)
+        }}
+        className="gap-4"
+      >
+        <TabsList>
+          {TABS.map((value) => (
+            <TabsTrigger key={value} value={value}>
+              {label(value)}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+
+        {/* Only the active tab mounts, so only its queue is fetched. */}
+        <TabsContent value="support">
+          <SupportTicketsTab />
+        </TabsContent>
+
+        <TabsContent value="quota">
+          <QuotaRequestsTab />
+        </TabsContent>
+      </Tabs>
+    </div>
+  )
+}

@@ -2318,7 +2318,17 @@
     "title": "Super Admin",
     "nav": {
       "entry": "Super Admin",
-      "quotaRequests": "Quota requests"
+      "quotaRequests": "Quota requests",
+      "overview": "Overview",
+      "tenancy": "Tenancy",
+      "groups": {
+        "tenancy": "Tenancy",
+        "attention": "Needs attention",
+        "catalog": "Catalog",
+        "infrastructure": "Infrastructure",
+        "pricing": "Pricing",
+        "platform": "Platform"
+      }
     },
     "catalog": {
       "title": "Platform Catalog",
@@ -2341,7 +2351,8 @@
       "tabs": {
         "organizations": "Organizations",
         "accounts": "Accounts",
-        "users": "Users"
+        "users": "Users",
+        "orphan_users": "Without an organization"
       },
       "fields": {
         "name": "Name",
@@ -2395,7 +2406,9 @@
       "empty": {
         "organizations": "No organizations yet",
         "accounts": "No accounts yet",
-        "users": "No users yet"
+        "users": "No users yet",
+        "orphanUsers": "No users without an organization",
+        "orphanUsersHint": "Every user on the platform belongs to one — which is how it should look."
       }
     },
     "zones": {
@@ -3076,6 +3089,67 @@
       },
       "empty": "No quota requests",
       "emptySubtitle": "Customer quota increase requests will appear here for review."
+    },
+    "overview": {
+      "title": "Platform overview",
+      "subtitle": "The size of the platform, and anything waiting on you.",
+      "loadError": "The platform overview could not be read.",
+      "stats": {
+        "organizations": "Organizations",
+        "accounts": "Accounts",
+        "users": "Users",
+        "orphanUsers": "Users without an organization"
+      },
+      "attention": {
+        "title": "Needs attention",
+        "subtitle": "Everything here is something only an operator can clear.",
+        "quotaRequests": "quota requests awaiting a decision",
+        "openTickets": "support tickets still open",
+        "awaitingVerification": "users the platform is waiting on to verify",
+        "orphanUsers": "users belong to no organization",
+        "review": "Review",
+        "manage": "Manage"
+      }
+    },
+    "tenancy": {
+      "subtitle": "Organizations, the accounts under them, and every user on the platform."
+    },
+    "kyc": {
+      "column": "Verification",
+      "onboardingStatus": "Onboarding",
+      "state": {
+        "verified": "Verified",
+        "reverifying": "Re-verification asked",
+        "unverified": "Not verified"
+      },
+      "actions": {
+        "menu": "Verification actions",
+        "title": "Identity verification",
+        "bypass": "Mark verified",
+        "reverify": "Require re-verification"
+      },
+      "confirm": {
+        "bypassTitle": "Mark this user verified?",
+        "bypassBody": "{{name}} will reach everything gated behind identity verification without completing it. Their account is recorded as verified from now.",
+        "reverifyTitle": "Require re-verification?",
+        "reverifyBody": "{{name}} will be asked to verify again the next time they load the console, and stays blocked from gated features until they do. Nothing is emailed to them.",
+        "reasonLabel": "Reason",
+        "reasonPlaceholder": "Why this override is being made",
+        "reasonHint": "Recorded in the audit log against your account."
+      },
+      "toasts": {
+        "bypassed": "User marked verified",
+        "reverificationRequested": "Re-verification required",
+        "failed": "Could not change the verification state"
+      }
+    },
+    "requests": {
+      "title": "Requests",
+      "subtitle": "Support tickets and quota increases waiting on a decision.",
+      "tabs": {
+        "support": "Support tickets",
+        "quota": "Quota requests"
+      }
     }
   },
   "region": {
