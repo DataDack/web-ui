@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from "react"
 
+import { Button } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Disc3, Layers, Pencil, Plus, RefreshCw, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
@@ -15,7 +16,6 @@ import {
   textColumn,
   type RowAction,
 } from "@/components/console"
-import { Button } from "@datadack/common-ui"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useQueryParamState } from "@/hooks/use-query-param-state"
 import { useScreen } from "@/services/api/screen"

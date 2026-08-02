@@ -1,6 +1,15 @@
 import { useState } from "react"
 
-import { Button, Skeleton } from "@datadack/common-ui"
+import {
+  Button,
+  Skeleton,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@datadack/common-ui"
 import { AlertTriangle, Boxes, Crosshair, Ear, Info, Layers, Network, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link, useNavigate, useParams } from "react-router-dom"
@@ -16,14 +25,6 @@ import {
   StatusBadge,
   TagList,
 } from "@/components/console"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
 import { parseTags } from "@/lib/tags"
 import { TargetGroupsPanel } from "@/modules/target-groups/partials/TargetGroupsPanel"
 import { TG_ROUTES } from "@/modules/target-groups/target-groups.constants"

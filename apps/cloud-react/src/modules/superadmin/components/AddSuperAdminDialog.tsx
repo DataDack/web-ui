@@ -1,8 +1,5 @@
 import { useEffect, useMemo, useState } from "react"
 
-import { ArrowLeft, ChevronRight, Loader2, Mail, Search, Shield } from "lucide-react"
-import { useTranslation } from "react-i18next"
-
 import {
   Button,
   Dialog,
@@ -12,6 +9,9 @@ import {
   DialogTitle,
   Input,
 } from "@datadack/common-ui"
+import { ArrowLeft, ChevronRight, Loader2, Mail, Search, Shield } from "lucide-react"
+import { useTranslation } from "react-i18next"
+
 import { useAdminUsers, useSetSuperAdmin } from "../superadmin.hooks"
 import type { AdminUser } from "../superadmin.types"
 

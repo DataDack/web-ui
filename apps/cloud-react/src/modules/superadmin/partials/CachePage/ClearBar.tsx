@@ -1,7 +1,6 @@
+import { Button } from "@datadack/common-ui"
 import { Loader2, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
-
-import { Button } from "@datadack/common-ui"
 
 interface ClearBarProps {
   namespaceCount: number

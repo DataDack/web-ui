@@ -1,6 +1,3 @@
-import { Bell } from "lucide-react"
-import { useTranslation } from "react-i18next"
-
 import {
   Button,
   DropdownMenu,
@@ -9,6 +6,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@datadack/common-ui"
+import { Bell } from "lucide-react"
+import { useTranslation } from "react-i18next"
+
 export function NotificationsMenu() {
   const { t } = useTranslation()
 

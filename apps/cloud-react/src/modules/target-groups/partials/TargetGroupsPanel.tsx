@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react"
 
+import { Button } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Crosshair, Plus, RefreshCw, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
@@ -16,7 +17,6 @@ import {
   StatGrid,
   textColumn,
 } from "@/components/console"
-import { Button } from "@datadack/common-ui"
 
 import { TG_ROUTES } from "../target-groups.constants"
 import { useDeleteTargetGroup, useTargetGroups } from "../target-groups.hooks"

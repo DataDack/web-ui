@@ -1,23 +1,22 @@
 import { useMemo } from "react"
 
-import { Skeleton } from "@datadack/common-ui"
+import { cellMono, cellText, DataTable } from "@datadack/common-ui"
+import type { ColumnDef } from "@tanstack/react-table"
 import { Cable } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { CopyButton, EmptyState, Section, staggerDelay, StatusBadge } from "@/components/console"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import { CopyButton, EmptyState, Section, StatusBadge } from "@/components/console"
 
 import { useRouters, useVPNConnections } from "../../vpc.hooks"
 import type { VPCNetwork } from "../../vpc.types"
 
-const HEAD_CLASS = "px-3 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground"
+interface VPNRow {
+  id: string
+  name: string
+  router_id: string
+  remote_gateway: string
+  status: string
+}
 
 export function VpnTab({ network }: Readonly<{ network: VPCNetwork }>) {
   const { t } = useTranslation()
@@ -31,59 +30,48 @@ export function VpnTab({ network }: Readonly<{ network: VPCNetwork }>) {
   const routerNames = useMemo(() => new Map(routers.map((r) => [r.id, r.name])), [routers])
   const networkConnections = connections.filter((c) => networkRouterIds.has(c.router_id))
 
-  if (isLoading) {
-    return (
-      <div className="space-y-2">
-        {["a", "b", "c"].map((k) => (
-          <Skeleton key={k} className="h-10 rounded-lg" />
-        ))}
-      </div>
-    )
-  }
+  const columns = useMemo<ColumnDef<VPNRow, unknown>[]>(
+    () => [
+      {
+        id: "name",
+        accessorKey: "name",
+        header: t("vpc.columns.name"),
+        cell: ({ row }) => cellMono(row.original.name),
+      },
+      {
+        id: "router",
+        header: t("vpc.columns.router"),
+        accessorFn: (row) => routerNames.get(row.router_id) ?? row.router_id,
+        cell: ({ row }) =>
+          cellText(routerNames.get(row.original.router_id) ?? row.original.router_id),
+      },
+      {
+        id: "remoteGateway",
+        accessorKey: "remote_gateway",
+        header: t("vpc.columns.remoteGateway"),
+        enableSorting: false,
+        cell: ({ row }) => <CopyButton value={row.original.remote_gateway} />,
+      },
+      {
+        id: "status",
+        accessorKey: "status",
+        header: t("vpc.columns.status"),
+        cell: ({ row }) => (
+          <StatusBadge status={row.original.status} pulse={row.original.status === "connected"} />
+        ),
+      },
+    ],
+    [routerNames, t],
+  )
 
   return (
     <Section variant="panel" title={t("vpc.tabs.vpn")} description={t("vpc.detail.vpnDescription")}>
-      {networkConnections.length === 0 ? (
-        <EmptyState icon={Cable} title={t("vpc.detail.noVpn")} />
-      ) : (
-        <div className="glass-1 overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow className="hover:bg-transparent">
-                <TableHead className={HEAD_CLASS}>{t("vpc.columns.name")}</TableHead>
-                <TableHead className={HEAD_CLASS}>{t("vpc.columns.router")}</TableHead>
-                <TableHead className={HEAD_CLASS}>{t("vpc.columns.remoteGateway")}</TableHead>
-                <TableHead className={HEAD_CLASS}>{t("vpc.columns.status")}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {networkConnections.map((connection, index) => (
-                <TableRow
-                  key={connection.id}
-                  className="animate-content-enter"
-                  style={staggerDelay(index)}
-                >
-                  <TableCell className="px-3 font-mono text-[13px] font-medium">
-                    {connection.name}
-                  </TableCell>
-                  <TableCell className="px-3 font-mono text-[12px] text-muted-foreground">
-                    {routerNames.get(connection.router_id) ?? connection.router_id}
-                  </TableCell>
-                  <TableCell className="px-3">
-                    <CopyButton value={connection.remote_gateway} />
-                  </TableCell>
-                  <TableCell className="px-3">
-                    <StatusBadge
-                      status={connection.status}
-                      pulse={connection.status === "connected"}
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      )}
+      <DataTable
+        data={networkConnections}
+        columns={columns}
+        loading={isLoading}
+        empty={<EmptyState icon={Cable} title={t("vpc.detail.noVpn")} />}
+      />
     </Section>
   )
 }

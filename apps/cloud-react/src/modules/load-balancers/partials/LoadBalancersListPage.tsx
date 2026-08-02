@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react"
 
+import { Button } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Layers, Plus, RefreshCw, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
@@ -18,7 +19,6 @@ import {
   statusColumn,
   textColumn,
 } from "@/components/console"
-import { Button } from "@datadack/common-ui"
 import { useScreen } from "@/services/api/screen"
 
 import { isLbTransitional, LB_ROUTES } from "../load-balancers.constants"

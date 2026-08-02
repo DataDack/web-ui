@@ -1,8 +1,5 @@
 import { useMemo, useState } from "react"
 
-import { Check, ChevronDown } from "lucide-react"
-import { useTranslation } from "react-i18next"
-
 import {
   Command,
   CommandEmpty,
@@ -14,6 +11,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@datadack/common-ui"
+import { Check, ChevronDown } from "lucide-react"
+import { useTranslation } from "react-i18next"
+
 import { cn } from "@/lib/utils"
 
 import { useCountries } from "./countries.hooks"

@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from "react"
 
+import { Button, Input } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Globe, RefreshCw, Search } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { copyColumn, dateColumn, EmptyState, ResourceTable, textColumn } from "@/components/console"
-import { Button, Input } from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 
 import { useAdminStaticIPAllocations } from "../superadmin.hooks"

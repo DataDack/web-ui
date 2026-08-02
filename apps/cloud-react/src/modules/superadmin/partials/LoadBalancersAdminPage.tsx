@@ -1,6 +1,17 @@
 import { Fragment, useState } from "react"
 
-import { Badge, Button, Input, Switch } from "@datadack/common-ui"
+import {
+  Badge,
+  Button,
+  Input,
+  Switch,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQueryClient } from "@tanstack/react-query"
 import {
@@ -22,14 +33,6 @@ import { z } from "zod/v4"
 
 import { CopyButton, PageHeader, Section } from "@/components/console"
 import { TONE_CLASSES, TONE_DOT_CLASSES, type StatusTone } from "@/components/console/status-config"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
 import { cn } from "@/lib/utils"
 import { useScreen } from "@/services/api/screen"
 

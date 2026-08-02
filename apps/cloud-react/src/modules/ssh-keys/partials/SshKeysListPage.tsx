@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react"
 
+import { Button } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { KeyRound, Plus, RefreshCw, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
@@ -15,7 +16,6 @@ import {
   PageHeader,
   ResourceTable,
 } from "@/components/console"
-import { Button } from "@datadack/common-ui"
 import { useScreen } from "@/services/api/screen"
 
 import { SSH_KEYS_ROUTES } from "../ssh-keys.constants"

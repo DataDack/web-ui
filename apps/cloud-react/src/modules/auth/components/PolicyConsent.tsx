@@ -1,6 +1,5 @@
-import { Trans, useTranslation } from "react-i18next"
-
 import { Checkbox } from "@datadack/common-ui"
+import { Trans, useTranslation } from "react-i18next"
 
 import { POLICY_URLS } from "../auth.constants"
 

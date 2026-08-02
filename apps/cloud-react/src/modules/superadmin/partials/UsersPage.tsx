@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react"
 
+import { Button, Input } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Plus, RefreshCw, Search, ShieldCheck, ShieldOff, Users } from "lucide-react"
 import { useTranslation } from "react-i18next"
@@ -15,7 +16,6 @@ import {
   textColumn,
   type RowAction,
 } from "@/components/console"
-import { Button, Input } from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/modules/auth/auth.context"
 import { useScreen } from "@/services/api/screen"

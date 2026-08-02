@@ -10,6 +10,12 @@ import {
   DropdownMenuTrigger,
   Skeleton,
   Switch,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@datadack/common-ui"
 import {
   Activity,
@@ -46,14 +52,6 @@ import {
   TagList,
   type KeyValueItem,
 } from "@/components/console"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
 import { parseTags } from "@/lib/tags"
 import { cn } from "@/lib/utils"
 import { useDetachDisk, useDisks } from "@/modules/disks/disks.hooks"

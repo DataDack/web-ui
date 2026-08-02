@@ -1,12 +1,5 @@
 import { useEffect, useMemo, useState } from "react"
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { AtSign, ChevronLeft, Loader2, User } from "lucide-react"
-import { useForm } from "react-hook-form"
-import { useTranslation } from "react-i18next"
-import { toast } from "sonner"
-import { z } from "zod"
-
 import {
   Button,
   Form,
@@ -19,6 +12,13 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@datadack/common-ui"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { AtSign, ChevronLeft, Loader2, User } from "lucide-react"
+import { useForm } from "react-hook-form"
+import { useTranslation } from "react-i18next"
+import { toast } from "sonner"
+import { z } from "zod"
+
 import { extractError, useSendLoginOtp, useUpdateProfile, useVerifyLoginOtp } from "../auth.hooks"
 import type { UserProfile } from "../auth.types"
 import { usePhoneInput } from "../phone"

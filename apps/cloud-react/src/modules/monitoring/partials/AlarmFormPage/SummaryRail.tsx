@@ -7,10 +7,10 @@
 //
 // Stateless on purpose so it can live next to the page component.
 
+import { Button } from "@datadack/common-ui"
 import { Check, Circle, Loader2, Send } from "lucide-react"
 
 import { Section } from "@/components/console"
-import { Button } from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 
 import type { ReadinessRow, SectionId } from "./schema"

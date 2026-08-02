@@ -10,6 +10,12 @@ import {
   SelectTrigger,
   SelectValue,
   Skeleton,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@datadack/common-ui"
 import {
   AlertTriangle,
@@ -27,14 +33,6 @@ import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
 
 import { ConfirmDialog, DetailPage, EmptyState, staggerDelay } from "@/components/console"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
 import { useScreen } from "@/services/api/screen"
 
 import { sgProtocolUsesPorts } from "../api/shared"

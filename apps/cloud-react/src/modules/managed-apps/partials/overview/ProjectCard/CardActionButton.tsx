@@ -1,7 +1,6 @@
+import { Button } from "@datadack/common-ui"
 import { ExternalLink } from "lucide-react"
 import { Link } from "react-router-dom"
-
-import { Button } from "@datadack/common-ui"
 
 import type { CardAction } from "./card-action"
 

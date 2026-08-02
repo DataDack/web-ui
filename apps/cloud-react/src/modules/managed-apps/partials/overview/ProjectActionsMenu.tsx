@@ -1,6 +1,3 @@
-import { MoreHorizontal } from "lucide-react"
-import { Link } from "react-router-dom"
-
 import {
   Button,
   DropdownMenu,
@@ -9,6 +6,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@datadack/common-ui"
+import { MoreHorizontal } from "lucide-react"
+import { Link } from "react-router-dom"
+
 import { cn } from "@/lib/utils"
 
 import { MANAGED_APPS_ROUTES } from "../../managed-apps.constants"

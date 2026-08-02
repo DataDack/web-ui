@@ -1,6 +1,6 @@
+import { Button } from "@datadack/common-ui"
 import { ArrowDownRight, ArrowUpRight, Check } from "lucide-react"
 
-import { Button } from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 
 import { formatPrice, planHighlights, PlanTierArt } from "../../../components"

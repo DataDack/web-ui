@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react"
 
+import { Button } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { FileText, Lock, Plus, RefreshCw, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
@@ -15,7 +16,6 @@ import {
   ResourceTable,
   textColumn,
 } from "@/components/console"
-import { Button } from "@datadack/common-ui"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useScreen } from "@/services/api/screen"
 

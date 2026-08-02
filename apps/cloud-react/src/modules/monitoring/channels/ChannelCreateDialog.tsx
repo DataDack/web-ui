@@ -1,10 +1,5 @@
 import { useEffect } from "react"
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Loader2, Save, Send, TriangleAlert } from "lucide-react"
-import { useForm, useWatch, type UseFormReturn } from "react-hook-form"
-import { toast } from "sonner"
-
 import {
   Button,
   Dialog,
@@ -20,6 +15,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@datadack/common-ui"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Loader2, Save, Send, TriangleAlert } from "lucide-react"
+import { useForm, useWatch, type UseFormReturn } from "react-hook-form"
+import { toast } from "sonner"
+
 import { cn } from "@/lib/utils"
 
 import { useCreateChannel, useTestChannel } from "../monitoring.hooks"

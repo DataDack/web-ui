@@ -3,6 +3,7 @@ import { ExternalLink, GitBranch, GitPullRequest } from "lucide-react"
 import { Link } from "react-router-dom"
 
 import { KeyValueGrid, Section } from "@/components/console"
+
 import { CurrentDeploymentHero } from "./CurrentDeploymentHero"
 import { RuntimePanel } from "./RuntimePanel"
 import { ProjectTypeBadge } from "../../components"

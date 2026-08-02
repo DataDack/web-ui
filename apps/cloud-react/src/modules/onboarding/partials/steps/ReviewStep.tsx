@@ -1,9 +1,9 @@
 import { useState } from "react"
 
+import { Button } from "@datadack/common-ui"
 import { CheckCircle2, Loader2, Rocket, ShieldCheck } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { Button } from "@datadack/common-ui"
 import { useAuth } from "@/modules/auth/auth.context"
 import { PolicyConsent } from "@/modules/auth/components/PolicyConsent"
 

@@ -7,6 +7,12 @@ import {
   PopoverContent,
   PopoverTrigger,
   Skeleton,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@datadack/common-ui"
 import {
   type ColumnDef,
@@ -31,14 +37,6 @@ import {
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
 import { cn } from "@/lib/utils"
 
 import { type BulkAction, BulkActionsBar } from "./BulkActionsBar"

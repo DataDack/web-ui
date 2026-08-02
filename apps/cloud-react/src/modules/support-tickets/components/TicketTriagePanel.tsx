@@ -13,6 +13,7 @@ import {
 import { useTranslation } from "react-i18next"
 
 import { Section } from "@/components/console"
+
 import { TICKET_PRIORITIES, TICKET_STATUSES } from "../support-tickets.constants"
 import type { SupportTicket, UpdateTicketPayload } from "../support-tickets.types"
 

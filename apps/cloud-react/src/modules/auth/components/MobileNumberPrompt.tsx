@@ -1,8 +1,5 @@
 import { useEffect, useState } from "react"
 
-import { Loader2, ShieldCheck } from "lucide-react"
-import { useTranslation } from "react-i18next"
-
 import {
   Button,
   Dialog,
@@ -11,6 +8,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@datadack/common-ui"
+import { Loader2, ShieldCheck } from "lucide-react"
+import { useTranslation } from "react-i18next"
+
 import { extractError } from "@/services/api/client"
 
 import { useAuth } from "../auth.context"

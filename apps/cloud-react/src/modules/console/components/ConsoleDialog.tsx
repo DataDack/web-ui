@@ -1,5 +1,3 @@
-import { Server, TerminalIcon } from "lucide-react"
-
 import {
   Dialog,
   DialogContent,
@@ -7,6 +5,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@datadack/common-ui"
+import { Server, TerminalIcon } from "lucide-react"
 
 import type { ConsoleTarget } from "../console.api"
 import { ConsoleTerminal } from "./ConsoleTerminal"

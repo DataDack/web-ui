@@ -1,9 +1,9 @@
+import { Tooltip, TooltipContent, TooltipTrigger } from "@datadack/common-ui"
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 import { useTranslation } from "react-i18next"
 import { NavLink, useLocation } from "react-router-dom"
 
-import { Tooltip, TooltipContent, TooltipTrigger } from "@datadack/common-ui"
 import { cn } from "@/lib/utils"
 
 import {

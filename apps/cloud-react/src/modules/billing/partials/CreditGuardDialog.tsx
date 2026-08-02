@@ -1,6 +1,3 @@
-import { AlertTriangle, Wallet } from "lucide-react"
-import { useNavigate } from "react-router-dom"
-
 import {
   Button,
   Dialog,
@@ -10,6 +7,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@datadack/common-ui"
+import { AlertTriangle, Wallet } from "lucide-react"
+import { useNavigate } from "react-router-dom"
+
 import { BILLING_ROUTES } from "../billing.constants"
 import {
   HOURLY_RUNWAY_HOURS,

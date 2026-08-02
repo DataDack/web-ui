@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react"
 
+import { Button } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Activity, Globe, Plus, RefreshCw, Trash2, Users } from "lucide-react"
 import { useTranslation } from "react-i18next"
@@ -15,7 +16,6 @@ import {
   StatGrid,
   statusColumn,
 } from "@/components/console"
-import { Button } from "@datadack/common-ui"
 import { useScreen } from "@/services/api/screen"
 
 import { ASG_ROUTES } from "../autoscaling.constants"

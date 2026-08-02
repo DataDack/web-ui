@@ -1,9 +1,10 @@
 import { useState } from "react"
 
+import { Button, Input } from "@datadack/common-ui"
 import { Loader2 } from "lucide-react"
 
 import { FieldRow, Section } from "@/components/console"
-import { Button, Input } from "@datadack/common-ui"
+
 import { PROJECT_TYPE_META } from "../../../components"
 import { useUpdateProject } from "../../../managed-apps.hooks"
 import type { Project } from "../../../managed-apps.types"

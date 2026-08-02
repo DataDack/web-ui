@@ -1,18 +1,19 @@
 import { useMemo } from "react"
 
-import { Button, Skeleton } from "@datadack/common-ui"
-import { Hammer, Loader2, RotateCcw, X } from "lucide-react"
-import { useSearchParams } from "react-router-dom"
-
-import { EmptyState, Section, staggerDelay } from "@/components/console"
 import {
+  Button,
+  Skeleton,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@datadack/common-ui"
+import { Hammer, Loader2, RotateCcw, X } from "lucide-react"
+import { useSearchParams } from "react-router-dom"
+
+import { EmptyState, Section, staggerDelay } from "@/components/console"
 
 import { formatDuration, isTimeSet, shortSha, timeSince, triggerLabel } from "./build-format"
 import { BuildLogConsole } from "./BuildLogConsole"

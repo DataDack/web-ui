@@ -15,6 +15,12 @@ import {
   SelectTrigger,
   SelectValue,
   Skeleton,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@datadack/common-ui"
 import { Activity, Crosshair, Plus, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
@@ -30,14 +36,6 @@ import {
   staggerDelay,
   StatusBadge,
 } from "@/components/console"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
 import { VMS_ROUTES } from "@/modules/vms/vms.constants"
 import { useInstances } from "@/modules/vms/vms.hooks"
 import { useScreen } from "@/services/api/screen"

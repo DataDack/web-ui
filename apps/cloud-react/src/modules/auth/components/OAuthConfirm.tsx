@@ -1,9 +1,8 @@
 import { useState } from "react"
 
+import { Button } from "@datadack/common-ui"
 import { ChevronLeft, Loader2, MailCheck } from "lucide-react"
 import { useTranslation } from "react-i18next"
-
-import { Button } from "@datadack/common-ui"
 
 import type { OAuthPreview } from "../auth.types"
 import { usePhoneInput } from "../phone"

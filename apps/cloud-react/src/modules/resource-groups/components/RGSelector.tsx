@@ -1,8 +1,3 @@
-import { Check, ChevronDown, FolderTree, Plus, Settings } from "lucide-react"
-import { useTranslation } from "react-i18next"
-import { useNavigate } from "react-router-dom"
-
-import { staggerDelay } from "@/components/console"
 import {
   Button,
   DropdownMenu,
@@ -12,6 +7,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@datadack/common-ui"
+import { Check, ChevronDown, FolderTree, Plus, Settings } from "lucide-react"
+import { useTranslation } from "react-i18next"
+import { useNavigate } from "react-router-dom"
+
+import { staggerDelay } from "@/components/console"
 import { cn } from "@/lib/utils"
 
 import { useResourceGroup } from "../resource-group.context"

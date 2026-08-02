@@ -1,9 +1,8 @@
 import { useState } from "react"
 
+import { Button } from "@datadack/common-ui"
 import { Check, ChevronDown, ChevronRight, Copy } from "lucide-react"
 import { toast } from "sonner"
-
-import { Button } from "@datadack/common-ui"
 
 interface WorkflowPreviewProps {
   yaml: string

@@ -1,10 +1,10 @@
+import { Button } from "@datadack/common-ui"
 import { ArrowLeft, Menu } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
 import { UserMenu } from "@/components/console/shell/UserMenu"
 import { Logo } from "@/components/Logo"
-import { Button } from "@datadack/common-ui"
 
 /**
  * Top bar for the super-admin console. Carries an "admin" badge and an explicit

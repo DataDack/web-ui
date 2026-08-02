@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from "react"
 
+import { Button } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Download, FileText } from "lucide-react"
 import { useTranslation } from "react-i18next"
@@ -13,7 +14,6 @@ import {
   statusColumn,
   textColumn,
 } from "@/components/console"
-import { Button } from "@datadack/common-ui"
 
 import { useInvoices } from "../billing.hooks"
 import { billingService } from "../billing.service"

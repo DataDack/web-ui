@@ -1,11 +1,11 @@
 import { useEffect, useMemo } from "react"
 
+import { Button } from "@datadack/common-ui"
 import { ExternalLink, Loader2, ShieldAlert, ShieldCheck } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useLocation, useNavigate } from "react-router-dom"
 
 import { OnboardingStepSkeleton } from "@/components/console/feedback/Skeletons"
-import { Button } from "@datadack/common-ui"
 import { useAuth } from "@/modules/auth/auth.context"
 import { useScreen } from "@/services/api/screen"
 

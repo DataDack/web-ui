@@ -1,7 +1,5 @@
 import { type ReactNode, useEffect, useMemo, useState } from "react"
 
-import { ChevronDown } from "lucide-react"
-
 import {
   Command,
   CommandInput,
@@ -13,6 +11,8 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@datadack/common-ui"
+import { ChevronDown } from "lucide-react"
+
 import { useDebounce } from "@/hooks/use-debounce"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import { cn } from "@/lib/utils"

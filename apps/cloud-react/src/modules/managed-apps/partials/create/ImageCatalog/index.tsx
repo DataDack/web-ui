@@ -1,6 +1,5 @@
-import { ArrowLeft } from "lucide-react"
-
 import { Button } from "@datadack/common-ui"
+import { ArrowLeft } from "lucide-react"
 
 import { ImageCard } from "./ImageCard"
 import { IMAGE_CATALOG } from "./images.catalog"

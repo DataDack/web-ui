@@ -10,19 +10,17 @@ import {
   SelectTrigger,
   SelectValue,
   Skeleton,
-} from "@datadack/common-ui"
-import { Loader2, Lock, Plus, Trash2 } from "lucide-react"
-import { useTranslation } from "react-i18next"
-
-import { ConfirmDialog, EmptyState, staggerDelay } from "@/components/console"
-import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@datadack/common-ui"
+import { Loader2, Lock, Plus, Trash2 } from "lucide-react"
+import { useTranslation } from "react-i18next"
+
+import { ConfirmDialog, EmptyState, staggerDelay } from "@/components/console"
 
 import { CreateSecurityGroupSheet } from "./CreateSecurityGroupSheet"
 import { sgProtocolUsesPorts } from "../../api/shared"

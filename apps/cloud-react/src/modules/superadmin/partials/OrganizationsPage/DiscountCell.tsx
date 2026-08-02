@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState, type SyntheticEvent } from "react"
 
+import { Button, Input } from "@datadack/common-ui"
 import { Check, Pencil, X } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { Button, Input } from "@datadack/common-ui"
 import type { AccountRow } from "./types"
 import { useSetAccountDiscount } from "../../superadmin.hooks"
 

@@ -1,8 +1,7 @@
 import { useState } from "react"
 
-import { Bell, Check } from "lucide-react"
-
 import { Button } from "@datadack/common-ui"
+import { Bell, Check } from "lucide-react"
 
 import type { CatalogImage } from "./images.catalog"
 

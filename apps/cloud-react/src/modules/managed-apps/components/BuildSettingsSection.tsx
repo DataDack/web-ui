@@ -5,7 +5,9 @@ import {
   AccordionTrigger,
   Skeleton,
 } from "@datadack/common-ui"
+
 import { OverrideField } from "@/components/console"
+
 import { RootDirectoryInput } from "./RootDirectoryInput"
 import { useBuildDefaults } from "../managed-apps.hooks"
 import type { ProjectType } from "../managed-apps.types"

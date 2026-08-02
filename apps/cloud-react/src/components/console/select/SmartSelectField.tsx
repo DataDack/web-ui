@@ -1,5 +1,3 @@
-import type { Control, FieldPath, FieldValues } from "react-hook-form"
-
 import {
   FormControl,
   FormDescription,
@@ -8,6 +6,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@datadack/common-ui"
+import type { Control, FieldPath, FieldValues } from "react-hook-form"
 
 import { SmartSelect } from "./SmartSelect"
 import type { SmartSelectProps } from "./SmartSelect/smart-select.types"

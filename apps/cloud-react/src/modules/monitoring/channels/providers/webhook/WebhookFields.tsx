@@ -1,7 +1,6 @@
+import { Input } from "@datadack/common-ui"
 import { ShieldCheck } from "lucide-react"
 import type { UseFormReturn } from "react-hook-form"
-
-import { Input } from "@datadack/common-ui"
 
 import type { ChannelFormValues } from "../../channels.form"
 import { FieldError, FieldLabel } from "../../components/FormFields"

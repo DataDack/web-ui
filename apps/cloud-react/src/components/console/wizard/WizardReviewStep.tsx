@@ -1,7 +1,6 @@
+import { Button } from "@datadack/common-ui"
 import { Pencil } from "lucide-react"
 import { useTranslation } from "react-i18next"
-
-import { Button } from "@datadack/common-ui"
 
 import { KeyValueGrid, type KeyValueItem } from "../KeyValueGrid"
 

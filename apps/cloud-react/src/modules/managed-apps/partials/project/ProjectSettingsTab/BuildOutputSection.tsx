@@ -1,9 +1,9 @@
 import { useState } from "react"
 
+import { Button } from "@datadack/common-ui"
 import { Info, Loader2 } from "lucide-react"
 
 import { Section } from "@/components/console"
-import { Button } from "@datadack/common-ui"
 
 import { BuildSettingsSection, type BuildSettingsValue } from "../../../components"
 import { useUpdateProject } from "../../../managed-apps.hooks"

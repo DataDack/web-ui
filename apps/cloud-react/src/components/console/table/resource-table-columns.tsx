@@ -1,6 +1,3 @@
-import type { ColumnDef } from "@tanstack/react-table"
-import { type LucideIcon, MoreHorizontal } from "lucide-react"
-
 import {
   Button,
   DropdownMenu,
@@ -9,6 +6,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@datadack/common-ui"
+import type { ColumnDef } from "@tanstack/react-table"
+import { type LucideIcon, MoreHorizontal } from "lucide-react"
+
 import { parseTags } from "@/lib/tags"
 
 import type { ColumnMeta } from "./ResourceTable"

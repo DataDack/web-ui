@@ -1,5 +1,13 @@
 import { useMemo, useState } from "react"
 
+import {
+  Button,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { LifeBuoy, RefreshCw } from "lucide-react"
 import { useTranslation } from "react-i18next"
@@ -13,14 +21,6 @@ import {
   statusColumn,
   textColumn,
 } from "@/components/console"
-import {
-  Button,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@datadack/common-ui"
 import { PriorityBadge } from "@/modules/support-tickets/components/PriorityBadge"
 import {
   formatTicketAccount,

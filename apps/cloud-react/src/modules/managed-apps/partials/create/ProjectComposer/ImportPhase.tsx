@@ -1,7 +1,7 @@
+import { Button } from "@datadack/common-ui"
 import { ExternalLink, Loader2 } from "lucide-react"
 
 import { FieldRow } from "@/components/console"
-import { Button } from "@datadack/common-ui"
 
 import { ProjectTypePicker, type RepoProjectType } from "./ProjectTypePicker"
 import { GitHubAccountSelect, RepoSelect } from "../../../components"
