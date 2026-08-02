@@ -1,6 +1,6 @@
 import type * as React from "react"
 
-import { css, cx } from "@emotion/css"
+import { css, cx } from "../lib/emotion"
 import { Avatar as AvatarPrimitive } from "radix-ui"
 
 // The Tailwind original drove the size-dependent rules through named group

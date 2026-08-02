@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { css, cx } from "@emotion/css"
+import { css, cx } from "../lib/emotion"
 import { OTPInput, OTPInputContext } from "input-otp"
 import { MinusIcon } from "lucide-react"
 

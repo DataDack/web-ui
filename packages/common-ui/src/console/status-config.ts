@@ -1,7 +1,7 @@
 // Single source of truth mapping backend status strings to visual tones.
 // Every status badge in the console renders through this config.
 
-import { css } from "@emotion/css"
+import { css } from "../lib/emotion"
 
 export type StatusTone = "success" | "neutral" | "warning" | "danger" | "info"
 

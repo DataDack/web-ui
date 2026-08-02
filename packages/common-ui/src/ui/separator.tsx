@@ -1,6 +1,6 @@
 import type * as React from "react"
 
-import { css, cx } from "@emotion/css"
+import { css, cx } from "../lib/emotion"
 import { Separator as SeparatorPrimitive } from "radix-ui"
 
 // Radix sets data-orientation, so the two axes are attribute selectors rather

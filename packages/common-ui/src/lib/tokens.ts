@@ -1,4 +1,4 @@
-import { injectGlobal } from "@emotion/css"
+import { injectGlobal } from "./emotion"
 
 // Default values for every design token the kit reads, injected once at
 // import time. The selectors are wrapped in :where() so they carry ZERO

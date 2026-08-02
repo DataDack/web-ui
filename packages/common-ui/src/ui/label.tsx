@@ -1,6 +1,6 @@
 import type * as React from "react"
 
-import { css, cx } from "@emotion/css"
+import { css, cx } from "../lib/emotion"
 import { Label as LabelPrimitive } from "radix-ui"
 
 // The two disabled rules were Tailwind group-*/peer-* variants, which compile to

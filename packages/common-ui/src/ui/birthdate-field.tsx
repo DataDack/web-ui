@@ -2,7 +2,7 @@ import { useState } from "react"
 
 import { Cake } from "lucide-react"
 
-import { css, cx } from "@emotion/css"
+import { css, cx } from "../lib/emotion"
 
 import { media, mix } from "../lib/styles"
 import { DayGridPicker } from "./day-grid-picker"

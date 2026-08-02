@@ -1,4 +1,4 @@
-import { css } from "@emotion/css"
+import { css } from "../lib/emotion"
 
 import { mix } from "../lib/styles"
 

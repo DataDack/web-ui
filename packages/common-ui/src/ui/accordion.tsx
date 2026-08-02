@@ -1,6 +1,6 @@
 import type * as React from "react"
 
-import { css, cx } from "@emotion/css"
+import { css, cx } from "../lib/emotion"
 import { ChevronDown } from "lucide-react"
 import { Accordion as AccordionPrimitive } from "radix-ui"
 

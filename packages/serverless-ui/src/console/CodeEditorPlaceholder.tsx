@@ -1,4 +1,4 @@
-import { css, cx } from "@emotion/css"
+import { css, cx } from "@datadack/common-ui"
 import { Code2, FileCode2, FileJson, FileText, Rocket, Search, type LucideIcon } from "lucide-react"
 
 import {

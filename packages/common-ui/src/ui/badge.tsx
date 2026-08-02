@@ -1,6 +1,6 @@
 import type * as React from "react"
 
-import { css, cx } from "@emotion/css"
+import { css, cx } from "../lib/emotion"
 import { Slot } from "radix-ui"
 
 const base = css`

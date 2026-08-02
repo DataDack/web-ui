@@ -200,3 +200,8 @@ export {
 
 // Utilities
 export { cn, formatBytes, timeAgo } from "./lib/cn"
+
+// The design system's emotion instance. Anything that styles on top of this kit
+// must use these rather than importing @emotion/css directly, so every rule
+// lands in the one prepended <style> block and the cascade stays predictable.
+export { css, cx, keyframes, injectGlobal } from "./lib/emotion"

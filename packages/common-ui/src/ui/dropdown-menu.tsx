@@ -1,6 +1,6 @@
 import type * as React from "react"
 
-import { cx } from "@emotion/css"
+import { cx } from "../lib/emotion"
 import { CheckIcon, ChevronRightIcon, CircleIcon } from "lucide-react"
 import { DropdownMenu as DropdownMenuPrimitive } from "radix-ui"
 

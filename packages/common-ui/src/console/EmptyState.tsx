@@ -1,4 +1,4 @@
-import { css, cx } from "@emotion/css"
+import { css, cx } from "../lib/emotion"
 import type { LucideIcon } from "lucide-react"
 
 import { contentEnter, glass1 } from "../lib/styles"

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 
-import { css, cx } from "@emotion/css"
+import { css, cx } from "../lib/emotion"
 import type { LucideIcon } from "lucide-react"
 
 import { glass1, media } from "../lib/styles"

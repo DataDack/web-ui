@@ -1,6 +1,6 @@
 import type * as React from "react"
 
-import { css, cx } from "@emotion/css"
+import { css, cx } from "../lib/emotion"
 import { Tabs as TabsPrimitive } from "radix-ui"
 
 import { contentEnter, mix } from "../lib/styles"

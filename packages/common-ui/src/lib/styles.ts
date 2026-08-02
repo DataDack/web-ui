@@ -1,4 +1,4 @@
-import { css, keyframes } from "@emotion/css"
+import { css, keyframes } from "./emotion"
 
 // Shared emotion building blocks. Every component styles itself through
 // @emotion/css at runtime, reading the console theme's bare tokens

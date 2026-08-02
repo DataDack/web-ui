@@ -1,6 +1,6 @@
 import type * as React from "react"
 
-import { css, cx } from "@emotion/css"
+import { css, cx } from "../lib/emotion"
 import { CheckIcon, MinusIcon } from "lucide-react"
 import { Checkbox as CheckboxPrimitive } from "radix-ui"
 

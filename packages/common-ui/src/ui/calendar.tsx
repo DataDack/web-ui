@@ -1,6 +1,6 @@
 import type * as React from "react"
 
-import { css, cx } from "@emotion/css"
+import { css, cx } from "../lib/emotion"
 import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react"
 import { DayPicker, getDefaultClassNames } from "react-day-picker"
 

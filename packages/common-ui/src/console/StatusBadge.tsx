@@ -1,4 +1,4 @@
-import { css, cx } from "@emotion/css"
+import { css, cx } from "../lib/emotion"
 import { Loader2 } from "lucide-react"
 
 import { getStatusConfig, TONE_CLASSES, TONE_DOT_CLASSES } from "./status-config"

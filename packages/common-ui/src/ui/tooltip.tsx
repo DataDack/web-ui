@@ -1,6 +1,6 @@
 import type * as React from "react"
 
-import { css, cx } from "@emotion/css"
+import { css, cx } from "../lib/emotion"
 import { Tooltip as TooltipPrimitive } from "radix-ui"
 
 import { popperAnimation } from "../lib/styles"

@@ -1,6 +1,6 @@
 import type * as React from "react"
 
-import { css, cx, keyframes } from "@emotion/css"
+import { css, cx, keyframes } from "../lib/emotion"
 import { XIcon } from "lucide-react"
 import { Dialog as SheetPrimitive } from "radix-ui"
 

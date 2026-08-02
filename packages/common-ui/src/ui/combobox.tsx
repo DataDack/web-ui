@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-import { css, cx } from "@emotion/css"
+import { css, cx } from "../lib/emotion"
 import { Check, ChevronDown } from "lucide-react"
 
 import { mix } from "../lib/styles"
