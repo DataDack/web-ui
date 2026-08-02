@@ -230,7 +230,7 @@ export function CreatePolicyPage() {
           <Button variant="ghost" onClick={() => void navigate(IAM_ROUTES.POLICIES)}>
             {t("console.wizard.cancel")}
           </Button>
-          <Button onClick={submit} disabled={isPending}>
+          <Button onClick={submit} disabled={isPending} loading={isPending}>
             {isPending ? t("iam.policies.createForm.creating") : t("iam.policies.create")}
           </Button>
         </div>

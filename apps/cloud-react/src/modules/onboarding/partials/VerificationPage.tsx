@@ -171,6 +171,7 @@ export function VerificationPage() {
             }}
             disabled={startKyc.isPending}
             className="btn-gold rounded-full font-bold"
+            loading={startKyc.isPending}
           >
             {startKyc.isPending ? (
               <Loader2 className="size-4 animate-spin" />
@@ -186,7 +187,12 @@ export function VerificationPage() {
           {/* The one way past the gate. Explicit, never automatic —
                         and it only buys this session; resource creation stays
                         blocked by the backend until verification lands. */}
-          <Button variant="ghost" onClick={onSkip} disabled={startKyc.isPending}>
+          <Button
+            variant="ghost"
+            onClick={onSkip}
+            disabled={startKyc.isPending}
+            loading={startKyc.isPending}
+          >
             {t("onboarding.verification.skipForNow")}
           </Button>
         </div>

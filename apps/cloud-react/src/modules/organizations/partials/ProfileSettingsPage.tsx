@@ -124,6 +124,7 @@ export function ProfileSettingsPage() {
                   variant="gold"
                   className="gap-1.5"
                   disabled={isPending || !isDirty}
+                  loading={isPending}
                 >
                   <Save className="size-3.5" />
                   {isPending ? t("profile.saving") : t("profile.save")}

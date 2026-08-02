@@ -2,7 +2,7 @@ import type * as React from "react"
 
 import { Slot } from "radix-ui"
 
-import { css, cx } from "../lib/emotion"
+import { css, cx, keyframes } from "../lib/emotion"
 import { mix } from "../lib/styles"
 
 const base = css`
@@ -207,26 +207,71 @@ function buttonVariants(options?: {
   )
 }
 
+const spinFrames = keyframes`
+  to { transform: rotate(360deg); }
+`
+
+/* The spinner replaces the leading icon rather than joining it, so the button
+   does not change width mid-action and shift the layout around it. */
+const spinner = css`
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  border-radius: 9999px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  animation: ${spinFrames} 700ms linear infinite;
+`
+
 function Button({
   className,
   variant = "default",
   size = "default",
   asChild = false,
+  loading = false,
+  children,
+  disabled,
   ...props
 }: React.ComponentProps<"button"> & {
   variant?: ButtonVariant | null
   size?: ButtonSize | null
   asChild?: boolean
+  /**
+   * Shows a spinner and stops the button responding while an action is in
+   * flight. Disables as well as spins: a mutation that takes a second is a
+   * second in which an impatient user will click again, and most of these
+   * actions are not idempotent.
+   *
+   * Ignored under `asChild`, where the rendered child owns its own content.
+   */
+  loading?: boolean
 }) {
   const Comp = asChild ? Slot.Root : "button"
+
   return (
     <Comp
       data-slot="button"
       data-variant={variant}
       data-size={size}
+      data-loading={loading || undefined}
+      // aria-busy tells a screen reader the press was received and is being
+      // worked on, which the visual spinner alone does not convey.
+      aria-busy={loading || undefined}
+      disabled={disabled ?? (asChild ? undefined : loading)}
       className={buttonVariants({ variant, size, className })}
       {...props}
-    />
+    >
+      {/* Slot accepts exactly one child, so under asChild the children are
+          passed through untouched rather than wrapped alongside a spinner. */}
+      {asChild ? (
+        children
+      ) : (
+        <>
+          {loading && <span className={spinner} aria-hidden="true" />}
+          {children}
+        </>
+      )}
+    </Comp>
   )
 }
 

@@ -84,6 +84,7 @@ export function EnvSection({ project }: Readonly<{ project: Project }>) {
               if (wouldClear.length > 0) setConfirmOpen(true)
               else save()
             }}
+            loading={update.isPending}
           >
             {update.isPending && <Loader2 className="size-3.5 animate-spin" />}
             Save variables

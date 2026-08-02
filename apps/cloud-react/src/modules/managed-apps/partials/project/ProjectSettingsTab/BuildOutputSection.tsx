@@ -53,6 +53,7 @@ export function BuildOutputSection({ project }: Readonly<{ project: Project }>) 
             onClick={() => {
               update.mutate(value)
             }}
+            loading={update.isPending}
           >
             {update.isPending && <Loader2 className="size-3.5 animate-spin" />}
             Save changes

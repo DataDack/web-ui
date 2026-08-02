@@ -196,7 +196,7 @@ export function KycActions({ user }: Readonly<{ user: KycSubject }>) {
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={close} disabled={isPending}>
+            <Button variant="outline" onClick={close} disabled={isPending} loading={isPending}>
               {t("common.cancel")}
             </Button>
             <Button
@@ -205,6 +205,7 @@ export function KycActions({ user }: Readonly<{ user: KycSubject }>) {
               // A reason is required: an override with no justification is the
               // thing the audit line exists to prevent.
               disabled={isPending || reason.trim() === ""}
+              loading={isPending}
             >
               {action === "bypass"
                 ? t("superAdmin.kyc.actions.bypass")

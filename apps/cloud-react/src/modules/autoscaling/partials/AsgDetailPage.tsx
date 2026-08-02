@@ -230,6 +230,7 @@ function SetCapacityDialog({
               onOpenChange(false)
             }}
             disabled={isPending}
+            loading={isPending}
           >
             {t("console.confirm.cancel")}
           </Button>
@@ -247,6 +248,7 @@ function SetCapacityDialog({
                 },
               )
             }}
+            loading={isPending}
           >
             {isPending && <Loader2 className="size-3.5 animate-spin" />}
             {t("autoscaling.actions.setCapacity")}

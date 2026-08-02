@@ -257,7 +257,7 @@ export function CreateDiskSheet({ open, onOpenChange }: Readonly<Props>) {
             <Button type="button" variant="ghost" onClick={close}>
               {t("console.wizard.cancel")}
             </Button>
-            <Button type="submit" variant="gold" disabled={isPending}>
+            <Button type="submit" variant="gold" disabled={isPending} loading={isPending}>
               {isPending ? t("disks.form.creating") : t("disks.form.create")}
             </Button>
           </div>

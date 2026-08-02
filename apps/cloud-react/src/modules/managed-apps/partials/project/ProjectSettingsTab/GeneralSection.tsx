@@ -83,6 +83,7 @@ export function GeneralSection({ project }: Readonly<{ project: Project }>) {
           onClick={() => {
             update.mutate({ name })
           }}
+          loading={update.isPending}
         >
           {update.isPending && <Loader2 className="size-3.5 animate-spin" />}
           Save changes

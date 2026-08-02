@@ -102,6 +102,7 @@ export function AcceptInvitePage() {
           onClick={() => {
             accept.mutate()
           }}
+          loading={accept.isPending}
         >
           {accept.isPending && <Loader2 className="size-4 animate-spin" />}
           {t("iam.invitations.accept.cta")}

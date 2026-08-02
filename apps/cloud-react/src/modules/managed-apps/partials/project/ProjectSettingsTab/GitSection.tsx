@@ -112,6 +112,7 @@ export function GitSection({ project }: Readonly<{ project: Project }>) {
           onClick={() => {
             update.mutate({ branch })
           }}
+          loading={update.isPending}
         >
           {update.isPending && <Loader2 className="size-3.5 animate-spin" />}
           Save branch

@@ -224,7 +224,13 @@ export function EmailOtpFlow({
               </FormItem>
             )}
           />
-          <Button type="submit" variant="gold" disabled={send.isPending} className={pillButton}>
+          <Button
+            type="submit"
+            variant="gold"
+            disabled={send.isPending}
+            className={pillButton}
+            loading={send.isPending}
+          >
             {send.isPending && <Loader2 className="animate-spin" />}
             {t("auth.otp.send")}
           </Button>
@@ -264,6 +270,7 @@ export function EmailOtpFlow({
             variant="gold"
             disabled={updateProfile.isPending}
             className={pillButton}
+            loading={updateProfile.isPending}
           >
             {updateProfile.isPending && <Loader2 className="animate-spin" />}
             {t("auth.otp.saveName")}
@@ -348,6 +355,7 @@ export function EmailOtpFlow({
           variant="gold"
           disabled={verify.isPending || (needsPhone && !phone.e164)}
           className={pillButton}
+          loading={verify.isPending}
         >
           {verify.isPending && <Loader2 className="animate-spin" />}
           {t("auth.otp.verify")}

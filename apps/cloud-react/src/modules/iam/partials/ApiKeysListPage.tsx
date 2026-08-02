@@ -308,6 +308,7 @@ function CreateApiKeyDialog({
               close(false)
             }}
             disabled={isPending}
+            loading={isPending}
           >
             {t("console.confirm.cancel")}
           </Button>
@@ -316,6 +317,7 @@ function CreateApiKeyDialog({
             disabled={name.trim().length < 2 || isPending}
             className="gap-2"
             onClick={submit}
+            loading={isPending}
           >
             {isPending && <Loader2 className="size-3.5 animate-spin" />}
             {t("iam.apiKeys.create")}

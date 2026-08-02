@@ -706,6 +706,7 @@ function CostSummary({
             className="mt-2 w-full h-11"
             disabled={isPending || !isValid || quotaBlocked}
             onClick={onDeploy}
+            loading={isPending}
           >
             {isPending ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
             Deploy Now

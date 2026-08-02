@@ -309,7 +309,7 @@ function CreateNetworkInterfaceDialog({
             <Button type="button" variant="ghost" onClick={close}>
               {t("console.wizard.cancel")}
             </Button>
-            <Button type="submit" variant="gold" disabled={isPending}>
+            <Button type="submit" variant="gold" disabled={isPending} loading={isPending}>
               {isPending
                 ? t("networkInterfaces.createForm.submitting")
                 : t("networkInterfaces.createForm.submit")}
@@ -396,6 +396,7 @@ function AttachInterfaceDialog({
                 )
               }
             }}
+            loading={isPending}
           >
             {isPending
               ? t("networkInterfaces.attachForm.submitting")

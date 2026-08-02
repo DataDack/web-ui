@@ -99,6 +99,7 @@ export function CurrentDeploymentHero({
               onClick={() => {
                 deployProject.mutate()
               }}
+              loading={deployProject.isPending}
             >
               {deployProject.isPending ? (
                 <Loader2 className="size-3.5 animate-spin" />

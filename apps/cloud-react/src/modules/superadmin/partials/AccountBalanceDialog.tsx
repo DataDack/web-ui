@@ -206,10 +206,11 @@ export function AccountBalanceDialog({ account, refId, onOpenChange }: Readonly<
               onClick={() => {
                 onOpenChange(false)
               }}
+              loading={isPending}
             >
               {t("console.wizard.cancel")}
             </Button>
-            <Button type="submit" disabled={isPending} className="gap-2">
+            <Button type="submit" disabled={isPending} className="gap-2" loading={isPending}>
               {isPending && <Loader2 className="size-4 animate-spin" />}
               {t("superAdmin.organizations.balance.submit")}
             </Button>

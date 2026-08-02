@@ -507,6 +507,7 @@ function SecurityGroupPicker({ form }: Readonly<{ form: UseFormReturn<FormValues
             className="gap-1.5"
             disabled={isCreatingDefault}
             onClick={createDefaultGroup}
+            loading={isCreatingDefault}
           >
             {isCreatingDefault && <Loader2 className="size-3.5 animate-spin" />}
             {t("vms.wizard.createDefaultSg")}

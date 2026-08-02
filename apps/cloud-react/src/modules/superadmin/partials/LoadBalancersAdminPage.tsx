@@ -223,11 +223,17 @@ function FleetConfiguration({ settings }: Readonly<{ settings: LBSettings }>) {
               ? t("superAdmin.loadBalancers.fleet.unsaved")
               : t("superAdmin.loadBalancers.fleet.saved")}
           </span>
-          <Button type="button" variant="ghost" onClick={onReset} disabled={!isDirty || isPending}>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={onReset}
+            disabled={!isDirty || isPending}
+            loading={isPending}
+          >
             <RotateCcw className="size-4" />
             {t("superAdmin.loadBalancers.actions.reset")}
           </Button>
-          <Button type="submit" variant="gold" disabled={!isDirty || isPending}>
+          <Button type="submit" variant="gold" disabled={!isDirty || isPending} loading={isPending}>
             {isPending ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
             {t("superAdmin.loadBalancers.actions.save")}
           </Button>

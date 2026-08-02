@@ -330,7 +330,7 @@ export function CreateAsgSheet({ open, onOpenChange }: Readonly<Props>) {
             <Button type="button" variant="ghost" onClick={close}>
               {t("console.wizard.cancel")}
             </Button>
-            <Button type="submit" variant="gold" disabled={isPending}>
+            <Button type="submit" variant="gold" disabled={isPending} loading={isPending}>
               {isPending ? t("autoscaling.form.creating") : t("autoscaling.form.create")}
             </Button>
           </div>

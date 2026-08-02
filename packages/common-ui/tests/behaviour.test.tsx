@@ -382,3 +382,65 @@ describe("EmptyState", () => {
     expect(screen.getByText("Add one to begin")).toBeInTheDocument()
   })
 })
+
+describe("Button loading state", () => {
+  test("shows a spinner and marks itself busy", () => {
+    render(<Button loading>Save</Button>)
+
+    const button = screen.getByRole("button", { name: "Save" })
+    // aria-busy is what a screen reader reads; the spinner alone says nothing.
+    expect(button).toHaveAttribute("aria-busy", "true")
+    expect(button).toHaveAttribute("data-loading", "true")
+  })
+
+  test("stops responding while loading", async () => {
+    const user = userEvent.setup()
+    const onClick = mock(() => {})
+    render(
+      <Button loading onClick={onClick}>
+        Save
+      </Button>,
+    )
+
+    // Most of these actions are not idempotent, so a second click during a
+    // slow mutation must not fire.
+    await user.click(screen.getByRole("button", { name: "Save" }))
+    expect(onClick).not.toHaveBeenCalled()
+    expect(screen.getByRole("button", { name: "Save" })).toBeDisabled()
+  })
+
+  test("keeps its label so the button does not resize mid-action", () => {
+    render(<Button loading>Save changes</Button>)
+    expect(screen.getByRole("button", { name: "Save changes" })).toBeInTheDocument()
+  })
+
+  test("an explicit disabled={false} still wins over loading", () => {
+    // Escape hatch for a button that must stay clickable during a background
+    // refresh it does not own.
+    render(
+      <Button loading disabled={false}>
+        Save
+      </Button>,
+    )
+    expect(screen.getByRole("button", { name: "Save" })).toBeEnabled()
+  })
+
+  test("not loading leaves no trace", () => {
+    render(<Button>Save</Button>)
+    const button = screen.getByRole("button", { name: "Save" })
+    expect(button).not.toHaveAttribute("aria-busy")
+    expect(button).not.toHaveAttribute("data-loading")
+    expect(button).toBeEnabled()
+  })
+
+  test("asChild leaves the child's content alone", () => {
+    render(
+      <Button asChild loading>
+        <a href="/x">Go</a>
+      </Button>,
+    )
+    // A link cannot be disabled, and injecting a spinner into an arbitrary child
+    // would break whatever it renders.
+    expect(screen.getByRole("link", { name: "Go" })).toBeInTheDocument()
+  })
+})

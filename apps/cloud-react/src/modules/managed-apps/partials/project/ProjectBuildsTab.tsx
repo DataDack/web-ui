@@ -152,6 +152,7 @@ export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
                   onClick={() => {
                     cancelBuild.mutate(build.id)
                   }}
+                  loading={cancelBuild.isPending}
                 >
                   {cancelBuild.isPending ? (
                     <Loader2 className="size-3 animate-spin" />
@@ -176,6 +177,7 @@ export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
                 onClick={() => {
                   createBuild.mutate({ projectId: project.id, commitSha: build.commit_sha })
                 }}
+                loading={createBuild.isPending}
               >
                 {createBuild.isPending ? (
                   <Loader2 className="size-3 animate-spin" />

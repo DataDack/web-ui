@@ -161,6 +161,7 @@ export function ResourceGroupCard({ rg }: Readonly<Props>) {
                     onClick={handleDelete}
                     disabled={isDeleting || isActive}
                     className="text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                    loading={isDeleting}
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>

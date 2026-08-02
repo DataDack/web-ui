@@ -67,6 +67,7 @@ function JiraOAuthConnect({
           className="w-full gap-2 border-[#0052CC] bg-[#0052CC] text-white hover:bg-[#0747A6]"
           disabled={startJiraOAuth.isPending}
           onClick={beginJiraOAuth}
+          loading={startJiraOAuth.isPending}
         >
           {startJiraOAuth.isPending ? (
             <Loader2 className="size-4 animate-spin" />
@@ -117,6 +118,7 @@ function JiraOAuthConnect({
           className="gap-1.5"
           disabled={startJiraOAuth.isPending}
           onClick={beginJiraOAuth}
+          loading={startJiraOAuth.isPending}
         >
           {startJiraOAuth.isPending ? (
             <Loader2 className="size-3.5 animate-spin" />
@@ -135,6 +137,7 @@ function JiraOAuthConnect({
             onClick={() => {
               disconnectJira.mutate(activeCloudId)
             }}
+            loading={disconnectJira.isPending}
           >
             {disconnectJira.isPending && disconnectJira.variables === activeCloudId ? (
               <Loader2 className="size-3.5 animate-spin" />

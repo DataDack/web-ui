@@ -137,7 +137,12 @@ function ReserveIpDialog({
             <Button type="button" variant="ghost" onClick={close}>
               {t("console.wizard.cancel")}
             </Button>
-            <Button type="submit" variant="gold" disabled={isPending || quotaBlocked}>
+            <Button
+              type="submit"
+              variant="gold"
+              disabled={isPending || quotaBlocked}
+              loading={isPending}
+            >
               {isPending
                 ? t("staticIps.reserveForm.submitting")
                 : t("staticIps.reserveForm.submit")}
@@ -224,6 +229,7 @@ function AssignIpDialog({
                 )
               }
             }}
+            loading={isPending}
           >
             {isPending ? t("staticIps.assignForm.submitting") : t("staticIps.assignForm.submit")}
           </Button>

@@ -152,7 +152,13 @@ export function CustomPlanDialog({
         </div>
 
         <DialogFooter>
-          <Button type="button" variant="ghost" onClick={close} disabled={create.isPending}>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={close}
+            disabled={create.isPending}
+            loading={create.isPending}
+          >
             Cancel
           </Button>
           <Button
@@ -161,6 +167,7 @@ export function CustomPlanDialog({
             className="gap-2"
             disabled={needs.trim() === "" || create.isPending}
             onClick={submit}
+            loading={create.isPending}
           >
             {create.isPending && <Loader2 className="size-3.5 animate-spin" />}
             Send request

@@ -127,12 +127,18 @@ export function AccountTypeStep({
           onClick={() => void onContinue()}
           disabled={!choice || orgNameMissing || setType.isPending}
           className="btn-gold rounded-full font-bold"
+          loading={setType.isPending}
         >
           {setType.isPending && <Loader2 className="size-4 animate-spin" />}
           {t("onboarding.continue")}
         </Button>
         {onSkip && (
-          <Button variant="ghost" onClick={onSkip} disabled={setType.isPending}>
+          <Button
+            variant="ghost"
+            onClick={onSkip}
+            disabled={setType.isPending}
+            loading={setType.isPending}
+          >
             {t("onboarding.type.skip")}
           </Button>
         )}

@@ -213,6 +213,7 @@ export function PVENodesPage() {
               }}
               disabled={refreshMetrics.isPending || isFetching}
               aria-label={t("common.refresh")}
+              loading={refreshMetrics.isPending}
             >
               <RefreshCw
                 className={`w-4 h-4 ${isFetching || refreshMetrics.isPending ? "animate-spin" : ""}`}

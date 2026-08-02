@@ -129,12 +129,18 @@ export function BasicDetailsStep({ onNext }: Readonly<{ onNext: () => void }>) {
             onClick={() => void verify()}
             disabled={otp.length !== 6 || confirm.isPending}
             className="btn-gold rounded-full font-bold"
+            loading={confirm.isPending}
           >
             {confirm.isPending && <Loader2 className="size-4 animate-spin" />}
             {t("onboarding.details.verify")}
           </Button>
           {/* The number is already saved — verifying it can wait. */}
-          <Button variant="ghost" onClick={onNext} disabled={confirm.isPending}>
+          <Button
+            variant="ghost"
+            onClick={onNext}
+            disabled={confirm.isPending}
+            loading={confirm.isPending}
+          >
             {t("onboarding.details.skipVerify")}
           </Button>
         </div>

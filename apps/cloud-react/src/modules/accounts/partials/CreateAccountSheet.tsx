@@ -82,7 +82,7 @@ export function CreateAccountSheet({ open, onOpenChange }: Readonly<Props>) {
             <Button type="button" variant="ghost" onClick={close}>
               {t("accounts.form.cancel")}
             </Button>
-            <Button type="submit" variant="gold" disabled={isPending}>
+            <Button type="submit" variant="gold" disabled={isPending} loading={isPending}>
               {isPending ? t("accounts.form.creating") : t("accounts.form.create")}
             </Button>
           </div>

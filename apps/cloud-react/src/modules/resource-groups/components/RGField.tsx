@@ -255,6 +255,7 @@ function CreateRGPopoverForm({
           className="gap-1.5"
           disabled={isPending}
           onClick={submit}
+          loading={isPending}
         >
           {isPending && <Loader2 className="size-3.5 animate-spin" />}
           {t("resourceGroups.form.create")}

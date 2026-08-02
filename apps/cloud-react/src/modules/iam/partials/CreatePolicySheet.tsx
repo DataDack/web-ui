@@ -150,7 +150,7 @@ export function CreatePolicySheet({ open, onOpenChange }: Readonly<Props>) {
             <Button type="button" variant="ghost" onClick={close}>
               {t("console.wizard.cancel")}
             </Button>
-            <Button type="submit" variant="gold" disabled={isPending}>
+            <Button type="submit" variant="gold" disabled={isPending} loading={isPending}>
               {isPending ? t("iam.policies.createForm.creating") : t("iam.policies.create")}
             </Button>
           </div>

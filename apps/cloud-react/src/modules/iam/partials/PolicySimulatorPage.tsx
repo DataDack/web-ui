@@ -99,7 +99,11 @@ export function PolicySimulatorPage() {
             />
           </div>
 
-          <Button onClick={run} disabled={!userId || !action || simulate.isPending}>
+          <Button
+            onClick={run}
+            disabled={!userId || !action || simulate.isPending}
+            loading={simulate.isPending}
+          >
             {simulate.isPending && <Loader2 className="size-4 animate-spin mr-1.5" />}
             {t("iam.simulator.run")}
           </Button>

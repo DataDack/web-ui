@@ -203,7 +203,7 @@ export function CreateResourceGroupSheet({ open, onOpenChange, onCreated }: Read
             <Button type="button" variant="ghost" onClick={close}>
               {t("resourceGroups.form.cancel")}
             </Button>
-            <Button type="submit" variant="gold" disabled={isPending}>
+            <Button type="submit" variant="gold" disabled={isPending} loading={isPending}>
               {isPending ? t("resourceGroups.form.creating") : t("resourceGroups.form.create")}
             </Button>
           </div>

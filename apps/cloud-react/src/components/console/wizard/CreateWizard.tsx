@@ -226,7 +226,13 @@ export function CreateWizard<T extends FieldValues, TInput extends FieldValues =
         {/* Fixed footer: a static flex row pinned below the scroll region,
                     so content never slides underneath it. */}
         <div className="flex items-center justify-between gap-3 shrink-0 pt-4 mt-1 border-t border-border-glass">
-          <Button type="button" variant="ghost" onClick={onCancel} disabled={isSubmitting}>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={onCancel}
+            disabled={isSubmitting}
+            loading={isSubmitting}
+          >
             {t("console.wizard.cancel")}
           </Button>
           <div className="flex items-center gap-2">
@@ -237,6 +243,7 @@ export function CreateWizard<T extends FieldValues, TInput extends FieldValues =
                 onClick={back}
                 disabled={isSubmitting || isAdvancing}
                 className="gap-1.5"
+                loading={isSubmitting}
               >
                 <ArrowLeft className="size-3.5" />
                 {t("console.wizard.back")}
@@ -248,6 +255,7 @@ export function CreateWizard<T extends FieldValues, TInput extends FieldValues =
                 variant="gold"
                 disabled={isSubmitting || submitDisabled}
                 className="gap-2"
+                loading={isSubmitting}
               >
                 {isSubmitting && <Loader2 className="size-3.5 animate-spin" />}
                 {submitLabel}

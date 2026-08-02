@@ -351,6 +351,7 @@ function AgentCredentialsSection({ node }: Readonly<{ node: PVENode }>) {
           size="sm"
           onClick={onGenerate}
           disabled={isPending}
+          loading={isPending}
         >
           {isPending ? (
             <Loader2 className="size-4 animate-spin" />

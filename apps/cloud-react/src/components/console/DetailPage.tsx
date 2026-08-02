@@ -1,9 +1,6 @@
 import type { ReactNode } from "react"
 
-import {
-  Button,
-  CopyButton,
-} from "@datadack/common-ui"
+import { Button, CopyButton } from "@datadack/common-ui"
 import { ArrowLeft, type LucideIcon } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 import { Link, useSearchParams } from "react-router-dom"

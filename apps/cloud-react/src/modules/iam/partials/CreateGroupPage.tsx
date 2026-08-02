@@ -98,7 +98,7 @@ export function CreateGroupPage() {
             <Button type="button" variant="ghost" onClick={() => void navigate(IAM_ROUTES.GROUPS)}>
               {t("console.wizard.cancel")}
             </Button>
-            <Button type="submit" variant="gold" disabled={isPending}>
+            <Button type="submit" variant="gold" disabled={isPending} loading={isPending}>
               {isPending ? t("iam.groups.createForm.creating") : t("iam.groups.create")}
             </Button>
           </div>

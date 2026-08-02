@@ -381,7 +381,13 @@ export function SupportTicketCreatePage() {
           <Button type="button" variant="ghost" onClick={() => void navigate("/support/tickets")}>
             {t("console.wizard.cancel")}
           </Button>
-          <Button type="submit" variant="gold" className="gap-2" disabled={isPending}>
+          <Button
+            type="submit"
+            variant="gold"
+            className="gap-2"
+            disabled={isPending}
+            loading={isPending}
+          >
             <Send className="h-4 w-4" />
             {isPending ? t("supportTickets.createForm.creating") : t("supportTickets.create")}
           </Button>

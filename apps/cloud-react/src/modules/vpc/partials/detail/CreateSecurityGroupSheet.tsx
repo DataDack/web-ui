@@ -109,7 +109,7 @@ export function CreateSecurityGroupSheet({ network, open, onOpenChange }: Readon
             <Button type="button" variant="ghost" onClick={close}>
               {t("console.wizard.cancel")}
             </Button>
-            <Button type="submit" variant="gold" disabled={isPending}>
+            <Button type="submit" variant="gold" disabled={isPending} loading={isPending}>
               {isPending ? t("vpc.sgForm.creating") : t("vpc.sgForm.create")}
             </Button>
           </div>

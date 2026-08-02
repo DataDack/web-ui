@@ -78,6 +78,7 @@ export function BuildLogConsole({ buildId, open, onOpenChange }: Readonly<BuildL
                     onClick={() => {
                       cancelBuild.mutate(build.id)
                     }}
+                    loading={cancelBuild.isPending}
                   >
                     {cancelBuild.isPending ? (
                       <Loader2 className="size-3 animate-spin" />

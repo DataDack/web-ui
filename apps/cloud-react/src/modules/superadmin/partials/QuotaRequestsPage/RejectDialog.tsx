@@ -75,6 +75,7 @@ function RejectForm({
             onClick={() => {
               onOpenChange(false)
             }}
+            loading={isPending}
           >
             {t("common.cancel")}
           </Button>
@@ -84,6 +85,7 @@ function RejectForm({
             disabled={isPending || !note.trim()}
             className="gap-2"
             onClick={submit}
+            loading={isPending}
           >
             {isPending && <Loader2 className="size-4 animate-spin" />}
             {t("superAdmin.quotaRequests.reject")}

@@ -196,6 +196,7 @@ function AddRuleRow({ sgId }: Readonly<{ sgId: string }>) {
           className="h-8 gap-1"
           disabled={!canSubmit || isPending}
           onClick={submit}
+          loading={isPending}
         >
           {isPending ? <Loader2 className="size-3 animate-spin" /> : <Plus className="size-3" />}
           {t("vpc.rules.add")}

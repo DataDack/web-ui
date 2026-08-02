@@ -84,6 +84,7 @@ export function AttachDiskDialog({ disk, onOpenChange }: Readonly<Props>) {
               close(false)
             }}
             disabled={isPending}
+            loading={isPending}
           >
             {t("console.confirm.cancel")}
           </Button>
@@ -102,6 +103,7 @@ export function AttachDiskDialog({ disk, onOpenChange }: Readonly<Props>) {
                 },
               )
             }}
+            loading={isPending}
           >
             {isPending && <Loader2 className="size-3.5 animate-spin" />}
             {t("disks.actions.attach")}

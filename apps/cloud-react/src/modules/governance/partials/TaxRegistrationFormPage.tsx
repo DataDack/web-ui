@@ -385,10 +385,16 @@ export function TaxRegistrationFormPage() {
         </Section>
 
         <div className="flex items-center justify-end gap-2">
-          <Button type="button" variant="ghost" onClick={back} disabled={isPending}>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={back}
+            disabled={isPending}
+            loading={isPending}
+          >
             {t("common.cancel")}
           </Button>
-          <Button type="submit" disabled={isPending}>
+          <Button type="submit" disabled={isPending} loading={isPending}>
             {isPending && <Loader2 className="size-4 animate-spin" />}
             {isEdit ? t("common.save") : t("taxSettings.actions.add")}
           </Button>

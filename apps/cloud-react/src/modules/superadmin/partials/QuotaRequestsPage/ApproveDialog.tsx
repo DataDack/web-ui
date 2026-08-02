@@ -104,10 +104,17 @@ function ApproveForm({
             onClick={() => {
               onOpenChange(false)
             }}
+            loading={isPending}
           >
             {t("common.cancel")}
           </Button>
-          <Button type="button" disabled={isPending || invalid} className="gap-2" onClick={submit}>
+          <Button
+            type="button"
+            disabled={isPending || invalid}
+            className="gap-2"
+            onClick={submit}
+            loading={isPending}
+          >
             {isPending && <Loader2 className="size-4 animate-spin" />}
             {t("superAdmin.quotaRequests.approve")}
           </Button>

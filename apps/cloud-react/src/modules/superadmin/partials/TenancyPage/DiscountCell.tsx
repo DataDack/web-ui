@@ -102,6 +102,7 @@ export function DiscountCell({ account }: Readonly<{ account: AccountRow }>) {
         aria-label={t("superAdmin.organizations.discount.save")}
         disabled={setDiscount.isPending}
         onClick={save}
+        loading={setDiscount.isPending}
       >
         <Check className="size-3.5" />
       </Button>
@@ -112,6 +113,7 @@ export function DiscountCell({ account }: Readonly<{ account: AccountRow }>) {
         aria-label={t("superAdmin.organizations.discount.cancel")}
         disabled={setDiscount.isPending}
         onClick={cancel}
+        loading={setDiscount.isPending}
       >
         <X className="size-3.5" />
       </Button>

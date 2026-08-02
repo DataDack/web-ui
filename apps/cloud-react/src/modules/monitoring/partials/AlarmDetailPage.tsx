@@ -885,6 +885,7 @@ export function AlarmDetailPage() {
               onClick={() => {
                 setEnabled.mutate({ id: alarm.id, enabled: !alarm.enabled })
               }}
+              loading={setEnabled.isPending}
             >
               {alarm.enabled ? <BellOff className="size-3.5" /> : <BellRing className="size-3.5" />}
               {alarm.enabled ? "Disable" : "Enable"}
@@ -904,6 +905,7 @@ export function AlarmDetailPage() {
                 onClick={() => {
                   void sendTests()
                 }}
+                loading={testChannel.isPending}
               >
                 <Send className="size-3.5" />
                 Send test

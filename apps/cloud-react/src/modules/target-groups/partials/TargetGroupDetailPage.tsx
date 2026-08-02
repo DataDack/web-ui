@@ -421,7 +421,12 @@ function RegisterTargetDialog({
           >
             {t("console.wizard.cancel")}
           </Button>
-          <Button variant="gold" disabled={!valid || isPending} onClick={submit}>
+          <Button
+            variant="gold"
+            disabled={!valid || isPending}
+            onClick={submit}
+            loading={isPending}
+          >
             {isPending ? t("targetGroups.targets.registering") : t("targetGroups.targets.register")}
           </Button>
         </div>

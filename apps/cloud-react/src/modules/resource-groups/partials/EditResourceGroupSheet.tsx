@@ -146,7 +146,7 @@ export function EditResourceGroupSheet({ group, open, onOpenChange }: Readonly<P
             <Button type="button" variant="ghost" onClick={close}>
               {t("resourceGroups.form.cancel")}
             </Button>
-            <Button type="submit" variant="gold" disabled={isPending}>
+            <Button type="submit" variant="gold" disabled={isPending} loading={isPending}>
               {isPending ? t("resourceGroups.form.saving") : t("resourceGroups.form.save")}
             </Button>
           </div>

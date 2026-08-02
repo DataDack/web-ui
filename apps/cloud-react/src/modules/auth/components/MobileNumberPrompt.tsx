@@ -123,10 +123,11 @@ export function MobileNumberPrompt() {
               setOpen(false)
             }}
             disabled={isPending}
+            loading={isPending}
           >
             {t("auth.mobilePrompt.later")}
           </Button>
-          <Button variant="gold" onClick={submit} disabled={isPending}>
+          <Button variant="gold" onClick={submit} disabled={isPending} loading={isPending}>
             {isPending && <Loader2 className="size-4 animate-spin" />}
             {t("auth.mobilePrompt.save")}
           </Button>

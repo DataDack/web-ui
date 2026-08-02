@@ -1,17 +1,45 @@
 import { useMemo } from "react"
 
-import { Badge, Button, EmptyState } from "@datadack/common-ui"
-import { ArrowLeft, Boxes, Crown, ShieldCheck, Star, UserRound } from "lucide-react"
+import {
+  Badge,
+  Button,
+  DataTable,
+  EmptyState,
+  Skeleton,
+  StatusBadge,
+  dateColumn,
+  textColumn,
+} from "@datadack/common-ui"
+import type { ColumnDef } from "@tanstack/react-table"
+import {
+  ArrowLeft,
+  Boxes,
+  Crown,
+  Gauge,
+  LifeBuoy,
+  ShieldCheck,
+  Star,
+  UserRound,
+} from "lucide-react"
 import { useNavigate, useParams } from "react-router-dom"
 
 import { KeyValueGrid, PageHeader, Section, type KeyValueItem } from "@/components/console"
+import { useAuth } from "@/modules/auth/auth.context"
+import { useAllSupportTickets } from "@/modules/support-tickets/support-tickets.hooks"
+import type { SupportTicket } from "@/modules/support-tickets/support-tickets.types"
 import { useScreen } from "@/services/api/screen"
 
 import { ActiveBadge } from "../components/ActiveBadge"
-import { useAdminPlatformOverview } from "../superadmin.hooks"
-import type { OverviewAccount, OverviewUser } from "../superadmin.types"
+import { KycActions, KycBadge } from "../components/KycCell"
+import {
+  useAdminPlatformOverview,
+  useAdminQuotaRequests,
+  useSetSuperAdmin,
+} from "../superadmin.hooks"
+import type { AdminQuotaRequest, OverviewAccount, OverviewUser } from "../superadmin.types"
 
-const ORGS_PATH = "/admin/organizations"
+// The old /admin/organizations now redirects here.
+const TENANCY_PATH = "/admin/tenancy"
 
 // "8 Jul 2026" — matches the admin tables' dateColumn format.
 function fmtDate(raw?: string | null): string {
@@ -45,12 +73,6 @@ function titleCase(s: string): string {
     .join(" ")
 }
 
-// The external KYC service's user-level flags, folded into one display label.
-function kycLabel(u: OverviewUser): string {
-  if (u.kyc_completed) return u.need_actions ? "Re-verification required" : "Completed"
-  return u.need_actions ? "Action required" : "Not started"
-}
-
 // The account rows this user belongs to, tagged with their role + whether they
 // own it. Derived from the cached overview graph (no dedicated user endpoint).
 interface MembershipRow {
@@ -63,8 +85,16 @@ export function AdminUserProfilePage() {
   useScreen("superadmin.userProfile")
   const navigate = useNavigate()
   const { userId } = useParams<{ userId: string }>()
+  const { user: operator } = useAuth()
 
   const { data: overview, isLoading } = useAdminPlatformOverview()
+  const { mutate: setSuperAdmin, isPending: isTogglingSuperAdmin } = useSetSuperAdmin()
+
+  // What this person has already asked for. Both endpoints are platform-wide and
+  // neither filters by user, so they are narrowed here — the operator wants the
+  // history in front of them, not a search they have to run.
+  const tickets = useAllSupportTickets()
+  const quota = useAdminQuotaRequests("", 1)
 
   // Every user is either attached to an org (org.users) or an orphan — flatten
   // both so the lookup covers everyone, tagging each with its org name.
@@ -94,19 +124,104 @@ export function AdminUserProfilePage() {
     return rows.sort((a, b) => Number(b.isOwner) - Number(a.isOwner))
   }, [overview, userId])
 
-  if (!isLoading && !user) {
+  // Narrowed here rather than server-side: neither endpoint filters by user.
+  const theirTickets = useMemo(
+    () => (tickets.data ?? []).filter((ticket) => ticket.createdBy === userId),
+    [tickets.data, userId],
+  )
+
+  // Matched on email — quota requests record who asked by address, not by id.
+  const theirQuotaRequests = useMemo(
+    () =>
+      (quota.data?.rows ?? []).filter(
+        (request) => !!user?.email && request.requested_by_email === user.email,
+      ),
+    [quota.data?.rows, user?.email],
+  )
+
+  const ticketColumns = useMemo<ColumnDef<SupportTicket>[]>(
+    () => [
+      textColumn<SupportTicket>({
+        id: "subject",
+        header: "Subject",
+        accessor: (ticket) => ticket.subject,
+      }),
+      textColumn<SupportTicket>({
+        id: "category",
+        header: "Category",
+        accessor: (ticket) => titleCase(ticket.category),
+        muted: true,
+        responsive: "md",
+      }),
+      {
+        id: "status",
+        header: () => "Status",
+        accessorFn: (ticket) => ticket.status,
+        cell: ({ row }) => <StatusBadge status={row.original.status} />,
+      },
+      dateColumn<SupportTicket>({
+        id: "opened",
+        header: "Opened",
+        accessor: (ticket) => ticket.createdAt,
+        responsive: "md",
+      }),
+    ],
+    [],
+  )
+
+  const quotaColumns = useMemo<ColumnDef<AdminQuotaRequest>[]>(
+    () => [
+      textColumn<AdminQuotaRequest>({
+        id: "quota",
+        header: "Quota",
+        accessor: (request) => request.quota_name,
+      }),
+      textColumn<AdminQuotaRequest>({
+        id: "account",
+        header: "Account",
+        accessor: (request) => request.account_name,
+        muted: true,
+        responsive: "md",
+      }),
+      {
+        id: "status",
+        header: () => "Status",
+        accessorFn: (request) => request.status,
+        cell: ({ row }) => <StatusBadge status={row.original.status} />,
+      },
+      dateColumn<AdminQuotaRequest>({
+        id: "requested",
+        header: "Requested",
+        accessor: (request) => request.created_at,
+        responsive: "md",
+      }),
+    ],
+    [],
+  )
+
+  if (isLoading) {
+    return (
+      <div className="space-y-5">
+        <Skeleton className="h-20 rounded-xl" />
+        <Skeleton className="h-48 rounded-xl" />
+        <Skeleton className="h-40 rounded-xl" />
+      </div>
+    )
+  }
+
+  if (!user) {
     return (
       <div className="space-y-5">
         <PageHeader
           icon={UserRound}
           breadcrumbs={[
             { label: "Super Admin" },
-            { label: "Organizations", to: ORGS_PATH },
+            { label: "Tenancy", to: TENANCY_PATH },
             { label: "User" },
           ]}
           title="User not found"
           actions={
-            <Button variant="outline" size="sm" onClick={() => void navigate(ORGS_PATH)}>
+            <Button variant="outline" size="sm" onClick={() => void navigate(TENANCY_PATH)}>
               <ArrowLeft className="size-4" />
               Back
             </Button>
@@ -157,13 +272,13 @@ export function AdminUserProfilePage() {
           label: "Onboarding",
           value: user.onboarding_status ? titleCase(user.onboarding_status) : "—",
         },
+        { label: "KYC", value: <KycBadge user={user} /> },
         {
-          label: "KYC",
-          value: (
-            <Badge variant="outline" className="font-normal">
-              {kycLabel(user)}
-            </Badge>
-          ),
+          // The distinction that matters when someone says "I am locked out":
+          // whether the platform is waiting on them, not whether they ever
+          // verified.
+          label: "Blocked by verification",
+          value: user.need_actions ? "Yes — must verify" : "No",
         },
         { label: "Created", value: fmtDate(user.created_at) },
         { label: "Last Login", value: fmtDateTime(user.last_login_at) },
@@ -176,20 +291,49 @@ export function AdminUserProfilePage() {
         icon={UserRound}
         breadcrumbs={[
           { label: "Super Admin" },
-          { label: "Organizations", to: ORGS_PATH },
+          { label: "Tenancy", to: TENANCY_PATH },
           { label: title },
         ]}
         title={title}
         description={user?.email}
         actions={
-          <Button variant="outline" size="sm" onClick={() => void navigate(ORGS_PATH)}>
-            <ArrowLeft className="size-4" />
-            Back
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={() => void navigate(TENANCY_PATH)}>
+              <ArrowLeft className="size-4" />
+              Back
+            </Button>
+            {/* Overriding verification is a decision about a person, so it lives
+                on the page that shows the whole person. */}
+            <KycActions user={user} />
+          </div>
         }
       />
 
-      <Section variant="panel" title="Profile">
+      <Section
+        variant="panel"
+        title="Profile"
+        actions={
+          <Button
+            size="sm"
+            variant={user.is_super_admin ? "outline" : "default"}
+            loading={isTogglingSuperAdmin}
+            // The backend refuses a self-revoke so the platform can never be
+            // left with no operator; say so rather than failing on click.
+            disabled={operator?.id === user.id && user.is_super_admin}
+            title={
+              operator?.id === user.id && user.is_super_admin
+                ? "You cannot revoke your own super-admin access"
+                : undefined
+            }
+            onClick={() => {
+              setSuperAdmin({ id: user.id, isSuperAdmin: !user.is_super_admin })
+            }}
+          >
+            <ShieldCheck className="size-3.5" />
+            {user.is_super_admin ? "Revoke super admin" : "Grant super admin"}
+          </Button>
+        }
+      >
         <KeyValueGrid items={profileItems} columns={3} />
       </Section>
 
@@ -233,6 +377,58 @@ export function AdminUserProfilePage() {
             ))}
           </div>
         )}
+      </Section>
+
+      <Section
+        variant="panel"
+        title="Support tickets"
+        description="Everything this user has raised, newest first."
+      >
+        <DataTable<SupportTicket>
+          data={theirTickets}
+          columns={ticketColumns}
+          loading={tickets.isLoading}
+          error={tickets.isError ? "Their tickets could not be read." : undefined}
+          onRetry={() => void tickets.refetch()}
+          getRowId={(ticket) => ticket.id}
+          onRowClick={(ticket) => void navigate(`/admin/support/${ticket.id}`)}
+          defaultSorting={[{ id: "opened", desc: true }]}
+          empty={
+            <EmptyState
+              icon={LifeBuoy}
+              title="No tickets from this user"
+              description="They have not asked support for anything yet."
+            />
+          }
+          onRefresh={() => void tickets.refetch()}
+          refreshing={tickets.isFetching}
+        />
+      </Section>
+
+      <Section
+        variant="panel"
+        title="Quota requests"
+        description="Increases this user has asked for, and what was decided."
+      >
+        <DataTable<AdminQuotaRequest>
+          data={theirQuotaRequests}
+          columns={quotaColumns}
+          loading={quota.isLoading}
+          error={quota.isError ? "Their quota requests could not be read." : undefined}
+          onRetry={() => void quota.refetch()}
+          getRowId={(request) => request.id}
+          onRowClick={() => void navigate("/admin/requests?tab=quota")}
+          defaultSorting={[{ id: "requested", desc: true }]}
+          empty={
+            <EmptyState
+              icon={Gauge}
+              title="No quota requests from this user"
+              description="They have not asked for an increase to any limit."
+            />
+          }
+          onRefresh={() => void quota.refetch()}
+          refreshing={quota.isFetching}
+        />
       </Section>
     </div>
   )

@@ -126,13 +126,19 @@ export function NamingConventionsPage() {
               <RefreshCw className={`w-4 h-4 ${isFetching ? "animate-spin" : ""}`} />
             </Button>
             {canEdit && dirty && (
-              <Button variant="ghost" className="gap-1.5" onClick={reset} disabled={isSaving}>
+              <Button
+                variant="ghost"
+                className="gap-1.5"
+                onClick={reset}
+                disabled={isSaving}
+                loading={isSaving}
+              >
                 <RotateCcw className="size-3.5" />
                 {t("naming.actions.reset")}
               </Button>
             )}
             {canEdit && (
-              <Button onClick={submit} disabled={!dirty || isSaving}>
+              <Button onClick={submit} disabled={!dirty || isSaving} loading={isSaving}>
                 {isSaving ? t("naming.actions.saving") : t("naming.actions.save")}
               </Button>
             )}

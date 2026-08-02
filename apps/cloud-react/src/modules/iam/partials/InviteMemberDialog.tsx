@@ -235,10 +235,10 @@ export function InviteMemberDialog({
             </>
           ) : (
             <>
-              <Button variant="ghost" onClick={close} disabled={isPending}>
+              <Button variant="ghost" onClick={close} disabled={isPending} loading={isPending}>
                 {t("console.wizard.cancel")}
               </Button>
-              <Button variant="gold" onClick={submit} disabled={isPending}>
+              <Button variant="gold" onClick={submit} disabled={isPending} loading={isPending}>
                 {isPending ? t("iam.invitations.form.sending") : t("iam.invitations.invite")}
               </Button>
             </>

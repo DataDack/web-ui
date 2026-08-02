@@ -316,7 +316,12 @@ function AddListenerDialog({
           >
             {t("console.wizard.cancel")}
           </Button>
-          <Button variant="gold" disabled={!valid || isPending} onClick={submit}>
+          <Button
+            variant="gold"
+            disabled={!valid || isPending}
+            onClick={submit}
+            loading={isPending}
+          >
             {isPending ? t("loadBalancers.listeners.adding") : t("loadBalancers.listeners.add")}
           </Button>
         </div>

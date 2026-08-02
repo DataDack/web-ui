@@ -113,7 +113,12 @@ export function SummaryRail({
           <Button type="button" variant="ghost" onClick={onCancel}>
             Cancel
           </Button>
-          <Button type="submit" className="gap-2" disabled={isSubmitting || blocker !== null}>
+          <Button
+            type="submit"
+            className="gap-2"
+            disabled={isSubmitting || blocker !== null}
+            loading={isSubmitting}
+          >
             {isSubmitting ? (
               <Loader2 className="size-4 animate-spin" />
             ) : (

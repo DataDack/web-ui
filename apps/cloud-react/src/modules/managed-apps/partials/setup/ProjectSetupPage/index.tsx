@@ -199,6 +199,7 @@ export function ProjectSetupPage() {
                     onClick={() => {
                       retry.mutate()
                     }}
+                    loading={retry.isPending}
                   >
                     {retry.isPending ? (
                       <Loader2 className="size-3.5 animate-spin" />
@@ -253,6 +254,7 @@ export function ProjectSetupPage() {
                   onClick={() => {
                     retry.mutate()
                   }}
+                  loading={retry.isPending}
                 >
                   {retry.isPending ? (
                     <Loader2 className="size-3.5 animate-spin" />

@@ -151,7 +151,7 @@ export function SecurityGroupCreatePage() {
             >
               {t("console.wizard.cancel")}
             </Button>
-            <Button type="submit" variant="gold" disabled={isPending}>
+            <Button type="submit" variant="gold" disabled={isPending} loading={isPending}>
               {isPending && <Loader2 className="size-3.5 animate-spin" />}
               {isPending ? t("vpc.sgForm.creating") : t("vpc.sgForm.create")}
             </Button>

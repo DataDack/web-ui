@@ -376,6 +376,7 @@ function SshKeyCreate({ method, onCreated }: Readonly<SshKeyCreateProps>) {
               className="gap-2"
               disabled={isPending || !publicKey}
               onClick={() => void submit()}
+              loading={isPending}
             >
               {isPending ? (
                 <Loader2 className="size-3.5 animate-spin" />

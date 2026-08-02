@@ -323,6 +323,7 @@ function FunctionAliases({ name }: Readonly<{ name: string }>) {
               },
             )
           }}
+          loading={putAlias.isPending}
         >
           {t("common.add", { defaultValue: "Add" })}
         </Button>
@@ -362,6 +363,7 @@ function InvokeTester({ name }: Readonly<{ name: string }>) {
           onClick={() => {
             invoke.mutate(payload)
           }}
+          loading={invoke.isPending}
         >
           <Play className="size-3.5" />
           {invoke.isPending ? t("serverless.invoke.running") : t("serverless.invoke.run")}

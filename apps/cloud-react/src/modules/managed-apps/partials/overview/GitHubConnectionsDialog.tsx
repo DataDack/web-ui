@@ -122,7 +122,13 @@ export function GitHubConnectionsDialog({
           </div>
 
           <div className="flex flex-wrap items-center gap-2 border-t border-border/60 pt-4">
-            <Button size="sm" className="gap-1.5" disabled={installUrl.isPending} onClick={connect}>
+            <Button
+              size="sm"
+              className="gap-1.5"
+              disabled={installUrl.isPending}
+              onClick={connect}
+              loading={installUrl.isPending}
+            >
               {installUrl.isPending ? (
                 <Loader2 className="size-3.5 animate-spin" />
               ) : (

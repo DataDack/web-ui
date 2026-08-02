@@ -271,6 +271,7 @@ export function NewOrgWizardPage() {
           type="submit"
           disabled={!consent || create.isPending}
           className="btn-gold rounded-full font-bold"
+          loading={create.isPending}
         >
           {create.isPending && <Loader2 className="size-4 animate-spin" />}
           {t("org.newOrg.submit")}

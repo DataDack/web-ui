@@ -185,7 +185,7 @@ export function AddIPPoolDialog({ open, onOpenChange }: Readonly<Props>) {
               <Textarea {...register("description")} rows={2} />
             </Field>
 
-            <Button type="submit" disabled={isPending} className="mt-1 gap-2">
+            <Button type="submit" disabled={isPending} className="mt-1 gap-2" loading={isPending}>
               {isPending && <Loader2 className="size-4 animate-spin" />}
               {t("superAdmin.staticIps.pools.add")}
             </Button>

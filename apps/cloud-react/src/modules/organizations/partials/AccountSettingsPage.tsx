@@ -252,6 +252,7 @@ function AccountDetailsSection({
                 setEditing(false)
               }}
               disabled={isPending}
+              loading={isPending}
             >
               {t("common.cancel", { defaultValue: "Cancel" })}
             </Button>
@@ -260,6 +261,7 @@ function AccountDetailsSection({
               variant="gold"
               className="gap-1.5"
               disabled={isPending || !isDirty}
+              loading={isPending}
             >
               <Save className="size-3.5" />
               {isPending ? t("org.settings.saving") : t("org.settings.save")}
@@ -405,6 +407,7 @@ function OrgDetailsSection({ org, canEdit }: Readonly<{ org: Organization; canEd
                 setEditing(false)
               }}
               disabled={isPending}
+              loading={isPending}
             >
               {t("common.cancel", { defaultValue: "Cancel" })}
             </Button>
@@ -413,6 +416,7 @@ function OrgDetailsSection({ org, canEdit }: Readonly<{ org: Organization; canEd
               variant="gold"
               className="gap-1.5"
               disabled={isPending || !isDirty}
+              loading={isPending}
             >
               <Save className="size-3.5" />
               {isPending ? t("org.settings.saving") : t("org.settings.save")}
@@ -630,10 +634,17 @@ function BillingAddressSection({
                 setEditing(false)
               }}
               disabled={isPending}
+              loading={isPending}
             >
               {t(k("cancel"))}
             </Button>
-            <Button type="submit" variant="gold" className="gap-1.5" disabled={isPending}>
+            <Button
+              type="submit"
+              variant="gold"
+              className="gap-1.5"
+              disabled={isPending}
+              loading={isPending}
+            >
               <Save className="size-3.5" />
               {isPending ? t("org.settings.saving") : t("org.settings.save")}
             </Button>
@@ -808,10 +819,17 @@ function AccountAddressSection({
                 setEditing(false)
               }}
               disabled={isPending}
+              loading={isPending}
             >
               {t(k("cancel"))}
             </Button>
-            <Button type="submit" variant="gold" className="gap-1.5" disabled={isPending}>
+            <Button
+              type="submit"
+              variant="gold"
+              className="gap-1.5"
+              disabled={isPending}
+              loading={isPending}
+            >
               <Save className="size-3.5" />
               {isPending ? t("org.settings.saving") : t("org.settings.save")}
             </Button>
@@ -1128,10 +1146,16 @@ function ConvertToBusinessSheet({
           </div>
 
           <div className="flex items-center justify-end gap-3 pt-1">
-            <Button type="button" variant="ghost" onClick={close} disabled={isPending}>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={close}
+              disabled={isPending}
+              loading={isPending}
+            >
               {t(k("cancel"))}
             </Button>
-            <Button type="submit" variant="gold" disabled={isPending}>
+            <Button type="submit" variant="gold" disabled={isPending} loading={isPending}>
               {isPending
                 ? t("org.settings.saving")
                 : t("account.settings.convert.submit", {
@@ -1218,6 +1242,7 @@ function TransferOwnershipSection({ account }: Readonly<{ account: MyAccount }>)
                 cancel.mutate()
               }}
               disabled={cancel.isPending}
+              loading={cancel.isPending}
             >
               {t("account.settings.transfer.cancelPending", {
                 defaultValue: "Cancel",
