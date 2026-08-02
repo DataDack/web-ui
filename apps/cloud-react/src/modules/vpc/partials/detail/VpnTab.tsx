@@ -30,7 +30,7 @@ export function VpnTab({ network }: Readonly<{ network: VPCNetwork }>) {
   const routerNames = useMemo(() => new Map(routers.map((r) => [r.id, r.name])), [routers])
   const networkConnections = connections.filter((c) => networkRouterIds.has(c.router_id))
 
-  const columns = useMemo<ColumnDef<VPNRow, unknown>[]>(
+  const columns = useMemo<ColumnDef<VPNRow>[]>(
     () => [
       {
         id: "name",
