@@ -4,6 +4,7 @@ import type { ColumnDef } from "@tanstack/react-table"
 import { Boxes, Container, Cpu, Package, Plus, Zap } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
 
+import { apiErrorMessage } from "@/lib/api"
 import { useDashboard } from "@/lib/queries"
 import type { FunctionEntity } from "@/lib/schemas"
 
@@ -20,7 +21,7 @@ import {
   cellText,
 } from "@datadack/common-ui"
 export function FunctionsPage() {
-  const { data, isFetching, isLoading, refetch } = useDashboard()
+  const { data, error, isFetching, isLoading, refetch } = useDashboard()
   const functions = data?.detail.functions ?? []
 
   const navigate = useNavigate()
@@ -147,6 +148,8 @@ export function FunctionsPage() {
         }
         onRefresh={() => void refetch()}
         refreshing={isFetching}
+        error={error ? apiErrorMessage(error) : undefined}
+        onRetry={() => void refetch()}
       />
     </>
   )

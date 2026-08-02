@@ -3,6 +3,7 @@ import { useMemo } from "react"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Layers, Package } from "lucide-react"
 
+import { apiErrorMessage } from "@/lib/api"
 import { useDashboard } from "@/lib/queries"
 import type { LayerVersion } from "@/lib/schemas"
 
@@ -19,7 +20,7 @@ import {
   timeAgo,
 } from "@datadack/common-ui"
 export function LayersPage() {
-  const { data, isFetching, isLoading, refetch } = useDashboard()
+  const { data, error, isFetching, isLoading, refetch } = useDashboard()
   const layers = data?.detail.layers ?? []
 
   const columns = useMemo<ColumnDef<LayerVersion>[]>(
@@ -110,6 +111,8 @@ export function LayersPage() {
         }
         onRefresh={() => void refetch()}
         refreshing={isFetching}
+        error={error ? apiErrorMessage(error) : undefined}
+        onRetry={() => void refetch()}
       />
     </>
   )

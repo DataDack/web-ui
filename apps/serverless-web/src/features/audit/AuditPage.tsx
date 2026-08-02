@@ -169,12 +169,6 @@ export function AuditPage() {
         </label>
       </div>
 
-      {error && (
-        <div className="border-status-danger/40 bg-status-danger-bg text-status-danger mb-4 rounded-lg border px-3 py-2 text-[12px]">
-          {apiErrorMessage(error)}
-        </div>
-      )}
-
       <StatGrid className="mb-6">
         <StatCard label="Events" value={events.length} icon={ScrollText} loading={isLoading} />
         <StatCard
@@ -207,6 +201,8 @@ export function AuditPage() {
         }
         onRefresh={() => void refetch()}
         refreshing={isFetching}
+        error={error ? apiErrorMessage(error) : undefined}
+        onRetry={() => void refetch()}
       />
     </>
   )

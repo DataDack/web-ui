@@ -3,6 +3,7 @@ import { useMemo } from "react"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Cpu, HardDrive, Server, ServerOff } from "lucide-react"
 
+import { apiErrorMessage } from "@/lib/api"
 import { useDashboard } from "@/lib/queries"
 import type { Worker } from "@/lib/schemas"
 
@@ -21,7 +22,7 @@ import {
 const LIVE_STATES = ["ready", "active"]
 
 export function WorkersPage() {
-  const { data, isFetching, isLoading, refetch } = useDashboard()
+  const { data, error, isFetching, isLoading, refetch } = useDashboard()
   const workers = data?.detail.workers ?? []
 
   const columns = useMemo<ColumnDef<Worker>[]>(
@@ -133,6 +134,8 @@ export function WorkersPage() {
         }
         onRefresh={() => void refetch()}
         refreshing={isFetching}
+        error={error ? apiErrorMessage(error) : undefined}
+        onRetry={() => void refetch()}
       />
     </>
   )
