@@ -2,8 +2,161 @@ import { useId, useMemo, useRef, useState } from "react"
 
 import { Check, ChevronDown, Loader2 } from "lucide-react"
 
-import { Popover, PopoverAnchor, PopoverContent } from "@datadack/common-ui"
-import { cn } from "@/lib/utils"
+import { css, cx } from "@emotion/css"
+
+import { animateSpin, fontMono, mix } from "../lib/styles"
+import { Popover, PopoverAnchor, PopoverContent } from "./popover"
+
+// Matches Input's box, but the focus ring lives on the wrapper (focus-within)
+// because the chevron button sits inside the same field.
+const field = css`
+  position: relative;
+  display: flex;
+  height: 36px;
+  width: 100%;
+  align-items: center;
+  border-radius: 0.375rem;
+  border: 1px solid var(--input);
+  background: transparent;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  transition-property: color, box-shadow;
+  transition-duration: 150ms;
+
+  &:focus-within {
+    border-color: var(--ring);
+    box-shadow: 0 0 0 3px ${mix("--ring", 50)};
+  }
+
+  .dark & {
+    background: ${mix("--input", 30)};
+  }
+`
+
+const fieldInvalid = css`
+  border-color: var(--destructive);
+  box-shadow: 0 0 0 3px ${mix("--destructive", 20)};
+
+  .dark & {
+    box-shadow: 0 0 0 3px ${mix("--destructive", 40)};
+  }
+`
+
+const fieldDisabled = css`
+  pointer-events: none;
+  opacity: 0.5;
+`
+
+const textInput = css`
+  height: 100%;
+  width: 100%;
+  min-width: 0;
+  border-radius: 0.375rem;
+  background: transparent;
+  padding-left: 12px;
+  padding-right: 32px;
+  font-size: 14px;
+  line-height: 20px;
+  outline: none;
+
+  &::placeholder {
+    color: var(--muted-foreground);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+`
+
+const toggle = css`
+  position: absolute;
+  right: 0;
+  display: flex;
+  height: 100%;
+  align-items: center;
+  padding-left: 8px;
+  padding-right: 8px;
+  color: ${mix("--muted-foreground", 70)};
+
+  &:hover {
+    color: var(--foreground);
+  }
+`
+
+const chevron = css`
+  width: 16px;
+  height: 16px;
+  transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+`
+
+const chevronOpen = css`
+  transform: rotate(180deg);
+`
+
+const list = css`
+  max-height: 16rem;
+  width: var(--radix-popover-trigger-width);
+  overflow-y: auto;
+  padding: 4px;
+`
+
+const status = css`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--muted-foreground);
+`
+
+const spinner = css`
+  width: 14px;
+  height: 14px;
+`
+
+const row = css`
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 8px;
+  border-radius: 0.125rem;
+  padding: 6px 8px;
+  text-align: left;
+  font-size: 14px;
+  line-height: 20px;
+  outline: none;
+  color: var(--foreground);
+`
+
+const rowActive = css`
+  background: var(--accent);
+  color: var(--accent-foreground);
+`
+
+const rowLabel = css`
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`
+
+const rowHint = css`
+  flex-shrink: 0;
+  font-family: ${fontMono};
+  font-size: 11px;
+  color: var(--muted-foreground);
+`
+
+const check = css`
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+`
+
+const checkHidden = css`
+  opacity: 0;
+`
 
 export interface ComboboxInputOption {
   /** The value written into the field when the row is picked. */
@@ -76,15 +229,7 @@ export function ComboboxInput({
   return (
     <Popover open={showList} onOpenChange={setOpen}>
       <PopoverAnchor asChild>
-        <div
-          className={cn(
-            "relative flex h-9 w-full items-center rounded-md border border-input bg-transparent shadow-xs transition-[color,box-shadow] dark:bg-input/30",
-            "focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50",
-            invalid && "border-destructive ring-destructive/20 dark:ring-destructive/40",
-            disabled && "pointer-events-none opacity-50",
-            className,
-          )}
-        >
+        <div className={cx(field, invalid && fieldInvalid, disabled && fieldDisabled, className)}>
           <input
             ref={inputRef}
             id={id}
@@ -97,7 +242,7 @@ export function ComboboxInput({
             disabled={disabled}
             value={value}
             placeholder={placeholder}
-            className="h-full w-full min-w-0 rounded-md bg-transparent pr-8 pl-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed"
+            className={textInput}
             onChange={(event) => {
               const next = event.target.value
               onValueChange(transform ? transform(next) : next)
@@ -128,13 +273,13 @@ export function ComboboxInput({
             tabIndex={-1}
             aria-label="Toggle suggestions"
             disabled={disabled}
-            className="absolute right-0 flex h-full items-center px-2 text-muted-foreground/70 hover:text-foreground"
+            className={toggle}
             onClick={() => {
               setOpen((prev) => !prev)
               inputRef.current?.focus()
             }}
           >
-            <ChevronDown className={cn("size-4 transition-transform", showList && "rotate-180")} />
+            <ChevronDown className={cx(chevron, showList && chevronOpen)} />
           </button>
         </div>
       </PopoverAnchor>
@@ -146,17 +291,15 @@ export function ComboboxInput({
           // Keep the caret in the input; the list is navigated by keyboard.
           event.preventDefault()
         }}
-        className="max-h-64 w-(--radix-popover-trigger-width) overflow-y-auto p-1"
+        className={list}
       >
         {loading && (
-          <div className="flex items-center gap-2 px-2 py-2 text-sm text-muted-foreground">
-            <Loader2 className="size-3.5 animate-spin" />
+          <div className={status}>
+            <Loader2 className={cx(spinner, animateSpin)} />
             {loadingText}
           </div>
         )}
-        {!loading && filtered.length === 0 && (
-          <div className="px-2 py-2 text-sm text-muted-foreground">{emptyText}</div>
-        )}
+        {!loading && filtered.length === 0 && <div className={status}>{emptyText}</div>}
         {!loading &&
           filtered.map((option, index) => {
             const selected = option.value === value
@@ -166,10 +309,7 @@ export function ComboboxInput({
                 type="button"
                 role="option"
                 aria-selected={selected}
-                className={cn(
-                  "flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-left text-sm outline-none",
-                  index === active ? "bg-accent text-accent-foreground" : "text-foreground",
-                )}
+                className={cx(row, index === active && rowActive)}
                 onMouseEnter={() => {
                   setActive(index)
                 }}
@@ -182,13 +322,9 @@ export function ComboboxInput({
                   inputRef.current?.focus()
                 }}
               >
-                <span className="min-w-0 flex-1 truncate">{option.label ?? option.value}</span>
-                {option.hint && (
-                  <span className="shrink-0 font-mono text-[11px] text-muted-foreground">
-                    {option.hint}
-                  </span>
-                )}
-                <Check className={cn("size-4 shrink-0", selected ? "opacity-100" : "opacity-0")} />
+                <span className={rowLabel}>{option.label ?? option.value}</span>
+                {option.hint && <span className={rowHint}>{option.hint}</span>}
+                <Check className={cx(check, !selected && checkHidden)} />
               </button>
             )
           })}

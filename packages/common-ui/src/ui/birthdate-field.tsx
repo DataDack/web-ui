@@ -2,15 +2,110 @@ import { useState } from "react"
 
 import { Cake } from "lucide-react"
 
-import {
-  DayGridPicker,
-  MONTHS,
-  MonthYearPicker,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@datadack/common-ui"
-import { cn } from "@/lib/utils"
+import { css, cx } from "@emotion/css"
+
+import { media, mix } from "../lib/styles"
+import { DayGridPicker } from "./day-grid-picker"
+import { MONTHS, MonthYearPicker } from "./month-year-picker"
+import { Popover, PopoverContent, PopoverTrigger } from "./popover"
+
+const trigger = css`
+  display: flex;
+  height: 36px;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border-radius: 0.375rem;
+  border: 1px solid var(--input);
+  background: transparent;
+  padding: 4px 12px;
+  font-size: 16px;
+  line-height: 24px;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  transition-property: color, box-shadow;
+  transition-duration: 150ms;
+  outline: none;
+
+  &:focus-visible {
+    border-color: var(--ring);
+    box-shadow: 0 0 0 3px ${mix("--ring", 50)};
+  }
+
+  &[data-invalid="true"] {
+    border-color: var(--destructive);
+    box-shadow: 0 0 0 3px ${mix("--destructive", 20)};
+  }
+
+  ${media.md} {
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .dark & {
+    background: ${mix("--input", 30)};
+  }
+
+  .dark &[data-invalid="true"] {
+    box-shadow: 0 0 0 3px ${mix("--destructive", 40)};
+  }
+`
+
+const valueRow = css`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-variant-numeric: tabular-nums;
+`
+
+const cakeIcon = css`
+  width: 16px;
+  height: 16px;
+  color: var(--muted-foreground);
+`
+
+/* The pickers sit inside the popover, so they drop their own frame. */
+const framelessPicker = css`
+  border: 0;
+  box-shadow: none;
+`
+
+const footerButton = css`
+  width: 100%;
+  border-top: 1px solid var(--border);
+  border-bottom-left-radius: 0.375rem;
+  border-bottom-right-radius: 0.375rem;
+  padding: 8px 16px;
+  text-align: center;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  outline: none;
+  transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 3px ${mix("--ring", 50)};
+  }
+`
+
+const popoverBody = css`
+  width: auto;
+  padding: 0;
+`
+
+const muted = css`
+  color: var(--muted-foreground);
+`
+
+const placeholderText = css`
+  color: ${mix("--muted-foreground", 50)};
+`
 
 /** Parse an ISO `yyyy-mm-dd` string into parts (no timezone shift). */
 function parseISO(value?: string) {
@@ -89,27 +184,22 @@ export function BirthdateField({
           type="button"
           data-invalid={invalid ? "true" : undefined}
           data-empty={!parts}
-          className={cn(
-            "flex h-9 w-full items-center justify-between gap-2 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none md:text-sm dark:bg-input/30",
-            "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
-            "data-[invalid=true]:border-destructive data-[invalid=true]:ring-destructive/20 dark:data-[invalid=true]:ring-destructive/40",
-            className,
-          )}
+          className={cx(trigger, className)}
         >
-          <span className="flex items-center gap-2 tabular-nums">
+          <span className={valueRow}>
             <Segment empty={!parts}>{parts ? String(parts.day).padStart(2, "0") : "DD"}</Segment>
             <Divider />
             <Segment empty={!parts}>{parts ? MONTHS[parts.month] : "Mon"}</Segment>
             <Divider />
             <Segment empty={!parts}>{parts ? parts.year : "YYYY"}</Segment>
           </span>
-          <Cake className="size-4 text-muted-foreground" />
+          <Cake className={cakeIcon} />
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" align="start">
+      <PopoverContent className={popoverBody} align="start">
         {view === "monthYear" ? (
           <MonthYearPicker
-            className="border-0 shadow-none"
+            className={framelessPicker}
             month={month}
             year={year}
             fromYear={fromYear}
@@ -127,7 +217,7 @@ export function BirthdateField({
           />
         ) : (
           <DayGridPicker
-            className="border-0 shadow-none"
+            className={framelessPicker}
             label={
               month !== undefined && year !== undefined ? `${MONTHS[month]} ${String(year)}` : "Day"
             }
@@ -145,7 +235,7 @@ export function BirthdateField({
             onClick={() => {
               setView("monthYear")
             }}
-            className="w-full rounded-b-md border-t px-4 py-2 text-center text-xs font-medium text-muted-foreground outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50"
+            className={footerButton}
           >
             Change month &amp; year
           </button>
@@ -156,9 +246,9 @@ export function BirthdateField({
 }
 
 function Segment({ children, empty }: Readonly<{ children: React.ReactNode; empty?: boolean }>) {
-  return <span className={cn("font-medium", empty && "text-muted-foreground")}>{children}</span>
+  return <span className={cx("font-medium", empty && muted)}>{children}</span>
 }
 
 function Divider() {
-  return <span className="text-muted-foreground/50">/</span>
+  return <span className={placeholderText}>/</span>
 }

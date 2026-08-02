@@ -1,7 +1,6 @@
 import { useState } from "react"
 
-import { BirthdateField } from "@/components/ui/birthdate-field"
-import { DayGridPicker, MonthYearPicker } from "@datadack/common-ui"
+import { BirthdateField, DayGridPicker, MonthYearPicker } from "@datadack/common-ui"
 /**
  * Demo of the date-selector family under the rose design skin. Mount this on a
  * route (or in a story) to preview the components in the pink theme.

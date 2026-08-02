@@ -7,7 +7,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
+} from "@datadack/common-ui"
 
 import { SmartSelect } from "./SmartSelect"
 import type { SmartSelectProps } from "./SmartSelect/smart-select.types"

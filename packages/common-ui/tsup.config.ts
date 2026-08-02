@@ -30,6 +30,7 @@ const options: Options = {
     "clsx",
     "cmdk",
     "react-day-picker",
+    "react-hook-form",
     "tailwind-merge",
   ],
 }

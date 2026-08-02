@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { Label } from "@datadack/common-ui"
+import { css, cx } from "@emotion/css"
 import { Slot } from "radix-ui"
 import {
   Controller,
@@ -12,7 +12,30 @@ import {
   type FieldValues,
 } from "react-hook-form"
 
-import { cn } from "@/lib/utils"
+import { Label } from "./label"
+
+const item = css`
+  display: grid;
+  gap: 8px;
+`
+
+const label = css`
+  &[data-error="true"] {
+    color: var(--destructive);
+  }
+`
+
+const description = css`
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--muted-foreground);
+`
+
+const message = css`
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--destructive);
+`
 
 const Form = FormProvider
 
@@ -66,7 +89,7 @@ function FormItem({ className, ...props }: React.ComponentProps<"div">) {
 
   return (
     <FormItemContext.Provider value={{ id }}>
-      <div data-slot="form-item" className={cn("grid gap-2", className)} {...props} />
+      <div data-slot="form-item" className={cx(item, className)} {...props} />
     </FormItemContext.Provider>
   )
 }
@@ -78,7 +101,7 @@ function FormLabel({ className, ...props }: React.ComponentProps<typeof Label>) 
     <Label
       data-slot="form-label"
       data-error={!!error}
-      className={cn("data-[error=true]:text-destructive", className)}
+      className={cx(label, className)}
       htmlFor={formItemId}
       {...props}
     />
@@ -106,7 +129,7 @@ function FormDescription({ className, ...props }: React.ComponentProps<"p">) {
     <p
       data-slot="form-description"
       id={formDescriptionId}
-      className={cn("text-muted-foreground text-sm", className)}
+      className={cx(description, className)}
       {...props}
     />
   )
@@ -121,24 +144,19 @@ function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
   }
 
   return (
-    <p
-      data-slot="form-message"
-      id={formMessageId}
-      className={cn("text-destructive text-sm", className)}
-      {...props}
-    >
+    <p data-slot="form-message" id={formMessageId} className={cx(message, className)} {...props}>
       {body}
     </p>
   )
 }
 
 export {
-  useFormField,
   Form,
-  FormItem,
-  FormLabel,
   FormControl,
   FormDescription,
-  FormMessage,
   FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  useFormField,
 }
