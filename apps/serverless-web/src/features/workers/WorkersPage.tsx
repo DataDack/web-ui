@@ -9,7 +9,8 @@ import type { Worker } from "@/lib/schemas"
 import {
   Badge,
   PageHeader,
-  ResourceTable,
+  DataTable,
+  EmptyState,
   StatCard,
   StatGrid,
   StatusBadge,
@@ -117,14 +118,19 @@ export function WorkersPage() {
         <StatCard label="Sandbox slots" value={slots} icon={Cpu} loading={isLoading} />
       </StatGrid>
 
-      <ResourceTable
+      <DataTable
         data={workers}
         columns={columns}
         loading={isLoading}
+        searchable
         searchPlaceholder="Filter workers…"
-        emptyIcon={ServerOff}
-        emptyTitle="No workers enrolled"
-        emptyDescription="Functions cannot be placed until a worker joins. Enrol one with a worker token."
+        empty={
+          <EmptyState
+            icon={ServerOff}
+            title="No workers enrolled"
+            description="Functions cannot be placed until a worker joins. Enrol one with a worker token."
+          />
+        }
       />
     </>
   )

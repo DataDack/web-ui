@@ -4,7 +4,7 @@ import {
   Badge,
   EmptyState,
   KeyValueGrid,
-  ResourceTable,
+  DataTable,
   Skeleton,
   StatusBadge,
   Tabs,
@@ -174,13 +174,17 @@ function FunctionVersions({ name }: Readonly<{ name: string }>) {
     [],
   )
   return (
-    <ResourceTable
+    <DataTable
       data={data ?? []}
       columns={columns}
       loading={isLoading}
-      emptyIcon={History}
-      emptyTitle="No published versions"
-      emptyDescription="Publishing a version freezes the current code and configuration."
+      empty={
+        <EmptyState
+          icon={History}
+          title="No published versions"
+          description="Publishing a version freezes the current code and configuration."
+        />
+      }
     />
   )
 }
@@ -225,13 +229,17 @@ function FunctionAliases({ name }: Readonly<{ name: string }>) {
     [],
   )
   return (
-    <ResourceTable
+    <DataTable
       data={data ?? []}
       columns={columns}
       loading={isLoading}
-      emptyIcon={GitBranch}
-      emptyTitle="No aliases"
-      emptyDescription="Aliases give a stable name (prod, staging) to a published version."
+      empty={
+        <EmptyState
+          icon={GitBranch}
+          title="No aliases"
+          description="Aliases give a stable name (prod, staging) to a published version."
+        />
+      }
     />
   )
 }

@@ -2,7 +2,8 @@ import { useMemo } from "react"
 
 import {
   PageHeader,
-  ResourceTable,
+  DataTable,
+  EmptyState,
   StatCard,
   StatGrid,
   StatusBadge,
@@ -100,14 +101,19 @@ export function ServerlessFunctionsPage() {
         />
       </StatGrid>
 
-      <ResourceTable
+      <DataTable
         data={functions}
         columns={columns}
         loading={isLoading}
+        searchable
         searchPlaceholder="Filter functions…"
-        emptyIcon={Zap}
-        emptyTitle="No functions yet"
-        emptyDescription="Deploy your first function to see it here."
+        empty={
+          <EmptyState
+            icon={Zap}
+            title="No functions yet"
+            description="Deploy your first function to see it here."
+          />
+        }
       />
     </div>
   )

@@ -11,7 +11,8 @@ import {
   Badge,
   Button,
   PageHeader,
-  ResourceTable,
+  DataTable,
+  EmptyState,
   StatCard,
   StatGrid,
   StatusBadge,
@@ -131,14 +132,19 @@ export function FunctionsPage() {
         />
       </StatGrid>
 
-      <ResourceTable
+      <DataTable
         data={functions}
         columns={columns}
         loading={isLoading}
+        searchable
         searchPlaceholder="Filter functions…"
-        emptyIcon={Boxes}
-        emptyTitle="No functions deployed"
-        emptyDescription="Deploy one with POST /v1/functions and it will appear here."
+        empty={
+          <EmptyState
+            icon={Boxes}
+            title="No functions deployed"
+            description="Deploy one with POST /v1/functions and it will appear here."
+          />
+        }
       />
     </>
   )

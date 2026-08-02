@@ -9,7 +9,8 @@ import type { LayerVersion } from "@/lib/schemas"
 import {
   Badge,
   PageHeader,
-  ResourceTable,
+  DataTable,
+  EmptyState,
   StatCard,
   StatGrid,
   cellMono,
@@ -94,14 +95,19 @@ export function LayersPage() {
         <StatCard label="Distinct layers" value={distinct} icon={Package} loading={isLoading} />
       </StatGrid>
 
-      <ResourceTable
+      <DataTable
         data={layers}
         columns={columns}
         loading={isLoading}
+        searchable
         searchPlaceholder="Filter layers…"
-        emptyIcon={Layers}
-        emptyTitle="No layers published"
-        emptyDescription="Publish one with POST /v1/layers and its versions will appear here."
+        empty={
+          <EmptyState
+            icon={Layers}
+            title="No layers published"
+            description="Publish one with POST /v1/layers and its versions will appear here."
+          />
+        }
       />
     </>
   )

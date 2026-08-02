@@ -3,7 +3,8 @@ import { useMemo } from "react"
 import {
   Badge,
   PageHeader,
-  ResourceTable,
+  DataTable,
+  EmptyState,
   cellMono,
   cellText,
   formatBytes,
@@ -80,14 +81,19 @@ export function ServerlessLayersPage() {
         description="Shared dependency archives functions reference by name and version."
         icon={Layers}
       />
-      <ResourceTable
+      <DataTable
         data={layers}
         columns={columns}
         loading={isLoading}
+        searchable
         searchPlaceholder="Filter layers…"
-        emptyIcon={Layers}
-        emptyTitle="No layers yet"
-        emptyDescription="Publish a layer to share dependencies across functions."
+        empty={
+          <EmptyState
+            icon={Layers}
+            title="No layers yet"
+            description="Publish a layer to share dependencies across functions."
+          />
+        }
       />
     </div>
   )

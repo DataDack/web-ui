@@ -12,7 +12,8 @@ import {
   ChartNote,
   LineTimeChart,
   PageHeader,
-  ResourceTable,
+  DataTable,
+  EmptyState,
   StatCard,
   StatGrid,
   cellMono,
@@ -267,14 +268,19 @@ export function MetricsPage() {
 
       {/* The table is also the accessible view of the charts above: every value
           plotted is readable here without relying on colour. */}
-      <ResourceTable
+      <DataTable
         data={data?.topFunctions ?? []}
         columns={columns}
         loading={isLoading}
+        searchable
         searchPlaceholder="Filter functions…"
-        emptyIcon={Gauge}
-        emptyTitle="No invocations in this window"
-        emptyDescription="Invoke a function and its totals appear here."
+        empty={
+          <EmptyState
+            icon={Gauge}
+            title="No invocations in this window"
+            description="Invoke a function and its totals appear here."
+          />
+        }
       />
     </>
   )

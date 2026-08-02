@@ -10,7 +10,8 @@ import type { AuditEvent } from "@/lib/schemas"
 import {
   Badge,
   PageHeader,
-  ResourceTable,
+  DataTable,
+  EmptyState,
   StatCard,
   StatGrid,
   cellMono,
@@ -191,14 +192,19 @@ export function AuditPage() {
         />
       </StatGrid>
 
-      <ResourceTable
+      <DataTable
         data={events}
         columns={columns}
         loading={isLoading}
+        searchable
         searchPlaceholder="Filter events…"
-        emptyIcon={ShieldCheck}
-        emptyTitle="Nothing recorded yet"
-        emptyDescription="Deploy, delete or invoke something and it appears here. Reads are not recorded."
+        empty={
+          <EmptyState
+            icon={ShieldCheck}
+            title="Nothing recorded yet"
+            description="Deploy, delete or invoke something and it appears here. Reads are not recorded."
+          />
+        }
       />
     </>
   )
