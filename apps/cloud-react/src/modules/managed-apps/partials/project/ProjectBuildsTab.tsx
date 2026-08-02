@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useMemo } from "react"
 
 import { Button, DataTable, EmptyState, type DataTableColumnMeta } from "@datadack/common-ui"
@@ -22,6 +23,7 @@ import { isBuildTransitional, type Build, type Project } from "../../managed-app
  * and a refresh keeps it open.
  */
 export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
+  const { t } = useTranslation()
   const {
     data: builds = [],
     isLoading,
@@ -62,7 +64,7 @@ export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
     return (
       <EmptyState
         icon={Hammer}
-        title="No builds yet"
+        title={t("managedApps.projectBuildsTab.noBuildsYet")}
         description={
           project.project_type === "n8n"
             ? "n8n instances are provisioned without a build pipeline."
@@ -204,8 +206,8 @@ export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
 
       <Section
         variant="panel"
-        title="Build history"
-        description="Newest first — click a row to open its log."
+        title={t("managedApps.projectBuildsTab.buildHistory")}
+        description={t("managedApps.projectBuildsTab.newestFirstClickARowToOpenItsLog")}
       >
         <DataTable<Build>
           data={sortedBuilds}
@@ -217,7 +219,9 @@ export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
           // The Redeploy control only appears on the hovered row, which needs a
           // named hover group on the row itself.
           rowClassName="group/row"
-          empty={<EmptyState icon={Hammer} title="No builds yet" />}
+          empty={
+            <EmptyState icon={Hammer} title={t("managedApps.projectBuildsTab.noBuildsYet2")} />
+          }
           error={buildsError ? "Failed to load" : undefined}
           onRetry={() => void refetchBuilds()}
           retryLabel={"Try again"}
@@ -227,8 +231,8 @@ export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
 
       <Section
         variant="panel"
-        title="Deployment activity"
-        description="Every lifecycle event across these builds, newest first."
+        title={t("managedApps.projectBuildsTab.deploymentActivity")}
+        description={t("managedApps.projectBuildsTab.everyLifecycleEventAcrossTheseBuildsNewestFi")}
       >
         <ActivityTimeline builds={sortedBuilds} />
       </Section>

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import {
   Accordion,
   AccordionContent,
@@ -36,6 +37,7 @@ export function NetworkingSection({
   onChange,
   vpcError,
 }: Readonly<NetworkingSectionProps>) {
+  const { t } = useTranslation()
   const { data: vpcs = [], isLoading: vpcsLoading, isError: vpcsError, refetch } = useVPCs()
   const { data: subnets = [], isLoading: subnetsLoading } = useVPCSubnets(vpcId)
 
@@ -71,7 +73,7 @@ export function NetworkingSection({
         <AccordionTrigger className="text-[13px] font-semibold hover:no-underline">
           <span className="flex items-center gap-2">
             <Network className="size-3.5 text-muted-foreground" />
-            Private networking
+            {t("managedApps.networkingSection.privateNetworking")}
             <span className="text-[11px] font-normal text-muted-foreground">
               {bound ? "bound" : "optional · public only"}
             </span>
@@ -95,7 +97,7 @@ export function NetworkingSection({
               error={vpcsError}
               onRefresh={() => void refetch()}
               invalid={Boolean(vpcError)}
-              placeholder="Public only — no VPC"
+              placeholder={t("managedApps.networkingSection.publicOnlyNoVpc")}
               searchPlaceholder="Search VPCs…"
               emptyText="This account has no VPCs yet."
               noMatchText={(q) => `No VPC matches “${q}”.`}
@@ -126,7 +128,7 @@ export function NetworkingSection({
                 options={subnetOptions}
                 value={subnetId || undefined}
                 loading={subnetsLoading}
-                placeholder="Any subnet in this VPC"
+                placeholder={t("managedApps.networkingSection.anySubnetInThisVpc")}
                 searchPlaceholder="Search subnets…"
                 emptyText="This VPC has no subnets yet."
                 noMatchText={(q) => `No subnet matches “${q}”.`}
@@ -156,7 +158,7 @@ export function NetworkingSection({
                 onChange({ vpc_id: "", subnet_id: "" })
               }}
             >
-              Remove binding — deploy public only
+              {t("managedApps.networkingSection.removeBindingDeployPublicOnly")}
             </Button>
           )}
         </AccordionContent>

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { AppWindow, Atom, Check, FolderTree, Loader2, Settings2, TriangleAlert } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -80,6 +81,7 @@ export function ProjectTypePicker({
   rootDir,
   onRootDirChange,
 }: Readonly<ProjectTypePickerProps>) {
+  const { t } = useTranslation()
   // Only a positive detection gates anything. `n8n` can never be detected from
   // a repository, so it is not a case to handle here.
   const detected =
@@ -118,7 +120,7 @@ export function ProjectTypePicker({
       {/* Above the cards, where guidance is read — FieldRow puts its own
 			    description underneath, which is after the decision has been made. */}
       <p className="text-[12px] text-muted-foreground">
-        We read the repository to work this out. Pick one if we could not.
+        {t("managedApps.projectTypePicker.weReadTheRepositoryToWorkThisOutPickOneIfWeC")}
       </p>
 
       <div className="grid items-stretch gap-3 sm:grid-cols-3">
@@ -199,7 +201,7 @@ export function ProjectTypePicker({
       {detecting && (
         <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
           <Loader2 className="size-3 animate-spin" />
-          Reading the repository…
+          {t("managedApps.projectTypePicker.readingTheRepository")}
         </p>
       )}
 
@@ -229,7 +231,7 @@ export function ProjectTypePicker({
           {/* The fix for the common cause, offered rather than described. */}
           {unbuildable && candidates.length === 0 && (
             <p className="text-[11px] text-muted-foreground">
-              Choose another repository above, or one with a package.json.
+              {t("managedApps.projectTypePicker.chooseAnotherRepositoryAboveOrOneWithAPackag")}
             </p>
           )}
 

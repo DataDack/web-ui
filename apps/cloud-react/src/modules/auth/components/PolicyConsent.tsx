@@ -54,7 +54,7 @@ export function PolicyConsent({
                   e.stopPropagation()
                 }}
               >
-                Privacy Policy
+                {t("auth.policyConsent.privacyPolicy")}
               </a>
             ),
             terms: (
@@ -67,7 +67,7 @@ export function PolicyConsent({
                   e.stopPropagation()
                 }}
               >
-                Terms of Service
+                {t("auth.policyConsent.termsOfService")}
               </a>
             ),
           }}

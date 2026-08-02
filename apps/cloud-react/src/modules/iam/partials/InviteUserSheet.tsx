@@ -81,7 +81,7 @@ export function InviteUserSheet({ open, onOpenChange }: Readonly<Props>) {
                 {t("iam.columns.name")}
                 <span className="text-destructive ml-0.5">*</span>
               </Label>
-              <Input {...register("name")} placeholder="Jane Doe" />
+              <Input {...register("name")} placeholder={t("iam.inviteUserSheet.janeDoe")} />
               {errors.name && <p className="text-[11px] text-destructive">{errors.name.message}</p>}
             </div>
 
@@ -90,7 +90,11 @@ export function InviteUserSheet({ open, onOpenChange }: Readonly<Props>) {
                 {t("iam.columns.email")}
                 <span className="text-destructive ml-0.5">*</span>
               </Label>
-              <Input {...register("email")} placeholder="jane@company.com" className="font-mono" />
+              <Input
+                {...register("email")}
+                placeholder={t("iam.inviteUserSheet.janeCompanyCom")}
+                className="font-mono"
+              />
               {errors.email && (
                 <p className="text-[11px] text-destructive">{errors.email.message}</p>
               )}

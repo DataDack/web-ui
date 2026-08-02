@@ -129,7 +129,9 @@ export function EditResourceGroupSheet({ group, open, onOpenChange }: Readonly<P
               >
                 <Textarea
                   {...register("description")}
-                  placeholder="Describe the purpose of this resource group..."
+                  placeholder={t(
+                    "resourceGroups.editResourceGroupSheet.describeThePurposeOfThisResourceGroup",
+                  )}
                   rows={3}
                   className="resize-none"
                 />

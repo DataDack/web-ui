@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { Button } from "@datadack/common-ui"
 import { ArrowRight, Check, Loader2, Plus } from "lucide-react"
 
@@ -39,6 +40,7 @@ export function GetStartedHero({
   onConnect,
   onCreate,
 }: Readonly<GetStartedHeroProps>) {
+  const { t } = useTranslation()
   const steps: Step[] = [
     {
       title: "Connect GitHub",
@@ -69,7 +71,9 @@ export function GetStartedHero({
 
       <div className="relative grid gap-10 p-8 lg:grid-cols-[minmax(0,1fr)_260px] lg:p-10">
         <div className="min-w-0">
-          <h2 className="text-xl font-bold tracking-tight">Ship from GitHub in three steps</h2>
+          <h2 className="text-xl font-bold tracking-tight">
+            {t("managedApps.getStartedHero.shipFromGithubInThreeSteps")}
+          </h2>
           <p className="mt-1.5 max-w-lg text-[13px] text-muted-foreground">
             Connect a repository and every push to your chosen branch builds and deploys. OpenNext
             and React today; managed n8n agents are coming soon.
@@ -109,7 +113,7 @@ export function GetStartedHero({
             {connected ? (
               <Button className="gap-2" onClick={onCreate}>
                 <Plus className="size-4" />
-                Create your first project
+                {t("managedApps.getStartedHero.createYourFirstProject")}
               </Button>
             ) : (
               <Button className="gap-2" disabled={connecting} onClick={onConnect}>
@@ -125,13 +129,13 @@ export function GetStartedHero({
             {connected && (
               <span className="flex items-center gap-1.5 text-[12px] text-status-success">
                 <Check className="size-3.5" />
-                GitHub connected
+                {t("managedApps.getStartedHero.githubConnected")}
               </span>
             )}
 
             {!connected && (
               <Button variant="ghost" className="gap-1.5" onClick={onCreate}>
-                Skip and create a project
+                {t("managedApps.getStartedHero.skipAndCreateAProject")}
                 <ArrowRight className="size-3.5" />
               </Button>
             )}

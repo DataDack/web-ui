@@ -235,10 +235,17 @@ export function StoragePriceFormSheet({ open, onOpenChange, price }: Readonly<Pr
         />
       </Field>
       <Field label="SKU" error={errors.sku?.message}>
-        <Input {...register("sku")} placeholder="blk-ssd-zonal-in1a" className="font-mono" />
+        <Input
+          {...register("sku")}
+          placeholder={t("superAdmin.storagePriceFormSheet.blkSsdZonalIn1a")}
+          className="font-mono"
+        />
       </Field>
       <Field label="Name" error={errors.name?.message}>
-        <Input {...register("name")} placeholder="Zonal SSD block" />
+        <Input
+          {...register("name")}
+          placeholder={t("superAdmin.storagePriceFormSheet.zonalSsdBlock")}
+        />
       </Field>
       <Field label="Description" error={errors.description?.message}>
         <Textarea {...register("description")} rows={3} />
@@ -266,7 +273,10 @@ export function StoragePriceFormSheet({ open, onOpenChange, price }: Readonly<Pr
           )}
         />
       </Field>
-      <Field label="Volume type" error={errors.volume_type?.message}>
+      <Field
+        label={t("superAdmin.storagePriceFormSheet.volumeType")}
+        error={errors.volume_type?.message}
+      >
         <Controller
           control={control}
           name="volume_type"
@@ -306,22 +316,37 @@ export function StoragePriceFormSheet({ open, onOpenChange, price }: Readonly<Pr
           )}
         />
       </Field>
-      <Field label="Min size GB" error={errors.min_size_gb?.message}>
+      <Field
+        label={t("superAdmin.storagePriceFormSheet.minSizeGb")}
+        error={errors.min_size_gb?.message}
+      >
         <Input type="number" min={1} {...register("min_size_gb")} />
       </Field>
-      <Field label="Max size GB" error={errors.max_size_gb?.message}>
+      <Field
+        label={t("superAdmin.storagePriceFormSheet.maxSizeGb")}
+        error={errors.max_size_gb?.message}
+      >
         <Input type="number" min={0} {...register("max_size_gb")} />
       </Field>
-      <Field label="Included IOPS" error={errors.included_iops?.message}>
+      <Field
+        label={t("superAdmin.storagePriceFormSheet.includedIops")}
+        error={errors.included_iops?.message}
+      >
         <Input type="number" min={0} {...register("included_iops")} />
       </Field>
-      <Field label="Max IOPS" error={errors.max_iops?.message}>
+      <Field label={t("superAdmin.storagePriceFormSheet.maxIops")} error={errors.max_iops?.message}>
         <Input type="number" min={0} {...register("max_iops")} />
       </Field>
-      <Field label="Included throughput MBps" error={errors.included_throughput_mbps?.message}>
+      <Field
+        label={t("superAdmin.storagePriceFormSheet.includedThroughputMbps")}
+        error={errors.included_throughput_mbps?.message}
+      >
         <Input type="number" min={0} {...register("included_throughput_mbps")} />
       </Field>
-      <Field label="Max throughput MBps" error={errors.max_throughput_mbps?.message}>
+      <Field
+        label={t("superAdmin.storagePriceFormSheet.maxThroughputMbps")}
+        error={errors.max_throughput_mbps?.message}
+      >
         <Input type="number" min={0} {...register("max_throughput_mbps")} />
       </Field>
       <Field
@@ -337,13 +362,22 @@ export function StoragePriceFormSheet({ open, onOpenChange, price }: Readonly<Pr
       >
         <Input type="number" min={0} step="any" {...register("price_per_iops")} />
       </Field>
-      <Field label="Throughput price / MBps" error={errors.price_per_throughput_mbps?.message}>
+      <Field
+        label={t("superAdmin.storagePriceFormSheet.throughputPriceMbps")}
+        error={errors.price_per_throughput_mbps?.message}
+      >
         <Input type="number" min={0} step="any" {...register("price_per_throughput_mbps")} />
       </Field>
-      <Field label="Snapshot price / GB month" error={errors.snapshot_price_per_gb_month?.message}>
+      <Field
+        label={t("superAdmin.storagePriceFormSheet.snapshotPriceGbMonth")}
+        error={errors.snapshot_price_per_gb_month?.message}
+      >
         <Input type="number" min={0} step="any" {...register("snapshot_price_per_gb_month")} />
       </Field>
-      <Field label="Setup fee" error={errors.setup_fee?.message}>
+      <Field
+        label={t("superAdmin.storagePriceFormSheet.setupFee")}
+        error={errors.setup_fee?.message}
+      >
         <Input type="number" min={0} step="any" {...register("setup_fee")} />
       </Field>
       <Field label={t("superAdmin.storagePrices.fields.currency")} error={errors.currency?.message}>
@@ -355,7 +389,10 @@ export function StoragePriceFormSheet({ open, onOpenChange, price }: Readonly<Pr
           )}
         />
       </Field>
-      <Field label="Billing unit" error={errors.billing_unit?.message}>
+      <Field
+        label={t("superAdmin.storagePriceFormSheet.billingUnit")}
+        error={errors.billing_unit?.message}
+      >
         <Controller
           control={control}
           name="billing_unit"
@@ -375,14 +412,20 @@ export function StoragePriceFormSheet({ open, onOpenChange, price }: Readonly<Pr
           )}
         />
       </Field>
-      <Field label="Tax inclusive" error={errors.tax_inclusive?.message}>
+      <Field
+        label={t("superAdmin.storagePriceFormSheet.taxInclusive")}
+        error={errors.tax_inclusive?.message}
+      >
         <Controller
           control={control}
           name="tax_inclusive"
           render={({ field }) => <Switch checked={field.value} onCheckedChange={field.onChange} />}
         />
       </Field>
-      <Field label="Features JSON" error={errors.features?.message}>
+      <Field
+        label={t("superAdmin.storagePriceFormSheet.featuresJson")}
+        error={errors.features?.message}
+      >
         <Textarea {...register("features")} rows={4} placeholder='{"encrypted":true}' />
       </Field>
       <Controller

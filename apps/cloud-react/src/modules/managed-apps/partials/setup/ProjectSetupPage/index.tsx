@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { Button, EmptyState, Skeleton } from "@datadack/common-ui"
 import {
   AlertTriangle,
@@ -92,6 +93,7 @@ const TONE_CLASS = {
  * are unblocked.
  */
 export function ProjectSetupPage() {
+  const { t } = useTranslation()
   useScreen("managed-apps-project-setup")
   const navigate = useNavigate()
   const { id = "" } = useParams()
@@ -114,8 +116,8 @@ export function ProjectSetupPage() {
     return (
       <EmptyState
         icon={AlertTriangle}
-        title="Could not load setup"
-        description="We could not read this project's onboarding state."
+        title={t("managedApps.index.couldNotLoadSetup")}
+        description={t("managedApps.index.weCouldNotReadThisProjectSOnboardingState")}
         action={{ label: "Try again", onClick: () => void refetch() }}
       />
     )
@@ -143,7 +145,7 @@ export function ProjectSetupPage() {
       >
         <Link to={MANAGED_APPS_ROUTES.root}>
           <ArrowLeft className="size-3.5" />
-          Managed Apps
+          {t("managedApps.index.managedApps")}
         </Link>
       </Button>
 
@@ -212,7 +214,7 @@ export function ProjectSetupPage() {
 
                 {setup.builds_enabled && (
                   <Button size="sm" onClick={() => void navigate(MANAGED_APPS_ROUTES.project(id))}>
-                    Go to project
+                    {t("managedApps.index.goToProject")}
                   </Button>
                 )}
 

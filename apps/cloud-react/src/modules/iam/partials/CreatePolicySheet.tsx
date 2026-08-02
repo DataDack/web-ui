@@ -106,7 +106,11 @@ export function CreatePolicySheet({ open, onOpenChange }: Readonly<Props>) {
                 {t("iam.columns.name")}
                 <span className="text-destructive ml-0.5">*</span>
               </Label>
-              <Input {...register("name")} placeholder="DeployReadOnly" className="font-mono" />
+              <Input
+                {...register("name")}
+                placeholder={t("iam.createPolicySheet.deployreadonly")}
+                className="font-mono"
+              />
               {errors.name && <p className="text-[11px] text-destructive">{errors.name.message}</p>}
             </div>
 

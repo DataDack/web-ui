@@ -183,10 +183,17 @@ export function BandwidthPriceFormSheet({ open, onOpenChange, price }: Readonly<
         />
       </Field>
       <Field label="SKU" error={errors.sku?.message}>
-        <Input {...register("sku")} placeholder="bw-egress-in1a" className="font-mono" />
+        <Input
+          {...register("sku")}
+          placeholder={t("superAdmin.bandwidthPriceFormSheet.bwEgressIn1a")}
+          className="font-mono"
+        />
       </Field>
       <Field label="Name" error={errors.name?.message}>
-        <Input {...register("name")} placeholder="Egress data transfer" />
+        <Input
+          {...register("name")}
+          placeholder={t("superAdmin.bandwidthPriceFormSheet.egressDataTransfer")}
+        />
       </Field>
       <Field
         label={t("superAdmin.bandwidthPrices.fields.direction")}
@@ -235,7 +242,10 @@ export function BandwidthPriceFormSheet({ open, onOpenChange, price }: Readonly<
           )}
         />
       </Field>
-      <Field label="Billing unit" error={errors.billing_unit?.message}>
+      <Field
+        label={t("superAdmin.bandwidthPriceFormSheet.billingUnit")}
+        error={errors.billing_unit?.message}
+      >
         <Controller
           control={control}
           name="billing_unit"
@@ -255,14 +265,20 @@ export function BandwidthPriceFormSheet({ open, onOpenChange, price }: Readonly<
           )}
         />
       </Field>
-      <Field label="Tax inclusive" error={errors.tax_inclusive?.message}>
+      <Field
+        label={t("superAdmin.bandwidthPriceFormSheet.taxInclusive")}
+        error={errors.tax_inclusive?.message}
+      >
         <Controller
           control={control}
           name="tax_inclusive"
           render={({ field }) => <Switch checked={field.value} onCheckedChange={field.onChange} />}
         />
       </Field>
-      <Field label="Features JSON" error={errors.features?.message}>
+      <Field
+        label={t("superAdmin.bandwidthPriceFormSheet.featuresJson")}
+        error={errors.features?.message}
+      >
         <Textarea {...register("features")} rows={4} placeholder='{"metered":true}' />
       </Field>
     </FormSheet>

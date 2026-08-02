@@ -144,7 +144,7 @@ export function NewOrgWizardPage() {
           hint={t("org.newOrg.nameHint")}
           error={errors.name?.message}
         >
-          <Input {...register("name")} placeholder="Acme Inc." />
+          <Input {...register("name")} placeholder={t("organizations.newOrgWizardPage.acmeInc")} />
         </Field>
 
         {/* Account type — individual or business (unlocks GSTIN/TAN). */}
@@ -202,7 +202,7 @@ export function NewOrgWizardPage() {
           <Input
             {...register("billing_email")}
             type="email"
-            placeholder="billing@acme.com"
+            placeholder={t("organizations.newOrgWizardPage.billingAcmeCom")}
             className="font-mono"
           />
         </Field>

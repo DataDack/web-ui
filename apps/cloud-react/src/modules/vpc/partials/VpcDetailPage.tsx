@@ -202,7 +202,7 @@ function OverviewTab({ network }: Readonly<{ network: VPCNetwork }>) {
           <div className="flex flex-col gap-5 mt-2">
             <div className="flex flex-col gap-1.5 pb-4 border-b border-border-glass">
               <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
-                Region & Zone
+                {t("vpc.vpcDetailPage.regionZone")}
               </span>
               <div className="flex items-center gap-2">
                 <Globe className="size-4 text-foreground/70" />
@@ -235,7 +235,7 @@ function OverviewTab({ network }: Readonly<{ network: VPCNetwork }>) {
 
             <div className="flex flex-col gap-1.5 pb-4 border-b border-border-glass">
               <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
-                Default Network
+                {t("vpc.vpcDetailPage.defaultNetwork")}
               </span>
               {network.is_default ? (
                 <Badge

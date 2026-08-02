@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useMemo, useState } from "react"
 
 import { Button } from "@datadack/common-ui"
@@ -38,6 +39,7 @@ function parseTypeParam(raw: string | null): ProjectType | undefined {
  * (filterable by ?type=, set from the toolbar) and account-wide activity.
  */
 export function ManagedAppsOverviewPage() {
+  const { t } = useTranslation()
   useScreen("managed-apps-overview")
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -116,7 +118,7 @@ export function ManagedAppsOverviewPage() {
     <div>
       <PageHeader
         icon={Rocket}
-        title="Managed Apps"
+        title={t("managedApps.managedAppsOverviewPage.managedApps")}
         description="Build OpenNext and React apps straight from a GitHub branch — every push triggers a new deploy."
         meta={<PlanUsageChip />}
         actions={
@@ -146,7 +148,7 @@ export function ManagedAppsOverviewPage() {
             </Button>
             <Button className="gap-2" onClick={() => void navigate(MANAGED_APPS_ROUTES.create)}>
               <Plus className="size-4" />
-              Create project
+              {t("managedApps.managedAppsOverviewPage.createProject")}
             </Button>
           </>
         }
@@ -200,7 +202,7 @@ export function ManagedAppsOverviewPage() {
         }}
         title={`Delete ${pendingDelete?.name ?? "project"}?`}
         description="The project, its build history and its public address are removed. Your repository and the workflow file in it are left untouched."
-        confirmLabel="Delete project"
+        confirmLabel={t("managedApps.managedAppsOverviewPage.deleteProject")}
         loading={deleteProject.isPending}
         onConfirm={() => {
           if (!pendingDelete) return

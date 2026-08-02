@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useState } from "react"
 
 import { Button } from "@datadack/common-ui"
@@ -19,6 +20,7 @@ import type { Project } from "../../../managed-apps.types"
  * have to wonder whether their repo is about to be touched.
  */
 export function DangerZone({ project }: Readonly<{ project: Project }>) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const deleteProject = useDeleteProject()
   const [confirmOpen, setConfirmOpen] = useState(false)
@@ -27,7 +29,7 @@ export function DangerZone({ project }: Readonly<{ project: Project }>) {
     <>
       <Section
         variant="panel"
-        title="Danger zone"
+        title={t("managedApps.dangerZone.dangerZone")}
         description="Deleting a project removes it, its build history and its public address. Your repository is left untouched."
         className="border border-destructive/30"
       >
@@ -40,16 +42,16 @@ export function DangerZone({ project }: Readonly<{ project: Project }>) {
           }}
         >
           <Trash2 className="size-3.5" />
-          Delete project
+          {t("managedApps.dangerZone.deleteProject3")}
         </Button>
       </Section>
 
       <ConfirmDialog
         open={confirmOpen}
         onOpenChange={setConfirmOpen}
-        title="Delete project"
+        title={t("managedApps.dangerZone.deleteProject")}
         description={`This permanently deletes "${project.name}", its build history and its public address. The workflow file stays in your repository — remove it there if you no longer want it.`}
-        confirmLabel="Delete project"
+        confirmLabel={t("managedApps.dangerZone.deleteProject2")}
         confirmText={project.name}
         loading={deleteProject.isPending}
         onConfirm={() => {

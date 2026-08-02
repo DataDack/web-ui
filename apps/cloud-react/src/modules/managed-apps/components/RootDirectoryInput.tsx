@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { Input } from "@datadack/common-ui"
 import { FolderTree } from "lucide-react"
 
@@ -25,9 +26,10 @@ export function RootDirectoryInput({
   id = "root-dir",
   error,
 }: Readonly<RootDirectoryInputProps>) {
+  const { t } = useTranslation()
   return (
     <FieldRow
-      label="Root directory"
+      label={t("managedApps.rootDirectoryInput.rootDirectory")}
       htmlFor={id}
       error={error}
       description="Leave empty for the repository root. Set this for a monorepo — for example apps/web."

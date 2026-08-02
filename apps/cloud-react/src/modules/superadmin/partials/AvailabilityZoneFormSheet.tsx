@@ -239,7 +239,10 @@ export function AvailabilityZoneFormSheet({
             required
             error={errors.region_name?.message}
           >
-            <Input {...register("region_name")} placeholder="India Noida (NCR)" />
+            <Input
+              {...register("region_name")}
+              placeholder={t("superAdmin.availabilityZoneFormSheet.indiaNoidaNcr")}
+            />
           </Field>
           {!isEdit && regions.length > 0 && (
             <button
@@ -299,7 +302,10 @@ export function AvailabilityZoneFormSheet({
         />
       </Field>
       <Field label={t("superAdmin.availabilityZones.fields.name")} error={errors.name?.message}>
-        <Input {...register("name")} placeholder="Noida 1A" />
+        <Input
+          {...register("name")}
+          placeholder={t("superAdmin.availabilityZoneFormSheet.noida1a")}
+        />
       </Field>
       <Controller
         control={control}

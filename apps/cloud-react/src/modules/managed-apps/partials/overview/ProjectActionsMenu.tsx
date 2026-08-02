@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import {
   Button,
   DropdownMenu,
@@ -45,6 +46,7 @@ export function ProjectActionsMenu({
   onDelete,
   className,
 }: Readonly<ProjectActionsMenuProps>) {
+  const { t } = useTranslation()
   const { project, state } = entry
 
   return (
@@ -62,7 +64,9 @@ export function ProjectActionsMenu({
       <DropdownMenuContent align="end" className="w-44">
         {state.kind === "awaiting_setup" && (
           <DropdownMenuItem asChild>
-            <Link to={MANAGED_APPS_ROUTES.setup(project.id)}>Finish setup</Link>
+            <Link to={MANAGED_APPS_ROUTES.setup(project.id)}>
+              {t("managedApps.projectActionsMenu.finishSetup")}
+            </Link>
           </DropdownMenuItem>
         )}
         <DropdownMenuItem
@@ -74,7 +78,9 @@ export function ProjectActionsMenu({
           {state.kind === "awaiting_build" ? "Deploy now" : "Rebuild"}
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link to={`${MANAGED_APPS_ROUTES.project(project.id)}?tab=builds`}>View builds</Link>
+          <Link to={`${MANAGED_APPS_ROUTES.project(project.id)}?tab=builds`}>
+            {t("managedApps.projectActionsMenu.viewBuilds")}
+          </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link to={`${MANAGED_APPS_ROUTES.project(project.id)}?tab=settings`}>Settings</Link>

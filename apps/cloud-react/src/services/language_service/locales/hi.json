@@ -393,7 +393,8 @@
       "status": "स्थिति",
       "zone": "ज़ोन",
       "machineType": "मशीन प्रकार",
-      "privateIp": "निजी IP"
+      "privateIp": "निजी IP",
+      "details": "विवरण"
     },
     "tabs": {
       "overview": "अवलोकन",
@@ -508,7 +509,22 @@
       "securityGroups": "सुरक्षा समूह",
       "securityGroupsHint": "वैकल्पिक — चयन न करने पर इंस्टेंस बिना सुरक्षा समूह के लॉन्च होता है।",
       "noSecurityGroups": "इस नेटवर्क स्कोप से मेल खाने वाला कोई सुरक्षा समूह नहीं है।",
-      "createDefaultSg": "डिफ़ॉल्ट सुरक्षा समूह बनाएँ"
+      "createDefaultSg": "डिफ़ॉल्ट सुरक्षा समूह बनाएँ",
+      "availabilityZone": "उपलब्धता क्षेत्र",
+      "zoneLocked": "शीर्ष बार में चुने गए क्षेत्र से निर्धारित।",
+      "billing": "बिलिंग",
+      "billingHourly": "प्रति घंटा",
+      "billingMonthly": "मासिक",
+      "billingHourlyDesc": "इंस्टेंस जितने घंटे चले, उसका भुगतान करें।",
+      "billingMonthlyDesc": "एक निश्चित मासिक दर, अग्रिम बिल की जाती है।",
+      "billedHourly": "प्रति घंटा बिल",
+      "billedMonthly": "मासिक बिल",
+      "noSubnetsInAz": "चुने गए उपलब्धता क्षेत्र में कोई सबनेट नहीं है।",
+      "privateIp": "प्राइवेट IP (वैकल्पिक)",
+      "privateIpPlaceholder": "स्वतः असाइन करें या पता दर्ज करें",
+      "privateIpHint": "स्वतः असाइन करने के लिए {{cidr}} से खाली छोड़ें।",
+      "privateIpHintNoSubnet": "प्राइवेट IP असाइन करने के लिए पहले एक सबनेट चुनें।",
+      "privateIpAuto": "स्वतः असाइन किया गया"
     },
     "toasts": {
       "created": "इंस्टेंस \"{{name}}\" बनाया जा रहा है",
@@ -554,6 +570,105 @@
       "sshTitle": "SSH — ब्राउज़र लॉगिन",
       "guestTitle": "गेस्ट कंसोल",
       "hostTitle": "Proxmox होस्ट शेल"
+    },
+    "images": {
+      "title": "इमेज",
+      "subtitle": "नए इंस्टेंस के लिए उपलब्ध सिस्टम इमेज (AMI) देखें।",
+      "searchPlaceholder": "नाम, OS या आर्किटेक्चर से इमेज खोजें…",
+      "empty": "कोई इमेज उपलब्ध नहीं",
+      "emptySubtitle": "कैटलॉग में अभी कोई सिस्टम इमेज प्रकाशित नहीं है।",
+      "stats": {
+        "total": "कुल इमेज",
+        "families": "OS परिवार",
+        "architectures": "आर्किटेक्चर"
+      },
+      "columns": {
+        "name": "इमेज",
+        "family": "OS परिवार",
+        "version": "वर्शन",
+        "architecture": "आर्किटेक्चर",
+        "minDisk": "न्यूनतम डिस्क"
+      },
+      "useToCreate": "इंस्टेंस लॉन्च करें"
+    },
+    "vmCreateWizardPage": {
+      "generalSettings": "सामान्य सेटिंग्स",
+      "instanceNameResourceGroupAndTagging": "इंस्टेंस का नाम, रिसोर्स ग्रुप और टैगिंग",
+      "billingCycle": "बिलिंग चक्र",
+      "billingCycle2": "बिलिंग चक्र",
+      "hourlyMonthlyOrYearlyBilling": "प्रति घंटा, मासिक या वार्षिक बिलिंग",
+      "locationNetwork": "स्थान और नेटवर्क",
+      "dataCenterAndNetworkIsolation": "डेटा सेंटर और नेटवर्क आइसोलेशन",
+      "selectOsApps": "OS / ऐप्स चुनें",
+      "operatingSystemMarketplaceIsos": "ऑपरेटिंग सिस्टम, मार्केटप्लेस, ISO",
+      "selectPlan": "प्लान चुनें",
+      "chooseHardwareSpecsForYourInstance": "अपने इंस्टेंस के लिए हार्डवेयर विशेषताएँ चुनें",
+      "storageConfiguration": "स्टोरेज कॉन्फ़िगरेशन",
+      "configureBootAndDataDisks": "बूट और डेटा डिस्क कॉन्फ़िगर करें",
+      "authConfiguration": "प्रमाणीकरण कॉन्फ़िगरेशन",
+      "setupSshAccess": "SSH पहुँच सेट करें",
+      "costSummary": "लागत सारांश",
+      "selectAPlanToSeeCostDetails": "लागत विवरण देखने के लिए एक प्लान चुनें",
+      "totalCost": "कुल लागत",
+      "includesPublicIpv4AddressCharge": "सार्वजनिक IPv4 पते का शुल्क शामिल है।"
+    },
+    "vmDetailPage": {
+      "infrastructureProfile": "इंफ्रास्ट्रक्चर प्रोफ़ाइल",
+      "terminationProtection": "समाप्ति सुरक्षा"
+    },
+    "vmsListPage": {
+      "noPublicIp": "कोई सार्वजनिक IP नहीं"
+    },
+    "basicsStep": {
+      "leaveBlankToAutoGenerate": "स्वतः बनाने के लिए खाली छोड़ें",
+      "aBriefDescriptionOfThisInstance": "इस इंस्टेंस का संक्षिप्त विवरण…",
+      "instanceNameOptional": "इंस्टेंस का नाम (वैकल्पिक)",
+      "descriptionOptional": "विवरण (वैकल्पिक)",
+      "tagsOptional": "टैग (वैकल्पिक)",
+      "advancedOptions": "उन्नत विकल्प",
+      "terminationProtection": "समाप्ति सुरक्षा",
+      "preventThisInstanceFromBeingAccidentallyDele": "इस इंस्टेंस को गलती से हटाए जाने से रोकें।"
+    },
+    "diskStep": {
+      "selectAStorageClass": "स्टोरेज क्लास चुनें",
+      "first30GbIncludedFreeExtraGbBilledAtThePerGb": "पहले 30 GB निःशुल्क · अतिरिक्त GB प्रति-GB दर से बिल होंगे।",
+      "volumeClass": "वॉल्यूम क्लास *",
+      "deleteOnTermination": "समाप्ति पर हटाएँ",
+      "automaticallyDeleteThisDataDiskWhenTheInstan": "इंस्टेंस समाप्त होने पर इस डेटा डिस्क को स्वतः हटा दें।"
+    },
+    "locationAndNetworkStep": {
+      "dynamicIp": "डायनेमिक IP",
+      "dhcpAssignedAddressMayChangeWhenTheInstanceS": "DHCP द्वारा असाइन किया गया पता। इंस्टेंस रुकने और चलने पर बदल सकता है।",
+      "staticIp": "स्टेटिक IP",
+      "reservedAddressThatStaysWithTheInstanceForIt": "आरक्षित पता, जो इंस्टेंस के पूरे जीवनकाल तक उसी के साथ रहता है।",
+      "dataCenterLocation": "डेटा सेंटर स्थान",
+      "availabilityZone": "उपलब्धता क्षेत्र",
+      "networkIsolation": "नेटवर्क आइसोलेशन",
+      "virtualPublicServerVps": "वर्चुअल पब्लिक सर्वर (VPS)",
+      "instanceConnectsDirectlyToTheInternetWithAPu": "इंस्टेंस सार्वजनिक IP के साथ सीधे इंटरनेट से जुड़ता है।",
+      "virtualPrivateCloudVpc": "वर्चुअल प्राइवेट क्लाउड (VPC)",
+      "isolateYourInstanceInsideAPrivateNetwork": "अपने इंस्टेंस को एक प्राइवेट नेटवर्क में अलग रखें।",
+      "noVpcsAvailable": "कोई VPC उपलब्ध नहीं",
+      "youDonTHaveAnyVpcsInThisRegion": "इस क्षेत्र में आपका कोई VPC नहीं है।",
+      "createAVpcFirst": "पहले एक VPC बनाएँ",
+      "publicIpv4": "सार्वजनिक IPv4"
+    },
+    "machinePlanStep": {
+      "noMachineTypesAvailableInThisZone": "इस क्षेत्र में कोई मशीन प्रकार उपलब्ध नहीं है।",
+      "networkDisk": "नेटवर्क / डिस्क"
+    },
+    "oSStep": {
+      "quickSelect": "त्वरित चयन",
+      "myImages": "मेरी इमेज",
+      "availableAmis": "उपलब्ध AMI",
+      "architecture": "आर्किटेक्चर:",
+      "minDisk": "न्यूनतम डिस्क:",
+      "marketplaceApps": "मार्केटप्लेस ऐप्स",
+      "customImagesSnapshots": "कस्टम इमेज और स्नैपशॉट",
+      "yourSavedAmisAndVolumeSnapshotsWillAppearHer": "आपकी सहेजी गई AMI और वॉल्यूम स्नैपशॉट यहाँ दिखेंगे। जल्द आ रहा है!"
+    },
+    "sshStep": {
+      "sshEd25519Aaaa": "ssh-ed25519 AAAA…"
     }
   },
   "sshKeys": {
@@ -1933,7 +2048,15 @@
         "activeHint": "Inactive availability zones are hidden from tenant pickers.",
         "noZones": "No zones yet — create one in Admin → Zones first.",
         "available": "उपलब्ध",
-        "availableHint": "अनुपलब्ध AZ प्रोविज़निंग कैटलॉग से छिपा दिए जाते हैं।"
+        "availableHint": "अनुपलब्ध AZ प्रोविज़निंग कैटलॉग से छिपा दिए जाते हैं।",
+        "region": "क्षेत्र",
+        "regionCode": "क्षेत्र कोड",
+        "regionName": "क्षेत्र का नाम",
+        "regionPlaceholder": "कोई मौजूदा क्षेत्र चुनें",
+        "newRegion": "नया क्षेत्र",
+        "selectExisting": "मौजूदा चुनें",
+        "country": "देश",
+        "countryPlaceholder": "देश चुनें"
       },
       "status": {
         "available": "Available",
@@ -1985,6 +2108,22 @@
         "connectionDesc": "How the platform reaches the Proxmox API.",
         "capacity": "Capacity",
         "capacityDesc": "Total resources this node provides for scheduling."
+      },
+      "agentCredentials": {
+        "title": "एजेंट क्रेडेंशियल",
+        "subtitle": "इस नोड के लोड-बैलेंसर एजेंट कॉन्फ़िग लाने और रिफ़्रेश वेबहुक प्रमाणित करने के लिए यही क्लाइंट ID और सीक्रेट उपयोग करते हैं।",
+        "clientId": "क्लाइंट ID",
+        "noClientId": "अभी नहीं बनाया गया",
+        "secretState": "सीक्रेट",
+        "secretSet": "सीक्रेट सेट है",
+        "secretUnset": "कोई सीक्रेट सेट नहीं",
+        "secret": "सीक्रेट",
+        "generate": "बनाएँ",
+        "regenerate": "दोबारा बनाएँ",
+        "generateHint": "इस नोड के लिए क्रेडेंशियल जोड़ी बनाएँ। यह इस नोड पर प्रोविज़न होने वाले लोड-बैलेंसर कंटेनरों को दी जाती है।",
+        "regenerateHint": "दोबारा बनाने पर नया सीक्रेट बनता है और पुराना अमान्य हो जाता है। इस नोड के मौजूदा लोड-बैलेंसर कंटेनर तब तक चलते रहेंगे जब तक कंट्रोल प्लेन नया सीक्रेट फिर से न भेजे (या वे दोबारा प्रोविज़न न हों)।",
+        "shownOnceTitle": "सीक्रेट अभी कॉपी करें — यह दोबारा नहीं दिखाया जाएगा",
+        "shownOnceBody": "सीक्रेट केवल यहाँ, एक बार दिखाया जाता है। इसे सुरक्षित रखें। खो जाने पर नई जोड़ी बनाने के लिए दोबारा बनाएँ।"
       }
     },
     "images": {
@@ -2123,7 +2262,8 @@
         "specsDesc": "Compute, memory, GPU and bandwidth this flavor provides.",
         "pricing": "Pricing",
         "pricingDesc": "Rates billed per availability zone for this flavor."
-      }
+      },
+      "editTitle": "VM मूल्य संपादित करें"
     },
     "storagePrices": {
       "title": "Storage prices",
@@ -2156,7 +2296,8 @@
         "priceHourly": "Hourly",
         "priceMonthly": "Monthly",
         "currency": "Currency"
-      }
+      },
+      "editTitle": "स्टेटिक IP मूल्य संपादित करें"
     },
     "bandwidthPrices": {
       "title": "बैंडविड्थ मूल्य",
@@ -2262,7 +2403,17 @@
       "serviceFailed": "सेवा सहेजी नहीं जा सकी",
       "bandwidthPriceCreated": "बैंडविड्थ मूल्य बनाया गया",
       "bandwidthPriceUpdated": "बैंडविड्थ मूल्य अपडेट किया गया",
-      "bandwidthPriceFailed": "बैंडविड्थ मूल्य सहेजा नहीं जा सका"
+      "bandwidthPriceFailed": "बैंडविड्थ मूल्य सहेजा नहीं जा सका",
+      "agentCredentialsGenerated": "एजेंट क्रेडेंशियल बनाए गए",
+      "agentCredentialsFailed": "एजेंट क्रेडेंशियल नहीं बनाए जा सके",
+      "vmPriceUpdated": "VM मूल्य अद्यतन हुआ",
+      "staticIpPriceUpdated": "स्टेटिक IP मूल्य अद्यतन हुआ",
+      "ipPoolCreated": "IP पूल बनाया गया",
+      "ipPoolUpdated": "IP पूल अद्यतन हुआ",
+      "ipPoolDeleted": "IP पूल हटाया गया",
+      "ipPoolFailed": "IP पूल सहेजा नहीं जा सका",
+      "lbSettingsUpdated": "लोड बैलेंसर सेटिंग्स सहेजी गईं",
+      "lbSettingsFailed": "लोड बैलेंसर सेटिंग्स सहेजी नहीं जा सकीं"
     },
     "shell": {
       "console": "Console",
@@ -2298,7 +2449,8 @@
         "role": "भूमिका",
         "superAdmin": "सुपर एडमिन",
         "status": "स्थिति",
-        "created": "शामिल हुए"
+        "created": "शामिल हुए",
+        "mobile": "मोबाइल"
       },
       "actions": {
         "grant": "सुपर एडमिन बनाएँ",
@@ -2457,6 +2609,327 @@
         "support": "सहायता टिकट",
         "quota": "कोटा अनुरोध"
       }
+    },
+    "organizations": {
+      "title": "संगठन",
+      "subtitle": "पूरे प्लेटफ़ॉर्म के संगठन, खाते और उपयोगकर्ता प्रबंधित करें।",
+      "searchPlaceholder": "खोजें…",
+      "tabs": {
+        "organizations": "संगठन",
+        "accounts": "खाते",
+        "users": "उपयोगकर्ता",
+        "orphan_users": "संगठन रहित"
+      },
+      "fields": {
+        "name": "नाम",
+        "slug": "स्लग",
+        "billingEmail": "बिलिंग ईमेल",
+        "status": "स्थिति",
+        "accounts": "खाते",
+        "users": "उपयोगकर्ता",
+        "created": "बनाया गया",
+        "accountNumber": "खाता #",
+        "accountName": "नाम",
+        "organization": "संगठन",
+        "main": "मुख्य",
+        "discount": "छूट",
+        "balance": "शेष",
+        "members": "सदस्य",
+        "email": "ईमेल",
+        "mobile": "मोबाइल",
+        "role": "भूमिका",
+        "access": "पहुँच",
+        "userStatus": "स्थिति"
+      },
+      "main": "मुख्य",
+      "root": "रूट",
+      "superAdmin": "सुपर एडमिन",
+      "discount": {
+        "edit": "छूट संपादित करें",
+        "save": "छूट सहेजें",
+        "cancel": "रद्द करें",
+        "saved": "छूट अद्यतन हुई",
+        "failed": "छूट अद्यतन नहीं हो सकी"
+      },
+      "balance": {
+        "edit": "शेष समायोजित करें",
+        "title": "वॉलेट शेष समायोजित करें",
+        "subtitle": "{{name}} · खाता {{number}}",
+        "current": "वर्तमान शेष",
+        "direction": "गतिविधि",
+        "credit": "क्रेडिट जोड़ें (टॉप-अप)",
+        "debit": "क्रेडिट घटाएँ",
+        "amount": "राशि",
+        "amountHint": "क्रेडिट में (1 क्रेडिट = ₹1)। यह शेष में जोड़ा या घटाया जाता है, यह नया कुल नहीं है।",
+        "reason": "कारण",
+        "reasonHint": "इस प्रविष्टि के सामने खाते के विवरण में दिखाया जाता है।",
+        "projected": "इसके बाद शेष",
+        "negativeWarning": "इससे वॉलेट ऋणात्मक हो जाएगा। धन जोड़े जाने तक खाता नए रिसोर्स नहीं बना सकेगा।",
+        "submit": "गतिविधि दर्ज करें",
+        "saved": "वॉलेट शेष अद्यतन हुआ",
+        "failed": "वॉलेट शेष अद्यतन नहीं हो सका"
+      },
+      "empty": {
+        "organizations": "अभी कोई संगठन नहीं",
+        "accounts": "अभी कोई खाता नहीं",
+        "users": "अभी कोई उपयोगकर्ता नहीं",
+        "orphanUsers": "कोई संगठन रहित उपयोगकर्ता नहीं",
+        "orphanUsersHint": "प्लेटफ़ॉर्म का हर उपयोगकर्ता किसी संगठन से जुड़ा है — यही अपेक्षित है।"
+      }
+    },
+    "loadBalancers": {
+      "title": "लोड बैलेंसर",
+      "subtitle": "फ़्लीट-व्यापी लोड-बैलेंसर सेटिंग्स और प्रति-नोड LB मैनेजर।",
+      "fleet": {
+        "title": "फ़्लीट कॉन्फ़िगरेशन",
+        "subtitle": "हर लोड-बैलेंसर कंटेनर पर लागू प्लेटफ़ॉर्म-व्यापी डिफ़ॉल्ट। प्रत्येक फ़ील्ड के नीचे env-var नाम दिखाए गए हैं।",
+        "unsaved": "आपके परिवर्तन सहेजे नहीं गए हैं।",
+        "saved": "सभी परिवर्तन सहेजे गए।",
+        "loadError": "फ़्लीट सेटिंग्स लोड नहीं हो सकीं।"
+      },
+      "fields": {
+        "traceHeader": "ट्रेस हेडर",
+        "sendName": "बैकएंड नाम अग्रेषित करें",
+        "sendNameHint": "चालू होने पर बैलेंसर नीचे दिए हेडर में पूल/बैकएंड का नाम अपस्ट्रीम भेजता है।",
+        "nameHeader": "नाम हेडर",
+        "agentWebhookPort": "एजेंट वेबहुक पोर्ट",
+        "managerPort": "मैनेजर पोर्ट",
+        "templateCtid": "टेम्पलेट CTID",
+        "controlPlaneCidr": "कंट्रोल-प्लेन CIDR"
+      },
+      "auth": {
+        "title": "प्रमाणीकरण",
+        "body": "एकमात्र क्रेडेंशियल प्रत्येक नोड की client_id / secret जोड़ी है। वेबहुक और फ़ॉरवर्ड हॉप कोई बियरर टोकन नहीं ले जाते — वे भरोसेमंद हैं क्योंकि वे फ़ायरवॉल के पीछे प्राइवेट नोड नेटवर्क पर चलते हैं, जो बाहर से पहुँच योग्य नहीं है।"
+      },
+      "nodes": {
+        "title": "नोड मैनेजर",
+        "subtitle": "प्रत्येक Proxmox नोड एक LB मैनेजर चलाता है। पहुँच जाँचें और प्रत्येक नोड का एजेंट क्रेडेंशियल बनाएँ।",
+        "empty": "अभी कोई PVE नोड पंजीकृत नहीं है।"
+      },
+      "table": {
+        "node": "नोड",
+        "manager": "मैनेजर स्थिति",
+        "clientId": "क्लाइंट ID",
+        "secret": "सीक्रेट",
+        "actions": "क्रियाएँ",
+        "checking": "जाँच हो रही है…",
+        "noStatus": "कोई स्थिति नहीं",
+        "noClientId": "नहीं बनाया गया",
+        "secretSet": "सेट",
+        "secretMissing": "अनुपलब्ध"
+      },
+      "managerStatus": {
+        "healthy": "स्वस्थ",
+        "unreachable": "पहुँच से बाहर",
+        "no_manager": "कोई मैनेजर नहीं"
+      },
+      "actions": {
+        "save": "सहेजें",
+        "reset": "रीसेट",
+        "health": "स्वास्थ्य",
+        "recheckAll": "सभी दोबारा जाँचें",
+        "generate": "क्रेडेंशियल बनाएँ",
+        "regenerate": "दोबारा बनाएँ"
+      },
+      "creds": {
+        "shownOnceTitle": "सीक्रेट अभी कॉपी करें — यह दोबारा नहीं दिखाया जाएगा",
+        "shownOnceBody": "सीक्रेट केवल यहाँ, एक बार दिखाया जाता है। इसे सुरक्षित रखें। खो जाने पर नई जोड़ी बनाने के लिए दोबारा बनाएँ।",
+        "clientId": "क्लाइंट ID",
+        "secret": "सीक्रेट"
+      }
+    },
+    "staticIps": {
+      "title": "स्टेटिक IP",
+      "subtitle": "प्लेटफ़ॉर्म की स्टेटिक IP सूची, मूल्य निर्धारण और सक्रिय आवंटन प्रबंधित करें।",
+      "tabs": {
+        "pools": "IP पूल",
+        "inUse": "उपयोग में IP"
+      },
+      "pricing": {
+        "label": "स्टेटिक IP मूल्य",
+        "notSet": "कोई मूल्य कॉन्फ़िगर नहीं",
+        "notSetHint": "वह एक मूल्य निर्धारित करें जो स्टेटिक IP आवंटन बिलिंग तय करता है।",
+        "set": "मूल्य निर्धारित करें",
+        "edit": "मूल्य संपादित करें",
+        "sourceOfTruth": "IP आवंटन बिलिंग के लिए प्रामाणिक स्रोत",
+        "hourly": "प्रति घंटा",
+        "idleHourly": "निष्क्रिय प्रति घंटा",
+        "monthly": "मासिक"
+      },
+      "stats": {
+        "total": "उपयोग योग्य पते",
+        "available": "उपलब्ध",
+        "inUse": "उपयोग में",
+        "pools": "पूल"
+      },
+      "pools": {
+        "add": "IP पूल जोड़ें",
+        "empty": "अभी कोई IP पूल नहीं",
+        "emptySubtitle": "स्टेटिक IP आवंटित करना शुरू करने के लिए एक CIDR ब्लॉक (जैसे 167.0.1.12/30) पंजीकृत करें।",
+        "delete": "पूल हटाएँ",
+        "confirmDeleteTitle": "यह IP पूल हटाएँ?",
+        "confirmDeleteBody": "ब्लॉक {{cidr}} सूची से हटा दिया जाएगा। यह केवल तब संभव है जब इसका कोई पता उपयोग में न हो।",
+        "columns": {
+          "pool": "पूल / CIDR",
+          "region": "क्षेत्र",
+          "az": "उपलब्धता क्षेत्र",
+          "total": "उपयोग योग्य",
+          "used": "उपयोग में",
+          "available": "उपलब्ध",
+          "gateway": "गेटवे",
+          "status": "स्थिति"
+        }
+      },
+      "dialog": {
+        "title": "IP पूल जोड़ें",
+        "subtitle": "एक सार्वजनिक IPv4 ब्लॉक पंजीकृत करें। इससे बनने वाला हर पता दाईं ओर सूचीबद्ध है।",
+        "cidr": "CIDR ब्लॉक",
+        "region": "क्षेत्र",
+        "regionPlaceholder": "क्षेत्र चुनें",
+        "az": "उपलब्धता क्षेत्र",
+        "azPlaceholder": "उपलब्धता क्षेत्र चुनें",
+        "name": "नाम",
+        "namePlaceholder": "खाली छोड़ने पर CIDR से स्वतः बनाया जाएगा",
+        "gateway": "गेटवे",
+        "gatewayPlaceholder": "डिफ़ॉल्ट रूप से पहला उपयोग योग्य पता",
+        "description": "विवरण",
+        "preview": "इस ब्लॉक के पते",
+        "previewEmpty": "पतों की झलक देखने के लिए एक मान्य CIDR दर्ज करें।",
+        "usableSummary": "{{total}} पतों में से {{usable}} उपयोग योग्य",
+        "network": "नेटवर्क",
+        "broadcast": "ब्रॉडकास्ट",
+        "gatewayLabel": "गेटवे"
+      },
+      "inUse": {
+        "searchPlaceholder": "IP या नाम से खोजें",
+        "empty": "कोई स्टेटिक IP उपयोग में नहीं",
+        "emptySubtitle": "किसी भी संगठन द्वारा आवंटित स्टेटिक IP यहाँ दिखेंगे।",
+        "reserved": "आरक्षित",
+        "associated": "उपयोग में",
+        "columns": {
+          "ip": "IP पता",
+          "status": "स्थिति",
+          "vm": "संलग्न",
+          "account": "खाता",
+          "org": "संगठन",
+          "user": "स्वामी",
+          "pool": "पूल",
+          "assigned": "आवंटित"
+        }
+      }
+    },
+    "support": {
+      "title": "सहायता टिकट",
+      "subtitle": "हर खाते और संगठन के ग्राहक टिकटों की छँटाई करें और हल करें।",
+      "empty": "कोई सहायता टिकट नहीं",
+      "emptySubtitle": "सभी खातों के ग्राहक टिकट छँटाई के लिए यहाँ दिखेंगे।"
+    },
+    "accountResourcesPage": {
+      "noResources": "कोई रिसोर्स नहीं",
+      "thisAccountIsnTConsumingAnyResourcesRightNow": "यह खाता अभी कोई रिसोर्स उपयोग नहीं कर रहा है।",
+      "deleteAccount": "खाता हटाएँ",
+      "deleteAccount2": "खाता हटाएँ",
+      "deleteAccount3": "खाता हटाएँ",
+      "staticIpsWillBeReleasedBackToThePool": "स्टेटिक IP पूल में वापस छोड़ दिए जाएंगे।",
+      "authUsersAreNotDeleted": "प्रमाणीकरण उपयोगकर्ता नहीं हटाए जाते।"
+    },
+    "adminUserProfilePage": {
+      "userNotFound": "उपयोगकर्ता नहीं मिला",
+      "userNotFound2": "उपयोगकर्ता नहीं मिला",
+      "thisUserIsnTPartOfTheCurrentPlatformOverview": "यह उपयोगकर्ता वर्तमान प्लेटफ़ॉर्म अवलोकन का हिस्सा नहीं है।",
+      "supportTickets": "सहायता टिकट",
+      "everythingThisUserHasRaisedNewestFirst": "इस उपयोगकर्ता द्वारा उठाया गया सब कुछ, नवीनतम पहले।",
+      "noTicketsFromThisUser": "इस उपयोगकर्ता का कोई टिकट नहीं",
+      "theyHaveNotAskedSupportForAnythingYet": "उन्होंने अभी तक सहायता से कुछ नहीं पूछा है।",
+      "quotaRequests": "कोटा अनुरोध",
+      "increasesThisUserHasAskedForAndWhatWasDecide": "इस उपयोगकर्ता द्वारा मांगी गई वृद्धि, और उन पर क्या निर्णय हुआ।",
+      "noQuotaRequestsFromThisUser": "इस उपयोगकर्ता का कोई कोटा अनुरोध नहीं",
+      "theyHaveNotAskedForAnIncreaseToAnyLimit": "उन्होंने किसी सीमा में वृद्धि नहीं मांगी है।",
+      "superAdmin": "सुपर एडमिन",
+      "thisUserIsnAposTAMemberOfAnyAccount": "यह उपयोगकर्ता किसी खाते का सदस्य नहीं है।"
+    },
+    "bandwidthPriceFormSheet": {
+      "egressDataTransfer": "एग्रेस डेटा ट्रांसफ़र",
+      "billingUnit": "बिलिंग इकाई",
+      "taxInclusive": "कर सहित",
+      "featuresJson": "फ़ीचर JSON",
+      "bwEgressIn1a": "bw-egress-in1a"
+    },
+    "staticIPPriceFormSheet": {
+      "staticIpv4Premium": "स्टेटिक IPv4 प्रीमियम",
+      "ipVersion": "IP संस्करण",
+      "addressType": "पता प्रकार",
+      "networkTier": "नेटवर्क टियर",
+      "idleHourly": "निष्क्रिय प्रति घंटा",
+      "setupFee": "सेटअप शुल्क",
+      "billingUnit": "बिलिंग इकाई",
+      "billingIncrementSeconds": "बिलिंग वृद्धि सेकंड",
+      "taxInclusive": "कर सहित",
+      "featuresJson": "फ़ीचर JSON",
+      "ipStaticPremiumIn1a": "ip-static-premium-in1a"
+    },
+    "storagePriceFormSheet": {
+      "zonalSsdBlock": "ज़ोनल SSD ब्लॉक",
+      "volumeType": "वॉल्यूम प्रकार",
+      "minSizeGb": "न्यूनतम आकार GB",
+      "maxSizeGb": "अधिकतम आकार GB",
+      "includedIops": "शामिल IOPS",
+      "maxIops": "अधिकतम IOPS",
+      "includedThroughputMbps": "शामिल थ्रूपुट MBps",
+      "maxThroughputMbps": "अधिकतम थ्रूपुट MBps",
+      "throughputPriceMbps": "थ्रूपुट मूल्य / MBps",
+      "snapshotPriceGbMonth": "स्नैपशॉट मूल्य / GB माह",
+      "setupFee": "सेटअप शुल्क",
+      "billingUnit": "बिलिंग इकाई",
+      "taxInclusive": "कर सहित",
+      "featuresJson": "फ़ीचर JSON",
+      "blkSsdZonalIn1a": "blk-ssd-zonal-in1a"
+    },
+    "storagePricesPage": {
+      "nameSku": "नाम / SKU",
+      "iopsThroughput": "IOPS / थ्रूपुट"
+    },
+    "vMPriceFormPage": {
+      "standardS2Medium": "स्टैंडर्ड S2 मीडियम",
+      "displayName": "प्रदर्शित नाम",
+      "sortOrder": "क्रम",
+      "cpuVendor": "CPU विक्रेता",
+      "cpuModel": "CPU मॉडल",
+      "clockGhz": "क्लॉक GHz",
+      "localDiskGb": "लोकल डिस्क GB",
+      "bootDiskGb": "बूट डिस्क GB",
+      "maxDataDisks": "अधिकतम डेटा डिस्क",
+      "maxNics": "अधिकतम NIC",
+      "networkTier": "नेटवर्क टियर",
+      "ipv4Included": "IPv4 शामिल",
+      "ipv6Supported": "IPv6 समर्थित",
+      "baselineIops": "बेसलाइन IOPS",
+      "burstIops": "बर्स्ट IOPS",
+      "spotHourly": "स्पॉट प्रति घंटा",
+      "reservedMonthly": "आरक्षित मासिक",
+      "reservedYearly": "आरक्षित वार्षिक",
+      "setupFee": "सेटअप शुल्क",
+      "billingUnit": "बिलिंग इकाई",
+      "billingIncrementSeconds": "बिलिंग वृद्धि सेकंड",
+      "taxInclusive": "कर सहित",
+      "featuresJson": "फ़ीचर JSON",
+      "ddStandardS2MediumIn1a": "dd-standard-s2-medium-in1a",
+      "epyc9554": "EPYC 9554"
+    },
+    "vMPricesPage": {
+      "monthlyReserved": "मासिक / आरक्षित"
+    },
+    "serviceFormSheet": {
+      "computeEngine": "कंप्यूट इंजन",
+      "scalableHighPerformanceSovereignVirtualMachi": "स्केलेबल, उच्च-प्रदर्शन सॉवरेन वर्चुअल मशीनें…"
+    },
+    "availabilityZoneFormSheet": {
+      "indiaNoidaNcr": "भारत नोएडा (NCR)",
+      "noida1a": "Noida 1A"
+    },
+    "imageVersionsPage": {
+      "ubuntu2204Lts": "Ubuntu 22.04 LTS",
+      "ubuntu2404Cloudinit": "ubuntu-24.04-cloudinit"
     }
   },
   "region": {
@@ -2745,6 +3218,259 @@
       "running": "चल रहा है…",
       "hint": "एक JSON पेलोड भेजें और फ़ंक्शन की प्रतिक्रिया देखें।",
       "empty": "अभी तक कोई इनवोकेशन नहीं"
+    }
+  },
+  "managedApps": {
+    "buildSettingsSection": {
+      "installCommand": "इंस्टॉल कमांड",
+      "buildCommand": "बिल्ड कमांड",
+      "outputDirectory": "आउटपुट डायरेक्टरी",
+      "buildAndOutputSettings": "बिल्ड और आउटपुट सेटिंग्स"
+    },
+    "gitHubAccountSelect": {
+      "selectAGithubAccount": "GitHub खाता चुनें",
+      "connectAnotherAccount": "दूसरा खाता जोड़ें",
+      "manageOnGithub": "GitHub पर प्रबंधित करें"
+    },
+    "index": {
+      "changePlan": "प्लान बदलें",
+      "importEnv": ".env आयात करें",
+      "addVariable": "वेरिएबल जोड़ें",
+      "publicImages": "सार्वजनिक इमेज",
+      "readyMadeServicesWeRunForYouNoRepositoryNoBu": "तैयार सेवाएँ जो हम आपके लिए चलाते हैं — कोई रिपॉज़िटरी नहीं, कोई बिल्ड पाइपलाइन नहीं।",
+      "newProject": "नया प्रोजेक्ट",
+      "copyBuildId": "बिल्ड ID कॉपी करें",
+      "yourPlan": "आपका प्लान",
+      "couldNotLoadSetup": "सेटअप लोड नहीं हो सका",
+      "weCouldNotReadThisProjectSOnboardingState": "हम इस प्रोजेक्ट की ऑनबोर्डिंग स्थिति नहीं पढ़ सके।",
+      "managedApps": "मैनेज्ड ऐप्स",
+      "goToProject": "प्रोजेक्ट पर जाएँ"
+    },
+    "repoSelect": {
+      "adjustGithubAppAccess": "GitHub ऐप की पहुँच बदलें"
+    },
+    "rootDirectoryInput": {
+      "rootDirectory": "रूट डायरेक्टरी"
+    },
+    "runtimeSelect": {
+      "selectARuntime": "रनटाइम चुनें"
+    },
+    "envImportSheet": {
+      "pasteEnvContents": ".env की सामग्री पेस्ट करें",
+      "importFromEnv": ".env से आयात करें"
+    },
+    "envVarRow": {
+      "variableName": "वेरिएबल का नाम",
+      "variableValue": "वेरिएबल का मान",
+      "alreadyUsedTheLastRowWins": "पहले से उपयोग में — अंतिम पंक्ति मान्य होगी।"
+    },
+    "imageCard": {
+      "comingSoon": "जल्द आ रहा है"
+    },
+    "configurePhase": {
+      "projectName": "प्रोजेक्ट का नाम",
+      "leaveEmptyToNameItAfterTheRepositoryBecomesP": "खाली छोड़ें तो रिपॉज़िटरी के नाम पर रखा जाएगा। यह सार्वजनिक पते का हिस्सा बनता है।",
+      "planLimits": "प्लान और सीमाएँ",
+      "inheritedFromYourAccountPlanChangeItInManage": "आपके खाते के प्लान से लिया गया। इसे मैनेज्ड ऐप्स → सेटिंग्स में बदलें।",
+      "changeRepoOrType": "रिपॉज़िटरी या प्रकार बदलें"
+    },
+    "detectionNotice": {
+      "inspectingTheRepository": "रिपॉज़िटरी की जाँच हो रही है…",
+      "resetToDetected": "पहचाने गए मान पर लौटें"
+    },
+    "howItWorksAside": {
+      "howItWorks": "यह कैसे काम करता है"
+    },
+    "importPhase": {
+      "githubAccount": "GitHub खाता",
+      "projectType": "प्रोजेक्ट प्रकार",
+      "loadingYourGithubConnections": "आपके GitHub कनेक्शन लोड हो रहे हैं…",
+      "connectGithubToImportARepository": "रिपॉज़िटरी आयात करने के लिए GitHub जोड़ें",
+      "importAGitRepository": "Git रिपॉज़िटरी आयात करें",
+      "everyPushToTheBranchYouChooseWillBuildAndDep": "आप जो ब्रांच चुनेंगे, उसमें हर पुश बिल्ड और डिप्लॉय करेगा।",
+      "repositoryMissing": "रिपॉज़िटरी नहीं मिली?",
+      "adjustWhichRepositoriesTheAppCanSee": "ऐप कौन-सी रिपॉज़िटरी देख सकता है, यह बदलें"
+    },
+    "networkingSection": {
+      "publicOnlyNoVpc": "केवल सार्वजनिक — कोई VPC नहीं",
+      "anySubnetInThisVpc": "इस VPC का कोई भी सबनेट",
+      "privateNetworking": "प्राइवेट नेटवर्किंग",
+      "removeBindingDeployPublicOnly": "बाइंडिंग हटाएँ — केवल सार्वजनिक रूप से डिप्लॉय करें"
+    },
+    "projectTypePicker": {
+      "weReadTheRepositoryToWorkThisOutPickOneIfWeC": "हम यह पता लगाने के लिए रिपॉज़िटरी पढ़ते हैं। यदि हम न कर सकें तो आप चुनें।",
+      "readingTheRepository": "रिपॉज़िटरी पढ़ी जा रही है…",
+      "chooseAnotherRepositoryAboveOrOneWithAPackag": "ऊपर से दूसरी रिपॉज़िटरी चुनें, या ऐसी जिसमें package.json हो।"
+    },
+    "sourcePhase": {
+      "deployFromGithub": "GitHub से डिप्लॉय करें",
+      "reactOpennextNextJs": "React · OpenNext (Next.js)",
+      "publicImages": "सार्वजनिक इमेज",
+      "n8nMoreServicesSoon": "n8n · और सेवाएँ जल्द",
+      "whereIsYourAppComingFrom": "आपका ऐप कहाँ से आ रहा है?",
+      "deployYourOwnCodeFromARepositoryOrLaunchARea": "अपना कोड किसी रिपॉज़िटरी से डिप्लॉय करें, या कोई तैयार सेवा शुरू करें।"
+    },
+    "gitHubCallbackPage": {
+      "continueDeploying": "डिप्लॉय करना जारी रखें",
+      "backToManagedApps": "मैनेज्ड ऐप्स पर लौटें"
+    },
+    "getStartedHero": {
+      "shipFromGithubInThreeSteps": "तीन चरणों में GitHub से शिप करें",
+      "createYourFirstProject": "अपना पहला प्रोजेक्ट बनाएँ",
+      "githubConnected": "GitHub जुड़ा है",
+      "skipAndCreateAProject": "छोड़ें और प्रोजेक्ट बनाएँ"
+    },
+    "gitHubConnectionsDialog": {
+      "removeGithubConnection": "GitHub कनेक्शन हटाएँ?",
+      "githubConnections": "GitHub कनेक्शन",
+      "accountsAndOrganisationsThisPlatformCanReadR": "वे खाते और संगठन जिनकी रिपॉज़िटरी यह प्लेटफ़ॉर्म पढ़ सकता है।",
+      "noGithubAccountIsConnectedYet": "अभी कोई GitHub खाता नहीं जुड़ा है।",
+      "manageRepositoryAccess": "रिपॉज़िटरी पहुँच प्रबंधित करें"
+    },
+    "managedAppsOverviewPage": {
+      "managedApps": "मैनेज्ड ऐप्स",
+      "deleteProject": "प्रोजेक्ट हटाएँ",
+      "createProject": "प्रोजेक्ट बनाएँ"
+    },
+    "overviewToolbar": {
+      "searchByNameRepoBranchOrState": "नाम, रिपॉज़िटरी, ब्रांच या स्थिति से खोजें…",
+      "searchProjects": "प्रोजेक्ट खोजें",
+      "filterByRuntime": "रनटाइम से फ़िल्टर करें",
+      "sortProjects": "प्रोजेक्ट क्रमबद्ध करें",
+      "allRuntimes": "सभी रनटाइम"
+    },
+    "projectActionsMenu": {
+      "finishSetup": "सेटअप पूरा करें",
+      "viewBuilds": "बिल्ड देखें"
+    },
+    "currentDeploymentHero": {
+      "buildHistory": "बिल्ड इतिहास"
+    },
+    "latestBuildLog": {
+      "latestBuild": "नवीनतम बिल्ड",
+      "viewOnGithub": "GitHub पर देखें"
+    },
+    "projectBuildsTab": {
+      "noBuildsYet": "अभी कोई बिल्ड नहीं",
+      "buildHistory": "बिल्ड इतिहास",
+      "newestFirstClickARowToOpenItsLog": "नवीनतम पहले — लॉग खोलने के लिए किसी पंक्ति पर क्लिक करें।",
+      "noBuildsYet2": "अभी कोई बिल्ड नहीं",
+      "deploymentActivity": "डिप्लॉयमेंट गतिविधि",
+      "everyLifecycleEventAcrossTheseBuildsNewestFi": "इन बिल्ड की हर जीवनचक्र घटना, नवीनतम पहले।"
+    },
+    "projectDetailPage": {
+      "projectNotFound": "प्रोजेक्ट नहीं मिला",
+      "finishSetup": "सेटअप पूरा करें"
+    },
+    "projectOverviewTab": {
+      "emptyFieldsInheritThePlatformDefaultForThisR": "खाली फ़ील्ड इस रनटाइम के प्लेटफ़ॉर्म डिफ़ॉल्ट को अपनाते हैं।",
+      "finishSetup": "सेटअप पूरा करें"
+    },
+    "buildOutputSection": {
+      "buildOutput": "बिल्ड और आउटपुट",
+      "whatRunsWhenThisProjectBuildsEmptyFieldsInhe": "यह प्रोजेक्ट बिल्ड होने पर क्या चलता है। खाली फ़ील्ड प्लेटफ़ॉर्म डिफ़ॉल्ट अपनाते हैं।",
+      "appliesToTheNextBuildThisDoesNotStartOne": "अगले बिल्ड पर लागू होगा — इससे कोई बिल्ड शुरू नहीं होता।"
+    },
+    "dangerZone": {
+      "dangerZone": "जोखिम क्षेत्र",
+      "deleteProject": "प्रोजेक्ट हटाएँ",
+      "deleteProject2": "प्रोजेक्ट हटाएँ",
+      "deleteProject3": "प्रोजेक्ट हटाएँ"
+    },
+    "envSection": {
+      "environmentVariables": "एनवायरनमेंट वेरिएबल",
+      "someValuesWillBeCleared": "कुछ मान मिट जाएंगे",
+      "saveAndClearThem": "सहेजें और उन्हें मिटाएँ",
+      "retypeAValueForAnyYouWantToKeepThenSaveAgain": "जिन्हें रखना है उनके लिए मान दोबारा टाइप करें, फिर सहेजें।"
+    },
+    "generalSection": {
+      "howThisProjectIsIdentifiedInTheConsole": "कंसोल में इस प्रोजेक्ट की पहचान कैसे होती है।"
+    },
+    "gitSection": {
+      "whereThisProjectSCodeComesFrom": "इस प्रोजेक्ट का कोड कहाँ से आता है।",
+      "trackedBranch": "ट्रैक की गई ब्रांच",
+      "everyPushToThisBranchTriggersABuild": "इस ब्रांच में हर पुश एक बिल्ड शुरू करता है।",
+      "theBuildWorkflowIsNotOnThisBranchYetSoPushes": "बिल्ड वर्कफ़्लो अभी इस ब्रांच पर नहीं है, इसलिए पुश से बिल्ड नहीं होगा।",
+      "finishSetup": "सेटअप पूरा करें"
+    },
+    "planSection": {
+      "theAccountPlanThisProjectRunsUnderAndTheQuot": "वह खाता प्लान जिसके अंतर्गत यह प्रोजेक्ट चलता है, और उसके साथ मिलने वाले कोटा।"
+    },
+    "runtimePanel": {
+      "notAssigned": "असाइन नहीं किया गया",
+      "noRuntimeContainerYet": "अभी कोई रनटाइम कंटेनर नहीं।"
+    },
+    "customPlanCard": {
+      "letAposSTalk": "बात करें",
+      "contactUs": "संपर्क करें",
+      "opensASupportTicketWeReplyInTheThread": "एक सहायता टिकट खुलता है — हम उसी थ्रेड में उत्तर देते हैं।"
+    },
+    "customPlanDialog": {
+      "eG25": "जैसे 25",
+      "talkToUsAboutACustomPlan": "कस्टम प्लान के बारे में हमसे बात करें",
+      "whatDoYouNeed": "आपको क्या चाहिए?",
+      "projectsYouExpectToRun": "आप कितने प्रोजेक्ट चलाने की अपेक्षा करते हैं"
+    },
+    "setupWorkPanel": {
+      "viewOnGithub": "GitHub पर देखें"
+    },
+    "workflowPreview": {
+      "copyTheWorkflowFile": "वर्कफ़्लो फ़ाइल कॉपी करें"
+    },
+    "projectExplorer": {
+      "couldNotLoadYourProjects": "आपके प्रोजेक्ट लोड नहीं हो सके।",
+      "noProjectsMatchTheseFilters": "इन फ़िल्टरों से कोई प्रोजेक्ट मेल नहीं खाता"
+    }
+  },
+  "monitoring": {
+    "discordFields": {
+      "webhookUrl": "वेबहुक URL"
+    },
+    "webhookFields": {
+      "optionalSigningSecret": "वैकल्पिक साइनिंग सीक्रेट",
+      "requestsInclude": "अनुरोधों में शामिल है",
+      "leaveEmptyForAnUnsignedWebhook": "बिना हस्ताक्षर वाले वेबहुक के लिए खाली छोड़ें।"
+    },
+    "conditionSection": {
+      "periodsThatMustBreach": "उल्लंघन होने वाली अवधियाँ",
+      "periodsEvaluated": "मूल्यांकित अवधियाँ",
+      "ifDataStopsArriving": "यदि डेटा आना बंद हो जाए",
+      "alertWhenThe": "अलर्ट करें जब",
+      "chooseASignalAboveToSeeItChartedAgainstThisT": "इस सीमा के सापेक्ष चार्ट देखने के लिए ऊपर एक सिग्नल चुनें।",
+      "wouldBeInAlarmNow": "अभी अलार्म की स्थिति में होगा",
+      "advancedIfDataStopsArriving": "उन्नत — यदि डेटा आना बंद हो जाए"
+    },
+    "signalSection": {
+      "eGRequestLatencyMs": "जैसे request_latency_ms",
+      "signalToWatch": "निगरानी हेतु सिग्नल",
+      "metricName": "मेट्रिक का नाम",
+      "exactlyAsYouPushItInsideTheNamespaceAbove": "जैसा आप भेजते हैं, ठीक उसी रूप में — ऊपर दिए नेमस्पेस के अंदर।",
+      "pickAResourceAboveToSeeItsSignals": "इसके सिग्नल देखने के लिए ऊपर एक रिसोर्स चुनें।"
+    },
+    "summaryRail": {
+      "thisAlarm": "यह अलार्म",
+      "beforeYouSave": "सहेजने से पहले"
+    },
+    "index": {
+      "pickWhatToWatchWhichSignalAndWhenItShouldPag": "चुनें कि किसकी निगरानी करनी है, कौन-सा सिग्नल, और कब आपको सूचित करना है।",
+      "whatToWatch": "किसकी निगरानी करें",
+      "whatThisResourceReportsPickingOneSetsASensib": "यह रिसोर्स क्या रिपोर्ट करता है। एक चुनने पर एक उपयुक्त शुरुआती नियम सेट हो जाता है।",
+      "readItAsASentenceTheChartBelowReplaysItOverT": "इसे एक वाक्य की तरह पढ़ें — नीचे का चार्ट इसे पिछले दिन पर दोहराता है।",
+      "notifications": "सूचनाएँ",
+      "whoHearsAboutItAndWhetherTheyAlsoHearTheReco": "किसे सूचना मिलेगी, और क्या उन्हें रिकवरी की सूचना भी मिलेगी।",
+      "suggestedFromTheResourceAndSignalAboveChange": "ऊपर दिए रिसोर्स और सिग्नल से सुझाया गया — चाहें तो बदल दें।",
+      "eGLbProdWebErrorRate5xxHigh": "जैसे lb-prod-web-error-rate-5xx-high",
+      "whatShouldSomeoneDoWhenThisFires": "जब यह ट्रिगर हो तो किसी को क्या करना चाहिए?",
+      "alarmName": "अलार्म का नाम",
+      "descriptionOptional": "विवरण (वैकल्पिक)"
+    },
+    "jiraOAuthCallbackPage": {
+      "backToChannels": "चैनलों पर लौटें"
+    },
+    "logsPage": {
+      "searchAndFilterRecentLogEventsAcrossYourServ": "अपनी सेवाओं के हाल के लॉग इवेंट खोजें और फ़िल्टर करें।",
+      "logStreamingIsOnTheWay": "लॉग स्ट्रीमिंग जल्द आ रही है",
+      "liveTail": "लाइव टेल"
     }
   }
 }

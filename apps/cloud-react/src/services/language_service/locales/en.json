@@ -442,6 +442,12 @@
       "hint": "Resources are organised and billed by resource group.",
       "none": "No resource groups yet",
       "create": "New resource group"
+    },
+    "createResourceGroupSheet": {
+      "describeThePurposeOfThisResourceGroup": "Describe the purpose of this resource group..."
+    },
+    "editResourceGroupSheet": {
+      "describeThePurposeOfThisResourceGroup": "Describe the purpose of this resource group..."
     }
   },
   "compute": {
@@ -695,6 +701,85 @@
         "minDisk": "Min disk"
       },
       "useToCreate": "Launch instance"
+    },
+    "vmCreateWizardPage": {
+      "generalSettings": "General Settings",
+      "instanceNameResourceGroupAndTagging": "Instance name, resource group and tagging",
+      "billingCycle": "Billing Cycle",
+      "hourlyMonthlyOrYearlyBilling": "Hourly, monthly, or yearly billing",
+      "locationNetwork": "Location & Network",
+      "dataCenterAndNetworkIsolation": "Data center and network isolation",
+      "selectOsApps": "Select OS / Apps",
+      "operatingSystemMarketplaceIsos": "Operating System, Marketplace, ISOs",
+      "selectPlan": "Select Plan",
+      "chooseHardwareSpecsForYourInstance": "Choose hardware specs for your instance",
+      "storageConfiguration": "Storage Configuration",
+      "configureBootAndDataDisks": "Configure boot and data disks",
+      "authConfiguration": "Auth Configuration",
+      "setupSshAccess": "Setup SSH access",
+      "costSummary": "Cost Summary",
+      "billingCycle2": "Billing Cycle",
+      "selectAPlanToSeeCostDetails": "Select a plan to see cost details",
+      "totalCost": "Total Cost",
+      "includesPublicIpv4AddressCharge": "Includes public IPv4 address charge."
+    },
+    "vmDetailPage": {
+      "infrastructureProfile": "Infrastructure Profile",
+      "terminationProtection": "Termination Protection"
+    },
+    "vmsListPage": {
+      "noPublicIp": "No Public IP"
+    },
+    "basicsStep": {
+      "leaveBlankToAutoGenerate": "Leave blank to auto-generate",
+      "aBriefDescriptionOfThisInstance": "A brief description of this instance...",
+      "instanceNameOptional": "Instance Name (Optional)",
+      "descriptionOptional": "Description (Optional)",
+      "tagsOptional": "Tags (Optional)",
+      "advancedOptions": "Advanced Options",
+      "terminationProtection": "Termination Protection",
+      "preventThisInstanceFromBeingAccidentallyDele": "Prevent this instance from being accidentally deleted."
+    },
+    "diskStep": {
+      "selectAStorageClass": "Select a storage class",
+      "first30GbIncludedFreeExtraGbBilledAtThePerGb": "First 30 GB included free · extra GB billed at the per-GB rate.",
+      "volumeClass": "Volume Class *",
+      "deleteOnTermination": "Delete on Termination",
+      "automaticallyDeleteThisDataDiskWhenTheInstan": "Automatically delete this data disk when the instance is terminated."
+    },
+    "locationAndNetworkStep": {
+      "dynamicIp": "Dynamic IP",
+      "dhcpAssignedAddressMayChangeWhenTheInstanceS": "DHCP-assigned address. May change when the instance stops and starts.",
+      "staticIp": "Static IP",
+      "reservedAddressThatStaysWithTheInstanceForIt": "Reserved address that stays with the instance for its lifetime.",
+      "dataCenterLocation": "Data Center Location",
+      "availabilityZone": "Availability Zone",
+      "networkIsolation": "Network Isolation",
+      "virtualPublicServerVps": "Virtual Public Server (VPS)",
+      "instanceConnectsDirectlyToTheInternetWithAPu": "Instance connects directly to the internet with a public IP.",
+      "virtualPrivateCloudVpc": "Virtual Private Cloud (VPC)",
+      "isolateYourInstanceInsideAPrivateNetwork": "Isolate your instance inside a private network.",
+      "noVpcsAvailable": "No VPCs Available",
+      "youDonTHaveAnyVpcsInThisRegion": "You don’t have any VPCs in this region.",
+      "createAVpcFirst": "Create a VPC first",
+      "publicIpv4": "Public IPv4"
+    },
+    "machinePlanStep": {
+      "noMachineTypesAvailableInThisZone": "No machine types available in this zone.",
+      "networkDisk": "Network / disk"
+    },
+    "oSStep": {
+      "quickSelect": "Quick Select",
+      "myImages": "My Images",
+      "availableAmis": "Available AMIs",
+      "architecture": "Architecture:",
+      "minDisk": "Min Disk:",
+      "marketplaceApps": "Marketplace Apps",
+      "customImagesSnapshots": "Custom Images & Snapshots",
+      "yourSavedAmisAndVolumeSnapshotsWillAppearHer": "Your saved AMIs and volume snapshots will appear here. Coming soon!"
+    },
+    "sshStep": {
+      "sshEd25519Aaaa": "ssh-ed25519 AAAA..."
     }
   },
   "sshKeys": {
@@ -1074,6 +1159,20 @@
         "actor": "Actor",
         "ip": "IP"
       }
+    },
+    "createPolicySheet": {
+      "deployreadonly": "DeployReadOnly"
+    },
+    "inviteMemberDialog": {
+      "teammateCompanyCom": "teammate@company.com"
+    },
+    "inviteUserSheet": {
+      "janeDoe": "Jane Doe",
+      "janeCompanyCom": "jane@company.com"
+    },
+    "policySimulatorPage": {
+      "vmInstancesCreate": "vm:instances:create",
+      "urnCloudVmInstances": "urn:cloud:vm:*:instances/*"
     }
   },
   "billing": {
@@ -1503,6 +1602,10 @@
       "inboundRules": "Inbound rules",
       "outboundRules": "Outbound rules",
       "notFound": "Security group not found"
+    },
+    "vpcDetailPage": {
+      "regionZone": "Region & Zone",
+      "defaultNetwork": "Default Network"
     }
   },
   "common": {
@@ -2020,6 +2123,17 @@
       "capacityFailed": "Failed to update capacity",
       "deleted": "Group deleted",
       "deleteFailed": "Failed to delete group"
+    },
+    "createAsgSheet": {
+      "optionalDescription": "Optional description...",
+      "advancedScalingPolicies": "Advanced Scaling Policies",
+      "healthCheckGraceS": "Health Check Grace (s)",
+      "terminationPolicy": "Termination Policy",
+      "oldestInstance": "Oldest Instance",
+      "newestInstance": "Newest Instance",
+      "closestToHour": "Closest To Hour",
+      "capacityRebalance": "Capacity Rebalance",
+      "automaticallyRedistributeInstancesAcrossAvai": "Automatically redistribute instances across availability zones."
     }
   },
   "disks": {
@@ -2082,6 +2196,17 @@
       "detachFailed": "Failed to detach disk",
       "deleted": "Disk deleted",
       "deleteFailed": "Failed to delete disk"
+    },
+    "createDiskSheet": {
+      "optionalDescription": "Optional description...",
+      "volumeClass": "Volume Class",
+      "generalPurposeGp3": "General Purpose (gp3)",
+      "provisionedIopsIo2": "Provisioned IOPS (io2)",
+      "coldHddSc1": "Cold HDD (sc1)",
+      "advancedFeatures": "Advanced Features",
+      "allowMountingToMultipleInstancesSimultaneous": "Allow mounting to multiple instances simultaneously.",
+      "deleteOnTermination": "Delete on Termination",
+      "automaticallyDeleteDiskWhenTheAttachedInstan": "Automatically delete disk when the attached instance terminates."
     }
   },
   "resources": {
@@ -2206,6 +2331,10 @@
     "confirm": {
       "intro": "Confirm the account you're creating with {{provider}}.",
       "create": "Create account"
+    },
+    "policyConsent": {
+      "privacyPolicy": "Privacy Policy",
+      "termsOfService": "Terms of Service"
     }
   },
   "onboarding": {
@@ -3151,6 +3280,113 @@
         "support": "Support tickets",
         "quota": "Quota requests"
       }
+    },
+    "accountResourcesPage": {
+      "noResources": "No resources",
+      "thisAccountIsnTConsumingAnyResourcesRightNow": "This account isn't consuming any resources right now.",
+      "deleteAccount": "Delete account",
+      "deleteAccount2": "Delete account",
+      "deleteAccount3": "Delete account",
+      "staticIpsWillBeReleasedBackToThePool": "Static IPs will be released back to the pool.",
+      "authUsersAreNotDeleted": "Auth users are not deleted."
+    },
+    "adminUserProfilePage": {
+      "userNotFound": "User not found",
+      "userNotFound2": "User not found",
+      "thisUserIsnTPartOfTheCurrentPlatformOverview": "This user isn't part of the current platform overview.",
+      "supportTickets": "Support tickets",
+      "everythingThisUserHasRaisedNewestFirst": "Everything this user has raised, newest first.",
+      "noTicketsFromThisUser": "No tickets from this user",
+      "theyHaveNotAskedSupportForAnythingYet": "They have not asked support for anything yet.",
+      "quotaRequests": "Quota requests",
+      "increasesThisUserHasAskedForAndWhatWasDecide": "Increases this user has asked for, and what was decided.",
+      "noQuotaRequestsFromThisUser": "No quota requests from this user",
+      "theyHaveNotAskedForAnIncreaseToAnyLimit": "They have not asked for an increase to any limit.",
+      "superAdmin": "Super Admin",
+      "thisUserIsnAposTAMemberOfAnyAccount": "This user isn&apos;t a member of any account."
+    },
+    "availabilityZoneFormSheet": {
+      "indiaNoidaNcr": "India Noida (NCR)",
+      "noida1a": "Noida 1A"
+    },
+    "bandwidthPriceFormSheet": {
+      "bwEgressIn1a": "bw-egress-in1a",
+      "egressDataTransfer": "Egress data transfer",
+      "billingUnit": "Billing unit",
+      "taxInclusive": "Tax inclusive",
+      "featuresJson": "Features JSON"
+    },
+    "imageVersionsPage": {
+      "ubuntu2204Lts": "Ubuntu 22.04 LTS",
+      "ubuntu2404Cloudinit": "ubuntu-24.04-cloudinit"
+    },
+    "serviceFormSheet": {
+      "computeEngine": "Compute Engine",
+      "scalableHighPerformanceSovereignVirtualMachi": "Scalable, high-performance sovereign virtual machines…"
+    },
+    "staticIPPriceFormSheet": {
+      "ipStaticPremiumIn1a": "ip-static-premium-in1a",
+      "staticIpv4Premium": "Static IPv4 premium",
+      "ipVersion": "IP version",
+      "addressType": "Address type",
+      "networkTier": "Network tier",
+      "idleHourly": "Idle hourly",
+      "setupFee": "Setup fee",
+      "billingUnit": "Billing unit",
+      "billingIncrementSeconds": "Billing increment seconds",
+      "taxInclusive": "Tax inclusive",
+      "featuresJson": "Features JSON"
+    },
+    "storagePriceFormSheet": {
+      "blkSsdZonalIn1a": "blk-ssd-zonal-in1a",
+      "zonalSsdBlock": "Zonal SSD block",
+      "volumeType": "Volume type",
+      "minSizeGb": "Min size GB",
+      "maxSizeGb": "Max size GB",
+      "includedIops": "Included IOPS",
+      "maxIops": "Max IOPS",
+      "includedThroughputMbps": "Included throughput MBps",
+      "maxThroughputMbps": "Max throughput MBps",
+      "throughputPriceMbps": "Throughput price / MBps",
+      "snapshotPriceGbMonth": "Snapshot price / GB month",
+      "setupFee": "Setup fee",
+      "billingUnit": "Billing unit",
+      "taxInclusive": "Tax inclusive",
+      "featuresJson": "Features JSON"
+    },
+    "storagePricesPage": {
+      "nameSku": "Name / SKU",
+      "iopsThroughput": "IOPS / throughput"
+    },
+    "vMPriceFormPage": {
+      "ddStandardS2MediumIn1a": "dd-standard-s2-medium-in1a",
+      "standardS2Medium": "Standard S2 Medium",
+      "epyc9554": "EPYC 9554",
+      "displayName": "Display name",
+      "sortOrder": "Sort order",
+      "cpuVendor": "CPU vendor",
+      "cpuModel": "CPU model",
+      "clockGhz": "Clock GHz",
+      "localDiskGb": "Local disk GB",
+      "bootDiskGb": "Boot disk GB",
+      "maxDataDisks": "Max data disks",
+      "maxNics": "Max NICs",
+      "networkTier": "Network tier",
+      "ipv4Included": "IPv4 included",
+      "ipv6Supported": "IPv6 supported",
+      "baselineIops": "Baseline IOPS",
+      "burstIops": "Burst IOPS",
+      "spotHourly": "Spot hourly",
+      "reservedMonthly": "Reserved monthly",
+      "reservedYearly": "Reserved yearly",
+      "setupFee": "Setup fee",
+      "billingUnit": "Billing unit",
+      "billingIncrementSeconds": "Billing increment seconds",
+      "taxInclusive": "Tax inclusive",
+      "featuresJson": "Features JSON"
+    },
+    "vMPricesPage": {
+      "monthlyReserved": "Monthly / reserved"
     }
   },
   "region": {
@@ -3759,6 +3995,295 @@
       "running": "Invoking…",
       "hint": "Run an invocation to see its response here.",
       "empty": "(empty body)"
+    },
+    "createFunctionPage": {
+      "registryExampleComMyFunctionLatest": "registry.example.com/my-function:latest",
+      "indexHandler": "index.handler"
+    }
+  },
+  "managedApps": {
+    "buildSettingsSection": {
+      "installCommand": "Install command",
+      "buildCommand": "Build command",
+      "outputDirectory": "Output directory",
+      "buildAndOutputSettings": "Build and output settings"
+    },
+    "gitHubAccountSelect": {
+      "selectAGithubAccount": "Select a GitHub account",
+      "connectAnotherAccount": "Connect another account",
+      "manageOnGithub": "Manage on GitHub"
+    },
+    "index": {
+      "changePlan": "Change plan",
+      "importEnv": "Import .env",
+      "addVariable": "Add variable",
+      "publicImages": "Public Images",
+      "readyMadeServicesWeRunForYouNoRepositoryNoBu": "Ready-made services we run for you — no repository, no build pipeline.",
+      "newProject": "New project",
+      "copyBuildId": "Copy build ID",
+      "yourPlan": "Your plan",
+      "couldNotLoadSetup": "Could not load setup",
+      "weCouldNotReadThisProjectSOnboardingState": "We could not read this project's onboarding state.",
+      "managedApps": "Managed Apps",
+      "goToProject": "Go to project"
+    },
+    "repoSelect": {
+      "adjustGithubAppAccess": "Adjust GitHub App access"
+    },
+    "rootDirectoryInput": {
+      "rootDirectory": "Root directory"
+    },
+    "runtimeSelect": {
+      "selectARuntime": "Select a runtime"
+    },
+    "envImportSheet": {
+      "pasteEnvContents": "Paste .env contents",
+      "importFromEnv": "Import from .env"
+    },
+    "envVarRow": {
+      "variableName": "Variable name",
+      "variableValue": "Variable value",
+      "alreadyUsedTheLastRowWins": "Already used — the last row wins."
+    },
+    "imageCard": {
+      "comingSoon": "Coming soon"
+    },
+    "configurePhase": {
+      "projectName": "Project name",
+      "leaveEmptyToNameItAfterTheRepositoryBecomesP": "Leave empty to name it after the repository. Becomes part of the public address.",
+      "planLimits": "Plan & limits",
+      "inheritedFromYourAccountPlanChangeItInManage": "Inherited from your account plan. Change it in Managed Apps → Settings.",
+      "changeRepoOrType": "Change repo or type"
+    },
+    "detectionNotice": {
+      "inspectingTheRepository": "Inspecting the repository…",
+      "resetToDetected": "Reset to detected"
+    },
+    "howItWorksAside": {
+      "howItWorks": "How it works"
+    },
+    "importPhase": {
+      "githubAccount": "GitHub account",
+      "projectType": "Project type",
+      "loadingYourGithubConnections": "Loading your GitHub connections…",
+      "connectGithubToImportARepository": "Connect GitHub to import a repository",
+      "importAGitRepository": "Import a Git repository",
+      "everyPushToTheBranchYouChooseWillBuildAndDep": "Every push to the branch you choose will build and deploy.",
+      "repositoryMissing": "Repository missing?",
+      "adjustWhichRepositoriesTheAppCanSee": "Adjust which repositories the app can see"
+    },
+    "networkingSection": {
+      "publicOnlyNoVpc": "Public only — no VPC",
+      "anySubnetInThisVpc": "Any subnet in this VPC",
+      "privateNetworking": "Private networking",
+      "removeBindingDeployPublicOnly": "Remove binding — deploy public only"
+    },
+    "projectTypePicker": {
+      "weReadTheRepositoryToWorkThisOutPickOneIfWeC": "We read the repository to work this out. Pick one if we could not.",
+      "readingTheRepository": "Reading the repository…",
+      "chooseAnotherRepositoryAboveOrOneWithAPackag": "Choose another repository above, or one with a package.json."
+    },
+    "sourcePhase": {
+      "deployFromGithub": "Deploy from GitHub",
+      "reactOpennextNextJs": "React · OpenNext (Next.js)",
+      "publicImages": "Public Images",
+      "n8nMoreServicesSoon": "n8n · more services soon",
+      "whereIsYourAppComingFrom": "Where is your app coming from?",
+      "deployYourOwnCodeFromARepositoryOrLaunchARea": "Deploy your own code from a repository, or launch a ready-made service."
+    },
+    "gitHubCallbackPage": {
+      "continueDeploying": "Continue deploying",
+      "backToManagedApps": "Back to Managed Apps"
+    },
+    "getStartedHero": {
+      "shipFromGithubInThreeSteps": "Ship from GitHub in three steps",
+      "createYourFirstProject": "Create your first project",
+      "githubConnected": "GitHub connected",
+      "skipAndCreateAProject": "Skip and create a project"
+    },
+    "gitHubConnectionsDialog": {
+      "removeGithubConnection": "Remove GitHub connection?",
+      "githubConnections": "GitHub connections",
+      "accountsAndOrganisationsThisPlatformCanReadR": "Accounts and organisations this platform can read repositories from.",
+      "noGithubAccountIsConnectedYet": "No GitHub account is connected yet.",
+      "manageRepositoryAccess": "Manage repository access"
+    },
+    "managedAppsOverviewPage": {
+      "managedApps": "Managed Apps",
+      "deleteProject": "Delete project",
+      "createProject": "Create project"
+    },
+    "overviewToolbar": {
+      "searchByNameRepoBranchOrState": "Search by name, repo, branch or state…",
+      "searchProjects": "Search projects",
+      "filterByRuntime": "Filter by runtime",
+      "sortProjects": "Sort projects",
+      "allRuntimes": "All runtimes"
+    },
+    "projectActionsMenu": {
+      "finishSetup": "Finish setup",
+      "viewBuilds": "View builds"
+    },
+    "currentDeploymentHero": {
+      "buildHistory": "Build history"
+    },
+    "latestBuildLog": {
+      "latestBuild": "Latest build",
+      "viewOnGithub": "View on GitHub"
+    },
+    "projectBuildsTab": {
+      "noBuildsYet": "No builds yet",
+      "buildHistory": "Build history",
+      "newestFirstClickARowToOpenItsLog": "Newest first — click a row to open its log.",
+      "noBuildsYet2": "No builds yet",
+      "deploymentActivity": "Deployment activity",
+      "everyLifecycleEventAcrossTheseBuildsNewestFi": "Every lifecycle event across these builds, newest first."
+    },
+    "projectDetailPage": {
+      "projectNotFound": "Project not found",
+      "finishSetup": "Finish setup"
+    },
+    "projectOverviewTab": {
+      "emptyFieldsInheritThePlatformDefaultForThisR": "Empty fields inherit the platform default for this runtime.",
+      "finishSetup": "Finish setup"
+    },
+    "buildOutputSection": {
+      "buildOutput": "Build & output",
+      "whatRunsWhenThisProjectBuildsEmptyFieldsInhe": "What runs when this project builds. Empty fields inherit the platform default.",
+      "appliesToTheNextBuildThisDoesNotStartOne": "Applies to the next build — this does not start one."
+    },
+    "dangerZone": {
+      "dangerZone": "Danger zone",
+      "deleteProject": "Delete project",
+      "deleteProject2": "Delete project",
+      "deleteProject3": "Delete project"
+    },
+    "envSection": {
+      "environmentVariables": "Environment variables",
+      "someValuesWillBeCleared": "Some values will be cleared",
+      "saveAndClearThem": "Save and clear them",
+      "retypeAValueForAnyYouWantToKeepThenSaveAgain": "Retype a value for any you want to keep, then save again."
+    },
+    "generalSection": {
+      "howThisProjectIsIdentifiedInTheConsole": "How this project is identified in the console."
+    },
+    "gitSection": {
+      "whereThisProjectSCodeComesFrom": "Where this project's code comes from.",
+      "trackedBranch": "Tracked branch",
+      "everyPushToThisBranchTriggersABuild": "Every push to this branch triggers a build.",
+      "theBuildWorkflowIsNotOnThisBranchYetSoPushes": "The build workflow is not on this branch yet, so pushes will not build.",
+      "finishSetup": "Finish setup"
+    },
+    "planSection": {
+      "theAccountPlanThisProjectRunsUnderAndTheQuot": "The account plan this project runs under, and the quotas that come with it."
+    },
+    "runtimePanel": {
+      "notAssigned": "Not assigned",
+      "noRuntimeContainerYet": "No runtime container yet."
+    },
+    "customPlanCard": {
+      "letAposSTalk": "Let&apos;s talk",
+      "contactUs": "Contact us",
+      "opensASupportTicketWeReplyInTheThread": "Opens a support ticket — we reply in the thread."
+    },
+    "customPlanDialog": {
+      "eG25": "e.g. 25",
+      "talkToUsAboutACustomPlan": "Talk to us about a Custom plan",
+      "whatDoYouNeed": "What do you need?",
+      "projectsYouExpectToRun": "Projects you expect to run"
+    },
+    "setupWorkPanel": {
+      "viewOnGithub": "View on GitHub"
+    },
+    "workflowPreview": {
+      "copyTheWorkflowFile": "Copy the workflow file"
+    },
+    "projectExplorer": {
+      "couldNotLoadYourProjects": "Could not load your projects.",
+      "noProjectsMatchTheseFilters": "No projects match these filters"
+    }
+  },
+  "monitoring": {
+    "discordFields": {
+      "webhookUrl": "Webhook URL"
+    },
+    "webhookFields": {
+      "optionalSigningSecret": "optional signing secret",
+      "requestsInclude": "Requests include",
+      "leaveEmptyForAnUnsignedWebhook": "Leave empty for an unsigned webhook."
+    },
+    "conditionSection": {
+      "periodsThatMustBreach": "Periods that must breach",
+      "periodsEvaluated": "Periods evaluated",
+      "ifDataStopsArriving": "If data stops arriving",
+      "alertWhenThe": "Alert when the",
+      "chooseASignalAboveToSeeItChartedAgainstThisT": "Choose a signal above to see it charted against this threshold.",
+      "wouldBeInAlarmNow": "Would be in alarm now",
+      "advancedIfDataStopsArriving": "Advanced — if data stops arriving"
+    },
+    "signalSection": {
+      "eGRequestLatencyMs": "e.g. request_latency_ms",
+      "signalToWatch": "Signal to watch",
+      "metricName": "Metric name",
+      "exactlyAsYouPushItInsideTheNamespaceAbove": "Exactly as you push it, inside the namespace above.",
+      "pickAResourceAboveToSeeItsSignals": "Pick a resource above to see its signals."
+    },
+    "summaryRail": {
+      "thisAlarm": "This alarm",
+      "beforeYouSave": "Before you save"
+    },
+    "index": {
+      "pickWhatToWatchWhichSignalAndWhenItShouldPag": "Pick what to watch, which signal, and when it should page you.",
+      "whatToWatch": "What to watch",
+      "whatThisResourceReportsPickingOneSetsASensib": "What this resource reports. Picking one sets a sensible starting rule.",
+      "readItAsASentenceTheChartBelowReplaysItOverT": "Read it as a sentence — the chart below replays it over the last day.",
+      "notifications": "Notifications",
+      "whoHearsAboutItAndWhetherTheyAlsoHearTheReco": "Who hears about it, and whether they also hear the recovery.",
+      "suggestedFromTheResourceAndSignalAboveChange": "Suggested from the resource and signal above — change it if you like.",
+      "eGLbProdWebErrorRate5xxHigh": "e.g. lb-prod-web-error-rate-5xx-high",
+      "whatShouldSomeoneDoWhenThisFires": "What should someone do when this fires?",
+      "alarmName": "Alarm name",
+      "descriptionOptional": "Description (optional)"
+    },
+    "jiraOAuthCallbackPage": {
+      "backToChannels": "Back to channels"
+    },
+    "logsPage": {
+      "searchAndFilterRecentLogEventsAcrossYourServ": "Search and filter recent log events across your services.",
+      "logStreamingIsOnTheWay": "Log streaming is on the way",
+      "liveTail": "Live tail"
+    }
+  },
+  "organizations": {
+    "accountSettingsPage": {
+      "defaultAccount": "Default Account",
+      "acmeInc": "Acme Inc.",
+      "billingAcmeCom": "billing@acme.com",
+      "acmeInc2": "Acme Inc.",
+      "billingAcmeCom2": "billing@acme.com",
+      "acmePrivateLimited": "Acme Private Limited",
+      "u12345ka2020ptc000000": "U12345KA2020PTC000000"
+    },
+    "newOrgWizardPage": {
+      "acmeInc": "Acme Inc.",
+      "billingAcmeCom": "billing@acme.com"
+    },
+    "profileSettingsPage": {
+      "janeDoe": "Jane Doe"
+    }
+  },
+  "search": {
+    "globalSearch": {
+      "trySearchingForAModuleVmVpcOrUser": "Try searching for a module, VM, VPC, or user"
+    }
+  },
+  "services": {
+    "serviceGrid": {
+      "sovereignServices": "Sovereign Services",
+      "manageInfrastructureAcrossYourIsolatedDomain": "Manage infrastructure across your isolated domains."
+    },
+    "serviceStatusBanner": {
+      "serviceDegraded": "Service Degraded"
     }
   }
 }

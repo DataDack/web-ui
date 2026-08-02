@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useState } from "react"
 
 import { Badge, Button, Input } from "@datadack/common-ui"
@@ -24,6 +25,7 @@ interface EnvVarRowProps {
  * real replacement was supplied.
  */
 export function EnvVarRow({ row, duplicate, onChange, onRemove }: Readonly<EnvVarRowProps>) {
+  const { t } = useTranslation()
   const [revealed, setRevealed] = useState(false)
   const isStored = row.state === "stored"
   const canReveal = row.value !== "" && !isStored
@@ -34,7 +36,7 @@ export function EnvVarRow({ row, duplicate, onChange, onRemove }: Readonly<EnvVa
         <Input
           value={row.key}
           placeholder="KEY"
-          aria-label="Variable name"
+          aria-label={t("managedApps.envVarRow.variableName")}
           data-invalid={duplicate ? "true" : undefined}
           className={cn(
             "font-mono",
@@ -45,7 +47,9 @@ export function EnvVarRow({ row, duplicate, onChange, onRemove }: Readonly<EnvVa
           }}
         />
         {duplicate && (
-          <p className="mt-1 text-[11px] text-destructive">Already used — the last row wins.</p>
+          <p className="mt-1 text-[11px] text-destructive">
+            {t("managedApps.envVarRow.alreadyUsedTheLastRowWins")}
+          </p>
         )}
       </div>
 
@@ -54,7 +58,7 @@ export function EnvVarRow({ row, duplicate, onChange, onRemove }: Readonly<EnvVa
           value={row.value}
           type={revealed || row.value === "" ? "text" : "password"}
           placeholder={isStored ? "Set — type to replace" : "value"}
-          aria-label="Variable value"
+          aria-label={t("managedApps.envVarRow.variableValue")}
           className={cn("font-mono", canReveal && "pr-9")}
           onChange={(event) => {
             onChange({

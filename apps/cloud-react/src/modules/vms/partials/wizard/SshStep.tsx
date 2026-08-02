@@ -361,7 +361,7 @@ function SshKeyCreate({ method, onCreated }: Readonly<SshKeyCreateProps>) {
                 setPublicKey(e.target.value)
                 if (keyError) setKeyError(null)
               }}
-              placeholder="ssh-ed25519 AAAA..."
+              placeholder={t("vms.sshStep.sshEd25519Aaaa")}
               rows={5}
               className="resize-none font-mono text-[12px]"
             />

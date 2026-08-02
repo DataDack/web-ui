@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { Skeleton } from "@datadack/common-ui"
 import { LayoutGrid } from "lucide-react"
 
@@ -7,6 +8,7 @@ import { useServices } from "../services.hooks"
 import { ServiceCard } from "./ServiceCard"
 
 export function ServiceGrid() {
+  const { t } = useTranslation()
   const services = useServices()
   const isLoading = services.length === 0
 
@@ -16,10 +18,10 @@ export function ServiceGrid() {
         <div>
           <h2 className="font-bold text-headline-lg text-foreground flex items-center gap-2">
             <LayoutGrid className="w-6 h-6" />
-            Sovereign Services
+            {t("services.serviceGrid.sovereignServices")}
           </h2>
           <p className="text-body-md text-on-surface-variant mt-1">
-            Manage infrastructure across your isolated domains.
+            {t("services.serviceGrid.manageInfrastructureAcrossYourIsolatedDomain")}
           </p>
         </div>
       </header>

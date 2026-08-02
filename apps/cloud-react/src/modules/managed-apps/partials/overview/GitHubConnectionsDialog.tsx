@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useState } from "react"
 
 import {
@@ -43,6 +44,7 @@ export function GitHubConnectionsDialog({
   open,
   onOpenChange,
 }: Readonly<GitHubConnectionsDialogProps>) {
+  const { t } = useTranslation()
   const { data: connections = [], isLoading } = useGitHubConnections()
   const installUrl = useGitHubInstallUrl()
   const remove = useDeleteGitHubConnection()
@@ -65,9 +67,11 @@ export function GitHubConnectionsDialog({
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>GitHub connections</DialogTitle>
+            <DialogTitle>{t("managedApps.gitHubConnectionsDialog.githubConnections")}</DialogTitle>
             <DialogDescription>
-              Accounts and organisations this platform can read repositories from.
+              {t(
+                "managedApps.gitHubConnectionsDialog.accountsAndOrganisationsThisPlatformCanReadR",
+              )}
             </DialogDescription>
           </DialogHeader>
 
@@ -76,7 +80,7 @@ export function GitHubConnectionsDialog({
 
             {!isLoading && connections.length === 0 && (
               <p className="py-6 text-center text-[13px] text-muted-foreground">
-                No GitHub account is connected yet.
+                {t("managedApps.gitHubConnectionsDialog.noGithubAccountIsConnectedYet")}
               </p>
             )}
 
@@ -139,7 +143,7 @@ export function GitHubConnectionsDialog({
             <Button size="sm" variant="ghost" asChild className="gap-1.5">
               <a href={GITHUB_INSTALLATIONS_URL} target="_blank" rel="noreferrer">
                 <GitHubMark className="size-3.5" />
-                Manage repository access
+                {t("managedApps.gitHubConnectionsDialog.manageRepositoryAccess")}
                 <ExternalLink className="size-3" />
               </a>
             </Button>
@@ -155,7 +159,7 @@ export function GitHubConnectionsDialog({
             setUninstall(false)
           }
         }}
-        title="Remove GitHub connection?"
+        title={t("managedApps.gitHubConnectionsDialog.removeGithubConnection")}
         confirmLabel={uninstall ? "Remove & uninstall" : "Remove"}
         loading={remove.isPending}
         onConfirm={() => {

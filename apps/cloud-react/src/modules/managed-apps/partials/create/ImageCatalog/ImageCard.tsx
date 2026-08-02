@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useState } from "react"
 
 import { Button } from "@datadack/common-ui"
@@ -30,6 +31,7 @@ interface ImageCardProps {
  * promised because none is sent.
  */
 export function ImageCard({ image }: Readonly<ImageCardProps>) {
+  const { t } = useTranslation()
   const [notified, setNotified] = useState(() => readNotified(image.slug))
 
   const notify = () => {
@@ -54,7 +56,7 @@ export function ImageCard({ image }: Readonly<ImageCardProps>) {
           </div>
         </div>
         <span className="rounded-full bg-status-warning/10 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-status-warning uppercase">
-          Coming soon
+          {t("managedApps.imageCard.comingSoon")}
         </span>
       </div>
 

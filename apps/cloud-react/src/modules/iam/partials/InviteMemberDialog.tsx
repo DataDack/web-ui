@@ -150,7 +150,7 @@ export function InviteMemberDialog({
                 onChange={(e) => {
                   setEmail(e.target.value)
                 }}
-                placeholder="teammate@company.com"
+                placeholder={t("iam.inviteMemberDialog.teammateCompanyCom")}
                 className="font-mono"
                 type="email"
               />

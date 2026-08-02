@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useState } from "react"
 
 import { Button } from "@datadack/common-ui"
@@ -30,13 +31,14 @@ export function DetectionNotice({
   onApply,
   overridden,
 }: Readonly<DetectionNoticeProps>) {
+  const { t } = useTranslation()
   const [open, setOpen] = useState(false)
 
   if (isLoading) {
     return (
       <p className="flex items-center gap-2 text-[12px] text-muted-foreground">
         <Loader2 className="size-3.5 animate-spin" />
-        Inspecting the repository…
+        {t("managedApps.detectionNotice.inspectingTheRepository")}
       </p>
     )
   }
@@ -84,7 +86,7 @@ export function DetectionNotice({
             className="h-6 px-2 text-[11px]"
             onClick={onApply}
           >
-            Reset to detected
+            {t("managedApps.detectionNotice.resetToDetected")}
           </Button>
         )}
         <Button

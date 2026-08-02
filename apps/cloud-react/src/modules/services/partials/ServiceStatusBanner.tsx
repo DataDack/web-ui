@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useState } from "react"
 
 import { AlertTriangle } from "lucide-react"
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export function ServiceStatusBanner({ serviceId }: Readonly<Props>) {
+  const { t } = useTranslation()
   const [dismissed, setDismissed] = useState(false)
   const { isUnderMaintenance, isDegraded, maintenance, affectedSubServices } =
     useServiceStatus(serviceId)
@@ -39,7 +41,9 @@ export function ServiceStatusBanner({ serviceId }: Readonly<Props>) {
       >
         <AlertTriangle className="w-4 h-4 shrink-0" style={{ color: "var(--secondary)" }} />
         <div className="flex-1 min-w-0">
-          <span className="text-sm font-medium text-foreground">Service Degraded</span>
+          <span className="text-sm font-medium text-foreground">
+            {t("services.serviceStatusBanner.serviceDegraded")}
+          </span>
           <span className="text-xs text-muted-foreground ml-2">
             Affected: {affectedSubServices.join(", ")}
           </span>

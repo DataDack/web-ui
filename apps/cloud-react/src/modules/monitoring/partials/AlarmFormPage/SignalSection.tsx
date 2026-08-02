@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 // Section 2 — "Signal".
 //
 // The signals offered are the ones the chosen kind of resource actually emits,
@@ -36,21 +37,22 @@ export function SignalSection({
   onMetricChange: (value: string) => void
   onMetricSelect: (descriptor: MetricDescriptor) => void
 }>) {
+  const { t } = useTranslation()
   if (targetType === "custom") {
     return (
       <div className="space-y-1.5">
-        <Label className={LABEL_CLASS}>Metric name</Label>
+        <Label className={LABEL_CLASS}>{t("monitoring.signalSection.metricName")}</Label>
         <Input
           value={metric}
           onChange={(event) => {
             onMetricChange(event.target.value)
           }}
-          placeholder="e.g. request_latency_ms"
+          placeholder={t("monitoring.signalSection.eGRequestLatencyMs")}
           className="font-mono text-[13px]"
           autoComplete="off"
         />
         <p className="text-[12px] text-muted-foreground">
-          Exactly as you push it, inside the namespace above.
+          {t("monitoring.signalSection.exactlyAsYouPushItInsideTheNamespaceAbove")}
         </p>
         {error && <p className="text-[11px] text-destructive">{error}</p>}
       </div>
@@ -60,7 +62,7 @@ export function SignalSection({
   if (!hasTarget) {
     return (
       <p className="rounded-lg border border-dashed border-border p-4 text-center text-[13px] text-muted-foreground">
-        Pick a resource above to see its signals.
+        {t("monitoring.signalSection.pickAResourceAboveToSeeItsSignals")}
       </p>
     )
   }
@@ -69,7 +71,7 @@ export function SignalSection({
     <div className="space-y-2.5">
       <div
         role="radiogroup"
-        aria-label="Signal to watch"
+        aria-label={t("monitoring.signalSection.signalToWatch")}
         className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3"
       >
         {metricsFor(targetType).map((descriptor) => (

@@ -96,7 +96,10 @@ export function ProfileSettingsPage() {
                   {t("profile.name")}
                   <span className="text-destructive ml-0.5">*</span>
                 </Label>
-                <Input {...register("name")} placeholder="Jane Doe" />
+                <Input
+                  {...register("name")}
+                  placeholder={t("organizations.profileSettingsPage.janeDoe")}
+                />
                 {errors.name && (
                   <p className="text-[11px] text-destructive">{errors.name.message}</p>
                 )}

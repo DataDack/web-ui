@@ -50,7 +50,7 @@ export function OSStep({
               value="quick-select"
               className="text-[13px] h-full rounded-md data-[state=active]:bg-accent/50"
             >
-              Quick Select
+              {t("vms.oSStep.quickSelect")}
             </TabsTrigger>
             <TabsTrigger
               value="marketplace"
@@ -62,7 +62,7 @@ export function OSStep({
               value="my-images"
               className="text-[13px] h-full rounded-md data-[state=active]:bg-accent/50"
             >
-              My Images
+              {t("vms.oSStep.myImages")}
             </TabsTrigger>
           </TabsList>
 
@@ -105,7 +105,7 @@ export function OSStep({
 
             {openFamily && openFamily.versions.length > 0 && (
               <div className="space-y-3 pt-2">
-                <FieldLabel>Available AMIs</FieldLabel>
+                <FieldLabel>{t("vms.oSStep.availableAmis")}</FieldLabel>
                 <div className="grid sm:grid-cols-2 gap-3">
                   <TooltipProvider>
                     {openFamily.versions.map((version) => {
@@ -163,7 +163,7 @@ export function OSStep({
                               <div className="grid grid-cols-2 gap-x-4 gap-y-1 pt-1 text-muted-foreground">
                                 {version.architecture && (
                                   <>
-                                    <span>Architecture:</span>
+                                    <span>{t("vms.oSStep.architecture")}</span>
                                     <span className="font-medium text-foreground">
                                       {version.architecture}
                                     </span>
@@ -171,7 +171,7 @@ export function OSStep({
                                 )}
                                 {version.min_disk_gb > 0 && (
                                   <>
-                                    <span>Min Disk:</span>
+                                    <span>{t("vms.oSStep.minDisk")}</span>
                                     <span className="font-medium text-foreground">
                                       {version.min_disk_gb} GB
                                     </span>
@@ -196,7 +196,9 @@ export function OSStep({
           >
             <Box className="size-8 mx-auto text-muted-foreground/50" />
             <div>
-              <p className="text-[14px] font-medium text-foreground">Marketplace Apps</p>
+              <p className="text-[14px] font-medium text-foreground">
+                {t("vms.oSStep.marketplaceApps")}
+              </p>
               <p className="text-[13px] text-muted-foreground mt-1 max-w-sm mx-auto">
                 Pre-configured 1-click applications are currently unavailable. Coming soon!
               </p>
@@ -209,9 +211,11 @@ export function OSStep({
           >
             <HardDrive className="size-8 mx-auto text-muted-foreground/50" />
             <div>
-              <p className="text-[14px] font-medium text-foreground">Custom Images & Snapshots</p>
+              <p className="text-[14px] font-medium text-foreground">
+                {t("vms.oSStep.customImagesSnapshots")}
+              </p>
               <p className="text-[13px] text-muted-foreground mt-1 max-w-sm mx-auto">
-                Your saved AMIs and volume snapshots will appear here. Coming soon!
+                {t("vms.oSStep.yourSavedAmisAndVolumeSnapshotsWillAppearHer")}
               </p>
             </div>
           </TabsContent>

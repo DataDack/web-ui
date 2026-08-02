@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { Input } from "@datadack/common-ui"
 import { ShieldCheck } from "lucide-react"
 import type { UseFormReturn } from "react-hook-form"
@@ -6,6 +7,7 @@ import type { ChannelFormValues } from "../../channels.form"
 import { FieldError, FieldLabel } from "../../components/FormFields"
 
 export function WebhookFields({ form }: Readonly<{ form: UseFormReturn<ChannelFormValues> }>) {
+  const { t } = useTranslation()
   const {
     register,
     watch,
@@ -30,19 +32,22 @@ export function WebhookFields({ form }: Readonly<{ form: UseFormReturn<ChannelFo
         <Input
           {...register("webhookSecret")}
           type="password"
-          placeholder="optional signing secret"
+          placeholder={t("monitoring.webhookFields.optionalSigningSecret")}
           autoComplete="off"
         />
         {webhookSecret?.trim() ? (
           <p className="flex items-start gap-1.5 text-[11px] text-muted-foreground">
             <ShieldCheck className="mt-px size-3.5 shrink-0" />
             <span>
-              Requests include <code className="font-mono">X-DataDack-Signature</code> and{" "}
+              {t("monitoring.webhookFields.requestsInclude")}{" "}
+              <code className="font-mono">X-DataDack-Signature</code> and{" "}
               <code className="font-mono">X-DataDack-Timestamp</code>.
             </span>
           </p>
         ) : (
-          <p className="text-[11px] text-muted-foreground">Leave empty for an unsigned webhook.</p>
+          <p className="text-[11px] text-muted-foreground">
+            {t("monitoring.webhookFields.leaveEmptyForAnUnsignedWebhook")}
+          </p>
         )}
       </div>
     </>

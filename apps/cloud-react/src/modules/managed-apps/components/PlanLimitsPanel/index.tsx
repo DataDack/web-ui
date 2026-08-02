@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { Button, Skeleton } from "@datadack/common-ui"
 import { AlertCircle, ArrowRight, Sparkles } from "lucide-react"
 import { Link } from "react-router-dom"
@@ -34,6 +35,7 @@ export function PlanLimitsPanel({
   showChangeLink = true,
   className,
 }: Readonly<PlanLimitsPanelProps>) {
+  const { t } = useTranslation()
   const { data: account, isLoading } = useAccountPlan()
   const { data: plans, isLoading: plansLoading } = usePlans()
 
@@ -94,7 +96,7 @@ export function PlanLimitsPanel({
           <Button asChild variant="ghost" size="sm" className="h-7 gap-1.5 text-[12px]">
             <Link to={MANAGED_APPS_ROUTES.settings}>
               <Sparkles className="size-3.5" />
-              Change plan
+              {t("managedApps.index.changePlan")}
               <ArrowRight className="size-3" />
             </Link>
           </Button>

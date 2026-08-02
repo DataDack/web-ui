@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useMemo } from "react"
 
 import {
@@ -82,6 +83,7 @@ interface MembershipRow {
 }
 
 export function AdminUserProfilePage() {
+  const { t } = useTranslation()
   useScreen("superadmin.userProfile")
   const navigate = useNavigate()
   const { userId } = useParams<{ userId: string }>()
@@ -219,7 +221,7 @@ export function AdminUserProfilePage() {
             { label: "Tenancy", to: TENANCY_PATH },
             { label: "User" },
           ]}
-          title="User not found"
+          title={t("superAdmin.adminUserProfilePage.userNotFound")}
           actions={
             <Button variant="outline" size="sm" onClick={() => void navigate(TENANCY_PATH)}>
               <ArrowLeft className="size-4" />
@@ -229,8 +231,10 @@ export function AdminUserProfilePage() {
         />
         <EmptyState
           icon={UserRound}
-          title="User not found"
-          description="This user isn't part of the current platform overview."
+          title={t("superAdmin.adminUserProfilePage.userNotFound2")}
+          description={t(
+            "superadmin.adminUserProfilePage.thisUserIsnTPartOfTheCurrentPlatformOverview",
+          )}
         />
       </div>
     )
@@ -250,7 +254,7 @@ export function AdminUserProfilePage() {
         {user.is_super_admin && (
           <span className="inline-flex items-center gap-1 rounded-full bg-violet-500/10 px-1.5 py-0.5 text-[11px] font-medium text-violet-600 dark:text-violet-400">
             <ShieldCheck className="size-3" />
-            Super Admin
+            {t("superAdmin.adminUserProfilePage.superAdmin")}
           </span>
         )}
       </div>
@@ -344,7 +348,7 @@ export function AdminUserProfilePage() {
       >
         {memberships.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            This user isn&apos;t a member of any account.
+            {t("superAdmin.adminUserProfilePage.thisUserIsnAposTAMemberOfAnyAccount")}
           </p>
         ) : (
           <div className="space-y-2">
@@ -381,8 +385,8 @@ export function AdminUserProfilePage() {
 
       <Section
         variant="panel"
-        title="Support tickets"
-        description="Everything this user has raised, newest first."
+        title={t("superAdmin.adminUserProfilePage.supportTickets")}
+        description={t("superAdmin.adminUserProfilePage.everythingThisUserHasRaisedNewestFirst")}
       >
         <DataTable<SupportTicket>
           data={theirTickets}
@@ -396,8 +400,10 @@ export function AdminUserProfilePage() {
           empty={
             <EmptyState
               icon={LifeBuoy}
-              title="No tickets from this user"
-              description="They have not asked support for anything yet."
+              title={t("superAdmin.adminUserProfilePage.noTicketsFromThisUser")}
+              description={t(
+                "superadmin.adminUserProfilePage.theyHaveNotAskedSupportForAnythingYet",
+              )}
             />
           }
           onRefresh={() => void tickets.refetch()}
@@ -407,8 +413,10 @@ export function AdminUserProfilePage() {
 
       <Section
         variant="panel"
-        title="Quota requests"
-        description="Increases this user has asked for, and what was decided."
+        title={t("superAdmin.adminUserProfilePage.quotaRequests")}
+        description={t(
+          "superadmin.adminUserProfilePage.increasesThisUserHasAskedForAndWhatWasDecide",
+        )}
       >
         <DataTable<AdminQuotaRequest>
           data={theirQuotaRequests}
@@ -422,8 +430,10 @@ export function AdminUserProfilePage() {
           empty={
             <EmptyState
               icon={Gauge}
-              title="No quota requests from this user"
-              description="They have not asked for an increase to any limit."
+              title={t("superAdmin.adminUserProfilePage.noQuotaRequestsFromThisUser")}
+              description={t(
+                "superadmin.adminUserProfilePage.theyHaveNotAskedForAnIncreaseToAnyLimit",
+              )}
             />
           }
           onRefresh={() => void quota.refetch()}

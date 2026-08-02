@@ -473,7 +473,7 @@ function PackageStep({
           </Label>
           <Input
             id="fn-image"
-            placeholder="registry.example.com/my-function:latest"
+            placeholder={t("serverless.createFunctionPage.registryExampleComMyFunctionLatest")}
             className="font-mono"
             aria-invalid={!!form.formState.errors.imageUri}
             {...form.register("imageUri")}
@@ -565,7 +565,7 @@ function RuntimeStep({ form }: Readonly<{ form: UseFormReturn<FormValues> }>) {
             <Label htmlFor="fn-handler">{t("serverless.form.handler")}</Label>
             <Input
               id="fn-handler"
-              placeholder="index.handler"
+              placeholder={t("serverless.createFunctionPage.indexHandler")}
               className="font-mono"
               {...form.register("handler")}
             />

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { Package } from "lucide-react"
 
 import { SourceOptionCard } from "./SourceOptionCard"
@@ -17,20 +18,23 @@ interface SourcePhaseProps {
  * unchanged Import → Configure flow; Public Images opens the catalog.
  */
 export function SourcePhase({ onPickGitHub, onPickImages }: Readonly<SourcePhaseProps>) {
+  const { t } = useTranslation()
   return (
     <div className="mx-auto w-full max-w-3xl space-y-6">
       <div className="space-y-1 text-center">
-        <h2 className="text-lg font-semibold tracking-tight">Where is your app coming from?</h2>
+        <h2 className="text-lg font-semibold tracking-tight">
+          {t("managedApps.sourcePhase.whereIsYourAppComingFrom")}
+        </h2>
         <p className="text-[13px] text-muted-foreground">
-          Deploy your own code from a repository, or launch a ready-made service.
+          {t("managedApps.sourcePhase.deployYourOwnCodeFromARepositoryOrLaunchARea")}
         </p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <SourceOptionCard
           icon={<GitHubMark className="size-5" />}
-          title="Deploy from GitHub"
-          subtitle="React · OpenNext (Next.js)"
+          title={t("managedApps.sourcePhase.deployFromGithub")}
+          subtitle={t("managedApps.sourcePhase.reactOpennextNextJs")}
           bullets={[
             "Push to deploy — every commit builds",
             "Builds run on your GitHub Actions",
@@ -42,8 +46,8 @@ export function SourcePhase({ onPickGitHub, onPickImages }: Readonly<SourcePhase
         />
         <SourceOptionCard
           icon={<Package className="size-5" />}
-          title="Public Images"
-          subtitle="n8n · more services soon"
+          title={t("managedApps.sourcePhase.publicImages")}
+          subtitle={t("managedApps.sourcePhase.n8nMoreServicesSoon")}
           bullets={[
             "One-click managed services",
             "No repository, no build pipeline",

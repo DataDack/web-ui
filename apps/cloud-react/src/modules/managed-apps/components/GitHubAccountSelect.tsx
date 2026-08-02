@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { Badge, Button } from "@datadack/common-ui"
 import { ExternalLink } from "lucide-react"
 
@@ -39,6 +40,7 @@ export function GitHubAccountSelect({
   invalid,
   id,
 }: Readonly<GitHubAccountSelectProps>) {
+  const { t } = useTranslation()
   const { data: connections = [], isLoading, isFetching, isError, refetch } = useGitHubConnections()
 
   const options: SmartSelectOption<GitHubConnection>[] = connections.map((connection) => ({
@@ -61,7 +63,7 @@ export function GitHubAccountSelect({
       fetching={isFetching}
       error={isError}
       onRefresh={() => void refetch()}
-      placeholder="Select a GitHub account"
+      placeholder={t("managedApps.gitHubAccountSelect.selectAGithubAccount")}
       searchPlaceholder="Search accounts…"
       emptyText="No GitHub account is connected yet."
       noMatchText={(q) => `No connected account matches “${q}”.`}
@@ -101,7 +103,7 @@ export function GitHubAccountSelect({
               className="h-7 px-2 text-[12px]"
               onClick={onConnect}
             >
-              Connect another account
+              {t("managedApps.gitHubAccountSelect.connectAnotherAccount")}
             </Button>
           )}
           <Button
@@ -113,7 +115,7 @@ export function GitHubAccountSelect({
           >
             <a href={GITHUB_INSTALLATIONS_URL} target="_blank" rel="noreferrer">
               <ExternalLink className="size-3" />
-              Manage on GitHub
+              {t("managedApps.gitHubAccountSelect.manageOnGithub")}
             </a>
           </Button>
         </>

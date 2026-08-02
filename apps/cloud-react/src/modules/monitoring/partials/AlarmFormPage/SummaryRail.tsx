@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 // The sticky right rail: what you have said, what is still missing, and save.
 //
 // The checklist is the replacement for a stepper. It gives the same "am I done?"
@@ -45,13 +46,14 @@ export function SummaryRail({
   onJump: (id: SectionId) => void
   onCancel: () => void
 }>) {
+  const { t } = useTranslation()
   const channelWord = channelCount === 1 ? "channel" : "channels"
   const channelLine =
     channelCount === 0 ? "no channels — tracked silently" : `${String(channelCount)} ${channelWord}`
 
   return (
     <div className="space-y-4 lg:sticky lg:top-4">
-      <Section variant="panel" title="This alarm" className="space-y-3">
+      <Section variant="panel" title={t("monitoring.summaryRail.thisAlarm")} className="space-y-3">
         <div className="space-y-1">
           <p className={SUMMARY_LABEL_CLASS}>Watching</p>
           <p className="text-[13px] text-foreground">{targetLine}</p>
@@ -70,7 +72,11 @@ export function SummaryRail({
         </div>
       </Section>
 
-      <Section variant="panel" title="Before you save" className="space-y-1">
+      <Section
+        variant="panel"
+        title={t("monitoring.summaryRail.beforeYouSave")}
+        className="space-y-1"
+      >
         <ul className="space-y-0.5">
           {rows.map((row) => (
             <li key={row.id}>

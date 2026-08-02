@@ -4,6 +4,8 @@ import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { expect, mock, test } from "bun:test"
 
+import { i18nMock } from "./i18n-mock"
+
 const ACCOUNT_ID = "acct-1"
 const ACCOUNT_NUMBER = "ACC-1001"
 
@@ -62,11 +64,9 @@ function noop() {
   return undefined
 }
 
-void mock.module("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (_key: string, options?: { defaultValue?: string }) => options?.defaultValue ?? _key,
-  }),
-}))
+// Resolves real copy from en.json: the queries below look for what a user
+// reads, which only works if `t` returns the translation rather than the key.
+void mock.module("react-i18next", () => i18nMock)
 
 void mock.module("sonner", () => ({
   toast: {

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { Rocket, Settings2, Sparkles } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -43,6 +44,7 @@ interface HowItWorksAsideProps {
  * flow losing anything.
  */
 export function HowItWorksAside({ className }: Readonly<HowItWorksAsideProps>) {
+  const { t } = useTranslation()
   return (
     <aside
       className={cn(
@@ -52,7 +54,7 @@ export function HowItWorksAside({ className }: Readonly<HowItWorksAsideProps>) {
     >
       <h3 className="flex items-center gap-2 text-[13px] font-semibold">
         <Sparkles className="size-4 text-brand-gold" />
-        How it works
+        {t("managedApps.howItWorksAside.howItWorks")}
       </h3>
 
       {/* Numbered, and joined by a rule, because these are three stages of one

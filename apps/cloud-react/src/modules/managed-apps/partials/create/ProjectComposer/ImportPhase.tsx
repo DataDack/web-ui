@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { Button } from "@datadack/common-ui"
 import { ExternalLink, Loader2 } from "lucide-react"
 
@@ -53,6 +54,7 @@ export function ImportPhase({
   rootDir,
   onRootDirChange,
 }: Readonly<ImportPhaseProps>) {
+  const { t } = useTranslation()
   const { data: connections = [], isLoading } = useGitHubConnections()
   const usable = connections.filter((connection) => !connection.revoked)
 
@@ -60,7 +62,7 @@ export function ImportPhase({
     return (
       <div className="flex items-center gap-2 py-16 text-sm text-muted-foreground">
         <Loader2 className="size-4 animate-spin" />
-        Loading your GitHub connections…
+        {t("managedApps.importPhase.loadingYourGithubConnections")}
       </div>
     )
   }
@@ -72,7 +74,9 @@ export function ImportPhase({
       <div className="glass-1 mx-auto flex max-w-md flex-col items-center gap-3 rounded-xl border border-border/60 p-8 text-center">
         <ConnectRepoArt className="mb-1" />
         <div className="space-y-1">
-          <h2 className="text-sm font-semibold">Connect GitHub to import a repository</h2>
+          <h2 className="text-sm font-semibold">
+            {t("managedApps.importPhase.connectGithubToImportARepository")}
+          </h2>
           <p className="text-[13px] text-muted-foreground">
             Install the DataDack app on the account or organisation that owns the repository you
             want to deploy. You choose which repositories it can see.
@@ -95,9 +99,11 @@ export function ImportPhase({
   return (
     <div className="mx-auto w-full max-w-3xl space-y-5">
       <div className="space-y-1">
-        <h2 className="text-lg font-semibold tracking-tight">Import a Git repository</h2>
+        <h2 className="text-lg font-semibold tracking-tight">
+          {t("managedApps.importPhase.importAGitRepository")}
+        </h2>
         <p className="text-[13px] text-muted-foreground">
-          Every push to the branch you choose will build and deploy.
+          {t("managedApps.importPhase.everyPushToTheBranchYouChooseWillBuildAndDep")}
         </p>
       </div>
 
@@ -105,7 +111,11 @@ export function ImportPhase({
 			    this repo" — so they sit on one line and the eye travels left to
 			    right instead of down a column of two lonely selects. */}
       <div className="grid gap-4 sm:grid-cols-2">
-        <FieldRow label="GitHub account" required error={errors.installation}>
+        <FieldRow
+          label={t("managedApps.importPhase.githubAccount")}
+          required
+          error={errors.installation}
+        >
           <GitHubAccountSelect
             value={installationId ?? undefined}
             onChange={onAccountChange}
@@ -128,7 +138,7 @@ export function ImportPhase({
 			    would be asking the user to classify something they have not
 			    chosen yet, and detection would have nothing to check it against. */}
       {repo && (
-        <FieldRow label="Project type" required>
+        <FieldRow label={t("managedApps.importPhase.projectType")} required>
           <ProjectTypePicker
             value={projectType}
             onChange={onProjectTypeChange}
@@ -142,14 +152,14 @@ export function ImportPhase({
       )}
 
       <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-        Repository missing?
+        {t("managedApps.importPhase.repositoryMissing")}
         <a
           href={GITHUB_INSTALLATIONS_URL}
           target="_blank"
           rel="noreferrer"
           className="inline-flex items-center gap-1 text-status-info hover:underline"
         >
-          Adjust which repositories the app can see
+          {t("managedApps.importPhase.adjustWhichRepositoriesTheAppCanSee")}
           <ExternalLink className="size-3" />
         </a>
       </p>

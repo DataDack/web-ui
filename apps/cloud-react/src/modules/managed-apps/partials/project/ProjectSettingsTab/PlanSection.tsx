@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { Section } from "@/components/console"
 
 import { PlanLimitsPanel } from "../../../components"
@@ -16,11 +17,12 @@ import { PlanLimitsPanel } from "../../../components"
  * used" gauge would be inventing a measurement the platform does not take.
  */
 export function PlanSection() {
+  const { t } = useTranslation()
   return (
     <Section
       variant="panel"
       title="Plan"
-      description="The account plan this project runs under, and the quotas that come with it."
+      description={t("managedApps.planSection.theAccountPlanThisProjectRunsUnderAndTheQuot")}
     >
       <PlanLimitsPanel />
     </Section>

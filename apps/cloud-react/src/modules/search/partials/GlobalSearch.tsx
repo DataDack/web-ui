@@ -160,7 +160,7 @@ export function GlobalSearch({ open, onOpenChange }: Readonly<GlobalSearchProps>
                     No results for &ldquo;{query}&rdquo;
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Try searching for a module, VM, VPC, or user
+                    {t("search.globalSearch.trySearchingForAModuleVmVpcOrUser")}
                   </p>
                 </div>
               </div>

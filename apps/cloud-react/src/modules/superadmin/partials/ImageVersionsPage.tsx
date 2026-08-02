@@ -796,7 +796,10 @@ function IdentityStep({ form }: Readonly<{ form: UseFormReturn<FormValues> }>) {
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-1.5">
           <FieldLabel>{t("superAdmin.images.versions.fields.name")} *</FieldLabel>
-          <Input {...form.register("name")} placeholder="Ubuntu 22.04 LTS" />
+          <Input
+            {...form.register("name")}
+            placeholder={t("superAdmin.imageVersionsPage.ubuntu2204Lts")}
+          />
           <FieldError message={form.formState.errors.name?.message} />
         </div>
         <div className="space-y-1.5">
@@ -847,7 +850,7 @@ function SourceStep({ form }: Readonly<{ form: UseFormReturn<FormValues> }>) {
         <Input
           {...form.register("ami_file")}
           className="font-mono"
-          placeholder="ubuntu-24.04-cloudinit"
+          placeholder={t("superAdmin.imageVersionsPage.ubuntu2404Cloudinit")}
         />
         <FieldError message={form.formState.errors.ami_file?.message} />
       </div>

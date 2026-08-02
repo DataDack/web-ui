@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import {
   Input,
   Select,
@@ -75,6 +76,7 @@ export function OverviewToolbar({
   typeFilter,
   onTypeFilterChange,
 }: Readonly<OverviewToolbarProps>) {
+  const { t } = useTranslation()
   return (
     <div className="glass-1 mb-4 flex flex-wrap items-center gap-2 px-3 py-2.5">
       <div className="relative min-w-[200px] flex-1 sm:max-w-xs">
@@ -84,9 +86,9 @@ export function OverviewToolbar({
           onChange={(event) => {
             onSearchChange(event.target.value)
           }}
-          placeholder="Search by name, repo, branch or state…"
+          placeholder={t("managedApps.overviewToolbar.searchByNameRepoBranchOrState")}
           className="h-8 pl-8 text-[13px]"
-          aria-label="Search projects"
+          aria-label={t("managedApps.overviewToolbar.searchProjects")}
         />
       </div>
 
@@ -109,12 +111,12 @@ export function OverviewToolbar({
         <SelectTrigger
           size="sm"
           className="w-[150px] shrink-0 text-[12px]"
-          aria-label="Filter by runtime"
+          aria-label={t("managedApps.overviewToolbar.filterByRuntime")}
         >
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value={ALL_TYPES}>All runtimes</SelectItem>
+          <SelectItem value={ALL_TYPES}>{t("managedApps.overviewToolbar.allRuntimes")}</SelectItem>
           {TYPE_OPTIONS.map((option) => (
             <SelectItem key={option.value} value={option.value} disabled={option.soon}>
               <span className="flex items-center gap-1.5">
@@ -140,7 +142,7 @@ export function OverviewToolbar({
           <SelectTrigger
             size="sm"
             className="w-[170px] shrink-0 text-[12px]"
-            aria-label="Sort projects"
+            aria-label={t("managedApps.overviewToolbar.sortProjects")}
           >
             <SelectValue />
           </SelectTrigger>

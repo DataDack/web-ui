@@ -170,12 +170,22 @@ export function StaticIPPriceFormSheet({ open, onOpenChange, price }: Readonly<P
       submitLabel={isEdit ? t("superAdmin.actions.save") : t("superAdmin.actions.create")}
     >
       <Field label="SKU" error={errors.sku?.message}>
-        <Input {...register("sku")} placeholder="ip-static-premium-in1a" className="font-mono" />
+        <Input
+          {...register("sku")}
+          placeholder={t("superAdmin.staticIPPriceFormSheet.ipStaticPremiumIn1a")}
+          className="font-mono"
+        />
       </Field>
       <Field label="Name" error={errors.name?.message}>
-        <Input {...register("name")} placeholder="Static IPv4 premium" />
+        <Input
+          {...register("name")}
+          placeholder={t("superAdmin.staticIPPriceFormSheet.staticIpv4Premium")}
+        />
       </Field>
-      <Field label="IP version" error={errors.ip_version?.message}>
+      <Field
+        label={t("superAdmin.staticIPPriceFormSheet.ipVersion")}
+        error={errors.ip_version?.message}
+      >
         <Controller
           control={control}
           name="ip_version"
@@ -195,7 +205,10 @@ export function StaticIPPriceFormSheet({ open, onOpenChange, price }: Readonly<P
           )}
         />
       </Field>
-      <Field label="Address type" error={errors.address_type?.message}>
+      <Field
+        label={t("superAdmin.staticIPPriceFormSheet.addressType")}
+        error={errors.address_type?.message}
+      >
         <Controller
           control={control}
           name="address_type"
@@ -215,7 +228,10 @@ export function StaticIPPriceFormSheet({ open, onOpenChange, price }: Readonly<P
           )}
         />
       </Field>
-      <Field label="Network tier" error={errors.network_tier?.message}>
+      <Field
+        label={t("superAdmin.staticIPPriceFormSheet.networkTier")}
+        error={errors.network_tier?.message}
+      >
         <Input {...register("network_tier")} placeholder="premium" />
       </Field>
       <Field
@@ -225,7 +241,10 @@ export function StaticIPPriceFormSheet({ open, onOpenChange, price }: Readonly<P
       >
         <Input type="number" min={0} step="any" {...register("price_hourly")} />
       </Field>
-      <Field label="Idle hourly" error={errors.price_idle_hourly?.message}>
+      <Field
+        label={t("superAdmin.staticIPPriceFormSheet.idleHourly")}
+        error={errors.price_idle_hourly?.message}
+      >
         <Input type="number" min={0} step="any" {...register("price_idle_hourly")} />
       </Field>
       <Field
@@ -234,7 +253,10 @@ export function StaticIPPriceFormSheet({ open, onOpenChange, price }: Readonly<P
       >
         <Input type="number" min={0} step="any" {...register("price_monthly")} />
       </Field>
-      <Field label="Setup fee" error={errors.setup_fee?.message}>
+      <Field
+        label={t("superAdmin.staticIPPriceFormSheet.setupFee")}
+        error={errors.setup_fee?.message}
+      >
         <Input type="number" min={0} step="any" {...register("setup_fee")} />
       </Field>
       <Field
@@ -249,7 +271,10 @@ export function StaticIPPriceFormSheet({ open, onOpenChange, price }: Readonly<P
           )}
         />
       </Field>
-      <Field label="Billing unit" error={errors.billing_unit?.message}>
+      <Field
+        label={t("superAdmin.staticIPPriceFormSheet.billingUnit")}
+        error={errors.billing_unit?.message}
+      >
         <Controller
           control={control}
           name="billing_unit"
@@ -269,17 +294,26 @@ export function StaticIPPriceFormSheet({ open, onOpenChange, price }: Readonly<P
           )}
         />
       </Field>
-      <Field label="Billing increment seconds" error={errors.billing_increment_seconds?.message}>
+      <Field
+        label={t("superAdmin.staticIPPriceFormSheet.billingIncrementSeconds")}
+        error={errors.billing_increment_seconds?.message}
+      >
         <Input type="number" min={1} {...register("billing_increment_seconds")} />
       </Field>
-      <Field label="Tax inclusive" error={errors.tax_inclusive?.message}>
+      <Field
+        label={t("superAdmin.staticIPPriceFormSheet.taxInclusive")}
+        error={errors.tax_inclusive?.message}
+      >
         <Controller
           control={control}
           name="tax_inclusive"
           render={({ field }) => <Switch checked={field.value} onCheckedChange={field.onChange} />}
         />
       </Field>
-      <Field label="Features JSON" error={errors.features?.message}>
+      <Field
+        label={t("superAdmin.staticIPPriceFormSheet.featuresJson")}
+        error={errors.features?.message}
+      >
         <Textarea {...register("features")} rows={4} placeholder='{"attachable":true}' />
       </Field>
     </FormSheet>

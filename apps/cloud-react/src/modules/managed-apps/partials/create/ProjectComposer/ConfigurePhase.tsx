@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { Button, Input } from "@datadack/common-ui"
 import { ChevronLeft, GitBranch } from "lucide-react"
 
@@ -51,6 +52,7 @@ export function ConfigurePhase({
   detectionOverridden,
   onResetDetection,
 }: Readonly<ConfigurePhaseProps>) {
+  const { t } = useTranslation()
   return (
     <div className="space-y-6">
       {/* The chosen source, with the way back to change it. Losing nothing
@@ -80,7 +82,7 @@ export function ConfigurePhase({
           onClick={onChangeRepo}
         >
           <ChevronLeft className="size-3.5" />
-          Change repo or type
+          {t("managedApps.configurePhase.changeRepoOrType")}
         </Button>
       </div>
 
@@ -99,10 +101,10 @@ export function ConfigurePhase({
       </FieldRow>
 
       <FieldRow
-        label="Project name"
+        label={t("managedApps.configurePhase.projectName")}
         htmlFor="project-name"
         error={errors.name}
-        description="Leave empty to name it after the repository. Becomes part of the public address."
+        description={t("managedApps.configurePhase.leaveEmptyToNameItAfterTheRepositoryBecomesP")}
       >
         <Input
           id="project-name"
@@ -135,8 +137,8 @@ export function ConfigurePhase({
 			    every other project onto it. The limits it will run under are
 			    worth stating, so they are; changing them is Settings' job. */}
       <FieldRow
-        label="Plan & limits"
-        description="Inherited from your account plan. Change it in Managed Apps → Settings."
+        label={t("managedApps.configurePhase.planLimits")}
+        description={t("managedApps.configurePhase.inheritedFromYourAccountPlanChangeItInManage")}
       >
         <PlanLimitsPanel />
       </FieldRow>

@@ -122,7 +122,10 @@ export function CreateDiskSheet({ open, onOpenChange }: Readonly<Props>) {
               <Label className="text-xs font-semibold tracking-wide uppercase text-muted-foreground">
                 Description
               </Label>
-              <Input {...register("description")} placeholder="Optional description..." />
+              <Input
+                {...register("description")}
+                placeholder={t("disks.createDiskSheet.optionalDescription")}
+              />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -171,7 +174,7 @@ export function CreateDiskSheet({ open, onOpenChange }: Readonly<Props>) {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label className="text-xs font-semibold tracking-wide uppercase text-muted-foreground">
-                  Volume Class
+                  {t("disks.createDiskSheet.volumeClass")}
                 </Label>
                 <Select
                   value={watch("volume_class")}
@@ -183,9 +186,13 @@ export function CreateDiskSheet({ open, onOpenChange }: Readonly<Props>) {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="gp3">General Purpose (gp3)</SelectItem>
-                    <SelectItem value="io2">Provisioned IOPS (io2)</SelectItem>
-                    <SelectItem value="sc1">Cold HDD (sc1)</SelectItem>
+                    <SelectItem value="gp3">
+                      {t("disks.createDiskSheet.generalPurposeGp3")}
+                    </SelectItem>
+                    <SelectItem value="io2">
+                      {t("disks.createDiskSheet.provisionedIopsIo2")}
+                    </SelectItem>
+                    <SelectItem value="sc1">{t("disks.createDiskSheet.coldHddSc1")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -219,12 +226,14 @@ export function CreateDiskSheet({ open, onOpenChange }: Readonly<Props>) {
             <Separator className="my-2" />
 
             <div className="space-y-4">
-              <h4 className="text-sm font-semibold">Advanced Features</h4>
+              <h4 className="text-sm font-semibold">
+                {t("disks.createDiskSheet.advancedFeatures")}
+              </h4>
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label>Multi-Attach</Label>
                   <p className="text-xs text-muted-foreground">
-                    Allow mounting to multiple instances simultaneously.
+                    {t("disks.createDiskSheet.allowMountingToMultipleInstancesSimultaneous")}
                   </p>
                 </div>
                 <Switch
@@ -236,9 +245,9 @@ export function CreateDiskSheet({ open, onOpenChange }: Readonly<Props>) {
               </div>
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label>Delete on Termination</Label>
+                  <Label>{t("disks.createDiskSheet.deleteOnTermination")}</Label>
                   <p className="text-xs text-muted-foreground">
-                    Automatically delete disk when the attached instance terminates.
+                    {t("disks.createDiskSheet.automaticallyDeleteDiskWhenTheAttachedInstan")}
                   </p>
                 </div>
                 <Switch

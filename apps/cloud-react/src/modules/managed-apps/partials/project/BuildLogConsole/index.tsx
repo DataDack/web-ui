@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import {
   Button,
   CopyButton,
@@ -32,6 +33,7 @@ interface BuildLogConsoleProps {
  * back on.
  */
 export function BuildLogConsole({ buildId, open, onOpenChange }: Readonly<BuildLogConsoleProps>) {
+  const { t } = useTranslation()
   const { data: build } = useBuild(buildId)
   const active = isBuildTransitional(build?.status)
   const { data: logs, isLoading } = useBuildLogs(buildId, active)
@@ -68,7 +70,7 @@ export function BuildLogConsole({ buildId, open, onOpenChange }: Readonly<BuildL
                   Duration:{" "}
                   {active ? "in progress" : formatDuration(build.started_at, build.finished_at)}
                 </span>
-                <CopyButton value={build.id} label="Copy build ID" />
+                <CopyButton value={build.id} label={t("managedApps.index.copyBuildId")} />
                 {build.status === "queued" && (
                   <Button
                     size="sm"

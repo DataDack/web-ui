@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { Badge, Button } from "@datadack/common-ui"
 import { ExternalLink, GitBranch, GitPullRequest } from "lucide-react"
 import { Link } from "react-router-dom"
@@ -18,6 +19,7 @@ import { isSetupComplete, type Project } from "../../managed-apps.types"
  * it is built. The deployment state leads; configuration follows.
  */
 export function ProjectOverviewTab({ project }: Readonly<{ project: Project }>) {
+  const { t } = useTranslation()
   const isN8n = project.project_type === "n8n"
   const { data: builds = [] } = useProjectBuilds(project.id)
   const latestBuild = builds.at(0)
@@ -39,7 +41,7 @@ export function ProjectOverviewTab({ project }: Readonly<{ project: Project }>) 
               <Button asChild size="sm" className="gap-1.5">
                 <Link to={MANAGED_APPS_ROUTES.setup(project.id)}>
                   <GitPullRequest className="size-3.5" />
-                  Finish setup
+                  {t("managedApps.projectOverviewTab.finishSetup")}
                 </Link>
               </Button>
             ) : undefined
@@ -134,7 +136,9 @@ export function ProjectOverviewTab({ project }: Readonly<{ project: Project }>) 
         <Section
           variant="panel"
           title="Build"
-          description="Empty fields inherit the platform default for this runtime."
+          description={t(
+            "managedApps.projectOverviewTab.emptyFieldsInheritThePlatformDefaultForThisR",
+          )}
         >
           <KeyValueGrid
             columns={3}

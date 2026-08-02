@@ -549,14 +549,17 @@ function FlavorStep({ form }: Readonly<{ form: UseFormReturn<FormValues> }>) {
           <FieldLabel>SKU</FieldLabel>
           <Input
             {...form.register("sku")}
-            placeholder="dd-standard-s2-medium-in1a"
+            placeholder={t("superAdmin.vMPriceFormPage.ddStandardS2MediumIn1a")}
             className="font-mono"
           />
           <FieldError message={form.formState.errors.sku?.message} />
         </div>
         <div className="space-y-1.5">
-          <FieldLabel>Display name</FieldLabel>
-          <Input {...form.register("display_name")} placeholder="Standard S2 Medium" />
+          <FieldLabel>{t("superAdmin.vMPriceFormPage.displayName")}</FieldLabel>
+          <Input
+            {...form.register("display_name")}
+            placeholder={t("superAdmin.vMPriceFormPage.standardS2Medium")}
+          />
           <FieldError message={form.formState.errors.display_name?.message} />
         </div>
       </div>
@@ -616,7 +619,7 @@ function FlavorStep({ form }: Readonly<{ form: UseFormReturn<FormValues> }>) {
           />
         </div>
         <div className="space-y-1.5">
-          <FieldLabel>Sort order</FieldLabel>
+          <FieldLabel>{t("superAdmin.vMPriceFormPage.sortOrder")}</FieldLabel>
           <Input type="number" min={0} {...form.register("sort_order")} />
           <FieldError message={form.formState.errors.sort_order?.message} />
         </div>
@@ -650,17 +653,20 @@ function SpecsStep({ form }: Readonly<{ form: UseFormReturn<FormValues> }>) {
 
       <div className="grid sm:grid-cols-3 gap-4">
         <div className="space-y-1.5">
-          <FieldLabel>CPU vendor</FieldLabel>
+          <FieldLabel>{t("superAdmin.vMPriceFormPage.cpuVendor")}</FieldLabel>
           <Input {...form.register("cpu_vendor")} placeholder="AMD" />
           <FieldError message={form.formState.errors.cpu_vendor?.message} />
         </div>
         <div className="space-y-1.5">
-          <FieldLabel>CPU model</FieldLabel>
-          <Input {...form.register("cpu_model")} placeholder="EPYC 9554" />
+          <FieldLabel>{t("superAdmin.vMPriceFormPage.cpuModel")}</FieldLabel>
+          <Input
+            {...form.register("cpu_model")}
+            placeholder={t("superAdmin.vMPriceFormPage.epyc9554")}
+          />
           <FieldError message={form.formState.errors.cpu_model?.message} />
         </div>
         <div className="space-y-1.5">
-          <FieldLabel>Clock GHz</FieldLabel>
+          <FieldLabel>{t("superAdmin.vMPriceFormPage.clockGhz")}</FieldLabel>
           <Input type="number" min={0} step="any" {...form.register("clock_ghz")} />
           <FieldError message={form.formState.errors.clock_ghz?.message} />
         </div>
@@ -681,22 +687,22 @@ function SpecsStep({ form }: Readonly<{ form: UseFormReturn<FormValues> }>) {
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="space-y-1.5">
-          <FieldLabel>Local disk GB</FieldLabel>
+          <FieldLabel>{t("superAdmin.vMPriceFormPage.localDiskGb")}</FieldLabel>
           <Input type="number" min={0} {...form.register("local_disk_gb")} />
           <FieldError message={form.formState.errors.local_disk_gb?.message} />
         </div>
         <div className="space-y-1.5">
-          <FieldLabel>Boot disk GB</FieldLabel>
+          <FieldLabel>{t("superAdmin.vMPriceFormPage.bootDiskGb")}</FieldLabel>
           <Input type="number" min={0} {...form.register("default_boot_disk_gb")} />
           <FieldError message={form.formState.errors.default_boot_disk_gb?.message} />
         </div>
         <div className="space-y-1.5">
-          <FieldLabel>Max data disks</FieldLabel>
+          <FieldLabel>{t("superAdmin.vMPriceFormPage.maxDataDisks")}</FieldLabel>
           <Input type="number" min={0} {...form.register("max_data_disks")} />
           <FieldError message={form.formState.errors.max_data_disks?.message} />
         </div>
         <div className="space-y-1.5">
-          <FieldLabel>Max NICs</FieldLabel>
+          <FieldLabel>{t("superAdmin.vMPriceFormPage.maxNics")}</FieldLabel>
           <Input type="number" min={0} {...form.register("max_nics")} />
           <FieldError message={form.formState.errors.max_nics?.message} />
         </div>
@@ -709,12 +715,12 @@ function SpecsStep({ form }: Readonly<{ form: UseFormReturn<FormValues> }>) {
           <FieldError message={form.formState.errors.bandwidth_gbps?.message} />
         </div>
         <div className="space-y-1.5">
-          <FieldLabel>Network tier</FieldLabel>
+          <FieldLabel>{t("superAdmin.vMPriceFormPage.networkTier")}</FieldLabel>
           <Input {...form.register("network_tier")} placeholder="premium" />
           <FieldError message={form.formState.errors.network_tier?.message} />
         </div>
         <div className="space-y-1.5">
-          <FieldLabel>IPv4 included</FieldLabel>
+          <FieldLabel>{t("superAdmin.vMPriceFormPage.ipv4Included")}</FieldLabel>
           <Input type="number" min={0} {...form.register("ipv4_included")} />
           <FieldError message={form.formState.errors.ipv4_included?.message} />
         </div>
@@ -726,18 +732,18 @@ function SpecsStep({ form }: Readonly<{ form: UseFormReturn<FormValues> }>) {
               <Switch checked={field.value} onCheckedChange={field.onChange} />
             )}
           />
-          <FieldLabel>IPv6 supported</FieldLabel>
+          <FieldLabel>{t("superAdmin.vMPriceFormPage.ipv6Supported")}</FieldLabel>
         </div>
       </div>
 
       <div className="grid sm:grid-cols-2 gap-4">
         <div className="space-y-1.5">
-          <FieldLabel>Baseline IOPS</FieldLabel>
+          <FieldLabel>{t("superAdmin.vMPriceFormPage.baselineIops")}</FieldLabel>
           <Input type="number" min={0} {...form.register("baseline_iops")} />
           <FieldError message={form.formState.errors.baseline_iops?.message} />
         </div>
         <div className="space-y-1.5">
-          <FieldLabel>Burst IOPS</FieldLabel>
+          <FieldLabel>{t("superAdmin.vMPriceFormPage.burstIops")}</FieldLabel>
           <Input type="number" min={0} {...form.register("burst_iops")} />
           <FieldError message={form.formState.errors.burst_iops?.message} />
         </div>
@@ -770,17 +776,17 @@ function PricingStep({ form }: Readonly<{ form: UseFormReturn<FormValues> }>) {
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="space-y-1.5">
-          <FieldLabel>Spot hourly</FieldLabel>
+          <FieldLabel>{t("superAdmin.vMPriceFormPage.spotHourly")}</FieldLabel>
           <Input type="number" min={0} step="any" {...form.register("price_spot_hourly")} />
           <FieldError message={form.formState.errors.price_spot_hourly?.message} />
         </div>
         <div className="space-y-1.5">
-          <FieldLabel>Reserved monthly</FieldLabel>
+          <FieldLabel>{t("superAdmin.vMPriceFormPage.reservedMonthly")}</FieldLabel>
           <Input type="number" min={0} step="any" {...form.register("price_reserved_monthly")} />
           <FieldError message={form.formState.errors.price_reserved_monthly?.message} />
         </div>
         <div className="space-y-1.5">
-          <FieldLabel>Reserved yearly</FieldLabel>
+          <FieldLabel>{t("superAdmin.vMPriceFormPage.reservedYearly")}</FieldLabel>
           <Input type="number" min={0} step="any" {...form.register("price_reserved_yearly")} />
           <FieldError message={form.formState.errors.price_reserved_yearly?.message} />
         </div>
@@ -788,7 +794,7 @@ function PricingStep({ form }: Readonly<{ form: UseFormReturn<FormValues> }>) {
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="space-y-1.5">
-          <FieldLabel>Setup fee</FieldLabel>
+          <FieldLabel>{t("superAdmin.vMPriceFormPage.setupFee")}</FieldLabel>
           <Input type="number" min={0} step="any" {...form.register("setup_fee")} />
           <FieldError message={form.formState.errors.setup_fee?.message} />
         </div>
@@ -808,7 +814,7 @@ function PricingStep({ form }: Readonly<{ form: UseFormReturn<FormValues> }>) {
           <FieldError message={form.formState.errors.currency?.message} />
         </div>
         <div className="space-y-1.5">
-          <FieldLabel>Billing unit</FieldLabel>
+          <FieldLabel>{t("superAdmin.vMPriceFormPage.billingUnit")}</FieldLabel>
           <Controller
             control={form.control}
             name="billing_unit"
@@ -829,7 +835,7 @@ function PricingStep({ form }: Readonly<{ form: UseFormReturn<FormValues> }>) {
           />
         </div>
         <div className="space-y-1.5">
-          <FieldLabel>Billing increment seconds</FieldLabel>
+          <FieldLabel>{t("superAdmin.vMPriceFormPage.billingIncrementSeconds")}</FieldLabel>
           <Input type="number" min={1} {...form.register("billing_increment_seconds")} />
           <FieldError message={form.formState.errors.billing_increment_seconds?.message} />
         </div>
@@ -844,7 +850,7 @@ function PricingStep({ form }: Readonly<{ form: UseFormReturn<FormValues> }>) {
               <Switch checked={field.value} onCheckedChange={field.onChange} />
             )}
           />
-          <FieldLabel>Tax inclusive</FieldLabel>
+          <FieldLabel>{t("superAdmin.vMPriceFormPage.taxInclusive")}</FieldLabel>
         </div>
         <div className="flex items-center gap-3">
           <Controller
@@ -859,7 +865,7 @@ function PricingStep({ form }: Readonly<{ form: UseFormReturn<FormValues> }>) {
       </div>
 
       <div className="space-y-1.5">
-        <FieldLabel>Features JSON</FieldLabel>
+        <FieldLabel>{t("superAdmin.vMPriceFormPage.featuresJson")}</FieldLabel>
         <Textarea {...form.register("features")} rows={5} placeholder='{"burstable":true}' />
         <FieldError message={form.formState.errors.features?.message} />
       </div>

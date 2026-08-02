@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { type ReactNode, useMemo, useState } from "react"
 
 import { Button, EmptyState, Skeleton } from "@datadack/common-ui"
@@ -67,6 +68,7 @@ export function ProjectExplorer({
   onDelete,
   onReconnect,
 }: Readonly<ProjectExplorerProps>) {
+  const { t } = useTranslation()
   // Search stays component state: it changes on every keystroke, and writing
   // each one to the URL would flood history and re-render every consumer of the
   // query string.
@@ -108,7 +110,7 @@ export function ProjectExplorer({
     empty = (
       <EmptyState
         icon={Search}
-        title="No projects match these filters"
+        title={t("managedApps.projectExplorer.noProjectsMatchTheseFilters")}
         description="Nothing matches what you are filtering by. Clear the filters to see every project."
         action={{ label: "Clear filters", onClick: clearFilters }}
       />
@@ -135,9 +137,11 @@ export function ProjectExplorer({
     content = (
       <div className="glass-1 flex flex-col items-center gap-3 rounded-xl border border-status-danger/30 px-6 py-12 text-center">
         <AlertTriangle className="size-5 text-status-danger" />
-        <p className="text-[13px] text-muted-foreground">Could not load your projects.</p>
+        <p className="text-[13px] text-muted-foreground">
+          {t("managedApps.projectExplorer.couldNotLoadYourProjects")}
+        </p>
         <Button size="sm" variant="outline" onClick={onRetry}>
-          Try again
+          {t("console.table.retry")}
         </Button>
       </div>
     )

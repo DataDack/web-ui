@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { Button, EmptyState, Skeleton } from "@datadack/common-ui"
 import { GitPullRequest, Hammer, Info, PackageX, Settings } from "lucide-react"
 import { Link, useNavigate, useParams } from "react-router-dom"
@@ -20,6 +21,7 @@ import { isBuildTransitional } from "../../managed-apps.types"
  * (Settings). Tab state syncs to ?tab= via the shared DetailPage.
  */
 export function ProjectDetailPage() {
+  const { t } = useTranslation()
   useScreen("managed-apps-project-detail")
   const navigate = useNavigate()
   const { id = "" } = useParams()
@@ -50,7 +52,7 @@ export function ProjectDetailPage() {
     return (
       <EmptyState
         icon={PackageX}
-        title="Project not found"
+        title={t("managedApps.projectDetailPage.projectNotFound")}
         description={`No project with id "${id}" exists in this account.`}
         action={{
           label: "Back to Managed Apps",
@@ -78,7 +80,7 @@ export function ProjectDetailPage() {
           <Button asChild size="sm" className="gap-1.5">
             <Link to={MANAGED_APPS_ROUTES.setup(project.id)}>
               <GitPullRequest className="size-3.5" />
-              Finish setup
+              {t("managedApps.projectDetailPage.finishSetup")}
             </Link>
           </Button>
         ) : undefined

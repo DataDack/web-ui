@@ -157,7 +157,10 @@ export function CreateAsgSheet({ open, onOpenChange }: Readonly<Props>) {
               <Label className="text-xs font-semibold tracking-wide uppercase text-muted-foreground">
                 Description
               </Label>
-              <Input {...register("description")} placeholder="Optional description..." />
+              <Input
+                {...register("description")}
+                placeholder={t("autoscaling.createAsgSheet.optionalDescription")}
+              />
             </div>
 
             <div className="space-y-1.5">
@@ -269,11 +272,13 @@ export function CreateAsgSheet({ open, onOpenChange }: Readonly<Props>) {
             <Separator className="my-2" />
 
             <div className="space-y-4">
-              <h4 className="text-sm font-semibold">Advanced Scaling Policies</h4>
+              <h4 className="text-sm font-semibold">
+                {t("autoscaling.createAsgSheet.advancedScalingPolicies")}
+              </h4>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <Label className="text-xs font-semibold tracking-wide uppercase text-muted-foreground">
-                    Health Check Grace (s)
+                    {t("autoscaling.createAsgSheet.healthCheckGraceS")}
                   </Label>
                   <Input
                     type="number"
@@ -285,7 +290,7 @@ export function CreateAsgSheet({ open, onOpenChange }: Readonly<Props>) {
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-xs font-semibold tracking-wide uppercase text-muted-foreground">
-                    Termination Policy
+                    {t("autoscaling.createAsgSheet.terminationPolicy")}
                   </Label>
                   <Select
                     value={watch("termination_policy")}
@@ -299,9 +304,15 @@ export function CreateAsgSheet({ open, onOpenChange }: Readonly<Props>) {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="OldestInstance">Oldest Instance</SelectItem>
-                      <SelectItem value="NewestInstance">Newest Instance</SelectItem>
-                      <SelectItem value="ClosestToNextInstanceHour">Closest To Hour</SelectItem>
+                      <SelectItem value="OldestInstance">
+                        {t("autoscaling.createAsgSheet.oldestInstance")}
+                      </SelectItem>
+                      <SelectItem value="NewestInstance">
+                        {t("autoscaling.createAsgSheet.newestInstance")}
+                      </SelectItem>
+                      <SelectItem value="ClosestToNextInstanceHour">
+                        {t("autoscaling.createAsgSheet.closestToHour")}
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -309,9 +320,9 @@ export function CreateAsgSheet({ open, onOpenChange }: Readonly<Props>) {
 
               <div className="flex items-center justify-between mt-2">
                 <div className="space-y-0.5">
-                  <Label>Capacity Rebalance</Label>
+                  <Label>{t("autoscaling.createAsgSheet.capacityRebalance")}</Label>
                   <p className="text-xs text-muted-foreground">
-                    Automatically redistribute instances across availability zones.
+                    {t("autoscaling.createAsgSheet.automaticallyRedistributeInstancesAcrossAvai")}
                   </p>
                 </div>
                 <Switch

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useState } from "react"
 
 import { Badge, Button } from "@datadack/common-ui"
@@ -19,6 +20,7 @@ import { isSetupComplete, type Project } from "../../../managed-apps.types"
  * behave. Only the tracked branch can move, so only it is a control.
  */
 export function GitSection({ project }: Readonly<{ project: Project }>) {
+  const { t } = useTranslation()
   const [branch, setBranch] = useState(project.branch)
   const update = useUpdateProject(project.id)
   const setupDone = isSetupComplete(project.setup_state)
@@ -27,7 +29,7 @@ export function GitSection({ project }: Readonly<{ project: Project }>) {
     <Section
       variant="panel"
       title="Git"
-      description="Where this project's code comes from."
+      description={t("managedApps.gitSection.whereThisProjectSCodeComesFrom")}
       actions={
         <Link
           to={MANAGED_APPS_ROUTES.setup(project.id)}
@@ -81,7 +83,10 @@ export function GitSection({ project }: Readonly<{ project: Project }>) {
           ]}
         />
 
-        <FieldRow label="Tracked branch" description="Every push to this branch triggers a build.">
+        <FieldRow
+          label={t("managedApps.gitSection.trackedBranch")}
+          description={t("managedApps.gitSection.everyPushToThisBranchTriggersABuild")}
+        >
           <div className="sm:w-80">
             <BranchSelect
               installationId={project.installation_id}
@@ -97,10 +102,12 @@ export function GitSection({ project }: Readonly<{ project: Project }>) {
           <div className="flex flex-wrap items-center gap-2 rounded-lg border border-status-warning/25 bg-status-warning-bg px-3 py-2.5">
             <GitPullRequest className="size-3.5 shrink-0 text-status-warning" />
             <span className="flex-1 text-[12px] text-muted-foreground">
-              The build workflow is not on this branch yet, so pushes will not build.
+              {t("managedApps.gitSection.theBuildWorkflowIsNotOnThisBranchYetSoPushes")}
             </span>
             <Button asChild size="sm" variant="outline" className="shrink-0">
-              <Link to={MANAGED_APPS_ROUTES.setup(project.id)}>Finish setup</Link>
+              <Link to={MANAGED_APPS_ROUTES.setup(project.id)}>
+                {t("managedApps.gitSection.finishSetup")}
+              </Link>
             </Button>
           </div>
         )}

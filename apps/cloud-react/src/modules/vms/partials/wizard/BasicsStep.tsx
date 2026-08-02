@@ -43,9 +43,9 @@ export function BasicsStep({
 
         <div className="grid gap-x-6 gap-y-5 md:grid-cols-2">
           <div className="space-y-1.5">
-            <FieldLabel>Instance Name (Optional)</FieldLabel>
+            <FieldLabel>{t("vms.basicsStep.instanceNameOptional")}</FieldLabel>
             <Input
-              placeholder="Leave blank to auto-generate"
+              placeholder={t("vms.basicsStep.leaveBlankToAutoGenerate")}
               className="font-mono"
               value={form.watch("name") ?? ""}
               onChange={(e) => {
@@ -62,9 +62,9 @@ export function BasicsStep({
           </div>
 
           <div className="space-y-1.5">
-            <FieldLabel>Description (Optional)</FieldLabel>
+            <FieldLabel>{t("vms.basicsStep.descriptionOptional")}</FieldLabel>
             <Textarea
-              placeholder="A brief description of this instance..."
+              placeholder={t("vms.basicsStep.aBriefDescriptionOfThisInstance")}
               rows={3}
               className="resize-none"
               value={form.watch("description") ?? ""}
@@ -81,19 +81,19 @@ export function BasicsStep({
       </div>
 
       <div className="space-y-2 border-t border-border-glass pt-5">
-        <FieldLabel>Tags (Optional)</FieldLabel>
+        <FieldLabel>{t("vms.basicsStep.tagsOptional")}</FieldLabel>
         <TagEditor rows={tagRows} onChange={setTagRows} />
       </div>
 
       <div className="space-y-4 border-t border-border-glass pt-5">
-        <h4 className="text-sm font-semibold">Advanced Options</h4>
+        <h4 className="text-sm font-semibold">{t("vms.basicsStep.advancedOptions")}</h4>
 
         <div className="grid items-start gap-x-6 gap-y-4 md:grid-cols-2">
           <div className="space-y-1.5">
-            <FieldLabel>Termination Protection</FieldLabel>
+            <FieldLabel>{t("vms.basicsStep.terminationProtection")}</FieldLabel>
             <div className="flex h-9 items-center justify-between gap-4 rounded-md border border-border-glass bg-muted/10 px-3">
               <p className="text-xs text-muted-foreground line-clamp-1">
-                Prevent this instance from being accidentally deleted.
+                {t("vms.basicsStep.preventThisInstanceFromBeingAccidentallyDele")}
               </p>
               <Switch
                 checked={form.watch("termination_protection")}

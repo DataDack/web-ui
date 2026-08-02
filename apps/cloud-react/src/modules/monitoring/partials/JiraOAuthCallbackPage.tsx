@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useEffect, useRef, useState } from "react"
 
 import { Button } from "@datadack/common-ui"
@@ -19,6 +20,7 @@ type Phase = "working" | "done" | "error"
  * user to the Channels page. The exchange runs exactly once (StrictMode-safe).
  */
 export function JiraOAuthCallbackPage() {
+  const { t } = useTranslation()
   const [params] = useSearchParams()
   const navigate = useNavigate()
   const { mutate: completeOAuth } = useJiraOAuthCallback()
@@ -87,7 +89,7 @@ export function JiraOAuthCallbackPage() {
             void navigate(MONITORING_ROUTES.channels, { replace: true })
           }}
         >
-          Back to channels
+          {t("monitoring.jiraOAuthCallbackPage.backToChannels")}
         </Button>
       )}
     </div>

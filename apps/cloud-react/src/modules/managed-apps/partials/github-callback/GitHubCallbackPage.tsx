@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useEffect, useRef, useState } from "react"
 
 import { Button } from "@datadack/common-ui"
@@ -21,6 +22,7 @@ type Phase = "working" | "done" | "error"
  * exactly once (StrictMode-safe).
  */
 export function GitHubCallbackPage() {
+  const { t } = useTranslation()
   useScreen("managed-apps-github-callback")
   const [params] = useSearchParams()
   const navigate = useNavigate()
@@ -115,7 +117,7 @@ export function GitHubCallbackPage() {
             void navigate(MANAGED_APPS_ROUTES.create, { replace: true })
           }}
         >
-          Continue deploying
+          {t("managedApps.gitHubCallbackPage.continueDeploying")}
         </Button>
       )}
 
@@ -131,7 +133,7 @@ export function GitHubCallbackPage() {
               void navigate(MANAGED_APPS_ROUTES.root, { replace: true })
             }}
           >
-            Back to Managed Apps
+            {t("managedApps.gitHubCallbackPage.backToManagedApps")}
           </Button>
         </div>
       )}

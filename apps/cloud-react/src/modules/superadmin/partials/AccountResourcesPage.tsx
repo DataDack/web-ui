@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useMemo, useState } from "react"
 
 import {
@@ -68,6 +69,7 @@ function orDash(v?: string): string {
 }
 
 export function AccountResourcesPage() {
+  const { t } = useTranslation()
   useScreen("superadmin.accountResources")
   const navigate = useNavigate()
   const { accountId } = useParams<{ accountId: string }>()
@@ -233,7 +235,7 @@ export function AccountResourcesPage() {
               disabled={deleteDisabled}
             >
               <Trash2 className="size-4" />
-              Delete account
+              {t("superAdmin.accountResourcesPage.deleteAccount3")}
             </Button>
           </div>
         }
@@ -301,8 +303,10 @@ export function AccountResourcesPage() {
         empty={
           <EmptyState
             icon={Boxes}
-            title="No resources"
-            description="This account isn't consuming any resources right now."
+            title={t("superAdmin.accountResourcesPage.noResources")}
+            description={t(
+              "superadmin.accountResourcesPage.thisAccountIsnTConsumingAnyResourcesRightNow",
+            )}
           />
         }
         onRefresh={() => void refetch()}
@@ -313,7 +317,7 @@ export function AccountResourcesPage() {
       <ConfirmDialog
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
-        title="Delete account"
+        title={t("superAdmin.accountResourcesPage.deleteAccount")}
         description={
           <div className="space-y-3">
             <p>
@@ -321,15 +325,15 @@ export function AccountResourcesPage() {
               load balancers, disks, VPC resources, and related networking state.
             </p>
             <ul className="list-disc space-y-1 pl-4">
-              <li>Static IPs will be released back to the pool.</li>
+              <li>{t("superAdmin.accountResourcesPage.staticIpsWillBeReleasedBackToThePool")}</li>
               <li>
                 Billing history, invoices, ledger entries, payments, and usage records will be kept.
               </li>
-              <li>Auth users are not deleted.</li>
+              <li>{t("superAdmin.accountResourcesPage.authUsersAreNotDeleted")}</li>
             </ul>
           </div>
         }
-        confirmLabel="Delete account"
+        confirmLabel={t("superAdmin.accountResourcesPage.deleteAccount2")}
         confirmText={deleteConfirmText}
         loading={deleteAccount.isPending}
         onConfirm={() => {

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 // Section 3 — "Condition".
 //
 // The rule reads as one sentence with the controls sitting inside it, so nobody
@@ -121,6 +122,7 @@ export function ConditionSection({
   onPeriodChange: (value: PeriodSeconds) => void
   onTreatMissingChange: (value: TreatMissingData) => void
 }>) {
+  const { t } = useTranslation()
   const [advancedOpen, setAdvancedOpen] = useState(false)
 
   const thresholdValue = numeric(threshold)
@@ -176,7 +178,7 @@ export function ConditionSection({
     <div className="space-y-4">
       {/* The rule, as a sentence. */}
       <div className="flex flex-wrap items-center gap-x-2 gap-y-2 text-[13px] text-foreground">
-        <span>Alert when the</span>
+        <span>{t("monitoring.conditionSection.alertWhenThe")}</span>
         <Select
           value={statistic}
           onValueChange={(value) => {
@@ -225,7 +227,7 @@ export function ConditionSection({
         <Input
           type="number"
           min={1}
-          aria-label="Periods that must breach"
+          aria-label={t("monitoring.conditionSection.periodsThatMustBreach")}
           className={INLINE_NUMBER_CLASS}
           {...register("datapointsToAlarm")}
         />
@@ -233,7 +235,7 @@ export function ConditionSection({
         <Input
           type="number"
           min={1}
-          aria-label="Periods evaluated"
+          aria-label={t("monitoring.conditionSection.periodsEvaluated")}
           className={INLINE_NUMBER_CLASS}
           {...register("evaluationPeriods")}
         />
@@ -268,7 +270,7 @@ export function ConditionSection({
       {/* The same rule, replayed over real history. */}
       {!hasSignal && (
         <p className="rounded-lg border border-dashed border-border p-4 text-center text-[13px] text-muted-foreground">
-          Choose a signal above to see it charted against this threshold.
+          {t("monitoring.conditionSection.chooseASignalAboveToSeeItChartedAgainstThisT")}
         </p>
       )}
 
@@ -284,7 +286,7 @@ export function ConditionSection({
                 className="shrink-0 gap-1.5 font-mono text-[11px] text-status-danger bg-status-danger-bg border-status-danger/25"
               >
                 <span className="size-1.5 rounded-full bg-status-danger" />
-                Would be in alarm now
+                {t("monitoring.conditionSection.wouldBeInAlarmNow")}
               </Badge>
             )}
           </div>
@@ -325,12 +327,12 @@ export function ConditionSection({
           <ChevronDown
             className={cn("size-3.5 transition-transform", advancedOpen && "rotate-180")}
           />
-          Advanced — if data stops arriving
+          {t("monitoring.conditionSection.advancedIfDataStopsArriving")}
         </button>
         {advancedOpen && (
           <div
             role="radiogroup"
-            aria-label="If data stops arriving"
+            aria-label={t("monitoring.conditionSection.ifDataStopsArriving")}
             className="mt-2.5 grid gap-2 sm:grid-cols-2"
           >
             {TREAT_MISSING_OPTIONS.map((option) => (

@@ -134,7 +134,9 @@ export function CreateResourceGroupSheet({ open, onOpenChange, onCreated }: Read
               >
                 <Textarea
                   {...register("description")}
-                  placeholder="Describe the purpose of this resource group..."
+                  placeholder={t(
+                    "resourceGroups.createResourceGroupSheet.describeThePurposeOfThisResourceGroup",
+                  )}
                   rows={3}
                   className="resize-none"
                 />

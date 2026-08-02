@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useState } from "react"
 
 import { ExternalLink, FileCode2, Loader2, ScrollText } from "lucide-react"
@@ -30,6 +31,7 @@ interface SetupWorkPanelProps {
  * keeps it, because `selected` overrides the default from that point on.
  */
 export function SetupWorkPanel({ projectId, setup }: Readonly<SetupWorkPanelProps>) {
+  const { t } = useTranslation()
   const { data: builds = [] } = useProjectBuilds(projectId)
   const latest = builds.at(0)
 
@@ -84,7 +86,7 @@ export function SetupWorkPanel({ projectId, setup }: Readonly<SetupWorkPanelProp
                   rel="noreferrer"
                   className="inline-flex items-center gap-1 text-[11px] text-status-info hover:underline"
                 >
-                  View on GitHub
+                  {t("managedApps.setupWorkPanel.viewOnGithub")}
                   <ExternalLink className="size-3" />
                 </a>
               )}

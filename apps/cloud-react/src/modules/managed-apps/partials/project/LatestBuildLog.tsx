@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { ExternalLink } from "lucide-react"
 
 import { Section } from "@/components/console"
@@ -23,6 +24,7 @@ import { isBuildTransitional, type Build } from "../../managed-apps.types"
  * per-build query then keeps status and timings fresh at its own cadence.
  */
 export function LatestBuildLog({ build }: Readonly<{ build: Build }>) {
+  const { t } = useTranslation()
   const { data: fresh } = useBuild(build.id)
   const current = fresh ?? build
   const active = isBuildTransitional(current.status)
@@ -34,7 +36,7 @@ export function LatestBuildLog({ build }: Readonly<{ build: Build }>) {
   return (
     <Section
       variant="panel"
-      title="Latest build"
+      title={t("managedApps.latestBuildLog.latestBuild")}
       description={current.commit_message || `${triggerLabel(current.triggered_by)} deploy`}
       actions={
         <>
@@ -46,7 +48,7 @@ export function LatestBuildLog({ build }: Readonly<{ build: Build }>) {
               rel="noreferrer"
               className="flex items-center gap-1 text-[12px] text-status-info hover:underline"
             >
-              View on GitHub
+              {t("managedApps.latestBuildLog.viewOnGithub")}
               <ExternalLink className="size-3" />
             </a>
           )}

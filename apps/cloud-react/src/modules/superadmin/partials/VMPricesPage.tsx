@@ -149,7 +149,9 @@ export function VMPricesPage() {
       {
         id: "price_monthly",
         header: () => (
-          <span className="text-xs font-semibold uppercase tracking-wider">Monthly / reserved</span>
+          <span className="text-xs font-semibold uppercase tracking-wider">
+            {t("superAdmin.vMPricesPage.monthlyReserved")}
+          </span>
         ),
         accessorFn: (p) => p.price_monthly,
         cell: ({ row }) => (

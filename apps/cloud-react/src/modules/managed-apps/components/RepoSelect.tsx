@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useState } from "react"
 
 import { Badge, Button } from "@datadack/common-ui"
@@ -54,6 +55,7 @@ export function RepoSelect({
   invalid,
   id,
 }: Readonly<RepoSelectProps>) {
+  const { t } = useTranslation()
   const [query, setQuery] = useState("")
   const {
     data: repos = [],
@@ -159,7 +161,7 @@ export function RepoSelect({
         >
           <a href={GITHUB_INSTALLATIONS_URL} target="_blank" rel="noreferrer">
             <ExternalLink className="size-3" />
-            Adjust GitHub App access
+            {t("managedApps.repoSelect.adjustGithubAppAccess")}
           </a>
         </Button>
       }

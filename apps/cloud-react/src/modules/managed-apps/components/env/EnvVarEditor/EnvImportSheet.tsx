@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useMemo, useState } from "react"
 
 import {
@@ -29,6 +30,7 @@ interface EnvImportSheetProps {
  * anyone should be asked to do.
  */
 export function EnvImportSheet({ open, onOpenChange, onImport }: Readonly<EnvImportSheetProps>) {
+  const { t } = useTranslation()
   const [text, setText] = useState("")
   const parsed = useMemo(() => parseDotEnv(text), [text])
 
@@ -52,7 +54,7 @@ export function EnvImportSheet({ open, onOpenChange, onImport }: Readonly<EnvImp
     >
       <SheetContent side="right" className="flex w-full flex-col gap-0 sm:max-w-lg">
         <SheetHeader>
-          <SheetTitle>Import from .env</SheetTitle>
+          <SheetTitle>{t("managedApps.envImportSheet.importFromEnv")}</SheetTitle>
           <SheetDescription>
             Paste the contents of a .env file. Comments and blank lines are ignored; repeated keys
             keep their last value.
@@ -67,7 +69,7 @@ export function EnvImportSheet({ open, onOpenChange, onImport }: Readonly<EnvImp
             }}
             placeholder={"DATABASE_URL=postgres://…\nAPI_TOKEN=…\n# comments are ignored"}
             className="min-h-52 font-mono text-[12px]"
-            aria-label="Paste .env contents"
+            aria-label={t("managedApps.envImportSheet.pasteEnvContents")}
           />
 
           {text.trim() !== "" && (

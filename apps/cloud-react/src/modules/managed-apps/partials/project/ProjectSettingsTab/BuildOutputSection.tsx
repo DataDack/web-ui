@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useState } from "react"
 
 import { Button } from "@datadack/common-ui"
@@ -17,6 +18,7 @@ import type { Project } from "../../../managed-apps.types"
  * it. Saying so prevents the reasonable assumption that pressing Save deploys.
  */
 export function BuildOutputSection({ project }: Readonly<{ project: Project }>) {
+  const { t } = useTranslation()
   const update = useUpdateProject(project.id)
   const [value, setValue] = useState<BuildSettingsValue>({
     root_dir: project.root_dir,
@@ -34,8 +36,8 @@ export function BuildOutputSection({ project }: Readonly<{ project: Project }>) 
   return (
     <Section
       variant="panel"
-      title="Build & output"
-      description="What runs when this project builds. Empty fields inherit the platform default."
+      title={t("managedApps.buildOutputSection.buildOutput")}
+      description={t("managedApps.buildOutputSection.whatRunsWhenThisProjectBuildsEmptyFieldsInhe")}
     >
       <div className="space-y-4">
         <BuildSettingsSection
@@ -60,7 +62,7 @@ export function BuildOutputSection({ project }: Readonly<{ project: Project }>) 
           </Button>
           <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
             <Info className="size-3" />
-            Applies to the next build — this does not start one.
+            {t("managedApps.buildOutputSection.appliesToTheNextBuildThisDoesNotStartOne")}
           </span>
         </div>
       </div>

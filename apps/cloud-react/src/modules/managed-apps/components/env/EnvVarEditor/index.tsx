@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useMemo, useState } from "react"
 
 import { Button, Label } from "@datadack/common-ui"
@@ -29,6 +30,7 @@ export function EnvVarEditor({
   description,
   label = "Environment variables",
 }: Readonly<EnvVarEditorProps>) {
+  const { t } = useTranslation()
   const [importOpen, setImportOpen] = useState(false)
   const duplicates = useMemo(() => duplicateKeys(rows), [rows])
 
@@ -76,7 +78,7 @@ export function EnvVarEditor({
           }}
         >
           <FileUp className="size-3.5" />
-          Import .env
+          {t("managedApps.index.importEnv")}
         </Button>
       </div>
 
@@ -106,7 +108,7 @@ export function EnvVarEditor({
         }}
       >
         <Plus className="size-3.5" />
-        Add variable
+        {t("managedApps.index.addVariable")}
       </Button>
 
       {description && <p className="text-[11px] text-muted-foreground">{description}</p>}

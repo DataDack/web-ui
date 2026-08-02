@@ -163,7 +163,7 @@ export function ServiceFormSheet({ open, onOpenChange, service }: Readonly<Props
       </Field>
 
       <Field label={t("superAdmin.services.fields.name")} required error={errors.name?.message}>
-        <Input {...register("name")} placeholder="Compute Engine" />
+        <Input {...register("name")} placeholder={t("superAdmin.serviceFormSheet.computeEngine")} />
       </Field>
 
       <Field
@@ -173,7 +173,9 @@ export function ServiceFormSheet({ open, onOpenChange, service }: Readonly<Props
         <Textarea
           {...register("description")}
           rows={3}
-          placeholder="Scalable, high-performance sovereign virtual machines…"
+          placeholder={t(
+            "superadmin.serviceFormSheet.scalableHighPerformanceSovereignVirtualMachi",
+          )}
         />
       </Field>
 

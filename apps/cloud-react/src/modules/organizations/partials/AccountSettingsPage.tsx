@@ -242,7 +242,10 @@ function AccountDetailsSection({
             required
             error={errors.name?.message}
           >
-            <Input {...register("name")} placeholder="Default Account" />
+            <Input
+              {...register("name")}
+              placeholder={t("organizations.accountSettingsPage.defaultAccount")}
+            />
           </Field>
           <div className="flex items-center justify-end gap-3 pt-1">
             <Button
@@ -382,7 +385,10 @@ function OrgDetailsSection({ org, canEdit }: Readonly<{ org: Organization; canEd
       {editing ? (
         <form onSubmit={(e) => void handleSubmit(onSubmit)(e)} className="max-w-xl space-y-5">
           <Field label={t("org.settings.name")} required error={errors.name?.message}>
-            <Input {...register("name")} placeholder="Acme Inc." />
+            <Input
+              {...register("name")}
+              placeholder={t("organizations.accountSettingsPage.acmeInc")}
+            />
           </Field>
 
           <Field
@@ -394,7 +400,7 @@ function OrgDetailsSection({ org, canEdit }: Readonly<{ org: Organization; canEd
             <Input
               {...register("billing_email")}
               type="email"
-              placeholder="billing@acme.com"
+              placeholder={t("organizations.accountSettingsPage.billingAcmeCom")}
               className="font-mono"
             />
           </Field>
@@ -1043,14 +1049,21 @@ function ConvertToBusinessSheet({
             required
             error={errors.org_name?.message}
           >
-            <Input {...register("org_name")} placeholder="Acme Inc." />
+            <Input
+              {...register("org_name")}
+              placeholder={t("organizations.accountSettingsPage.acmeInc2")}
+            />
           </Field>
           <Field
             label={t("org.settings.billingEmail", { defaultValue: "Billing email" })}
             hint={t(k("optional"))}
             error={errors.billing_email?.message}
           >
-            <Input {...register("billing_email")} type="email" placeholder="billing@acme.com" />
+            <Input
+              {...register("billing_email")}
+              type="email"
+              placeholder={t("organizations.accountSettingsPage.billingAcmeCom2")}
+            />
           </Field>
           <Field
             label={t("account.settings.convert.legalName", {
@@ -1059,7 +1072,10 @@ function ConvertToBusinessSheet({
             required
             error={errors.legal_name?.message}
           >
-            <Input {...register("legal_name")} placeholder="Acme Private Limited" />
+            <Input
+              {...register("legal_name")}
+              placeholder={t("organizations.accountSettingsPage.acmePrivateLimited")}
+            />
           </Field>
           <Field label={t(k("country"))} required error={errors.country?.message}>
             <Controller
@@ -1099,7 +1115,7 @@ function ConvertToBusinessSheet({
               >
                 <Input
                   {...register("cin")}
-                  placeholder="U12345KA2020PTC000000"
+                  placeholder={t("organizations.accountSettingsPage.u12345ka2020ptc000000")}
                   className="font-mono uppercase"
                 />
               </Field>

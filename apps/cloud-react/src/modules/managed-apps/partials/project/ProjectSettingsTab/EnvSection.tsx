@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useMemo, useState } from "react"
 
 import { Button, Skeleton } from "@datadack/common-ui"
@@ -24,6 +25,7 @@ import type { Project } from "../../../managed-apps.types"
  * until then this is the honest behaviour.
  */
 export function EnvSection({ project }: Readonly<{ project: Project }>) {
+  const { t } = useTranslation()
   const { data: names = [], isLoading } = useProjectEnv(project.id)
   const update = useUpdateProjectEnv(project.id)
   const [confirmOpen, setConfirmOpen] = useState(false)
@@ -66,7 +68,7 @@ export function EnvSection({ project }: Readonly<{ project: Project }>) {
     <>
       <Section
         variant="panel"
-        title="Environment variables"
+        title={t("managedApps.envSection.environmentVariables")}
         description={`${countLabel}. Values are write-only — only names are returned.`}
       >
         <div className="space-y-4">
@@ -95,8 +97,8 @@ export function EnvSection({ project }: Readonly<{ project: Project }>) {
       <ConfirmDialog
         open={confirmOpen}
         onOpenChange={setConfirmOpen}
-        title="Some values will be cleared"
-        confirmLabel="Save and clear them"
+        title={t("managedApps.envSection.someValuesWillBeCleared")}
+        confirmLabel={t("managedApps.envSection.saveAndClearThem")}
         loading={update.isPending}
         onConfirm={save}
         description={
@@ -108,7 +110,9 @@ export function EnvSection({ project }: Readonly<{ project: Project }>) {
             <span className="block font-mono text-[12px] text-destructive">
               {wouldClear.join(", ")}
             </span>
-            <span className="block">Retype a value for any you want to keep, then save again.</span>
+            <span className="block">
+              {t("managedApps.envSection.retypeAValueForAnyYouWantToKeepThenSaveAgain")}
+            </span>
           </span>
         }
       />

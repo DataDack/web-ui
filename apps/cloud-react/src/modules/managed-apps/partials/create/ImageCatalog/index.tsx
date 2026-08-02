@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { Button } from "@datadack/common-ui"
 import { ArrowLeft } from "lucide-react"
 
@@ -18,6 +19,7 @@ interface ImageCatalogProps {
  * measured before the provisioner is built.
  */
 export function ImageCatalog({ onBack }: Readonly<ImageCatalogProps>) {
+  const { t } = useTranslation()
   const featured = IMAGE_CATALOG.filter((image) => image.availability === "coming_soon")
   const planned = IMAGE_CATALOG.filter((image) => image.availability === "planned")
 
@@ -35,9 +37,9 @@ export function ImageCatalog({ onBack }: Readonly<ImageCatalogProps>) {
           Source
         </Button>
         <div>
-          <h2 className="text-sm font-semibold">Public Images</h2>
+          <h2 className="text-sm font-semibold">{t("managedApps.index.publicImages")}</h2>
           <p className="text-[12px] text-muted-foreground">
-            Ready-made services we run for you — no repository, no build pipeline.
+            {t("managedApps.index.readyMadeServicesWeRunForYouNoRepositoryNoBu")}
           </p>
         </div>
       </div>

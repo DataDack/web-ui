@@ -74,7 +74,7 @@ export function PolicySimulatorPage() {
               onChange={(e) => {
                 setAction(e.target.value)
               }}
-              placeholder="vm:instances:create"
+              placeholder={t("iam.policySimulatorPage.vmInstancesCreate")}
               className="font-mono"
               list="authz-actions"
             />
@@ -94,7 +94,7 @@ export function PolicySimulatorPage() {
               onChange={(e) => {
                 setResource(e.target.value)
               }}
-              placeholder="urn:cloud:vm:*:instances/*"
+              placeholder={t("iam.policySimulatorPage.urnCloudVmInstances")}
               className="font-mono"
             />
           </div>

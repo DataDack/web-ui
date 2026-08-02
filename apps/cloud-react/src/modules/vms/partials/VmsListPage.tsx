@@ -186,7 +186,7 @@ export function VmsListPage() {
             ) : (
               <div className="flex items-center gap-1.5 text-muted-foreground">
                 <Globe className="size-3 opacity-50" />
-                <span className="opacity-50">No Public IP</span>
+                <span className="opacity-50">{t("vms.vmsListPage.noPublicIp")}</span>
               </div>
             )}
             <div className="flex items-center gap-1.5 text-muted-foreground">

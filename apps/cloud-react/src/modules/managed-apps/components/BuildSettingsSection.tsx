@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import {
   Accordion,
   AccordionContent,
@@ -43,6 +44,7 @@ export function BuildSettingsSection({
   onChange,
   defaultOpen = false,
 }: Readonly<BuildSettingsSectionProps>) {
+  const { t } = useTranslation()
   const { data: defaults, isLoading } = useBuildDefaults(projectType)
 
   const set = (patch: Partial<BuildSettingsValue>) => {
@@ -61,7 +63,7 @@ export function BuildSettingsSection({
       <AccordionItem value="build" className="border-border/60">
         <AccordionTrigger className="text-[13px] font-semibold hover:no-underline">
           <span className="flex items-center gap-2">
-            Build and output settings
+            {t("managedApps.buildSettingsSection.buildAndOutputSettings")}
             <span className="text-[11px] font-normal text-muted-foreground">
               {overriddenCount === 0 ? "using defaults" : `${String(overriddenCount)} overridden`}
             </span>
@@ -84,7 +86,7 @@ export function BuildSettingsSection({
             <>
               <OverrideField
                 id="install-command"
-                label="Install command"
+                label={t("managedApps.buildSettingsSection.installCommand")}
                 inheritedValue={defaults.install_command}
                 value={value.install_command}
                 onChange={(install_command) => {
@@ -93,7 +95,7 @@ export function BuildSettingsSection({
               />
               <OverrideField
                 id="build-command"
-                label="Build command"
+                label={t("managedApps.buildSettingsSection.buildCommand")}
                 inheritedValue={defaults.build_command}
                 value={value.build_command}
                 editable={defaults.build_editable}
@@ -103,7 +105,7 @@ export function BuildSettingsSection({
               />
               <OverrideField
                 id="output-dir"
-                label="Output directory"
+                label={t("managedApps.buildSettingsSection.outputDirectory")}
                 inheritedValue={defaults.output_dir}
                 value={value.output_dir}
                 editable={defaults.output_editable}

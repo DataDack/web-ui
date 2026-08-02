@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 // Create / edit an alarm — one page, all of it visible.
 //
 // The old flow asked for a metric identity (namespace, metric name, free-text
@@ -100,6 +101,7 @@ function joinNames(names: string[]): string {
 }
 
 export function AlarmFormPage() {
+  const { t } = useTranslation()
   useScreen("monitoring.alarm-form")
   const navigate = useNavigate()
   const { id } = useParams<{ id?: string }>()
@@ -299,7 +301,7 @@ export function AlarmFormPage() {
           { label: isEdit ? "Edit" : "Create" },
         ]}
         title={isEdit ? "Edit alarm" : "Create alarm"}
-        description="Pick what to watch, which signal, and when it should page you."
+        description={t("monitoring.index.pickWhatToWatchWhichSignalAndWhenItShouldPag")}
         actions={
           <Button
             variant="ghost"
@@ -330,7 +332,7 @@ export function AlarmFormPage() {
             <div ref={targetRef}>
               <Section
                 variant="panel"
-                title="What to watch"
+                title={t("monitoring.index.whatToWatch")}
                 description={
                   isEdit
                     ? "The resource this alarm watches."
@@ -364,7 +366,7 @@ export function AlarmFormPage() {
               <Section
                 variant="panel"
                 title="Signal"
-                description="What this resource reports. Picking one sets a sensible starting rule."
+                description={t("monitoring.index.whatThisResourceReportsPickingOneSetsASensib")}
               >
                 <SignalSection
                   targetType={targetType}
@@ -386,7 +388,7 @@ export function AlarmFormPage() {
               <Section
                 variant="panel"
                 title="Condition"
-                description="Read it as a sentence — the chart below replays it over the last day."
+                description={t("monitoring.index.readItAsASentenceTheChartBelowReplaysItOverT")}
               >
                 <ConditionSection
                   namespace={namespace}
@@ -427,8 +429,8 @@ export function AlarmFormPage() {
             <div ref={notifyRef}>
               <Section
                 variant="panel"
-                title="Notifications"
-                description="Who hears about it, and whether they also hear the recovery."
+                title={t("monitoring.index.notifications")}
+                description={t("monitoring.index.whoHearsAboutItAndWhetherTheyAlsoHearTheReco")}
               >
                 <NotifySection
                   severity={values.severity}
@@ -447,14 +449,14 @@ export function AlarmFormPage() {
               <Section
                 variant="panel"
                 title="Name"
-                description="Suggested from the resource and signal above — change it if you like."
+                description={t("monitoring.index.suggestedFromTheResourceAndSignalAboveChange")}
               >
                 <div className="space-y-4">
                   <div className="space-y-1.5">
-                    <Label className={LABEL_CLASS}>Alarm name</Label>
+                    <Label className={LABEL_CLASS}>{t("monitoring.index.alarmName")}</Label>
                     <Input
                       {...register("name")}
-                      placeholder="e.g. lb-prod-web-error-rate-5xx-high"
+                      placeholder={t("monitoring.index.eGLbProdWebErrorRate5xxHigh")}
                       className="font-mono text-[13px]"
                       autoComplete="off"
                     />
@@ -467,10 +469,12 @@ export function AlarmFormPage() {
                     {errors.name?.message && <p className={ERROR_CLASS}>{errors.name.message}</p>}
                   </div>
                   <div className="space-y-1.5">
-                    <Label className={LABEL_CLASS}>Description (optional)</Label>
+                    <Label className={LABEL_CLASS}>
+                      {t("monitoring.index.descriptionOptional")}
+                    </Label>
                     <Textarea
                       {...register("description")}
-                      placeholder="What should someone do when this fires?"
+                      placeholder={t("monitoring.index.whatShouldSomeoneDoWhenThisFires")}
                       className="min-h-16 text-[13px]"
                     />
                     {errors.description?.message && (

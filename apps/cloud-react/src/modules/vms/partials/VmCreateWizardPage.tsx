@@ -377,25 +377,25 @@ export function VmCreateWizardPage() {
         {/* Left Column: Form Sections */}
         <div className="space-y-6">
           <SectionCard
-            title="General Settings"
+            title={t("vms.vmCreateWizardPage.generalSettings")}
             icon={Settings}
-            description="Instance name, resource group and tagging"
+            description={t("vms.vmCreateWizardPage.instanceNameResourceGroupAndTagging")}
           >
             <BasicsStep form={form} tagRows={tagRows} setTagRows={setTagRows} />
           </SectionCard>
 
           <SectionCard
-            title="Billing Cycle"
+            title={t("vms.vmCreateWizardPage.billingCycle")}
             icon={CreditCard}
-            description="Hourly, monthly, or yearly billing"
+            description={t("vms.vmCreateWizardPage.hourlyMonthlyOrYearlyBilling")}
           >
             <BillingStep form={form} />
           </SectionCard>
 
           <SectionCard
-            title="Location & Network"
+            title={t("vms.vmCreateWizardPage.locationNetwork")}
             icon={Globe}
-            description="Data center and network isolation"
+            description={t("vms.vmCreateWizardPage.dataCenterAndNetworkIsolation")}
           >
             <LocationAndNetworkStep
               form={form}
@@ -406,30 +406,34 @@ export function VmCreateWizardPage() {
           </SectionCard>
 
           <SectionCard
-            title="Select OS / Apps"
+            title={t("vms.vmCreateWizardPage.selectOsApps")}
             icon={Box}
-            description="Operating System, Marketplace, ISOs"
+            description={t("vms.vmCreateWizardPage.operatingSystemMarketplaceIsos")}
           >
             <OSStep form={form} families={families} />
           </SectionCard>
 
           <SectionCard
-            title="Select Plan"
+            title={t("vms.vmCreateWizardPage.selectPlan")}
             icon={Cpu}
-            description="Choose hardware specs for your instance"
+            description={t("vms.vmCreateWizardPage.chooseHardwareSpecsForYourInstance")}
           >
             <MachinePlanStep form={form} zonePrices={zonePrices} activePrice={activePrice} />
           </SectionCard>
 
           <SectionCard
-            title="Storage Configuration"
+            title={t("vms.vmCreateWizardPage.storageConfiguration")}
             icon={HardDrive}
-            description="Configure boot and data disks"
+            description={t("vms.vmCreateWizardPage.configureBootAndDataDisks")}
           >
             <DiskStep form={form} storageOptions={storageOptions} />
           </SectionCard>
 
-          <SectionCard title="Auth Configuration" icon={Lock} description="Setup SSH access">
+          <SectionCard
+            title={t("vms.vmCreateWizardPage.authConfiguration")}
+            icon={Lock}
+            description={t("vms.vmCreateWizardPage.setupSshAccess")}
+          >
             <SshStep form={form} />
           </SectionCard>
         </div>
@@ -595,6 +599,7 @@ function CostSummary({
   isValid: boolean
   onDeploy: () => void
 }>) {
+  const { t } = useTranslation()
   const isHourly = billingPeriod === "hourly"
   const periodSuffix = isHourly ? "/hr" : "/mo"
 
@@ -620,12 +625,14 @@ function CostSummary({
       <div className="rounded-xl border border-border-glass bg-background/50 backdrop-blur-xl shadow-lg shadow-black/5 overflow-hidden">
         <div className="border-b border-border-glass px-5 py-4">
           <h3 className="text-[11px] font-semibold tracking-widest text-muted-foreground uppercase">
-            Cost Summary
+            {t("vms.vmCreateWizardPage.costSummary")}
           </h3>
         </div>
         <div className="p-5 space-y-4">
           <div className="flex justify-between items-center text-[13px]">
-            <span className="text-muted-foreground">Billing Cycle</span>
+            <span className="text-muted-foreground">
+              {t("vms.vmCreateWizardPage.billingCycle2")}
+            </span>
             <span className="font-medium text-foreground bg-accent/50 px-2 py-0.5 rounded text-[11px] uppercase tracking-wide">
               {billingPeriod}
             </span>
@@ -643,7 +650,7 @@ function CostSummary({
             />
           ) : (
             <div className="pt-2 border-t border-border-glass text-[12px] text-muted-foreground text-center py-4">
-              Select a plan to see cost details
+              {t("vms.vmCreateWizardPage.selectAPlanToSeeCostDetails")}
             </div>
           )}
 
@@ -672,7 +679,9 @@ function CostSummary({
 
           <div className="pt-4 border-t border-border-glass">
             <div className="flex justify-between items-baseline">
-              <span className="text-sm font-semibold text-foreground">Total Cost</span>
+              <span className="text-sm font-semibold text-foreground">
+                {t("vms.vmCreateWizardPage.totalCost")}
+              </span>
               <span className="text-2xl font-mono font-bold text-primary">
                 {activePrice
                   ? formatBillingPrice(
@@ -691,7 +700,7 @@ function CostSummary({
             </div>
             {publicIpCharge && activePrice && (
               <p className="mt-1 text-[11px] text-muted-foreground">
-                Includes public IPv4 address charge.
+                {t("vms.vmCreateWizardPage.includesPublicIpv4AddressCharge")}
               </p>
             )}
           </div>

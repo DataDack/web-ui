@@ -43,13 +43,13 @@ export function DiskStep({
             onBlur={() => void form.trigger("disk_size_gb")}
           />
           <p className="text-[11px] text-muted-foreground">
-            First 30 GB included free · extra GB billed at the per-GB rate.
+            {t("vms.diskStep.first30GbIncludedFreeExtraGbBilledAtThePerGb")}
           </p>
           <FieldError message={form.formState.errors.disk_size_gb?.message} />
         </div>
 
         <div className="space-y-1.5">
-          <FieldLabel>Volume Class *</FieldLabel>
+          <FieldLabel>{t("vms.diskStep.volumeClass")}</FieldLabel>
           <Select
             value={form.watch("disk_type")}
             onValueChange={(value) => {
@@ -65,7 +65,7 @@ export function DiskStep({
             disabled={storageOptions.length === 0}
           >
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select a storage class" />
+              <SelectValue placeholder={t("vms.diskStep.selectAStorageClass")} />
             </SelectTrigger>
             <SelectContent>
               {storageOptions.map((o) => (
@@ -81,9 +81,9 @@ export function DiskStep({
 
       <div className="flex items-center justify-between pt-4 border-t border-border-glass max-w-sm">
         <div className="space-y-0.5">
-          <Label>Delete on Termination</Label>
+          <Label>{t("vms.diskStep.deleteOnTermination")}</Label>
           <p className="text-xs text-muted-foreground">
-            Automatically delete this data disk when the instance is terminated.
+            {t("vms.diskStep.automaticallyDeleteThisDataDiskWhenTheInstan")}
           </p>
         </div>
         <Switch

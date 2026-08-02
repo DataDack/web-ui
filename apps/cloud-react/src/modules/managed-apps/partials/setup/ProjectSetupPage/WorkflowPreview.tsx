@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useState } from "react"
 
 import { Button } from "@datadack/common-ui"
@@ -78,6 +79,7 @@ function highlight(line: string, key: string) {
  * approving.
  */
 export function WorkflowPreview({ yaml }: Readonly<WorkflowPreviewProps>) {
+  const { t } = useTranslation()
   const [expanded, setExpanded] = useState(false)
   const [copied, setCopied] = useState(false)
 
@@ -108,7 +110,7 @@ export function WorkflowPreview({ yaml }: Readonly<WorkflowPreviewProps>) {
           type="button"
           variant="ghost"
           size="icon"
-          aria-label="Copy the workflow file"
+          aria-label={t("managedApps.workflowPreview.copyTheWorkflowFile")}
           className="absolute top-2 right-2 z-10 size-7 bg-background/80 backdrop-blur"
           onClick={() => void copy()}
         >

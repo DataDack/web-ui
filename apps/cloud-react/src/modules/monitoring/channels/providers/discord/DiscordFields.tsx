@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { Input } from "@datadack/common-ui"
 import type { UseFormReturn } from "react-hook-form"
 
@@ -5,6 +6,7 @@ import type { ChannelFormValues } from "../../channels.form"
 import { FieldError, FieldLabel } from "../../components/FormFields"
 
 export function DiscordFields({ form }: Readonly<{ form: UseFormReturn<ChannelFormValues> }>) {
+  const { t } = useTranslation()
   const {
     register,
     formState: { errors },
@@ -12,7 +14,7 @@ export function DiscordFields({ form }: Readonly<{ form: UseFormReturn<ChannelFo
 
   return (
     <div className="space-y-1.5">
-      <FieldLabel>Webhook URL</FieldLabel>
+      <FieldLabel>{t("monitoring.discordFields.webhookUrl")}</FieldLabel>
       <Input
         {...register("discordWebhookUrl")}
         placeholder="https://discord.com/api/webhooks/..."

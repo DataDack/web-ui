@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useState } from "react"
 
 import { Skeleton } from "@datadack/common-ui"
@@ -27,6 +28,7 @@ import type { Plan } from "../../../managed-apps.types"
  * shaped — name, branch, build, env — stays on the project it belongs to.
  */
 export function ManagedAppsSettingsPage() {
+  const { t } = useTranslation()
   useScreen("managed-apps-settings")
 
   const { data: account, isLoading: accountLoading } = useAccountPlan()
@@ -158,14 +160,14 @@ export function ManagedAppsSettingsPage() {
 
       <div className="space-y-6">
         <Section
-          title="Your plan"
+          title={t("managedApps.index.yourPlan")}
           description="Applies account-wide. Projects inherit these limits; they never carry a plan of their own."
         >
           <PlanLimitsPanel showChangeLink={false} />
         </Section>
 
         <Section
-          title="Change plan"
+          title={t("managedApps.index.changePlan")}
           description={
             defaultPlan
               ? `Every account starts on ${defaultPlan.name} and is charged nothing until it upgrades. Upgrades are billed monthly from your wallet and take effect immediately.`

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useState } from "react"
 
 import { Button, Input } from "@datadack/common-ui"
@@ -28,6 +29,7 @@ const NAME_PATTERN = /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/
  * different project.
  */
 export function GeneralSection({ project }: Readonly<{ project: Project }>) {
+  const { t } = useTranslation()
   const isN8n = project.project_type === "n8n"
   const [name, setName] = useState(project.name)
   const update = useUpdateProject(project.id)
@@ -45,7 +47,7 @@ export function GeneralSection({ project }: Readonly<{ project: Project }>) {
     <Section
       variant="panel"
       title="General"
-      description="How this project is identified in the console."
+      description={t("managedApps.generalSection.howThisProjectIsIdentifiedInTheConsole")}
     >
       <div className="space-y-5">
         <FieldRow

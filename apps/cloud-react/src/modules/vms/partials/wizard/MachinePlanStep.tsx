@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useMemo, useState } from "react"
 
 import type { UseFormReturn } from "react-hook-form"
@@ -39,6 +40,7 @@ type MachinePlanStepProps = Readonly<{
 }>
 
 export function MachinePlanStep({ form, zonePrices, activePrice }: MachinePlanStepProps) {
+  const { t } = useTranslation()
   const selectedMachine = form.watch("machine_type_id")
 
   // Group prices by family
@@ -60,7 +62,7 @@ export function MachinePlanStep({ form, zonePrices, activePrice }: MachinePlanSt
     <div className="space-y-4">
       {zonePrices.length === 0 ? (
         <p className="text-[12px] text-muted-foreground glass-1 px-3.5 py-3">
-          No machine types available in this zone.
+          {t("vms.machinePlanStep.noMachineTypesAvailableInThisZone")}
         </p>
       ) : (
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -110,7 +112,7 @@ export function MachinePlanStep({ form, zonePrices, activePrice }: MachinePlanSt
                       <th className="px-4 py-3 font-semibold text-muted-foreground">Arch</th>
                       <th className="px-4 py-3 font-semibold text-muted-foreground">Compute</th>
                       <th className="px-4 py-3 font-semibold text-muted-foreground">
-                        Network / disk
+                        {t("vms.machinePlanStep.networkDisk")}
                       </th>
                       <th className="px-4 py-3 font-semibold text-muted-foreground text-right">
                         Price

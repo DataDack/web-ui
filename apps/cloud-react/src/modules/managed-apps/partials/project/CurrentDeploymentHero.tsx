@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { Button, CopyButton } from "@datadack/common-ui"
 import { ExternalLink, GitBranch, Loader2, PackageCheck, Rocket } from "lucide-react"
 import { Link } from "react-router-dom"
@@ -32,6 +33,7 @@ export function CurrentDeploymentHero({
   onDeploy,
   deploying,
 }: Readonly<CurrentDeploymentHeroProps>) {
+  const { t } = useTranslation()
   const settledAt =
     latestBuild && isTimeSet(latestBuild.finished_at) ? latestBuild.finished_at : null
 
@@ -153,7 +155,7 @@ export function CurrentDeploymentHero({
             to={`${MANAGED_APPS_ROUTES.project(project.id)}?tab=builds`}
             className="ml-auto text-status-info hover:underline"
           >
-            Build history
+            {t("managedApps.currentDeploymentHero.buildHistory")}
           </Link>
         </div>
       )}

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { SmartSelect, type SmartSelectOption } from "@/components/console"
 
 import { PROJECT_TYPE_META } from "./project-type"
@@ -41,6 +42,7 @@ export function RuntimeSelect({
   invalid,
   id,
 }: Readonly<RuntimeSelectProps>) {
+  const { t } = useTranslation()
   const options: SmartSelectOption<RepoRuntime>[] = RUNTIMES.map((runtime) => ({
     value: runtime,
     item: runtime,
@@ -55,7 +57,7 @@ export function RuntimeSelect({
       value={value}
       disabled={disabled}
       invalid={invalid}
-      placeholder="Select a runtime"
+      placeholder={t("managedApps.runtimeSelect.selectARuntime")}
       searchPlaceholder="Search runtimes…"
       onValueChange={(_next, runtime) => {
         onChange(runtime)

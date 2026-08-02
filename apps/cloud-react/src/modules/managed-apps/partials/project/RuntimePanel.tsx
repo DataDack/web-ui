@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { CopyButton } from "@datadack/common-ui"
 import { KeyValueGrid, Section } from "@/components/console"
 
@@ -12,6 +13,7 @@ import type { Project } from "../../managed-apps.types"
  * broke. An honest absence beats an ambiguous one.
  */
 export function RuntimePanel({ project }: Readonly<{ project: Project }>) {
+  const { t } = useTranslation()
   const provisioned = project.container_ip !== "" || project.proxmox_ct_id !== 0
 
   return (
@@ -29,7 +31,9 @@ export function RuntimePanel({ project }: Readonly<{ project: Project }>) {
               value: project.container_ip ? (
                 <CopyButton value={project.container_ip} />
               ) : (
-                <span className="text-muted-foreground">Not assigned</span>
+                <span className="text-muted-foreground">
+                  {t("managedApps.runtimePanel.notAssigned")}
+                </span>
               ),
             },
             {
@@ -45,7 +49,9 @@ export function RuntimePanel({ project }: Readonly<{ project: Project }>) {
         />
       ) : (
         <div className="space-y-1">
-          <p className="text-sm text-muted-foreground">No runtime container yet.</p>
+          <p className="text-sm text-muted-foreground">
+            {t("managedApps.runtimePanel.noRuntimeContainerYet")}
+          </p>
           <p className="text-[12px] text-muted-foreground/80">
             Builds run and artifacts are stored, but the runtime fleet is not provisioned in this
             region — so nothing serves the public address yet.

@@ -58,7 +58,9 @@ export function StoragePricesPage() {
       {
         id: "name",
         header: () => (
-          <span className="text-xs font-semibold uppercase tracking-wider">Name / SKU</span>
+          <span className="text-xs font-semibold uppercase tracking-wider">
+            {t("superAdmin.storagePricesPage.nameSku")}
+          </span>
         ),
         accessorFn: (p) => p.name,
         cell: ({ row }) => (
@@ -150,7 +152,9 @@ export function StoragePricesPage() {
       {
         id: "price_per_iops",
         header: () => (
-          <span className="text-xs font-semibold uppercase tracking-wider">IOPS / throughput</span>
+          <span className="text-xs font-semibold uppercase tracking-wider">
+            {t("superAdmin.storagePricesPage.iopsThroughput")}
+          </span>
         ),
         accessorFn: (p) => p.price_per_iops,
         cell: ({ row }) => (

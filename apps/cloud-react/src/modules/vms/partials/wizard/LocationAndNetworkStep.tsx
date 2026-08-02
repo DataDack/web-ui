@@ -110,7 +110,7 @@ export function LocationAndNetworkStep({
     <div className="space-y-8">
       {/* Part 1: DC Location */}
       <div className="space-y-3">
-        <FieldLabel>Data Center Location</FieldLabel>
+        <FieldLabel>{t("vms.locationAndNetworkStep.dataCenterLocation")}</FieldLabel>
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
           {regions.map((r) => {
             const isActive = region === r.code
@@ -156,7 +156,7 @@ export function LocationAndNetworkStep({
         if (zones.length === 0) return null
         return (
           <div className="space-y-3">
-            <FieldLabel>Availability Zone</FieldLabel>
+            <FieldLabel>{t("vms.locationAndNetworkStep.availabilityZone")}</FieldLabel>
             <div className="flex flex-wrap gap-2">
               {zones.map((az) => {
                 const isActive = zone === az.code
@@ -189,7 +189,7 @@ export function LocationAndNetworkStep({
       })()}
 
       <div className="border-t border-border-glass pt-6 space-y-4">
-        <FieldLabel>Network Isolation</FieldLabel>
+        <FieldLabel>{t("vms.locationAndNetworkStep.networkIsolation")}</FieldLabel>
 
         <div className="grid sm:grid-cols-2 gap-3 mb-6">
           <motion.button
@@ -213,10 +213,10 @@ export function LocationAndNetworkStep({
           >
             <Network className="size-4 text-muted-foreground mb-2" />
             <span className="block text-[13px] font-medium text-foreground">
-              Virtual Public Server (VPS)
+              {t("vms.locationAndNetworkStep.virtualPublicServerVps")}
             </span>
             <span className="block text-[11px] text-muted-foreground mt-0.5">
-              Instance connects directly to the internet with a public IP.
+              {t("vms.locationAndNetworkStep.instanceConnectsDirectlyToTheInternetWithAPu")}
             </span>
           </motion.button>
           <motion.button
@@ -243,10 +243,10 @@ export function LocationAndNetworkStep({
           >
             <Globe className="size-4 text-muted-foreground mb-2" />
             <span className="block text-[13px] font-medium text-foreground">
-              Virtual Private Cloud (VPC)
+              {t("vms.locationAndNetworkStep.virtualPrivateCloudVpc")}
             </span>
             <span className="block text-[11px] text-muted-foreground mt-0.5">
-              Isolate your instance inside a private network.
+              {t("vms.locationAndNetworkStep.isolateYourInstanceInsideAPrivateNetwork")}
             </span>
           </motion.button>
         </div>
@@ -255,9 +255,11 @@ export function LocationAndNetworkStep({
           <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
             {vpcs.length === 0 ? (
               <div className="glass-1 px-4 py-4 text-center rounded-lg border-dashed border-status-warning/40 bg-status-warning/5">
-                <p className="text-[13px] font-medium text-foreground">No VPCs Available</p>
+                <p className="text-[13px] font-medium text-foreground">
+                  {t("vms.locationAndNetworkStep.noVpcsAvailable")}
+                </p>
                 <p className="text-[12px] text-muted-foreground mb-3">
-                  You don’t have any VPCs in this region.
+                  {t("vms.locationAndNetworkStep.youDonTHaveAnyVpcsInThisRegion")}
                 </p>
                 <Button
                   type="button"
@@ -265,7 +267,7 @@ export function LocationAndNetworkStep({
                   size="sm"
                   onClick={() => window.open(VPC_ROUTES.CREATE, "_blank")}
                 >
-                  Create a VPC first
+                  {t("vms.locationAndNetworkStep.createAVpcFirst")}
                 </Button>
               </div>
             ) : (
@@ -376,7 +378,7 @@ export function LocationAndNetworkStep({
               <AccordionTrigger className="hover:no-underline [&>svg]:size-6 [&>svg]:text-foreground [&[data-state=open]>svg]:text-primary">
                 <div className="flex flex-1 items-center justify-between gap-3 pr-3">
                   <span className="text-xs font-semibold tracking-wide uppercase text-muted-foreground">
-                    Public IPv4
+                    {t("vms.locationAndNetworkStep.publicIpv4")}
                   </span>
                   <span className="text-[11px] font-medium text-muted-foreground">
                     {publicIpSummary}
@@ -410,8 +412,10 @@ export function LocationAndNetworkStep({
                         })
                       }}
                       icon={Wifi}
-                      title="Dynamic IP"
-                      description="DHCP-assigned address. May change when the instance stops and starts."
+                      title={t("vms.locationAndNetworkStep.dynamicIp")}
+                      description={t(
+                        "vms.locationAndNetworkStep.dhcpAssignedAddressMayChangeWhenTheInstanceS",
+                      )}
                       priceLabel="Free"
                       priceTone="success"
                     />
@@ -423,8 +427,10 @@ export function LocationAndNetworkStep({
                         })
                       }}
                       icon={Anchor}
-                      title="Static IP"
-                      description="Reserved address that stays with the instance for its lifetime."
+                      title={t("vms.locationAndNetworkStep.staticIp")}
+                      description={t(
+                        "vms.locationAndNetworkStep.reservedAddressThatStaysWithTheInstanceForIt",
+                      )}
                       priceLabel={staticIpLabel}
                       priceTone="warning"
                     />

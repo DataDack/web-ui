@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useState } from "react"
 
 import {
@@ -47,6 +48,7 @@ export function CustomPlanDialog({
   currentPlanName,
   projectsInUse,
 }: Readonly<CustomPlanDialogProps>) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const create = useCreateSupportTicket()
 
@@ -108,7 +110,7 @@ export function CustomPlanDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <MessageSquare className="size-4 text-brand-gold" />
-            Talk to us about a Custom plan
+            {t("managedApps.customPlanDialog.talkToUsAboutACustomPlan")}
           </DialogTitle>
           <DialogDescription>
             Tell us what you need and we will price it. This opens a support ticket, so the reply
@@ -120,7 +122,7 @@ export function CustomPlanDialog({
         <div className="space-y-4">
           <div className="space-y-1.5">
             <Label htmlFor="custom-plan-needs" className="text-[13px]">
-              What do you need?
+              {t("managedApps.customPlanDialog.whatDoYouNeed")}
             </Label>
             <Textarea
               id="custom-plan-needs"
@@ -136,13 +138,14 @@ export function CustomPlanDialog({
 
           <div className="space-y-1.5">
             <Label htmlFor="custom-plan-projects" className="text-[13px]">
-              Projects you expect to run <span className="text-muted-foreground">(optional)</span>
+              {t("managedApps.customPlanDialog.projectsYouExpectToRun")}{" "}
+              <span className="text-muted-foreground">(optional)</span>
             </Label>
             <Input
               id="custom-plan-projects"
               value={projects}
               inputMode="numeric"
-              placeholder="e.g. 25"
+              placeholder={t("managedApps.customPlanDialog.eG25")}
               className="sm:w-40"
               onChange={(event) => {
                 setProjects(event.target.value)

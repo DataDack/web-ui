@@ -347,7 +347,7 @@ function OverviewTab({ instance }: Readonly<{ instance: Instance }>) {
         />
       </Section>
 
-      <Section variant="panel" title="Infrastructure Profile">
+      <Section variant="panel" title={t("vms.vmDetailPage.infrastructureProfile")}>
         <KeyValueGrid
           columns={3}
           items={[
@@ -393,7 +393,7 @@ function OverviewTab({ instance }: Readonly<{ instance: Instance }>) {
                           payload: { termination_protection: true },
                         })
                       }}
-                      aria-label="Termination Protection"
+                      aria-label={t("vms.vmDetailPage.terminationProtection")}
                     />
                     <span>{instance.termination_protection ? "Enabled" : "Disabled"}</span>
                   </span>
