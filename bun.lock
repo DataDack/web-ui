@@ -81,6 +81,10 @@
       "version": "0.0.0",
       "dependencies": {
         "@datadack/common-ui": "workspace:*",
+        "@datadack/serverless-ui": "workspace:*",
+        "@hookform/resolvers": "^5.4.0",
+        "react-hook-form": "^7.79.0",
+        "zod": "^4.4.3"
       },
     },
     "apps/serverless-web": {
@@ -88,8 +92,8 @@
       "version": "0.0.0",
       "dependencies": {
         "@datadack/common-ui": "workspace:*",
-        "@datadack/serverless-ui": "workspace:*",
-      },
+        "@datadack/serverless-ui": "workspace:*"
+      }
     },
     "config/eslint-config": {
       "name": "@serverless-ui/eslint-config",

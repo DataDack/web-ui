@@ -1,45 +1,51 @@
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 
 import {
+  actionsColumn,
   Badge,
-  EmptyState,
-  KeyValueGrid,
+  Button,
   DataTable,
+  EmptyState,
+  Input,
   Skeleton,
   StatusBadge,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-  cellMono,
-  cellText,
-  timeAgo,
+  Textarea,
+  textColumn,
 } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
-import { ArrowLeft, Container, GitBranch, History, Package, Settings2 } from "lucide-react"
-import { Link, useParams, useSearchParams } from "react-router-dom"
+import { GitBranch, History, Play, Settings2, Trash2, Zap } from "lucide-react"
+import { useTranslation } from "react-i18next"
+import { useNavigate, useParams } from "react-router-dom"
 
-import { useFunctionAliases, useFunctionVersions, useServerlessFunction } from "../serverless.hooks"
+import {
+  ConfirmDialog,
+  DetailPage,
+  KeyValueGrid,
+  Section,
+  type DetailTab,
+} from "@/components/console"
+import { useScreen } from "@/services/api/screen"
+
+import { SERVERLESS_ROUTES } from "../serverless.constants"
+import {
+  useDeleteAlias,
+  useDeleteFunction,
+  useFunctionAliases,
+  useFunctionVersions,
+  useInvokeFunction,
+  usePutAlias,
+  useServerlessFunction,
+} from "../serverless.hooks"
 import type { FunctionAlias, FunctionVersion } from "../serverless.types"
 
-const TABS = [
-  { value: "configuration", label: "Configuration", icon: Settings2 },
-  { value: "versions", label: "Versions", icon: History },
-  { value: "aliases", label: "Aliases", icon: GitBranch },
-]
-
-/**
- * A function's home, Lambda-style: identity and state in the header,
- * everything else behind URL-persisted tabs. Same layout as the
- * serverless-web console's detail page, rendered from the shared kit.
- */
 export function ServerlessFunctionDetailPage() {
+  useScreen("serverless.function-detail")
+  const { t } = useTranslation()
   const { name = "" } = useParams()
+  const navigate = useNavigate()
   const { data: fn, isLoading } = useServerlessFunction(name)
-
-  const [searchParams, setSearchParams] = useSearchParams()
-  const requested = searchParams.get("tab") ?? "configuration"
-  const activeTab = TABS.some((tab) => tab.value === requested) ? requested : "configuration"
+  const { mutate: deleteFunction, isPending: isDeleting } = useDeleteFunction()
+  const [confirmingDelete, setConfirmingDelete] = useState(false)
 
   if (isLoading) {
     return (
@@ -53,221 +59,334 @@ export function ServerlessFunctionDetailPage() {
 
   if (!fn) {
     return (
-      <>
-        <BackLink />
-        <EmptyState
-          icon={Package}
-          title={`No function named ${name}`}
-          description="It may have been deleted, or it belongs to another account."
-        />
-      </>
+      <EmptyState
+        icon={Zap}
+        title={name}
+        description={t("serverless.emptyHint")}
+        action={{
+          label: t("serverless.title"),
+          onClick: () => void navigate(SERVERLESS_ROUTES.ROOT),
+        }}
+      />
     )
   }
 
-  const isImage = fn.packageType === "image"
+  const tabs: DetailTab[] = [
+    {
+      value: "configuration",
+      label: t("serverless.tabs.configuration"),
+      icon: Settings2,
+      content: (
+        <Section variant="panel" title={t("serverless.tabs.configuration")}>
+          <KeyValueGrid
+            items={[
+              { label: t("serverless.form.packageType"), value: fn.packageType, mono: true },
+              { label: t("serverless.columns.runtime"), value: fn.runtime, mono: true },
+              { label: t("serverless.form.handler"), value: fn.handler, mono: true },
+              {
+                label: t("serverless.form.architecture"),
+                value: fn.architecture,
+                mono: true,
+              },
+              {
+                label: t("serverless.columns.memory"),
+                value: fn.memorySize ? `${String(fn.memorySize)} MB` : undefined,
+              },
+              {
+                label: t("serverless.form.timeout"),
+                value: fn.timeout ? `${String(fn.timeout)}s` : undefined,
+              },
+              { label: "URI", value: fn.imageUri, mono: true, copyable: !!fn.imageUri },
+              {
+                label: t("serverless.layers.title"),
+                value: fn.layers?.length
+                  ? fn.layers.map((layer) => `${layer.name}:${String(layer.version)}`).join(", ")
+                  : undefined,
+                mono: true,
+              },
+            ]}
+          />
+        </Section>
+      ),
+    },
+    {
+      value: "versions",
+      label: t("serverless.tabs.versions"),
+      icon: History,
+      content: <FunctionVersions name={fn.name} />,
+    },
+    {
+      value: "aliases",
+      label: t("serverless.tabs.aliases"),
+      icon: GitBranch,
+      content: <FunctionAliases name={fn.name} />,
+    },
+    {
+      value: "test",
+      label: t("serverless.tabs.test"),
+      icon: Play,
+      content: <InvokeTester name={fn.name} />,
+    },
+  ]
 
   return (
     <>
-      <BackLink />
+      <DetailPage
+        backTo={SERVERLESS_ROUTES.ROOT}
+        backLabel={t("serverless.title")}
+        icon={Zap}
+        title={fn.name}
+        status={fn.state}
+        actions={
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-2"
+            onClick={() => {
+              setConfirmingDelete(true)
+            }}
+          >
+            <Trash2 className="size-3.5" />
+            {t("serverless.actions.delete")}
+          </Button>
+        }
+        tabs={tabs}
+        layoutId="serverless-function-tabs"
+      />
 
-      <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-2.5">
-            <div className="glass-1 flex size-10 shrink-0 items-center justify-center rounded-xl">
-              {isImage ? (
-                <Container className="text-muted-foreground size-4.5" />
-              ) : (
-                <Package className="text-muted-foreground size-4.5" />
-              )}
-            </div>
-            <h1 className="truncate font-mono text-xl font-bold tracking-tight">{fn.name}</h1>
-            <StatusBadge status={fn.state} pulse />
-          </div>
-          <p className="text-muted-foreground mt-1.5 text-sm">
-            {isImage ? (fn.imageUri ?? "container image") : (fn.runtime ?? "zip package")}
-            {fn.updatedAt ? ` · updated ${timeAgo(fn.updatedAt)}` : ""}
-          </p>
-        </div>
-      </div>
-
-      <Tabs
-        value={activeTab}
-        onValueChange={(tab) => {
-          setSearchParams(tab === "configuration" ? {} : { tab }, { replace: true })
+      <ConfirmDialog
+        open={confirmingDelete}
+        onOpenChange={setConfirmingDelete}
+        title={t("serverless.actions.deleteConfirmTitle", { name: fn.name })}
+        description={t("serverless.actions.deleteConfirmBody")}
+        confirmLabel={t("serverless.actions.deleteConfirmLabel")}
+        confirmText={fn.name}
+        destructive
+        loading={isDeleting}
+        onConfirm={() => {
+          deleteFunction(fn.name, {
+            onSuccess: () => void navigate(SERVERLESS_ROUTES.ROOT),
+          })
         }}
-      >
-        <TabsList>
-          {TABS.map(({ value, label, icon: Icon }) => (
-            <TabsTrigger key={value} value={value}>
-              <Icon className="size-3.5" />
-              {label}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-
-        <TabsContent value="configuration">
-          <div className="glass-2 p-5">
-            <KeyValueGrid
-              items={[
-                { label: "Package type", value: fn.packageType, mono: true },
-                { label: "Runtime", value: fn.runtime, mono: true },
-                { label: "Handler", value: fn.handler, mono: true },
-                { label: "Architecture", value: fn.architecture, mono: true },
-                {
-                  label: "Memory",
-                  value: fn.memorySize ? `${String(fn.memorySize)} MB` : undefined,
-                },
-                {
-                  label: "Timeout",
-                  value: fn.timeout ? `${String(fn.timeout)}s` : undefined,
-                },
-                { label: "Region", value: fn.region, mono: true },
-                {
-                  label: "Layers",
-                  value: fn.layers?.length
-                    ? fn.layers.map((layer) => `${layer.name}:${String(layer.version)}`).join(", ")
-                    : undefined,
-                  mono: true,
-                },
-                { label: "Created", value: timeAgo(fn.createdAt) },
-              ]}
-            />
-          </div>
-        </TabsContent>
-
-        <TabsContent value="versions">
-          <FunctionVersions name={fn.name} />
-        </TabsContent>
-
-        <TabsContent value="aliases">
-          <FunctionAliases name={fn.name} />
-        </TabsContent>
-      </Tabs>
+      />
     </>
   )
 }
 
 function FunctionVersions({ name }: Readonly<{ name: string }>) {
-  const {
-    data,
-    isLoading,
-    isError: functionVersionsError,
-    refetch: refetchFunctionVersions,
-  } = useFunctionVersions(name)
+  const { t } = useTranslation()
+  const { data, isLoading } = useFunctionVersions(name)
   const columns = useMemo<ColumnDef<FunctionVersion>[]>(
     () => [
       {
-        accessorKey: "version",
-        header: "Version",
+        id: "version",
+        header: () => (
+          <span className="text-xs font-semibold uppercase tracking-wider">
+            {t("serverless.columns.version")}
+          </span>
+        ),
+        accessorFn: (v) => v.version,
         cell: ({ row }) => (
           <Badge variant="outline" className="font-mono text-[11px]">
             v{row.original.version}
           </Badge>
         ),
       },
-      {
-        accessorKey: "codeSha256",
-        header: "Code SHA-256",
-        cell: ({ row }) => cellMono(row.original.codeSha256?.slice(0, 16)),
-      },
-      {
-        accessorKey: "createdAt",
-        header: "Published",
-        cell: ({ row }) => cellText(timeAgo(row.original.createdAt)),
-      },
+      textColumn<FunctionVersion>({
+        id: "sha",
+        header: t("serverless.columns.codeSha"),
+        accessor: (v) => v.codeSha256?.slice(0, 16),
+        mono: true,
+        muted: true,
+      }),
+      textColumn<FunctionVersion>({
+        id: "published",
+        header: t("serverless.columns.published"),
+        accessor: (v) => v.createdAt,
+        muted: true,
+        responsive: "md",
+      }),
     ],
-    [],
+    [t],
   )
   return (
-    <DataTable
+    <DataTable<FunctionVersion>
       data={data ?? []}
       columns={columns}
       loading={isLoading}
-      empty={
-        <EmptyState
-          icon={History}
-          title="No published versions"
-          description="Publishing a version freezes the current code and configuration."
-        />
-      }
-      error={functionVersionsError ? "Failed to load" : undefined}
-      onRetry={() => void refetchFunctionVersions()}
-      retryLabel={"Try again"}
+      getRowId={(v) => v.version}
     />
   )
 }
 
 function FunctionAliases({ name }: Readonly<{ name: string }>) {
-  const {
-    data,
-    isLoading,
-    isError: functionAliasesError,
-    refetch: refetchFunctionAliases,
-  } = useFunctionAliases(name)
+  const { t } = useTranslation()
+  const { data, isLoading } = useFunctionAliases(name)
+  const putAlias = usePutAlias(name)
+  const { mutate: removeAlias } = useDeleteAlias(name)
+  const [aliasName, setAliasName] = useState("")
+  const [aliasVersion, setAliasVersion] = useState("")
+
   const columns = useMemo<ColumnDef<FunctionAlias>[]>(
     () => [
+      textColumn<FunctionAlias>({
+        id: "alias",
+        header: t("serverless.columns.alias"),
+        accessor: (a) => a.name,
+        mono: true,
+      }),
       {
-        accessorKey: "name",
-        header: "Alias",
-        cell: ({ row }) => cellMono(row.original.name),
-      },
-      {
-        accessorKey: "functionVersion",
-        header: "Version",
+        id: "version",
+        header: () => (
+          <span className="text-xs font-semibold uppercase tracking-wider">
+            {t("serverless.columns.version")}
+          </span>
+        ),
+        accessorFn: (a) => a.functionVersion,
         cell: ({ row }) => (
           <Badge variant="outline" className="font-mono text-[11px]">
             v{row.original.functionVersion}
           </Badge>
         ),
       },
-      {
-        id: "weights",
-        header: "Canary",
-        cell: ({ row }) => {
-          const weights = row.original.additionalVersionWeights
-          if (!weights || Object.keys(weights).length === 0) return cellText()
-          return cellMono(
-            Object.entries(weights)
-              .map(([version, weight]) => `v${version}: ${String(weight)}%`)
-              .join(", "),
-          )
+      textColumn<FunctionAlias>({
+        id: "canary",
+        header: t("serverless.columns.canary"),
+        accessor: (a) => {
+          const weights = a.additionalVersionWeights
+          if (!weights || Object.keys(weights).length === 0) return null
+          return Object.entries(weights)
+            .map(([version, weight]) => `v${version}: ${String(weight)}%`)
+            .join(", ")
         },
-      },
-      {
-        accessorKey: "description",
-        header: "Description",
-        cell: ({ row }) => cellText(row.original.description),
-      },
+        mono: true,
+        muted: true,
+        responsive: "md",
+      }),
+      textColumn<FunctionAlias>({
+        id: "description",
+        header: t("serverless.columns.description"),
+        accessor: (a) => a.description,
+        muted: true,
+        responsive: "lg",
+      }),
+      actionsColumn<FunctionAlias>({
+        ariaLabel: t("console.table.actions"),
+        actions: () => [
+          {
+            label: t("serverless.actions.delete"),
+            icon: Trash2,
+            destructive: true,
+            onAction: (alias: FunctionAlias) => {
+              removeAlias(alias.name)
+            },
+          },
+        ],
+      }),
     ],
-    [],
+    [removeAlias, t],
   )
+
+  const canAdd = aliasName.trim() !== "" && aliasVersion.trim() !== ""
+
   return (
-    <DataTable
-      data={data ?? []}
-      columns={columns}
-      loading={isLoading}
-      empty={
-        <EmptyState
-          icon={GitBranch}
-          title="No aliases"
-          description="Aliases give a stable name (prod, staging) to a published version."
+    <div className="space-y-3">
+      {/* Point a stable name (prod, staging) at a published version. */}
+      <div className="flex flex-wrap items-center gap-2">
+        <Input
+          value={aliasName}
+          onChange={(e) => {
+            setAliasName(e.target.value)
+          }}
+          placeholder="prod"
+          className="h-8 max-w-44 font-mono text-[13px]"
         />
-      }
-      error={functionAliasesError ? "Failed to load" : undefined}
-      onRetry={() => void refetchFunctionAliases()}
-      retryLabel={"Try again"}
-    />
+        <Input
+          value={aliasVersion}
+          onChange={(e) => {
+            setAliasVersion(e.target.value)
+          }}
+          placeholder="1"
+          className="h-8 max-w-28 font-mono text-[13px]"
+        />
+        <Button
+          size="sm"
+          disabled={!canAdd || putAlias.isPending}
+          onClick={() => {
+            putAlias.mutate(
+              { name: aliasName.trim(), functionVersion: aliasVersion.trim() },
+              {
+                onSuccess: () => {
+                  setAliasName("")
+                  setAliasVersion("")
+                },
+              },
+            )
+          }}
+        >
+          {t("common.add", { defaultValue: "Add" })}
+        </Button>
+      </div>
+
+      <DataTable<FunctionAlias>
+        data={data ?? []}
+        columns={columns}
+        loading={isLoading}
+        getRowId={(alias) => alias.name}
+      />
+    </div>
   )
 }
 
-function BackLink() {
+function InvokeTester({ name }: Readonly<{ name: string }>) {
+  const { t } = useTranslation()
+  const invoke = useInvokeFunction(name)
+  const [payload, setPayload] = useState('{\n  "hello": "world"\n}')
+  const result = invoke.data
+
   return (
-    <Link
-      to="/serverless"
-      className="text-muted-foreground hover:text-foreground mb-4 inline-flex items-center gap-1.5 text-[13px] transition-colors"
-    >
-      <ArrowLeft className="size-3.5" />
-      Functions
-    </Link>
+    <div className="grid gap-4 lg:grid-cols-2">
+      <Section variant="panel" title={t("serverless.invoke.payload")}>
+        <Textarea
+          value={payload}
+          onChange={(e) => {
+            setPayload(e.target.value)
+          }}
+          spellCheck={false}
+          rows={12}
+          className="font-mono text-[13px]"
+        />
+        <Button
+          className="mt-3 gap-2"
+          disabled={invoke.isPending}
+          onClick={() => {
+            invoke.mutate(payload)
+          }}
+        >
+          <Play className="size-3.5" />
+          {invoke.isPending ? t("serverless.invoke.running") : t("serverless.invoke.run")}
+        </Button>
+      </Section>
+
+      <Section variant="panel" title={t("serverless.invoke.response")}>
+        {!result && !invoke.isPending && (
+          <p className="text-muted-foreground text-[13px]">{t("serverless.invoke.hint")}</p>
+        )}
+        {invoke.isPending && <Skeleton className="h-32 rounded-lg" />}
+        {!invoke.isPending && result && (
+          <>
+            <div className="mb-2 flex items-center gap-2">
+              <StatusBadge status={result.status < 400 ? "active" : "error"} />
+              <span className="text-muted-foreground font-mono text-[12px]">
+                HTTP {result.status} · {String(result.durationMs)} ms
+              </span>
+            </div>
+            <pre className="border-border max-h-80 overflow-auto rounded-lg border p-3 font-mono text-[12px] whitespace-pre-wrap">
+              {result.body || t("serverless.invoke.empty")}
+            </pre>
+          </>
+        )}
+      </Section>
+    </div>
   )
 }

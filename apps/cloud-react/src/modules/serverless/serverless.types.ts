@@ -69,3 +69,79 @@ export interface ActivityEvent {
   region?: string
   at?: string
 }
+
+/** One deployable runtime from the FaaS catalog (GET /functions/runtimes). */
+export interface RuntimeInfo {
+  name: string
+  family: string
+  languageVersion?: string
+  osRelease: string
+  architectures: string[]
+  handlerFormat: string
+  handlerRequired: boolean
+  bundledRic: boolean
+  deprecatedForCreate: boolean
+  deprecatedForUpdate: boolean
+  successorRuntime?: string
+}
+
+/** Presigned artifact upload slot (POST /layers/uploads/presign). */
+export interface PresignedUpload {
+  method: string
+  url: string
+  bucket: string
+  key: string
+  expiresAt?: string
+  headers?: Record<string, string>
+}
+
+export interface CreateFunctionRequest {
+  name: string
+  packageType: "image" | "zip"
+  imageUri?: string
+  codeArtifact?: { bucket: string; key: string }
+  runtime?: string
+  handler?: string
+  architecture?: string
+  memorySize?: number
+  timeout?: number
+  env?: Record<string, string>
+  layers?: { name: string; version: number }[]
+  region?: string
+}
+
+/** Blank-starter deploy: inline files the control plane zips server-side. */
+export interface CreateFunctionFromSourceRequest {
+  name: string
+  runtime: string
+  handler: string
+  architecture?: string
+  memorySize?: number
+  timeout?: number
+  env?: Record<string, string>
+  files: { path: string; content: string }[]
+}
+
+export interface PublishLayerRequest {
+  name: string
+  description?: string
+  codeArtifact: { bucket: string; key: string }
+  compatibleRuntimes?: string[]
+  compatibleArchitectures?: string[]
+  region?: string
+}
+
+export interface PutAliasRequest {
+  name: string
+  functionVersion: string
+  description?: string
+  additionalVersionWeights?: Record<string, number>
+}
+
+/** Raw result of a test invoke — the gateway passes bytes through verbatim. */
+export interface InvokeResult {
+  status: number
+  contentType: string
+  body: string
+  durationMs: number
+}

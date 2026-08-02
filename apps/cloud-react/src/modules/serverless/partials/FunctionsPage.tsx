@@ -1,127 +1,227 @@
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 
 import {
-  PageHeader,
+  actionsColumn,
+  Button,
   DataTable,
-  EmptyState,
-  StatCard,
-  StatGrid,
-  StatusBadge,
-  cellMono,
-  cellText,
-  timeAgo,
+  dateColumn,
+  Input,
+  statusColumn,
+  textColumn,
 } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
-import { Activity, Boxes, Container, Package, Zap } from "lucide-react"
-import { Link } from "react-router-dom"
+import { Container, Package, Play, Plus, RefreshCw, Search, Trash2, Zap } from "lucide-react"
+import { useTranslation } from "react-i18next"
+import { useNavigate } from "react-router-dom"
 
-import { useServerlessFunctions } from "../serverless.hooks"
+import { ConfirmDialog, PageHeader, StatGrid } from "@/components/console"
+import { useScreen } from "@/services/api/screen"
+
+import { SERVERLESS_ROUTES } from "../serverless.constants"
+import { useDeleteFunction, useServerlessFunctions } from "../serverless.hooks"
 import type { FunctionEntity } from "../serverless.types"
 
-/**
- * Serverless landing: the account's functions. Built from the shared
- * @datadack/serverless-ui kit — the same components the serverless-web
- * console renders this list with, so the two surfaces stay visually and
- * behaviorally identical.
- */
 export function ServerlessFunctionsPage() {
-  const {
-    data,
-    isLoading,
-    isError: serverlessFunctionsError,
-    refetch: refetchServerlessFunctions,
-  } = useServerlessFunctions()
-  const functions = data ?? []
+  useScreen("serverless.functions-list")
+  const { t } = useTranslation()
+  const navigate = useNavigate()
+  const { data, isLoading, isError, refetch, isFetching } = useServerlessFunctions()
+  const { mutate: deleteFunction, isPending: isDeleting } = useDeleteFunction()
+
+  const functions = useMemo(() => data ?? [], [data])
+  const [query, setQuery] = useState("")
+  const [toDelete, setToDelete] = useState<FunctionEntity | null>(null)
+
+  const filtered = useMemo(() => {
+    if (!query.trim()) return functions
+    const q = query.toLowerCase()
+    return functions.filter(
+      (fn) =>
+        fn.name.toLowerCase().includes(q) ||
+        (fn.runtime ?? "").toLowerCase().includes(q) ||
+        fn.packageType.toLowerCase().includes(q),
+    )
+  }, [functions, query])
+
+  const stats = useMemo(
+    () => [
+      { label: t("serverless.stats.total"), value: functions.length, loading: isLoading },
+      {
+        label: t("serverless.stats.active"),
+        value: functions.filter((fn) => fn.state.toLowerCase() === "active").length,
+        color: "success" as const,
+        loading: isLoading,
+      },
+      {
+        label: t("serverless.stats.images"),
+        value: functions.filter((fn) => fn.packageType === "image").length,
+        loading: isLoading,
+      },
+      {
+        label: t("serverless.stats.zips"),
+        value: functions.filter((fn) => fn.packageType !== "image").length,
+        loading: isLoading,
+      },
+    ],
+    [functions, isLoading, t],
+  )
 
   const columns = useMemo<ColumnDef<FunctionEntity>[]>(
     () => [
       {
-        accessorKey: "name",
-        header: "Name",
+        id: "name",
+        header: () => (
+          <span className="text-xs font-semibold uppercase tracking-wider">
+            {t("serverless.columns.name")}
+          </span>
+        ),
+        accessorFn: (fn) => fn.name,
         cell: ({ row }) => (
-          <Link
-            to={`/serverless/functions/${encodeURIComponent(row.original.name)}`}
-            className="font-mono text-[13px] font-medium hover:underline"
-          >
-            {row.original.name}
-          </Link>
+          <div className="flex items-center gap-3">
+            {row.original.packageType === "image" ? (
+              <Container className="size-5 shrink-0 text-muted-foreground" />
+            ) : (
+              <Package className="size-5 shrink-0 text-muted-foreground" />
+            )}
+            <div className="flex flex-col">
+              <span className="font-semibold text-[14px] leading-tight text-foreground font-mono">
+                {row.original.name}
+              </span>
+              <span className="text-[11px] text-muted-foreground mt-0.5">
+                {row.original.packageType === "image"
+                  ? t("serverless.form.image")
+                  : (row.original.runtime ?? t("serverless.form.zip"))}
+              </span>
+            </div>
+          </div>
         ),
       },
-      {
-        accessorKey: "runtime",
-        header: "Runtime",
-        cell: ({ row }) =>
-          cellMono(row.original.packageType === "image" ? "container image" : row.original.runtime),
-      },
-      {
-        accessorKey: "memorySize",
-        header: "Memory",
-        cell: ({ row }) =>
-          cellText(row.original.memorySize ? `${String(row.original.memorySize)} MB` : null),
-      },
-      {
-        accessorKey: "state",
-        header: "State",
-        cell: ({ row }) => <StatusBadge status={row.original.state} />,
-      },
-      {
-        accessorKey: "updatedAt",
-        header: "Updated",
-        cell: ({ row }) => cellText(timeAgo(row.original.updatedAt)),
-      },
+      statusColumn<FunctionEntity>({
+        header: t("serverless.columns.state"),
+        accessor: (fn) => fn.state,
+        pulse: (fn) => fn.state.toLowerCase() === "active",
+      }),
+      textColumn<FunctionEntity>({
+        id: "memory",
+        header: t("serverless.columns.memory"),
+        accessor: (fn) => (fn.memorySize ? `${String(fn.memorySize)} MB` : null),
+        mono: true,
+        responsive: "md",
+      }),
+      textColumn<FunctionEntity>({
+        id: "handler",
+        header: t("serverless.form.handler"),
+        accessor: (fn) => fn.handler,
+        mono: true,
+        muted: true,
+        responsive: "lg",
+      }),
+      dateColumn<FunctionEntity>({
+        id: "updated",
+        header: t("serverless.columns.updated"),
+        accessor: (fn) => fn.updatedAt ?? "",
+        responsive: "xl",
+      }),
+      actionsColumn<FunctionEntity>({
+        ariaLabel: t("console.table.actions"),
+        actions: (fn) => [
+          {
+            label: t("serverless.actions.test"),
+            icon: Play,
+            onAction: () => {
+              void navigate(`${SERVERLESS_ROUTES.detail(fn.name)}?tab=test`)
+            },
+          },
+          {
+            label: t("serverless.actions.delete"),
+            icon: Trash2,
+            destructive: true,
+            onAction: (target: FunctionEntity) => {
+              setToDelete(target)
+            },
+          },
+        ],
+      }),
     ],
-    [],
+    [navigate, t],
   )
 
-  const active = functions.filter((fn) => fn.state.toLowerCase() === "active").length
-
   return (
-    <div>
+    <div className="space-y-5">
       <PageHeader
-        title="Serverless"
-        description="Deploy functions that scale to zero — pay per invocation."
         icon={Zap}
+        breadcrumbs={[
+          { label: t("console.nav.groups.serverless") },
+          { label: t("console.nav.items.functions") },
+        ]}
+        title={t("serverless.title")}
+        description={t("serverless.subtitle")}
+        actions={
+          <>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => void refetch()}
+              disabled={isFetching}
+              aria-label={t("common.refresh")}
+            >
+              <RefreshCw className={`w-4 h-4 ${isFetching ? "animate-spin" : ""}`} />
+            </Button>
+            <Button className="gap-2" onClick={() => void navigate(SERVERLESS_ROUTES.CREATE)}>
+              <Plus className="w-4 h-4" />
+              {t("serverless.create")}
+            </Button>
+          </>
+        }
       />
 
-      <StatGrid className="mb-5">
-        <StatCard label="Functions" value={functions.length} icon={Boxes} loading={isLoading} />
-        <StatCard
-          label="Active"
-          value={active}
-          icon={Activity}
-          color="success"
-          loading={isLoading}
-        />
-        <StatCard
-          label="Container images"
-          value={functions.filter((fn) => fn.packageType === "image").length}
-          icon={Container}
-          loading={isLoading}
-        />
-        <StatCard
-          label="Zip packages"
-          value={functions.filter((fn) => fn.packageType !== "image").length}
-          icon={Package}
-          loading={isLoading}
-        />
-      </StatGrid>
+      <StatGrid stats={stats} />
 
-      <DataTable
-        data={functions}
+      <DataTable<FunctionEntity>
+        data={filtered}
         columns={columns}
         loading={isLoading}
-        searchable
-        searchPlaceholder="Filter functions…"
-        empty={
-          <EmptyState
-            icon={Zap}
-            title="No functions yet"
-            description="Deploy your first function to see it here."
-          />
+        error={isError ? t("console.table.error") : undefined}
+        onRetry={() => void refetch()}
+        retryLabel={t("console.table.retry")}
+        onRefresh={() => void refetch()}
+        refreshLabel={t("console.table.refresh")}
+        getRowId={(fn) => fn.name}
+        onRowClick={(fn) => void navigate(SERVERLESS_ROUTES.detail(fn.name))}
+        toolbar={
+          <div className="relative w-full max-w-xs">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
+            <Input
+              value={query}
+              onChange={(e) => {
+                setQuery(e.target.value)
+              }}
+              placeholder={t("serverless.searchPlaceholder")}
+              className="pl-8 h-8 text-[13px]"
+            />
+          </div>
         }
-        error={serverlessFunctionsError ? "Failed to load" : undefined}
-        onRetry={() => void refetchServerlessFunctions()}
-        retryLabel={"Try again"}
+      />
+
+      <ConfirmDialog
+        open={toDelete !== null}
+        onOpenChange={(open) => {
+          if (!open) setToDelete(null)
+        }}
+        title={t("serverless.actions.deleteConfirmTitle", { name: toDelete?.name ?? "" })}
+        description={t("serverless.actions.deleteConfirmBody")}
+        confirmLabel={t("serverless.actions.deleteConfirmLabel")}
+        confirmText={toDelete?.name}
+        destructive
+        loading={isDeleting}
+        onConfirm={() => {
+          if (!toDelete) return
+          deleteFunction(toDelete.name, {
+            onSuccess: () => {
+              setToDelete(null)
+            },
+          })
+        }}
       />
     </div>
   )

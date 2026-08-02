@@ -1,10 +1,18 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
+import { handleQuotaGateError } from "@/modules/governance/quota-gate"
 import { useActiveRegion } from "@/modules/region/region.context"
 import { extractError } from "@/services/api/client"
 
 import { serverlessApi } from "./serverless.api"
+import type {
+  CreateFunctionFromSourceRequest,
+  CreateFunctionRequest,
+  PresignedUpload,
+  PublishLayerRequest,
+  PutAliasRequest,
+} from "./serverless.types"
 
 // The active region is part of every query key: switching regions in the
 // console shell is a different data set, not a refetch of the same one.
@@ -16,6 +24,7 @@ export const SERVERLESS_QUERY_KEYS = {
   aliases: (region: string | null, name: string) =>
     ["serverless", region, "functions", name, "aliases"] as const,
   layers: (region: string | null) => ["serverless", region, "layers"] as const,
+  runtimes: (region: string | null) => ["serverless", region, "runtimes"] as const,
   activity: ["serverless", "activity"] as const,
 }
 
@@ -85,5 +94,133 @@ export function useDeleteFunction() {
       })
     },
     onError: (error) => toast.error(extractError(error, "Could not delete the function")),
+  })
+}
+
+/** The deployable runtime catalog backing the create form's picker. */
+export function useServerlessRuntimes() {
+  const { activeRegionCode } = useActiveRegion()
+  return useQuery({
+    queryKey: SERVERLESS_QUERY_KEYS.runtimes(activeRegionCode),
+    queryFn: () => serverlessApi.listRuntimes(activeRegionCode),
+    staleTime: 5 * 60_000, // the catalog changes on control-plane releases, not per click
+  })
+}
+
+export function useCreateFunction() {
+  const queryClient = useQueryClient()
+  const { activeRegionCode } = useActiveRegion()
+  return useMutation({
+    mutationFn: (body: CreateFunctionRequest) =>
+      serverlessApi.createFunction(activeRegionCode, body),
+    onSuccess: async (_data, body) => {
+      toast.success(`Function ${body.name} deployed`)
+      await queryClient.invalidateQueries({
+        queryKey: SERVERLESS_QUERY_KEYS.functions(activeRegionCode),
+      })
+    },
+    onError: (error) => {
+      // The quota gate renders its own persistent upgrade toast.
+      if (handleQuotaGateError(error)) return
+      toast.error(extractError(error, "Could not deploy the function"))
+    },
+  })
+}
+
+export function useCreateFunctionFromSource() {
+  const queryClient = useQueryClient()
+  const { activeRegionCode } = useActiveRegion()
+  return useMutation({
+    mutationFn: (body: CreateFunctionFromSourceRequest) =>
+      serverlessApi.createFunctionFromSource(activeRegionCode, body),
+    onSuccess: async (_data, body) => {
+      toast.success(`Function ${body.name} deployed`)
+      await queryClient.invalidateQueries({
+        queryKey: SERVERLESS_QUERY_KEYS.functions(activeRegionCode),
+      })
+    },
+    onError: (error) => {
+      if (handleQuotaGateError(error)) return
+      toast.error(extractError(error, "Could not deploy the function"))
+    },
+  })
+}
+
+export function usePublishLayer() {
+  const queryClient = useQueryClient()
+  const { activeRegionCode } = useActiveRegion()
+  return useMutation({
+    mutationFn: (body: PublishLayerRequest) => serverlessApi.publishLayer(activeRegionCode, body),
+    onSuccess: async (_data, body) => {
+      toast.success(`Layer ${body.name} published`)
+      await queryClient.invalidateQueries({
+        queryKey: SERVERLESS_QUERY_KEYS.layers(activeRegionCode),
+      })
+    },
+    onError: (error) => {
+      if (handleQuotaGateError(error)) return
+      toast.error(extractError(error, "Could not publish the layer"))
+    },
+  })
+}
+
+/**
+ * Presign + browser PUT in one step. The archive goes straight to the FaaS
+ * object store; the mutation resolves to the {bucket, key} reference a
+ * create/publish body embeds.
+ */
+export function useUploadArtifact() {
+  const { activeRegionCode } = useActiveRegion()
+  return useMutation({
+    mutationFn: async ({ kind, file }: { kind: "functions" | "layers"; file: File }) => {
+      const slot: PresignedUpload = await serverlessApi.presignUpload(activeRegionCode, {
+        kind,
+        filename: file.name,
+        contentType: file.type || "application/zip",
+      })
+      await serverlessApi.uploadArtifact(slot, file)
+      return { bucket: slot.bucket, key: slot.key }
+    },
+    onError: (error) => toast.error(extractError(error, "Artifact upload failed")),
+  })
+}
+
+export function usePutAlias(fn: string) {
+  const queryClient = useQueryClient()
+  const { activeRegionCode } = useActiveRegion()
+  return useMutation({
+    mutationFn: (body: PutAliasRequest) => serverlessApi.putAlias(activeRegionCode, fn, body),
+    onSuccess: async (_data, body) => {
+      toast.success(`Alias ${body.name} saved`)
+      await queryClient.invalidateQueries({
+        queryKey: SERVERLESS_QUERY_KEYS.aliases(activeRegionCode, fn),
+      })
+    },
+    onError: (error) => toast.error(extractError(error, "Could not save the alias")),
+  })
+}
+
+export function useDeleteAlias(fn: string) {
+  const queryClient = useQueryClient()
+  const { activeRegionCode } = useActiveRegion()
+  return useMutation({
+    mutationFn: (alias: string) => serverlessApi.deleteAlias(activeRegionCode, fn, alias),
+    onSuccess: async (_data, alias) => {
+      toast.success(`Alias ${alias} deleted`)
+      await queryClient.invalidateQueries({
+        queryKey: SERVERLESS_QUERY_KEYS.aliases(activeRegionCode, fn),
+      })
+    },
+    onError: (error) => toast.error(extractError(error, "Could not delete the alias")),
+  })
+}
+
+export function useInvokeFunction(fn: string) {
+  const { activeRegionCode } = useActiveRegion()
+  return useMutation({
+    mutationFn: (payload: string) => serverlessApi.invoke(activeRegionCode, fn, payload),
+    // No onError toast: invoke never rejects on a function-level failure —
+    // the tester shows whatever came back. A rejection here is transport.
+    onError: (error) => toast.error(extractError(error, "Invoke did not reach the platform")),
   })
 }

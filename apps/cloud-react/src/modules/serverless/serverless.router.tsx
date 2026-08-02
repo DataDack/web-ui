@@ -10,6 +10,16 @@ export const serverlessRoutes: RouteObject[] = [
     },
   },
   {
+    // Full-bleed like every other create surface: the service sidebar is
+    // navigation away from a focused task (see AppShell's hideSidebar).
+    path: "serverless/create",
+    handle: { hideSidebar: true },
+    lazy: async () => {
+      const { CreateFunctionPage } = await import("./partials/CreateFunctionPage")
+      return { Component: CreateFunctionPage }
+    },
+  },
+  {
     path: "serverless/functions/:name",
     lazy: async () => {
       const { ServerlessFunctionDetailPage } = await import("./partials/FunctionDetailPage")
@@ -21,6 +31,14 @@ export const serverlessRoutes: RouteObject[] = [
     lazy: async () => {
       const { ServerlessLayersPage } = await import("./partials/LayersPage")
       return { Component: ServerlessLayersPage }
+    },
+  },
+  {
+    path: "serverless/layers/publish",
+    handle: { hideSidebar: true },
+    lazy: async () => {
+      const { PublishLayerPage } = await import("./partials/PublishLayerPage")
+      return { Component: PublishLayerPage }
     },
   },
 ]

@@ -1,11 +1,18 @@
-import { apiDelete, apiGet } from "@/services/api/client"
+import { api, apiDelete, apiGet, apiPost } from "@/services/api/client"
 
 import type {
   ActivityEvent,
+  CreateFunctionFromSourceRequest,
+  CreateFunctionRequest,
   FunctionAlias,
   FunctionEntity,
   FunctionVersion,
+  InvokeResult,
   LayerVersion,
+  PresignedUpload,
+  PublishLayerRequest,
+  PutAliasRequest,
+  RuntimeInfo,
 } from "./serverless.types"
 
 // cloud-be-go: app "serverless" — a guarded pass-through to the regional FaaS
@@ -78,5 +85,80 @@ export const serverlessApi = {
     // Account-scoped feed, aggregated across regions — no selector.
     const data = await apiGet<unknown>("/serverless/functions/activity")
     return Array.isArray(data) ? (data as ActivityEvent[]) : []
+  },
+
+  listRuntimes: async (region: string | null): Promise<RuntimeInfo[]> =>
+    pickList(
+      await apiGet<unknown>(withRegion("/serverless/functions/runtimes", region)),
+      "runtimes",
+    ),
+
+  createFunction: (region: string | null, body: CreateFunctionRequest) =>
+    apiPost<unknown>(withRegion("/serverless/functions", region), body),
+
+  createFunctionFromSource: (region: string | null, body: CreateFunctionFromSourceRequest) =>
+    apiPost<unknown>(withRegion("/serverless/functions/source", region), body),
+
+  publishLayer: (region: string | null, body: PublishLayerRequest) =>
+    apiPost<unknown>(withRegion("/serverless/layers", region), body),
+
+  putAlias: (region: string | null, fn: string, body: PutAliasRequest) =>
+    apiPost<unknown>(
+      withRegion(`/serverless/functions/${encodeURIComponent(fn)}/aliases`, region),
+      body,
+    ),
+
+  deleteAlias: (region: string | null, fn: string, alias: string) =>
+    apiDelete<unknown>(
+      withRegion(
+        `/serverless/functions/${encodeURIComponent(fn)}/aliases/${encodeURIComponent(alias)}`,
+        region,
+      ),
+    ),
+
+  /**
+   * Two-step artifact upload: the gateway presigns a PUT slot in the FaaS
+   * object store, then the browser uploads the archive straight there — the
+   * zip bytes never pass through the platform backend.
+   */
+  presignUpload: (
+    region: string | null,
+    req: { kind: string; filename: string; contentType: string },
+  ) => apiPost<PresignedUpload>(withRegion("/serverless/layers/uploads/presign", region), req),
+
+  uploadArtifact: async (slot: PresignedUpload, file: File): Promise<void> => {
+    const res = await fetch(slot.url, {
+      method: slot.method || "PUT",
+      headers: { "Content-Type": file.type || "application/zip", ...slot.headers },
+      body: file,
+    })
+    if (!res.ok) throw new Error(`artifact upload failed (${String(res.status)})`)
+  },
+
+  /**
+   * Test invoke — a RAW passthrough on the gateway (functions answer in any
+   * media type), so this rides the axios instance directly instead of the
+   * envelope helpers, and never throws on a non-2xx: the function's own
+   * error output IS the result the tester wants to show.
+   */
+  invoke: async (region: string | null, fn: string, payload: string): Promise<InvokeResult> => {
+    const started = performance.now()
+    const res = await api.post<string>(
+      withRegion(`/serverless/functions/${encodeURIComponent(fn)}/invoke`, region),
+      payload,
+      {
+        headers: { "Content-Type": "application/json" },
+        responseType: "text",
+        transformResponse: [(data: string) => data],
+        validateStatus: () => true,
+      },
+    )
+    const contentType: unknown = res.headers["content-type"]
+    return {
+      status: res.status,
+      contentType: typeof contentType === "string" ? contentType : "",
+      body: res.data,
+      durationMs: Math.round(performance.now() - started),
+    }
   },
 }
