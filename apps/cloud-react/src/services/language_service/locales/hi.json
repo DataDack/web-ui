@@ -22,7 +22,8 @@
         "governance": "गवर्नेंस",
         "monitoring": "Monitoring",
         "managedApps": "Managed Apps",
-        "serverless": "Serverless"
+        "serverless": "Serverless",
+        "support": "सहायता"
       },
       "items": {
         "dashboard": "डैशबोर्ड",
@@ -58,7 +59,23 @@
         "reactApps": "React",
         "n8nAgents": "n8n Agents",
         "functions": "फ़ंक्शन",
-        "layers": "लेयर"
+        "layers": "लेयर",
+        "networkInterfaces": "नेटवर्क इंटरफ़ेस",
+        "namingConventions": "नामकरण नियम",
+        "iamGroups": "समूह",
+        "iamInvitations": "आमंत्रण",
+        "iamPermissions": "अनुमतियाँ",
+        "iamSimulator": "सिम्युलेटर",
+        "iamAudit": "ऑडिट लॉग",
+        "securityGroups": "सिक्योरिटी ग्रुप",
+        "routers": "राउटर",
+        "internetGateways": "इंटरनेट गेटवे",
+        "natGateways": "NAT गेटवे",
+        "vpn": "VPN",
+        "taxSettings": "कर सेटिंग्स",
+        "supportTickets": "सहायता टिकट",
+        "images": "AMI",
+        "targetGroups": "टारगेट ग्रुप"
       },
       "soon": "जल्द आ रहा है",
       "collapse": "संकुचित करें",
@@ -111,6 +128,14 @@
       "remove": "टैग हटाएं",
       "keyPlaceholder": "key",
       "valuePlaceholder": "value"
+    },
+    "comingSoon": {
+      "badge": "जल्द आ रहा है",
+      "title": "जल्द आ रहा है",
+      "description": "यह सेवा अभी उपलब्ध नहीं है। हम इसे बना रहे हैं — कुछ समय बाद देखें।"
+    },
+    "smartSelectList": {
+      "tryAgain": "दोबारा प्रयास करें"
     }
   },
   "status": {
@@ -149,7 +174,11 @@
     "suspended": "निलंबित",
     "closed": "बंद",
     "starting": "शुरू हो रहा है",
-    "stopping": "रुक रहा है"
+    "stopping": "रुक रहा है",
+    "open": "खुला",
+    "in_progress": "प्रगति में",
+    "waiting_user": "आपकी प्रतीक्षा में",
+    "resolved": "हल हुआ"
   },
   "modules": {
     "dashboard": "डैशबोर्ड",
@@ -197,6 +226,71 @@
       "securityDesc": "खतरे का पता लगाना, भेद्यता स्कैनिंग और अनुपालन निगरानी।",
       "billing": "बिलिंग और लागत",
       "billingDesc": "विस्तृत व्यय रिपोर्ट, बजट और वित्तीय शासन।"
+    },
+    "home": {
+      "title": "कंसोल होम",
+      "createResource": "रिसोर्स बनाएँ",
+      "tabs": {
+        "overview": "अवलोकन",
+        "metrics": "मेट्रिक",
+        "serviceTiles": "सेवा टाइल"
+      },
+      "quickActions": {
+        "create": "एक रिसोर्स बनाएँ",
+        "compute": "कंप्यूट",
+        "storage": "स्टोरेज और डेटाबेस",
+        "networking": "नेटवर्किंग",
+        "identity": "पहचान",
+        "governance": "गवर्नेंस",
+        "resourceGroups": "रिसोर्स ग्रुप",
+        "monitoring": "निगरानी",
+        "managedApps": "मैनेज्ड ऐप्स",
+        "support": "सहायता",
+        "soon": "जल्द"
+      },
+      "stats": {
+        "runningInstances": "चल रहे इंस्टेंस",
+        "runningInstancesMeta": "{{stopped}} रुके · {{provisioning}} प्रोविज़निंग",
+        "runningInstancesTrend": "आज +{{count}}",
+        "storageUsed": "उपयोग किया गया स्टोरेज",
+        "storageUsedMeta": "{{total}} प्रोविज़न में से",
+        "apiRequests": "API अनुरोध",
+        "apiRequestsMeta": "p95 विलंब {{latency}} ms",
+        "apiRequestsTrend": "{{rate}} त्रुटि",
+        "activeAlerts": "सक्रिय अलर्ट",
+        "activeAlertsMeta": "{{warnings}} चेतावनी · {{info}} सूचना",
+        "activeAlertsTrend": "{{count}} अति गंभीर"
+      },
+      "recent": {
+        "title": "हाल में देखे गए",
+        "viewAll": "सभी रिसोर्स देखें"
+      },
+      "serviceHealth": {
+        "title": "सेवा स्वास्थ्य",
+        "updated": "{{time}} पहले अद्यतन",
+        "operational": "सामान्य",
+        "elevated": "बढ़ा हुआ विलंब",
+        "degraded": "क्षीण",
+        "outage": "बाधित",
+        "inactive": "निष्क्रिय",
+        "comingSoon": "जल्द आ रहा है"
+      },
+      "cost": {
+        "title": "लागत और उपयोग",
+        "mtd": "माह-अब तक · {{prev}} की तुलना में {{change}}",
+        "budget": "{{budget}} बजट का {{percent}}",
+        "forecast": "अनुमान {{amount}}"
+      },
+      "alerts": {
+        "title": "अलर्ट",
+        "critical": "{{count}} अति गंभीर",
+        "viewAll": "सभी अलर्ट देखें"
+      }
+    },
+    "sovereignServices": {
+      "comingSoon": "जल्द आ रहा है",
+      "sovereignServices": "सॉवरेन सेवाएँ",
+      "manageInfrastructureAcrossYourIsolatedDomain": "अपने पृथक डोमेन में इंफ्रास्ट्रक्चर प्रबंधित करें।"
     }
   },
   "accounts": {
@@ -213,7 +307,8 @@
     "backToList": "खातों पर वापस",
     "selector": {
       "label": "खाता",
-      "none": "कोई खाता नहीं"
+      "none": "कोई खाता नहीं",
+      "switchLabel": "सक्रिय खाता बदलें"
     },
     "stats": {
       "total": "कुल खाते",
@@ -270,7 +365,10 @@
       "saveFailed": "खाता अपडेट नहीं किया जा सका",
       "defaultSet": "डिफ़ॉल्ट खाता अपडेट किया गया",
       "defaultFailed": "डिफ़ॉल्ट खाता सेट नहीं किया जा सका"
-    }
+    },
+    "active": "सक्रिय",
+    "sectionTitle": "खाते",
+    "sectionDescription": "प्रत्येक खाता एक अलग बिलिंग और पहुँच सीमा है। ऊपर का ड्रॉपडाउन कंसोल को सक्रिय खाते तक सीमित करता है।"
   },
   "resourceGroups": {
     "title": "संसाधन समूह",
@@ -343,6 +441,23 @@
       "hint": "संसाधन रिसोर्स ग्रुप के अनुसार व्यवस्थित और बिल किए जाते हैं।",
       "none": "अभी तक कोई रिसोर्स ग्रुप नहीं",
       "create": "नया रिसोर्स ग्रुप"
+    },
+    "wizard": {
+      "subtitle": "रिसोर्स ग्रुप आपके क्लाउड रिसोर्स को तार्किक रूप से व्यवस्थित और नियंत्रित करते हैं।",
+      "basics": "मूल विवरण",
+      "basicsDescription": "अपने समूह को नाम दें और उसका उद्देश्य बताएँ।",
+      "descriptionPlaceholder": "इस रिसोर्स ग्रुप का उद्देश्य बताएँ…",
+      "region": "क्षेत्र",
+      "regionTitle": "क्षेत्र",
+      "regionDescription": "इस समूह के लिए मुख्य क्षेत्र चुनें।",
+      "tagsDescription": "व्यवस्था और बिलिंग के लिए वैकल्पिक की-वैल्यू टैग जोड़ें।",
+      "submit": "रिसोर्स ग्रुप बनाएँ"
+    },
+    "createResourceGroupSheet": {
+      "describeThePurposeOfThisResourceGroup": "इस रिसोर्स ग्रुप का उद्देश्य बताएँ…"
+    },
+    "editResourceGroupSheet": {
+      "describeThePurposeOfThisResourceGroup": "इस रिसोर्स ग्रुप का उद्देश्य बताएँ…"
     }
   },
   "compute": {
@@ -368,7 +483,13 @@
         "title": "ध्यान चाहिए",
         "subtitle": "गैर-सामान्य स्थिति वाले संसाधन।",
         "nominal": "सब सामान्य",
-        "nominalHint": "अभी कुछ भी आपके ध्यान की आवश्यकता नहीं है।"
+        "nominalHint": "अभी कुछ भी आपके ध्यान की आवश्यकता नहीं है।",
+        "summary": {
+          "instances": "{{count}} इंस्टेंस पर ध्यान चाहिए",
+          "disks": "{{count}} डिस्क संलग्न नहीं",
+          "loadBalancers": "{{count}} लोड बैलेंसर विफल",
+          "autoscaling": "{{count}} समूह निलंबित"
+        }
       },
       "kinds": {
         "vm": "VM",
@@ -1181,6 +1302,65 @@
       "checkoutFailed": "भुगतान विंडो नहीं खुल सकी। कृपया पुनः प्रयास करें।",
       "pdfFailed": "चालान PDF डाउनलोड नहीं हो सका। कृपया पुनः प्रयास करें।",
       "topupNeeded": "पर्याप्त क्रेडिट नहीं — जारी रखने के लिए नीचे टॉप-अप करें।"
+    },
+    "nav": {
+      "overview": "अवलोकन",
+      "invoices": "इनवॉइस",
+      "usage": "उपयोग",
+      "ledger": "लेनदेन",
+      "paymentMethods": "भुगतान विधियाँ",
+      "budgets": "बजट"
+    },
+    "overview": {
+      "subtitle": "एक नज़र में आपका वॉलेट, खर्च की प्रवृत्ति और लागत विभाजन।",
+      "spendTitle": "खर्च — पिछले 30 दिन",
+      "spendSubtitle": "आपके वॉलेट से प्रतिदिन काटे गए क्रेडिट।",
+      "spendEmpty": "पिछले 30 दिनों में कोई खर्च नहीं।",
+      "byServiceTitle": "सेवा के अनुसार लागत",
+      "byServiceSubtitle": "इस माह का उपयोग कहाँ गया।",
+      "byServiceEmpty": "अभी कोई उपयोग दर्ज नहीं।",
+      "activityTitle": "हाल की गतिविधि",
+      "activityEmpty": "अभी कोई वॉलेट गतिविधि नहीं।",
+      "viewAll": "सभी देखें",
+      "spend30d": "खर्च (30 दिन)"
+    },
+    "hero": {
+      "label": "वॉलेट शेष",
+      "burn": "खर्च दर",
+      "perDay": "/दिन",
+      "runway": "अवधि",
+      "runwayValue": "{{days}} दिन",
+      "runwayUnknown": "—",
+      "runwayHealthy": "ठीक",
+      "runwayLow": "कम हो रहा है",
+      "toppedUp": "कुल टॉप-अप",
+      "runwayEmpty": "कोई खर्च नहीं"
+    },
+    "lowBalance": {
+      "empty": "आपका वॉलेट खाली है। रिसोर्स चालू रखने के लिए टॉप-अप करें।",
+      "low": "शेष कम — आपकी वर्तमान खर्च दर पर लगभग {{days}} दिन बचे हैं।",
+      "cta": "क्रेडिट टॉप-अप करें"
+    },
+    "paymentMethods": {
+      "title": "भुगतान विधियाँ",
+      "subtitle": "सहेजे गए कार्ड और भुगतान विकल्प प्रबंधित करें।"
+    },
+    "budgets": {
+      "title": "बजट और अलर्ट",
+      "subtitle": "खर्च की सीमाएँ तय करें और सीमा पार होने से पहले सूचना पाएँ।"
+    },
+    "sections": {
+      "usageTitle": "रिसोर्स उपयोग",
+      "subscriptionsTitle": "सदस्यताएँ",
+      "ledgerTitle": "क्रेडिट लेजर",
+      "topupsTitle": "टॉप-अप"
+    },
+    "creditGuardDialog": {
+      "currentBalance": "वर्तमान शेष",
+      "currentBalance2": "वर्तमान शेष",
+      "runwayLeft": "बची अवधि",
+      "continueAnyway": "फिर भी जारी रखें",
+      "addCredits": "क्रेडिट जोड़ें"
     }
   },
   "vpc": {
@@ -1252,7 +1432,25 @@
       "noSecurityGroups": "कोई सुरक्षा समूह नहीं",
       "noSecurityGroupsDescription": "इंस्टेंस के ट्रैफ़िक को नियंत्रित करने के लिए सुरक्षा समूह बनाएं।",
       "noVpn": "कोई VPN कनेक्शन नहीं",
-      "vpnDescription": "इस नेटवर्क के राउटर पर समाप्त होने वाली साइट-टू-साइट टनल।"
+      "vpnDescription": "इस नेटवर्क के राउटर पर समाप्त होने वाली साइट-टू-साइट टनल।",
+      "architecture": "नेटवर्क आर्किटेक्चर",
+      "diagramPending": "नेटवर्क अभी प्रोविज़न हो रहा है — टोपोलॉजी अपूर्ण हो सकती है।",
+      "diagramUnhealthy": "नेटवर्क {{status}} स्थिति में है — दिखाए गए कनेक्शन अनुपलब्ध हो सकते हैं।",
+      "noIgwTitle": "कोई इंटरनेट गेटवे नहीं",
+      "noIgwHint": "प्राइवेट (पृथक) नेटवर्क",
+      "publicSubnets": "सार्वजनिक सबनेट · {{count}}",
+      "privateSubnets": "प्राइवेट सबनेट · {{count}}",
+      "vpcCidr": "VPC CIDR",
+      "instancesTotal_one": "कुल {{count}} इंस्टेंस",
+      "instancesTotal_other": "कुल {{count}} इंस्टेंस",
+      "instancesConnected_one": "{{count}} इंस्टेंस जुड़ा",
+      "instancesConnected_other": "{{count}} इंस्टेंस जुड़े",
+      "ipsFree": "{{count}} IP मुक्त",
+      "routingNone": "कोई राउटर संलग्न नहीं",
+      "routingActive_one": "क्षेत्रीय (डायनेमिक) · {{count}} राउटर",
+      "routingActive_other": "क्षेत्रीय (डायनेमिक) · {{count}} राउटर",
+      "routingPending": "राउटर प्रोविज़न हो रहा है…",
+      "securityGroupsDescription": "वर्चुअल फ़ायरवॉल जो आपके इंस्टेंस के आने-जाने वाले ट्रैफ़िक को नियंत्रित करते हैं।"
     },
     "rules": {
       "count": "{{count}} नियम",
@@ -1371,7 +1569,11 @@
       "addPrivateSubnet": "प्राइवेट सबनेट जोड़ें",
       "removeSubnet": "सबनेट हटाएं",
       "makePublic": "पब्लिक बनाएं",
-      "makePrivate": "प्राइवेट बनाएं"
+      "makePrivate": "प्राइवेट बनाएं",
+      "subnets": "सबनेट",
+      "subnetsDescription": "नेटवर्क रेंज से कम से कम एक सबनेट निकालें।",
+      "subnetsAdd": "एक और सबनेट जोड़ें",
+      "subnetsNone": "कोई नहीं"
     },
     "toasts": {
       "created": "VPC \"{{name}}\" बनाया गया",
@@ -1419,6 +1621,10 @@
       "inboundRules": "इनबाउंड नियम",
       "outboundRules": "आउटबाउंड नियम",
       "notFound": "सुरक्षा समूह नहीं मिला"
+    },
+    "vpcDetailPage": {
+      "regionZone": "क्षेत्र और ज़ोन",
+      "defaultNetwork": "डिफ़ॉल्ट नेटवर्क"
     }
   },
   "common": {
@@ -1470,7 +1676,11 @@
     "allCountries": "सभी देश",
     "allCurrencies": "सभी मुद्राएँ",
     "cancel": "रद्द करें",
-    "add": "जोड़ें"
+    "add": "जोड़ें",
+    "save": "सहेजें",
+    "saving": "सहेजा जा रहा है…",
+    "edit": "संपादित करें",
+    "unavailable": "अनुपलब्ध"
   },
   "staticIps": {
     "title": "स्टैटिक IP",
@@ -1857,6 +2067,17 @@
       "capacityFailed": "क्षमता अपडेट करने में विफल",
       "deleted": "समूह हटाया गया",
       "deleteFailed": "समूह हटाने में विफल"
+    },
+    "createAsgSheet": {
+      "optionalDescription": "वैकल्पिक विवरण…",
+      "advancedScalingPolicies": "उन्नत स्केलिंग नीतियाँ",
+      "healthCheckGraceS": "स्वास्थ्य जाँच छूट (सेकंड)",
+      "terminationPolicy": "समाप्ति नीति",
+      "oldestInstance": "सबसे पुराना इंस्टेंस",
+      "newestInstance": "सबसे नया इंस्टेंस",
+      "closestToHour": "घंटे के सबसे निकट",
+      "capacityRebalance": "क्षमता पुनर्संतुलन",
+      "automaticallyRedistributeInstancesAcrossAvai": "उपलब्धता क्षेत्रों में इंस्टेंस स्वतः पुनर्वितरित करें।"
     }
   },
   "disks": {
@@ -1919,6 +2140,17 @@
       "detachFailed": "डिस्क अलग करने में विफल",
       "deleted": "डिस्क हटाई गई",
       "deleteFailed": "डिस्क हटाने में विफल"
+    },
+    "createDiskSheet": {
+      "optionalDescription": "वैकल्पिक विवरण…",
+      "volumeClass": "वॉल्यूम क्लास",
+      "generalPurposeGp3": "सामान्य उपयोग (gp3)",
+      "provisionedIopsIo2": "प्रोविज़न्ड IOPS (io2)",
+      "coldHddSc1": "कोल्ड HDD (sc1)",
+      "advancedFeatures": "उन्नत सुविधाएँ",
+      "allowMountingToMultipleInstancesSimultaneous": "एक साथ कई इंस्टेंस पर माउंट करने की अनुमति दें।",
+      "deleteOnTermination": "समाप्ति पर हटाएँ",
+      "automaticallyDeleteDiskWhenTheAttachedInstan": "संलग्न इंस्टेंस समाप्त होने पर डिस्क स्वतः हटा दें।"
     }
   },
   "resources": {
@@ -2124,6 +2356,10 @@
     "confirm": {
       "intro": "{{provider}} के साथ बनाए जा रहे खाते की पुष्टि करें।",
       "create": "खाता बनाएँ"
+    },
+    "policyConsent": {
+      "privacyPolicy": "गोपनीयता नीति",
+      "termsOfService": "सेवा की शर्तें"
     }
   },
   "onboarding": {
@@ -2251,7 +2487,7 @@
     },
     "catalog": {
       "title": "Platform Catalog",
-      "subtitle": "Manage the zones, nodes, images, and pricing available to all tenants."
+      "subtitle": "सभी टेनेंट के लिए उपलब्ध ज़ोन, नोड, इमेज और मूल्य निर्धारण प्रबंधित करें।"
     },
     "actions": {
       "create": "Create",
@@ -2273,7 +2509,7 @@
       "emptySubtitle": "Add your first zone to populate region pickers.",
       "fields": {
         "code": "Code",
-        "codeLocked": "Code can’t be changed after creation.",
+        "codeLocked": "बनाने के बाद कोड नहीं बदला जा सकता।",
         "name": "Name",
         "country": "Country",
         "countryPlaceholder": "Select a country",
@@ -2292,10 +2528,10 @@
         "zone": "Zone",
         "zonePlaceholder": "Select a zone",
         "code": "Code",
-        "codeLocked": "Code can’t be changed after creation.",
+        "codeLocked": "बनाने के बाद कोड नहीं बदला जा सकता।",
         "name": "Name",
         "activeHint": "Inactive availability zones are hidden from tenant pickers.",
-        "noZones": "No zones yet — create one in Admin → Zones first.",
+        "noZones": "अभी कोई ज़ोन नहीं — पहले एडमिन → ज़ोन में एक बनाएँ।",
         "available": "उपलब्ध",
         "availableHint": "अनुपलब्ध AZ प्रोविज़निंग कैटलॉग से छिपा दिए जाते हैं।",
         "region": "क्षेत्र",
@@ -2342,7 +2578,7 @@
         "cpuTotal": "CPU total",
         "ramTotal": "RAM total (MB)",
         "storageTotal": "Storage total (GB)",
-        "noAZs": "No availability zones yet — create one in Admin → Availability Zones first.",
+        "noAZs": "अभी कोई उपलब्धता क्षेत्र नहीं — पहले एडमिन → उपलब्धता क्षेत्र में एक बनाएँ।",
         "unchanged": "Unchanged"
       },
       "status": {
@@ -2384,10 +2620,10 @@
       "empty": "No images yet",
       "emptySubtitle": "Add an OS image to the boot catalog.",
       "deleteTitle": "Delete image",
-      "deleteDescription": "Delete “{{name}}” and its versions from the boot catalog? This can’t be undone.",
+      "deleteDescription": "“{{name}}” और उसके वर्शन बूट कैटलॉग से हटाएँ? इसे पूर्ववत नहीं किया जा सकता।",
       "fields": {
         "name": "Name",
-        "nameLocked": "Name can’t be changed after creation.",
+        "nameLocked": "बनाने के बाद नाम नहीं बदला जा सकता।",
         "displayName": "Display name",
         "description": "Description",
         "sortOrder": "Sort order",
@@ -2428,9 +2664,9 @@
         "yes": "Yes",
         "no": "No",
         "deleteTitle": "Delete version",
-        "deleteDescription": "Remove “{{name}}” from this image? This can’t be undone.",
+        "deleteDescription": "“{{name}}” को इस इमेज से हटाएँ? इसे पूर्ववत नहीं किया जा सकता।",
         "wizard": {
-          "description": "Create the version in the same order tenants understand it: identity, source, then availability.",
+          "description": "वर्शन उसी क्रम में बनाएँ जिसमें टेनेंट उसे समझते हैं: पहचान, स्रोत, फिर उपलब्धता।",
           "identity": "Identity",
           "identityDesc": "Name the version and define its OS metadata.",
           "source": "Source",
@@ -2496,7 +2732,7 @@
         "priceMonthly": "Monthly",
         "priceYearly": "Yearly",
         "currency": "Currency",
-        "noAZs": "No availability zones yet — create one in Admin → Availability Zones first."
+        "noAZs": "अभी कोई उपलब्धता क्षेत्र नहीं — पहले एडमिन → उपलब्धता क्षेत्र में एक बनाएँ।"
       },
       "family": {
         "standard": "Standard",
@@ -2506,9 +2742,9 @@
       },
       "wizard": {
         "flavor": "Flavor",
-        "flavorDesc": "Pick the availability zone, name the flavor and choose its family.",
+        "flavorDesc": "उपलब्धता क्षेत्र चुनें, फ़्लेवर को नाम दें और उसका परिवार चुनें।",
         "specs": "Specs",
-        "specsDesc": "Compute, memory, GPU and bandwidth this flavor provides.",
+        "specsDesc": "यह फ़्लेवर जो कंप्यूट, मेमोरी, GPU और बैंडविड्थ देता है।",
         "pricing": "Pricing",
         "pricingDesc": "Rates billed per availability zone for this flavor."
       },
@@ -2617,35 +2853,35 @@
     "toasts": {
       "zoneCreated": "Zone created",
       "zoneUpdated": "Zone updated",
-      "zoneFailed": "Couldn’t save the zone",
+      "zoneFailed": "ज़ोन सहेजा नहीं जा सका",
       "availabilityZoneCreated": "Availability zone created",
       "availabilityZoneUpdated": "Availability zone updated",
-      "availabilityZoneFailed": "Couldn’t save the availability zone",
+      "availabilityZoneFailed": "उपलब्धता क्षेत्र सहेजा नहीं जा सका",
       "pveNodeCreated": "PVE node created",
       "pveNodeUpdated": "PVE node updated",
-      "pveNodeFailed": "Couldn’t save the PVE node",
+      "pveNodeFailed": "PVE नोड सहेजा नहीं जा सका",
       "pveNodeRefreshed": "PVE मेट्रिक्स रिफ्रेश किए गए",
       "pveNodeRefreshFailed": "PVE मेट्रिक्स रिफ्रेश नहीं हो सके",
       "pveNodeDeleted": "PVE नोड हटा दिया गया",
       "pveNodeDeleteFailed": "PVE नोड हटाया नहीं जा सका",
       "iconUploaded": "Icon uploaded",
-      "iconFailed": "Couldn’t upload the icon",
+      "iconFailed": "आइकन अपलोड नहीं हो सका",
       "imageCreated": "Image created",
       "imageUpdated": "Image updated",
       "imageDeleted": "Image deleted",
-      "imageFailed": "Couldn’t save the image",
-      "imageDeleteFailed": "Couldn’t delete the image",
+      "imageFailed": "इमेज सहेजी नहीं जा सकी",
+      "imageDeleteFailed": "इमेज हटाई नहीं जा सकी",
       "vmPriceCreated": "VM price created",
-      "vmPriceFailed": "Couldn’t save the VM price",
+      "vmPriceFailed": "VM मूल्य सहेजा नहीं जा सका",
       "storagePriceCreated": "Storage price created",
       "storagePriceUpdated": "Storage price updated",
-      "storagePriceFailed": "Couldn’t save the storage price",
+      "storagePriceFailed": "स्टोरेज मूल्य सहेजा नहीं जा सका",
       "staticIpPriceCreated": "Static IP price created",
-      "staticIpPriceFailed": "Couldn’t save the static IP price",
+      "staticIpPriceFailed": "स्टेटिक IP मूल्य सहेजा नहीं जा सका",
       "versionAdded": "Version added",
       "versionUpdated": "Version updated",
       "versionDeleted": "Version deleted",
-      "versionFailed": "Couldn’t save the version",
+      "versionFailed": "वर्शन सहेजा नहीं जा सका",
       "serviceCreated": "सेवा बनाई गई",
       "serviceUpdated": "सेवा अपडेट हुई",
       "serviceDeleted": "सेवा हटाई गई",
@@ -2765,7 +3001,7 @@
       "noMetrics": "कोई लाइव मेट्रिक नहीं। कार्ड पर काउंट दिखाने के लिए एक जोड़ें।",
       "fields": {
         "key": "Key",
-        "keyLocked": "Key can’t be changed after creation.",
+        "keyLocked": "बनाने के बाद की नहीं बदली जा सकती।",
         "name": "Name",
         "description": "Description",
         "icon": "Icon",
@@ -2777,7 +3013,7 @@
         "sortOrder": "Sort order",
         "sortOrderHint": "Lower numbers appear first.",
         "metrics": "Live metrics",
-        "metricsHint": "Each chip shows a live per-tenant count, computed at request time.",
+        "metricsHint": "प्रत्येक चिप अनुरोध के समय गणना किया गया प्रति-टेनेंट सजीव आँकड़ा दिखाता है।",
         "metricLabel": "Label (e.g. Instances)",
         "metricSource": "Count source",
         "accent": "Accent"
@@ -3467,6 +3703,10 @@
       "running": "चल रहा है…",
       "hint": "एक JSON पेलोड भेजें और फ़ंक्शन की प्रतिक्रिया देखें।",
       "empty": "अभी तक कोई इनवोकेशन नहीं"
+    },
+    "createFunctionPage": {
+      "registryExampleComMyFunctionLatest": "registry.example.com/my-function:latest",
+      "indexHandler": "index.handler"
     }
   },
   "managedApps": {
@@ -3669,6 +3909,12 @@
     "projectExplorer": {
       "couldNotLoadYourProjects": "आपके प्रोजेक्ट लोड नहीं हो सके।",
       "noProjectsMatchTheseFilters": "इन फ़िल्टरों से कोई प्रोजेक्ट मेल नहीं खाता"
+    },
+    "summaryAside": {
+      "envVars": "एनव वेरिएबल"
+    },
+    "stateFilterChips": {
+      "filterByState": "स्थिति से फ़िल्टर करें"
     }
   },
   "monitoring": {
@@ -3720,6 +3966,48 @@
       "searchAndFilterRecentLogEventsAcrossYourServ": "अपनी सेवाओं के हाल के लॉग इवेंट खोजें और फ़िल्टर करें।",
       "logStreamingIsOnTheWay": "लॉग स्ट्रीमिंग जल्द आ रही है",
       "liveTail": "लाइव टेल"
+    },
+    "alarmsListPage": {
+      "noAlarmsMatchTheseFilters": "इन फ़िल्टरों से कोई अलार्म मेल नहीं खाता",
+      "noAlarmsYet": "अभी कोई अलार्म नहीं",
+      "createAlarm": "अलार्म बनाएँ",
+      "searchByAlarmNameResourceOrSignal": "अलार्म नाम, रिसोर्स या सिग्नल से खोजें…",
+      "searchAlarms": "अलार्म खोजें",
+      "resourceType": "रिसोर्स प्रकार",
+      "deleteAlarm": "अलार्म हटाएँ"
+    },
+    "monitoringOverviewPage": {
+      "needsAttention": "ध्यान चाहिए",
+      "groupedByTheResourceEachAlarmWatches": "प्रत्येक अलार्म जिस रिसोर्स की निगरानी करता है, उसके अनुसार समूहित।",
+      "channelHealth": "चैनल स्वास्थ्य",
+      "recentStateTransitions": "हाल के स्थिति परिवर्तन",
+      "newestFirst": "नवीनतम पहले।"
+    },
+    "alarmDetailPage": {
+      "noDeliveriesListedForThisAlarm": "इस अलार्म के लिए कोई डिलीवरी सूचीबद्ध नहीं",
+      "stateHistory": "स्थिति इतिहास",
+      "noStateChangesYet": "अभी कोई स्थिति परिवर्तन नहीं",
+      "configuration": "कॉन्फ़िगरेशन",
+      "underlyingMetricSeries": "आधारभूत मेट्रिक श्रेणी",
+      "alarmNotFound": "अलार्म नहीं मिला",
+      "deleteAlarm": "अलार्म हटाएँ"
+    },
+    "channelsPage": {
+      "notificationChannels": "सूचना चैनल",
+      "refreshChannels": "चैनल रिफ़्रेश करें",
+      "addChannel": "चैनल जोड़ें",
+      "noChannelsYet": "अभी कोई चैनल नहीं",
+      "deleteChannel": "चैनल हटाएँ?"
+    },
+    "jiraFields": {
+      "chooseASite": "एक साइट चुनें",
+      "opsCompanyCom": "ops@company.com",
+      "apiToken": "API टोकन",
+      "datadackMonitoringOps": "datadack-monitoring, ops"
+    },
+    "targetSection": {
+      "whatKindOfResourceToWatch": "किस प्रकार के रिसोर्स की निगरानी करें",
+      "serviceApiEnvProd": "service=api, env=prod"
     }
   },
   "targetGroups": {
@@ -3981,6 +4269,173 @@
       "deleted": "कर पंजीकरण हटाया गया",
       "deleteFailed": "कर पंजीकरण हटाया नहीं जा सका",
       "exportFailed": "कर पंजीकरण निर्यात नहीं हो सके"
+    }
+  },
+  "networkInterfaces": {
+    "title": "नेटवर्क इंटरफ़ेस",
+    "subtitle": "आपके इंस्टेंस के लिए इलास्टिक नेटवर्क इंटरफ़ेस (ENI)।",
+    "create": "नेटवर्क इंटरफ़ेस बनाएँ",
+    "empty": "कोई नेटवर्क इंटरफ़ेस नहीं",
+    "emptySubtitle": "किसी इंस्टेंस से वर्चुअल NIC जोड़ने के लिए एक नेटवर्क इंटरफ़ेस बनाएँ।",
+    "searchPlaceholder": "नाम, ID, IP, सबनेट से फ़िल्टर करें…",
+    "stats": {
+      "total": "कुल",
+      "inUse": "उपयोग में",
+      "available": "उपलब्ध"
+    },
+    "columns": {
+      "name": "नाम",
+      "interfaceId": "इंटरफ़ेस ID",
+      "status": "स्थिति",
+      "subnet": "सबनेट ID",
+      "vpc": "VPC ID",
+      "zone": "उपलब्धता क्षेत्र",
+      "securityGroups": "सिक्योरिटी ग्रुप",
+      "privateIp": "प्राइवेट IP",
+      "instance": "संलग्न इंस्टेंस"
+    },
+    "actions": {
+      "attach": "जोड़ें",
+      "detach": "अलग करें",
+      "delete": "हटाएँ"
+    },
+    "createForm": {
+      "title": "नेटवर्क इंटरफ़ेस बनाएँ",
+      "description": "चुने गए सबनेट में एक इलास्टिक नेटवर्क इंटरफ़ेस बनाता है।",
+      "name": "नाम",
+      "vpc": "VPC",
+      "vpcPlaceholder": "VPC चुनें",
+      "selectVpcFirst": "पहले एक VPC चुनें",
+      "subnet": "सबनेट",
+      "subnetPlaceholder": "सबनेट चुनें",
+      "subnetEmpty": "इस VPC में कोई सबनेट नहीं",
+      "securityGroups": "सिक्योरिटी ग्रुप",
+      "securityGroupsEmpty": "इस VPC में कोई सिक्योरिटी ग्रुप नहीं",
+      "descriptionField": "विवरण",
+      "descriptionPlaceholder": "इस इंटरफ़ेस के लिए वैकल्पिक टिप्पणी",
+      "privateIp": "प्राइवेट IP",
+      "privateIpPlaceholder": "खाली छोड़ने पर स्वतः असाइन",
+      "submit": "बनाएँ",
+      "submitting": "बन रहा है…"
+    },
+    "attachForm": {
+      "title": "नेटवर्क इंटरफ़ेस जोड़ें",
+      "description": "\"{{name}}\" को किसी चल रहे इंस्टेंस से जोड़ें।",
+      "instance": "इंस्टेंस",
+      "instancePlaceholder": "इंस्टेंस चुनें",
+      "noInstances": "कोई चल रहा इंस्टेंस उपलब्ध नहीं",
+      "submit": "जोड़ें",
+      "submitting": "जोड़ा जा रहा है…"
+    },
+    "detachConfirm": {
+      "title": "नेटवर्क इंटरफ़ेस अलग करें?",
+      "description": "\"{{name}}\" को \"{{instance}}\" से अलग कर दिया जाएगा, पर वह उपलब्ध रहेगा।"
+    },
+    "deleteConfirm": {
+      "title": "नेटवर्क इंटरफ़ेस हटाएँ?",
+      "description": "\"{{name}}\" स्थायी रूप से हटा दिया जाएगा। इसे पूर्ववत नहीं किया जा सकता।"
+    },
+    "toasts": {
+      "created": "\"{{name}}\" बनाया गया",
+      "createFailed": "नेटवर्क इंटरफ़ेस बनाया नहीं जा सका",
+      "attached": "\"{{name}}\" जोड़ा गया",
+      "attachFailed": "नेटवर्क इंटरफ़ेस जोड़ा नहीं जा सका",
+      "detached": "\"{{name}}\" अलग किया गया",
+      "detachFailed": "नेटवर्क इंटरफ़ेस अलग नहीं किया जा सका",
+      "deleted": "नेटवर्क इंटरफ़ेस हटाया गया",
+      "deleteFailed": "नेटवर्क इंटरफ़ेस हटाया नहीं जा सका"
+    }
+  },
+  "naming": {
+    "title": "नामकरण नियम",
+    "subtitle": "एक ही नियम जो तय करता है कि आपके संगठन के हर रिसोर्स का नाम क्या हो सकता है।",
+    "readOnlyHint": "केवल संगठन का स्वामी या प्रशासक इस नियम को बदल सकता है।",
+    "loadError": "नामकरण नियम लोड नहीं हो सका।",
+    "footnote": "नाम क्लाइंट और सर्वर दोनों पर सत्यापित होते हैं। यह एक नियम संगठन के हर रिसोर्स प्रकार पर लागू होता है। डिफ़ॉल्ट रूप से कोई भी नाम स्वीकार्य है।",
+    "badges": {
+      "default": "कोई भी नाम",
+      "custom": "कस्टम"
+    },
+    "actions": {
+      "save": "परिवर्तन सहेजें",
+      "saving": "सहेजा जा रहा है…",
+      "reset": "रीसेट"
+    },
+    "toasts": {
+      "saved": "नामकरण नियम सहेजा गया",
+      "saveFailed": "नामकरण नियम सहेजा नहीं जा सका",
+      "invalidPattern": "यह मान्य पैटर्न नहीं है।"
+    },
+    "restrict": {
+      "label": "रिसोर्स नामों पर प्रतिबंध लगाएँ",
+      "hint": "डिफ़ॉल्ट रूप से बंद — कोई भी नाम स्वीकार्य है। नियम अनिवार्य करने के लिए चालू करें।"
+    },
+    "current": {
+      "title": "वर्तमान नियम",
+      "patternLabel": "पैटर्न",
+      "allowAny": "कोई भी नाम स्वीकार्य है। कोई नामकरण नियम लागू नहीं है।"
+    },
+    "test": {
+      "label": "कोई नाम जाँचें",
+      "placeholder": "जाँचने के लिए नाम लिखें…",
+      "valid": "स्वीकार्य",
+      "invalid": "स्वीकार्य नहीं"
+    },
+    "edit": {
+      "presetsTitle": "किसी प्रीसेट से शुरू करें",
+      "customTitle": "अनुकूलित करें",
+      "customActive": "यह एक कस्टम पैटर्न है। नीचे के विकल्प बदलने पर यह बदल जाएगा।",
+      "advancedTitle": "पैटर्न सीधे संपादित करें",
+      "advancedHint": "उन्नत उपयोगकर्ताओं के लिए — रेगुलर एक्सप्रेशन स्वयं संपादित करें।",
+      "invalidPattern": "यह मान्य रेगुलर एक्सप्रेशन नहीं है।"
+    },
+    "fields": {
+      "letterCase": "अक्षर",
+      "case": {
+        "lower": "छोटे अक्षर (a–z)",
+        "upper": "बड़े अक्षर (A–Z)",
+        "mixed": "दोनों (a–z, A–Z)"
+      },
+      "digits": "अंक (0–9)",
+      "hyphen": "हाइफ़न (-)",
+      "underscore": "अंडरस्कोर (_)",
+      "dot": "बिंदु (.)",
+      "space": "स्पेस",
+      "startsWithLetter": "अक्षर से शुरू होना चाहिए",
+      "minLength": "न्यूनतम लंबाई",
+      "maxLength": "अधिकतम लंबाई"
+    }
+  },
+  "organizations": {
+    "accountSettingsPage": {
+      "defaultAccount": "डिफ़ॉल्ट खाता",
+      "acmeInc": "Acme Inc.",
+      "acmeInc2": "Acme Inc.",
+      "billingAcmeCom": "billing@acme.com",
+      "billingAcmeCom2": "billing@acme.com",
+      "acmePrivateLimited": "Acme Private Limited",
+      "u12345ka2020ptc000000": "U12345KA2020PTC000000"
+    },
+    "newOrgWizardPage": {
+      "acmeInc": "Acme Inc.",
+      "billingAcmeCom": "billing@acme.com"
+    },
+    "profileSettingsPage": {
+      "janeDoe": "Jane Doe"
+    }
+  },
+  "search": {
+    "globalSearch": {
+      "trySearchingForAModuleVmVpcOrUser": "किसी मॉड्यूल, VM, VPC या उपयोगकर्ता को खोजने का प्रयास करें"
+    }
+  },
+  "services": {
+    "serviceGrid": {
+      "sovereignServices": "सॉवरेन सेवाएँ",
+      "manageInfrastructureAcrossYourIsolatedDomain": "अपने पृथक डोमेन में इंफ्रास्ट्रक्चर प्रबंधित करें।"
+    },
+    "serviceStatusBanner": {
+      "serviceDegraded": "सेवा क्षीण"
     }
   }
 }
