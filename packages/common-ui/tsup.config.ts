@@ -29,6 +29,7 @@ const options: Options = {
     "@emotion/css",
     "clsx",
     "cmdk",
+    "react-day-picker",
     "tailwind-merge",
   ],
 }

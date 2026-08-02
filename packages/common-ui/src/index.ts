@@ -60,6 +60,7 @@ export {
 } from "./ui/avatar"
 export { Badge, badgeVariants } from "./ui/badge"
 export { Button, buttonVariants } from "./ui/button"
+export { Calendar } from "./ui/calendar"
 export {
   Card,
   CardAction,
@@ -70,6 +71,7 @@ export {
   CardTitle,
 } from "./ui/card"
 export { Checkbox } from "./ui/checkbox"
+export { Combobox, type ComboboxOption } from "./ui/combobox"
 export {
   Command,
   CommandDialog,
@@ -98,6 +100,7 @@ export {
   ContextMenuSubTrigger,
   ContextMenuTrigger,
 } from "./ui/context-menu"
+export { DatePicker } from "./ui/date-picker"
 export { DayGridPicker } from "./ui/day-grid-picker"
 export {
   Dialog,
@@ -131,6 +134,7 @@ export {
 export { Input } from "./ui/input"
 export { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "./ui/input-otp"
 export { Label } from "./ui/label"
+export { MONTHS, MonthYearPicker } from "./ui/month-year-picker"
 export { Popover, PopoverAnchor, PopoverContent, PopoverTrigger } from "./ui/popover"
 export { ScrollArea, ScrollBar } from "./ui/scroll-area"
 export {

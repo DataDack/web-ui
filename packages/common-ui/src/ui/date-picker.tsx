@@ -1,10 +1,11 @@
 import { useState } from "react"
 
+import { css, cx } from "@emotion/css"
 import { CalendarIcon } from "lucide-react"
 
-import { Button, Popover, PopoverContent, PopoverTrigger } from "@datadack/common-ui"
-import { Calendar } from "@/components/ui/calendar"
-import { cn } from "@/lib/utils"
+import { Button } from "./button"
+import { Calendar } from "./calendar"
+import { Popover, PopoverContent, PopoverTrigger } from "./popover"
 
 /** Parse an ISO `yyyy-mm-dd` string into a local Date (no timezone shift). */
 function parseISO(value?: string): Date | undefined {
@@ -28,6 +29,28 @@ const DISPLAY = new Intl.DateTimeFormat(undefined, {
   month: "long",
   year: "numeric",
 })
+
+const trigger = css`
+  width: 100%;
+  justify-content: flex-start;
+  text-align: left;
+  font-weight: 400;
+
+  &[data-empty="true"] {
+    color: var(--muted-foreground);
+  }
+`
+
+const icon = css`
+  width: 16px;
+  height: 16px;
+  opacity: 0.6;
+`
+
+const content = css`
+  width: auto;
+  padding: 0;
+`
 
 export function DatePicker({
   value,
@@ -60,16 +83,13 @@ export function DatePicker({
           variant="outline"
           aria-invalid={invalid}
           data-empty={!selected}
-          className={cn(
-            "w-full justify-start text-left font-normal",
-            "data-[empty=true]:text-muted-foreground",
-          )}
+          className={cx(trigger)}
         >
-          <CalendarIcon className="size-4 opacity-60" />
+          <CalendarIcon className={icon} />
           {selected ? DISPLAY.format(selected) : placeholder}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" align="start">
+      <PopoverContent className={content} align="start">
         <Calendar
           mode="single"
           selected={selected}
