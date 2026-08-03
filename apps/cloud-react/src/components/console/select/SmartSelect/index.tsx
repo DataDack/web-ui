@@ -1,6 +1,7 @@
 import { type ReactNode, useEffect, useMemo, useState } from "react"
 
 import {
+  cn,
   Command,
   CommandInput,
   Popover,
@@ -15,7 +16,6 @@ import { ChevronDown } from "lucide-react"
 
 import { useDebounce } from "@/hooks/use-debounce"
 import { useMediaQuery } from "@/hooks/use-media-query"
-import { cn } from "@/lib/utils"
 
 import type { SmartSelectOption, SmartSelectProps } from "./smart-select.types"
 import { SmartSelectFooter } from "./SmartSelectFooter"

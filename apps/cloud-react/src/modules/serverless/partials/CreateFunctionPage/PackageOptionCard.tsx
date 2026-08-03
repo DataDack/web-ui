@@ -1,8 +1,7 @@
 import type { ReactNode } from "react"
 
+import { cn } from "@datadack/common-ui"
 import { Check } from "lucide-react"
-
-import { cn } from "@/lib/utils"
 
 interface PackageOptionCardProps {
   icon: ReactNode

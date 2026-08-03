@@ -1,8 +1,6 @@
-import { Button } from "@datadack/common-ui"
+import { Button, cn } from "@datadack/common-ui"
 import { Search } from "lucide-react"
 import { useTranslation } from "react-i18next"
-
-import { cn } from "@/lib/utils"
 
 interface SearchTriggerProps {
   onOpen: () => void

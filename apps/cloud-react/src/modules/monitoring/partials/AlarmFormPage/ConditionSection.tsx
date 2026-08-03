@@ -1,4 +1,3 @@
-import { useTranslation } from "react-i18next"
 // Section 3 — "Condition".
 //
 // The rule reads as one sentence with the controls sitting inside it, so nobody
@@ -11,6 +10,7 @@ import { useMemo, useState } from "react"
 
 import {
   Badge,
+  cn,
   Input,
   Select,
   SelectContent,
@@ -20,9 +20,9 @@ import {
 } from "@datadack/common-ui"
 import { ChevronDown } from "lucide-react"
 import type { UseFormRegister } from "react-hook-form"
+import { useTranslation } from "react-i18next"
 
 import { MetricChart } from "@/components/console"
-import { cn } from "@/lib/utils"
 
 import { simulateAlarm, windowCount } from "./backtest"
 import { numeric, type FormValues, type PeriodSeconds } from "./schema"

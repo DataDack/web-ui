@@ -1,7 +1,5 @@
-import { Button } from "@datadack/common-ui"
+import { Button, cn } from "@datadack/common-ui"
 import { ArrowDownToLine, Copy, Download, WrapText } from "lucide-react"
-
-import { cn } from "@/lib/utils"
 
 interface LogToolbarProps {
   following: boolean

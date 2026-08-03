@@ -1,4 +1,3 @@
-import { useTranslation } from "react-i18next"
 // The page someone lands on after being paged.
 //
 // It answers, in order: what is wrong, on which resource, since when, what the
@@ -12,10 +11,11 @@ import { useMemo, useState } from "react"
 import {
   Badge,
   Button,
-  EmptyState,
-  Skeleton,
+  cn,
   DataTable,
   type DataTableColumnMeta,
+  EmptyState,
+  Skeleton,
 } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import {
@@ -30,6 +30,7 @@ import {
   SquareArrowRight,
   Trash2,
 } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
 import { toast } from "sonner"
 
@@ -43,7 +44,6 @@ import {
   PageHeader,
   Section,
 } from "@/components/console"
-import { cn } from "@/lib/utils"
 import { useDisks } from "@/modules/disks/disks.hooks"
 import { useLoadBalancers } from "@/modules/load-balancers/load-balancers.hooks"
 import { useInstances } from "@/modules/vms/vms.hooks"
@@ -646,7 +646,11 @@ function HistoryTab({ entries }: Readonly<{ entries: AlarmHistoryEntry[] }>) {
 function ChannelBindings({ alarm }: Readonly<{ alarm: Alarm }>) {
   const { t } = useTranslation()
   if (alarm.channels.length === 0) {
-    return <span className="text-status-warning">{t("monitoring.alarmDetailPage.noChannelsNobodyIsNotified")}</span>
+    return (
+      <span className="text-status-warning">
+        {t("monitoring.alarmDetailPage.noChannelsNobodyIsNotified")}
+      </span>
+    )
   }
   return (
     <span className="flex flex-col gap-1">

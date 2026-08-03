@@ -1,4 +1,3 @@
-import { useTranslation } from "react-i18next"
 // Section 4 — "Notifications".
 //
 // Two things went wrong in the old flow and are fixed here:
@@ -14,10 +13,9 @@ import { useTranslation } from "react-i18next"
 
 import { useState } from "react"
 
-import { Badge, Button, Checkbox, Label } from "@datadack/common-ui"
+import { Badge, Button, Checkbox, cn, Label } from "@datadack/common-ui"
 import { AlertTriangle, Plus } from "lucide-react"
-
-import { cn } from "@/lib/utils"
+import { useTranslation } from "react-i18next"
 
 import type { ChannelBinding } from "./schema"
 import { ChannelCreateDialog } from "../../channels/ChannelCreateDialog"
@@ -160,7 +158,9 @@ function ChannelRow({
       {selected && (
         <div className="mt-2.5 space-y-1.5 border-t border-border-glass pt-2.5">
           <div className="flex flex-wrap items-center gap-1.5">
-            <span className="mr-1 text-[11px] text-muted-foreground">{t("monitoring.notifySection.notifyOn")}</span>
+            <span className="mr-1 text-[11px] text-muted-foreground">
+              {t("monitoring.notifySection.notifyOn")}
+            </span>
             {/*
                           Three independent toggles, not one exclusive choice —
                           each maps to its own CloudWatch action list, so any
@@ -297,7 +297,11 @@ export function NotifySection({
           </Button>
         </div>
 
-        {isLoading && <p className="text-[13px] text-muted-foreground">{t("monitoring.notifySection.loadingChannels")}</p>}
+        {isLoading && (
+          <p className="text-[13px] text-muted-foreground">
+            {t("monitoring.notifySection.loadingChannels")}
+          </p>
+        )}
 
         {!isLoading && available.length === 0 && (
           <div className="rounded-lg border border-dashed border-border p-4 text-center">

@@ -1,6 +1,6 @@
 import { useMemo } from "react"
 
-import { cn } from "@/lib/utils"
+import { cn } from "@datadack/common-ui"
 
 import { deriveActivityEvents } from "./activity-events"
 import { ActivityEventRow } from "./ActivityEventRow"

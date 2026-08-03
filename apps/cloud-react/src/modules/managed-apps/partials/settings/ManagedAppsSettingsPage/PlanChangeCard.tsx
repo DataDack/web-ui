@@ -1,7 +1,5 @@
-import { Button } from "@datadack/common-ui"
+import { Button, cn } from "@datadack/common-ui"
 import { ArrowDownRight, ArrowUpRight, Check } from "lucide-react"
-
-import { cn } from "@/lib/utils"
 
 import { formatPrice, planHighlights, PlanTierArt } from "../../../components"
 import type { Plan } from "../../../managed-apps.types"

@@ -1,4 +1,3 @@
-import { useTranslation } from "react-i18next"
 // The alarms list, readable as a sentence: what state it is in, what it is
 // called, and — the part that used to be missing — what it actually watches.
 //
@@ -17,6 +16,7 @@ import {
   actionsColumn,
   Badge,
   Button,
+  cn,
   DataTable,
   EmptyState,
   Input,
@@ -28,10 +28,10 @@ import {
 } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { BellOff, BellRing, Pencil, Plus, RefreshCw, Search, SearchX, Trash2 } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { Link, useNavigate } from "react-router-dom"
 
 import { ConfirmDialog, PageHeader } from "@/components/console"
-import { cn } from "@/lib/utils"
 import { useDisks } from "@/modules/disks/disks.hooks"
 import { useLoadBalancers } from "@/modules/load-balancers/load-balancers.hooks"
 import { useInstances } from "@/modules/vms/vms.hooks"

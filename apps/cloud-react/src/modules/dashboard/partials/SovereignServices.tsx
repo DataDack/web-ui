@@ -1,10 +1,9 @@
-import { useTranslation } from "react-i18next"
-import { Skeleton } from "@datadack/common-ui"
+import { cn, Skeleton } from "@datadack/common-ui"
 import { CheckCircle2, Grip } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
 import { Stagger, StaggerItem } from "@/components/console"
-import { cn } from "@/lib/utils"
 import { useCatalogServices } from "@/modules/services/catalog.hooks"
 import type { CatalogMetric, CatalogService, CatalogStatus } from "@/modules/services/catalog.types"
 import { ServiceIcon } from "@/modules/services/ServiceIcon"

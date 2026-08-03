@@ -3,16 +3,17 @@ import { Fragment, useMemo, useState } from "react"
 import {
   Badge,
   Button,
+  cn,
   CopyButton,
+  DataTable,
   Input,
   Switch,
-  DataTable,
   TableCell,
   TableRow,
 } from "@datadack/common-ui"
-import type { ColumnDef } from "@tanstack/react-table"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQueryClient } from "@tanstack/react-query"
+import type { ColumnDef } from "@tanstack/react-table"
 import {
   AlertTriangle,
   Activity,
@@ -32,7 +33,6 @@ import { z } from "zod/v4"
 
 import { PageHeader, Section } from "@/components/console"
 import { TONE_CLASSES, TONE_DOT_CLASSES, type StatusTone } from "@/components/console/status-config"
-import { cn } from "@/lib/utils"
 import { useScreen } from "@/services/api/screen"
 
 import { Field } from "../components/form-fields"

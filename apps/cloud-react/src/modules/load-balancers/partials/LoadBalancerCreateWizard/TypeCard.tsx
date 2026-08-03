@@ -1,6 +1,5 @@
+import { cn } from "@datadack/common-ui"
 import type { Layers } from "lucide-react"
-
-import { cn } from "@/lib/utils"
 
 export function TypeCard({
   icon: Icon,

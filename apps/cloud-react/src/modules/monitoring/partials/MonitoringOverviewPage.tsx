@@ -1,4 +1,3 @@
-import { useTranslation } from "react-i18next"
 // Monitoring overview — a dashboard, not a second copy of the alarms list.
 //
 // The list page already answers "what alarms exist". This page answers the four
@@ -12,12 +11,12 @@ import { useTranslation } from "react-i18next"
 
 import { useMemo } from "react"
 
-import { Badge, Button } from "@datadack/common-ui"
+import { Badge, Button, cn } from "@datadack/common-ui"
 import { Activity, ArrowRight, BellRing, CheckCircle2, Plus, Radio, WifiOff } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
 import { PageHeader, Section, StatGrid, type StatCardProps } from "@/components/console"
-import { cn } from "@/lib/utils"
 import { useDisks } from "@/modules/disks/disks.hooks"
 import { useLoadBalancers } from "@/modules/load-balancers/load-balancers.hooks"
 import { useInstances } from "@/modules/vms/vms.hooks"
@@ -719,9 +718,15 @@ export function MonitoringOverviewPage() {
             )}
           </Section>
 
-          <Section title={t("monitoring.monitoringOverviewPage.recentStateTransitions")} description={t("monitoring.monitoringOverviewPage.newestFirst")} variant="panel">
+          <Section
+            title={t("monitoring.monitoringOverviewPage.recentStateTransitions")}
+            description={t("monitoring.monitoringOverviewPage.newestFirst")}
+            variant="panel"
+          >
             {history.length === 0 ? (
-              <p className={NOTE}>{t("monitoring.monitoringOverviewPage.noAlarmHasChangedStateYet")}</p>
+              <p className={NOTE}>
+                {t("monitoring.monitoringOverviewPage.noAlarmHasChangedStateYet")}
+              </p>
             ) : (
               <ul className="divide-y divide-border/60">
                 {history.slice(0, FEED_LIMIT).map((entry) => (

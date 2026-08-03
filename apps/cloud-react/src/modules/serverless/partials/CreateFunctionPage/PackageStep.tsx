@@ -1,10 +1,8 @@
-import { Input, Label } from "@datadack/common-ui"
+import { cn, Input, Label } from "@datadack/common-ui"
 import { CodeEditorPlaceholder } from "@datadack/serverless"
 import { CheckCircle2, Container, FileArchive, Loader2, Sparkles, UploadCloud } from "lucide-react"
 import type { UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
-
-import { cn } from "@/lib/utils"
 
 import { FieldError } from "./FieldError"
 import { PackageOptionCard } from "./PackageOptionCard"

@@ -2,6 +2,7 @@ import { useMemo, useState } from "react"
 
 import {
   Button,
+  cn,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -19,8 +20,6 @@ import {
 } from "@datadack/common-ui"
 import { Loader2, Minus, Plus } from "lucide-react"
 import { useTranslation } from "react-i18next"
-
-import { cn } from "@/lib/utils"
 
 import { QuotaRing } from "../../components/QuotaRing"
 import { useRequestQuotaIncrease } from "../../quotas.hooks"

@@ -1,7 +1,6 @@
-import { useTranslation } from "react-i18next"
+import { cn } from "@datadack/common-ui"
 import { AppWindow, Atom, Check, FolderTree, Loader2, Settings2, TriangleAlert } from "lucide-react"
-
-import { cn } from "@/lib/utils"
+import { useTranslation } from "react-i18next"
 
 import type { RepoDetection } from "../../../managed-apps.types"
 

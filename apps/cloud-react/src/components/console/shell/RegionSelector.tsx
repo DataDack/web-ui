@@ -2,6 +2,7 @@ import { useEffect, useMemo } from "react"
 
 import {
   Button,
+  cn,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -12,7 +13,6 @@ import { Check, ChevronDown, Globe, Loader2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { staggerDelay } from "@/components/console"
-import { cn } from "@/lib/utils"
 import { useActiveRegion } from "@/modules/region/region.context"
 import { usePlatformRegions } from "@/modules/superadmin/superadmin.hooks"
 

@@ -1,7 +1,5 @@
-import { Badge, Button, Checkbox } from "@datadack/common-ui"
+import { Badge, Button, Checkbox, cn } from "@datadack/common-ui"
 import { useTranslation } from "react-i18next"
-
-import { cn } from "@/lib/utils"
 
 import { groupState, type Selection } from "./cache-selection"
 import { ImpactBadge } from "./ImpactBadge"

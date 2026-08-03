@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react"
 
+import { cn } from "@datadack/common-ui"
 import { Loader2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { FcGoogle } from "react-icons/fc"
 import { toast } from "sonner"
 
 import { env } from "@/env"
-import { cn } from "@/lib/utils"
 import { useTheme } from "@/services/theme_service"
 
 interface CredentialResponse {

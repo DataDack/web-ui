@@ -1,8 +1,6 @@
 import type { ReactNode } from "react"
 
-import { Label } from "@datadack/common-ui"
-
-import { cn } from "@/lib/utils"
+import { cn, Label } from "@datadack/common-ui"
 
 interface FieldRowProps {
   label: ReactNode

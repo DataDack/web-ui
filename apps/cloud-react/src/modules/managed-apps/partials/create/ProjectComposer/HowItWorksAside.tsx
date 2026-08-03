@@ -1,7 +1,6 @@
-import { useTranslation } from "react-i18next"
+import { cn } from "@datadack/common-ui"
 import { Rocket, Settings2, Sparkles } from "lucide-react"
-
-import { cn } from "@/lib/utils"
+import { useTranslation } from "react-i18next"
 
 import { GitHubMark } from "../../../components/GitHubMark"
 import { DeployPipelineArt } from "../../../components/illustrations/DeployPipelineArt"

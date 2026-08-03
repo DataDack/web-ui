@@ -3,9 +3,7 @@
 // that exports both components and helpers breaks fast refresh for everything
 // importing it.
 
-import { Badge } from "@datadack/common-ui"
-
-import { cn } from "@/lib/utils"
+import { Badge, cn } from "@datadack/common-ui"
 
 import { SEVERITY_BADGE_CLASS } from "../channels/channels.meta"
 import { ALARM_STATE_META } from "../monitoring.meta"

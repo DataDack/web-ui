@@ -1,12 +1,11 @@
 import { useState } from "react"
 
-import { Button, Input, Label } from "@datadack/common-ui"
+import { Button, cn, Input, Label } from "@datadack/common-ui"
 import { useMutation } from "@tanstack/react-query"
 import { Building2, Check, Loader2, User } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
-import { cn } from "@/lib/utils"
 import { extractError } from "@/services/api/client"
 
 import { useOnboardingFlow } from "../../onboarding.flow"

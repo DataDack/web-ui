@@ -1,8 +1,8 @@
+import { cn } from "@datadack/common-ui"
 import { ExternalLink } from "lucide-react"
 
 import { staggerDelay } from "@/components/console"
 import { TONE_DOT_CLASSES } from "@/components/console/status-config"
-import { cn } from "@/lib/utils"
 
 import { timeSince, type ActivityEvent } from "./activity-events"
 

@@ -1,13 +1,12 @@
 import { useMemo, useState } from "react"
 
-import { Button } from "@datadack/common-ui"
+import { Button, cn } from "@datadack/common-ui"
 import { Network, Pencil, Plus } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { PageHeader } from "@/components/console"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useQueryParamState } from "@/hooks/use-query-param-state"
-import { cn } from "@/lib/utils"
 import { useScreen } from "@/services/api/screen"
 
 import { useAdminStaticIPPrices } from "../superadmin.hooks"

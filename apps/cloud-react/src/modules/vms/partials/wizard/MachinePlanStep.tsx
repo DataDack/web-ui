@@ -1,10 +1,10 @@
-import { useTranslation } from "react-i18next"
 import { useMemo, useState } from "react"
 
+import { cn } from "@datadack/common-ui"
 import type { UseFormReturn } from "react-hook-form"
+import { useTranslation } from "react-i18next"
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { cn } from "@/lib/utils"
 import type { VMPriceOption } from "@/modules/catalog/catalog.types"
 
 import { formatPrice } from "./wizard.format"

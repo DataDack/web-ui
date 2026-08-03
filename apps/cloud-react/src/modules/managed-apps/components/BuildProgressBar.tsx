@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 
-import { cn } from "@/lib/utils"
+import { cn } from "@datadack/common-ui"
 
 import { TRANSITIONAL_BUILD_STATUSES, type Build } from "../managed-apps.types"
 

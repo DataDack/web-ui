@@ -2,6 +2,7 @@ import { useEffect, useMemo } from "react"
 
 import {
   Button,
+  cn,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -22,7 +23,6 @@ import { useTranslation } from "react-i18next"
 import { z } from "zod/v4"
 
 import { CidrInput } from "@/components/console"
-import { cn } from "@/lib/utils"
 
 import { Field } from "../components/form-fields"
 import { describeCidr } from "../ip-utils"

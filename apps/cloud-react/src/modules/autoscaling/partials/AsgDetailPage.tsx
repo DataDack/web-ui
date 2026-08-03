@@ -10,6 +10,7 @@ import {
   DialogTitle,
   Input,
   Label,
+  parseTags,
   Skeleton,
   TagList,
 } from "@datadack/common-ui"
@@ -18,7 +19,6 @@ import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
 
 import { ConfirmDialog, DetailPage, KeyValueGrid, Section } from "@/components/console"
-import { parseTags } from "@/lib/tags"
 import { useScreen } from "@/services/api/screen"
 
 import { ASG_ROUTES } from "../autoscaling.constants"

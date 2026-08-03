@@ -1,9 +1,8 @@
-import { Input, Label } from "@datadack/common-ui"
+import { Input, Label, type TagRow } from "@datadack/common-ui"
 import type { UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 
 import { TagEditor } from "@/components/console"
-import type { TagRow } from "@/lib/tags"
 
 import { FieldError } from "./FieldError"
 import type { FormValues } from "./schema"

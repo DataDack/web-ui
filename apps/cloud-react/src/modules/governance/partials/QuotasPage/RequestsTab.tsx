@@ -1,8 +1,7 @@
-import { Badge, EmptyState, Skeleton } from "@datadack/common-ui"
+import { Badge, cn, EmptyState, Skeleton } from "@datadack/common-ui"
 import { ArrowRight, Check, Inbox, X } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { cn } from "@/lib/utils"
 import { timeAgo } from "@/modules/monitoring/monitoring.meta"
 
 import type { QuotaRequest, QuotaRequestStatus } from "../../quotas.types"

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 
 import {
   Button,
+  cn,
   Input,
   Label,
   Select,
@@ -9,6 +10,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  type TagRow,
+  tagRowsToRecord,
 } from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
@@ -34,8 +37,6 @@ import {
   TagEditor,
   type WizardStep,
 } from "@/components/console"
-import { tagRowsToRecord, type TagRow } from "@/lib/tags"
-import { cn } from "@/lib/utils"
 import { useRegionCatalog } from "@/modules/catalog/catalog.hooks"
 import type { AvailabilityZoneBrief } from "@/modules/catalog/catalog.types"
 import { QuotaNotice, useQuotaBlocked } from "@/modules/governance/components/QuotaNotice"

@@ -4,6 +4,7 @@ import {
   Avatar,
   AvatarFallback,
   Button,
+  cn,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -13,7 +14,6 @@ import { Check, LifeBuoy, LogOut, Plus, Settings, ShieldCheck, Star, Wallet } fr
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
-import { cn } from "@/lib/utils"
 import { ACCOUNT_ROUTES } from "@/modules/accounts/accounts.constants"
 import { useActiveAccount, useSwitchAccount } from "@/modules/accounts/accounts.hooks"
 import { CreateAccountSheet } from "@/modules/accounts/partials/CreateAccountSheet"

@@ -1,4 +1,3 @@
-import { useTranslation } from "react-i18next"
 // Section 1 — "What to watch".
 //
 // This is the question the old form never asked. Everything downstream (which
@@ -7,11 +6,11 @@ import { useTranslation } from "react-i18next"
 
 import { useMemo, useState } from "react"
 
-import { Checkbox, Input, Label } from "@datadack/common-ui"
+import { Checkbox, cn, Input, Label } from "@datadack/common-ui"
 import { Check, Search } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
 import { getStatusConfig, StatusBadge } from "@/components/console"
-import { cn } from "@/lib/utils"
 
 import { useAlarmTargets, useTargetCounts } from "./useAlarmTargets"
 import {
@@ -212,7 +211,9 @@ export function TargetSection({
               className="font-mono text-[13px]"
               autoComplete="off"
             />
-            <p className={MUTED_NOTE_CLASS}>{t("monitoring.targetSection.theNamespaceYouPushThisMetricUnder")}</p>
+            <p className={MUTED_NOTE_CLASS}>
+              {t("monitoring.targetSection.theNamespaceYouPushThisMetricUnder")}
+            </p>
             {errors.customNamespace && <p className={ERROR_CLASS}>{errors.customNamespace}</p>}
           </div>
           <div className="space-y-1.5">
@@ -226,7 +227,9 @@ export function TargetSection({
               className="font-mono text-[13px]"
               autoComplete="off"
             />
-            <p className={MUTED_NOTE_CLASS}>{t("monitoring.targetSection.leaveEmptyToWatchEverySeriesInTheNamespace")}</p>
+            <p className={MUTED_NOTE_CLASS}>
+              {t("monitoring.targetSection.leaveEmptyToWatchEverySeriesInTheNamespace")}
+            </p>
             {errors.customDimensions && <p className={ERROR_CLASS}>{errors.customDimensions}</p>}
           </div>
         </div>

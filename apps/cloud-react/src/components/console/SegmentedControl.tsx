@@ -1,8 +1,7 @@
 import { type KeyboardEvent, useRef } from "react"
 
+import { cn } from "@datadack/common-ui"
 import type { LucideIcon } from "lucide-react"
-
-import { cn } from "@/lib/utils"
 
 export interface SegmentedOption<T extends string> {
   value: T

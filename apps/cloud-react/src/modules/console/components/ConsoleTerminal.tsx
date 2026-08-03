@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState } from "react"
 
+import { cn } from "@datadack/common-ui"
 import { FitAddon } from "@xterm/addon-fit"
 import { Terminal } from "@xterm/xterm"
 
 import "@xterm/xterm/css/xterm.css"
-
-import { cn } from "@/lib/utils"
 
 import { consoleApi, consoleWsUrl, type ConsoleTarget } from "../console.api"
 

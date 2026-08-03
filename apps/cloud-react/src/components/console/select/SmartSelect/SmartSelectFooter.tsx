@@ -1,9 +1,7 @@
 import type { ReactNode } from "react"
 
-import { Button } from "@datadack/common-ui"
+import { Button, cn } from "@datadack/common-ui"
 import { RefreshCw } from "lucide-react"
-
-import { cn } from "@/lib/utils"
 
 interface SmartSelectFooterProps {
   /** Escape hatches — "Adjust GitHub App access", "Create a new one". */

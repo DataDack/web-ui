@@ -1,8 +1,6 @@
-import { useTranslation } from "react-i18next"
-import { Button } from "@datadack/common-ui"
+import { Button, cn } from "@datadack/common-ui"
 import { ArrowRight, Check, Loader2, Plus } from "lucide-react"
-
-import { cn } from "@/lib/utils"
+import { useTranslation } from "react-i18next"
 
 import { GitHubMark } from "../../components/GitHubMark"
 import { DeployPipelineArt } from "../../components/illustrations/DeployPipelineArt"

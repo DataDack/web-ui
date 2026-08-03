@@ -1,11 +1,10 @@
 import { Suspense, useCallback, useEffect, useState } from "react"
 
-import { Skeleton } from "@datadack/common-ui"
+import { cn, Skeleton } from "@datadack/common-ui"
 import { useLocation, useMatches, useNavigate, useOutlet } from "react-router-dom"
 
 import { useKeySequence } from "@/hooks/use-key-sequence"
 import { useKeyboardShortcut } from "@/hooks/use-keyboard-shortcut"
-import { cn } from "@/lib/utils"
 import { MobileNumberPrompt } from "@/modules/auth/components/MobileNumberPrompt"
 import { GlobalSearch } from "@/modules/search/partials/GlobalSearch"
 import { useConsoleBroadcastSync } from "@/services/broadcast"

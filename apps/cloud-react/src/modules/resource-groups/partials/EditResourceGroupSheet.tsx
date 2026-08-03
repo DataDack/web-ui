@@ -4,6 +4,7 @@ import {
   Button,
   Input,
   Label,
+  recordToTagRows,
   ScrollArea,
   Separator,
   Sheet,
@@ -11,6 +12,8 @@ import {
   SheetDescription,
   SheetHeader,
   SheetTitle,
+  type TagRow,
+  tagRowsToRecord,
   Textarea,
 } from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -19,7 +22,6 @@ import { useTranslation } from "react-i18next"
 import { z } from "zod/v4"
 
 import { TagEditor } from "@/components/console"
-import { recordToTagRows, tagRowsToRecord, type TagRow } from "@/lib/tags"
 import { useNamingRule } from "@/modules/governance/governance.hooks"
 import type { NamingRule } from "@/modules/governance/governance.types"
 import { namingNameSchema } from "@/modules/governance/governance.validation"

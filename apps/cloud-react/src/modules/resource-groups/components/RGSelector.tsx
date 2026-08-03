@@ -1,5 +1,6 @@
 import {
   Button,
+  cn,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -12,7 +13,6 @@ import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
 import { staggerDelay } from "@/components/console"
-import { cn } from "@/lib/utils"
 
 import { useResourceGroup } from "../resource-group.context"
 import { useResourceGroups, useSwitchResourceGroup } from "../resource-groups.hooks"

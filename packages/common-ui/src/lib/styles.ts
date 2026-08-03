@@ -53,20 +53,23 @@ export const animateSpin = css`
 
 /* glass-1: subtle (toolbars, stat cards) · glass-2: standard panel.
    Values match the consoles' own .glass-* utilities so the kit renders the
-   same whether or not the consumer defines those classes. */
+   same whether or not the consumer defines those classes — including the
+   radius, which reads --radius-xl (0.625rem in both consoles, since they
+   derive it from --radius) and falls back to Tailwind's stock 0.75rem for a
+   consumer that ships no radius scale. */
 
 export const glass1 = css`
   background: var(--glass-1-bg, rgb(255 255 255 / 0.55));
   backdrop-filter: blur(16px);
   border: 1px solid var(--border-glass, rgb(0 0 0 / 0.08));
-  border-radius: 0.75rem;
+  border-radius: var(--radius-xl, 0.75rem);
 `
 
 export const glass2 = css`
   background: var(--glass-2-bg, rgb(255 255 255 / 0.65));
   backdrop-filter: blur(28px);
   border: 1px solid var(--border-glass, rgb(0 0 0 / 0.08));
-  border-radius: 0.75rem;
+  border-radius: var(--radius-xl, 0.75rem);
 `
 
 /** glass-3: the most opaque tier — overlay cards that must read over content. */
@@ -74,7 +77,7 @@ export const glass3 = css`
   background: var(--glass-3-bg, rgb(255 255 255 / 0.78));
   backdrop-filter: blur(32px);
   border: 1px solid var(--border-glass, rgb(0 0 0 / 0.08));
-  border-radius: 0.75rem;
+  border-radius: var(--radius-xl, 0.75rem);
 `
 
 // tw-animate-css's animate-in / animate-out, reproduced for Radix's data-state

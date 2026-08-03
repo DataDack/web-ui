@@ -1,6 +1,5 @@
+import { cn } from "@datadack/common-ui"
 import { ArrowRight, TrendingDown, TrendingUp } from "lucide-react"
-
-import { cn } from "@/lib/utils"
 
 import { formatPrice, planQuotaDeltas } from "../../../components"
 import type { Plan } from "../../../managed-apps.types"

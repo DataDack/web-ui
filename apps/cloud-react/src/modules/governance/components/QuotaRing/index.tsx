@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react"
 
+import { cn } from "@datadack/common-ui"
 import { useTranslation } from "react-i18next"
-
-import { cn } from "@/lib/utils"
 
 import { type QuotaTone, quotaTone } from "./quota-tone"
 

@@ -1,9 +1,8 @@
-import { Input, Label } from "@datadack/common-ui"
+import { cn, Input, Label } from "@datadack/common-ui"
 import { Layers, Network } from "lucide-react"
 import type { UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 
-import { cn } from "@/lib/utils"
 import { RGField } from "@/modules/resource-groups/components/RGField"
 
 import type { FormValues } from "./schema"

@@ -1,8 +1,6 @@
-import { Button, Input, Label } from "@datadack/common-ui"
+import { Button, Input, Label, type TagRow } from "@datadack/common-ui"
 import { Plus, Tag, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
-
-import type { TagRow } from "@/lib/tags"
 
 interface TagEditorProps {
   rows: TagRow[]

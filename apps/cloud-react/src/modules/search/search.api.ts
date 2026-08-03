@@ -1,4 +1,5 @@
-import { parseTags, type TagsInput } from "@/lib/tags"
+import { parseTags, type TagsInput } from "@datadack/common-ui"
+
 import { apiGet } from "@/services/api/client"
 
 import { SEARCH_TYPE_LABELS, SEARCH_TYPE_ORDER } from "./search.constants"

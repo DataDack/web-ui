@@ -1,6 +1,6 @@
 import { useEffect, type ReactNode } from "react"
 
-import { Button, Input, Label, Textarea } from "@datadack/common-ui"
+import { Button, cn, Input, Label, Textarea } from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { AlignLeft, ArrowLeft, Check, Compass, LifeBuoy, PenLine, Send } from "lucide-react"
 import { Controller, useForm } from "react-hook-form"
@@ -9,7 +9,6 @@ import { useNavigate } from "react-router-dom"
 import { z } from "zod/v4"
 
 import { type StatusTone, PageHeader, Section } from "@/components/console"
-import { cn } from "@/lib/utils"
 import { useScreen } from "@/services/api/screen"
 
 import { PriorityBadge } from "../components/PriorityBadge"

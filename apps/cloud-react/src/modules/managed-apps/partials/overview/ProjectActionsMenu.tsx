@@ -1,6 +1,6 @@
-import { useTranslation } from "react-i18next"
 import {
   Button,
+  cn,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -8,9 +8,8 @@ import {
   DropdownMenuTrigger,
 } from "@datadack/common-ui"
 import { MoreHorizontal } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
-
-import { cn } from "@/lib/utils"
 
 import { MANAGED_APPS_ROUTES } from "../../managed-apps.constants"
 import type { ProjectEntry } from "../../managed-apps.state"

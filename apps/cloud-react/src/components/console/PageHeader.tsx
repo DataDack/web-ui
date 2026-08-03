@@ -1,9 +1,8 @@
 import type { ReactNode } from "react"
 
+import { cn } from "@datadack/common-ui"
 import { ChevronRight, type LucideIcon } from "lucide-react"
 import { Link } from "react-router-dom"
-
-import { cn } from "@/lib/utils"
 
 export interface Breadcrumb {
   label: string

@@ -1,7 +1,6 @@
+import { cn } from "@datadack/common-ui"
 import type { LucideIcon } from "lucide-react"
 import { motion } from "motion/react"
-
-import { cn } from "@/lib/utils"
 
 import { EASE } from "./motion-config"
 

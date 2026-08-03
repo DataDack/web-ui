@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react"
 
+import { type TagRow, tagRowsToRecord } from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Zap } from "lucide-react"
 import { useForm } from "react-hook-form"
@@ -8,7 +9,6 @@ import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
 
 import { CreateWizard, PageHeader, type KeyValueItem, type WizardStep } from "@/components/console"
-import { tagRowsToRecord, type TagRow } from "@/lib/tags"
 import { useNamingRule } from "@/modules/governance/governance.hooks"
 import { useScreen } from "@/services/api/screen"
 

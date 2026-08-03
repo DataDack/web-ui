@@ -1,4 +1,3 @@
-import { useTranslation } from "react-i18next"
 // The sticky right rail: what you have said, what is still missing, and save.
 //
 // The checklist is the replacement for a stepper. It gives the same "am I done?"
@@ -8,11 +7,11 @@ import { useTranslation } from "react-i18next"
 //
 // Stateless on purpose so it can live next to the page component.
 
-import { Button } from "@datadack/common-ui"
+import { Button, cn } from "@datadack/common-ui"
 import { Check, Circle, Loader2, Send } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
 import { Section } from "@/components/console"
-import { cn } from "@/lib/utils"
 
 import type { ReadinessRow, SectionId } from "./schema"
 import { SeverityChip } from "../../components/StateChips"

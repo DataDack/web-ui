@@ -1,13 +1,20 @@
-import { useTranslation } from "react-i18next"
 import { useCallback, useMemo, useState } from "react"
 
-import { actionsColumn, Badge, Button, DataTable, EmptyState, Switch } from "@datadack/common-ui"
+import {
+  actionsColumn,
+  Badge,
+  Button,
+  cn,
+  DataTable,
+  EmptyState,
+  Switch,
+} from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { BellRing, Plus, RefreshCw, Send, Trash2 } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 import { ConfirmDialog, PageHeader } from "@/components/console"
-import { cn } from "@/lib/utils"
 import { useScreen } from "@/services/api/screen"
 
 import {

@@ -1,10 +1,8 @@
-import { useTranslation } from "react-i18next"
 import { useState } from "react"
 
-import { Badge, Button, Input } from "@datadack/common-ui"
+import { Badge, Button, cn, Input } from "@datadack/common-ui"
 import { Eye, EyeOff, Trash2 } from "lucide-react"
-
-import { cn } from "@/lib/utils"
+import { useTranslation } from "react-i18next"
 
 import type { EnvRow } from "./env-types"
 

@@ -3,6 +3,7 @@ import { useMemo, useState, type ReactNode } from "react"
 import {
   Badge,
   Button,
+  cn,
   EmptyState,
   Input,
   Label,
@@ -43,7 +44,6 @@ import {
 } from "@/components/console"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useQueryParamState } from "@/hooks/use-query-param-state"
-import { cn } from "@/lib/utils"
 import { useScreen } from "@/services/api/screen"
 
 import { ActiveBadge } from "../components/ActiveBadge"

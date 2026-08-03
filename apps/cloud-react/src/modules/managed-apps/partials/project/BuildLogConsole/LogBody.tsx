@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef } from "react"
 
-import { cn } from "@/lib/utils"
+import { cn } from "@datadack/common-ui"
 
 /** How close to the bottom still counts as "at the bottom", in pixels. */
 const BOTTOM_THRESHOLD = 32

@@ -1,9 +1,7 @@
-import { useTranslation } from "react-i18next"
-import { Button, Skeleton } from "@datadack/common-ui"
+import { Button, cn, Skeleton } from "@datadack/common-ui"
 import { AlertCircle, ArrowRight, Sparkles } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
-
-import { cn } from "@/lib/utils"
 
 import { QuotaMeter } from "./QuotaMeter"
 import { MANAGED_APPS_ROUTES } from "../../managed-apps.constants"

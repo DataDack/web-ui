@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react"
 
 import {
   Button,
+  cn,
   copyColumn,
   DataTable,
   dateColumn,
@@ -12,8 +13,6 @@ import {
 import type { ColumnDef } from "@tanstack/react-table"
 import { Globe, RefreshCw, Search } from "lucide-react"
 import { useTranslation } from "react-i18next"
-
-import { cn } from "@/lib/utils"
 
 import { useAdminStaticIPAllocations } from "../superadmin.hooks"
 import type { StaticIPAllocation } from "../superadmin.types"

@@ -1,6 +1,5 @@
+import { cn } from "@datadack/common-ui"
 import { useTranslation } from "react-i18next"
-
-import { cn } from "@/lib/utils"
 
 /** Compact active/inactive pill used across the admin catalog tables. */
 export function ActiveBadge({ active }: Readonly<{ active: boolean }>) {

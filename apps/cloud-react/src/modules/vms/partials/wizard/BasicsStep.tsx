@@ -1,9 +1,8 @@
-import { Input, Switch, Textarea } from "@datadack/common-ui"
+import { Input, Switch, type TagRow, Textarea } from "@datadack/common-ui"
 import type { UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 
 import { TagEditor } from "@/components/console"
-import type { TagRow } from "@/lib/tags"
 import { RGField } from "@/modules/resource-groups/components/RGField"
 
 import { FieldLabel, FieldError } from "./wizard.shared"

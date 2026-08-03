@@ -1,8 +1,7 @@
-import { Badge } from "@datadack/common-ui"
+import { Badge, cn } from "@datadack/common-ui"
 import { useTranslation } from "react-i18next"
 
 import type { StatusTone } from "@/components/console"
-import { cn } from "@/lib/utils"
 
 import { priorityMeta } from "../support-tickets.constants"
 import type { TicketPriority } from "../support-tickets.types"

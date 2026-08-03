@@ -1,9 +1,9 @@
-import { useTranslation } from "react-i18next"
 import { useEffect } from "react"
 
 import {
   Badge,
   Button,
+  cn,
   ComboboxInput,
   Input,
   Select,
@@ -15,9 +15,9 @@ import {
 } from "@datadack/common-ui"
 import { CheckCircle2, Loader2, Plus, Unlink } from "lucide-react"
 import { useWatch, type UseFormReturn } from "react-hook-form"
+import { useTranslation } from "react-i18next"
 import { SiJira } from "react-icons/si"
 
-import { cn } from "@/lib/utils"
 import {
   useDisconnectJira,
   useJiraConnections,

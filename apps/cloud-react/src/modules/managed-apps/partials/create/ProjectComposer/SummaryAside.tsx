@@ -1,8 +1,6 @@
-import { useTranslation } from "react-i18next"
-import { Button } from "@datadack/common-ui"
+import { Button, cn } from "@datadack/common-ui"
 import { AlertCircle, GitPullRequest, Loader2, Rocket } from "lucide-react"
-
-import { cn } from "@/lib/utils"
+import { useTranslation } from "react-i18next"
 
 import type { ComposerValues } from "./schema"
 import { projectTypeLabel } from "../../../components"

@@ -3,6 +3,7 @@ import { useMemo, useState } from "react"
 import {
   actionsColumn,
   Button,
+  cn,
   DataTable,
   dateColumn,
   EmptyState,
@@ -16,7 +17,6 @@ import { Plus, RefreshCw, Search, ShieldCheck, ShieldOff, Users } from "lucide-r
 import { useTranslation } from "react-i18next"
 
 import { ConfirmDialog, PageHeader } from "@/components/console"
-import { cn } from "@/lib/utils"
 import { useAuth } from "@/modules/auth/auth.context"
 import { useScreen } from "@/services/api/screen"
 

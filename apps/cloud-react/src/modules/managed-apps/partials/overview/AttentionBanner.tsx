@@ -1,8 +1,6 @@
-import { Button } from "@datadack/common-ui"
+import { Button, cn } from "@datadack/common-ui"
 import { ArrowRight, GitPullRequest, Unplug, XCircle } from "lucide-react"
 import { Link, useSearchParams } from "react-router-dom"
-
-import { cn } from "@/lib/utils"
 
 import { MANAGED_APPS_ROUTES } from "../../managed-apps.constants"
 import type { ProjectEntry } from "../../managed-apps.state"

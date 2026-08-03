@@ -2,6 +2,7 @@ import { useState } from "react"
 
 import {
   Button,
+  cn,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -13,7 +14,6 @@ import { Check, ChevronsUpDown, Plus, Star, Wallet } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { staggerDelay } from "@/components/console"
-import { cn } from "@/lib/utils"
 
 import { useActiveAccount, useSwitchAccount } from "../accounts.hooks"
 import { CreateAccountSheet } from "../partials/CreateAccountSheet"

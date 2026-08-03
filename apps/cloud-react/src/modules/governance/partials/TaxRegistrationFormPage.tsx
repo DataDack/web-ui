@@ -2,6 +2,7 @@ import { useEffect } from "react"
 
 import {
   Button,
+  cn,
   Input,
   Label,
   Select,
@@ -18,7 +19,6 @@ import { useNavigate, useParams } from "react-router-dom"
 import { z } from "zod/v4"
 
 import { PageHeader, Section } from "@/components/console"
-import { cn } from "@/lib/utils"
 import { useScreen } from "@/services/api/screen"
 
 import { TAX_SETTINGS_ROUTES } from "../governance.constants"

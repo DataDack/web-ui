@@ -1,8 +1,7 @@
+import { cn } from "@datadack/common-ui"
 import { CheckCircle2 } from "lucide-react"
 import { motion } from "motion/react"
 import type { UseFormReturn } from "react-hook-form"
-
-import { cn } from "@/lib/utils"
 
 import type { FormValues } from "./wizard.types"
 

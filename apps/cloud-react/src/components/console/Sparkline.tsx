@@ -1,6 +1,6 @@
 import { useId } from "react"
 
-import { cn } from "@/lib/utils"
+import { cn } from "@datadack/common-ui"
 
 interface SparklineProps {
   /** Raw series values; rendered left → right, auto-scaled to fit. */

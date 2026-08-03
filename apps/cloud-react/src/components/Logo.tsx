@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils"
+import { cn } from "@datadack/common-ui"
 
 /**
  * DataDack Cloud brand lockup: the official hexagon mark + the "Data" / gold

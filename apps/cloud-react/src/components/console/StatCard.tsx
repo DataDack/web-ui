@@ -1,8 +1,6 @@
-import { Skeleton } from "@datadack/common-ui"
+import { cn, Skeleton } from "@datadack/common-ui"
 import { type LucideIcon, TrendingDown, TrendingUp } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
-
-import { cn } from "@/lib/utils"
 
 import { AnimatedNumber } from "./motion/AnimatedNumber"
 import { DUR, EASE } from "./motion/motion-config"

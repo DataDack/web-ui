@@ -1,8 +1,6 @@
-import { Badge } from "@datadack/common-ui"
+import { Badge, cn } from "@datadack/common-ui"
 import { Loader2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
-
-import { cn } from "@/lib/utils"
 
 import { getStatusConfig, TONE_CLASSES, TONE_DOT_CLASSES } from "./status-config"
 

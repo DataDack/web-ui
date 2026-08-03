@@ -1,8 +1,13 @@
 import { useRef, type KeyboardEvent } from "react"
 
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@datadack/common-ui"
-
-import { cn } from "@/lib/utils"
+import {
+  cn,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@datadack/common-ui"
 
 /**
  * A guided CIDR builder: four octet boxes + a prefix selector. Replaces the

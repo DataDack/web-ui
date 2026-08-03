@@ -1,8 +1,7 @@
+import { cn } from "@datadack/common-ui"
 import { ShieldCheck } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { NavLink } from "react-router-dom"
-
-import { cn } from "@/lib/utils"
 
 import { ADMIN_NAV } from "./admin-nav"
 

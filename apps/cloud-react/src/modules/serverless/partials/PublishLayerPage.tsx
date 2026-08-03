@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react"
 
-import { Badge, Input, Label } from "@datadack/common-ui"
+import { Badge, cn, Input, Label } from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Layers, UploadCloud } from "lucide-react"
 import { useForm, type UseFormReturn } from "react-hook-form"
@@ -10,7 +10,6 @@ import { toast } from "sonner"
 import { z } from "zod/v4"
 
 import { CreateWizard, PageHeader, type WizardStep } from "@/components/console"
-import { cn } from "@/lib/utils"
 import { useNamingRule } from "@/modules/governance/governance.hooks"
 import type { NamingRule } from "@/modules/governance/governance.types"
 import { namingNameSchema } from "@/modules/governance/governance.validation"

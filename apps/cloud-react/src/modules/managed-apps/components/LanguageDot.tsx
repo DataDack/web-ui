@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils"
+import { cn } from "@datadack/common-ui"
 
 /**
  * GitHub's own language colours, for the languages this product actually

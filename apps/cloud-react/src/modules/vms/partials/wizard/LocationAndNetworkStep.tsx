@@ -7,6 +7,7 @@ import {
   AccordionTrigger,
   Button,
   Checkbox,
+  cn,
   Input,
   Select,
   SelectContent,
@@ -31,7 +32,6 @@ import { motion } from "motion/react"
 import type { UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 
-import { cn } from "@/lib/utils"
 import type { RegionCatalog, StaticIPPriceOption } from "@/modules/catalog/catalog.types"
 import { VPC_ROUTES } from "@/modules/vpc/vpc.constants"
 import {

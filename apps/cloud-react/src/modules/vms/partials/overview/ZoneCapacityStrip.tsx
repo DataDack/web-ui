@@ -1,9 +1,7 @@
 import { useMemo } from "react"
 
-import { Skeleton } from "@datadack/common-ui"
+import { cn, Skeleton } from "@datadack/common-ui"
 import { useTranslation } from "react-i18next"
-
-import { cn } from "@/lib/utils"
 
 import type { ComputeZoneStatus } from "../../vms.types"
 

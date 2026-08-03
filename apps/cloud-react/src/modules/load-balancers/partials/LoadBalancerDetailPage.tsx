@@ -3,13 +3,14 @@ import { useMemo, useState } from "react"
 import {
   Button,
   CopyButton,
+  copyColumn,
   DataTable,
+  type DataTableColumnMeta,
   EmptyState,
+  parseTags,
   Skeleton,
   TagList,
-  copyColumn,
   textColumn,
-  type DataTableColumnMeta,
 } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { AlertTriangle, Boxes, Crosshair, Ear, Info, Layers, Network, Trash2 } from "lucide-react"
@@ -17,11 +18,10 @@ import { useTranslation } from "react-i18next"
 import { Link, useNavigate, useParams } from "react-router-dom"
 
 import { ConfirmDialog, DetailPage, KeyValueGrid, Section, StatusBadge } from "@/components/console"
-import { parseTags } from "@/lib/tags"
 import { TargetGroupsPanel } from "@/modules/target-groups/partials/TargetGroupsPanel"
 import { TG_ROUTES } from "@/modules/target-groups/target-groups.constants"
-import type { Target } from "@/modules/target-groups/target-groups.types"
 import { useTargetGroups, useTargets } from "@/modules/target-groups/target-groups.hooks"
+import type { Target } from "@/modules/target-groups/target-groups.types"
 import { VMS_ROUTES } from "@/modules/vms/vms.constants"
 import { useInstances } from "@/modules/vms/vms.hooks"
 import { useAllSubnets, useVPC, useVPCs } from "@/modules/vpc/vpc.hooks"

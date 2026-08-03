@@ -1,3 +1,4 @@
+import { cn } from "@datadack/common-ui"
 import {
   Activity,
   Boxes,
@@ -15,7 +16,6 @@ import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
 import { Stagger, StaggerItem } from "@/components/console"
-import { cn } from "@/lib/utils"
 
 interface QuickAction {
   id: string

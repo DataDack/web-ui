@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
 
-import { Button } from "@datadack/common-ui"
+import { Button, type TagRow, tagRowsToRecord } from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
   Box,
@@ -19,7 +19,6 @@ import { useTranslation } from "react-i18next"
 import { Link, useNavigate } from "react-router-dom"
 
 import { ConfirmDialog, PageHeader } from "@/components/console"
-import { tagRowsToRecord, type TagRow } from "@/lib/tags"
 import { evaluateCreditGuard, type CreditGuardVerdict } from "@/modules/billing/billing.guard"
 import { useCreditBalance, useSubscriptions } from "@/modules/billing/billing.hooks"
 import { CreditGuardDialog } from "@/modules/billing/partials/CreditGuardDialog"

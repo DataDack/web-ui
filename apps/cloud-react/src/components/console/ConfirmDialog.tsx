@@ -2,6 +2,7 @@ import { useState, type ReactNode } from "react"
 
 import {
   Button,
+  cn,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -12,8 +13,6 @@ import {
 } from "@datadack/common-ui"
 import { Loader2, TriangleAlert } from "lucide-react"
 import { useTranslation } from "react-i18next"
-
-import { cn } from "@/lib/utils"
 
 interface ConfirmDialogProps {
   open: boolean

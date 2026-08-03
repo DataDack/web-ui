@@ -3,18 +3,20 @@ import { useMemo, useState } from "react"
 import {
   Badge,
   Button,
+  cn,
+  DataTable,
+  type DataTableColumnMeta,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
   EmptyState,
+  parseTags,
   Skeleton,
   Switch,
   TagList,
-  DataTable,
   textColumn,
-  type DataTableColumnMeta,
 } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import {
@@ -50,8 +52,6 @@ import {
   StatusBadge,
   type KeyValueItem,
 } from "@/components/console"
-import { parseTags } from "@/lib/tags"
-import { cn } from "@/lib/utils"
 import { useDetachDisk, useDisks } from "@/modules/disks/disks.hooks"
 import type { Disk } from "@/modules/disks/disks.types"
 import { useSSHKeys } from "@/modules/ssh-keys/ssh-keys.hooks"

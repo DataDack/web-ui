@@ -12,6 +12,7 @@ injectGlobal(`
     --background: #f5f5f6;
     --foreground: #1a1a1b;
     --card: #ffffff;
+    --card-foreground: #1a1a1b;
     --popover: #ffffff;
     --popover-foreground: #1a1a1b;
     --primary: #c9971b;
@@ -62,6 +63,7 @@ injectGlobal(`
     --background: #0a0a0d;
     --foreground: #f2f2f5;
     --card: #18181c;
+    --card-foreground: #e5e2e3;
     --popover: #201f20;
     --popover-foreground: #e5e2e3;
     --primary: #e9b94f;

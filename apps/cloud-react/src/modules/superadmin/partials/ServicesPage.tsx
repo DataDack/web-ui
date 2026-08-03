@@ -3,6 +3,7 @@ import { useMemo, useState } from "react"
 import {
   actionsColumn,
   Button,
+  cn,
   DataTable,
   EmptyState,
   nameColumn,
@@ -14,7 +15,6 @@ import { Ban, CheckCircle2, Clock, LayoutGrid, Pencil, Plus, RefreshCw, Trash2 }
 import { useTranslation } from "react-i18next"
 
 import { ConfirmDialog, PageHeader } from "@/components/console"
-import { cn } from "@/lib/utils"
 import { useScreen } from "@/services/api/screen"
 
 import { useAdminServices, useDeleteService, useUpdateServiceState } from "../superadmin.hooks"

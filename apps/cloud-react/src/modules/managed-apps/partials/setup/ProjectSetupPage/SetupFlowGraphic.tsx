@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils"
+import { cn } from "@datadack/common-ui"
 
 interface SetupFlowGraphicProps {
   /** Which stage the project has reached — earlier nodes render as done. */

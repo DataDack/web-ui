@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react"
 
 import {
   Button,
+  cn,
   Input,
   Label,
   Popover,
@@ -12,7 +13,6 @@ import {
 import { Check, ChevronsUpDown, FolderTree, Loader2, Plus } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { cn } from "@/lib/utils"
 import { useNamingRule } from "@/modules/governance/governance.hooks"
 import { namingNameSchema } from "@/modules/governance/governance.validation"
 

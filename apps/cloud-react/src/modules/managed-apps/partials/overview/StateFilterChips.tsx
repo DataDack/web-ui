@@ -1,8 +1,7 @@
+import { Button, cn } from "@datadack/common-ui"
 import { useTranslation } from "react-i18next"
-import { Button } from "@datadack/common-ui"
 
 import { TONE_CLASSES, TONE_DOT_CLASSES } from "@/components/console/status-config"
-import { cn } from "@/lib/utils"
 
 import type { StateChip, StateFilter } from "./project-list"
 

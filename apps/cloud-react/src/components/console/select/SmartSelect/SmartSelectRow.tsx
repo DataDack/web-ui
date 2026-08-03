@@ -1,6 +1,5 @@
+import { cn } from "@datadack/common-ui"
 import { Check } from "lucide-react"
-
-import { cn } from "@/lib/utils"
 
 import type { SmartSelectRowProps } from "./smart-select.types"
 

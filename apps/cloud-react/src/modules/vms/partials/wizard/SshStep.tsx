@@ -2,6 +2,7 @@ import { useState, useMemo, useRef } from "react"
 
 import {
   Button,
+  cn,
   Input,
   Select,
   SelectContent,
@@ -21,7 +22,6 @@ import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 import { canGenerateKeyPair, generateEd25519KeyPair } from "@/lib/ssh-keygen"
-import { cn } from "@/lib/utils"
 import { useNamingRule } from "@/modules/governance/governance.hooks"
 import { namingNameSchema } from "@/modules/governance/governance.validation"
 import { useSSHKeys, useCreateSSHKey } from "@/modules/ssh-keys/ssh-keys.hooks"

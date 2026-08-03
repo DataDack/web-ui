@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-import { Button, Input, Label } from "@datadack/common-ui"
+import { Button, cn, Input, Label } from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Building2, Check, Loader2, User } from "lucide-react"
 import { Controller, useForm } from "react-hook-form"
@@ -8,7 +8,6 @@ import { useTranslation } from "react-i18next"
 import { z } from "zod/v4"
 
 import type { WizardStepMeta } from "@/components/console/wizard/WizardStepper"
-import { cn } from "@/lib/utils"
 import { PolicyConsent } from "@/modules/auth/components/PolicyConsent"
 import { CountrySelect } from "@/modules/countries/CountrySelect"
 import { OnboardingLayout } from "@/modules/onboarding/partials/OnboardingLayout"

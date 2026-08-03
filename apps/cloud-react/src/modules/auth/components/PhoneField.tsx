@@ -1,7 +1,6 @@
-import { Input, Label } from "@datadack/common-ui"
+import { cn, Input, Label } from "@datadack/common-ui"
 import { useTranslation } from "react-i18next"
 
-import { cn } from "@/lib/utils"
 import { CountrySelect } from "@/modules/countries/CountrySelect"
 
 import { type PhoneInputState, placeholderForCountry } from "../phone"

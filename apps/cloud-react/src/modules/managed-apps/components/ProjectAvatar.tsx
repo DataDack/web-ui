@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils"
+import { cn } from "@datadack/common-ui"
 
 /**
  * Two projects on the same repository, with the same branch and the same last

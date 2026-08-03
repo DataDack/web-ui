@@ -1,4 +1,5 @@
-import { parseTags, type TagsInput } from "@/lib/tags"
+import { parseTags, type TagsInput } from "@datadack/common-ui"
+
 import { apiDelete, apiGet, apiPost, apiPut, LIST_QUERY } from "@/services/api/client"
 
 import { priorityMeta } from "./support-tickets.constants"

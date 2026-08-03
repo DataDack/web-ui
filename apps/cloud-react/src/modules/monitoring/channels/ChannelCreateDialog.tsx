@@ -1,8 +1,8 @@
-import { useTranslation } from "react-i18next"
 import { useEffect } from "react"
 
 import {
   Button,
+  cn,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -19,9 +19,8 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2, Save, Send, TriangleAlert } from "lucide-react"
 import { useForm, useWatch, type UseFormReturn } from "react-hook-form"
+import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
-
-import { cn } from "@/lib/utils"
 
 import { useCreateChannel, useTestChannel } from "../monitoring.hooks"
 import type { ChannelResponse, ChannelType } from "../monitoring.types"
@@ -65,10 +64,10 @@ function SavedButBrokenNotice({ name }: Readonly<{ name: string }>) {
     <div className="flex items-start gap-2 rounded-md border border-status-warning/30 bg-status-warning-bg p-3 text-[13px]">
       <TriangleAlert className="mt-px size-4 shrink-0 text-status-warning" />
       <p className="text-muted-foreground">
-        {t("monitoring.channelCreateDialog.savedAs")} <span className="font-mono text-foreground">{name}</span>, but the test
-        notification never arrived — alarms sent there would reach nobody. Fix the details below and
-        save again, then delete <span className="font-mono text-foreground">{name}</span> from the
-        list.
+        {t("monitoring.channelCreateDialog.savedAs")}{" "}
+        <span className="font-mono text-foreground">{name}</span>, but the test notification never
+        arrived — alarms sent there would reach nobody. Fix the details below and save again, then
+        delete <span className="font-mono text-foreground">{name}</span> from the list.
       </p>
     </div>
   )
@@ -221,7 +220,11 @@ export function ChannelCreateDialog({
 
             <div className="space-y-1.5">
               <FieldLabel>Name</FieldLabel>
-              <Input {...register("name")} placeholder={t("monitoring.channelCreateDialog.eGOpsAlerts")} autoComplete="off" />
+              <Input
+                {...register("name")}
+                placeholder={t("monitoring.channelCreateDialog.eGOpsAlerts")}
+                autoComplete="off"
+              />
               <FieldError message={errors.name?.message} />
             </div>
 
