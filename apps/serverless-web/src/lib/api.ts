@@ -406,12 +406,11 @@ export async function fetchTenants(): Promise<TenantList> {
 }
 
 /**
- * Who the control plane thinks is calling.
+ * Who the control plane thinks is calling, and which accounts they can reach.
  *
- * A 401 here is the expected answer for a signed-out operator, not a failure:
- * it is turned into an unauthenticated session so the guard can render the
- * sign-in form instead of an error page. Anything else is a real problem and
- * propagates.
+ * A 401 here is the expected answer when no token is configured, not a failure:
+ * it becomes an unauthenticated session so the console renders its empty states
+ * rather than an error page. Anything else is a real problem and propagates.
  */
 export async function fetchSession(): Promise<Session> {
   try {
@@ -425,17 +424,3 @@ export async function fetchSession(): Promise<Session> {
   }
 }
 
-export interface Credentials {
-  email: string
-  password: string
-}
-
-/** Signs a platform super admin in. The session lands in an HttpOnly cookie. */
-export async function signIn(credentials: Credentials): Promise<Session> {
-  const { data } = await http.post<unknown>("/v1/auth/login", credentials)
-  return sessionSchema.parse(data)
-}
-
-export async function signOut(): Promise<void> {
-  await http.post("/v1/auth/logout")
-}

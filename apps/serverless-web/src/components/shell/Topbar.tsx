@@ -1,7 +1,6 @@
 import { RefreshCw } from "lucide-react"
 import { Link } from "react-router-dom"
 
-import { AccountMenu } from "@/components/shell/AccountMenu"
 import { ConnectionSettings } from "@/components/shell/ConnectionSettings"
 import { ScopeSwitcher } from "@/components/shell/ScopeSwitcher"
 
@@ -43,7 +42,6 @@ export function Topbar({ onRefresh, refreshing = false, status }: Readonly<Topba
           </Button>
           <ConnectionSettings />
           <ThemeToggle />
-          <AccountMenu />
         </div>
       </div>
     </header>
