@@ -2,7 +2,7 @@ import { css, cx } from "../lib/emotion"
 import { mix } from "../lib/styles"
 
 const wrap = css`
-  border-radius: 0.75rem;
+  border-radius: var(--radius-xl, 0.75rem);
   border: 1px solid var(--border);
   background: var(--card);
   padding: 16px;

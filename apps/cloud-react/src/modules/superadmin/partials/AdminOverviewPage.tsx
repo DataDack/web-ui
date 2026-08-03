@@ -1,6 +1,5 @@
 import { useMemo } from "react"
 
-import { Button, EmptyState, Skeleton, StatGrid } from "@datadack/common-ui"
 import {
   ArrowRight,
   Building2,
@@ -14,9 +13,11 @@ import {
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
-import { PageHeader, Section, StatCard } from "@/components/console"
+import { PageHeader, Section, StatGrid } from "@/components/console"
 import { useAllSupportTickets } from "@/modules/support-tickets/support-tickets.hooks"
 import { useScreen } from "@/services/api/screen"
+
+import { Button, EmptyState, Skeleton } from "@datadack/common-ui"
 
 import { useAdminPlatformOverview, useAdminQuotaRequestCount } from "../superadmin.hooks"
 
@@ -173,17 +174,7 @@ export function AdminOverviewPage() {
         }
       />
 
-      <StatGrid>
-        {stats.map((stat) => (
-          <StatCard
-            key={stat.label}
-            label={stat.label}
-            value={stat.value}
-            icon={stat.icon}
-            loading={stat.loading}
-          />
-        ))}
-      </StatGrid>
+      <StatGrid stats={stats} />
 
       <Section
         variant="panel"

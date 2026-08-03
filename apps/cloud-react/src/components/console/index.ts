@@ -19,8 +19,11 @@ export { MetricChart } from "./MetricChart"
 export { SegmentedControl } from "./SegmentedControl"
 export type { SegmentedOption } from "./SegmentedControl"
 export { ComingSoon } from "./ComingSoon"
-export { KeyValueGrid } from "./KeyValueGrid"
-export type { KeyValueItem } from "./KeyValueGrid"
+// KeyValueGrid now lives in the design system. The app copy is gone: the kit
+// version carries the `copyable` items and the 2-column default this console
+// relies on, so call sites did not have to change.
+export { KeyValueGrid } from "@datadack/common-ui"
+export type { KeyValueItem } from "@datadack/common-ui"
 export { CidrInput } from "./CidrInput"
 export type { CidrInputProps } from "./CidrInput"
 export { TagEditor } from "./TagEditor"

@@ -1,5 +1,14 @@
 import { useQuery } from "@tanstack/react-query"
-import { Activity, ArrowLeft, Code2, Container, GitBranch, History, Package, Settings2 } from "lucide-react"
+import {
+  Activity,
+  ArrowLeft,
+  Code2,
+  Container,
+  GitBranch,
+  History,
+  Package,
+  Settings2,
+} from "lucide-react"
 import { Link, useParams, useSearchParams } from "react-router-dom"
 
 import { http } from "@/lib/api"
@@ -174,6 +183,7 @@ function ConfigurationTab({ fn }: Readonly<{ fn: FunctionEntity }>) {
       <section className="glass-2 rounded-xl p-5">
         <h3 className="mb-4 text-sm font-semibold">General</h3>
         <KeyValueGrid
+          columns={3}
           items={[
             { label: "Runtime", value: fn.runtime ?? fn.runtimeMode, mono: true },
             { label: "Handler", value: fn.handler, mono: true },
@@ -208,7 +218,10 @@ function ConfigurationTab({ fn }: Readonly<{ fn: FunctionEntity }>) {
         {env.length === 0 ? (
           <p className="text-muted-foreground text-[13px]">None set.</p>
         ) : (
-          <KeyValueGrid items={env.map(([key, value]) => ({ label: key, value, mono: true }))} />
+          <KeyValueGrid
+            columns={3}
+            items={env.map(([key, value]) => ({ label: key, value, mono: true }))}
+          />
         )}
       </section>
     </div>

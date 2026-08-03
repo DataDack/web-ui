@@ -1,12 +1,12 @@
 import { type ReactNode, useState } from "react"
 
-import { Button, cn } from "@datadack/common-ui"
 import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 import type { FieldValues, Path, UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 
-import type { KeyValueItem } from "../KeyValueGrid"
+import { Button, cn, type KeyValueItem } from "@datadack/common-ui"
+
 import { WizardReviewStep } from "./WizardReviewStep"
 import { WizardStepper } from "./WizardStepper"
 import { DUR, EASE } from "../motion/motion-config"

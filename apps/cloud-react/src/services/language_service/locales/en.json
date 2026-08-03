@@ -3964,6 +3964,7 @@
     "empty": "No functions yet",
     "emptyHint": "Deploy your first function to see it here.",
     "tabs": {
+      "code": "Code",
       "monitor": "Monitor",
       "configuration": "Configuration",
       "versions": "Versions",

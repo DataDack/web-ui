@@ -50,9 +50,15 @@ export {
 } from "./console/columns"
 export { KeyValueGrid, type KeyValueItem } from "./console/KeyValueGrid"
 export { Logo } from "./console/Logo"
-export { PageHeader } from "./console/PageHeader"
+export { PageHeader, type Breadcrumb } from "./console/PageHeader"
 export { cellMono, cellText, ResourceTable } from "./console/ResourceTable"
-export { StatCard, StatGrid, type StatCardProps, type StatColor } from "./console/StatCard"
+export {
+  StatCard,
+  statGridClass,
+  StatGrid,
+  type StatCardProps,
+  type StatColor,
+} from "./console/StatCard"
 export { StatusBadge } from "./console/StatusBadge"
 export { ThemeProvider, useTheme } from "./console/ThemeProvider"
 export { ThemeToggle } from "./console/ThemeToggle"

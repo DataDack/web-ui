@@ -1,19 +1,5 @@
 import { useMemo, useState } from "react"
 
-import type { ColumnDef } from "@tanstack/react-table"
-import { Activity, GitBranch, History, Play, Settings2, Trash2, Zap } from "lucide-react"
-import { useTranslation } from "react-i18next"
-import { useNavigate, useParams } from "react-router-dom"
-
-import {
-  ConfirmDialog,
-  DetailPage,
-  KeyValueGrid,
-  Section,
-  type DetailTab,
-} from "@/components/console"
-import { useScreen } from "@/services/api/screen"
-
 import {
   actionsColumn,
   Badge,
@@ -26,7 +12,21 @@ import {
   Textarea,
   textColumn,
 } from "@datadack/common-ui"
-import { MonitoringPlaceholder } from "@datadack/serverless"
+import { CodeEditorPlaceholder, MonitoringPlaceholder } from "@datadack/serverless"
+import type { ColumnDef } from "@tanstack/react-table"
+import { Activity, Code2, GitBranch, History, Play, Settings2, Trash2, Zap } from "lucide-react"
+import { useTranslation } from "react-i18next"
+import { useNavigate, useParams } from "react-router-dom"
+
+import {
+  ConfirmDialog,
+  DetailPage,
+  KeyValueGrid,
+  Section,
+  type DetailTab,
+} from "@/components/console"
+import { useScreen } from "@/services/api/screen"
+
 
 import { SERVERLESS_ROUTES } from "../serverless.constants"
 import {
@@ -74,6 +74,13 @@ export function ServerlessFunctionDetailPage() {
   }
 
   const tabs: DetailTab[] = [
+    {
+      value: "code",
+      label: t("serverless.tabs.code"),
+      icon: Code2,
+      // Shared with serverless-web's Code tab: same placeholder, same copy.
+      content: <CodeEditorPlaceholder functionName={fn.name} runtime={fn.runtime} />,
+    },
     {
       value: "monitor",
       label: t("serverless.tabs.monitor"),

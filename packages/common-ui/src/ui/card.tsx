@@ -6,7 +6,7 @@ const card = css`
   display: flex;
   flex-direction: column;
   gap: 24px;
-  border-radius: 0.75rem;
+  border-radius: var(--radius-xl, 0.75rem);
   border: 1px solid var(--border);
   background: var(--card);
   padding-top: 24px;

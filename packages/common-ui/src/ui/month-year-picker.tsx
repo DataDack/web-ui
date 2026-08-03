@@ -20,7 +20,7 @@ const MONTHS = [
 ] as const
 
 const wrap = css`
-  border-radius: 0.75rem;
+  border-radius: var(--radius-xl, 0.75rem);
   border: 1px solid var(--border);
   background: var(--card);
   color: var(--card-foreground);

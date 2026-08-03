@@ -52,11 +52,16 @@ export const animateSpin = css`
 `
 
 /* glass-1: subtle (toolbars, stat cards) · glass-2: standard panel.
-   Values match the consoles' own .glass-* utilities so the kit renders the
-   same whether or not the consumer defines those classes — including the
-   radius, which reads --radius-xl (0.625rem in both consoles, since they
-   derive it from --radius) and falls back to Tailwind's stock 0.75rem for a
-   consumer that ships no radius scale. */
+   Background, blur and border match the consoles' own .glass-* utilities so the
+   kit renders the same whether or not the consumer defines those classes. Two
+   deliberate exceptions: glass-3's blur is lighter here than in the apps, and
+   the apps set no radius on .glass-3 at all.
+
+   The radius reads --radius-xl — 0.625rem in both consoles, which derive it from
+   --radius — and falls back to Tailwind's stock 0.75rem for a consumer that
+   ships no radius scale. Every rounded surface in the kit reads this same token
+   (card, DataTable, the two pickers), so a Card inside a glass panel cannot
+   drift from the panel it sits in. */
 
 export const glass1 = css`
   background: var(--glass-1-bg, rgb(255 255 255 / 0.55));

@@ -1,8 +1,7 @@
-import { Button } from "@datadack/common-ui"
 import { Pencil } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { KeyValueGrid, type KeyValueItem } from "../KeyValueGrid"
+import { Button, KeyValueGrid, type KeyValueItem } from "@datadack/common-ui"
 
 export interface ReviewGroup {
   title: string

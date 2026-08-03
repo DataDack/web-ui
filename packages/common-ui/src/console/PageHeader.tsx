@@ -84,6 +84,7 @@ const icon = css`
 `
 
 const heading = css`
+  color: var(--foreground);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -100,7 +101,7 @@ const heading = css`
 
 const blurb = css`
   color: var(--muted-foreground);
-  margin-top: 6px;
+  margin-top: 4px;
   font-size: 14px;
   line-height: 20px;
 `
@@ -185,14 +186,20 @@ export function PageHeader({
       )}
       <div className={rowTop}>
         <div className={identity}>
-          <div className={titleRow}>
-            {Icon && iconPlacement === "tile" && (
+          {/* The flex row exists only to sit the tile next to the title. Without a
+              tile it would still turn the h1 into a flex item, which sizes to its
+              content instead of the column — and the ellipsis would then clip at a
+              different width than the same title rendered as a block. */}
+          {Icon && iconPlacement === "tile" ? (
+            <div className={titleRow}>
               <div className={cx(glass1, iconTile)}>
                 <Icon className={icon} />
               </div>
-            )}
+              <h1 className={heading}>{title}</h1>
+            </div>
+          ) : (
             <h1 className={heading}>{title}</h1>
-          </div>
+          )}
           {description && <p className={blurb}>{description}</p>}
           {meta && <div className={metaRow}>{meta}</div>}
         </div>

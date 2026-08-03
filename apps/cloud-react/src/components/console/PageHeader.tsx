@@ -1,64 +1,34 @@
-import type { ReactNode } from "react"
+import type { ComponentProps, ReactNode } from "react"
 
-import { cn } from "@datadack/common-ui"
-import { ChevronRight, type LucideIcon } from "lucide-react"
 import { Link } from "react-router-dom"
 
-export interface Breadcrumb {
-  label: string
-  to?: string
-}
+import { type Breadcrumb, PageHeader as KitPageHeader } from "@datadack/common-ui"
 
-interface PageHeaderProps {
-  title: string
-  description?: string
-  icon?: LucideIcon
-  breadcrumbs?: Breadcrumb[]
-  /** Right-aligned action slot (refresh button, primary CTA, ...) */
-  actions?: ReactNode
-  /** Extra row under the title (status badges, meta chips, ...) */
-  meta?: ReactNode
-  className?: string
-}
+export type { Breadcrumb }
 
+/** Turns a crumb into client-side navigation instead of a document load. */
+const routerLink = (crumb: Breadcrumb, children: ReactNode) => (
+  <Link to={crumb.to ?? ""}>{children}</Link>
+)
+
+/**
+ * The console's PageHeader: the design system's, wired to this app's router.
+ *
+ * The kit cannot import react-router, and cannot take it through a context
+ * either — @datadack/serverless bundles its own copy of the kit, so a provider
+ * mounted through one instance is invisible to components resolved from the
+ * other. It asks for a `renderLink` callback instead, and this is the one place
+ * that answers it. Without this wrapper every one of the ~80 headers in this
+ * console would have to pass the same callback itself.
+ *
+ * `iconPlacement` defaults to "crumb" rather than the kit's "tile": every header
+ * here pairs an icon with a breadcrumb trail and expects the small leading
+ * glyph, not the 36px tile the serverless console uses.
+ */
 export function PageHeader({
-  title,
-  description,
-  icon: Icon,
-  breadcrumbs,
-  actions,
-  meta,
-  className,
-}: Readonly<PageHeaderProps>) {
-  return (
-    <div className={cn("mb-6", className)}>
-      {breadcrumbs && breadcrumbs.length > 0 && (
-        <nav className="flex items-center gap-1 mb-2 text-[13px] text-muted-foreground">
-          {Icon && <Icon className="size-3.5 mr-1" />}
-          {breadcrumbs.map((crumb, index) => (
-            <span key={crumb.label} className="flex items-center gap-1">
-              {index > 0 && <ChevronRight className="size-3 opacity-60" />}
-              {crumb.to ? (
-                <Link to={crumb.to} className="hover:text-foreground transition-colors">
-                  {crumb.label}
-                </Link>
-              ) : (
-                <span>{crumb.label}</span>
-              )}
-            </span>
-          ))}
-        </nav>
-      )}
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0">
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground truncate">
-            {title}
-          </h1>
-          {description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}
-          {meta && <div className="mt-2 flex flex-wrap items-center gap-2">{meta}</div>}
-        </div>
-        {actions && <div className="flex items-center gap-2 shrink-0">{actions}</div>}
-      </div>
-    </div>
-  )
+  renderLink = routerLink,
+  iconPlacement = "crumb",
+  ...props
+}: Readonly<ComponentProps<typeof KitPageHeader>>) {
+  return <KitPageHeader {...props} renderLink={renderLink} iconPlacement={iconPlacement} />
 }

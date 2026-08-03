@@ -66,7 +66,7 @@ const wrap = css`
    the two consoles cannot drift on the surface treatment. */
 const borderedFrame = css`
   border: 1px solid var(--border-glass, var(--border));
-  border-radius: 0.75rem;
+  border-radius: var(--radius-xl, 0.75rem);
   overflow: hidden;
   background: ${mix("--card", 60)};
 `
@@ -290,7 +290,7 @@ const errorTile = css`
   align-items: center;
   justify-content: center;
   margin-bottom: 12px;
-  border-radius: 0.75rem;
+  border-radius: var(--radius-xl, 0.75rem);
   border: 1px solid ${mix("--destructive", 25)};
   background: ${mix("--destructive", 10)};
   color: var(--destructive);
@@ -447,10 +447,7 @@ export interface DataTableClientPagination {
   pageSizeOptions?: readonly number[]
 }
 
-export type DataTablePagination =
-  | boolean
-  | DataTableClientPagination
-  | DataTableServerPagination
+export type DataTablePagination = boolean | DataTableClientPagination | DataTableServerPagination
 
 function isServerPagination(
   pagination: DataTablePagination,
@@ -905,12 +902,7 @@ export function DataTable<T>({
                       error string is rarely a good title. */}
                   <span className={errorDetail}>{error}</span>
                   {onRetry && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className={retryButton}
-                      onClick={onRetry}
-                    >
+                    <Button size="sm" variant="outline" className={retryButton} onClick={onRetry}>
                       <RotateCw />
                       {retryLabel}
                     </Button>
@@ -944,58 +936,60 @@ export function DataTable<T>({
               const replacement = renderRow?.(row.original)
               if (replacement) return <Fragment key={row.id}>{replacement}</Fragment>
               return (
-              <Fragment key={row.id}>
-                <TableRow
-                  data-state={row.getIsSelected() ? "selected" : undefined}
-                  className={cx(
-                    animateRows && contentEnter,
-                    row.getIsSelected() && selectedRow,
-                    onRowClick && clickableRow,
-                    typeof rowClassName === "function" ? rowClassName(row.original) : rowClassName,
-                  )}
-                  style={animateRows ? rowStagger(rowIndex) : undefined}
-                  onClick={
-                    onRowClick
-                      ? () => {
-                          onRowClick(row.original)
-                        }
-                      : undefined
-                  }
-                >
-                  {row.getVisibleCells().map((cell) => {
-                    const meta = columnMeta(cell.column.columnDef)
-                    return (
-                      <TableCell
-                        key={cell.id}
-                        className={cx(
-                          density === "compact" && compactCell,
-                          (cell.column.id === "__select" || cell.column.id === "__expander") &&
-                            selectCell,
-                          responsiveClass(meta),
-                        )}
-                        // A cell holding its own controls must not also fire the
-                        // row's click handler — hitting a row menu would navigate.
-                        onClick={
-                          meta?.interactive
-                            ? (event) => {
-                                event.stopPropagation()
-                              }
-                            : undefined
-                        }
-                      >
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </TableCell>
-                    )
-                  })}
-                </TableRow>
-                {renderSubRow && (expanded[row.id] ?? false) && (
-                  <TableRow key={`${row.id}-detail`}>
-                    <TableCell colSpan={visibleColumnCount} className={subRowCell}>
-                      {renderSubRow(row.original)}
-                    </TableCell>
+                <Fragment key={row.id}>
+                  <TableRow
+                    data-state={row.getIsSelected() ? "selected" : undefined}
+                    className={cx(
+                      animateRows && contentEnter,
+                      row.getIsSelected() && selectedRow,
+                      onRowClick && clickableRow,
+                      typeof rowClassName === "function"
+                        ? rowClassName(row.original)
+                        : rowClassName,
+                    )}
+                    style={animateRows ? rowStagger(rowIndex) : undefined}
+                    onClick={
+                      onRowClick
+                        ? () => {
+                            onRowClick(row.original)
+                          }
+                        : undefined
+                    }
+                  >
+                    {row.getVisibleCells().map((cell) => {
+                      const meta = columnMeta(cell.column.columnDef)
+                      return (
+                        <TableCell
+                          key={cell.id}
+                          className={cx(
+                            density === "compact" && compactCell,
+                            (cell.column.id === "__select" || cell.column.id === "__expander") &&
+                              selectCell,
+                            responsiveClass(meta),
+                          )}
+                          // A cell holding its own controls must not also fire the
+                          // row's click handler — hitting a row menu would navigate.
+                          onClick={
+                            meta?.interactive
+                              ? (event) => {
+                                  event.stopPropagation()
+                                }
+                              : undefined
+                          }
+                        >
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </TableCell>
+                      )
+                    })}
                   </TableRow>
-                )}
-              </Fragment>
+                  {renderSubRow && (expanded[row.id] ?? false) && (
+                    <TableRow key={`${row.id}-detail`}>
+                      <TableCell colSpan={visibleColumnCount} className={subRowCell}>
+                        {renderSubRow(row.original)}
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </Fragment>
               )
             })}
 

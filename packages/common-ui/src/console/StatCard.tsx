@@ -1,3 +1,5 @@
+import type { ReactNode } from "react"
+
 import type { LucideIcon } from "lucide-react"
 
 import { css, cx } from "../lib/emotion"
@@ -71,7 +73,13 @@ const label = css`
 
 export interface StatCardProps {
   label: string
-  value: number | string
+  /**
+   * A node rather than a bare number so a console can hand in its own animated
+   * counter — the count-up lives on `motion`, which cannot enter this package
+   * without landing in the published @datadack/serverless bundle. The value
+   * span owns the typography and colour either way.
+   */
+  value: ReactNode
   icon?: LucideIcon
   color?: StatColor
   loading?: boolean
@@ -107,7 +115,12 @@ export function StatCard({
   )
 }
 
-const statGrid = css`
+/**
+ * The grid StatGrid lays its cards out on, exported because a console that
+ * wraps the cards in its own container — cloud-react staggers them through
+ * `motion` — still has to produce this exact layout rather than re-deriving it.
+ */
+export const statGridClass = css`
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
@@ -121,8 +134,8 @@ export function StatGrid({
   children,
   className,
 }: Readonly<{
-  children: React.ReactNode
+  children: ReactNode
   className?: string
 }>) {
-  return <div className={cx(statGrid, className)}>{children}</div>
+  return <div className={cx(statGridClass, className)}>{children}</div>
 }
