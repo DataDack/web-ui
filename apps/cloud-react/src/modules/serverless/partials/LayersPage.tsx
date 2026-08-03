@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react"
 
 import { Badge, Button, DataTable, dateColumn, Input, textColumn } from "@datadack/common-ui"
-import { formatBytes } from "@datadack/serverless-ui"
+import { formatBytes } from "@datadack/serverless"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Layers, Plus, RefreshCw, Search } from "lucide-react"
 import { useTranslation } from "react-i18next"

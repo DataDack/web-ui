@@ -55,7 +55,50 @@ export default defineConfig({
     // flashes and keeps Tailwind's layer ordering intact.
     cssCodeSplit: false,
   },
+  // @datadack/common-ui and @datadack/serverless are linked workspace packages,
+  // so Vite treats them as source and does NOT pre-bundle them at cold start —
+  // it crawls them lazily. Their bare imports (radix-ui, react, cmdk, …) are
+  // therefore discovered only when a route that pulls one in is first opened,
+  // which triggers a mid-session re-optimization and bumps the dep browserHash.
+  //
+  // That bump is what produced "Invalid hook call / Cannot read properties of
+  // null (reading 'useRef')": modules already in the page keep importing
+  // `chunk-<hash>.js?v=<old>` while newly fetched ones ask for `?v=<new>`. The
+  // browser keys ES modules by full URL *including the query*, so those are two
+  // separate module instances of React with two separate dispatchers — and Vite
+  // ignores `?v=` when resolving from disk, so it serves both with a 200 and the
+  // page never self-heals.
+  //
+  // Listing the transitive deps here gets them all optimized in the first pass,
+  // so the hash never changes mid-session. Keep in sync with the peer/regular
+  // deps of the two packages.
+  optimizeDeps: {
+    include: [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "@emotion/css/create-instance",
+      // Reached transitively through @emotion/css's emotion-element; the dev
+      // variant is what the dev server actually resolves, and leaving it out
+      // costs a re-optimize + full reload on the first render.
+      "@emotion/react/jsx-runtime",
+      "@emotion/react/jsx-dev-runtime",
+      "@tanstack/react-table",
+      "clsx",
+      "cmdk",
+      "lucide-react",
+      "radix-ui",
+      "react-day-picker",
+      "react-hook-form",
+      "react-icons/si",
+      "sonner",
+      "tailwind-merge",
+    ],
+  },
   resolve: {
+    // Symlinked workspace packages can otherwise resolve their own React
+    // through packages/*/node_modules; one copy per app, always.
+    dedupe: ["react", "react-dom"],
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },

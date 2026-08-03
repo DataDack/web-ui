@@ -214,6 +214,24 @@ export const tenantListSchema = z.object({
   switchable: z.boolean().default(false),
 })
 
+/**
+ * Who the control plane thinks is calling.
+ *
+ * `authenticated` false with `principalType` "anonymous" is a deployment with
+ * auth switched off, not a signed-out operator — the console renders normally
+ * and hides sign-out rather than bouncing to a login form nothing would accept.
+ */
+export const sessionSchema = z.object({
+  authenticated: z.boolean().default(false),
+  principalId: z.string().default(""),
+  principalType: z.string().default(""),
+  email: z.string().default(""),
+  accountId: z.string().default(""),
+  scopes: z.array(z.string()).default([]),
+  platformAdmin: z.boolean().default(false),
+  expiresAt: z.string().optional(),
+})
+
 export type CodeArtifact = z.infer<typeof codeArtifactSchema>
 export type LayerRef = z.infer<typeof layerRefSchema>
 export type FunctionEntity = z.infer<typeof functionSchema>
@@ -227,3 +245,4 @@ export type MetricSeries = z.infer<typeof metricSeriesSchema>
 export type AuditEvent = z.infer<typeof auditEventSchema>
 export type Tenant = z.infer<typeof tenantSchema>
 export type TenantList = z.infer<typeof tenantListSchema>
+export type Session = z.infer<typeof sessionSchema>

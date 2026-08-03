@@ -3,7 +3,7 @@ name: Publish packages
 # Publishes this workspace's packages to GitHub Packages.
 #
 # Triggered by a tag shaped like `<package>-v<version>` (e.g.
-# `serverless-ui-v0.1.0`), so each package is released independently and the
+# `serverless-v0.1.0`), so each package is released independently and the
 # tag records exactly what shipped. The package directory is derived from the
 # tag. The workflow refuses to publish when the tag and the package.json
 # version disagree — a mismatch there produces a release nobody can reproduce
@@ -11,13 +11,13 @@ name: Publish packages
 on:
   push:
     tags:
-      - "serverless-ui-v*"
+      - "serverless-v*"
   workflow_dispatch:
     inputs:
       package:
         description: Package directory under packages/
         required: true
-        default: serverless-ui
+        default: serverless
 
 permissions:
   # write: tag pushes also attach the packed tarball to a GitHub Release, the

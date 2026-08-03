@@ -5,7 +5,7 @@ import { AlertTriangle, Boxes, Loader2, Rocket } from "lucide-react"
 import { apiErrorMessage } from "@/lib/api"
 
 import { cn } from "@datadack/common-ui"
-import { RuntimeCatalog, RuntimeIcon } from "@datadack/serverless-ui"
+import { RuntimeCatalog, RuntimeIcon } from "@datadack/serverless"
 
 import { useCreateFunction, useRuntimes } from "../lib/queries"
 import type { Runtime } from "../lib/schemas"

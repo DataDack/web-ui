@@ -72,7 +72,7 @@ describe("export surface", () => {
   })
 
   test("the styling primitives are exported so domain kits share one instance", () => {
-    // serverless-ui and any future kit must style through these rather than
+    // serverless and any future kit must style through these rather than
     // importing @emotion/css, or they get a second unlayered cache.
     for (const helper of ["css", "cx", "keyframes", "injectGlobal"]) {
       expect(typeof UI[helper as keyof typeof UI]).toBe("function")

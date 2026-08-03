@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { ArrowLeft, Code2, Container, GitBranch, History, Package, Settings2 } from "lucide-react"
+import { Activity, ArrowLeft, Code2, Container, GitBranch, History, Package, Settings2 } from "lucide-react"
 import { Link, useParams, useSearchParams } from "react-router-dom"
 
 import { http } from "@/lib/api"
@@ -19,9 +19,10 @@ import {
   TabsTrigger,
   timeAgo,
 } from "@datadack/common-ui"
-import { CodeEditorPlaceholder } from "@datadack/serverless-ui"
+import { CodeEditorPlaceholder, MonitoringPlaceholder } from "@datadack/serverless"
 const TABS = [
   { value: "code", label: "Code", icon: Code2 },
+  { value: "monitor", label: "Monitor", icon: Activity },
   { value: "configuration", label: "Configuration", icon: Settings2 },
   { value: "versions", label: "Versions", icon: History },
   { value: "aliases", label: "Aliases", icon: GitBranch },
@@ -121,6 +122,9 @@ export function FunctionDetailPage() {
         <TabsContent value="code">
           <CodeTab fn={fn} />
         </TabsContent>
+        <TabsContent value="monitor">
+          <MonitorTab fn={fn} />
+        </TabsContent>
         <TabsContent value="configuration">
           <ConfigurationTab fn={fn} />
         </TabsContent>
@@ -144,6 +148,11 @@ function BackLink() {
       </Link>
     </Button>
   )
+}
+
+/** Per-function metrics are not built yet — the tab stays, the charts do not. */
+function MonitorTab({ fn }: Readonly<{ fn: FunctionEntity }>) {
+  return <MonitoringPlaceholder functionName={fn.name} />
 }
 
 /** Inline code editing is not built yet — the tab stays, the editor does not. */

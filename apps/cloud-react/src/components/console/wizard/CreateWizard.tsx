@@ -223,9 +223,22 @@ export function CreateWizard<T extends FieldValues, TInput extends FieldValues =
           </p>
         )}
 
-        {/* Fixed footer: a static flex row pinned below the scroll region,
-                    so content never slides underneath it. */}
-        <div className="flex items-center justify-between gap-3 shrink-0 pt-4 mt-1 border-t border-border-glass">
+        {/*
+         * Pinned footer.
+         *
+         * `sticky bottom-0` rather than relying on the flex chain above: the
+         * scroll region's `min-h-0 flex-1` only becomes a bounded scroll box if
+         * every ancestor up to the viewport has a resolved height, and AppShell's
+         * root is `min-h-screen` — a minimum, not a height. So on a tall step the
+         * document scrolls instead of the inner region, and a statically placed
+         * footer scrolls away with it. Sticky pins to whichever ancestor actually
+         * scrolls, so the buttons stay reachable either way.
+         *
+         * The translucent background is load-bearing, not decoration: content
+         * passes UNDER a sticky footer, so without it the buttons sit on top of
+         * whatever is scrolling by.
+         */}
+        <div className="sticky bottom-0 z-20 flex items-center justify-between gap-3 shrink-0 pt-4 pb-4 mt-1 border-t border-border-glass bg-background/90 backdrop-blur-sm">
           <Button
             type="button"
             variant="ghost"

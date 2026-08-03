@@ -17,7 +17,7 @@
 
 - [ ] apps/serverless-web (admin console served by faas-server)
 - [ ] apps/cloud-react (cloud console served by cloud-be)
-- [ ] packages/serverless-ui (publishable `@datadack/serverless-ui`)
+- [ ] packages/serverless (publishable `@datadack/serverless`)
 - [ ] config (eslint-config / typescript-config)
 - [ ] CI / tooling / docs
 
@@ -37,7 +37,7 @@ This repo is the `web` submodule of two Go services, each copying one app's
 `apps/serverless-web`, `cloud-be-go` takes `apps/cloud-react`.
 
 - [ ] Both `apps/*/dist` still build (CI asserts this)
-- [ ] If the published package version changed, a `serverless-ui-v*` tag is needed to release it
+- [ ] If the published package version changed, a `serverless-v*` tag is needed to release it
 - [ ] Submodule pointers in `serverless_faas` and `cloud-be-go` need bumping after merge —
       push this repo first, or their checkouts cannot resolve the new commit
 

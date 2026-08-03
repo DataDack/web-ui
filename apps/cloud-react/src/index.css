@@ -17,9 +17,9 @@
 
 @import "tailwindcss";
 
-/* The shared @datadack/serverless-ui kit ships class names in compiled JS —
+/* The shared @datadack/serverless kit ships class names in compiled JS —
    point Tailwind's scanner at it so those utilities are generated here. */
-@source "../node_modules/@datadack/serverless-ui/dist";
+@source "../node_modules/@datadack/serverless/dist";
 @import "tw-animate-css";
 @plugin "@tailwindcss/typography";
 
@@ -522,6 +522,34 @@
   }
 }
 
+/* ─── Ambient floating paths (auth / onboarding brand panels) ─────────── */
+/* Composited-only drift: transform + opacity, which the compositor animates
+   off the main thread. Duration and direction come from the component so the
+   two woven layers move against each other. See FloatingPaths.tsx for why the
+   strokes must stay static. */
+.animate-floating-paths {
+  animation-name: floating-paths-drift;
+  animation-duration: 26s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  will-change: transform, opacity;
+}
+
+/* Translate + opacity only — no scale. A scaling layer has to be
+   re-rasterized every frame at its new resolution; a translating one is a
+   single cached texture the compositor just moves. */
+@keyframes floating-paths-drift {
+  from {
+    transform: translate3d(-2%, 1.25%, 0);
+    opacity: 0.55;
+  }
+  to {
+    transform: translate3d(2%, -1.25%, 0);
+    opacity: 0.9;
+  }
+}
+
 /* ─── Content enter (skeleton → data swap) ────────────────────────────── */
 .animate-content-enter {
   animation: content-enter var(--dur-base) var(--ease-out-expo) both;
@@ -578,6 +606,10 @@
 @media (prefers-reduced-motion: reduce) {
   .pulse-glow {
     animation: none;
+  }
+  .animate-floating-paths {
+    animation: none;
+    will-change: auto;
   }
   *,
   *::before,

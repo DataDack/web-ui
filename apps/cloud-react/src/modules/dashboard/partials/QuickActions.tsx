@@ -9,6 +9,7 @@ import {
   Rocket,
   Server,
   ShieldCheck,
+  Zap,
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
@@ -36,6 +37,14 @@ const ACTIONS: QuickAction[] = [
     labelKey: "dashboard.home.quickActions.compute",
     icon: Server,
     to: "/compute/overview",
+  },
+  {
+    // Sits beside Compute rather than at the end: it is the other way to run
+    // code here, and the sidebar already groups them that way.
+    id: "serverless",
+    labelKey: "dashboard.home.quickActions.serverless",
+    icon: Zap,
+    to: "/serverless",
   },
   {
     id: "storage",

@@ -198,6 +198,7 @@
       "quickActions": {
         "create": "Create a resource",
         "compute": "Compute",
+        "serverless": "Serverless",
         "storage": "Storage & Databases",
         "networking": "Networking",
         "identity": "Identity",
@@ -3963,6 +3964,7 @@
     "empty": "No functions yet",
     "emptyHint": "Deploy your first function to see it here.",
     "tabs": {
+      "monitor": "Monitor",
       "configuration": "Configuration",
       "versions": "Versions",
       "aliases": "Aliases",

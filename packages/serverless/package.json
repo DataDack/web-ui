@@ -1,5 +1,5 @@
 {
-  "name": "@datadack/serverless-ui",
+  "name": "@datadack/serverless",
   "version": "1.0.0",
   "description": "Shared console kit for DataDack web surfaces: status tones, badges, list/detail building blocks, charts, and the shadcn-style primitives they stand on.",
   "license": "UNLICENSED",
@@ -24,7 +24,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/DataDack/web-ui.git",
-    "directory": "packages/serverless-ui"
+    "directory": "packages/serverless"
   },
   "scripts": {
     "build": "tsup",
@@ -40,6 +40,7 @@
     "tailwind-merge": "^3.6.0"
   },
   "peerDependencies": {
+    "@tanstack/react-query": "^5.0.0",
     "@tanstack/react-table": "^8.0.0",
     "lucide-react": ">=1.0.0",
     "react": ">=19.0.0",

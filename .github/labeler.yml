@@ -12,9 +12,9 @@
   - changed-files:
       - any-glob-to-any-file: "apps/cloud-react/**"
 
-"pkg: serverless-ui":
+"pkg: serverless":
   - changed-files:
-      - any-glob-to-any-file: "packages/serverless-ui/**"
+      - any-glob-to-any-file: "packages/serverless/**"
 
 "area: config":
   - changed-files:

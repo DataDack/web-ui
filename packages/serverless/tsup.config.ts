@@ -26,6 +26,10 @@ const options: Options = {
     "react",
     "react-dom",
     "react/jsx-runtime",
+    // The consumer owns the QueryClient; bundling react-query would give this
+    // package its own client and its hooks would read a different cache than
+    // the app's.
+    "@tanstack/react-query",
     "lucide-react",
     "react-icons",
     "react-icons/si",

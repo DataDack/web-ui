@@ -1,5 +1,19 @@
 import { useMemo, useState } from "react"
 
+import type { ColumnDef } from "@tanstack/react-table"
+import { Activity, GitBranch, History, Play, Settings2, Trash2, Zap } from "lucide-react"
+import { useTranslation } from "react-i18next"
+import { useNavigate, useParams } from "react-router-dom"
+
+import {
+  ConfirmDialog,
+  DetailPage,
+  KeyValueGrid,
+  Section,
+  type DetailTab,
+} from "@/components/console"
+import { useScreen } from "@/services/api/screen"
+
 import {
   actionsColumn,
   Badge,
@@ -12,19 +26,7 @@ import {
   Textarea,
   textColumn,
 } from "@datadack/common-ui"
-import type { ColumnDef } from "@tanstack/react-table"
-import { GitBranch, History, Play, Settings2, Trash2, Zap } from "lucide-react"
-import { useTranslation } from "react-i18next"
-import { useNavigate, useParams } from "react-router-dom"
-
-import {
-  ConfirmDialog,
-  DetailPage,
-  KeyValueGrid,
-  Section,
-  type DetailTab,
-} from "@/components/console"
-import { useScreen } from "@/services/api/screen"
+import { MonitoringPlaceholder } from "@datadack/serverless"
 
 import { SERVERLESS_ROUTES } from "../serverless.constants"
 import {
@@ -72,6 +74,13 @@ export function ServerlessFunctionDetailPage() {
   }
 
   const tabs: DetailTab[] = [
+    {
+      value: "monitor",
+      label: t("serverless.tabs.monitor"),
+      icon: Activity,
+      // Shared with serverless-web: same placeholder component, same copy.
+      content: <MonitoringPlaceholder functionName={fn.name} />,
+    },
     {
       value: "configuration",
       label: t("serverless.tabs.configuration"),

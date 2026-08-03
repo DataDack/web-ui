@@ -81,7 +81,7 @@
       "version": "0.0.0",
       "dependencies": {
         "@datadack/common-ui": "workspace:*",
-        "@datadack/serverless-ui": "workspace:*",
+        "@datadack/serverless": "workspace:*",
         "@hookform/resolvers": "^5.4.0",
         "react-hook-form": "^7.79.0",
         "zod": "^4.4.3",
@@ -92,7 +92,7 @@
       "version": "0.0.0",
       "dependencies": {
         "@datadack/common-ui": "workspace:*",
-        "@datadack/serverless-ui": "workspace:*",
+        "@datadack/serverless": "workspace:*",
       },
     },
     "config/eslint-config": {
@@ -146,8 +146,8 @@
         "sonner": ">=2.0.0",
       },
     },
-    "packages/serverless-ui": {
-      "name": "@datadack/serverless-ui",
+    "packages/serverless": {
+      "name": "@datadack/serverless",
       "version": "1.0.0",
       "dependencies": {
         "@emotion/css": "^11.13.5",
@@ -275,7 +275,7 @@
 
     "@datadack/common-ui": ["@datadack/common-ui@workspace:packages/common-ui"],
 
-    "@datadack/serverless-ui": ["@datadack/serverless-ui@workspace:packages/serverless-ui"],
+    "@datadack/serverless": ["@datadack/serverless@workspace:packages/serverless"],
 
     "@date-fns/tz": ["@date-fns/tz@1.5.0", "", {}, "sha512-lwYN/vDPeNRULcepoE/LO2Pgx+7/RV+S9ARfbc9lr2DtGkOD7pAiruHvbR1RX3Qyf6ja47EWJDMsNK5vK08DJg=="],
 

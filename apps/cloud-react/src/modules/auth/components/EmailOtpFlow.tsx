@@ -13,7 +13,7 @@ import {
   InputOTPSlot,
 } from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { AtSign, ChevronLeft, Loader2, User } from "lucide-react"
+import { AtSign, ChevronLeft, User } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
@@ -24,7 +24,12 @@ import type { UserProfile } from "../auth.types"
 import { usePhoneInput } from "../phone"
 import { PhoneField } from "./PhoneField"
 
-const RESEND_SECONDS = 30
+// Short enough that someone whose code never arrived is not left waiting, long
+// enough to swallow a double-click. Purely a client-side courtesy: the server
+// caps OTPs per address per window (OTPEmailMaxRequests) and has no min-gap, so
+// this timer can no longer disagree with it and re-enable a button that then
+// errors — which is exactly what a 30s timer against a 60s server gap did.
+const RESEND_SECONDS = 15
 
 // Backend gate messages on POST /auth/users/otp/verify for a NEW email: the OTP
 // is validated FIRST and is NOT consumed on these errors, so the same email +
@@ -231,7 +236,6 @@ export function EmailOtpFlow({
             className={pillButton}
             loading={send.isPending}
           >
-            {send.isPending && <Loader2 className="animate-spin" />}
             {t("auth.otp.send")}
           </Button>
         </form>
@@ -272,7 +276,6 @@ export function EmailOtpFlow({
             className={pillButton}
             loading={updateProfile.isPending}
           >
-            {updateProfile.isPending && <Loader2 className="animate-spin" />}
             {t("auth.otp.saveName")}
           </Button>
         </form>
@@ -357,7 +360,6 @@ export function EmailOtpFlow({
           className={pillButton}
           loading={verify.isPending}
         >
-          {verify.isPending && <Loader2 className="animate-spin" />}
           {t("auth.otp.verify")}
         </Button>
       </form>

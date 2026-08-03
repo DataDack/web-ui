@@ -6,7 +6,7 @@ import { streamLogs, type LogQuery } from "@/lib/api"
 import { useDashboard, useLogSnapshot } from "@/lib/queries"
 import type { LogLine } from "@/lib/schemas"
 
-import { Button, cn, EmptyState, Input, PageHeader } from "@datadack/serverless-ui"
+import { Button, cn, EmptyState, Input, PageHeader } from "@datadack/serverless"
 
 /** How many lines the pane holds. Past this the oldest are dropped: the browser
  *  is a tail, and an unbounded array is how a long-lived tab runs out of memory. */

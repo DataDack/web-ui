@@ -5,26 +5,13 @@ import { AlertTriangle, Check, PackageOpen, Search } from "lucide-react"
 import { css, cx } from "@datadack/common-ui"
 import { Input, fontMono } from "@datadack/common-ui"
 
+import type { RuntimeInfo } from "../data/types"
 import { familyLabel, RuntimeIcon } from "./RuntimeIcon"
-/**
- * One runtime catalog entry as served by the control plane's GET /v1/runtimes.
- * A plain interface rather than a schema: the consumer owns fetching and
- * validation, this component only renders.
- */
-export interface RuntimeInfo {
-  name: string
-  family: string
-  languageVersion?: string
-  osRelease: string
-  architectures: string[]
-  handlerFormat: string
-  handlerRequired: boolean
-  /** True when the artifact must carry its own RIC and a `bootstrap` binary. */
-  bundledRic: boolean
-  deprecatedForCreate: boolean
-  deprecatedForUpdate: boolean
-  successorRuntime?: string
-}
+
+// RuntimeInfo now lives in ../data/types alongside the rest of the FaaS domain
+// types, so the hooks and the create form share one definition with this grid.
+// Re-exported here because consumers already import it from this module.
+export type { RuntimeInfo }
 
 export interface RuntimeCatalogProps {
   /** The catalog to render — the consumer fetches it (GET /v1/runtimes). */

@@ -6,12 +6,14 @@ import {
   logSnapshotSchema,
   logLineSchema,
   metricSeriesSchema,
+  sessionSchema,
   tenantListSchema,
   type AuditEvent,
   type Dashboard,
   type LogLine,
   type LogSnapshot,
   type MetricSeries,
+  type Session,
   type TenantList,
 } from "./schemas"
 
@@ -51,9 +53,22 @@ export const connection = {
   },
 }
 
-/** Headers every request carries, shared by axios and the raw fetch stream. */
+/**
+ * Headers every request carries, shared by axios and the raw fetch stream.
+ *
+ * The operator session is a cookie, not a header: it is HttpOnly precisely so
+ * this file cannot read it, which is what stops an XSS bug in the console from
+ * turning into a stolen platform credential. The bearer token here is the
+ * separate, optional service credential ("client-id:client-secret") an operator
+ * can paste in to drive a control plane that has no identity service wired.
+ */
 function authHeaders(): Record<string, string> {
-  const headers: Record<string, string> = {}
+  const headers: Record<string, string> = {
+    // The custom header a browser cannot attach to a top-level navigation or a
+    // simple cross-site form, matching the convention the rest of the platform
+    // uses. Cheap, and it costs nothing to send.
+    "X-Requested-With": "XMLHttpRequest",
+  }
   const token = connection.token()
   if (token) headers.Authorization = `Bearer ${token}`
   const accountId = connection.accountId()
@@ -61,7 +76,12 @@ function authHeaders(): Record<string, string> {
   return headers
 }
 
-export const http: AxiosInstance = axios.create()
+export const http: AxiosInstance = axios.create({
+  // The session cookie has to ride along. Same-origin requests would carry it
+  // anyway; this is what makes a console pointed at a different control plane
+  // (Settings → API base) work too.
+  withCredentials: true,
+})
 
 // The base URL and bearer token are read per request rather than baked into the
 // instance, so changing them in Settings takes effect without a reload.
@@ -70,6 +90,40 @@ http.interceptors.request.use((config) => {
   Object.assign(config.headers, authHeaders())
   return config
 })
+
+/**
+ * Session expiry has to be observable from outside React: it is discovered by
+ * an axios interceptor, deep inside a query no component is watching. The
+ * listeners are notified once per rejected request and the guard re-checks the
+ * session, which sends the operator to the sign-in form instead of leaving a
+ * screen of failed panels behind.
+ */
+type UnauthorizedListener = () => void
+const unauthorizedListeners = new Set<UnauthorizedListener>()
+
+export function onUnauthorized(listener: UnauthorizedListener): () => void {
+  unauthorizedListeners.add(listener)
+  return () => {
+    unauthorizedListeners.delete(listener)
+  }
+}
+
+function notifyUnauthorized() {
+  for (const listener of unauthorizedListeners) listener()
+}
+
+http.interceptors.response.use(
+  (response) => response,
+  (error: unknown) => {
+    // 403 is deliberately not included: it means the credential is valid but the
+    // principal lacks the scope, and signing out would only cost them the
+    // session they legitimately hold.
+    if (axios.isAxiosError(error) && error.response?.status === 401) {
+      notifyUnauthorized()
+    }
+    return Promise.reject(error instanceof Error ? error : new Error(String(error)))
+  },
+)
 
 /** Unwraps the control plane's `{ error: { code, message } }` envelope. */
 export function apiErrorMessage(err: unknown): string {
@@ -141,8 +195,15 @@ export function streamLogs(query: LogQuery, handlers: LogStreamHandlers): () => 
     try {
       const response = await fetch(url, {
         headers: { ...authHeaders(), Accept: "text/event-stream" },
+        // Same reason as the axios instance: the operator session is a cookie.
+        credentials: "include",
         signal: controller.signal,
       })
+      if (response.status === 401) {
+        notifyUnauthorized()
+        handlers.onError?.("session expired")
+        return
+      }
       if (!response.ok || !response.body) {
         handlers.onError?.(`stream failed: ${String(response.status)} ${response.statusText}`)
         return
@@ -248,4 +309,39 @@ export async function fetchAuditEvents(query: AuditQuery): Promise<AuditEvent[]>
 export async function fetchTenants(): Promise<TenantList> {
   const { data } = await http.get<unknown>("/v1/accounts")
   return tenantListSchema.parse(data)
+}
+
+/**
+ * Who the control plane thinks is calling.
+ *
+ * A 401 here is the expected answer for a signed-out operator, not a failure:
+ * it is turned into an unauthenticated session so the guard can render the
+ * sign-in form instead of an error page. Anything else is a real problem and
+ * propagates.
+ */
+export async function fetchSession(): Promise<Session> {
+  try {
+    const { data } = await http.get<unknown>("/v1/auth/session")
+    return sessionSchema.parse(data)
+  } catch (err) {
+    if (axios.isAxiosError(err) && err.response?.status === 401) {
+      return sessionSchema.parse({ authenticated: false })
+    }
+    throw err
+  }
+}
+
+export interface Credentials {
+  email: string
+  password: string
+}
+
+/** Signs a platform super admin in. The session lands in an HttpOnly cookie. */
+export async function signIn(credentials: Credentials): Promise<Session> {
+  const { data } = await http.post<unknown>("/v1/auth/login", credentials)
+  return sessionSchema.parse(data)
+}
+
+export async function signOut(): Promise<void> {
+  await http.post("/v1/auth/logout")
 }

@@ -7,15 +7,16 @@ import { connection } from "@/lib/api"
 
 import { Button, Input } from "@datadack/common-ui"
 /**
- * Where the operator token is entered.
+ * The escape hatch, not the front door.
  *
- * The console is served from the control plane's own port and its shell is auth
- * exempt, but the API routes it calls are not. Without somewhere to put a token
- * the whole console is unusable the moment auth is turned on, so this lives in
- * the topbar rather than behind a settings page.
+ * Signing in is the normal way into the console, and it puts the session in an
+ * HttpOnly cookie this file cannot touch. What stays here is for the cases
+ * sign-in does not cover: pointing the console at a different control plane, and
+ * driving one that has no identity service wired by pasting its service
+ * credential as "client-id:client-secret".
  *
- * The token is held in localStorage and sent as a bearer header. It is never put
- * in a URL, so it does not end up in proxy or access logs.
+ * That credential is held in localStorage and sent as a bearer header. It is
+ * never put in a URL, so it does not end up in proxy or access logs.
  */
 export function ConnectionSettings() {
   const [open, setOpen] = useState(false)
@@ -40,7 +41,9 @@ export function ConnectionSettings() {
         aria-label="Connection settings"
         aria-expanded={open}
       >
-        <KeyRound className={connection.token() ? "size-4" : "text-status-warning size-4"} />
+        {/* No warning tint when unset: an empty field is the expected state for
+            a signed-in operator, and flagging it would train them to ignore it. */}
+        <KeyRound className="size-4" />
       </Button>
 
       {open && (
@@ -71,7 +74,7 @@ export function ConnectionSettings() {
             />
 
             <label className="text-muted-foreground mb-1 block text-[11px]" htmlFor="api-token">
-              Bearer token
+              Service credential
             </label>
             <Input
               id="api-token"
@@ -80,12 +83,13 @@ export function ConnectionSettings() {
               onChange={(event) => {
                 setToken(event.target.value)
               }}
-              placeholder="operator token"
+              placeholder="client-id:client-secret"
               className="mb-3 h-8 font-mono text-[12px]"
             />
 
             <p className="text-muted-foreground mb-3 text-[11px]">
-              Stored in this browser only and sent as an Authorization header.
+              Optional. Leave empty when signed in — the session covers it. Stored in this browser
+              only and sent as an Authorization header.
             </p>
 
             <div className="flex justify-end gap-2">
