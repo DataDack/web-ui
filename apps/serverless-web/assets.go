@@ -9,5 +9,5 @@ import "embed"
 // "no matching files found" rather than producing a binary whose console is
 // simply not built yet.
 //
-//go:embed dist
+//go:embed all:dist
 var Dist embed.FS
