@@ -19,7 +19,12 @@ import {
 
 const BASE_KEY = "faas.admin.apiBase"
 const TOKEN_KEY = "faas.admin.token"
-const TOKEN_EXPIRY_KEY = "faas.admin.tokenExpiresAt"
+// Written by an earlier version, which kept the expiry beside the token instead
+// of deriving it. Two keys meant they could disagree: a stale timestamp from a
+// previous token outlived it and expired the next one the moment it was read,
+// so a freshly pasted token worked until the first reload and then vanished.
+// Removed on sight rather than read.
+const LEGACY_TOKEN_EXPIRY_KEY = "faas.admin.tokenExpiresAt"
 const ACCOUNT_KEY = "faas.admin.accountId"
 const NAMESPACE_KEY = "faas.admin.namespace"
 
@@ -38,7 +43,10 @@ function tokenExpiry(token: string): number | null {
   if (!payload) return null
   try {
     // base64url → base64, and atob does not tolerate missing padding.
-    const padded = payload.replace(/-/g, "+").replace(/_/g, "/").padEnd(Math.ceil(payload.length / 4) * 4, "=")
+    const padded = payload
+      .replace(/-/g, "+")
+      .replace(/_/g, "/")
+      .padEnd(Math.ceil(payload.length / 4) * 4, "=")
     const claims = JSON.parse(atob(padded)) as { exp?: unknown }
     return typeof claims.exp === "number" ? claims.exp * 1000 : null
   } catch {
@@ -46,6 +54,24 @@ function tokenExpiry(token: string): number | null {
     // which means the token is kept until the control plane rejects it.
     return null
   }
+}
+
+/**
+ * The token's expiry, memoised per distinct token.
+ *
+ * Derived from the token every time rather than stored alongside it. A second
+ * key is a second source of truth, and the two drift: an expiry left behind by
+ * a previous token will happily condemn its replacement. Decoding costs a JSON
+ * parse, and the cache means that happens once per token rather than once per
+ * outbound request.
+ */
+let expiryCache: { token: string; expiresAt: number | null } | null = null
+
+function expiryOf(token: string): number | null {
+  if (expiryCache?.token === token) return expiryCache.expiresAt
+  const expiresAt = tokenExpiry(token)
+  expiryCache = { token, expiresAt }
+  return expiresAt
 }
 
 /** Operator-configurable connection settings, persisted in localStorage. */
@@ -66,11 +92,19 @@ export const connection = {
    * first load of the morning before anything tells the operator why.
    */
   token(): string {
-    const token = localStorage.getItem(TOKEN_KEY) ?? ""
+    let token = ""
+    try {
+      // Drop the orphan key an earlier version wrote, so it cannot mislead
+      // anything that still looks for it.
+      localStorage.removeItem(LEGACY_TOKEN_EXPIRY_KEY)
+      token = localStorage.getItem(TOKEN_KEY) ?? ""
+    } catch {
+      return ""
+    }
     if (!token) return ""
 
-    const expiresAt = Number(localStorage.getItem(TOKEN_EXPIRY_KEY) ?? "")
-    if (expiresAt && Date.now() >= expiresAt) {
+    const expiresAt = expiryOf(token)
+    if (expiresAt !== null && Date.now() >= expiresAt) {
       connection.clearToken()
       // Deferred: this runs while an outbound request is being built, and
       // notifying synchronously would re-enter the query client mid-flight.
@@ -85,8 +119,10 @@ export const connection = {
   },
   /** When the stored token lapses, or null when it carries no expiry. */
   tokenExpiresAt(): Date | null {
-    const expiresAt = Number(localStorage.getItem(TOKEN_EXPIRY_KEY) ?? "")
-    return expiresAt ? new Date(expiresAt) : null
+    const token = connection.token()
+    if (!token) return null
+    const expiresAt = expiryOf(token)
+    return expiresAt === null ? null : new Date(expiresAt)
   },
   /**
    * The tenant the console is acting on behalf of. The control plane ignores it
@@ -99,20 +135,29 @@ export const connection = {
   namespace(): string {
     return localStorage.getItem(NAMESPACE_KEY) ?? ""
   },
-  set(base: string, token: string) {
-    localStorage.setItem(BASE_KEY, base)
-    if (!token) {
-      connection.clearToken()
-      return
-    }
-    localStorage.setItem(TOKEN_KEY, token)
-    // Recorded once, at save time, so reading the token stays a timestamp
-    // comparison rather than a base64 decode on every outbound request.
-    const expiresAt = tokenExpiry(token)
-    if (expiresAt) {
-      localStorage.setItem(TOKEN_EXPIRY_KEY, String(expiresAt))
-    } else {
-      localStorage.removeItem(TOKEN_EXPIRY_KEY)
+  /**
+   * Persists the connection settings, reporting whether the write survived.
+   *
+   * localStorage is not guaranteed to work: it throws in Safari private
+   * browsing, when a quota is exhausted, and when storage is blocked by policy.
+   * Swallowing that means the operator saves a token, sees the panel close, and
+   * is then told on every request that no token was sent — with the field still
+   * showing the value they typed. The read-back is what turns that into an
+   * error they can see.
+   */
+  set(base: string, token: string): boolean {
+    try {
+      localStorage.setItem(BASE_KEY, base)
+      if (!token) {
+        connection.clearToken()
+        return true
+      }
+      localStorage.setItem(TOKEN_KEY, token)
+      localStorage.removeItem(LEGACY_TOKEN_EXPIRY_KEY)
+      // Trust nothing: a store can accept a write and drop it.
+      return localStorage.getItem(TOKEN_KEY) === token
+    } catch {
+      return false
     }
   },
   /**
@@ -124,8 +169,12 @@ export const connection = {
    * that is broken rather than one that is asking them to sign in.
    */
   clearToken() {
-    localStorage.removeItem(TOKEN_KEY)
-    localStorage.removeItem(TOKEN_EXPIRY_KEY)
+    try {
+      localStorage.removeItem(TOKEN_KEY)
+      localStorage.removeItem(LEGACY_TOKEN_EXPIRY_KEY)
+    } catch {
+      // Nothing useful to do: the token is unreadable either way.
+    }
   },
   setScope(accountId: string, namespace: string) {
     localStorage.setItem(ACCOUNT_KEY, accountId)

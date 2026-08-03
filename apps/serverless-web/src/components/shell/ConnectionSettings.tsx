@@ -24,6 +24,7 @@ export function ConnectionSettings() {
   const [base, setBase] = useState("")
   const [token, setToken] = useState("")
   const [expiresAt, setExpiresAt] = useState<Date | null>(null)
+  const [error, setError] = useState("")
   const queryClient = useQueryClient()
 
   /**
@@ -40,11 +41,17 @@ export function ConnectionSettings() {
     setBase(connection.base())
     setToken(connection.token())
     setExpiresAt(connection.tokenExpiresAt())
+    setError("")
     setOpen(true)
   }
 
   const save = () => {
-    connection.set(base.trim(), token.trim())
+    if (!connection.set(base.trim(), token.trim())) {
+      // The panel deliberately stays open: closing it would look like success.
+      setError("Could not save — this browser is blocking local storage.")
+      return
+    }
+    setError("")
     setExpiresAt(connection.tokenExpiresAt())
     setOpen(false)
     void queryClient.invalidateQueries()
@@ -117,6 +124,12 @@ export function ConnectionSettings() {
                 ? `Valid until ${expiresAt.toLocaleString()}. Stored in this browser only and sent as an Authorization header.`
                 : "Stored in this browser only and sent as an Authorization header."}
             </p>
+
+            {error && (
+              <p role="alert" className="text-status-danger mb-3 text-[11px]">
+                {error}
+              </p>
+            )}
 
             <div className="flex justify-end gap-2">
               <Button
