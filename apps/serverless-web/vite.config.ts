@@ -53,11 +53,22 @@ export default defineConfig({
     sourcemap: false,
     rollupOptions: {
       output: {
-        // Stable, unhashed names: assets.go embeds dist/ and the committed
-        // output should not churn on every rebuild.
-        entryFileNames: "assets/[name].js",
-        chunkFileNames: "assets/[name].js",
-        assetFileNames: "assets/[name][extname]",
+        // Content-hashed names.
+        //
+        // The previous stable names (assets/index.js) meant a deploy replaced a
+        // file at a URL browsers had already cached. Nothing then tied the
+        // stylesheet and the script together, so a client could hold one and
+        // refetch the other and render new markup against old CSS — which is
+        // exactly what happened, twice.
+        //
+        // Hashing makes each build a new URL: a client either has the whole
+        // matched set or fetches it. It also makes long immutable caching
+        // truthful, since a hashed URL genuinely never changes content. The
+        // cost is that two filenames in the committed dist/ change per build,
+        // which is a far smaller problem than shipping a mismatched pair.
+        entryFileNames: "assets/[name]-[hash].js",
+        chunkFileNames: "assets/[name]-[hash].js",
+        assetFileNames: "assets/[name]-[hash][extname]",
       },
     },
   },

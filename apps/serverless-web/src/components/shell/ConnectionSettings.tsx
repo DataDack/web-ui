@@ -21,12 +21,31 @@ import { Button, Input } from "@datadack/common-ui"
  */
 export function ConnectionSettings() {
   const [open, setOpen] = useState(false)
-  const [base, setBase] = useState(connection.base())
-  const [token, setToken] = useState(connection.token())
+  const [base, setBase] = useState("")
+  const [token, setToken] = useState("")
+  const [expiresAt, setExpiresAt] = useState<Date | null>(null)
   const queryClient = useQueryClient()
+
+  /**
+   * Re-reads storage every time the panel opens.
+   *
+   * Initialising this state once at mount let it drift: storage changes
+   * underneath the component — a token dropped on expiry, or cleared by another
+   * tab — while the field kept showing the value captured at page load. The
+   * operator then saw a token that was no longer being sent, and "fixed" it by
+   * pressing Save, which silently re-wrote the same string. That made a storage
+   * problem look like a server one.
+   */
+  const openPanel = () => {
+    setBase(connection.base())
+    setToken(connection.token())
+    setExpiresAt(connection.tokenExpiresAt())
+    setOpen(true)
+  }
 
   const save = () => {
     connection.set(base.trim(), token.trim())
+    setExpiresAt(connection.tokenExpiresAt())
     setOpen(false)
     void queryClient.invalidateQueries()
   }
@@ -37,7 +56,8 @@ export function ConnectionSettings() {
         variant="ghost"
         size="icon-sm"
         onClick={() => {
-          setOpen((current) => !current)
+          if (open) setOpen(false)
+          else openPanel()
         }}
         aria-label="Connection settings"
         aria-expanded={open}
@@ -89,8 +109,13 @@ export function ConnectionSettings() {
             />
 
             <p className="text-muted-foreground mb-3 text-[11px]">
-              Optional. Leave empty when signed in — the session covers it. Stored in this browser
-              only, sent as an Authorization header, and cleared automatically once it expires.
+              {/* The expiry is shown because it is the one thing that silently
+                  invalidates a token, and an operator staring at a rejected
+                  request has no other way to tell a spent token from a server
+                  fault. */}
+              {expiresAt
+                ? `Valid until ${expiresAt.toLocaleString()}. Stored in this browser only and sent as an Authorization header.`
+                : "Stored in this browser only and sent as an Authorization header."}
             </p>
 
             <div className="flex justify-end gap-2">

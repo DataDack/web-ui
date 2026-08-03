@@ -42,20 +42,28 @@ export function useSession() {
         // fires several requests in parallel on load and a burst of rejections
         // must collapse into one notification rather than a stack.
         if (reason === "token-expired") {
-          // Noticed locally, before the request went out: the token carried an
-          // exp claim that has passed, and it has already been dropped.
+          // Discovered locally from the token's own exp claim, so this is
+          // certain: it is spent, and it has already been dropped.
           toast.error("Your access token expired", {
             id: UNAUTHORIZED_TOAST_ID,
             description: "Add a new one in Connection settings to continue.",
           })
         } else if (connection.token()) {
-          // The control plane refused a token that still looks live: revoked,
-          // or never valid here. Dropping it is what turns "every request fails
-          // silently" into "you need to add a token again".
-          connection.clearToken()
+          // A 401 from the control plane, on a token that has not expired.
+          //
+          // Deliberately NOT cleared. A rejection can mean the token is bad, or
+          // it can mean the control plane could not check it — a cold key set,
+          // a restart, a blip at the identity service. Discarding a good
+          // credential over someone else's transient fault is unrecoverable
+          // without the operator going to find another token, and it is exactly
+          // what turned one bad response into a console that stayed broken.
+          //
+          // The operator is told and can clear it themselves; a genuinely dead
+          // token keeps saying so on every poll until they do.
           toast.error("Your access token was rejected", {
             id: UNAUTHORIZED_TOAST_ID,
-            description: "It has been revoked or is not valid here. Add a new one to continue.",
+            description:
+              "The control plane refused it. If it was revoked, replace it in Connection settings.",
           })
         } else {
           // No token at all, against a control plane that wants one.
