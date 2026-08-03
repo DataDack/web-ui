@@ -214,6 +214,16 @@ export const tenantListSchema = z.object({
   switchable: z.boolean().default(false),
 })
 
+/** One account the signed-in operator belongs to, per the identity service. */
+export const sessionAccountSchema = z.object({
+  id: z.string(),
+  accountNumber: z.string().default(""),
+  name: z.string().default(""),
+  status: z.string().default(""),
+  isOwner: z.boolean().default(false),
+  memberRole: z.string().default(""),
+})
+
 /**
  * Who the control plane thinks is calling.
  *
@@ -226,10 +236,15 @@ export const sessionSchema = z.object({
   principalId: z.string().default(""),
   principalType: z.string().default(""),
   email: z.string().default(""),
+  name: z.string().default(""),
   accountId: z.string().default(""),
   scopes: z.array(z.string()).default([]),
   platformAdmin: z.boolean().default(false),
   expiresAt: z.string().optional(),
+  // Sourced from the identity service, so it lists every account the operator
+  // is a member of — including ones that have never deployed a function and so
+  // are invisible to the control plane's own tenant list.
+  accounts: z.array(sessionAccountSchema).default([]),
 })
 
 export type CodeArtifact = z.infer<typeof codeArtifactSchema>
@@ -246,3 +261,4 @@ export type AuditEvent = z.infer<typeof auditEventSchema>
 export type Tenant = z.infer<typeof tenantSchema>
 export type TenantList = z.infer<typeof tenantListSchema>
 export type Session = z.infer<typeof sessionSchema>
+export type SessionAccount = z.infer<typeof sessionAccountSchema>

@@ -4,6 +4,7 @@ import { useQueryClient } from "@tanstack/react-query"
 import { Building2, Layers3 } from "lucide-react"
 
 import { connection } from "@/lib/api"
+import { useSession } from "@/lib/auth"
 import { useTenants } from "@/lib/queries"
 
 /**
@@ -14,14 +15,44 @@ import { useTenants } from "@/lib/queries"
  * switcher renders as a static label rather than a control that cannot do
  * anything. Selecting a tenant sets the header every request carries and clears
  * the cache, so nothing from the previous tenant survives the switch.
+ *
+ * The list itself comes from the identity service when the operator signed in,
+ * and from the control plane's own tenant list otherwise. The difference
+ * matters: the control plane only knows an account once it owns a function, so
+ * a switcher built from it cannot offer an account you have not deployed to
+ * yet — which is exactly the account you need to select in order to deploy the
+ * first one.
  */
 export function ScopeSwitcher() {
   const { data } = useTenants()
+  const { data: session } = useSession()
   const queryClient = useQueryClient()
   const [accountId, setAccountId] = useState(connection.accountId())
   const [namespace, setNamespace] = useState(connection.namespace())
 
-  const accounts = data?.accounts ?? []
+  // Merge, rather than pick one: the identity service knows every account the
+  // operator belongs to, the control plane knows how many functions each holds.
+  const deployed = data?.accounts ?? []
+  const membership = session?.accounts ?? []
+  const byId = new Map(deployed.map((account) => [account.accountId, account]))
+  const accounts = [
+    ...membership.map((account) => ({
+      accountId: account.id,
+      label: account.name || account.accountNumber || account.id,
+      namespaces: byId.get(account.id)?.namespaces ?? [],
+      functions: byId.get(account.id)?.functions ?? 0,
+    })),
+    // Anything the control plane knows about that the operator is not a member
+    // of — visible to a super admin, and dropping it would hide real tenants.
+    ...deployed
+      .filter((account) => !membership.some((m) => m.id === account.accountId))
+      .map((account) => ({
+        accountId: account.accountId,
+        label: account.accountId,
+        namespaces: account.namespaces,
+        functions: account.functions,
+      })),
+  ]
   const current = accounts.find((account) => account.accountId === accountId)
   const namespaces = current?.namespaces ?? accounts[0]?.namespaces ?? []
 
@@ -61,7 +92,7 @@ export function ScopeSwitcher() {
           <option value="">All accounts</option>
           {accounts.map((account) => (
             <option key={account.accountId} value={account.accountId}>
-              {account.accountId} ({account.functions})
+              {account.label} ({account.functions})
             </option>
           ))}
         </select>

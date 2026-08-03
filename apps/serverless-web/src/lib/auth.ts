@@ -1,11 +1,15 @@
 import { useEffect } from "react"
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { toast } from "sonner"
 
-import { fetchSession, onUnauthorized, signIn, signOut, type Credentials } from "@/lib/api"
+import { connection, fetchSession, onUnauthorized, signIn, signOut, type Credentials } from "@/lib/api"
 import type { Session } from "@/lib/schemas"
 
 export const sessionQueryKey = ["session"] as const
+
+/** Shared so a burst of rejected requests collapses into a single toast. */
+const UNAUTHORIZED_TOAST_ID = "faas.auth.unauthorized"
 
 /**
  * The console's view of who is signed in.
@@ -29,7 +33,36 @@ export function useSession() {
 
   useEffect(
     () =>
-      onUnauthorized(() => {
+      onUnauthorized((reason) => {
+        // Every branch ends with the operator needing to do something, so each
+        // one says what. The toasts share a stable id, because the console
+        // fires several requests in parallel on load and a burst of rejections
+        // must collapse into one notification rather than a stack.
+        if (reason === "token-expired") {
+          // Noticed locally, before the request went out — the token carried an
+          // exp claim that has passed and has already been dropped.
+          toast.error("Your access token expired", {
+            id: UNAUTHORIZED_TOAST_ID,
+            description: "Add a new one to continue.",
+          })
+        } else if (connection.token()) {
+          // The control plane refused a token that still looks live: revoked,
+          // or never valid. Dropping it is what turns "every request fails
+          // silently" into "you need to add a token again".
+          connection.clearToken()
+          toast.error("Your access token was rejected", {
+            id: UNAUTHORIZED_TOAST_ID,
+            description: "It has been revoked or is not valid here. Add a new one to continue.",
+          })
+        } else if (queryClient.getQueryData<Session>(sessionQueryKey)?.authenticated) {
+          // No stored token, but we were signed in: the session cookie lapsed.
+          // The guard is about to redirect to the sign-in form; say why, or the
+          // redirect looks like the console losing its place.
+          toast.error("Your session expired", {
+            id: UNAUTHORIZED_TOAST_ID,
+            description: "Sign in again to continue.",
+          })
+        }
         void queryClient.invalidateQueries({ queryKey: sessionQueryKey })
       }),
     [queryClient],

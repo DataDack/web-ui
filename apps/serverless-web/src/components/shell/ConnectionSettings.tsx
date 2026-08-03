@@ -12,11 +12,12 @@ import { Button, Input } from "@datadack/common-ui"
  * Signing in is the normal way into the console, and it puts the session in an
  * HttpOnly cookie this file cannot touch. What stays here is for the cases
  * sign-in does not cover: pointing the console at a different control plane, and
- * driving one that has no identity service wired by pasting its service
- * credential as "client-id:client-secret".
+ * pasting an access token copied from the identity service.
  *
- * That credential is held in localStorage and sent as a bearer header. It is
- * never put in a URL, so it does not end up in proxy or access logs.
+ * That token is held in localStorage and sent as a bearer header — weaker than
+ * the cookie, which page scripts cannot read at all. It is never put in a URL,
+ * so it does not end up in proxy or access logs, and it is dropped as soon as
+ * the control plane rejects it.
  */
 export function ConnectionSettings() {
   const [open, setOpen] = useState(false)
@@ -74,7 +75,7 @@ export function ConnectionSettings() {
             />
 
             <label className="text-muted-foreground mb-1 block text-[11px]" htmlFor="api-token">
-              Service credential
+              Access token
             </label>
             <Input
               id="api-token"
@@ -83,13 +84,13 @@ export function ConnectionSettings() {
               onChange={(event) => {
                 setToken(event.target.value)
               }}
-              placeholder="client-id:client-secret"
+              placeholder="paste an access token"
               className="mb-3 h-8 font-mono text-[12px]"
             />
 
             <p className="text-muted-foreground mb-3 text-[11px]">
               Optional. Leave empty when signed in — the session covers it. Stored in this browser
-              only and sent as an Authorization header.
+              only, sent as an Authorization header, and cleared automatically once it expires.
             </p>
 
             <div className="flex justify-end gap-2">

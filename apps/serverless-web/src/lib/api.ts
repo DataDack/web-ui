@@ -19,8 +19,34 @@ import {
 
 const BASE_KEY = "faas.admin.apiBase"
 const TOKEN_KEY = "faas.admin.token"
+const TOKEN_EXPIRY_KEY = "faas.admin.tokenExpiresAt"
 const ACCOUNT_KEY = "faas.admin.accountId"
 const NAMESPACE_KEY = "faas.admin.namespace"
+
+/**
+ * Reads the `exp` claim out of a JWT, in milliseconds, or null when there is
+ * none to read.
+ *
+ * This is housekeeping, not authentication: the payload is decoded without
+ * verifying anything, because the browser cannot verify a signature it has no
+ * key for and must not pretend otherwise. The control plane re-checks the
+ * signature and the expiry on every single request — this only lets the console
+ * stop sending a token it can already tell is spent.
+ */
+function tokenExpiry(token: string): number | null {
+  const payload = token.split(".")[1]
+  if (!payload) return null
+  try {
+    // base64url → base64, and atob does not tolerate missing padding.
+    const padded = payload.replace(/-/g, "+").replace(/_/g, "/").padEnd(Math.ceil(payload.length / 4) * 4, "=")
+    const claims = JSON.parse(atob(padded)) as { exp?: unknown }
+    return typeof claims.exp === "number" ? claims.exp * 1000 : null
+  } catch {
+    // Not a JWT, or not one this can read. Falls back to "no known expiry",
+    // which means the token is kept until the control plane rejects it.
+    return null
+  }
+}
 
 /** Operator-configurable connection settings, persisted in localStorage. */
 export const connection = {
@@ -29,8 +55,38 @@ export const connection = {
       localStorage.getItem(BASE_KEY) ?? (import.meta.env.VITE_API_BASE as string | undefined) ?? ""
     )
   },
+  /**
+   * The stored access token, or "" once it has lapsed.
+   *
+   * An access token is short-lived by design, so this is temporary storage with
+   * a known end: the expiry recorded at save time is checked on every read, and
+   * a lapsed token is dropped rather than returned. Without that the console
+   * would keep attaching a dead credential until a request came back 401 —
+   * which for a browser left open overnight means every panel fails on the
+   * first load of the morning before anything tells the operator why.
+   */
   token(): string {
-    return localStorage.getItem(TOKEN_KEY) ?? ""
+    const token = localStorage.getItem(TOKEN_KEY) ?? ""
+    if (!token) return ""
+
+    const expiresAt = Number(localStorage.getItem(TOKEN_EXPIRY_KEY) ?? "")
+    if (expiresAt && Date.now() >= expiresAt) {
+      connection.clearToken()
+      // Deferred: this runs while an outbound request is being built, and
+      // notifying synchronously would re-enter the query client mid-flight.
+      // Clearing first means the token is already gone by the time anything
+      // reads it again, so this fires once rather than per request.
+      queueMicrotask(() => {
+        notifyUnauthorized("token-expired")
+      })
+      return ""
+    }
+    return token
+  },
+  /** When the stored token lapses, or null when it carries no expiry. */
+  tokenExpiresAt(): Date | null {
+    const expiresAt = Number(localStorage.getItem(TOKEN_EXPIRY_KEY) ?? "")
+    return expiresAt ? new Date(expiresAt) : null
   },
   /**
    * The tenant the console is acting on behalf of. The control plane ignores it
@@ -45,7 +101,31 @@ export const connection = {
   },
   set(base: string, token: string) {
     localStorage.setItem(BASE_KEY, base)
+    if (!token) {
+      connection.clearToken()
+      return
+    }
     localStorage.setItem(TOKEN_KEY, token)
+    // Recorded once, at save time, so reading the token stays a timestamp
+    // comparison rather than a base64 decode on every outbound request.
+    const expiresAt = tokenExpiry(token)
+    if (expiresAt) {
+      localStorage.setItem(TOKEN_EXPIRY_KEY, String(expiresAt))
+    } else {
+      localStorage.removeItem(TOKEN_EXPIRY_KEY)
+    }
+  },
+  /**
+   * Forgets the stored operator token.
+   *
+   * Called when the control plane rejects it. An expired token is not going to
+   * start working, and leaving it in place means every subsequent request
+   * carries a credential that can only fail — so the operator sees a console
+   * that is broken rather than one that is asking them to sign in.
+   */
+  clearToken() {
+    localStorage.removeItem(TOKEN_KEY)
+    localStorage.removeItem(TOKEN_EXPIRY_KEY)
   },
   setScope(accountId: string, namespace: string) {
     localStorage.setItem(ACCOUNT_KEY, accountId)
@@ -58,9 +138,14 @@ export const connection = {
  *
  * The operator session is a cookie, not a header: it is HttpOnly precisely so
  * this file cannot read it, which is what stops an XSS bug in the console from
- * turning into a stolen platform credential. The bearer token here is the
- * separate, optional service credential ("client-id:client-secret") an operator
- * can paste in to drive a control plane that has no identity service wired.
+ * turning into a stolen platform credential.
+ *
+ * The bearer token here is the alternative to signing in: an access token
+ * copied from the identity service. The control plane verifies it against that
+ * service's published keys exactly as it verifies a session, and uses it to
+ * read the operator's profile and accounts. It lives in localStorage, so it is
+ * the weaker of the two paths — offered for driving a control plane from a
+ * browser that has not signed into this host.
  */
 function authHeaders(): Record<string, string> {
   const headers: Record<string, string> = {
@@ -98,7 +183,16 @@ http.interceptors.request.use((config) => {
  * session, which sends the operator to the sign-in form instead of leaving a
  * screen of failed panels behind.
  */
-type UnauthorizedListener = () => void
+/**
+ * Why the console lost its credential.
+ *
+ * "token-expired" is discovered locally, before a request goes out; "rejected"
+ * comes back from the control plane. They need different copy: one is routine
+ * and expected, the other may mean the token was revoked or was never valid.
+ */
+export type UnauthorizedReason = "token-expired" | "rejected"
+
+type UnauthorizedListener = (reason: UnauthorizedReason) => void
 const unauthorizedListeners = new Set<UnauthorizedListener>()
 
 export function onUnauthorized(listener: UnauthorizedListener): () => void {
@@ -108,8 +202,8 @@ export function onUnauthorized(listener: UnauthorizedListener): () => void {
   }
 }
 
-function notifyUnauthorized() {
-  for (const listener of unauthorizedListeners) listener()
+function notifyUnauthorized(reason: UnauthorizedReason) {
+  for (const listener of unauthorizedListeners) listener(reason)
 }
 
 http.interceptors.response.use(
@@ -119,7 +213,7 @@ http.interceptors.response.use(
     // principal lacks the scope, and signing out would only cost them the
     // session they legitimately hold.
     if (axios.isAxiosError(error) && error.response?.status === 401) {
-      notifyUnauthorized()
+      notifyUnauthorized("rejected")
     }
     return Promise.reject(error instanceof Error ? error : new Error(String(error)))
   },
@@ -200,7 +294,7 @@ export function streamLogs(query: LogQuery, handlers: LogStreamHandlers): () => 
         signal: controller.signal,
       })
       if (response.status === 401) {
-        notifyUnauthorized()
+        notifyUnauthorized("rejected")
         handlers.onError?.("session expired")
         return
       }
