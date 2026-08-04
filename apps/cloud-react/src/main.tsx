@@ -1,3 +1,10 @@
+// Must be the first import: it declares `@layer theme, base, datadack-ui,
+// components, utilities;`, which fixes the cascade layer order globally on
+// first appearance. Any component module evaluated first (e.g. TooltipProvider
+// below) would call emotion's css() before this parses, locking `datadack-ui`
+// in as the lowest-priority layer instead — see the comment atop index.css.
+import "./index.css"
+
 import { StrictMode } from "react"
 
 // Self-hosted fonts via @fontsource (no CDN dependency)
@@ -22,7 +29,6 @@ import { LanguageProvider } from "@/services/language_service"
 import { ThemeProvider } from "@/services/theme_service"
 
 import App from "./App.tsx"
-import "./index.css"
 
 // A deploy replaces the hashed chunk files, so a tab loaded before the deploy
 // gets the index.html SPA fallback (text/html) when a lazy route requests its

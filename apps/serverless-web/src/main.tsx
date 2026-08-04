@@ -1,3 +1,10 @@
+// Must be the first import: it declares `@layer theme, base, datadack-ui,
+// components, utilities;`, which fixes the cascade layer order globally on
+// first appearance. Any component module evaluated first would call emotion's
+// css() before this parses, locking `datadack-ui` in as the lowest-priority
+// layer instead — see the comment atop index.css.
+import "./index.css"
+
 import React from "react"
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
@@ -10,7 +17,6 @@ import { faasTransport } from "@/lib/faas-transport"
 
 import { ThemeProvider } from "@datadack/common-ui"
 import { ServerlessProvider } from "@datadack/serverless"
-import "./index.css"
 
 const queryClient = new QueryClient({
   defaultOptions: {

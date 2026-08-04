@@ -81,25 +81,8 @@ export function PackageStep({ form }: Readonly<PackageStepProps>) {
         </div>
       </div>
 
-      {packageType === "blank" && (
-        <div className="max-w-2xl space-y-3">
-          <p className="text-muted-foreground text-[13px]">{t("serverless.form.blankHint")}</p>
-          {/* Same placeholder the function's Code tab uses in serverless-web,
-              with copy for this context: here it is showing what the generated
-              function will look like once it exists, not an editor that is
-              disabled. Name and runtime are whatever has been chosen so far;
-              the component mocks the rest. */}
-          <CodeEditorPlaceholder
-            functionName={name || "my-function"}
-            runtime={runtime || undefined}
-            title="Editor coming soon"
-            message="Your function deploys with a working template for the runtime you pick below. Inline editing isn’t available yet — update the code through the API or CLI."
-          />
-        </div>
-      )}
-
       {packageType === "image" && (
-        <div className="max-w-lg space-y-3">
+        <div className="space-y-3">
           <div className="space-y-1.5">
             <Label htmlFor="fn-image">
               {t("serverless.form.imageUri")}
@@ -127,7 +110,7 @@ export function PackageStep({ form }: Readonly<PackageStepProps>) {
 
       {packageType !== "image" && (
         <div className="space-y-5">
-          <div className="max-w-lg space-y-1.5">
+          <div className="space-y-1.5">
             <Label htmlFor="fn-runtime">{t("serverless.columns.runtime")}</Label>
             <SmartSelect<RuntimeInfo>
               id="fn-runtime"
@@ -145,9 +128,12 @@ export function PackageStep({ form }: Readonly<PackageStepProps>) {
                 if (!info.architectures.includes(architecture)) {
                   form.setValue("architecture", info.architectures[0] ?? "x86_64")
                 }
+                // The handler input is hidden for a blank starter — the
+                // template already matches this shape, so the field is only
+                // ever set here, never typed by hand.
                 if (!info.handlerRequired) {
                   form.setValue("handler", "")
-                } else if (form.getValues("handler") === "") {
+                } else {
                   form.setValue("handler", info.handlerFormat)
                 }
               }}
@@ -167,41 +153,40 @@ export function PackageStep({ form }: Readonly<PackageStepProps>) {
             <FieldError message={form.formState.errors.runtime?.message} />
           </div>
 
-          <div className="border-border/60 grid max-w-lg gap-5 rounded-xl border p-4 sm:grid-cols-2">
-            {handlerRequired && (
-              <div className="space-y-1.5">
-                <Label htmlFor="fn-handler">{t("serverless.form.handler")}</Label>
-                <Input
-                  id="fn-handler"
-                  placeholder={t("serverless.createFunctionPage.indexHandler")}
-                  className="font-mono"
-                  aria-invalid={!!form.formState.errors.handler}
-                  {...form.register("handler")}
-                />
-                {/* The catalog knows the shape each runtime expects; showing it
-                    beside the field beats discovering it from a rejected submit. */}
-                {selected?.handlerFormat && !form.formState.errors.handler && (
-                  <p className="text-muted-foreground font-mono text-[11px]">
-                    {selected.handlerFormat}
-                  </p>
-                )}
-                <FieldError message={form.formState.errors.handler?.message} />
-              </div>
-            )}
-            <div className="space-y-1.5">
-              <Label>{t("serverless.form.architecture")}</Label>
-              <SegmentedControl
-                value={architecture}
-                onChange={(value) => {
-                  form.setValue("architecture", value, { shouldValidate: true })
-                }}
-                options={architectures.map((arch) => ({ value: arch, label: arch }))}
-                ariaLabel={t("serverless.form.architecture")}
-                showLabels
-              />
-              <FieldError message={form.formState.errors.architecture?.message} />
-            </div>
+          <div className="space-y-1.5">
+            <Label>{t("serverless.form.architecture")}</Label>
+            <SegmentedControl
+              value={architecture}
+              onChange={(value) => {
+                form.setValue("architecture", value, { shouldValidate: true })
+              }}
+              options={architectures.map((arch) => ({ value: arch, label: arch }))}
+              ariaLabel={t("serverless.form.architecture")}
+              showLabels
+            />
+            <FieldError message={form.formState.errors.architecture?.message} />
           </div>
+          {/* The handler input itself is hidden — handlerRequired still drives
+              validation (schema.ts), just off a value this step sets for the
+              runtime rather than one the user types. */}
+          <FieldError message={handlerRequired ? form.formState.errors.handler?.message : undefined} />
+
+          {packageType === "blank" && (
+            <div className="space-y-3">
+              <p className="text-muted-foreground text-[13px]">{t("serverless.form.blankHint")}</p>
+              {/* Same placeholder the function's Code tab uses in serverless-web,
+                  with copy for this context: here it is showing what the generated
+                  function will look like once it exists, not an editor that is
+                  disabled. Name and runtime are whatever has been chosen above;
+                  the component mocks the rest. */}
+              <CodeEditorPlaceholder
+                functionName={name || "my-function"}
+                runtime={runtime || undefined}
+                title="Editor coming soon"
+                message="Your function deploys with a working template for the runtime you picked above. Inline editing isn’t available yet — update the code through the API or CLI."
+              />
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -50,7 +50,17 @@ const fillTabContent = css`
   flex-direction: column;
 `
 
+/* Same fill behavior, without asserting flex-direction — ConfigurationTab's
+   own layout class already switches column→row at its own breakpoint, and
+   merging a hardcoded flex-direction here would fight that responsive rule. */
+const fillPane = css`
+  display: flex;
+  flex: 1;
+  min-height: 0;
+`
+
 const backButton = css`
+  align-self: flex-start;
   margin-left: -8px;
   margin-bottom: 12px;
   gap: 6px;
@@ -288,7 +298,7 @@ export function FunctionDetailPage({
                   labels={merged}
                   activeSection={activeConfigSection}
                   onSectionChange={onConfigSectionChange}
-                  className={fillTabContent}
+                  className={fillPane}
                 />
               )}
               {tab.value === "aliases" && <AliasesTab fn={fn} scope={scope} labels={merged} />}

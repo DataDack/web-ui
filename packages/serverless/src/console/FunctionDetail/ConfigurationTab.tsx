@@ -47,7 +47,7 @@ const layout = css`
   gap: 16px;
   align-items: stretch;
 
-  ${media.lg} {
+  ${media.md} {
     flex-direction: row;
     align-items: stretch;
   }
@@ -58,7 +58,7 @@ const nav = css`
   flex-direction: column;
   gap: 2px;
 
-  ${media.lg} {
+  ${media.md} {
     width: 220px;
     flex-shrink: 0;
   }
