@@ -5,9 +5,8 @@ import type { RuntimeInfo } from "../../serverless.types"
 
 interface SummaryAsideProps {
   name: string
-  packageType: "zip" | "image" | "blank"
+  packageType: "image" | "blank"
   packageLabel: string
-  artifactKey: string | undefined
   imageUri: string
   runtime: string
   handler: string
@@ -58,7 +57,6 @@ export function SummaryAside({
   name,
   packageType,
   packageLabel,
-  artifactKey,
   imageUri,
   runtime,
   handler,
@@ -80,7 +78,6 @@ export function SummaryAside({
         <div className="space-y-1.5">
           <Row label="Name" value={name || "—"} />
           <Row label="Package" value={packageLabel} />
-          {packageType === "zip" && <Row label="Artifact" value={artifactKey ?? "not uploaded"} />}
           {packageType === "image" && <Row label="Image" value={imageUri || "—"} />}
           {runtimeApplies && (
             <>

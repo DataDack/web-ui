@@ -38,6 +38,9 @@ const options: Options = {
     "@emotion/css",
     "clsx",
     "tailwind-merge",
+    // The app owns the mounted <Toaster/>; bundling sonner would give this
+    // package a private toast store that no toaster ever renders from.
+    "sonner",
   ],
 }
 

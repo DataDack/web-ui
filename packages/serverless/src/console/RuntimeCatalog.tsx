@@ -2,11 +2,10 @@ import { useMemo, useState } from "react"
 
 import { AlertTriangle, Check, PackageOpen, Search } from "lucide-react"
 
-import { css, cx } from "@datadack/common-ui"
-import { Input, fontMono } from "@datadack/common-ui"
+import { css, cx, fontMono, Input } from "@datadack/common-ui"
 
-import type { RuntimeInfo } from "../data/types"
 import { familyLabel, RuntimeIcon } from "./RuntimeIcon"
+import type { RuntimeInfo } from "../data/types"
 
 // RuntimeInfo now lives in ../data/types alongside the rest of the FaaS domain
 // types, so the hooks and the create form share one definition with this grid.

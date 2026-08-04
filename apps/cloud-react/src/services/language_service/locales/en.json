@@ -3971,13 +3971,200 @@
       "aliases": "Aliases",
       "test": "Test"
     },
+    "detail": {
+      "backLabel": "Functions",
+      "notFound": {
+        "title": "No function named {{name}}",
+        "description": "It may have been deleted, or it belongs to another account."
+      },
+      "unavailable": {
+        "title": "Function details are unavailable",
+        "description": "This console can’t reach the serverless API for the active region, so function details can’t be shown here."
+      },
+      "code": {
+        "title": "Coming soon",
+        "message": "Inline code editing isn’t available yet. Deploy updates through the API or CLI in the meantime."
+      },
+      "actions": {
+        "delete": "Delete"
+      },
+      "deleteConfirm": {
+        "title": "Delete {{name}}?",
+        "description": "This permanently removes the function, its versions and aliases. Invocations will start failing immediately.",
+        "confirmLabel": "Delete function",
+        "cancelLabel": "Cancel",
+        "typeToConfirm": "Type the function name to confirm",
+        "success": "Function {{name}} deleted"
+      },
+      "test": {
+        "payload": "Event",
+        "template": "Template",
+        "run": "Test",
+        "running": "Running…",
+        "response": "Execution result",
+        "hint": "Send a test event to see the response here.",
+        "empty": "(empty response)",
+        "invalidJson": "The event must be valid JSON.",
+        "executedVersion": "version",
+        "logs": "Function logs",
+        "failed": "The invocation failed"
+      },
+      "monitor": {
+        "blurb": "Per-function metrics are on the way. Each card below shows what will land here.",
+        "comingSoon": "Coming soon",
+        "metrics": {
+          "invocations": {
+            "title": "Invocations",
+            "unit": "Count"
+          },
+          "duration": {
+            "title": "Duration",
+            "unit": "Milliseconds"
+          },
+          "errors": {
+            "title": "Error count and success rate",
+            "unit": "Count / %"
+          },
+          "throttles": {
+            "title": "Throttles",
+            "unit": "Count"
+          },
+          "concurrent": {
+            "title": "Concurrent executions",
+            "unit": "Count"
+          },
+          "recursive": {
+            "title": "Recursive invocations detected",
+            "unit": "Count"
+          },
+          "asyncEventAge": {
+            "title": "Async invocation event age",
+            "unit": "Milliseconds"
+          },
+          "asyncEvents": {
+            "title": "Async events received",
+            "unit": "Count"
+          },
+          "asyncFailures": {
+            "title": "Async delivery failures",
+            "unit": "Count"
+          },
+          "iteratorAge": {
+            "title": "Iterator age",
+            "unit": "Milliseconds"
+          }
+        }
+      },
+      "configuration": {
+        "nav": {
+          "general": "General configuration",
+          "env": "Environment variables",
+          "triggers": "Triggers",
+          "tags": "Tags",
+          "concurrency": "Concurrency",
+          "async": "Asynchronous invocation",
+          "functionUrl": "Function URL",
+          "permissions": "Permissions",
+          "vpc": "VPC"
+        },
+        "soon": "Soon",
+        "edit": "Edit",
+        "save": "Save",
+        "cancel": "Cancel",
+        "saved": "Configuration saved",
+        "fields": {
+          "description": "Description",
+          "runtime": "Runtime",
+          "handler": "Handler",
+          "architecture": "Architecture",
+          "memory": "Memory",
+          "timeout": "Timeout",
+          "ephemeral": "Ephemeral storage",
+          "packageType": "Package type",
+          "namespace": "Namespace",
+          "region": "Region",
+          "lastModified": "Last modified",
+          "imageUri": "Container image",
+          "reserved": "Reserved concurrency",
+          "provisioned": "Provisioned concurrency",
+          "maxEventAge": "Maximum age of event",
+          "retryAttempts": "Retry attempts"
+        },
+        "envEmpty": "None set.",
+        "envHint": "Blank rows are ignored.",
+        "envAdd": "Add variable",
+        "envRemove": "Remove {{name}}",
+        "envRemoveUnnamed": "Remove variable",
+        "tagsEmpty": "No tags.",
+        "tagsHint": "Tags are stored as the function’s labels.",
+        "triggersEmpty": "No triggers",
+        "unreserved": "Not set",
+        "comingSoon": {
+          "functionUrl": {
+            "title": "Function URL",
+            "message": "A stable HTTPS endpoint for this function isn’t available yet."
+          },
+          "permissions": {
+            "title": "Permissions",
+            "message": "Resource-based policies aren’t available yet."
+          },
+          "vpc": {
+            "title": "VPC",
+            "message": "Attaching this function to a VPC isn’t available yet."
+          }
+        }
+      },
+      "versions": {
+        "columns": {
+          "version": "Version",
+          "description": "Description",
+          "date": "Published",
+          "codeSize": "Code size",
+          "sha": "SHA-256"
+        },
+        "empty": "No versions",
+        "createAlias": "Create alias from this version",
+        "rowActions": "Version actions"
+      },
+      "aliases": {
+        "columns": {
+          "name": "Alias",
+          "version": "Version",
+          "routing": "Weighted routing",
+          "description": "Description"
+        },
+        "empty": "No aliases",
+        "emptyHint": "Aliases point a stable name at a specific version.",
+        "create": "Create alias",
+        "edit": "Edit alias",
+        "save": "Save alias",
+        "namePlaceholder": "prod",
+        "weighted": "Split traffic with a second version",
+        "weight": "Weight (%)",
+        "version": "Version",
+        "description": "Description",
+        "deleteTitle": "Delete alias {{name}}?",
+        "deleteDescription": "Anything invoking through this alias will start failing.",
+        "saved": "Alias {{name}} saved",
+        "deleted": "Alias {{name}} deleted",
+        "rowActions": "Alias actions",
+        "sameVersion": "Pick two different versions",
+        "nameRequired": "An alias name is required",
+        "versionRequired": "Pick a version",
+        "weightRange": "Weight must be between 1 and 99"
+      },
+      "errors": {
+        "saveFailed": "Could not save the changes",
+        "deleteFailed": "Could not delete",
+        "invokeFailed": "Could not invoke the function",
+        "loadFailed": "Could not load the function"
+      }
+    },
     "wizard": {
       "basics": "Basics",
       "basicsDescription": "Name the function.",
-      "package": "Package",
-      "packageDescription": "Container image, or a zip archive uploaded to the artifact store.",
-      "runtime": "Runtime",
-      "runtimeDescription": "Execution runtime, handler and architecture for zip packages.",
+      "package": "Package & runtime",
+      "packageDescription": "Where the code comes from, and the runtime it runs on.",
       "sizing": "Sizing & environment",
       "sizingDescription": "Memory, timeout and environment variables.",
       "submit": "Deploy function",
@@ -3993,7 +4180,6 @@
       "zip": "Zip archive",
       "image": "Container image",
       "imageUri": "Image URI",
-      "uploadZip": "Upload the .zip deployment package",
       "uploadLayerZip": "Upload the layer .zip",
       "uploading": "Uploading {{name}}…",
       "handler": "Handler",
@@ -4006,7 +4192,7 @@
       "artifact": "Artifact",
       "artifactRequired": "Upload the archive before continuing.",
       "blank": "Blank starter",
-      "blankHint": "We generate a minimal working function for the runtime you pick in the next step — edit the code any time after it deploys."
+      "blankHint": "We generate a minimal working function for the runtime you pick below — edit the code any time after it deploys."
     },
     "invoke": {
       "payload": "Request payload",

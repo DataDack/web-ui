@@ -14,7 +14,6 @@ import { useScreen } from "@/services/api/screen"
 
 import { BasicsStep } from "./BasicsStep"
 import { PackageStep } from "./PackageStep"
-import { RuntimeStep } from "./RuntimeStep"
 import { makeSchema, type FormValues } from "./schema"
 import { SizingStep } from "./SizingStep"
 import { SummaryAside } from "./SummaryAside"
@@ -23,7 +22,6 @@ import {
   useCreateFunction,
   useCreateFunctionFromSource,
   useServerlessRuntimes,
-  useUploadArtifact,
 } from "../../serverless.hooks"
 import { templateForFamily } from "../../serverless.templates"
 import type { CreateFunctionRequest } from "../../serverless.types"
@@ -48,23 +46,18 @@ export function CreateFunctionPage() {
   const { mutate: create, isPending } = useCreateFunction()
   const { mutate: createFromSource, isPending: isSourcePending } = useCreateFunctionFromSource()
   const { data: allRuntimes } = useServerlessRuntimes()
-  const upload = useUploadArtifact()
   const { rule } = useNamingRule("function")
   // Rebuilt as the catalog arrives, so a runtime's own rules apply the moment
   // they are known rather than only after a rejected submit.
   const schema = useMemo(() => makeSchema(rule, allRuntimes ?? []), [rule, allRuntimes])
 
-  // The archive reference lives outside the form: it is produced by the
-  // presigned upload, not typed by the user.
-  const [artifact, setArtifact] = useState<{ bucket: string; key: string } | null>(null)
-  const [artifactName, setArtifactName] = useState("")
   const [envRows, setEnvRows] = useState<TagRow[]>([{ key: "", value: "" }])
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
       name: "",
-      packageType: "zip",
+      packageType: "blank",
       imageUri: "",
       runtime: "",
       handler: "",
@@ -75,21 +68,7 @@ export function CreateFunctionPage() {
     mode: "onTouched",
   })
 
-  const onArchive = (file: File | undefined) => {
-    if (!file) return
-    setArtifactName(file.name)
-    upload.mutate(
-      { kind: "functions", file },
-      {
-        onSuccess: (ref) => {
-          setArtifact(ref)
-        },
-      },
-    )
-  }
-
   const packageLabels = {
-    zip: t("serverless.form.zip"),
     image: t("serverless.form.image"),
     blank: t("serverless.form.blank"),
   } as const
@@ -110,23 +89,8 @@ export function CreateFunctionPage() {
         id: "package",
         title: t("serverless.wizard.package"),
         description: t("serverless.wizard.packageDescription"),
-        fields: ["packageType", "imageUri"],
-        render: (f) => (
-          <PackageStep
-            form={f}
-            artifact={artifact}
-            artifactName={artifactName}
-            uploading={upload.isPending}
-            onArchive={onArchive}
-          />
-        ),
-        validate: () => {
-          if (form.getValues("packageType") === "zip" && artifact === null) {
-            toast.error(t("serverless.form.artifactRequired"))
-            return false
-          }
-          return true
-        },
+        fields: ["packageType", "imageUri", "runtime", "handler", "architecture"],
+        render: (f) => <PackageStep form={f} />,
         reviewItems: (values) => {
           const items: KeyValueItem[] = [
             {
@@ -140,42 +104,15 @@ export function CreateFunctionPage() {
               value: values.imageUri,
               mono: true,
             })
-          } else if (values.packageType === "zip") {
-            items.push({
-              label: t("serverless.form.artifact"),
-              value: artifact?.key ?? "—",
-              mono: true,
-            })
+            return items
           }
+          items.push(
+            { label: t("serverless.columns.runtime"), value: values.runtime, mono: true },
+            { label: t("serverless.form.handler"), value: values.handler || "—", mono: true },
+            { label: t("serverless.form.architecture"), value: values.architecture, mono: true },
+          )
           return items
         },
-      },
-      {
-        id: "runtime",
-        title: t("serverless.wizard.runtime"),
-        description: t("serverless.wizard.runtimeDescription"),
-        fields: ["runtime", "handler", "architecture"],
-        render: (f) => <RuntimeStep form={f} />,
-        reviewItems: (values) =>
-          values.packageType === "image"
-            ? []
-            : [
-                {
-                  label: t("serverless.columns.runtime"),
-                  value: values.runtime,
-                  mono: true,
-                },
-                {
-                  label: t("serverless.form.handler"),
-                  value: values.handler || "—",
-                  mono: true,
-                },
-                {
-                  label: t("serverless.form.architecture"),
-                  value: values.architecture,
-                  mono: true,
-                },
-              ],
       },
       {
         id: "sizing",
@@ -201,7 +138,7 @@ export function CreateFunctionPage() {
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [t, artifact, artifactName, upload.isPending, envRows, form],
+    [t, envRows, form],
   )
 
   // Watched rather than read once, so the aside tracks the form as it is filled
@@ -226,14 +163,13 @@ export function CreateFunctionPage() {
         steps={steps}
         form={form}
         submitLabel={t("serverless.wizard.submit")}
-        isSubmitting={isPending || isSourcePending || upload.isPending}
+        isSubmitting={isPending || isSourcePending}
         onCancel={() => void navigate(SERVERLESS_ROUTES.ROOT)}
         aside={
           <SummaryAside
             name={watched.name}
             packageType={watched.packageType}
             packageLabel={packageLabels[watched.packageType]}
-            artifactKey={artifact?.key}
             imageUri={watched.imageUri}
             runtime={watched.runtime}
             handler={watched.handler}
@@ -253,9 +189,7 @@ export function CreateFunctionPage() {
             // this is unreachable — but deploying a placeholder that fails at
             // every invoke is worse than not deploying, so it stays a guard.
             if (!template) {
-              toast.error(
-                `${values.runtime} needs a compiled artifact — upload a .zip or use a container image.`,
-              )
+              toast.error(`${values.runtime} needs a compiled artifact — use a container image instead.`)
               return
             }
             createFromSource(
@@ -280,17 +214,10 @@ export function CreateFunctionPage() {
           }
           const body: CreateFunctionRequest = {
             name: values.name,
-            packageType: values.packageType,
+            packageType: "image",
+            imageUri: values.imageUri.trim(),
             memorySize: values.memorySize,
             timeout: values.timeout,
-          }
-          if (values.packageType === "image") {
-            body.imageUri = values.imageUri.trim()
-          } else if (artifact) {
-            body.codeArtifact = artifact
-            body.runtime = values.runtime
-            body.architecture = values.architecture
-            if (values.handler.trim() !== "") body.handler = values.handler.trim()
           }
           if (Object.keys(env).length > 0) body.env = env
           create(body, {

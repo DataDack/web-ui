@@ -4,8 +4,12 @@ import tailwindcss from "@tailwindcss/vite"
 import react from "@vitejs/plugin-react"
 import { defineConfig } from "vite"
 
-/** Control plane origin the dev server proxies API calls to. */
-const CONTROL_PLANE = process.env.CONTROL_PLANE_URL ?? "http://127.0.0.1:8080"
+/**
+ * Control plane origin the dev server proxies API calls to. 8085 matches the
+ * FaaS dev default (serverless_faas/.env HTTP_PORT); the api and router roles
+ * share that one listener, so /v1 and /function both land there.
+ */
+const CONTROL_PLANE = process.env.CONTROL_PLANE_URL ?? "http://127.0.0.1:8085"
 
 const proxied = ["/v1", "/function", "/async-function", "/system", "/metrics"]
 

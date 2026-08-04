@@ -32,7 +32,7 @@ export const makeSchema = (rule: NamingRule, runtimes: RuntimeInfo[]) =>
   z
     .object({
       name: namingNameSchema(rule),
-      packageType: z.enum(["zip", "image", "blank"]),
+      packageType: z.enum(["image", "blank"]),
       imageUri: z.string(),
       runtime: z.string(),
       handler: z.string(),
@@ -69,23 +69,22 @@ export const makeSchema = (rule: NamingRule, runtimes: RuntimeInfo[]) =>
       // bundled-RIC runtime has no inline source to zip in the first place. Both
       // used to reach the server and come back as
       // "runtime and handler are required for zip package".
-      if (values.packageType === "blank") {
-        if (selected.bundledRic) {
-          ctx.addIssue({
-            code: "custom",
-            path: ["runtime"],
-            message: `${selected.name} needs a compiled artifact — upload a .zip or use a container image instead of starting blank`,
-          })
-        }
-        if (values.handler.trim() === "") {
-          ctx.addIssue({
-            code: "custom",
-            path: ["handler"],
-            message: selected.handlerFormat
-              ? `A handler is required to start from a template — ${selected.handlerFormat}`
-              : "A handler is required to start from a template",
-          })
-        }
+      // (packageType is "blank" here — "image" already returned above.)
+      if (selected.bundledRic) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["runtime"],
+          message: `${selected.name} needs a compiled artifact — use a container image instead of starting blank`,
+        })
+      }
+      if (values.handler.trim() === "") {
+        ctx.addIssue({
+          code: "custom",
+          path: ["handler"],
+          message: selected.handlerFormat
+            ? `A handler is required to start from a template — ${selected.handlerFormat}`
+            : "A handler is required to start from a template",
+        })
       }
 
       if (selected.deprecatedForCreate) {

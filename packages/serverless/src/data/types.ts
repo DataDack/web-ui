@@ -81,3 +81,108 @@ export interface CreateFromPackageInput {
 export interface CreatedFunction {
   name: string
 }
+
+export interface CodeArtifact { bucket?: string; key: string; sha256?: string; sizeBytes?: number; source?: string }
+export interface LayerRef { name: string; version: number; arn?: string }
+
+export interface FunctionVersion {
+  version: string
+  versionNumber?: number
+  description?: string
+  codeSha256?: string
+  codeArtifact?: CodeArtifact | null
+  createdAt?: string
+}
+
+export interface FunctionEntity {
+  id?: string
+  accountId?: string
+  name: string
+  namespace?: string
+  region?: string
+  functionArn?: string
+  packageType: string
+  imageUri?: string
+  runtime?: string
+  runtimeMode?: string
+  handler?: string
+  architecture?: string
+  memorySize?: number
+  timeout?: number
+  ephemeralStorageMb?: number
+  description?: string
+  reservedConcurrency?: number
+  provisionedConcurrency?: number
+  maxRetryAttempts?: number
+  maxEventAgeSeconds?: number
+  layers?: LayerRef[]
+  env?: Record<string, string>
+  labels?: Record<string, string>
+  state: string
+  version?: FunctionVersion
+  createdAt?: string
+  updatedAt?: string
+}
+
+export interface FunctionAlias {
+  name: string
+  functionVersion: string
+  additionalVersionWeights?: Record<string, number>
+  description?: string
+  state?: string
+  revisionId?: string
+  createdAt?: string
+  updatedAt?: string
+}
+
+export interface PutAliasInput {
+  name: string
+  functionVersion: string
+  description?: string
+  additionalVersionWeights?: Record<string, number>
+}
+
+export interface Trigger {
+  id: string
+  type: string
+  name?: string
+  functionName: string
+  state?: string
+  schedule?: string
+  intervalSeconds?: number
+  sourceArn?: string
+  bucket?: string
+  prefix?: string
+  suffix?: string
+  createdAt?: string
+}
+
+export interface InvokeResult {
+  status: number
+  durationMs: number
+  body: string
+  contentType?: string
+  executedVersion?: string
+  functionError?: string
+  logs?: string
+}
+
+/**
+ * Patch for PATCH /v1/functions/{name} — an in-place configuration update that
+ * does NOT mint a version. Send only the keys being changed; the backend
+ * rejects unknown keys (400). A transport that omits updateFunctionConfig
+ * hides all edit UI (configEdit=false).
+ */
+export interface UpdateFunctionConfigInput {
+  description?: string
+  memorySize?: number
+  timeout?: number
+  handler?: string
+  ephemeralStorageMb?: number
+  env?: Record<string, string>
+  labels?: Record<string, string>
+  reservedConcurrency?: number
+  provisionedConcurrency?: number
+  maxRetryAttempts?: number
+  maxEventAgeSeconds?: number
+}

@@ -25,7 +25,7 @@ const monoInput = css`
   font-size: 12px;
 `
 
-const hint = css`
+const hintLine = css`
   font-size: 11px;
   color: ${mix("--muted-foreground", 80)};
 `
@@ -33,6 +33,12 @@ const hint = css`
 export interface EnvEditorProps {
   rows: EnvRow[]
   onChange: (rows: EnvRow[]) => void
+  /** "Add variable" button text; label-driven consumers pass a translation. */
+  addLabel?: string
+  /** Hint under the add button. */
+  hint?: string
+  /** aria-label for a row's remove button, given the row's current key. */
+  removeLabel?: (key: string) => string
 }
 
 /**
@@ -41,8 +47,17 @@ export interface EnvEditorProps {
  * Always keeps one empty row at the end so adding the first variable needs no
  * "add" click; the explicit button is for the second and later ones. Blank rows
  * are dropped on submit, so an untouched trailing row costs nothing.
+ *
+ * The strings default to English for the pre-existing create-form usage; the
+ * detail page's sections thread its labels tree through so translations apply.
  */
-export function EnvEditor({ rows, onChange }: Readonly<EnvEditorProps>) {
+export function EnvEditor({
+  rows,
+  onChange,
+  addLabel = "Add variable",
+  hint = "Blank rows are ignored.",
+  removeLabel = (key) => (key ? `Remove ${key}` : "Remove variable"),
+}: Readonly<EnvEditorProps>) {
   const update = (index: number, patch: Partial<EnvRow>) => {
     onChange(rows.map((row_, i) => (i === index ? { ...row_, ...patch } : row_)))
   }
@@ -74,7 +89,7 @@ export function EnvEditor({ rows, onChange }: Readonly<EnvEditorProps>) {
             type="button"
             variant="ghost"
             size="icon"
-            aria-label={`Remove ${entry.key || "variable"}`}
+            aria-label={removeLabel(entry.key)}
             disabled={rows.length === 1}
             onClick={() => {
               onChange(rows.filter((_, i) => i !== index))
@@ -95,9 +110,9 @@ export function EnvEditor({ rows, onChange }: Readonly<EnvEditorProps>) {
           }}
         >
           <Plus size={14} />
-          Add variable
+          {addLabel}
         </Button>
-        <p className={hint}>Blank rows are ignored.</p>
+        <p className={hintLine}>{hint}</p>
       </div>
     </div>
   )

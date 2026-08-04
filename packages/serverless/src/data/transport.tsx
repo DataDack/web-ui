@@ -5,7 +5,14 @@ import type {
   CreateFromPackageInput,
   CreateFromSourceInput,
   CreatedFunction,
+  FunctionAlias,
+  FunctionEntity,
+  FunctionVersion,
+  InvokeResult,
+  PutAliasInput,
   RuntimeInfo,
+  Trigger,
+  UpdateFunctionConfigInput,
 } from "./types"
 
 /**
@@ -41,6 +48,37 @@ export interface ServerlessTransport {
   createFromPackage?: (input: CreateFromPackageInput) => Promise<CreatedFunction>
   /** Upload a .zip and return its artifact-store reference. */
   uploadArtifact?: (file: File) => Promise<ArtifactRef>
+  /**
+   * One function, by name. Omit when the console has no detail surface —
+   * `capabilities.functionRead` is what hides the page, and calling an absent
+   * method is a programming error, not a runtime path. The same rule applies
+   * to every optional method below.
+   */
+  getFunction?: (name: string) => Promise<FunctionEntity>
+  /** Published versions of a function, unwrapped from the native keyed list. */
+  listVersions?: (name: string) => Promise<FunctionVersion[]>
+  /** Aliases of a function, unwrapped from the native keyed list. */
+  listAliases?: (name: string) => Promise<FunctionAlias[]>
+  /** Create or update an alias — the control plane upserts by name. */
+  putAlias?: (name: string, input: PutAliasInput) => Promise<FunctionAlias>
+  /** Delete one alias of a function. */
+  deleteAlias?: (name: string, alias: string) => Promise<void>
+  /** Delete the function itself. */
+  deleteFunction?: (name: string) => Promise<void>
+  /**
+   * Synchronously invoke with a raw payload and report what came back —
+   * status, timing, body, and whatever invoke metadata the console's path can
+   * observe (the optional `InvokeResult` fields stay absent when it cannot).
+   */
+  invokeFunction?: (name: string, payload: string) => Promise<InvokeResult>
+  /** Event-source triggers wired to a function, unwrapped from the keyed list. */
+  listTriggers?: (functionName: string) => Promise<Trigger[]>
+  /**
+   * In-place config update (PATCH /v1/functions/{name}); does not mint a
+   * version. Send only the keys being changed — the backend rejects unknown
+   * ones.
+   */
+  updateFunctionConfig?: (name: string, patch: UpdateFunctionConfigInput) => Promise<FunctionEntity>
 }
 
 /**
@@ -58,6 +96,22 @@ export interface ServerlessCapabilities {
   containerImage: boolean
   /** Offer "start from a template". Always available — it needs no upload. */
   blankTemplate: boolean
+  /** Show the function detail surface. Requires `getFunction`. */
+  functionRead: boolean
+  /** Show the Versions tab. Requires `listVersions`. */
+  versions: boolean
+  /** Show the Aliases tab. Requires `listAliases`. */
+  aliases: boolean
+  /** Offer alias create/edit/delete. Requires `putAlias` + `deleteAlias`. */
+  aliasWrite: boolean
+  /** Show the Test tab. Requires `invokeFunction`. */
+  invoke: boolean
+  /** Offer function deletion. Requires `deleteFunction`. */
+  functionDelete: boolean
+  /** Show the triggers section. Requires `listTriggers`. */
+  triggers: boolean
+  /** Offer configuration editing. Requires `updateFunctionConfig`. */
+  configEdit: boolean
 }
 
 export interface ServerlessContextValue {
@@ -101,6 +155,16 @@ export function ServerlessProvider({
         zipUpload: canPackage && typeof transport.uploadArtifact === "function",
         containerImage: canPackage,
         blankTemplate: true,
+        functionRead: typeof transport.getFunction === "function",
+        versions: typeof transport.listVersions === "function",
+        aliases: typeof transport.listAliases === "function",
+        aliasWrite:
+          typeof transport.putAlias === "function" &&
+          typeof transport.deleteAlias === "function",
+        invoke: typeof transport.invokeFunction === "function",
+        functionDelete: typeof transport.deleteFunction === "function",
+        triggers: typeof transport.listTriggers === "function",
+        configEdit: typeof transport.updateFunctionConfig === "function",
         ...capabilities,
       },
     }

@@ -1,8 +1,23 @@
-import { Code2, FileCode2, FileJson, FileText, Rocket, Search, type LucideIcon } from "lucide-react"
-
-import { css, cx } from "@datadack/common-ui"
 import {
+  ChevronRight,
+  Circle,
+  CircleDot,
+  Code2,
+  FileCode2,
+  FileJson,
+  FileText,
+  GitBranch,
+  Rocket,
+  Search,
+  X,
+  type LucideIcon,
+} from "lucide-react"
+
+import {
+  caretBlink,
   contentEnter,
+  css,
+  cx,
   fontMono,
   formatBytes,
   glass1,
@@ -11,13 +26,22 @@ import {
   media,
   mix,
 } from "@datadack/common-ui"
+
 const root = css`
   position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
   overflow: hidden;
   box-shadow: 0 0 0 1px ${mix("--border", 60)};
 `
 
 const mock = css`
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
   pointer-events: none;
   user-select: none;
   filter: blur(2px);
@@ -137,33 +161,55 @@ export function CodeEditorPlaceholder({
 }
 
 const chrome = css`
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
   opacity: 0.7;
 `
 
-const chromeHeader = css`
+const titleBar = css`
   display: flex;
   align-items: center;
   gap: 10px;
   border-bottom: 1px solid ${mix("--border", 60)};
-  padding: 10px 16px;
+  padding: 8px 12px;
 `
 
-const fileIcon = css`
-  color: var(--muted-foreground);
-  width: 14px;
-  height: 14px;
+const trafficLights = css`
+  display: none;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+
+  ${media.sm} {
+    display: flex;
+  }
 `
 
-const fileName = css`
-  font-family: ${fontMono};
-  font-size: 13px;
-  font-weight: 500;
+const trafficLight = css`
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+`
+
+const trafficLightRed = css`
+  background: ${mix("--destructive", 60)};
+`
+
+const trafficLightYellow = css`
+  background: ${mix("--status-warning", 60)};
+`
+
+const trafficLightGreen = css`
+  background: ${mix("--status-success", 60)};
 `
 
 const fileMeta = css`
   color: var(--muted-foreground);
   font-family: ${fontMono};
   font-size: 11px;
+  white-space: nowrap;
 `
 
 const headerActions = css`
@@ -171,6 +217,7 @@ const headerActions = css`
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
 `
 
 const discardChip = css`
@@ -200,9 +247,81 @@ const deployIcon = css`
   height: 12px;
 `
 
+const tabStrip = css`
+  display: flex;
+  align-items: stretch;
+  overflow-x: auto;
+  border-bottom: 1px solid ${mix("--border", 60)};
+`
+
+const tabItem = css`
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 6px;
+  border-right: 1px solid ${mix("--border", 50)};
+  padding: 7px 10px;
+  font-family: ${fontMono};
+  font-size: 11.5px;
+  color: var(--muted-foreground);
+`
+
+const tabItemActive = css`
+  background: ${mix("--accent", 55)};
+  color: var(--foreground);
+  box-shadow: inset 0 -2px 0 0 var(--brand-gold);
+`
+
+const tabItemIcon = css`
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+`
+
+const tabItemDot = css`
+  width: 6px;
+  height: 6px;
+  flex-shrink: 0;
+  color: ${mix("--muted-foreground", 70)};
+`
+
+const tabItemClose = css`
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+  color: ${mix("--muted-foreground", 70)};
+`
+
+const breadcrumb = css`
+  display: none;
+  align-items: center;
+  gap: 4px;
+  border-bottom: 1px solid ${mix("--border", 50)};
+  padding: 6px 12px;
+  font-family: ${fontMono};
+  font-size: 11px;
+  color: ${mix("--muted-foreground", 80)};
+
+  ${media.sm} {
+    display: flex;
+  }
+`
+
+const breadcrumbSep = css`
+  width: 11px;
+  height: 11px;
+  flex-shrink: 0;
+  color: ${mix("--muted-foreground", 50)};
+`
+
+const breadcrumbCurrent = css`
+  color: var(--foreground);
+`
+
 const chromeBody = css`
   display: flex;
-  min-height: 300px;
+  flex: 1;
+  min-height: 260px;
 `
 
 const sidebar = css`
@@ -269,6 +388,22 @@ const fileRowIcon = css`
   flex-shrink: 0;
 `
 
+const fileRowGap = css`
+  flex: 1;
+`
+
+const fileRowLines = css`
+  flex-shrink: 0;
+  color: ${mix("--muted-foreground", 55)};
+  font-size: 10px;
+`
+
+const codeArea = css`
+  display: flex;
+  min-width: 0;
+  flex: 1;
+`
+
 const codePane = css`
   min-width: 0;
   flex: 1;
@@ -300,6 +435,62 @@ const lineCode = css`
   white-space: pre;
 `
 
+const cursor = css`
+  display: inline-block;
+  width: 1.5px;
+  height: 13px;
+  margin-left: 1px;
+  vertical-align: -2px;
+  background: var(--foreground);
+`
+
+const minimap = css`
+  display: none;
+  width: 64px;
+  flex-shrink: 0;
+  border-left: 1px solid ${mix("--border", 50)};
+  padding: 12px 10px;
+
+  ${media.lg} {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+`
+
+const minimapLine = css`
+  height: 2px;
+  border-radius: 9999px;
+  background: ${mix("--muted-foreground", 30)};
+`
+
+const statusBar = css`
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-top: 1px solid ${mix("--border", 60)};
+  padding: 5px 12px;
+  font-family: ${fontMono};
+  font-size: 10.5px;
+  color: ${mix("--muted-foreground", 85)};
+`
+
+const statusItem = css`
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+`
+
+const statusIcon = css`
+  width: 11px;
+  height: 11px;
+`
+
+const statusGap = css`
+  flex: 1;
+`
+
 function EditorChrome({
   functionName,
   runtime,
@@ -316,9 +507,12 @@ function EditorChrome({
 
   return (
     <div className={chrome}>
-      <header className={chromeHeader}>
-        <FileCode2 className={fileIcon} />
-        <span className={fileName}>{functionName}</span>
+      <div className={titleBar}>
+        <div className={trafficLights}>
+          <span className={cx(trafficLight, trafficLightRed)} />
+          <span className={cx(trafficLight, trafficLightYellow)} />
+          <span className={cx(trafficLight, trafficLightGreen)} />
+        </div>
         <span className={fileMeta}>{meta}</span>
         <div className={headerActions}>
           <span className={discardChip}>Discard</span>
@@ -327,7 +521,30 @@ function EditorChrome({
             Deploy
           </span>
         </div>
-      </header>
+      </div>
+
+      <div className={tabStrip}>
+        {TABS.map((tabFile) => (
+          <div
+            key={tabFile.name}
+            className={cx(tabItem, tabFile.active && tabItemActive)}
+          >
+            <tabFile.icon className={tabItemIcon} />
+            {tabFile.name}
+            {tabFile.active ? (
+              <X className={tabItemClose} />
+            ) : (
+              <CircleDot className={tabItemDot} />
+            )}
+          </div>
+        ))}
+      </div>
+
+      <div className={breadcrumb}>
+        <span>{functionName}</span>
+        <ChevronRight className={breadcrumbSep} />
+        <span className={breadcrumbCurrent}>handler.js</span>
+      </div>
 
       <div className={chromeBody}>
         <aside className={sidebar}>
@@ -347,30 +564,59 @@ function EditorChrome({
               >
                 <file.icon className={fileRowIcon} />
                 {file.name}
+                <span className={fileRowGap} />
+                {file.lines !== undefined && (
+                  <span className={fileRowLines}>{file.lines}</span>
+                )}
               </li>
             ))}
           </ul>
         </aside>
 
-        <div className={codePane}>
-          <pre className={codeBlock}>
-            {CODE.map((tokens, index) => (
-              // Static, ordered decoration — the index is the only stable key.
+        <div className={codeArea}>
+          <div className={codePane}>
+            <pre className={codeBlock}>
+              {CODE.map((tokens, index) => (
+                // Static, ordered decoration — the index is the only stable key.
+                // eslint-disable-next-line react/no-array-index-key
+                <div key={index} className={codeLine}>
+                  <span className={lineNumber}>{index + 1}</span>
+                  <code className={lineCode}>
+                    {tokens.map((token, position) => (
+                      // eslint-disable-next-line react/no-array-index-key
+                      <span key={position} className={token.className}>
+                        {token.text}
+                      </span>
+                    ))}
+                    {index === CURSOR_LINE && <span className={cx(cursor, caretBlink)} />}
+                  </code>
+                </div>
+              ))}
+            </pre>
+          </div>
+
+          <div className={minimap} aria-hidden>
+            {MINIMAP_WIDTHS.map((width, index) => (
+              // Decorative density lines — order is the only identity they have.
               // eslint-disable-next-line react/no-array-index-key
-              <div key={index} className={codeLine}>
-                <span className={lineNumber}>{index + 1}</span>
-                <code className={lineCode}>
-                  {tokens.map((token, position) => (
-                    // eslint-disable-next-line react/no-array-index-key
-                    <span key={position} className={token.className}>
-                      {token.text}
-                    </span>
-                  ))}
-                </code>
-              </div>
+              <span key={index} className={minimapLine} style={{ width: `${width}%` }} />
             ))}
-          </pre>
+          </div>
         </div>
+      </div>
+
+      <div className={statusBar}>
+        <span className={statusItem}>
+          <GitBranch className={statusIcon} />
+          main
+        </span>
+        <span className={statusItem}>
+          <Circle className={statusIcon} />0 problems
+        </span>
+        <span className={statusGap} />
+        <span className={statusItem}>Ln {CURSOR_LINE + 1}, Col 3</span>
+        <span className={statusItem}>UTF-8</span>
+        <span className={statusItem}>JavaScript</span>
       </div>
     </div>
   )
@@ -381,16 +627,31 @@ interface MockFile {
   icon: LucideIcon
   active: boolean
   depth: 0 | 1
+  lines?: number
 }
 
 const FILES: MockFile[] = [
-  { name: "handler.js", icon: FileCode2, active: true, depth: 0 },
+  { name: "handler.js", icon: FileCode2, active: true, depth: 0, lines: 18 },
   { name: "lib/", icon: FileText, active: false, depth: 0 },
-  { name: "transform.js", icon: FileCode2, active: false, depth: 1 },
-  { name: "client.js", icon: FileCode2, active: false, depth: 1 },
-  { name: "package.json", icon: FileJson, active: false, depth: 0 },
-  { name: "README.md", icon: FileText, active: false, depth: 0 },
+  { name: "transform.js", icon: FileCode2, active: false, depth: 1, lines: 24 },
+  { name: "client.js", icon: FileCode2, active: false, depth: 1, lines: 12 },
+  { name: "package.json", icon: FileJson, active: false, depth: 0, lines: 15 },
+  { name: "README.md", icon: FileText, active: false, depth: 0, lines: 8 },
 ]
+
+interface MockTab {
+  name: string
+  icon: LucideIcon
+  active: boolean
+}
+
+const TABS: MockTab[] = [
+  { name: "handler.js", icon: FileCode2, active: true },
+  { name: "transform.js", icon: FileCode2, active: false },
+  { name: "package.json", icon: FileJson, active: false },
+]
+
+const MINIMAP_WIDTHS = [40, 65, 25, 80, 50, 0, 70, 90, 35, 60, 20, 0, 55, 45, 30, 75, 15, 0]
 
 interface Token {
   text: string
@@ -479,3 +740,6 @@ const CODE: Token[][] = [
   [txt("  "), punc("}")],
   [punc("}")],
 ]
+
+/** Where the fake blinking cursor sits — the closing brace of the return block. */
+const CURSOR_LINE = CODE.length - 1

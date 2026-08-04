@@ -19,6 +19,13 @@ const HANDLER_SHAPE = /^[\w./-]+\.\w+$/
 /** registry/repository[:tag|@sha256:…]. Loose: the registry is the authority. */
 const IMAGE_URI_SHAPE = /^[\w.-]+(?::\d+)?\/[\w./-]+(?::[\w.-]+|@sha256:[a-f0-9]{64})?$/
 
+/** Human labels for the summary panel, keyed by package choice. */
+const PACKAGE_LABELS: Record<PackageType, string> = {
+  zip: "Zip archive",
+  image: "Container image",
+  blank: "Blank starter",
+}
+
 const page = css`
   display: grid;
   gap: 32px;
@@ -328,7 +335,7 @@ export function CreateFunctionForm({
     upload.mutate(file, { onSuccess: setArtifact })
   }
 
-  const submit = (event: React.FormEvent) => {
+  const submit = (event: React.SyntheticEvent) => {
     event.preventDefault()
     setSubmitted(true)
     if (Object.keys(errors).length > 0) return
@@ -660,13 +667,7 @@ export function CreateFunctionForm({
         <SummaryPanel
           name={name}
           packageType={packageType}
-          packageLabel={
-            packageType === "zip"
-              ? "Zip archive"
-              : packageType === "image"
-                ? "Container image"
-                : "Blank starter"
-          }
+          packageLabel={PACKAGE_LABELS[packageType]}
           artifactKey={artifact?.key}
           imageUri={imageUri}
           runtime={runtime}

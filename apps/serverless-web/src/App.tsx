@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom"
 
 import { AppShell } from "@/components/shell/AppShell"
 import { AuditPage } from "@/features/audit/AuditPage"
+import { DebugPreviewPage } from "@/features/functions/DebugPreviewPage"
 import { CreateFunctionPage } from "@/features/functions/CreateFunctionPage"
 import { FunctionDetailPage } from "@/features/functions/FunctionDetailPage"
 import { FunctionsPage } from "@/features/functions/FunctionsPage"
@@ -23,6 +24,7 @@ export function App() {
         <Route path="/metrics" element={<MetricsPage />} />
         <Route path="/logs" element={<LogsPage />} />
         <Route path="/audit" element={<AuditPage />} />
+        <Route path="/debug-preview" element={<DebugPreviewPage />} />
         {/* The studio moved into the function detail page's Code tab. */}
         <Route path="/studio" element={<Navigate to="/functions" replace />} />
         {/* Unknown paths fall back rather than rendering an empty shell. */}

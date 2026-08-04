@@ -30,6 +30,26 @@ export {
   type CreateFunctionFormProps,
   type EnvRow,
 } from "./console/CreateFunctionForm"
+export { EnvEditor, type EnvEditorProps } from "./console/CreateFunctionForm/EnvEditor"
+export { ConfirmDialog, type ConfirmDialogProps } from "./console/ConfirmDialog"
+export {
+  AliasDialog,
+  AliasesTab,
+  ConfigurationTab,
+  DEFAULT_FUNCTION_DETAIL_LABELS,
+  FUNCTION_DETAIL_TABS,
+  FunctionDetailHeader,
+  FunctionDetailPage,
+  MonitorTab,
+  TEST_EVENT_TEMPLATES,
+  TestTab,
+  VersionsTab,
+  type ConfigurationSectionValue,
+  type FunctionDetailHeaderProps,
+  type FunctionDetailLabels,
+  type FunctionDetailPageProps,
+  type FunctionDetailTabValue,
+} from "./console/FunctionDetail"
 
 // Data layer. The transport is injected by the host console — see
 // ./data/transport for why the two consoles cannot share one client.
@@ -45,18 +65,36 @@ export {
   serverlessKeys,
   useCreateFromPackage,
   useCreateFromSource,
+  useDeleteAlias,
+  useDeleteFunction,
+  useFunction,
+  useFunctionAliases,
+  useFunctionTriggers,
+  useFunctionVersions,
+  useInvokeFunction,
+  usePutAlias,
   useRuntimes,
+  useUpdateFunctionConfig,
   useUploadArtifact,
 } from "./data/queries"
 export { familySupportsBlank, templateForFamily } from "./data/templates"
 export type {
   ArtifactRef,
+  CodeArtifact,
   CreateFromPackageInput,
   CreateFromSourceInput,
   CreatedFunction,
+  FunctionAlias,
+  FunctionEntity,
+  FunctionVersion,
+  InvokeResult,
+  LayerRef,
   PackageType,
+  PutAliasInput,
   StarterTemplate,
   TemplateFile,
+  Trigger,
+  UpdateFunctionConfigInput,
 } from "./data/types"
 
 // Re-exported so this package's published surface is unchanged for the repos

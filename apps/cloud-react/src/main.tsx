@@ -16,6 +16,7 @@ import { env } from "@/env"
 import { AuthProvider } from "@/modules/auth/auth.context"
 import { RegionProvider } from "@/modules/region/region.context"
 import { ResourceGroupProvider } from "@/modules/resource-groups/resource-group.context"
+import { ServerlessDataProvider } from "@/modules/serverless/ServerlessDataProvider"
 import { activeScope } from "@/services/api/active-scope"
 import { LanguageProvider } from "@/services/language_service"
 import { ThemeProvider } from "@/services/theme_service"
@@ -69,10 +70,14 @@ function mount() {
             <TooltipProvider delayDuration={300}>
               <AuthProvider>
                 <RegionProvider>
-                  <ResourceGroupProvider>
-                    <App />
-                    <Toaster richColors position="top-right" />
-                  </ResourceGroupProvider>
+                  {/* Below QueryClientProvider + RegionProvider: the serverless
+                      transport resolves its FaaS base per active region. */}
+                  <ServerlessDataProvider>
+                    <ResourceGroupProvider>
+                      <App />
+                      <Toaster richColors position="top-right" />
+                    </ResourceGroupProvider>
+                  </ServerlessDataProvider>
                 </RegionProvider>
               </AuthProvider>
             </TooltipProvider>

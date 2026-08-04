@@ -6,8 +6,10 @@ import { BrowserRouter } from "react-router-dom"
 import { Toaster } from "sonner"
 
 import { App } from "@/App"
+import { faasTransport } from "@/lib/faas-transport"
 
 import { ThemeProvider } from "@datadack/common-ui"
+import { ServerlessProvider } from "@datadack/serverless"
 import "./index.css"
 
 const queryClient = new QueryClient({
@@ -32,12 +34,18 @@ ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <ThemeProvider storageKey="faas.admin.theme">
       <QueryClientProvider client={queryClient}>
-        {/* The control plane serves this SPA from /admin, so the router shares
-            that basename and every route resolves under it. */}
-        <BrowserRouter basename="/admin">
-          <App />
-          <Toaster position="bottom-right" closeButton richColors />
-        </BrowserRouter>
+        {/* The shared serverless components fetch through this transport. The
+            hooks' default "default" scope is fine here: the ScopeSwitcher does
+            a wholesale invalidateQueries() on account/namespace switch, so the
+            cache never serves one tenant's data to another. */}
+        <ServerlessProvider transport={faasTransport}>
+          {/* The control plane serves this SPA from /admin, so the router shares
+              that basename and every route resolves under it. */}
+          <BrowserRouter basename="/admin">
+            <App />
+            <Toaster position="bottom-right" closeButton richColors />
+          </BrowserRouter>
+        </ServerlessProvider>
       </QueryClientProvider>
     </ThemeProvider>
   </React.StrictMode>,
