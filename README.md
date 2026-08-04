@@ -6,16 +6,22 @@ they share. Managed with [bun](https://bun.sh) workspaces and
 
 ## How this repo is consumed
 
-`DataDack/serverless_faas` carries this repository as a git submodule mounted at
-`web/`, so paths in that repo's `Makefile` and `Dockerfile` are `web/...` while
+Both `DataDack/serverless_faas` and `DataDack/cloud-be-go` carry this repository as a git submodule mounted at
+`web/`. Paths in those repositories' `Makefile` and `Dockerfile`s are `web/...` while
 paths here are relative to this root.
 
 ```
-serverless_faas/
-└── web/          ← this repository (submodule "web-ui", branch main)
+datadack/
+├── web-ui/             ← common standalone clone
+├── cloud-be-go/
+│   └── web/            ← submodule pointing to DataDack/web-ui (branch main)
+└── serverless_faas/
+    └── web/            ← submodule pointing to DataDack/web-ui (branch main)
 ```
 
-Clone the parent with `--recurse-submodules`, or run
+> 💡 **Auto-Sync:** In the `datadack` workspace root, use the `./sync-web.sh` script to fetch the latest changes here and automatically run `git submodule update --remote` in both backend projects.
+
+Clone the parent projects with `--recurse-submodules`, or run
 `git submodule update --init` afterwards; otherwise `web/` is empty and the Go
 build fails on a missing embed.
 
@@ -49,6 +55,13 @@ and never hit a registry. `packages/*` are versioned and publishable.
 > workspace was split out of `serverless_faas`. Until it does, the publish
 > workflow fails fast with a clear message. The sources are still recoverable
 > from `serverless_faas` history under `serverless-ui/packages/function-studio/`.
+
+## Key Features & Capabilities
+
+- **Internationalization (i18n):** Full support for multiple languages (e.g., English, Hindi) using `react-i18next` across billing, monitoring, and dashboard components.
+- **Robust Session Management:** Advanced authentication flows with automatic token expiry handling and isolated state management.
+- **Shared Design System:** Reusable, theme-aware components (`KeyValueGrid`, `StatCard`, etc.) built with Tailwind CSS v4 and standard CSS custom properties.
+- **Serverless & Monitoring UI:** Dedicated interfaces for the runtime catalog, monitoring placeholders, and serverless starter template validations.
 
 ## Getting started
 
