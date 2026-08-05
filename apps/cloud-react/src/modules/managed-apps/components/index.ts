@@ -1,5 +1,6 @@
 // Shared building blocks for the Managed Apps section (used across pages).
 export { ActivityTimeline } from "./ActivityTimeline"
+export { CPanelMark } from "./CPanelMark"
 export { BuildProgressBar } from "./BuildProgressBar"
 export { BuildStatusPill } from "./BuildStatusPill"
 export { ProjectAvatar } from "./ProjectAvatar"

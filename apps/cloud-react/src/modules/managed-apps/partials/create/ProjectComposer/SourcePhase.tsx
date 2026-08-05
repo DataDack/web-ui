@@ -2,11 +2,13 @@ import { useTranslation } from "react-i18next"
 import { Package } from "lucide-react"
 
 import { SourceOptionCard } from "./SourceOptionCard"
+import { CPanelMark } from "../../../components/CPanelMark"
 import { GitHubMark } from "../../../components/GitHubMark"
 
 interface SourcePhaseProps {
   onPickGitHub: () => void
   onPickImages: () => void
+  onPickHosting: () => void
 }
 
 /**
@@ -17,7 +19,11 @@ interface SourcePhaseProps {
  * the UI finally asks which kind is being created. GitHub continues into the
  * unchanged Import → Configure flow; Public Images opens the catalog.
  */
-export function SourcePhase({ onPickGitHub, onPickImages }: Readonly<SourcePhaseProps>) {
+export function SourcePhase({
+  onPickGitHub,
+  onPickImages,
+  onPickHosting,
+}: Readonly<SourcePhaseProps>) {
   const { t } = useTranslation()
   return (
     <div className="mx-auto w-full max-w-3xl space-y-6">
@@ -30,7 +36,7 @@ export function SourcePhase({ onPickGitHub, onPickImages }: Readonly<SourcePhase
         </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-3">
         <SourceOptionCard
           icon={<GitHubMark className="size-5" />}
           title={t("managedApps.sourcePhase.deployFromGithub")}
@@ -56,6 +62,19 @@ export function SourcePhase({ onPickGitHub, onPickImages }: Readonly<SourcePhase
           availability={{ label: "New", tone: "new" }}
           cta="Browse catalog"
           onSelect={onPickImages}
+        />
+        <SourceOptionCard
+          icon={<CPanelMark className="size-5" />}
+          title="cPanel hosting"
+          subtitle="Shared hosting with cPanel"
+          bullets={[
+            "WordPress, PHP, email and databases",
+            "We create the cPanel account for you",
+            "One-click login — no separate password",
+          ]}
+          availability={{ label: "Available", tone: "available" }}
+          cta="Choose a plan"
+          onSelect={onPickHosting}
         />
       </div>
 

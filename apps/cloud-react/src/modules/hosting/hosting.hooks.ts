@@ -90,11 +90,23 @@ export function useOrderHosting() {
   })
 }
 
-/** Opens cPanel in a new tab. The URL is single-use, so it is never stored. */
+/**
+ * Sends the browser to cPanel.
+ *
+ * A same-tab redirect rather than window.open: the URL is single-use and
+ * short-lived, so a popup blocked by the browser burns it and the retry mints
+ * another for nothing — and a `_blank` opened from an async callback is exactly
+ * the pattern blockers stop. The control panel is a destination, not a popover;
+ * browser history brings the user back.
+ *
+ * The URL is never stored. It is used the instant it arrives.
+ */
 export function useHostingLogin() {
   return useMutation({
     mutationFn: hostingApi.login,
-    onSuccess: (url) => window.open(url, "_blank", "noopener,noreferrer"),
+    onSuccess: (url) => {
+      window.location.assign(url)
+    },
     onError: (e) => toast.error(extractError(e, "Could not open the control panel")),
   })
 }

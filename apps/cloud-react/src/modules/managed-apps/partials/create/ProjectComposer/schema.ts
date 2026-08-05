@@ -15,12 +15,19 @@ import { z } from "zod/v4"
 export const composerSchema = z
   .object({
     /**
-     * Where the app comes from: a GitHub repository ("github") or a
-     * ready-made public image from the catalog ("image"). Empty until the
-     * source step is answered. Part of the form values so it survives the
-     * GitHub App install round-trip with the rest of the draft.
+     * Where the app comes from: a GitHub repository ("github"), a ready-made
+     * public image from the catalog ("image"), or cPanel shared hosting
+     * ("hosting"). Empty until the source step is answered. Part of the form
+     * values so it survives the GitHub App install round-trip with the rest of
+     * the draft.
+     *
+     * "hosting" is the one source that shares none of the fields below — it
+     * needs a domain and a plan, both held locally by HostingPhase. It appears
+     * here only so a reloaded draft resumes on that phase rather than dropping
+     * the user back at the fork; the repo rules in superRefine never run for it
+     * because that path never reaches Configure.
      */
-    source: z.enum(["", "github", "image"]),
+    source: z.enum(["", "github", "image", "hosting"]),
 
     installation_id: z.number().nullable(),
     /** "owner/name" — the selected repository. */
