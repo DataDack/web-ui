@@ -1,7 +1,8 @@
-import { useState } from "react"
+import { useMemo, useState } from "react"
 
 import { Check, Loader2, ServerCog, TriangleAlert } from "lucide-react"
 
+import { UNLIMITED } from "@/modules/hosting/hosting.constants"
 import { useHostingPlans, useOrderHosting } from "@/modules/hosting/hosting.hooks"
 import type { HostingPlan } from "@/modules/hosting/hosting.types"
 import {
@@ -15,6 +16,63 @@ import { Button, cn, Input, Label } from "@datadack/common-ui"
 
 /** A bare hostname: labels separated by dots, no scheme, no path, no trailing dot. */
 const DOMAIN_PATTERN = /^(?!-)[a-z0-9-]+(\.[a-z0-9-]+)+$/i
+
+interface SpecRow {
+  key: string
+  label: string
+  value: (plan: HostingPlan) => string
+}
+
+/**
+ * Everything a plan could be compared on, minus disk — disk is the headline on
+ * the card, not a row in the list.
+ *
+ * Websites counts the main domain plus the addon allowance, because that is
+ * what the customer is buying: "addon domains" is a cPanel term for the ones
+ * after the first, and quoting it raw makes a plan look one site smaller than
+ * it is.
+ */
+const SPEC_ROWS: SpecRow[] = [
+  {
+    key: "websites",
+    label: "Websites",
+    value: (p) =>
+      p.limits.addon_domains === UNLIMITED ? "Unlimited" : String(p.limits.addon_domains + 1),
+  },
+  { key: "bandwidth", label: "Bandwidth", value: (p) => formatLimitMB(p.limits.bandwidth_mb) },
+  { key: "databases", label: "Databases", value: (p) => formatCount(p.limits.databases) },
+  { key: "subdomains", label: "Subdomains", value: (p) => formatCount(p.limits.subdomains) },
+  { key: "mailboxes", label: "Mailboxes", value: (p) => formatCount(p.limits.email_accounts) },
+]
+
+/**
+ * Splits the spec rows into the ones that vary across the catalogue and the
+ * ones every plan shares, and folds the shared ones together with the features
+ * common to all plans into a single "every plan includes" list.
+ *
+ * Both halves are derived from the catalogue rather than hard-coded: an
+ * operator who gives one tier more bandwidth turns bandwidth back into a
+ * comparison column without anyone editing this file.
+ */
+function compareSpecs(plans: HostingPlan[]): { differing: SpecRow[]; included: string[] } {
+  if (plans.length === 0) return { differing: [], included: [] }
+
+  const differing: SpecRow[] = []
+  const sharedSpecs: string[] = []
+  for (const row of SPEC_ROWS) {
+    const first = row.value(plans[0])
+    if (plans.every((p) => row.value(p) === first)) {
+      sharedSpecs.push(`${first} ${row.label.toLowerCase()}`)
+    } else {
+      differing.push(row)
+    }
+  }
+
+  // A feature listed by every plan is a property of the product, not of a tier.
+  const sharedFeatures = plans[0].features.filter((f) => plans.every((p) => p.features.includes(f)))
+
+  return { differing, included: [...sharedSpecs, ...sharedFeatures] }
+}
 
 function domainProblem(raw: string): string | undefined {
   const value = raw.trim()
@@ -62,6 +120,14 @@ export function HostingPhase({ onOrdered }: Readonly<HostingPhaseProps>) {
   const available = (plans.data?.items ?? [])
     .filter((plan) => plan.visible && !plan.retired)
     .sort((a, b) => a.limits.disk_mb - b.limits.disk_mb)
+
+  // Which specs actually separate these plans, and which every plan shares.
+  //
+  // A column repeating the same value down all four rows is not a comparison —
+  // it is four chances to think bandwidth differs when it does not. The shared
+  // ones move to a single line under the grid, which both tells the truth and
+  // gives the differentiators room to be read.
+  const { differing, included } = useMemo(() => compareSpecs(available), [available])
 
   // A domain is the one thing we cannot derive. The cPanel username is left to
   // the backend, which allocates it from the domain and guarantees uniqueness
@@ -132,7 +198,34 @@ export function HostingPhase({ onOrdered }: Readonly<HostingPhaseProps>) {
           </div>
         )}
 
-        {!plans.isLoading && available.length === 0 && (
+        {/* A failed fetch is NOT an empty catalogue. Rendering "no plans
+            published" for both told the user the shop was empty when the real
+            answer was that we never reached it — and sent them to an
+            administrator who has nothing to fix. */}
+        {plans.isError && (
+          <div className="flex items-start gap-2.5 rounded-lg border border-status-danger/40 bg-status-danger/5 p-6 text-[13px]">
+            <TriangleAlert className="mt-0.5 size-4 shrink-0 text-status-danger" />
+            <div className="space-y-1">
+              <p className="font-medium text-foreground">Could not load the hosting plans.</p>
+              <p className="text-muted-foreground">
+                This is a problem reaching the catalogue, not an empty one.
+              </p>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="mt-2"
+                onClick={() => void plans.refetch()}
+                disabled={plans.isFetching}
+              >
+                {plans.isFetching ? <Loader2 className="size-3.5 animate-spin" /> : null}
+                Try again
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {!plans.isLoading && !plans.isError && available.length === 0 && (
           <div className="rounded-lg border border-border/60 bg-muted/30 p-6 text-[13px] text-muted-foreground">
             <p className="font-medium text-foreground">No hosting plans are published yet.</p>
             <p className="mt-1">
@@ -142,20 +235,35 @@ export function HostingPhase({ onOrdered }: Readonly<HostingPhaseProps>) {
           </div>
         )}
 
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          {available.map((plan, index) => (
-            <PlanCard
-              key={plan.sku}
-              plan={plan}
-              rank={index}
-              total={available.length}
-              selected={plan.sku === sku}
-              onSelect={() => {
-                setSku(plan.sku)
-              }}
-            />
-          ))}
-        </div>
+        {available.length > 0 && (
+          <>
+            <div
+              role="radiogroup"
+              aria-label="Hosting plan"
+              className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4"
+            >
+              {available.map((plan, index) => (
+                <PlanCard
+                  key={plan.sku}
+                  plan={plan}
+                  rank={index}
+                  total={available.length}
+                  rows={differing}
+                  selected={plan.sku === sku}
+                  onSelect={() => {
+                    setSku(plan.sku)
+                  }}
+                />
+              ))}
+            </div>
+
+            {included.length > 0 && (
+              <p className="pt-1 text-[12px] text-muted-foreground">
+                <span className="text-foreground">Every plan includes</span> {included.join(" · ")}
+              </p>
+            )}
+          </>
+        )}
 
         {touched && planIssue && (
           <p className="flex items-center gap-1.5 text-[12px] text-status-danger">
@@ -191,19 +299,40 @@ interface PlanCardProps {
   rank: number
   /** How many plans are on screen, so the glyph scales to the real range. */
   total: number
+  /** Only the specs that actually differ across the catalogue. */
+  rows: SpecRow[]
   selected: boolean
   onSelect: () => void
 }
 
-function PlanCard({ plan, rank, total, selected, onSelect }: Readonly<PlanCardProps>) {
+/**
+ * Splits "Origin (Starter)" into a name and the tier it sits at.
+ *
+ * The parenthetical is a convention in the catalogue, not a guarantee, so a
+ * name without one simply has no tier line rather than being mangled to fit.
+ */
+function splitName(full: string): { name: string; tier?: string } {
+  // Sliced rather than matched with a lazy group: `(.*?)\s*\(...` backtracks
+  // super-linearly on a name full of spaces and parentheses, and this runs for
+  // every card on every render.
+  const open = full.indexOf("(")
+  const close = full.endsWith(")") ? full.length - 1 : -1
+  if (open === -1 || close <= open + 1) return { name: full.trim() }
+  return { name: full.slice(0, open).trim(), tier: full.slice(open + 1, close).trim() }
+}
+
+function PlanCard({ plan, rank, total, rows, selected, onSelect }: Readonly<PlanCardProps>) {
   const price = entryPrice(plan)
+  const { name, tier } = splitName(plan.name)
+
   return (
     <button
       type="button"
+      role="radio"
+      aria-checked={selected}
       onClick={onSelect}
-      aria-pressed={selected}
       className={cn(
-        "relative flex flex-col gap-3 rounded-xl border p-4 text-left",
+        "group relative flex flex-col gap-4 rounded-xl border p-5 text-left",
         "transition-all duration-200 ease-out",
         "focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none",
         "motion-reduce:transform-none motion-reduce:transition-colors",
@@ -217,43 +346,63 @@ function PlanCard({ plan, rank, total, selected, onSelect }: Readonly<PlanCardPr
             ),
       )}
     >
-      {selected && (
-        <span className="absolute top-3 right-3 flex size-5 items-center justify-center rounded-full bg-status-info text-white">
-          <Check className="size-3" />
-        </span>
-      )}
-
-      <div className="flex items-center gap-3">
-        <TierArt rank={rank} total={total} active={selected} />
-        <span className="min-w-0">
-          <span className="block truncate text-sm font-semibold">{plan.name}</span>
-          {price && (
-            <span className="block text-[12px] text-muted-foreground">
-              <span className="font-medium text-foreground">
-                {formatMoney(price.amount, plan.pricing.currency)}
-              </span>{" "}
-              / {price.cycle}
-            </span>
+      {/* Identity. The tick sits in the flow rather than absolutely, so a long
+          plan name wraps beside it instead of running underneath it. */}
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <div className="truncate text-sm font-semibold">{name}</div>
+          {tier && (
+            <div className="text-[11px] tracking-wide text-muted-foreground uppercase">{tier}</div>
           )}
+        </div>
+        <span
+          className={cn(
+            "mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border transition-colors",
+            selected
+              ? "border-status-info bg-status-info text-white"
+              : "border-border/70 text-transparent group-hover:border-status-info/50",
+          )}
+          aria-hidden
+        >
+          <Check className="size-3" />
         </span>
       </div>
 
-      <dl className="grid grid-cols-2 gap-x-3 gap-y-1 text-[12px] text-muted-foreground">
-        <SpecRow label="Disk" value={formatLimitMB(plan.limits.disk_mb)} />
-        <SpecRow label="Bandwidth" value={formatLimitMB(plan.limits.bandwidth_mb)} />
-        <SpecRow label="Databases" value={formatCount(plan.limits.databases)} />
-        <SpecRow label="Mailboxes" value={formatCount(plan.limits.email_accounts)} />
-      </dl>
-    </button>
-  )
-}
+      {/* Price, given the weight of the thing actually being decided. */}
+      {price && (
+        <div className="flex items-baseline gap-1">
+          <span className="text-2xl leading-none font-semibold tracking-tight tabular-nums">
+            {formatMoney(price.amount, plan.pricing.currency)}
+          </span>
+          <span className="text-[12px] text-muted-foreground">/ {price.cycle}</span>
+        </div>
+      )}
 
-function SpecRow({ label, value }: Readonly<{ label: string; value: string }>) {
-  return (
-    <div className="flex items-baseline justify-between gap-2">
-      <dt className="truncate">{label}</dt>
-      <dd className="font-medium text-foreground tabular-nums">{value}</dd>
-    </div>
+      {/* Disk is the headline: it is what separates these tiers, and burying it
+          as one row among five made four near-identical cards. */}
+      <div className="flex items-center gap-2.5 rounded-lg border border-border/50 bg-muted/30 px-3 py-2.5">
+        <TierArt rank={rank} total={total} active={selected} />
+        <div className="min-w-0">
+          <div className="text-base leading-tight font-semibold tabular-nums">
+            {formatLimitMB(plan.limits.disk_mb)}
+          </div>
+          <div className="text-[11px] text-muted-foreground">NVMe storage</div>
+        </div>
+      </div>
+
+      {rows.length > 0 && (
+        <dl className="flex flex-col gap-1.5 text-[12px]">
+          {rows.map((row) => (
+            <div key={row.key} className="flex items-baseline justify-between gap-3">
+              {/* The label shrinks, the value never does: "Unlimited" beside a
+                  fixed-width label was what truncated both to "Databas…". */}
+              <dt className="min-w-0 truncate text-muted-foreground">{row.label}</dt>
+              <dd className="shrink-0 font-medium tabular-nums">{row.value(plan)}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+    </button>
   )
 }
 
