@@ -7,8 +7,11 @@ import {
   Gauge,
   HardDrive,
   LayoutDashboard,
+  Globe,
   LayoutGrid,
   Inbox,
+  ListChecks,
+  Package,
   MapPin,
   Network,
   Scale,
@@ -74,6 +77,19 @@ export const ADMIN_NAV: AdminNavGroup[] = [
       { labelKey: "superAdmin.pveNodes.title", icon: Server, path: "/admin/pve-nodes" },
       { labelKey: "superAdmin.loadBalancers.title", icon: Scale, path: "/admin/load-balancers" },
       { labelKey: "superAdmin.staticIps.title", icon: Network, path: "/admin/static-ips" },
+    ],
+  },
+  {
+    // Shared hosting is its own product line, not part of the infrastructure
+    // catalogue: an operator working on WHM servers is doing a different job
+    // from one working on Proxmox nodes, and mixing them made both harder to
+    // find.
+    labelKey: "hosting.admin.nav.group",
+    items: [
+      { labelKey: "hosting.admin.nav.servers", icon: Server, path: "/admin/hosting/servers" },
+      { labelKey: "hosting.admin.nav.plans", icon: Package, path: "/admin/hosting/plans" },
+      { labelKey: "hosting.admin.nav.accounts", icon: Globe, path: "/admin/hosting/accounts" },
+      { labelKey: "hosting.admin.nav.queue", icon: ListChecks, path: "/admin/hosting/queue" },
     ],
   },
   {

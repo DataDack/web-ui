@@ -4539,5 +4539,21 @@
     "serviceStatusBanner": {
       "serviceDegraded": "Service Degraded"
     }
+  },
+  "hosting": {
+    "nav": {
+      "group": "Web hosting",
+      "myHosting": "My hosting",
+      "plans": "Plans & pricing"
+    },
+    "admin": {
+      "nav": {
+        "group": "Shared hosting",
+        "servers": "Servers",
+        "plans": "Plans",
+        "accounts": "Accounts",
+        "queue": "Provisioning queue"
+      }
+    }
   }
 }

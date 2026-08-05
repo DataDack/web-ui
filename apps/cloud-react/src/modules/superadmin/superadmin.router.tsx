@@ -1,5 +1,7 @@
 import { Navigate, type RouteObject } from "react-router-dom"
 
+import { hostingAdminRoutes } from "@/modules/hosting/hosting.router"
+
 import { RequireSuperAdmin } from "./components/RequireSuperAdmin"
 import { AdminShell } from "./shell/AdminShell"
 
@@ -17,6 +19,9 @@ export const superadminRoutes: RouteObject[] = [
       // Operators land on the overview, not on a user list: the console's job on
       // arrival is to say whether anything needs attention.
       { index: true, element: <Navigate to="/admin/overview" replace /> },
+      // Shared hosting owns its own admin surfaces; they are spread in here so
+      // they inherit the admin shell and the is_super_admin gate.
+      ...hostingAdminRoutes,
       {
         path: "overview",
         lazy: async () => {

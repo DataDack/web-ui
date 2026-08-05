@@ -26,6 +26,7 @@ import {
   Zap,
   Router,
   ScrollText,
+  Package,
   Server,
   Settings2,
   ShieldCheck,
@@ -166,6 +167,26 @@ export const CONSOLE_SERVICES: ConsoleService[] = [
         labelKey: "console.nav.items.logs",
         icon: ScrollText,
         path: "/monitoring/logs",
+      },
+    ],
+  },
+  {
+    key: "hosting",
+    labelKey: "hosting.nav.group",
+    icon: Server,
+    // Two destinations: what the customer already has, and what they could
+    // buy. The plans page is a longer path than the list, so it takes its own
+    // active state.
+    items: [
+      {
+        labelKey: "hosting.nav.myHosting",
+        icon: Globe,
+        path: "/hosting",
+      },
+      {
+        labelKey: "hosting.nav.plans",
+        icon: Package,
+        path: "/hosting/plans",
       },
     ],
   },

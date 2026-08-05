@@ -11,6 +11,7 @@ import { disksRoutes } from "@/modules/disks/disks.router"
 import { errorRoutes } from "@/modules/errors/errors.router"
 import { RouteErrorBoundary } from "@/modules/errors/RouteErrorBoundary"
 import { governanceRoutes } from "@/modules/governance/governance.router"
+import { hostingRoutes } from "@/modules/hosting/hosting.router"
 import { iamPublicRoutes, iamRoutes } from "@/modules/iam/iam.router"
 import { kubernetesRoutes } from "@/modules/kubernetes/kubernetes.router"
 import { loadBalancersRoutes } from "@/modules/load-balancers/load-balancers.router"
@@ -100,6 +101,7 @@ const router = createBrowserRouter([
           ...billingRoutes,
           ...vpcRoutes,
           ...monitoringRoutes,
+          ...hostingRoutes,
           ...managedAppsRoutes,
           ...serverlessRoutes,
           ...resourceGroupsRoutes,
