@@ -281,10 +281,14 @@ export interface AdminHostingAccount extends HostingAccount {
 }
 
 export interface OrderRequest {
+  /** Empty asks the backend to assign a temporary hostname. */
   domain: string
   plan_sku: string
   cycle: string
+  /** Blank derives one from the domain. */
   username?: string
+  /** Blank generates one. */
+  password?: string
   idempotency_key: string
 }
 

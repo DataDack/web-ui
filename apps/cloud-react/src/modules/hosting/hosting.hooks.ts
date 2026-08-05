@@ -80,8 +80,18 @@ export function useHostingAccount(id: string | undefined) {
 export function useOrderHosting() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (input: { domain: string; plan_sku: string; cycle: string; username?: string }) =>
-      hostingApi.order({ ...input, idempotency_key: newIdempotencyKey("order") }),
+    mutationFn: (input: {
+      // Empty asks the backend to assign a temporary hostname derived from the
+      // username and the server — a customer may buy hosting before they own a
+      // domain, which is what WHM's own "choose a domain later" covers.
+      domain: string
+      plan_sku: string
+      cycle: string
+      /** Blank derives one from the domain. */
+      username?: string
+      /** Blank generates one. Never stored client-side beyond the request. */
+      password?: string
+    }) => hostingApi.order({ ...input, idempotency_key: newIdempotencyKey("order") }),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: HOSTING_QUERY_KEYS.accounts })
       toast.success("Hosting ordered — provisioning has started")

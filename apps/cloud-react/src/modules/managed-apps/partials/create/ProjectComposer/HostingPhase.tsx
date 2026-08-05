@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react"
+import { useMemo, useState, type ReactNode } from "react"
 
-import { Check, Loader2, ServerCog, TriangleAlert } from "lucide-react"
+import { Check, ChevronRight, Eye, EyeOff, Loader2, ServerCog, TriangleAlert } from "lucide-react"
 
 import { UNLIMITED } from "@/modules/hosting/hosting.constants"
 import { useHostingPlans, useOrderHosting } from "@/modules/hosting/hosting.hooks"
@@ -74,12 +74,41 @@ function compareSpecs(plans: HostingPlan[]): { differing: SpecRow[]; included: s
   return { differing, included: [...sharedSpecs, ...sharedFeatures] }
 }
 
+/** Only meaningful when the customer said they have a domain. */
 function domainProblem(raw: string): string | undefined {
   const value = raw.trim()
-  if (value === "") return "Enter the domain this hosting is for"
+  if (value === "") return "Enter the domain, or choose one later"
   if (!DOMAIN_PATTERN.test(value)) {
     return "Enter a bare domain, like example.com — no http:// and no trailing slash"
   }
+  return undefined
+}
+
+/**
+ * Mirrors validateSetupPassword in the accounts service.
+ *
+ * Duplicated deliberately rather than round-tripped: the server is the
+ * authority and re-checks it, but finding out after submit that the password
+ * was too weak means the order failed for a reason the field could have said
+ * while it was being typed.
+ */
+function passwordProblem(raw: string): string | undefined {
+  if (raw === "") return undefined // blank means "generate one"
+  // Code points, not graphemes or UTF-16 units: the server counts
+  // len([]rune(p)), and a client that disagreed would either accept a password
+  // the server rejects or nag about one the server would have taken.
+  // Array.from uses the string iterator, so surrogate pairs count once.
+  if (Array.from(raw).length < 12) return "At least 12 characters"
+  const classes = [/[a-z]/, /[A-Z]/, /\d/, /[^a-zA-Z0-9]/].filter((re) => re.test(raw)).length
+  if (classes < 3) return "Mix at least three of: lowercase, uppercase, digits, symbols"
+  return undefined
+}
+
+/** cPanel's own rules: lowercase alphanumeric, letter first, 16 max. */
+function usernameProblem(raw: string): string | undefined {
+  if (raw === "") return undefined // blank means "derive one"
+  if (raw.length > 16) return "At most 16 characters"
+  if (!/^[a-z][a-z0-9]*$/.test(raw)) return "Lowercase letters and digits, starting with a letter"
   return undefined
 }
 
@@ -112,9 +141,15 @@ export function HostingPhase({ onOrdered }: Readonly<HostingPhaseProps>) {
   const plans = useHostingPlans()
   const order = useOrderHosting()
 
+  const [hasDomain, setHasDomain] = useState(true)
   const [domain, setDomain] = useState("")
   const [sku, setSku] = useState("")
   const [touched, setTouched] = useState(false)
+  // Advanced: both blank is the good path, so the section starts collapsed.
+  const [showAdvanced, setShowAdvanced] = useState(false)
+  const [username, setUsername] = useState("")
+  const [password, setPassword] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
 
   // Sorted by size so the tier glyphs form a scale that matches reading order.
   const available = (plans.data?.items ?? [])
@@ -133,15 +168,26 @@ export function HostingPhase({ onOrdered }: Readonly<HostingPhaseProps>) {
   // the backend, which allocates it from the domain and guarantees uniqueness
   // per server — asking for it here would surface a cPanel constraint (16
   // characters, per-server collisions) that the user has no way to reason about.
-  const domainIssue = domainProblem(domain)
+  const domainIssue = hasDomain ? domainProblem(domain) : undefined
+  const usernameIssue = usernameProblem(username)
+  const passwordIssue = passwordProblem(password)
   const planIssue = sku === "" ? "Choose a plan" : undefined
-  const blocked = domainIssue != null || planIssue != null
+  const blocked =
+    domainIssue != null || usernameIssue != null || passwordIssue != null || planIssue != null
 
   const submit = () => {
     setTouched(true)
     if (blocked) return
     order.mutate(
-      { domain: domain.trim().toLowerCase(), plan_sku: sku, cycle: "monthly" },
+      {
+        // Empty means "assign a temporary hostname" to the backend, which is
+        // exactly what the second radio promises.
+        domain: hasDomain ? domain.trim().toLowerCase() : "",
+        plan_sku: sku,
+        cycle: "monthly",
+        username: username.trim(),
+        password,
+      },
       {
         onSuccess: (account) => {
           onOrdered(account.id)
@@ -151,7 +197,10 @@ export function HostingPhase({ onOrdered }: Readonly<HostingPhaseProps>) {
   }
 
   return (
-    <div className="mx-auto w-full max-w-6xl space-y-8">
+    // pb-[10vh]: the submit row sat flush against the bottom of the viewport,
+    // which reads as a cut-off page and leaves no room for the error a failed
+    // order puts there. Viewport-relative so it scales with the screen.
+    <div className="mx-auto w-full max-w-6xl space-y-8 pb-[10vh]">
       {/* No back control here: the composer header's own Back returns to the
           fork from this phase, and two arrows pointing the same way one line
           apart read as two different destinations. */}
@@ -163,29 +212,45 @@ export function HostingPhase({ onOrdered }: Readonly<HostingPhaseProps>) {
         </p>
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="hosting-domain">Domain</Label>
-        <Input
-          id="hosting-domain"
-          value={domain}
-          placeholder="example.com"
-          autoComplete="off"
-          spellCheck={false}
-          onChange={(event) => {
-            setDomain(event.target.value)
-          }}
-          aria-invalid={touched && domainIssue ? true : undefined}
-        />
-        {touched && domainIssue ? (
-          <p className="flex items-center gap-1.5 text-[12px] text-status-danger">
-            <TriangleAlert className="size-3.5" />
-            {domainIssue}
-          </p>
-        ) : (
-          <p className="text-[12px] text-muted-foreground">
-            Your cPanel username and password are generated for you — you never have to pick them.
-          </p>
-        )}
+      <div className="space-y-3">
+        <Label>Domain</Label>
+
+        <div role="radiogroup" aria-label="Domain" className="space-y-2">
+          <ChoiceRow
+            selected={hasDomain}
+            onSelect={() => {
+              setHasDomain(true)
+            }}
+            title="Use a domain you own"
+          >
+            <Input
+              id="hosting-domain"
+              value={domain}
+              placeholder="example.com"
+              autoComplete="off"
+              spellCheck={false}
+              // Typing in the field is the same statement as picking the radio,
+              // so it selects rather than being ignored until they also click.
+              onFocus={() => {
+                setHasDomain(true)
+              }}
+              onChange={(event) => {
+                setDomain(event.target.value)
+              }}
+              aria-invalid={touched && hasDomain && domainIssue ? true : undefined}
+            />
+            {touched && domainIssue && <FieldError>{domainIssue}</FieldError>}
+          </ChoiceRow>
+
+          <ChoiceRow
+            selected={!hasDomain}
+            onSelect={() => {
+              setHasDomain(false)
+            }}
+            title="Choose a domain later"
+            note="We assign a temporary address so you can start building straight away, and you can point a real domain at it whenever you have one."
+          />
+        </div>
       </div>
 
       <div className="space-y-2">
@@ -273,6 +338,93 @@ export function HostingPhase({ onOrdered }: Readonly<HostingPhaseProps>) {
         )}
       </div>
 
+      {/* Credentials are optional and the good path is to leave them alone, so
+          they are folded away rather than presented as two more things to
+          decide. cPanel's own form asks for both up front and adds a strength
+          meter; we generate a password that always passes instead. */}
+      <div className="space-y-3">
+        <button
+          type="button"
+          onClick={() => {
+            setShowAdvanced((v) => !v)
+          }}
+          aria-expanded={showAdvanced}
+          className="flex items-center gap-1.5 text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <ChevronRight
+            className={cn(
+              "size-3.5 transition-transform duration-200",
+              showAdvanced && "rotate-90",
+              "motion-reduce:transition-none",
+            )}
+            aria-hidden
+          />
+          Set the cPanel username and password myself
+        </button>
+
+        {showAdvanced && (
+          <div className="grid gap-4 rounded-lg border border-border/60 bg-muted/20 p-4 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="hosting-username">Username</Label>
+              <Input
+                id="hosting-username"
+                value={username}
+                placeholder="Generated from your domain"
+                autoComplete="off"
+                spellCheck={false}
+                maxLength={16}
+                onChange={(event) => {
+                  setUsername(event.target.value.toLowerCase())
+                }}
+                aria-invalid={usernameIssue ? true : undefined}
+              />
+              {usernameIssue ? (
+                <FieldError>{usernameIssue}</FieldError>
+              ) : (
+                <p className="text-[11px] text-muted-foreground">
+                  Lowercase, up to 16 characters. Leave blank and we pick one.
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="hosting-password">Password</Label>
+              <div className="flex gap-1.5">
+                <Input
+                  id="hosting-password"
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  placeholder="Generated for you"
+                  autoComplete="new-password"
+                  onChange={(event) => {
+                    setPassword(event.target.value)
+                  }}
+                  aria-invalid={passwordIssue ? true : undefined}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  onClick={() => {
+                    setShowPassword((v) => !v)
+                  }}
+                >
+                  {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                </Button>
+              </div>
+              {passwordIssue ? (
+                <FieldError>{passwordIssue}</FieldError>
+              ) : (
+                <p className="text-[11px] text-muted-foreground">
+                  12+ characters, three character types. Leave blank and we generate one.
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+
       <div className="flex items-center justify-between gap-4 border-t border-border/60 pt-4">
         <p className="text-[12px] text-muted-foreground">
           Billed monthly from your account balance. Provisioning usually takes under a minute.
@@ -289,6 +441,64 @@ export function HostingPhase({ onOrdered }: Readonly<HostingPhaseProps>) {
           )}
         </Button>
       </div>
+    </div>
+  )
+}
+
+function FieldError({ children }: Readonly<{ children: ReactNode }>) {
+  return (
+    <p className="flex items-center gap-1.5 text-[12px] text-status-danger">
+      <TriangleAlert className="size-3.5 shrink-0" />
+      {children}
+    </p>
+  )
+}
+
+interface ChoiceRowProps {
+  selected: boolean
+  onSelect: () => void
+  title: string
+  note?: string
+  children?: ReactNode
+}
+
+/**
+ * One option in a radio group that can carry its own controls.
+ *
+ * The radio is a real button with role="radio"; the row around it is a label
+ * rather than a second button, because nesting an <input> inside a <button> is
+ * invalid and swallows the input's own clicks.
+ */
+function ChoiceRow({ selected, onSelect, title, note, children }: Readonly<ChoiceRowProps>) {
+  return (
+    <div
+      className={cn(
+        "rounded-lg border p-3 transition-colors",
+        selected ? "border-status-info/60 bg-status-info/[0.04]" : "border-border/60",
+      )}
+    >
+      <button
+        type="button"
+        role="radio"
+        aria-checked={selected}
+        onClick={onSelect}
+        className="flex w-full items-start gap-2.5 text-left focus-visible:outline-none"
+      >
+        <span
+          className={cn(
+            "mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full border-2 transition-colors",
+            selected ? "border-status-info" : "border-border",
+          )}
+          aria-hidden
+        >
+          {selected && <span className="size-1.5 rounded-full bg-status-info" />}
+        </span>
+        <span className="min-w-0">
+          <span className="block text-[13px] font-medium">{title}</span>
+          {note && <span className="mt-0.5 block text-[12px] text-muted-foreground">{note}</span>}
+        </span>
+      </button>
+      {children && <div className="mt-2.5 space-y-1.5 pl-6.5">{children}</div>}
     </div>
   )
 }
