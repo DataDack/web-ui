@@ -26,7 +26,7 @@ export function SourcePhase({
 }: Readonly<SourcePhaseProps>) {
   const { t } = useTranslation()
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-6">
+    <div className="mx-auto w-full max-w-6xl space-y-8">
       <div className="space-y-1 text-center">
         <h2 className="text-lg font-semibold tracking-tight">
           {t("managedApps.sourcePhase.whereIsYourAppComingFrom")}

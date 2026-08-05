@@ -1,14 +1,8 @@
 import { useTranslation } from "react-i18next"
-import { Button } from "@datadack/common-ui"
-import { ArrowLeft } from "lucide-react"
 
 import { ImageCard } from "./ImageCard"
 import { IMAGE_CATALOG } from "./images.catalog"
 import { PlannedSlot } from "./PlannedSlot"
-
-interface ImageCatalogProps {
-  onBack: () => void
-}
 
 /**
  * Public Images — the catalog behind the second source card.
@@ -18,30 +12,21 @@ interface ImageCatalogProps {
  * step is honest about where the product is going, and so interest can be
  * measured before the provisioner is built.
  */
-export function ImageCatalog({ onBack }: Readonly<ImageCatalogProps>) {
+export function ImageCatalog() {
   const { t } = useTranslation()
   const featured = IMAGE_CATALOG.filter((image) => image.availability === "coming_soon")
   const planned = IMAGE_CATALOG.filter((image) => image.availability === "planned")
 
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-6">
-      <div className="flex items-center gap-3">
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className="-ml-2 gap-1.5 text-muted-foreground"
-          onClick={onBack}
-        >
-          <ArrowLeft className="size-3.5" />
-          Source
-        </Button>
-        <div>
-          <h2 className="text-sm font-semibold">{t("managedApps.index.publicImages")}</h2>
-          <p className="text-[12px] text-muted-foreground">
-            {t("managedApps.index.readyMadeServicesWeRunForYouNoRepositoryNoBu")}
-          </p>
-        </div>
+    <div className="mx-auto w-full max-w-6xl space-y-8">
+      {/* No back control here: the composer header's own Back already returns
+          to the fork from this phase, and two arrows pointing the same way one
+          line apart read as two different destinations. */}
+      <div>
+        <h2 className="text-sm font-semibold">{t("managedApps.index.publicImages")}</h2>
+        <p className="text-[12px] text-muted-foreground">
+          {t("managedApps.index.readyMadeServicesWeRunForYouNoRepositoryNoBu")}
+        </p>
       </div>
 
       <div className="space-y-4">

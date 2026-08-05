@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-import { ArrowLeft, Check, Loader2, ServerCog, TriangleAlert } from "lucide-react"
+import { Check, Loader2, ServerCog, TriangleAlert } from "lucide-react"
 
 import { useHostingPlans, useOrderHosting } from "@/modules/hosting/hosting.hooks"
 import type { HostingPlan } from "@/modules/hosting/hosting.types"
@@ -26,7 +26,6 @@ function domainProblem(raw: string): string | undefined {
 }
 
 interface HostingPhaseProps {
-  onBack: () => void
   /** Where to send the user once the account is reserved. */
   onOrdered: (accountId: string) => void
 }
@@ -51,7 +50,7 @@ interface HostingPhaseProps {
  * and queued exactly as it is from the hosting pricing page, and the WHM call
  * happens in the worker.
  */
-export function HostingPhase({ onBack, onOrdered }: Readonly<HostingPhaseProps>) {
+export function HostingPhase({ onOrdered }: Readonly<HostingPhaseProps>) {
   const plans = useHostingPlans()
   const order = useOrderHosting()
 
@@ -86,25 +85,16 @@ export function HostingPhase({ onBack, onOrdered }: Readonly<HostingPhaseProps>)
   }
 
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-6">
-      <div className="flex items-center gap-3">
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className="-ml-2 gap-1.5 text-muted-foreground"
-          onClick={onBack}
-        >
-          <ArrowLeft className="size-3.5" />
-          Source
-        </Button>
-        <div>
-          <h2 className="text-sm font-semibold">cPanel shared hosting</h2>
-          <p className="text-[12px] text-muted-foreground">
-            We create the cPanel account for you. Point your domain at our nameservers when it is
-            ready.
-          </p>
-        </div>
+    <div className="mx-auto w-full max-w-6xl space-y-8">
+      {/* No back control here: the composer header's own Back returns to the
+          fork from this phase, and two arrows pointing the same way one line
+          apart read as two different destinations. */}
+      <div>
+        <h2 className="text-sm font-semibold">cPanel shared hosting</h2>
+        <p className="text-[12px] text-muted-foreground">
+          We create the cPanel account for you. Point your domain at our nameservers when it is
+          ready.
+        </p>
       </div>
 
       <div className="space-y-2">
@@ -152,7 +142,7 @@ export function HostingPhase({ onBack, onOrdered }: Readonly<HostingPhaseProps>)
           </div>
         )}
 
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {available.map((plan, index) => (
             <PlanCard
               key={plan.sku}
@@ -213,11 +203,18 @@ function PlanCard({ plan, rank, total, selected, onSelect }: Readonly<PlanCardPr
       onClick={onSelect}
       aria-pressed={selected}
       className={cn(
-        "relative flex flex-col gap-3 rounded-xl border p-4 text-left transition-colors",
+        "relative flex flex-col gap-3 rounded-xl border p-4 text-left",
+        "transition-all duration-200 ease-out",
         "focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none",
+        "motion-reduce:transform-none motion-reduce:transition-colors",
         selected
-          ? "border-status-info bg-status-info/5"
-          : "border-border/60 hover:border-status-info/50",
+          ? "border-status-info bg-status-info/5 shadow-md shadow-status-info/10"
+          : cn(
+              "border-border/60",
+              // A selected card is already lifted, so only unselected ones move
+              // — otherwise choosing one makes the row twitch.
+              "hover:-translate-y-0.5 hover:border-status-info/50 hover:bg-status-info/[0.03] hover:shadow-lg hover:shadow-status-info/5",
+            ),
       )}
     >
       {selected && (

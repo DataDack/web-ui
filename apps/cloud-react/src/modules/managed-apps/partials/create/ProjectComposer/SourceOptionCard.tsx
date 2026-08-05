@@ -1,5 +1,7 @@
 import type { ReactNode } from "react"
 
+import { ArrowRight } from "lucide-react"
+
 import { cn } from "@datadack/common-ui"
 
 interface SourceOptionCardProps {
@@ -36,7 +38,15 @@ export function SourceOptionCard({
       onClick={onSelect}
       className={cn(
         "glass-1 group relative flex flex-col gap-4 rounded-xl border border-border/60 p-6 text-left",
-        "transition-colors hover:border-status-info/50 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none",
+        // Motion is on transform and shadow, not on layout: the card lifts in
+        // place rather than reflowing the row beside it.
+        "transition-all duration-200 ease-out",
+        "hover:-translate-y-0.5 hover:border-status-info/60 hover:bg-status-info/[0.04] hover:shadow-lg hover:shadow-status-info/5",
+        "active:translate-y-0 active:shadow-md",
+        "focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none",
+        // A pointer-driven lift is noise to anyone who asked for less motion;
+        // the colour and shadow still answer "this is hoverable".
+        "motion-reduce:transform-none motion-reduce:transition-colors",
       )}
     >
       <span
@@ -50,7 +60,12 @@ export function SourceOptionCard({
         {availability.label}
       </span>
 
-      <span className="flex size-11 items-center justify-center rounded-lg border border-border/60 bg-muted/40 text-foreground">
+      <span
+        className={cn(
+          "flex size-11 items-center justify-center rounded-lg border border-border/60 bg-muted/40 text-foreground",
+          "transition-colors duration-200 group-hover:border-status-info/40 group-hover:bg-status-info/10 group-hover:text-status-info",
+        )}
+      >
         {icon}
       </span>
 
@@ -70,8 +85,14 @@ export function SourceOptionCard({
         ))}
       </ul>
 
-      <span className="mt-auto pt-1 text-[13px] font-medium text-status-info group-hover:underline">
-        {cta} →
+      {/* The arrow is a separate span so it can travel without dragging the
+          label's underline across the gap with it. */}
+      <span className="mt-auto inline-flex items-center gap-1.5 pt-1 text-[13px] font-medium text-status-info">
+        <span className="underline-offset-4 group-hover:underline">{cta}</span>
+        <ArrowRight
+          className="size-3.5 transition-transform duration-200 ease-out group-hover:translate-x-1 motion-reduce:transform-none"
+          aria-hidden
+        />
       </span>
     </button>
   )
