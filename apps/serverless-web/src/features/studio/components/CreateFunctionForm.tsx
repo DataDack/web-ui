@@ -175,9 +175,10 @@ function CreateFunctionFormView({
         <div className="fs-alert fs-alert-warn">
           <AlertTriangle className="fs-size-4" />
           <span>
-            <strong>{runtime.name}</strong> needs its own runtime interface client and an executable{" "}
-            <code>bootstrap</code> at the package root. The starter file is a placeholder — upload a
-            real build before invoking.
+            <strong>{runtime.name}</strong> runs an executable <code>bootstrap</code> at the package
+            root rather than a named handler. A <code>provided.*</code> starter ships a working shell{" "}
+            <code>bootstrap</code>; a Java, .NET or Go starter is source and has to be built before
+            it will invoke.
           </span>
         </div>
       )}

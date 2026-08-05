@@ -390,12 +390,10 @@ export function TaxRegistrationFormPage() {
             variant="ghost"
             onClick={back}
             disabled={isPending}
-            loading={isPending}
           >
             {t("common.cancel")}
           </Button>
           <Button type="submit" disabled={isPending} loading={isPending}>
-            {isPending && <Loader2 className="size-4 animate-spin" />}
             {isEdit ? t("common.save") : t("taxSettings.actions.add")}
           </Button>
         </div>

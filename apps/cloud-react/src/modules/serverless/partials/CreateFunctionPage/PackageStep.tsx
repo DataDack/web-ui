@@ -33,10 +33,10 @@ export function PackageStep({ form }: Readonly<PackageStepProps>) {
   const architectures = selected?.architectures ?? ["x86_64", "arm64"]
   const handlerRequired = selected?.handlerRequired ?? true
 
-  // A blank starter has no inline source, so a deprecated runtime (never
-  // usable for a new function) is left out entirely rather than shown and
-  // rejected, and a bundled-RIC runtime (needs its own compiled bootstrap) is
-  // shown but disabled — both would otherwise dead-end on this exact step.
+  // Every runtime is selectable — each family has starter source now. A
+  // deprecated runtime is the one exception and is left out entirely rather
+  // than shown and rejected: it can never be used for a new function, so
+  // offering it only dead-ends on this step.
   const options = useMemo<SmartSelectOption<RuntimeInfo>[]>(
     () =>
       (runtimes ?? [])
@@ -46,10 +46,6 @@ export function PackageStep({ form }: Readonly<PackageStepProps>) {
           item: info,
           searchText: `${info.name} ${info.family} ${info.osRelease}`,
           group: familyLabel(info.family),
-          disabled: info.bundledRic,
-          disabledReason: info.bundledRic
-            ? "Needs a compiled artifact — not available for a blank starter"
-            : undefined,
         })),
     [runtimes],
   )
@@ -73,7 +69,7 @@ export function PackageStep({ form }: Readonly<PackageStepProps>) {
             icon={<Sparkles className="size-5" />}
             title={t("serverless.form.blank")}
             subtitle="Start from a template"
-            bullets={["Deploys immediately", "Edit the code after", "Interpreted runtimes only"]}
+            bullets={["Deploys immediately", "Edit the code after", "Any runtime"]}
             selected={packageType === "blank"}
             onSelect={() => {
               form.setValue("packageType", "blank", { shouldValidate: true })

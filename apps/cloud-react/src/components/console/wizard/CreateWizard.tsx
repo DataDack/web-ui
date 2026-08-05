@@ -1,6 +1,6 @@
 import { type ReactNode, useState } from "react"
 
-import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react"
+import { ArrowLeft, ArrowRight } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 import type { FieldValues, Path, UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
@@ -237,13 +237,11 @@ export function CreateWizard<T extends FieldValues, TInput extends FieldValues =
          * whatever is scrolling by.
          */}
         <div className="sticky bottom-0 z-20 flex items-center justify-between gap-3 shrink-0 pt-4 pb-4 mt-1 border-t border-border-glass bg-background/90 backdrop-blur-sm">
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={onCancel}
-            disabled={isSubmitting}
-            loading={isSubmitting}
-          >
+          {/* Cancel and Back are disabled while a submit is in flight but do not
+              spin: a spinner claims the button is doing the work, and three of
+              them racing at once hides which one the user actually pressed.
+              Only the button that owns the operation shows its progress. */}
+          <Button type="button" variant="ghost" onClick={onCancel} disabled={isSubmitting}>
             {t("console.wizard.cancel")}
           </Button>
           <div className="flex items-center gap-2">
@@ -254,7 +252,6 @@ export function CreateWizard<T extends FieldValues, TInput extends FieldValues =
                 onClick={back}
                 disabled={isSubmitting || isAdvancing}
                 className="gap-1.5"
-                loading={isSubmitting}
               >
                 <ArrowLeft className="size-3.5" />
                 {t("console.wizard.back")}
@@ -268,12 +265,16 @@ export function CreateWizard<T extends FieldValues, TInput extends FieldValues =
                 className="gap-2"
                 loading={isSubmitting}
               >
-                {isSubmitting && <Loader2 className="size-3.5 animate-spin" />}
                 {submitLabel}
               </Button>
             ) : (
-              <Button type="submit" variant="gold" disabled={isAdvancing} className="gap-1.5">
-                {isAdvancing && <Loader2 className="size-3.5 animate-spin" />}
+              <Button
+                type="submit"
+                variant="gold"
+                disabled={isAdvancing}
+                className="gap-1.5"
+                loading={isAdvancing}
+              >
                 {t("console.wizard.next")}
                 {!isAdvancing && <ArrowRight className="size-3.5" />}
               </Button>

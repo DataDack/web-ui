@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@datadack/common-ui"
-import { Loader2, ShieldCheck } from "lucide-react"
+import { ShieldCheck } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { extractError } from "@/services/api/client"
@@ -123,12 +123,10 @@ export function MobileNumberPrompt() {
               setOpen(false)
             }}
             disabled={isPending}
-            loading={isPending}
           >
             {t("auth.mobilePrompt.later")}
           </Button>
           <Button variant="gold" onClick={submit} disabled={isPending} loading={isPending}>
-            {isPending && <Loader2 className="size-4 animate-spin" />}
             {t("auth.mobilePrompt.save")}
           </Button>
         </div>

@@ -13,8 +13,29 @@ import { EnvEditor, type EnvRow } from "./EnvEditor"
 import { PackageOptionCard } from "./PackageOptionCard"
 import { SummaryPanel } from "./SummaryPanel"
 
-/** file.function — the shape every runtime the platform offers expects. */
-const HANDLER_SHAPE = /^[\w./-]+\.\w+$/
+/**
+ * A handler's shape depends on the family, and the control plane checks the
+ * matching one — so a single pattern would reject handlers the server accepts
+ * (java's `pkg.Class::method`, dotnet's `Assembly::Type::Method`). Families
+ * whose artifact is an executable name no symbol at all.
+ */
+const SCRIPT_HANDLER_SHAPE = /^[\w./-]+\.\w+$/
+const JAVA_HANDLER_SHAPE = /^[\w.$]+::[\w$]+$/
+const DOTNET_HANDLER_SHAPE = /^[\w.]+::[\w.]+::[\w.]+$/
+
+function handlerShapeFor(family: string): RegExp | null {
+  switch (family) {
+    case "java":
+      return JAVA_HANDLER_SHAPE
+    case "dotnet":
+      return DOTNET_HANDLER_SHAPE
+    case "go":
+    case "provided":
+      return null
+    default:
+      return SCRIPT_HANDLER_SHAPE
+  }
+}
 
 /** registry/repository[:tag|@sha256:…]. Loose: the registry is the authority. */
 const IMAGE_URI_SHAPE = /^[\w.-]+(?::\d+)?\/[\w./-]+(?::[\w.-]+|@sha256:[a-f0-9]{64})?$/
@@ -300,16 +321,17 @@ export function CreateFunctionForm({
         ? `${runtime.name} can no longer be used for a new function — use ${runtime.successorRuntime}`
         : `${runtime.name} can no longer be used for a new function`
     }
-    // A bundled-RIC runtime has no inline source to zip, so "start blank"
-    // would deploy a placeholder that fails at every invoke.
-    if (packageType === "blank" && (runtime.bundledRic || !template)) {
-      found.runtime = `${runtime.name} needs a compiled artifact — upload a .zip or use a container image instead of starting blank`
+    // Every family has starter source now, so the only thing that can refuse a
+    // blank start is a family the template table has not caught up with.
+    if (packageType === "blank" && !template) {
+      found.runtime = `${runtime.name} has no starter template — upload a .zip or use a container image instead of starting blank`
     }
     if (handlerRequired) {
+      const shape = handlerShapeFor(runtime.family)
       if (handler.trim() === "") {
         found.handler = `A handler is required — ${runtime.handlerFormat}`
-      } else if (!HANDLER_SHAPE.test(handler.trim())) {
-        found.handler = "Expected file.function — for example index.handler"
+      } else if (shape && !shape.test(handler.trim())) {
+        found.handler = `Expected ${runtime.handlerFormat}`
       }
     }
     return found

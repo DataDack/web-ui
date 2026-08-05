@@ -235,7 +235,7 @@ export function InviteMemberDialog({
             </>
           ) : (
             <>
-              <Button variant="ghost" onClick={close} disabled={isPending} loading={isPending}>
+              <Button variant="ghost" onClick={close} disabled={isPending}>
                 {t("console.wizard.cancel")}
               </Button>
               <Button variant="gold" onClick={submit} disabled={isPending} loading={isPending}>

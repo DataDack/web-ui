@@ -6,11 +6,34 @@ import { namingNameSchema } from "@/modules/governance/governance.validation"
 import type { RuntimeInfo } from "../../serverless.types"
 
 /**
- * A handler names a file and an exported symbol — "index.handler",
- * "lambda_function.lambda_handler". Every runtime the platform offers uses that
- * shape, and the control plane rejects anything else, so the form should too.
+ * A handler's shape depends on the family, and the control plane checks the
+ * matching one — so a single pattern here would reject handlers the server
+ * accepts. Mirrors the catalog's HandlerPattern per family:
+ *
+ *   script  index.handler, lambda_function.lambda_handler
+ *   java    example.Handler::handleRequest
+ *   dotnet  Function::Function.Handler::HandleRequest
+ *
+ * A family whose artifact is an executable (go, provided.*) has no symbol to
+ * name, so anything non-empty passes — handlerRequired is false there anyway.
  */
-const HANDLER_SHAPE = /^[\w./-]+\.\w+$/
+const SCRIPT_HANDLER_SHAPE = /^[\w./-]+\.\w+$/
+const JAVA_HANDLER_SHAPE = /^[\w.$]+::[\w$]+$/
+const DOTNET_HANDLER_SHAPE = /^[\w.]+::[\w.]+::[\w.]+$/
+
+function handlerShapeFor(family: string): RegExp | null {
+  switch (family) {
+    case "java":
+      return JAVA_HANDLER_SHAPE
+    case "dotnet":
+      return DOTNET_HANDLER_SHAPE
+    case "go":
+    case "provided":
+      return null
+    default:
+      return SCRIPT_HANDLER_SHAPE
+  }
+}
 
 /**
  * An OCI image reference: registry/repository with an optional tag or digest.
@@ -65,28 +88,6 @@ export const makeSchema = (rule: NamingRule, runtimes: RuntimeInfo[]) =>
       const selected = runtimes.find((r) => r.name === values.runtime)
       if (!selected) return // catalog still loading; the server is the backstop
 
-      // POST /functions/source types runtime and handler as required, and a
-      // bundled-RIC runtime has no inline source to zip in the first place. Both
-      // used to reach the server and come back as
-      // "runtime and handler are required for zip package".
-      // (packageType is "blank" here — "image" already returned above.)
-      if (selected.bundledRic) {
-        ctx.addIssue({
-          code: "custom",
-          path: ["runtime"],
-          message: `${selected.name} needs a compiled artifact — use a container image instead of starting blank`,
-        })
-      }
-      if (values.handler.trim() === "") {
-        ctx.addIssue({
-          code: "custom",
-          path: ["handler"],
-          message: selected.handlerFormat
-            ? `A handler is required to start from a template — ${selected.handlerFormat}`
-            : "A handler is required to start from a template",
-        })
-      }
-
       if (selected.deprecatedForCreate) {
         ctx.addIssue({
           code: "custom",
@@ -105,24 +106,36 @@ export const makeSchema = (rule: NamingRule, runtimes: RuntimeInfo[]) =>
         })
       }
 
-      const handler = values.handler.trim()
-      if (selected.handlerRequired) {
-        if (handler === "") {
-          ctx.addIssue({
-            code: "custom",
-            path: ["handler"],
-            message: selected.handlerFormat
-              ? `A handler is required — ${selected.handlerFormat}`
-              : "A handler is required",
-          })
-        } else if (!HANDLER_SHAPE.test(handler)) {
-          ctx.addIssue({
-            code: "custom",
-            path: ["handler"],
-            message: "Expected file.function — for example index.handler",
-          })
-        }
+      const handlerIssue = handlerProblem(selected, values.handler)
+      if (handlerIssue) {
+        ctx.addIssue({ code: "custom", path: ["handler"], message: handlerIssue })
       }
     })
+
+/**
+ * What is wrong with this handler for this runtime, or null when nothing is.
+ *
+ * A runtime whose artifact is an executable declares handlerRequired false and
+ * its handler is deliberately empty — demanding one there would block every Go
+ * and provided.* function from being created at all.
+ */
+function handlerProblem(runtime: RuntimeInfo, raw: string): string | null {
+  if (!runtime.handlerRequired) return null
+
+  const handler = raw.trim()
+  if (handler === "") {
+    return runtime.handlerFormat
+      ? `A handler is required — ${runtime.handlerFormat}`
+      : "A handler is required"
+  }
+
+  const shape = handlerShapeFor(runtime.family)
+  if (shape && !shape.test(handler)) {
+    return runtime.handlerFormat
+      ? `Expected ${runtime.handlerFormat}`
+      : "Expected file.function — for example index.handler"
+  }
+  return null
+}
 
 export type FormValues = z.infer<ReturnType<typeof makeSchema>>
