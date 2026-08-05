@@ -34,6 +34,23 @@ export const VPC_QUERY_KEYS = {
   vpn: ["vpc", "vpn"] as const,
 }
 
+// Gateway resources (routers, NAT/internet gateways, VPN connections) all
+// realize onto real infrastructure asynchronously, so their list views poll
+// while anything is mid-lifecycle — mirrors load-balancers' isLbTransitional.
+const VPC_GATEWAY_TRANSITIONAL_STATUSES = new Set([
+  "pending",
+  "provisioning",
+  "booting",
+  "configuring",
+  "attaching",
+  "detaching",
+  "deleting",
+])
+
+export function isVpcGatewayTransitional(status?: string | null): boolean {
+  return !!status && VPC_GATEWAY_TRANSITIONAL_STATUSES.has(status)
+}
+
 export const SG_DIRECTIONS: SGDirection[] = ["ingress", "egress"]
 export const SG_PROTOCOLS: SGProtocol[] = ["tcp", "udp", "icmp", "all"]
 export const SG_RULE_ACTIONS: SGRuleAction[] = ["allow", "deny"]

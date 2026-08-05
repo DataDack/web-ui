@@ -69,28 +69,28 @@ export const vpcRoutes: RouteObject[] = [
   {
     path: "networking/routers",
     lazy: async () => {
-      const { RoutersPage } = await import("./partials/NetworkingPlaceholderPages")
+      const { RoutersPage } = await import("./partials/RoutersPage")
       return { Component: RoutersPage }
     },
   },
   {
     path: "networking/internet-gateways",
     lazy: async () => {
-      const { InternetGatewaysPage } = await import("./partials/NetworkingPlaceholderPages")
+      const { InternetGatewaysPage } = await import("./partials/InternetGatewaysPage")
       return { Component: InternetGatewaysPage }
     },
   },
   {
     path: "networking/nat-gateways",
     lazy: async () => {
-      const { NatGatewaysPage } = await import("./partials/NetworkingPlaceholderPages")
+      const { NatGatewaysPage } = await import("./partials/NatGatewaysPage")
       return { Component: NatGatewaysPage }
     },
   },
   {
     path: "networking/vpn",
     lazy: async () => {
-      const { VpnPage } = await import("./partials/NetworkingPlaceholderPages")
+      const { VpnPage } = await import("./partials/VpnPage")
       return { Component: VpnPage }
     },
   },

@@ -15,6 +15,7 @@ import { useTranslation } from "react-i18next"
 
 import { ConfirmDialog, Section } from "@/components/console"
 
+import { isVpcGatewayTransitional } from "../../vpc.constants"
 import {
   useAttachIGW,
   useDetachIGW,
@@ -53,7 +54,7 @@ function RoutersSection({ network }: Readonly<{ network: VPCNetwork }>) {
       statusColumn({
         header: t("vpc.columns.status"),
         accessor: (r) => r.status,
-        pulse: (r) => r.status === "active",
+        pulse: (r) => isVpcGatewayTransitional(r.status),
       }),
     ],
     [t],

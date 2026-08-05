@@ -7,11 +7,14 @@ import { handleQuotaGateError } from "@/modules/governance/quota-gate"
 import { handleKycGateError } from "@/modules/onboarding/kyc-gate"
 import { apiGet, extractError } from "@/services/api/client"
 
-import { VPC_QUERY_KEYS } from "./vpc.constants"
+import { isVpcGatewayTransitional, VPC_QUERY_KEYS } from "./vpc.constants"
 import { vpcService } from "./vpc.service"
 import type {
   AddSGRuleRequest,
+  CreateInternetGatewayRequest,
+  CreateNATGatewayRequest,
   CreateNetworkInterfaceRequest,
+  CreateRouterRequest,
   CreateSecurityGroupRequest,
   CreateSubnetRequest,
   CreateVPCRequest,
@@ -463,6 +466,38 @@ export function useRouters() {
   return useQuery({
     queryKey: VPC_QUERY_KEYS.routers,
     queryFn: vpcService.fetchRouters,
+    // Router provisioning runs through pending → provisioning → booting →
+    // configuring before settling, so poll while any row is still mid-flight.
+    refetchInterval: (query) =>
+      query.state.data?.some((r) => isVpcGatewayTransitional(r.status)) ? 4000 : false,
+  })
+}
+
+export function useCreateRouter() {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (payload: CreateRouterRequest) => vpcService.createRouter(payload),
+    onSuccess: (router) => {
+      void queryClient.invalidateQueries({ queryKey: VPC_QUERY_KEYS.routers })
+      toast.success(t("routers.toasts.created", { name: router.name }))
+    },
+    onError: (e) => {
+      if (!handleQuotaGateError(e)) toast.error(t("routers.toasts.createFailed"))
+    },
+  })
+}
+
+export function useDeleteRouter() {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (id: string) => vpcService.removeRouter(id),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: VPC_QUERY_KEYS.routers })
+      toast.success(t("routers.toasts.deleted"))
+    },
+    onError: (e) => toast.error(extractError(e, t("routers.toasts.deleteFailed"))),
   })
 }
 
@@ -470,6 +505,36 @@ export function useNATGateways() {
   return useQuery({
     queryKey: VPC_QUERY_KEYS.nat,
     queryFn: vpcService.fetchNATGateways,
+    refetchInterval: (query) =>
+      query.state.data?.some((n) => isVpcGatewayTransitional(n.status)) ? 4000 : false,
+  })
+}
+
+export function useCreateNATGateway() {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (payload: CreateNATGatewayRequest) => vpcService.createNATGateway(payload),
+    onSuccess: (nat) => {
+      void queryClient.invalidateQueries({ queryKey: VPC_QUERY_KEYS.nat })
+      toast.success(t("natGateways.toasts.created", { name: nat.name }))
+    },
+    onError: (e) => {
+      if (!handleQuotaGateError(e)) toast.error(t("natGateways.toasts.createFailed"))
+    },
+  })
+}
+
+export function useDeleteNATGateway() {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (id: string) => vpcService.removeNATGateway(id),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: VPC_QUERY_KEYS.nat })
+      toast.success(t("natGateways.toasts.deleted"))
+    },
+    onError: (e) => toast.error(extractError(e, t("natGateways.toasts.deleteFailed"))),
   })
 }
 
@@ -477,6 +542,37 @@ export function useInternetGateways() {
   return useQuery({
     queryKey: VPC_QUERY_KEYS.igw,
     queryFn: vpcService.fetchInternetGateways,
+    refetchInterval: (query) =>
+      query.state.data?.some((g) => isVpcGatewayTransitional(g.status)) ? 4000 : false,
+  })
+}
+
+export function useCreateInternetGateway() {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (payload: CreateInternetGatewayRequest) =>
+      vpcService.createInternetGateway(payload),
+    onSuccess: (igw) => {
+      void queryClient.invalidateQueries({ queryKey: VPC_QUERY_KEYS.igw })
+      toast.success(t("internetGateways.toasts.created", { name: igw.name }))
+    },
+    onError: (e) => {
+      if (!handleQuotaGateError(e)) toast.error(t("internetGateways.toasts.createFailed"))
+    },
+  })
+}
+
+export function useDeleteInternetGateway() {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (id: string) => vpcService.removeInternetGateway(id),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: VPC_QUERY_KEYS.igw })
+      toast.success(t("internetGateways.toasts.deleted"))
+    },
+    onError: (e) => toast.error(extractError(e, t("internetGateways.toasts.deleteFailed"))),
   })
 }
 
@@ -511,5 +607,20 @@ export function useVPNConnections() {
   return useQuery({
     queryKey: VPC_QUERY_KEYS.vpn,
     queryFn: vpcService.fetchVPNConnections,
+    refetchInterval: (query) =>
+      query.state.data?.some((c) => isVpcGatewayTransitional(c.status)) ? 4000 : false,
+  })
+}
+
+export function useDeleteVPNConnection() {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (id: string) => vpcService.removeVPNConnection(id),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: VPC_QUERY_KEYS.vpn })
+      toast.success(t("vpn.toasts.deleted"))
+    },
+    onError: (e) => toast.error(extractError(e, t("vpn.toasts.deleteFailed"))),
   })
 }

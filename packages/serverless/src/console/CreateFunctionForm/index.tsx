@@ -251,9 +251,15 @@ export function CreateFunctionForm({
 
   // The handler default follows the runtime, but only until it is edited —
   // retyping a handler on every runtime click would be hostile.
+  //
+  // It defaults to the starter template's own handler, not handlerFormat:
+  // the latter is prose describing the shape ("file.exportedFunction"), which
+  // passes the control plane's pattern check and then fails at every invoke
+  // because the package holds no such file. Runtimes with no inline template
+  // fall back to the format, which is a placeholder the user must replace.
   useEffect(() => {
-    if (!handlerTouched && runtime) setHandler(runtime.handlerFormat)
-  }, [runtime, handlerTouched])
+    if (!handlerTouched && runtime) setHandler(template?.handler ?? runtime.handlerFormat)
+  }, [runtime, handlerTouched, template])
 
   // A runtime that does not offer the selected architecture would submit a
   // combination the control plane rejects.

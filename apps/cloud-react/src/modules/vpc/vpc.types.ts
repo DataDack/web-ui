@@ -132,7 +132,22 @@ export interface NetworkInterface {
   user_id: string
 }
 
-export type RouterStatus = "active" | "pending"
+// The router is the realization record of a VyOS guest, not a static row, so
+// its lifecycle has a state for each place provisioning can get stuck: no
+// guest yet (pending), clone/config/start running (provisioning), guest up
+// but no transport yet (booting), transport up and pushing config
+// (configuring), fully up (available), reachable-but-drifted and being
+// retried (degraded — NOT the same as failed), gave up (failed), or tearing
+// down (deleting).
+export type RouterStatus =
+  | "pending"
+  | "provisioning"
+  | "booting"
+  | "configuring"
+  | "available"
+  | "degraded"
+  | "failed"
+  | "deleting"
 
 export interface Router {
   id: string
@@ -143,11 +158,15 @@ export interface Router {
   network_id: string
   region: string
   status: RouterStatus
+  /** The router's WAN address once assigned (dhcp or static); unset while pending/booting. */
+  wan_ip?: string
   user_id: string
 }
 
 export type NATGatewayStatus =
   "pending" | "available" | "active" | "deleting" | "deleted" | "failed"
+
+export type NATGatewayConnectivity = "public" | "private"
 
 export interface NATGateway {
   id: string
@@ -159,6 +178,9 @@ export interface NATGateway {
   subnet_id: string
   /** Backend exposes no public IP field on NAT gateways. */
   public_ip: string
+  /** Id of the StaticIP bound as this gateway's EIP; unset for private gateways or zero-uuid. */
+  static_ip_id?: string
+  connectivity: NATGatewayConnectivity
   status: NATGatewayStatus
   user_id: string
 }
@@ -179,6 +201,8 @@ export interface InternetGateway {
 export type VPNConnectionStatus =
   "connected" | "pending" | "available" | "deleting" | "deleted" | "failed" | "error"
 
+export type VPNRoutingType = "static" | "bgp"
+
 export interface VPNConnection {
   id: string
   created_at: string
@@ -188,6 +212,11 @@ export interface VPNConnection {
   router_id: string
   /** Backend exposes no remote-gateway IP on the connection; always "". */
   remote_gateway: string
+  /** The cloud-side VPN gateway this connection terminates on. */
+  vpn_gateway_id: string
+  /** The customer's on-prem gateway this connection peers with. */
+  customer_gateway_id: string
+  routing_type: VPNRoutingType
   status: VPNConnectionStatus
   user_id: string
 }
@@ -259,4 +288,25 @@ export interface CreateNetworkInterfaceRequest {
   subnet_id: string
   private_ip?: string
   security_group_ids?: string[]
+}
+
+export interface CreateRouterRequest {
+  name: string
+  region: string
+  /** Attach the router to a VPC on creation; omit to leave it unattached. */
+  network_id?: string
+}
+
+export interface CreateInternetGatewayRequest {
+  name: string
+  region: string
+}
+
+export interface CreateNATGatewayRequest {
+  name: string
+  subnet_id: string
+  /** Static IP to bind as the gateway's EIP; omit to leave it unbound. */
+  static_ip_id?: string
+  /** Defaults to "public" server-side when omitted. */
+  connectivity?: NATGatewayConnectivity
 }

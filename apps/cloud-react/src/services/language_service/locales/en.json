@@ -168,6 +168,9 @@
     "healthy": "Healthy",
     "connected": "Connected",
     "provisioning": "Provisioning",
+    "booting": "Booting",
+    "configuring": "Configuring",
+    "draft": "Draft",
     "cancelled": "Cancelled",
     "suspended": "Suspended",
     "closed": "Closed",
@@ -1816,6 +1819,184 @@
       "detachFailed": "Failed to detach network interface",
       "deleted": "Network interface deleted",
       "deleteFailed": "Failed to delete network interface"
+    }
+  },
+  "routers": {
+    "title": "Routers",
+    "subtitle": "Route traffic between subnets and external networks.",
+    "create": "Create router",
+    "empty": "No routers",
+    "emptySubtitle": "Create a router to route traffic for a VPC network.",
+    "searchPlaceholder": "Filter by name, region…",
+    "stats": {
+      "total": "Total",
+      "available": "Available",
+      "degraded": "Degraded / failed"
+    },
+    "columns": {
+      "name": "Name",
+      "status": "Status",
+      "region": "Region",
+      "vpc": "VPC",
+      "wanIp": "WAN IP"
+    },
+    "actions": {
+      "delete": "Delete"
+    },
+    "createForm": {
+      "title": "Create router",
+      "description": "Provisions a gateway that routes traffic for a VPC network.",
+      "name": "Name",
+      "region": "Region",
+      "regionPlaceholder": "Select a region",
+      "vpc": "VPC",
+      "vpcPlaceholder": "Attach to a VPC (optional)",
+      "vpcNone": "None — unattached",
+      "submit": "Create router",
+      "submitting": "Creating…"
+    },
+    "deleteConfirm": {
+      "title": "Delete router?",
+      "description": "\"{{name}}\" will be permanently deleted. Any routes through it stop working."
+    },
+    "toasts": {
+      "created": "Provisioning \"{{name}}\"…",
+      "createFailed": "Failed to create router",
+      "deleted": "Router deleted",
+      "deleteFailed": "Failed to delete router"
+    }
+  },
+  "internetGateways": {
+    "title": "Internet Gateways",
+    "subtitle": "Attach a gateway to give a VPC network a route to the internet.",
+    "create": "Create internet gateway",
+    "empty": "No internet gateways",
+    "emptySubtitle": "Create an internet gateway, then attach it to a VPC network.",
+    "searchPlaceholder": "Filter by name…",
+    "stats": {
+      "total": "Total",
+      "attached": "Attached",
+      "detached": "Detached"
+    },
+    "columns": {
+      "name": "Name",
+      "status": "Status",
+      "vpc": "Attached VPC"
+    },
+    "actions": {
+      "attach": "Attach",
+      "detach": "Detach",
+      "delete": "Delete"
+    },
+    "createForm": {
+      "title": "Create internet gateway",
+      "description": "Provisions an internet gateway you can attach to a VPC network.",
+      "name": "Name",
+      "region": "Region",
+      "regionPlaceholder": "Select a region",
+      "submit": "Create",
+      "submitting": "Creating…"
+    },
+    "attachForm": {
+      "title": "Attach internet gateway",
+      "description": "Attach \"{{name}}\" to a VPC network.",
+      "vpc": "VPC",
+      "vpcPlaceholder": "Select a VPC",
+      "noVpcs": "No VPC networks available",
+      "submit": "Attach",
+      "submitting": "Attaching…"
+    },
+    "deleteConfirm": {
+      "title": "Delete internet gateway?",
+      "description": "\"{{name}}\" will be permanently deleted."
+    },
+    "toasts": {
+      "created": "\"{{name}}\" created",
+      "createFailed": "Failed to create internet gateway",
+      "deleted": "Internet gateway deleted",
+      "deleteFailed": "Failed to delete internet gateway"
+    }
+  },
+  "natGateways": {
+    "title": "NAT Gateways",
+    "subtitle": "Outbound internet access for private subnets.",
+    "create": "Create NAT gateway",
+    "empty": "No NAT gateways",
+    "emptySubtitle": "Create a NAT gateway to give a private subnet outbound internet access.",
+    "searchPlaceholder": "Filter by name, subnet…",
+    "stats": {
+      "total": "Total",
+      "available": "Available",
+      "pending": "Pending"
+    },
+    "columns": {
+      "name": "Name",
+      "status": "Status",
+      "subnet": "Subnet",
+      "connectivity": "Connectivity",
+      "eip": "Elastic IP"
+    },
+    "badges": {
+      "public": "Public",
+      "private": "Private"
+    },
+    "actions": {
+      "delete": "Delete"
+    },
+    "createForm": {
+      "title": "Create NAT gateway",
+      "description": "Provisions a NAT gateway in the selected subnet.",
+      "name": "Name",
+      "vpc": "VPC",
+      "vpcPlaceholder": "Select a VPC",
+      "selectVpcFirst": "Select a VPC first",
+      "subnet": "Subnet",
+      "subnetPlaceholder": "Select a subnet",
+      "subnetEmpty": "No subnets in this VPC",
+      "connectivity": "Connectivity",
+      "staticIp": "Elastic IP",
+      "staticIpPlaceholder": "Auto (no elastic IP)",
+      "staticIpEmpty": "No available static IPs",
+      "submit": "Create",
+      "submitting": "Creating…"
+    },
+    "deleteConfirm": {
+      "title": "Delete NAT gateway?",
+      "description": "\"{{name}}\" will be permanently deleted. Instances in its subnet lose outbound internet access."
+    },
+    "toasts": {
+      "created": "Provisioning \"{{name}}\"…",
+      "createFailed": "Failed to create NAT gateway",
+      "deleted": "NAT gateway deleted",
+      "deleteFailed": "Failed to delete NAT gateway"
+    }
+  },
+  "vpn": {
+    "title": "VPN",
+    "subtitle": "Site-to-site tunnels terminating on this account's routers.",
+    "empty": "No VPN connections",
+    "emptySubtitle": "VPN connections appear here once configured against a VPN gateway.",
+    "searchPlaceholder": "Filter by name…",
+    "stats": {
+      "total": "Total",
+      "connected": "Connected"
+    },
+    "columns": {
+      "name": "Name",
+      "status": "Status",
+      "type": "Type",
+      "peer": "Peer gateway"
+    },
+    "actions": {
+      "delete": "Delete"
+    },
+    "deleteConfirm": {
+      "title": "Delete VPN connection?",
+      "description": "\"{{name}}\" will be permanently deleted. The tunnel stops passing traffic."
+    },
+    "toasts": {
+      "deleted": "VPN connection deleted",
+      "deleteFailed": "Failed to delete VPN connection"
     }
   },
   "loadBalancers": {

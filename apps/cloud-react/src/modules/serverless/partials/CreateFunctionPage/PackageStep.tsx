@@ -12,6 +12,7 @@ import { FieldError } from "./FieldError"
 import { PackageOptionCard } from "./PackageOptionCard"
 import type { FormValues } from "./schema"
 import { useServerlessRuntimes } from "../../serverless.hooks"
+import { templateForFamily } from "../../serverless.templates"
 
 /** Same grouping order as the runtime catalog grid this dropdown replaces. */
 const FAMILY_ORDER = ["nodejs", "python", "ruby", "java", "dotnet", "provided", "go"]
@@ -128,13 +129,17 @@ export function PackageStep({ form }: Readonly<PackageStepProps>) {
                 if (!info.architectures.includes(architecture)) {
                   form.setValue("architecture", info.architectures[0] ?? "x86_64")
                 }
-                // The handler input is hidden for a blank starter — the
-                // template already matches this shape, so the field is only
-                // ever set here, never typed by hand.
+                // The handler input is hidden for a blank starter, so this is
+                // the only place the value is ever set. It must name a symbol
+                // the generated template actually exports: handlerFormat is
+                // prose describing the shape ("file.exportedFunction"), which
+                // passes the control plane's pattern check and then fails at
+                // every invoke because no such file is in the package.
+                const starter = templateForFamily(info.family)
                 if (!info.handlerRequired) {
                   form.setValue("handler", "")
                 } else {
-                  form.setValue("handler", info.handlerFormat)
+                  form.setValue("handler", starter?.handler ?? info.handlerFormat)
                 }
               }}
               renderRow={(option) => ({

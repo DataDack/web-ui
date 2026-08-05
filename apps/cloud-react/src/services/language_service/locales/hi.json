@@ -170,6 +170,9 @@
     "healthy": "स्वस्थ",
     "connected": "जुड़ा हुआ",
     "provisioning": "प्रावधान हो रहा है",
+    "booting": "बूट हो रहा है",
+    "configuring": "कॉन्फ़िगर हो रहा है",
+    "draft": "ड्राफ़्ट",
     "cancelled": "रद्द",
     "suspended": "निलंबित",
     "closed": "बंद",
@@ -4533,6 +4536,184 @@
       "detachFailed": "नेटवर्क इंटरफ़ेस अलग नहीं किया जा सका",
       "deleted": "नेटवर्क इंटरफ़ेस हटाया गया",
       "deleteFailed": "नेटवर्क इंटरफ़ेस हटाया नहीं जा सका"
+    }
+  },
+  "routers": {
+    "title": "राउटर",
+    "subtitle": "सबनेट और बाहरी नेटवर्क के बीच ट्रैफ़िक रूट करें।",
+    "create": "राउटर बनाएं",
+    "empty": "कोई राउटर नहीं",
+    "emptySubtitle": "VPC नेटवर्क के लिए ट्रैफ़िक रूट करने हेतु एक राउटर बनाएं।",
+    "searchPlaceholder": "नाम, क्षेत्र से फ़िल्टर करें…",
+    "stats": {
+      "total": "कुल",
+      "available": "उपलब्ध",
+      "degraded": "अवक्रमित / विफल"
+    },
+    "columns": {
+      "name": "नाम",
+      "status": "स्थिति",
+      "region": "क्षेत्र",
+      "vpc": "VPC",
+      "wanIp": "WAN IP"
+    },
+    "actions": {
+      "delete": "हटाएं"
+    },
+    "createForm": {
+      "title": "राउटर बनाएं",
+      "description": "VPC नेटवर्क के लिए ट्रैफ़िक रूट करने वाला गेटवे प्रावधानित करता है।",
+      "name": "नाम",
+      "region": "क्षेत्र",
+      "regionPlaceholder": "एक क्षेत्र चुनें",
+      "vpc": "VPC",
+      "vpcPlaceholder": "किसी VPC से जोड़ें (वैकल्पिक)",
+      "vpcNone": "कोई नहीं — असंलग्न",
+      "submit": "राउटर बनाएं",
+      "submitting": "बनाया जा रहा है…"
+    },
+    "deleteConfirm": {
+      "title": "राउटर हटाएं?",
+      "description": "\"{{name}}\" स्थायी रूप से हटा दिया जाएगा। इसके माध्यम से रूट काम करना बंद कर देंगे।"
+    },
+    "toasts": {
+      "created": "\"{{name}}\" प्रावधानित हो रहा है…",
+      "createFailed": "राउटर नहीं बनाया जा सका",
+      "deleted": "राउटर हटाया गया",
+      "deleteFailed": "राउटर हटाया नहीं जा सका"
+    }
+  },
+  "internetGateways": {
+    "title": "इंटरनेट गेटवे",
+    "subtitle": "किसी VPC नेटवर्क को इंटरनेट का रास्ता देने के लिए गेटवे जोड़ें।",
+    "create": "इंटरनेट गेटवे बनाएं",
+    "empty": "कोई इंटरनेट गेटवे नहीं",
+    "emptySubtitle": "इंटरनेट गेटवे बनाएं, फिर उसे किसी VPC नेटवर्क से जोड़ें।",
+    "searchPlaceholder": "नाम से फ़िल्टर करें…",
+    "stats": {
+      "total": "कुल",
+      "attached": "जुड़ा हुआ",
+      "detached": "अलग"
+    },
+    "columns": {
+      "name": "नाम",
+      "status": "स्थिति",
+      "vpc": "जुड़ा हुआ VPC"
+    },
+    "actions": {
+      "attach": "जोड़ें",
+      "detach": "अलग करें",
+      "delete": "हटाएं"
+    },
+    "createForm": {
+      "title": "इंटरनेट गेटवे बनाएं",
+      "description": "एक इंटरनेट गेटवे प्रावधानित करता है जिसे आप किसी VPC नेटवर्क से जोड़ सकते हैं।",
+      "name": "नाम",
+      "region": "क्षेत्र",
+      "regionPlaceholder": "एक क्षेत्र चुनें",
+      "submit": "बनाएं",
+      "submitting": "बनाया जा रहा है…"
+    },
+    "attachForm": {
+      "title": "इंटरनेट गेटवे जोड़ें",
+      "description": "\"{{name}}\" को किसी VPC नेटवर्क से जोड़ें।",
+      "vpc": "VPC",
+      "vpcPlaceholder": "एक VPC चुनें",
+      "noVpcs": "कोई VPC नेटवर्क उपलब्ध नहीं",
+      "submit": "जोड़ें",
+      "submitting": "जोड़ा जा रहा है…"
+    },
+    "deleteConfirm": {
+      "title": "इंटरनेट गेटवे हटाएं?",
+      "description": "\"{{name}}\" स्थायी रूप से हटा दिया जाएगा।"
+    },
+    "toasts": {
+      "created": "\"{{name}}\" बनाया गया",
+      "createFailed": "इंटरनेट गेटवे नहीं बनाया जा सका",
+      "deleted": "इंटरनेट गेटवे हटाया गया",
+      "deleteFailed": "इंटरनेट गेटवे हटाया नहीं जा सका"
+    }
+  },
+  "natGateways": {
+    "title": "NAT गेटवे",
+    "subtitle": "प्राइवेट सबनेट के लिए आउटबाउंड इंटरनेट एक्सेस।",
+    "create": "NAT गेटवे बनाएं",
+    "empty": "कोई NAT गेटवे नहीं",
+    "emptySubtitle": "प्राइवेट सबनेट को आउटबाउंड इंटरनेट एक्सेस देने के लिए NAT गेटवे बनाएं।",
+    "searchPlaceholder": "नाम, सबनेट से फ़िल्टर करें…",
+    "stats": {
+      "total": "कुल",
+      "available": "उपलब्ध",
+      "pending": "लंबित"
+    },
+    "columns": {
+      "name": "नाम",
+      "status": "स्थिति",
+      "subnet": "सबनेट",
+      "connectivity": "कनेक्टिविटी",
+      "eip": "इलास्टिक IP"
+    },
+    "badges": {
+      "public": "सार्वजनिक",
+      "private": "निजी"
+    },
+    "actions": {
+      "delete": "हटाएं"
+    },
+    "createForm": {
+      "title": "NAT गेटवे बनाएं",
+      "description": "चयनित सबनेट में एक NAT गेटवे प्रावधानित करता है।",
+      "name": "नाम",
+      "vpc": "VPC",
+      "vpcPlaceholder": "एक VPC चुनें",
+      "selectVpcFirst": "पहले एक VPC चुनें",
+      "subnet": "सबनेट",
+      "subnetPlaceholder": "एक सबनेट चुनें",
+      "subnetEmpty": "इस VPC में कोई सबनेट नहीं",
+      "connectivity": "कनेक्टिविटी",
+      "staticIp": "इलास्टिक IP",
+      "staticIpPlaceholder": "स्वतः (कोई इलास्टिक IP नहीं)",
+      "staticIpEmpty": "कोई उपलब्ध स्टैटिक IP नहीं",
+      "submit": "बनाएं",
+      "submitting": "बनाया जा रहा है…"
+    },
+    "deleteConfirm": {
+      "title": "NAT गेटवे हटाएं?",
+      "description": "\"{{name}}\" स्थायी रूप से हटा दिया जाएगा। इसके सबनेट में इंस्टेंस आउटबाउंड इंटरनेट एक्सेस खो देंगे।"
+    },
+    "toasts": {
+      "created": "\"{{name}}\" प्रावधानित हो रहा है…",
+      "createFailed": "NAT गेटवे नहीं बनाया जा सका",
+      "deleted": "NAT गेटवे हटाया गया",
+      "deleteFailed": "NAT गेटवे हटाया नहीं जा सका"
+    }
+  },
+  "vpn": {
+    "title": "VPN",
+    "subtitle": "इस अकाउंट के राउटर पर समाप्त होने वाली साइट-टू-साइट टनल।",
+    "empty": "कोई VPN कनेक्शन नहीं",
+    "emptySubtitle": "VPN गेटवे के विरुद्ध कॉन्फ़िगर होने के बाद VPN कनेक्शन यहां दिखाई देंगे।",
+    "searchPlaceholder": "नाम से फ़िल्टर करें…",
+    "stats": {
+      "total": "कुल",
+      "connected": "जुड़ा हुआ"
+    },
+    "columns": {
+      "name": "नाम",
+      "status": "स्थिति",
+      "type": "प्रकार",
+      "peer": "पीयर गेटवे"
+    },
+    "actions": {
+      "delete": "हटाएं"
+    },
+    "deleteConfirm": {
+      "title": "VPN कनेक्शन हटाएं?",
+      "description": "\"{{name}}\" स्थायी रूप से हटा दिया जाएगा। टनल ट्रैफ़िक भेजना बंद कर देगी।"
+    },
+    "toasts": {
+      "deleted": "VPN कनेक्शन हटाया गया",
+      "deleteFailed": "VPN कनेक्शन हटाया नहीं जा सका"
     }
   },
   "naming": {

@@ -11,7 +11,10 @@ import {
 } from "./vpc.api"
 import type {
   AddSGRuleRequest,
+  CreateInternetGatewayRequest,
+  CreateNATGatewayRequest,
   CreateNetworkInterfaceRequest,
+  CreateRouterRequest,
   CreateSecurityGroupRequest,
   CreateSubnetRequest,
   CreateVPCRequest,
@@ -70,9 +73,17 @@ export const vpcService = {
 
   // Routers / gateways / VPN
   fetchRouters: () => routersApi.list(),
+  createRouter: (payload: CreateRouterRequest) => routersApi.create(payload),
+  removeRouter: (id: string) => routersApi.delete(id),
   fetchNATGateways: () => natGatewaysApi.list(),
+  createNATGateway: (payload: CreateNATGatewayRequest) => natGatewaysApi.create(payload),
+  removeNATGateway: (id: string) => natGatewaysApi.delete(id),
   fetchInternetGateways: () => internetGatewaysApi.list(),
+  createInternetGateway: (payload: CreateInternetGatewayRequest) =>
+    internetGatewaysApi.create(payload),
+  removeInternetGateway: (id: string) => internetGatewaysApi.delete(id),
   attachIGW: (id: string, networkId: string) => internetGatewaysApi.attach(id, networkId),
   detachIGW: (id: string) => internetGatewaysApi.detach(id),
   fetchVPNConnections: () => vpnApi.list(),
+  removeVPNConnection: (id: string) => vpnApi.delete(id),
 }

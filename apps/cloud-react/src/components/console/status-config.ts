@@ -41,6 +41,15 @@ const STATUS_TONES: Record<string, StatusTone> = {
   "in-use": "info",
   assigned: "info",
   provisioning: "info",
+  // VPC router realization: guest started but no transport yet (booting),
+  // transport up and pushing config (configuring). Same "in progress" tone as
+  // provisioning — they're just later steps in the same rollout.
+  booting: "info",
+  configuring: "info",
+  // A serverless function that exists but has never run: its package is stored
+  // and its config is valid, but no worker has stood a sandbox up for it yet.
+  // Not a failure and not ready — the same in-progress tone as provisioning.
+  draft: "info",
   starting: "info",
   stopping: "warning",
   terminating: "warning",
@@ -82,6 +91,11 @@ const STATUS_TONES: Record<string, StatusTone> = {
 const IN_FLIGHT_STATUSES: ReadonlySet<string> = new Set([
   "creating",
   "provisioning",
+  "booting",
+  "configuring",
+  // A draft is waiting on a worker, so it spins rather than sitting still —
+  // it resolves on its own once a sandbox reports ready.
+  "draft",
   "starting",
   "stopping",
   "restarting",

@@ -162,7 +162,7 @@ function OverviewTab({ network }: Readonly<{ network: VPCNetwork }>) {
 
   // ── Router → Routing Type ──
   const vpcRouters = routers.filter((r) => idStr(r.network_id) === network.id)
-  const routerActive = vpcRouters.some((r) => r.status === "active")
+  const routerActive = vpcRouters.some((r) => r.status === "available")
   let routingLabel = t("vpc.detail.routingNone")
   if (vpcRouters.length > 0) {
     routingLabel = routerActive

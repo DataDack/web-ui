@@ -45,6 +45,9 @@ const STATUS_TONES: Record<string, StatusTone> = {
   // in-flight
   creating: "info",
   provisioning: "info",
+  // A serverless function that exists but has never run: its package is stored
+  // and its config is valid, but no worker has stood a sandbox up for it yet.
+  draft: "info",
   starting: "info",
   registering: "info",
   pending: "warning",
@@ -73,6 +76,9 @@ const STATUS_TONES: Record<string, StatusTone> = {
 const IN_FLIGHT: ReadonlySet<string> = new Set([
   "creating",
   "provisioning",
+  // A draft is waiting on a worker, so it spins rather than sitting still —
+  // it resolves on its own once a sandbox reports ready.
+  "draft",
   "starting",
   "stopping",
   "deleting",
