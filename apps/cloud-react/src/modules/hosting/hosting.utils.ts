@@ -23,6 +23,19 @@ export function formatCount(n: number): string {
   return String(n)
 }
 
+/**
+ * Websites a plan allows: the primary domain plus its addons.
+ *
+ * The +1 is why this cannot be formatCount. Arithmetic on the sentinel gives
+ * -1 + 1 = 0, and 0 does not mean "unlimited" here — it means "none", the exact
+ * opposite. That is what the Infinity card rendered: "Websites 0" sitting
+ * directly above its own bullet, "Unlimited websites".
+ */
+export function formatWebsites(addonDomains: number): string {
+  if (addonDomains === UNLIMITED) return "Unlimited"
+  return String(addonDomains + 1)
+}
+
 function round(v: number): string {
   return Number.isInteger(v) ? String(v) : v.toFixed(1)
 }
@@ -89,6 +102,23 @@ export function soldCycles(plan: HostingPlan): string[] {
  */
 export function hasCapability(account: HostingAccount, capability: string): boolean {
   return account.capabilities.includes(capability)
+}
+
+/**
+ * Whether an account is in a state a human should look at.
+ *
+ * Suspended and failed are obvious. A quota in the red band is here because it
+ * is the one problem the customer can still fix before the site breaks, and
+ * the point of an attention list is to be read before the outage rather than
+ * after it. `usageTone` decides the threshold, so this cannot drift from the
+ * bars that render beside it.
+ */
+export function accountNeedsAttention(account: HostingAccount): boolean {
+  if (account.status === "FAILED" || account.status === "SUSPENDED") return true
+  return [
+    usagePct(account.disk_used_mb, account.disk_limit_mb),
+    usagePct(account.bw_used_mb, account.bw_limit_mb),
+  ].some((pct) => usageTone(pct) === "danger")
 }
 
 /**

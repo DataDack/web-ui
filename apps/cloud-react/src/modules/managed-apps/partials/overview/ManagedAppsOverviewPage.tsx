@@ -1,217 +1,239 @@
-import { useMemo, useState } from "react"
+import { useState } from "react"
 
 import { Button, cn } from "@datadack/common-ui"
-import { Plus, RefreshCw, Rocket } from "lucide-react"
+import { useQueryClient } from "@tanstack/react-query"
+import { Globe, type LucideIcon, Plus, RefreshCw, Rocket } from "lucide-react"
+import { AnimatePresence, motion } from "motion/react"
 import { useTranslation } from "react-i18next"
 import { useNavigate, useSearchParams } from "react-router-dom"
 
-import { ConfirmDialog, PageHeader } from "@/components/console"
+import { PageHeader } from "@/components/console"
+import { DUR, EASE } from "@/components/console/motion/motion-config"
+import { HOSTING_ROUTES } from "@/modules/hosting/hosting.constants"
+import { HostingAccountsPanel } from "@/modules/hosting/partials/HostingAccountsPanel"
 import { useScreen } from "@/services/api/screen"
 
-import { AttentionBanner } from "./AttentionBanner"
-import { GetStartedHero } from "./GetStartedHero"
+import { EstateOverviewTab } from "./EstateOverviewTab"
 import { GitHubConnectionsDialog } from "./GitHubConnectionsDialog"
 import { PlanUsageChip } from "./PlanUsageChip"
-import { buildProjectEntries } from "./project-list"
-import { ProjectExplorer } from "./ProjectExplorer"
+import { ProjectsTab } from "./ProjectsTab"
 import { GitHubMark } from "../../components/GitHubMark"
-import { MANAGED_APPS_ROUTES } from "../../managed-apps.constants"
 import {
-  useCreateBuild,
-  useDeleteProject,
-  useGitHubInstallUrl,
-  useManagedAppsOverview,
-  useGitHubConnections,
-  useProjects,
-} from "../../managed-apps.hooks"
-import type { Build, Project, ProjectType } from "../../managed-apps.types"
+  DEFAULT_MANAGED_APPS_TAB,
+  MANAGED_APPS_ROUTES,
+  MANAGED_APPS_TABS,
+  type ManagedAppsTab,
+} from "../../managed-apps.constants"
 
-const PROJECT_TYPES: readonly ProjectType[] = ["opennext", "react", "n8n"]
-
-/** Validate the toolbar's ?type= query param — anything else means "all". */
-function parseTypeParam(raw: string | null): ProjectType | undefined {
-  return PROJECT_TYPES.find((type) => type === raw)
+/** X-Screen value per view, so backend traffic is attributed to what is on screen. */
+const SCREEN: Record<ManagedAppsTab, string> = {
+  overview: "managed-apps-overview",
+  apps: "managed-apps-projects",
+  hosting: "managed-apps-hosting",
 }
 
 /**
- * Managed Apps landing page — truthful state tiles, the project grid
- * (filterable by ?type=, set from the toolbar) and account-wide activity.
+ * Which query caches a view's Refresh button invalidates.
+ *
+ * The overview reads both, so it refreshes both — a refresh that only reloaded
+ * half of what is on screen would leave the tiles disagreeing with the cards
+ * beside them.
+ */
+const REFRESH_KEYS: Record<ManagedAppsTab, readonly (readonly string[])[]> = {
+  overview: [["managed-apps"], ["hosting"]],
+  apps: [["managed-apps"]],
+  hosting: [["hosting"]],
+}
+
+function parseTab(raw: string | null): ManagedAppsTab {
+  return MANAGED_APPS_TABS.find((tab) => tab === raw) ?? DEFAULT_MANAGED_APPS_TAB
+}
+
+interface ViewMeta {
+  icon: LucideIcon
+  title: string
+  description: string
+}
+
+/**
+ * Managed Apps — the account's whole website estate.
+ *
+ * Three views over two runtimes: a summary of both, the repo-built projects,
+ * and the cPanel accounts that used to live under their own "Web hosting"
+ * sidebar group. Merging them is the point — a customer running a Next.js app
+ * and a WordPress site was previously asked to hold two mental models of "my
+ * websites", and to check two pages to find out whether either was down.
+ *
+ * The sidebar IS the switch. There is no on-page tab bar: the service sidebar
+ * already lists these three as items, and a second row of the same three
+ * choices directly below it made the page look like it had six destinations.
+ * The header names the view instead, so what is selected on the left is stated
+ * on the right.
+ *
+ * Which view is showing lives in ?tab=, so a view is a link. Every route into
+ * one (the sidebar items, the overview's cards, MANAGED_APPS_ROUTES.byType)
+ * sets the whole query string, so one view's filters can never survive into
+ * another and hide rows for a reason the page no longer shows a control for.
  */
 export function ManagedAppsOverviewPage() {
   const { t } = useTranslation()
-  useScreen("managed-apps-overview")
   const navigate = useNavigate()
-  const [searchParams, setSearchParams] = useSearchParams()
+  const queryClient = useQueryClient()
+  const [searchParams] = useSearchParams()
 
-  const typeFilter = parseTypeParam(searchParams.get("type"))
+  const tab = parseTab(searchParams.get("tab"))
+  useScreen(SCREEN[tab])
 
-  const { data: overview } = useManagedAppsOverview()
-  const { data: projects = [], isLoading, isError, refetch, isFetching } = useProjects(typeFilter)
-  // Unfiltered — resolves project names for Activity and backs the
-  // account-wide tiles even while the grid is filtered.
-  const { data: allProjects = [] } = useProjects()
-
-  const { data: connections = [] } = useGitHubConnections()
-  // A revoked installation cannot source a project, so it does not count as
-  // "connected" for the purposes of step one.
-  const hasConnection = connections.some((connection) => !connection.revoked)
-
-  const installUrl = useGitHubInstallUrl()
-  const createBuild = useCreateBuild()
-  const deleteProject = useDeleteProject()
-  const [pendingDelete, setPendingDelete] = useState<Project | null>(null)
-  const [connectionsOpen, setConnectionsOpen] = useState(false)
-
-  // Newest known build per project. The overview endpoint caps this at five,
-  // so projects outside that window simply carry no build detail — their
-  // state still comes from `deploy_state`, which is always exact.
-  const buildsByProject = useMemo(() => {
-    const map = new Map<string, Build>()
-    for (const build of overview?.recent_builds ?? []) {
-      if (!map.has(build.project_id)) map.set(build.project_id, build)
-    }
-    return map
-  }, [overview])
-
-  // Every project's state, derived once here and handed down. The banner, the
-  // cards and the table rows all describe the same projects; deriving it in each
-  // of them was three chances to disagree.
-  const entries = useMemo(
-    () => buildProjectEntries(projects, buildsByProject),
-    [projects, buildsByProject],
-  )
-  const allEntries = useMemo(
-    () => buildProjectEntries(allProjects, buildsByProject),
-    [allProjects, buildsByProject],
-  )
-
-  // Nothing to list and nothing filtered out: this account has never created
-  // a project, so the page is onboarding rather than an empty table.
-  const isFirstRun = !isLoading && !isError && allProjects.length === 0 && !typeFilter
-
-  const setTypeFilter = (type: ProjectType | undefined) => {
-    setSearchParams(
-      (prev) => {
-        const next = new URLSearchParams(prev)
-        if (type) next.set("type", type)
-        else next.delete("type")
-        // A state chip counted against the old type-filtered set would keep
-        // filtering the new one, which reads as a page hiding projects for no
-        // stated reason.
-        next.delete("state")
-        return next
-      },
-      { replace: true },
-    )
+  // Built here rather than at module scope so the section title stays
+  // translated; the other two are the sidebar's own labels verbatim, because a
+  // page whose title disagrees with the nav item that reached it reads as a
+  // navigation mistake.
+  const VIEW: Record<ManagedAppsTab, ViewMeta> = {
+    overview: {
+      icon: Rocket,
+      title: t("managedApps.managedAppsOverviewPage.managedApps"),
+      description:
+        "Every site you run with DataDack — apps built from a GitHub branch, and cPanel hosting — in one place.",
+    },
+    apps: {
+      icon: Rocket,
+      title: "Apps",
+      description:
+        "Build OpenNext and React apps straight from a GitHub branch — every push triggers a new deploy.",
+    },
+    hosting: {
+      icon: Globe,
+      title: "cPanel Hosting",
+      description: "Your cPanel hosting accounts, provisioned and managed from the console.",
+    },
   }
 
-  const connectGitHub = () => {
-    installUrl.mutate(undefined, {
-      onSuccess: ({ url }) => {
-        window.location.assign(url)
-      },
+  const [connectionsOpen, setConnectionsOpen] = useState(false)
+  const [refreshing, setRefreshing] = useState(false)
+
+  const refresh = () => {
+    setRefreshing(true)
+    void Promise.all(
+      REFRESH_KEYS[tab].map((queryKey) => queryClient.invalidateQueries({ queryKey })),
+    ).finally(() => {
+      setRefreshing(false)
     })
+  }
+
+  const refreshButton = (
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={refresh}
+      disabled={refreshing}
+      aria-label="Refresh"
+    >
+      <RefreshCw className={cn("size-4", refreshing && "animate-spin")} />
+    </Button>
+  )
+
+  // Reachable from the overview and the Apps view, because a revoked
+  // installation is discovered on either. Connections used to be managed only
+  // inside the create flow, so an account with projects had no way to add,
+  // replace or remove one.
+  const githubButton = (
+    <Button
+      variant="ghost"
+      size="sm"
+      className="gap-1.5"
+      onClick={() => {
+        setConnectionsOpen(true)
+      }}
+    >
+      <GitHubMark className="size-3.5" />
+      GitHub
+    </Button>
+  )
+
+  const newProject = (
+    <Button className="gap-2" onClick={() => void navigate(MANAGED_APPS_ROUTES.create)}>
+      <Plus className="size-4" />
+      {t("managedApps.managedAppsOverviewPage.createProject")}
+    </Button>
+  )
+
+  const newHosting = (variant: "default" | "outline") => (
+    <Button
+      variant={variant}
+      className="gap-2"
+      onClick={() => void navigate(HOSTING_ROUTES.pricing)}
+    >
+      <Plus className="size-4" />
+      New hosting
+    </Button>
+  )
+
+  // The primary action is whatever the visible view creates. On the overview
+  // both are offered, because the overview is not about either one.
+  let actions
+  if (tab === "hosting") {
+    actions = (
+      <>
+        {refreshButton}
+        {newHosting("default")}
+      </>
+    )
+  } else if (tab === "apps") {
+    actions = (
+      <>
+        {githubButton}
+        {refreshButton}
+        {newProject}
+      </>
+    )
+  } else {
+    actions = (
+      <>
+        {githubButton}
+        {refreshButton}
+        {newHosting("outline")}
+        {newProject}
+      </>
+    )
   }
 
   return (
     <div>
       <PageHeader
-        icon={Rocket}
-        title={t("managedApps.managedAppsOverviewPage.managedApps")}
-        description="Build OpenNext and React apps straight from a GitHub branch — every push triggers a new deploy."
-        meta={<PlanUsageChip />}
-        actions={
-          <>
-            {/* Reachable at all times. Connections used to be managed
-						    only inside the create flow, so an account with projects
-						    had no way to add, replace or remove one. */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="gap-1.5"
-              onClick={() => {
+        icon={VIEW[tab].icon}
+        title={VIEW[tab].title}
+        description={VIEW[tab].description}
+        // The tier caps projects, not hosting accounts, so the chip is shown
+        // where it is true rather than on every view.
+        meta={tab === "hosting" ? undefined : <PlanUsageChip />}
+        actions={actions}
+      />
+
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={tab}
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -4 }}
+          transition={{ duration: DUR.fast, ease: EASE.out }}
+        >
+          {tab === "overview" && (
+            <EstateOverviewTab onCreateProject={() => void navigate(MANAGED_APPS_ROUTES.create)} />
+          )}
+          {tab === "apps" && (
+            <ProjectsTab
+              onOpenConnections={() => {
                 setConnectionsOpen(true)
               }}
-            >
-              <GitHubMark className="size-3.5" />
-              GitHub
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => void refetch()}
-              disabled={isFetching}
-              aria-label="Refresh"
-            >
-              <RefreshCw className={cn("size-4", isFetching && "animate-spin")} />
-            </Button>
-            <Button className="gap-2" onClick={() => void navigate(MANAGED_APPS_ROUTES.create)}>
-              <Plus className="size-4" />
-              {t("managedApps.managedAppsOverviewPage.createProject")}
-            </Button>
-          </>
-        }
-      />
-
-      {/* A first run is onboarding, not an empty table. When there is
-			    nothing to list, the hero IS the page — no search box over zero
-			    rows, no state bar summarising nothing. */}
-      {isFirstRun ? (
-        <GetStartedHero
-          connected={hasConnection}
-          connecting={installUrl.isPending}
-          onConnect={connectGitHub}
-          onCreate={() => void navigate(MANAGED_APPS_ROUTES.create)}
-        />
-      ) : (
-        <>
-          <AttentionBanner entries={allEntries} />
-          <ProjectExplorer
-            entries={entries}
-            isLoading={isLoading}
-            isError={isError}
-            onRetry={() => void refetch()}
-            typeFilter={typeFilter}
-            onTypeFilterChange={setTypeFilter}
-            deployingId={
-              createBuild.isPending && typeof createBuild.variables === "string"
-                ? createBuild.variables
-                : undefined
-            }
-            onDeploy={(project) => {
-              createBuild.mutate(project.id)
-            }}
-            onDelete={setPendingDelete}
-            // A revoked installation is fixed by managing connections, not
-            // by starting a fresh install and hoping it lands on the right
-            // account.
-            onReconnect={() => {
-              setConnectionsOpen(true)
-            }}
-          />
-        </>
-      )}
+            />
+          )}
+          {tab === "hosting" && (
+            <HostingAccountsPanel onNewHosting={() => void navigate(HOSTING_ROUTES.pricing)} />
+          )}
+        </motion.div>
+      </AnimatePresence>
 
       <GitHubConnectionsDialog open={connectionsOpen} onOpenChange={setConnectionsOpen} />
-
-      <ConfirmDialog
-        open={pendingDelete !== null}
-        onOpenChange={(open) => {
-          if (!open) setPendingDelete(null)
-        }}
-        title={`Delete ${pendingDelete?.name ?? "project"}?`}
-        description="The project, its build history and its public address are removed. Your repository and the workflow file in it are left untouched."
-        confirmLabel={t("managedApps.managedAppsOverviewPage.deleteProject")}
-        loading={deleteProject.isPending}
-        onConfirm={() => {
-          if (!pendingDelete) return
-          deleteProject.mutate(pendingDelete.id, {
-            onSuccess: () => {
-              setPendingDelete(null)
-            },
-          })
-        }}
-      />
     </div>
   )
 }

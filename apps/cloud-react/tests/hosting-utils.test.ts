@@ -8,6 +8,7 @@ import {
   formatCount,
   formatLimitMB,
   formatMoney,
+  formatWebsites,
   hasCapability,
   soldCycles,
   usagePct,
@@ -28,6 +29,23 @@ describe("unlimited is never confused with none", () => {
     expect(formatCount(UNLIMITED)).toBe("Unlimited")
     expect(formatCount(0)).toBe("None")
     expect(formatCount(25)).toBe("25")
+  })
+
+  // The pricing card used to render String(addon_domains + 1), which turns the
+  // sentinel into 0 — so the Infinity plan advertised "Websites 0" immediately
+  // above its own "Unlimited websites" bullet.
+  test("formatWebsites does not do arithmetic on the sentinel", () => {
+    expect(formatWebsites(UNLIMITED)).toBe("Unlimited")
+    expect(formatWebsites(UNLIMITED)).not.toBe("0")
+  })
+
+  // The count is addons PLUS the primary domain, which is what makes the
+  // Starter plan honestly advertise two sites off a single addon.
+  test("formatWebsites counts the primary domain too", () => {
+    expect(formatWebsites(0)).toBe("1")
+    expect(formatWebsites(1)).toBe("2")
+    expect(formatWebsites(3)).toBe("4")
+    expect(formatWebsites(8)).toBe("9")
   })
 
   test("usagePct has no percentage to report without a ceiling", () => {

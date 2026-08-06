@@ -14,8 +14,28 @@ export const GITHUB_INSTALLATIONS_URL = "https://github.com/settings/installatio
  */
 export const CREATE_DRAFT_KEY = "managed-apps:create:draft"
 
+/**
+ * The section's top-level views, held in ?tab= on /managed-apps.
+ *
+ * Managed Apps is the account's whole website estate: repo-built apps AND the
+ * cPanel accounts that used to live under their own "Web hosting" sidebar
+ * group. They are one service with two runtimes, so they are one page with two
+ * lists and a summary over both.
+ *
+ * The service sidebar switches between them — there is no on-page tab bar, so
+ * every link into a view below sets the WHOLE query string. That is what keeps
+ * one view's filters from surviving into another.
+ */
+export const MANAGED_APPS_TABS = ["overview", "apps", "hosting"] as const
+export type ManagedAppsTab = (typeof MANAGED_APPS_TABS)[number]
+export const DEFAULT_MANAGED_APPS_TAB: ManagedAppsTab = "overview"
+
 export const MANAGED_APPS_ROUTES = {
   root: "/managed-apps",
+  /** The repo-built projects list. */
+  apps: "/managed-apps?tab=apps",
+  /** The cPanel accounts list — where /hosting used to land. */
+  hosting: "/managed-apps?tab=hosting",
   create: "/managed-apps/create",
   /** Section settings — the one place the account's tier can be changed. */
   settings: "/managed-apps/settings",
@@ -23,8 +43,8 @@ export const MANAGED_APPS_ROUTES = {
   /** Post-create: the pull request that has to be merged before anything builds. */
   setup: (id: string) => `/managed-apps/projects/${id}/setup`,
   githubCallback: "/managed-apps/github/callback",
-  /** Overview filtered to one project type (sidebar OpenNext/React/n8n items). */
-  byType: (type: ProjectType) => `/managed-apps?type=${type}`,
+  /** The Apps view, filtered to one project type. */
+  byType: (type: ProjectType) => `/managed-apps?tab=apps&type=${type}`,
 } as const
 
 export const MANAGED_APPS_QUERY_KEYS = {

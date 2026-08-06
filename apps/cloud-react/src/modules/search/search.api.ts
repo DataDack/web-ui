@@ -159,7 +159,7 @@ const MODULES: SearchResult[] = [
     type: "module",
     label: "OpenNext",
     description: "Server-rendered Next.js deployments (OpenNext)",
-    path: "/managed-apps?type=opennext",
+    path: "/managed-apps?tab=apps&type=opennext",
     status: "active",
   },
   {
@@ -167,7 +167,23 @@ const MODULES: SearchResult[] = [
     type: "module",
     label: "React app",
     description: "Static React app hosting with managed builds",
-    path: "/managed-apps?type=react",
+    path: "/managed-apps?tab=apps&type=react",
+    status: "active",
+  },
+  {
+    id: "module-hosting",
+    type: "module",
+    label: "cPanel Hosting",
+    description: "Shared cPanel hosting accounts",
+    path: "/managed-apps?tab=hosting",
+    status: "active",
+  },
+  {
+    id: "module-hosting-plans",
+    type: "module",
+    label: "Hosting plans",
+    description: "Shared hosting plans and pricing",
+    path: "/hosting/plans",
     status: "active",
   },
   {
@@ -175,7 +191,7 @@ const MODULES: SearchResult[] = [
     type: "module",
     label: "n8n",
     description: "Managed n8n agent workflow instances (coming soon)",
-    path: "/managed-apps?type=n8n",
+    path: "/managed-apps?tab=apps&type=n8n",
     status: "active",
   },
 ]

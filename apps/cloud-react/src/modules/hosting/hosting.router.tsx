@@ -1,4 +1,6 @@
-import type { RouteObject } from "react-router-dom"
+import { Navigate, type RouteObject } from "react-router-dom"
+
+import { MANAGED_APPS_ROUTES } from "@/modules/managed-apps/managed-apps.constants"
 
 /**
  * Tenant-facing hosting routes, mounted inside the console shell.
@@ -8,11 +10,12 @@ import type { RouteObject } from "react-router-dom"
  */
 export const hostingRoutes: RouteObject[] = [
   {
+    // The account list moved into the Managed Apps section as its cPanel
+    // Hosting tab. This stays as a redirect rather than being deleted:
+    // "/hosting" is in customers' bookmarks and in every email we have sent
+    // about a provisioned account.
     path: "hosting",
-    lazy: async () => {
-      const { HostingAccountsPage } = await import("./partials/HostingAccountsPage")
-      return { Component: HostingAccountsPage }
-    },
+    element: <Navigate to={MANAGED_APPS_ROUTES.hosting} replace />,
   },
   {
     path: "hosting/plans",

@@ -67,7 +67,7 @@ export function HostingAccountDetailPage() {
         title={account.domain}
         description={accountSummary(account)}
         icon={Globe}
-        breadcrumbs={[{ label: "Web hosting", to: HOSTING_ROUTES.accounts }]}
+        breadcrumbs={[{ label: "cPanel Hosting", to: HOSTING_ROUTES.accounts }]}
         renderLink={(crumb, children) => (
           <button type="button" onClick={() => void navigate(crumb.to ?? "")}>
             {children}

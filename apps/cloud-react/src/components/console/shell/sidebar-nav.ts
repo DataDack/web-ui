@@ -116,25 +116,21 @@ export const CONSOLE_SERVICES: ConsoleService[] = [
         labelKey: "console.nav.items.routers",
         icon: Router,
         path: "/networking/routers",
-        comingSoon: true,
       },
       {
         labelKey: "console.nav.items.internetGateways",
         icon: Waypoints,
         path: "/networking/internet-gateways",
-        comingSoon: true,
       },
       {
         labelKey: "console.nav.items.natGateways",
         icon: ArrowRightLeft,
         path: "/networking/nat-gateways",
-        comingSoon: true,
       },
       {
         labelKey: "console.nav.items.vpn",
         icon: Cable,
         path: "/networking/vpn",
-        comingSoon: true,
       },
       {
         labelKey: "console.nav.items.staticIps",
@@ -171,42 +167,43 @@ export const CONSOLE_SERVICES: ConsoleService[] = [
     ],
   },
   {
-    key: "hosting",
-    labelKey: "hosting.nav.group",
-    icon: Server,
-    // Two destinations: what the customer already has, and what they could
-    // buy. The plans page is a longer path than the list, so it takes its own
-    // active state.
-    items: [
-      {
-        labelKey: "hosting.nav.myHosting",
-        icon: Globe,
-        path: "/hosting",
-      },
-      {
-        labelKey: "hosting.nav.plans",
-        icon: Package,
-        path: "/hosting/plans",
-      },
-    ],
-  },
-  {
     key: "managed-apps",
     labelKey: "console.nav.groups.managedApps",
     icon: Rocket,
-    // Two destinations, because there are two: the projects and the tier
-    // they all run under. The per-type entries this list used to carry
-    // (?type=opennext/react/n8n) linked to filters the overview already
-    // offers as chips — navigation that duplicated the page it landed on.
+    // One service, two ways of running a site: repo-built apps and cPanel
+    // hosting. They used to be two sidebar groups that shared nothing but the
+    // customer, so a person with one of each had to hold two mental models of
+    // "my websites". They are now tabs on one page, and these items address
+    // those tabs by their ?tab= value.
     //
     // Overview's "/managed-apps" prefix covers /projects/:id, /create and
-    // /github/callback; Settings is longer and more specific, so
-    // isItemActiveAmong hands it the active state on its own route.
+    // /github/callback; the tab items are longer and more specific, so
+    // isItemActiveAmong hands each of them the active state on its own tab.
+    //
+    // extraMatch keeps the hosting routes that are NOT tabs — the buy flow at
+    // /hosting/plans and an account's detail page at /hosting/:id — inside
+    // this service's sidebar rather than dropping the user into no service.
+    extraMatch: ["/hosting"],
     items: [
       {
         labelKey: "console.nav.items.overview",
         icon: LayoutDashboard,
         path: "/managed-apps",
+      },
+      {
+        labelKey: "console.nav.items.apps",
+        icon: Rocket,
+        path: "/managed-apps?tab=apps",
+      },
+      {
+        labelKey: "console.nav.items.cpanelHosting",
+        icon: Globe,
+        path: "/managed-apps?tab=hosting",
+      },
+      {
+        labelKey: "hosting.nav.plans",
+        icon: Package,
+        path: "/hosting/plans",
       },
       {
         labelKey: "console.nav.items.settings",
@@ -324,30 +321,57 @@ export const ALL_NAV_GROUPS: { labelKey: string; items: SidebarNavItem[] }[] = [
   })),
 ]
 
-export function isItemActive(pathname: string, path: string, match?: string): boolean {
-  const target = match ?? path
-  if (target === "/") return pathname === "/"
-  return pathname === target || pathname.startsWith(`${target}/`)
+/** Splits "/managed-apps?tab=hosting" into its path and its query string. */
+function splitTarget(target: string): [path: string, query: string] {
+  const mark = target.indexOf("?")
+  return mark === -1 ? [target, ""] : [target.slice(0, mark), target.slice(mark + 1)]
+}
+
+/**
+ * Whether a nav target covers the current location.
+ *
+ * A target may carry a query string ("/managed-apps?tab=hosting"). Tabs are
+ * page state rather than routes, so matching on the pathname alone would light
+ * up every tab's item at once. Every param the target names must be present
+ * with that value; params it does NOT name are ignored, so a tab that is also
+ * filtered (?tab=apps&state=failed) still owns its item.
+ */
+export function isItemActive(pathname: string, path: string, match?: string, search = ""): boolean {
+  const [targetPath, targetQuery] = splitTarget(match ?? path)
+
+  if (targetPath === "/") {
+    if (pathname !== "/") return false
+  } else if (pathname !== targetPath && !pathname.startsWith(`${targetPath}/`)) {
+    return false
+  }
+
+  if (targetQuery === "") return true
+  const current = new URLSearchParams(search)
+  return [...new URLSearchParams(targetQuery)].every(([key, value]) => current.get(key) === value)
 }
 
 /**
  * Specificity-aware active state: an item is active only when it matches AND no
  * sibling has a longer (more specific) matching target. This lets a nested item
  * like /compute/overview win over its parent /compute, while /compute/:id still
- * resolves to the parent (the only matching sibling).
+ * resolves to the parent (the only matching sibling). A query-bearing target is
+ * longer than the bare path it extends, so ?tab=apps outranks /managed-apps for
+ * free.
  */
 export function isItemActiveAmong(
   pathname: string,
   item: SidebarNavItem,
   siblings: SidebarNavItem[],
+  search = "",
 ): boolean {
-  if (!isItemActive(pathname, item.path, item.match)) return false
+  if (!isItemActive(pathname, item.path, item.match, search)) return false
   const target = item.match ?? item.path
   return !siblings.some((sibling) => {
     if (sibling === item) return false
     const siblingTarget = sibling.match ?? sibling.path
     return (
-      siblingTarget.length > target.length && isItemActive(pathname, sibling.path, sibling.match)
+      siblingTarget.length > target.length &&
+      isItemActive(pathname, sibling.path, sibling.match, search)
     )
   })
 }

@@ -281,7 +281,12 @@ export interface AdminHostingAccount extends HostingAccount {
 }
 
 export interface OrderRequest {
-  domain: string
+  /**
+   * Optional. Left out, the control panel assigns a working temporary address
+   * of its own and the customer connects a real domain whenever they have one —
+   * so not owning a domain yet never blocks a purchase.
+   */
+  domain?: string
   plan_sku: string
   cycle: string
   username?: string

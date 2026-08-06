@@ -75,7 +75,9 @@
         "taxSettings": "कर सेटिंग्स",
         "supportTickets": "सहायता टिकट",
         "images": "AMI",
-        "targetGroups": "टारगेट ग्रुप"
+        "targetGroups": "टारगेट ग्रुप",
+        "apps": "ऐप्स",
+        "cpanelHosting": "cPanel होस्टिंग"
       },
       "soon": "जल्द आ रहा है",
       "collapse": "संकुचित करें",

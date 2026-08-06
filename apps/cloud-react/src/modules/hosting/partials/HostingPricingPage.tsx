@@ -1,15 +1,25 @@
 import { useMemo, useState } from "react"
 
-import { Badge, Button, Input, Label } from "@datadack/common-ui"
-import { Check, Globe, Server } from "lucide-react"
+import { Check, Globe, Server, Sparkles } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 
 import { PageHeader, Section } from "@/components/console"
 
+import { Button, Input, Label, Separator } from "@datadack/common-ui"
+
 import { HOSTING_ROUTES } from "../hosting.constants"
 import { useHostingPlans, useOrderHosting } from "../hosting.hooks"
 import type { HostingPlan } from "../hosting.types"
-import { formatLimitMB, formatMoney, soldCycles } from "../hosting.utils"
+import {
+  formatCount,
+  formatLimitMB,
+  formatMoney,
+  formatWebsites,
+  soldCycles,
+} from "../hosting.utils"
+
+/** How the customer wants to be addressed on day one. */
+type DomainMode = "assigned" | "own"
 
 /**
  * The pricing page.
@@ -23,6 +33,7 @@ export function HostingPricingPage() {
   const order = useOrderHosting()
 
   const [selected, setSelected] = useState<HostingPlan | null>(null)
+  const [domainMode, setDomainMode] = useState<DomainMode>("assigned")
   const [domain, setDomain] = useState("")
 
   // Memoised because `sections` depends on them: a fresh [] literal each render
@@ -40,15 +51,33 @@ export function HostingPricingPage() {
       : known
   }, [groups, plans])
 
+  // Bullets every plan carries say nothing about which to pick, and repeating
+  // six of them per card is most of why the cards were tall enough to push the
+  // order step off screen. Stated once below the grid instead.
+  const sharedFeatures = useMemo(() => {
+    if (plans.length === 0) return []
+    const [first, ...rest] = plans
+    return first.features.filter((f) => rest.every((p) => p.features.includes(f)))
+  }, [plans])
+
+  const ordering = order.isPending
+  const domainReady = domainMode === "assigned" || domain.trim() !== ""
+
   if (isLoading) return <p className="p-6 text-sm text-muted-foreground">Loading plans…</p>
   if (isError) return <p className="p-6 text-sm text-destructive">Plans could not be loaded.</p>
 
   return (
-    <div className="space-y-8 pb-16">
+    // Bottom padding clears the sticky bar so the last card is never trapped
+    // underneath it.
+    <div className="space-y-6 pb-40">
       <PageHeader
         title="Shared hosting"
         description="cPanel hosting with free SSL, daily backups and one-click installs."
         icon={Server}
+        // The buy flow is reached from the cPanel Hosting tab and lands back
+        // on it, so it carries the trail rather than being a dead end the
+        // browser's Back button is the only way out of.
+        breadcrumbs={[{ label: "cPanel Hosting", to: HOSTING_ROUTES.accounts }]}
       />
 
       {sections.map((section) => {
@@ -62,12 +91,15 @@ export function HostingPricingPage() {
             title={section.name}
             description={section.description}
           >
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {/* Four across on a wide screen so the whole range is comparable
+                without scrolling, which is the only way a price table works. */}
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
               {inSection.map((plan) => (
                 <PlanCard
                   key={plan.sku}
                   plan={plan}
                   selected={selected?.sku === plan.sku}
+                  sharedFeatures={sharedFeatures}
                   onSelect={() => {
                     setSelected(plan)
                   }}
@@ -78,28 +110,83 @@ export function HostingPricingPage() {
         )
       })}
 
+      {sharedFeatures.length > 0 && (
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 rounded-lg border border-border bg-muted/30 px-4 py-3">
+          <span className="text-[12px] font-medium">In every plan</span>
+          {sharedFeatures.map((f) => (
+            <span key={f} className="flex items-center gap-1.5 text-[12px] text-muted-foreground">
+              <Check className="size-3.5 shrink-0 text-emerald-500" />
+              {f}
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* Pinned rather than placed at the end of the page. A checkout step below
+          four full-height cards is a step most people never scroll to — the bar
+          keeps it in view from the moment a plan is picked. */}
       {selected && (
-        <Section title={`Order ${selected.name}`} variant="panel">
-          <div className="grid gap-4 md:grid-cols-[1fr_auto] md:items-end">
-            <div className="space-y-1.5">
-              <Label>Your domain</Label>
-              <Input
-                value={domain}
-                onChange={(e) => {
-                  setDomain(e.target.value)
-                }}
-                placeholder="example.com"
-              />
-              <p className="text-[11px] text-muted-foreground">
-                Bring a domain you already own. After setup we show the nameservers to point it at.
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+          <div className="mx-auto flex max-w-6xl flex-col gap-3 p-4 lg:flex-row lg:items-end">
+            <div className="min-w-0 lg:w-56">
+              <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Your plan</p>
+              <p className="truncate text-sm font-semibold">{selected.name}</p>
+              <p className="text-[12px] text-muted-foreground">
+                {formatMoney(selected.pricing.monthly, selected.pricing.currency)}/month
+                {selected.pricing.setup_fee > 0 &&
+                  ` + ${formatMoney(selected.pricing.setup_fee, selected.pricing.currency)} setup`}
               </p>
             </div>
+
+            <Separator orientation="vertical" className="hidden h-12 lg:block" />
+
+            <div className="min-w-0 flex-1 space-y-2">
+              <Label className="text-[12px]">Your address</Label>
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <DomainChoice
+                  active={domainMode === "assigned"}
+                  icon={Sparkles}
+                  title="Give me an address"
+                  hint="Ready right away — connect a domain later"
+                  onClick={() => {
+                    setDomainMode("assigned")
+                  }}
+                />
+                <DomainChoice
+                  active={domainMode === "own"}
+                  icon={Globe}
+                  title="I have a domain"
+                  hint="Point it at us after setup"
+                  onClick={() => {
+                    setDomainMode("own")
+                  }}
+                />
+              </div>
+              {domainMode === "own" && (
+                <Input
+                  value={domain}
+                  onChange={(e) => {
+                    setDomain(e.target.value)
+                  }}
+                  placeholder="example.com"
+                  className="h-9"
+                />
+              )}
+            </div>
+
             <Button
               size="lg"
-              disabled={order.isPending || domain.trim() === ""}
+              className="lg:w-48"
+              disabled={ordering || !domainReady}
               onClick={() => {
                 order.mutate(
-                  { domain: domain.trim(), plan_sku: selected.sku, cycle: "monthly" },
+                  {
+                    // Omitted, not blanked: the panel only assigns an address of
+                    // its own when the field is absent from the request.
+                    ...(domainMode === "own" ? { domain: domain.trim() } : {}),
+                    plan_sku: selected.sku,
+                    cycle: "monthly",
+                  },
                   {
                     onSuccess: (account) => {
                       setDomain("")
@@ -110,41 +197,84 @@ export function HostingPricingPage() {
                 )
               }}
             >
-              {order.isPending
-                ? "Ordering…"
+              {ordering
+                ? "Setting up…"
                 : `Buy for ${formatMoney(selected.pricing.monthly, selected.pricing.currency)}/mo`}
             </Button>
           </div>
-        </Section>
+        </div>
       )}
     </div>
+  )
+}
+
+function DomainChoice({
+  active,
+  icon: Icon,
+  title,
+  hint,
+  onClick,
+}: Readonly<{
+  active: boolean
+  icon: typeof Globe
+  title: string
+  hint: string
+  onClick: () => void
+}>) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={`flex flex-1 items-start gap-2 rounded-lg border px-3 py-2 text-left transition ${
+        active ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"
+      }`}
+    >
+      <Icon className={`mt-0.5 size-4 shrink-0 ${active ? "text-primary" : "text-muted-foreground"}`} />
+      <span className="min-w-0">
+        <span className="block text-[13px] font-medium leading-tight">{title}</span>
+        <span className="block text-[11px] leading-tight text-muted-foreground">{hint}</span>
+      </span>
+    </button>
   )
 }
 
 function PlanCard({
   plan,
   selected,
+  sharedFeatures,
   onSelect,
-}: Readonly<{ plan: HostingPlan; selected: boolean; onSelect: () => void }>) {
+}: Readonly<{
+  plan: HostingPlan
+  selected: boolean
+  sharedFeatures: string[]
+  onSelect: () => void
+}>) {
   const cycles = soldCycles(plan)
+  // Only what makes THIS plan different from its neighbours. The rest is stated
+  // once for the whole range.
+  const distinct = plan.features.filter((f) => !sharedFeatures.includes(f))
   return (
     <button
       type="button"
       onClick={onSelect}
-      className={`flex flex-col rounded-xl border p-5 text-left transition ${
+      aria-pressed={selected}
+      className={`flex flex-col rounded-xl border p-4 text-left transition ${
         selected ? "border-primary ring-2 ring-primary/20" : "border-border hover:border-primary/40"
       }`}
     >
-      <span className="text-[15px] font-semibold">{plan.name}</span>
+      <span className="text-[14px] font-semibold">{plan.name}</span>
       {plan.description && (
-        <span className="mt-0.5 text-[12px] text-muted-foreground">{plan.description}</span>
+        <span className="mt-0.5 line-clamp-1 text-[11px] text-muted-foreground">
+          {plan.description}
+        </span>
       )}
 
-      <span className="mt-4 flex items-baseline gap-1">
-        <span className="text-2xl font-semibold">
+      <span className="mt-3 flex items-baseline gap-1">
+        <span className="text-xl font-semibold">
           {formatMoney(plan.pricing.monthly, plan.pricing.currency)}
         </span>
-        <span className="text-[12px] text-muted-foreground">/month</span>
+        <span className="text-[11px] text-muted-foreground">/month</span>
       </span>
       {plan.pricing.setup_fee > 0 && (
         <span className="text-[11px] text-muted-foreground">
@@ -154,32 +284,26 @@ function PlanCard({
       {/* Longer cycles are priced in the catalogue but not yet sellable — saying
           so beats showing a price that cannot be bought. */}
       {cycles.length > 1 && (
-        <span className="mt-1 text-[11px] text-muted-foreground">Longer terms coming soon</span>
+        <span className="mt-0.5 text-[11px] text-muted-foreground">Longer terms coming soon</span>
       )}
 
-      <div className="mt-4 space-y-1.5 border-t border-border pt-4 text-[12px]">
+      <div className="mt-3 space-y-1 border-t border-border pt-3 text-[12px]">
         <Spec label="Disk" value={formatLimitMB(plan.limits.disk_mb)} />
         <Spec label="Bandwidth" value={formatLimitMB(plan.limits.bandwidth_mb)} />
-        <Spec label="Websites" value={String(plan.limits.addon_domains + 1)} />
-        <Spec label="Email accounts" value={limitText(plan.limits.email_accounts)} />
-        <Spec label="Databases" value={limitText(plan.limits.databases)} />
+        <Spec label="Websites" value={formatWebsites(plan.limits.addon_domains)} />
+        <Spec label="Email accounts" value={formatCount(plan.limits.email_accounts)} />
+        <Spec label="Databases" value={formatCount(plan.limits.databases)} />
       </div>
 
-      {plan.features.length > 0 && (
-        <ul className="mt-4 space-y-1.5">
-          {plan.features.map((f) => (
-            <li key={f} className="flex items-start gap-2 text-[12px]">
-              <Check className="mt-0.5 size-3.5 shrink-0 text-emerald-500" />
+      {distinct.length > 0 && (
+        <ul className="mt-3 space-y-1">
+          {distinct.map((f) => (
+            <li key={f} className="flex items-start gap-1.5 text-[11px]">
+              <Check className="mt-0.5 size-3 shrink-0 text-emerald-500" />
               {f}
             </li>
           ))}
         </ul>
-      )}
-
-      {selected && (
-        <Badge className="mt-4 w-fit gap-1">
-          <Globe className="size-3" /> Selected
-        </Badge>
       )}
     </button>
   )
@@ -187,15 +311,9 @@ function PlanCard({
 
 function Spec({ label, value }: Readonly<{ label: string; value: string }>) {
   return (
-    <div className="flex justify-between">
+    <div className="flex justify-between gap-2">
       <span className="text-muted-foreground">{label}</span>
       <span className="font-medium">{value}</span>
     </div>
   )
-}
-
-function limitText(n: number): string {
-  if (n === -1) return "Unlimited"
-  if (n === 0) return "None"
-  return String(n)
 }

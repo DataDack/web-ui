@@ -33,8 +33,10 @@ function NavItemLink({
   onNavigate,
 }: Readonly<NavItemLinkProps>) {
   const { t } = useTranslation()
-  const { pathname } = useLocation()
-  const active = isItemActiveAmong(pathname, item, siblings)
+  // `search` too: the Managed Apps items address tabs (?tab=apps, ?tab=hosting),
+  // which the pathname alone cannot tell apart.
+  const { pathname, search } = useLocation()
+  const active = isItemActiveAmong(pathname, item, siblings, search)
   const Icon = item.icon
 
   const link = (

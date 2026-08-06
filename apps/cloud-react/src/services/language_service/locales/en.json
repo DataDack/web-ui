@@ -73,7 +73,9 @@
         "logs": "Logs",
         "opennext": "OpenNext",
         "reactApps": "React",
-        "n8nAgents": "n8n Agents"
+        "n8nAgents": "n8n Agents",
+        "apps": "Apps",
+        "cpanelHosting": "cPanel Hosting"
       },
       "soon": "Soon",
       "collapse": "Collapse",
@@ -4723,8 +4725,6 @@
   },
   "hosting": {
     "nav": {
-      "group": "Web hosting",
-      "myHosting": "My hosting",
       "plans": "Plans & pricing"
     },
     "admin": {

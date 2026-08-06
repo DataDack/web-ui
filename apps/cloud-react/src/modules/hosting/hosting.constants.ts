@@ -14,7 +14,12 @@ export const HOSTING_API = {
 
 export const HOSTING_ROUTES = {
   pricing: "/hosting/plans",
-  accounts: "/hosting",
+  /**
+   * The account list is the cPanel Hosting tab of the Managed Apps section —
+   * a customer's websites are one estate, whether a repo builds them or cPanel
+   * serves them. "/hosting" still resolves here, so old links keep working.
+   */
+  accounts: "/managed-apps?tab=hosting",
   account: (id: string) => `/hosting/${id}`,
 } as const
 

@@ -80,7 +80,7 @@ export function useHostingAccount(id: string | undefined) {
 export function useOrderHosting() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (input: { domain: string; plan_sku: string; cycle: string; username?: string }) =>
+    mutationFn: (input: { domain?: string; plan_sku: string; cycle: string; username?: string }) =>
       hostingApi.order({ ...input, idempotency_key: newIdempotencyKey("order") }),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: HOSTING_QUERY_KEYS.accounts })
