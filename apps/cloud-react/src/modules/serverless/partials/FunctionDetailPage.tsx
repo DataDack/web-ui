@@ -3,6 +3,7 @@ import { useMemo } from "react"
 import {
   FUNCTION_DETAIL_TABS,
   FunctionDetailPage,
+  registerMonacoSetup,
   type FunctionDetailPageProps,
   type FunctionDetailTabValue,
 } from "@datadack/serverless"
@@ -16,10 +17,11 @@ import { useScreen } from "@/services/api/screen"
 import { SERVERLESS_ROUTES } from "../serverless.constants"
 import { SERVERLESS_QUERY_KEYS } from "../serverless.hooks"
 
-// Configures the Code tab's editor to use this app's bundled Monaco instead of
-// the wrapper's CDN loader. Imported here — the only route that can reach the
-// editor — so Monaco lands in this route's chunk, not the entry bundle.
-import "@/lib/monaco-setup"
+// Points the Code tab's editor at this app's bundled Monaco rather than the
+// wrapper's CDN loader. A thunk, not a static import, so Monaco is split into
+// its own chunk and fetched only when someone opens a file. The package awaits
+// this immediately before mounting the editor.
+registerMonacoSetup(() => import("@/lib/monaco-setup"))
 
 // Thin wrapper over the shared @datadack/serverless detail page. Everything
 // app-specific stays here — the route param, the ?tab= URL state, navigation

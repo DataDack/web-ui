@@ -1,10 +1,10 @@
 import { loader } from "@monaco-editor/react"
 import * as monaco from "monaco-editor"
+import EditorWorker from "monaco-editor/editor/editor.worker?worker"
 import CssWorker from "monaco-editor/language/css/css.worker?worker"
 import HtmlWorker from "monaco-editor/language/html/html.worker?worker"
 import JsonWorker from "monaco-editor/language/json/json.worker?worker"
 import TsWorker from "monaco-editor/language/typescript/ts.worker?worker"
-import EditorWorker from "monaco-editor/editor/editor.worker?worker"
 
 // Monaco, bundled by this app rather than fetched from a CDN.
 //

@@ -3,7 +3,13 @@
 
 export { AliasDialog, type AliasDialogProps } from "./AliasDialog"
 export { AliasesTab, type AliasesTabProps } from "./AliasesTab"
-export { CodeNotEditable, CodeTab, type CodeNotEditableProps, type CodeTabProps } from "./code"
+export {
+  CodeNotEditable,
+  CodeTab,
+  registerMonacoSetup,
+  type CodeNotEditableProps,
+  type CodeTabProps,
+} from "./code"
 export { ConfigurationTab, type ConfigurationSectionValue, type ConfigurationTabProps } from "./ConfigurationTab"
 export { FunctionDetailHeader, type FunctionDetailHeaderProps } from "./FunctionDetailHeader"
 export { FunctionDetailPage, type FunctionDetailPageProps } from "./FunctionDetailPage"

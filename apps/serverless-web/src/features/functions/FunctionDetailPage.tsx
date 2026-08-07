@@ -3,13 +3,16 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom"
 import {
   FUNCTION_DETAIL_TABS,
   FunctionDetailPage as SharedFunctionDetailPage,
+  registerMonacoSetup,
   type FunctionDetailTabValue,
 } from "@datadack/serverless"
 
-// Configures the Code tab's editor to use this app's bundled Monaco instead of
-// the wrapper's CDN loader. Imported here — the only route that can reach the
-// editor — so Monaco lands in this route's chunk, not the entry bundle.
-import "@/lib/monaco-setup"
+// Points the Code tab's editor at this app's bundled Monaco rather than the
+// wrapper's CDN loader. A thunk, not a static import: this console has no
+// route-level code splitting, so importing the setup module directly would put
+// several megabytes of editor in the entry bundle for everyone. The package
+// awaits this immediately before mounting the editor.
+registerMonacoSetup(() => import("@/lib/monaco-setup"))
 
 /**
  * A function's home, laid out like Lambda's — rendered by the shared

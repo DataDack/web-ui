@@ -9,11 +9,20 @@ import { errorMessage } from "../errorMessage"
 import type { FunctionDetailLabels } from "../labels"
 import { CodeStatusBar } from "./CodeStatusBar"
 import { languageFor } from "./language"
+import { loadMonacoSetup } from "./monacoLoader"
 
 // Monaco is the largest thing either console can load. Keeping it behind
 // React.lazy means the Functions list, the Test tab and every other route stay
 // free of it, and it arrives only once someone opens a file.
-const MonacoPane = lazy(() => import("./MonacoPane"))
+//
+// The app's setup module runs FIRST, inside the same boundary: it is what calls
+// `loader.config({ monaco })`, and doing it here rather than at the app's route
+// scope is what makes "configured before the editor mounts" an ordering
+// guarantee instead of a race. See ./monacoLoader.
+const MonacoPane = lazy(async () => {
+  await loadMonacoSetup()
+  return import("./MonacoPane")
+})
 
 const pane = css`
   display: flex;

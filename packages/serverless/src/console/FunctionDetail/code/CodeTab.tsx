@@ -122,6 +122,11 @@ function withoutPath(buffers: Record<string, string>, path: string): Record<stri
   return Object.fromEntries(Object.entries(buffers).filter(([key]) => key !== path))
 }
 
+/** The open-tab list with one path swapped for another, for a rename. */
+function swapPath(paths: readonly string[], from: string, to: string): string[] {
+  return paths.map((path) => (path === from ? to : path))
+}
+
 export interface CodeTabProps {
   fn: FunctionEntity
   scope?: string
@@ -346,10 +351,13 @@ export function CodeTab({ fn, scope, labels, className }: Readonly<CodeTabProps>
         // rather than losing the file.
         const content = await contentFor(from)
         await putFile.mutateAsync({ path: to, content })
+        // Move the open tab while BOTH paths still exist in the tree. Doing it
+        // after the delete races the effect that prunes tabs for files that are
+        // gone, which would close the tab instead of following the rename.
+        setOpenPaths((prev) => swapPath(prev, from, to))
+        setActivePath((path) => (path === from ? to : path))
         await deleteFile.mutateAsync(from)
         setBuffers((prev) => withoutPath(prev, from))
-        setOpenPaths((prev) => prev.map((path) => (path === from ? to : path)))
-        setActivePath((path) => (path === from ? to : path))
         setPrompt(undefined)
         toast.success(copy.toasts.renamed(to))
       } catch (error) {

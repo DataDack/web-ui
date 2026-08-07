@@ -43,6 +43,7 @@ export {
   FunctionDetailHeader,
   FunctionDetailPage,
   MonitorTab,
+  registerMonacoSetup,
   TEST_EVENT_TEMPLATES,
   TestTab,
   VersionsTab,
