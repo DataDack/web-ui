@@ -4,6 +4,8 @@ import type {
   CreatedFunction,
   CreateFromSourceInput,
   FunctionAlias,
+  FunctionCode,
+  FunctionCodeFile,
   FunctionEntity,
   FunctionVersion,
   InvokeResult,
@@ -144,6 +146,57 @@ export const faasTransport: ServerlessTransport = {
     // nothing but changed fields, and JSON serialisation drops the `undefined`
     // ones, so the patch goes over the wire as-is.
     const { data } = await http.patch<FunctionEntity>(fnPath(name), patch)
+    return data
+  },
+
+  // Inline code editing. The file path travels as a `path` QUERY param, not a
+  // path segment — that is what the control plane's handlers read, and it is
+  // the only form that survives a nested path like lib/transform.js.
+
+  async getFunctionCode(name: string): Promise<FunctionCode> {
+    const { data } = await http.get<FunctionCode>(`${fnPath(name)}/code`)
+    return data
+  },
+
+  async getFunctionCodeFile(name: string, path: string): Promise<FunctionCodeFile> {
+    const { data } = await http.get<FunctionCodeFile>(`${fnPath(name)}/code/file`, {
+      params: { path },
+    })
+    return data
+  },
+
+  async putFunctionCodeFile(name: string, path: string, content: string): Promise<FunctionCode> {
+    const { data } = await http.put<FunctionCode>(
+      `${fnPath(name)}/code/file`,
+      { content },
+      { params: { path } },
+    )
+    return data
+  },
+
+  async deleteFunctionCodeFile(name: string, path: string): Promise<FunctionCode> {
+    const { data } = await http.delete<FunctionCode>(`${fnPath(name)}/code/file`, {
+      params: { path },
+    })
+    return data
+  },
+
+  async discardFunctionCodeDraft(name: string): Promise<FunctionCode> {
+    const { data } = await http.post<FunctionCode>(`${fnPath(name)}/code/discard`)
+    return data
+  },
+
+  /**
+   * Publishing the draft. An absent digest is a legitimate unconditional
+   * deploy, so the key is omitted rather than sent empty — the control plane
+   * treats an empty string as "no compare-and-swap" too, but omitting it says
+   * so without relying on that.
+   */
+  async deployFunctionCodeDraft(name: string, baseSha256?: string): Promise<FunctionEntity> {
+    const { data } = await http.post<FunctionEntity>(
+      `${fnPath(name)}/code/deploy`,
+      baseSha256 ? { baseSha256 } : {},
+    )
     return data
   },
 }

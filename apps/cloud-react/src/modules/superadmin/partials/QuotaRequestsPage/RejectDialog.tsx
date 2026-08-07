@@ -1,5 +1,8 @@
 import { useState } from "react"
 
+import { X } from "lucide-react"
+import { useTranslation } from "react-i18next"
+
 import {
   Button,
   Dialog,
@@ -9,8 +12,6 @@ import {
   DialogTitle,
   Textarea,
 } from "@datadack/common-ui"
-import { Loader2, X } from "lucide-react"
-import { useTranslation } from "react-i18next"
 
 import { Field } from "../../components/form-fields"
 import { useRejectQuotaRequest } from "../../superadmin.hooks"
@@ -75,7 +76,6 @@ function RejectForm({
             onClick={() => {
               onOpenChange(false)
             }}
-            loading={isPending}
           >
             {t("common.cancel")}
           </Button>
@@ -87,7 +87,6 @@ function RejectForm({
             onClick={submit}
             loading={isPending}
           >
-            {isPending && <Loader2 className="size-4 animate-spin" />}
             {t("superAdmin.quotaRequests.reject")}
           </Button>
         </div>

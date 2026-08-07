@@ -82,8 +82,18 @@ export interface CreatedFunction {
   name: string
 }
 
-export interface CodeArtifact { bucket?: string; key: string; sha256?: string; sizeBytes?: number; source?: string }
-export interface LayerRef { name: string; version: number; arn?: string }
+export interface CodeArtifact {
+  bucket?: string
+  key: string
+  sha256?: string
+  sizeBytes?: number
+  source?: string
+}
+export interface LayerRef {
+  name: string
+  version: number
+  arn?: string
+}
 
 export interface FunctionVersion {
   version: string
@@ -165,6 +175,71 @@ export interface InvokeResult {
   executedVersion?: string
   functionError?: string
   logs?: string
+}
+
+/* ── Inline code editing ──────────────────────────────────────────────────
+ *
+ * The editor is a view over a function's zip deployment package, never a
+ * checkout on a disk. Edits accumulate in a server-side draft archive and only
+ * a deploy turns that draft into a new function version, so a half-finished
+ * edit can never become running code.
+ *
+ * These mirror platform.FunctionCode / FunctionCodeEntry / FunctionCodeFile in
+ * the control plane (common/platform/function_code.go) field for field.
+ */
+
+/** The deployment package size the control plane will open inline (3 MB). */
+export const MAX_INLINE_EDIT_BYTES = 3 << 20
+/** The largest single file the editor may write back (1 MB). */
+export const MAX_CODE_FILE_BYTES = 1 << 20
+
+/** One file in a deployment package, as the tree lists it. */
+export interface FunctionCodeEntry {
+  path: string
+  sizeBytes: number
+  /** Binary files are listed but never opened — round-tripping corrupts them. */
+  binary: boolean
+}
+
+/**
+ * Why a package cannot be edited inline. The control plane decides this rather
+ * than letting each console infer it, so the UI only has to render the reason.
+ */
+export type CodeNotEditableReason =
+  "ImagePackage" | "NoCodeArtifact" | "ArchiveMissing" | "PackageTooLarge" | "NotAZipArchive"
+
+/** The editor's view of a function's deployment package. */
+export interface FunctionCode {
+  functionName: string
+  packageType: string
+  runtime?: string
+  handler?: string
+  imageUri?: string
+  version?: string
+  /** False means render `reason` instead of a tree. */
+  editable: boolean
+  reason?: CodeNotEditableReason
+  /** Digest of the archive these files came from — the draft when one exists. */
+  sha256?: string
+  /**
+   * Digest of the DEPLOYED package. A deploy sends this back to prove it is not
+   * silently overwriting a deploy that landed while the draft was open.
+   */
+  baseSha256?: string
+  sizeBytes: number
+  draft: boolean
+  draftUpdatedAt?: string
+  files: FunctionCodeEntry[]
+}
+
+/** One file's contents, read from the draft when there is one. */
+export interface FunctionCodeFile {
+  path: string
+  /** Empty for a binary file — the control plane never sends those as text. */
+  content: string
+  sizeBytes: number
+  binary: boolean
+  draft: boolean
 }
 
 /**

@@ -1,13 +1,14 @@
 import { useEffect, useMemo } from "react"
 
-import { Button } from "@datadack/common-ui"
-import { ExternalLink, Loader2, ShieldAlert, ShieldCheck } from "lucide-react"
+import { ExternalLink, ShieldAlert, ShieldCheck } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useLocation, useNavigate } from "react-router-dom"
 
 import { OnboardingStepSkeleton } from "@/components/console/feedback/Skeletons"
 import { useAuth } from "@/modules/auth/auth.context"
 import { useScreen } from "@/services/api/screen"
+
+import { Button } from "@datadack/common-ui"
 
 import { OnboardingLayout } from "./OnboardingLayout"
 import { clearKycSkip, skipKycForNow } from "../kyc-skip"
@@ -173,11 +174,7 @@ export function VerificationPage() {
             className="btn-gold rounded-full font-bold"
             loading={startKyc.isPending}
           >
-            {startKyc.isPending ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
-              <ExternalLink className="size-4" />
-            )}
+            <ExternalLink className="size-4" />
             {t(
               startKyc.isPending
                 ? "onboarding.verification.starting"
@@ -187,12 +184,7 @@ export function VerificationPage() {
           {/* The one way past the gate. Explicit, never automatic —
                         and it only buys this session; resource creation stays
                         blocked by the backend until verification lands. */}
-          <Button
-            variant="ghost"
-            onClick={onSkip}
-            disabled={startKyc.isPending}
-            loading={startKyc.isPending}
-          >
+          <Button variant="ghost" onClick={onSkip} disabled={startKyc.isPending}>
             {t("onboarding.verification.skipForNow")}
           </Button>
         </div>

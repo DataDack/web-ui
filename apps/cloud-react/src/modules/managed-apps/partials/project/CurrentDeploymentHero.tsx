@@ -1,7 +1,8 @@
-import { useTranslation } from "react-i18next"
-import { Button, CopyButton } from "@datadack/common-ui"
 import { ExternalLink, GitBranch, Loader2, PackageCheck, Rocket } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
+
+import { Button, CopyButton } from "@datadack/common-ui"
 
 import { hostLabel, isTimeSet, shortSha, timeSince } from "./build-format"
 import { BuildProgressBar, ProjectStateChip } from "../../components"
@@ -103,11 +104,7 @@ export function CurrentDeploymentHero({
               }}
               loading={deployProject.isPending}
             >
-              {deployProject.isPending ? (
-                <Loader2 className="size-3.5 animate-spin" />
-              ) : (
-                <PackageCheck className="size-3.5" />
-              )}
+              <PackageCheck className="size-3.5" />
               Release build
             </Button>
           )}

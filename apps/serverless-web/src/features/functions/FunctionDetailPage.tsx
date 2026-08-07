@@ -6,6 +6,11 @@ import {
   type FunctionDetailTabValue,
 } from "@datadack/serverless"
 
+// Configures the Code tab's editor to use this app's bundled Monaco instead of
+// the wrapper's CDN loader. Imported here — the only route that can reach the
+// editor — so Monaco lands in this route's chunk, not the entry bundle.
+import "@/lib/monaco-setup"
+
 /**
  * A function's home, laid out like Lambda's — rendered by the shared
  * FunctionDetail suite, which fetches through the transport mounted in

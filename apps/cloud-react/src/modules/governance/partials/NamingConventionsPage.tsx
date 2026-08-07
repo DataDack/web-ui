@@ -1,5 +1,15 @@
 import { useMemo, useState } from "react"
 
+import { Check, RefreshCw, RotateCcw, ScrollText, X } from "lucide-react"
+import { useTranslation } from "react-i18next"
+import { toast } from "sonner"
+
+import { PageHeader, Section } from "@/components/console"
+import { useAuth } from "@/modules/auth/auth.context"
+import { ORG_MANAGER_ROLES } from "@/modules/organizations/organizations.constants"
+import { useActiveOrganization } from "@/modules/organizations/organizations.hooks"
+import { useScreen } from "@/services/api/screen"
+
 import {
   Badge,
   Button,
@@ -14,15 +24,6 @@ import {
   Skeleton,
   Switch,
 } from "@datadack/common-ui"
-import { Check, RefreshCw, RotateCcw, ScrollText, X } from "lucide-react"
-import { useTranslation } from "react-i18next"
-import { toast } from "sonner"
-
-import { PageHeader, Section } from "@/components/console"
-import { useAuth } from "@/modules/auth/auth.context"
-import { ORG_MANAGER_ROLES } from "@/modules/organizations/organizations.constants"
-import { useActiveOrganization } from "@/modules/organizations/organizations.hooks"
-import { useScreen } from "@/services/api/screen"
 
 import { useNamingPolicy, useUpdateNamingPolicy } from "../governance.hooks"
 import {
@@ -126,13 +127,7 @@ export function NamingConventionsPage() {
               <RefreshCw className={`w-4 h-4 ${isFetching ? "animate-spin" : ""}`} />
             </Button>
             {canEdit && dirty && (
-              <Button
-                variant="ghost"
-                className="gap-1.5"
-                onClick={reset}
-                disabled={isSaving}
-                loading={isSaving}
-              >
+              <Button variant="ghost" className="gap-1.5" onClick={reset} disabled={isSaving}>
                 <RotateCcw className="size-3.5" />
                 {t("naming.actions.reset")}
               </Button>

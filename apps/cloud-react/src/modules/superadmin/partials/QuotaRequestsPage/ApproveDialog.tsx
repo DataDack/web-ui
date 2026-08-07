@@ -1,5 +1,8 @@
 import { useState } from "react"
 
+import { ArrowRight, Check } from "lucide-react"
+import { useTranslation } from "react-i18next"
+
 import {
   Button,
   Dialog,
@@ -10,8 +13,6 @@ import {
   Input,
   Textarea,
 } from "@datadack/common-ui"
-import { ArrowRight, Check, Loader2 } from "lucide-react"
-import { useTranslation } from "react-i18next"
 
 import { Field } from "../../components/form-fields"
 import { useApproveQuotaRequest } from "../../superadmin.hooks"
@@ -104,7 +105,6 @@ function ApproveForm({
             onClick={() => {
               onOpenChange(false)
             }}
-            loading={isPending}
           >
             {t("common.cancel")}
           </Button>
@@ -115,7 +115,6 @@ function ApproveForm({
             onClick={submit}
             loading={isPending}
           >
-            {isPending && <Loader2 className="size-4 animate-spin" />}
             {t("superAdmin.quotaRequests.approve")}
           </Button>
         </div>

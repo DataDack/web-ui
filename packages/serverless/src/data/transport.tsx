@@ -6,6 +6,8 @@ import type {
   CreateFromSourceInput,
   CreatedFunction,
   FunctionAlias,
+  FunctionCode,
+  FunctionCodeFile,
   FunctionEntity,
   FunctionVersion,
   InvokeResult,
@@ -79,6 +81,33 @@ export interface ServerlessTransport {
    * ones.
    */
   updateFunctionConfig?: (name: string, patch: UpdateFunctionConfigInput) => Promise<FunctionEntity>
+
+  /* ── Inline code editing ───────────────────────────────────────────────
+   *
+   * Every write here stages into the function's DRAFT archive; only
+   * `deployFunctionCodeDraft` turns staged edits into running code. The four
+   * mutating methods all resolve to the refreshed `FunctionCode`, so the
+   * editor never needs a follow-up read to learn the new digest or draft
+   * stamp.
+   */
+
+  /** The package tree plus whether it can be edited at all, and why not. */
+  getFunctionCode?: (name: string) => Promise<FunctionCode>
+  /** One file's contents, from the draft when one exists. */
+  getFunctionCodeFile?: (name: string, path: string) => Promise<FunctionCodeFile>
+  /** Stage a file write into the draft archive. */
+  putFunctionCodeFile?: (name: string, path: string, content: string) => Promise<FunctionCode>
+  /** Stage a file deletion into the draft archive. */
+  deleteFunctionCodeFile?: (name: string, path: string) => Promise<FunctionCode>
+  /** Throw the draft away and return to the deployed package. */
+  discardFunctionCodeDraft?: (name: string) => Promise<FunctionCode>
+  /**
+   * Publish the draft as a new function version. `baseSha256` is the deployed
+   * digest the session started from: sending it makes the deploy a
+   * compare-and-swap (409 CodeStale when another deploy landed underneath),
+   * omitting it opts out and last-write-wins.
+   */
+  deployFunctionCodeDraft?: (name: string, baseSha256?: string) => Promise<FunctionEntity>
 }
 
 /**
@@ -112,6 +141,13 @@ export interface ServerlessCapabilities {
   triggers: boolean
   /** Offer configuration editing. Requires `updateFunctionConfig`. */
   configEdit: boolean
+  /** Show the inline code editor. Requires `getFunctionCode` + `getFunctionCodeFile`. */
+  codeRead: boolean
+  /**
+   * Let the editor write. Requires all four mutating code methods — a console
+   * with only some of them would offer a Save that cannot be deployed.
+   */
+  codeEdit: boolean
 }
 
 export interface ServerlessContextValue {
@@ -159,12 +195,19 @@ export function ServerlessProvider({
         versions: typeof transport.listVersions === "function",
         aliases: typeof transport.listAliases === "function",
         aliasWrite:
-          typeof transport.putAlias === "function" &&
-          typeof transport.deleteAlias === "function",
+          typeof transport.putAlias === "function" && typeof transport.deleteAlias === "function",
         invoke: typeof transport.invokeFunction === "function",
         functionDelete: typeof transport.deleteFunction === "function",
         triggers: typeof transport.listTriggers === "function",
         configEdit: typeof transport.updateFunctionConfig === "function",
+        codeRead:
+          typeof transport.getFunctionCode === "function" &&
+          typeof transport.getFunctionCodeFile === "function",
+        codeEdit:
+          typeof transport.putFunctionCodeFile === "function" &&
+          typeof transport.deleteFunctionCodeFile === "function" &&
+          typeof transport.discardFunctionCodeDraft === "function" &&
+          typeof transport.deployFunctionCodeDraft === "function",
         ...capabilities,
       },
     }

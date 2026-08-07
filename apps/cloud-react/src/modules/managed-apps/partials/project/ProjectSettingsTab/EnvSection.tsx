@@ -1,10 +1,10 @@
-import { useTranslation } from "react-i18next"
 import { useMemo, useState } from "react"
 
-import { Button, Skeleton } from "@datadack/common-ui"
-import { Loader2 } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
 import { ConfirmDialog, Section } from "@/components/console"
+
+import { Button, Skeleton } from "@datadack/common-ui"
 
 import { EnvVarEditor, storedEnvRows, toEnvMap, type EnvRow } from "../../../components"
 import { useProjectEnv, useUpdateProjectEnv } from "../../../managed-apps.hooks"
@@ -88,7 +88,6 @@ export function EnvSection({ project }: Readonly<{ project: Project }>) {
             }}
             loading={update.isPending}
           >
-            {update.isPending && <Loader2 className="size-3.5 animate-spin" />}
             Save variables
           </Button>
         </div>

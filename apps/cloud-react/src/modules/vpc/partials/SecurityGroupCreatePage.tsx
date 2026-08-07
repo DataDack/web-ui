@@ -1,5 +1,18 @@
 import { useMemo } from "react"
 
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Lock } from "lucide-react"
+import { Controller, useForm } from "react-hook-form"
+import { useTranslation } from "react-i18next"
+import { useNavigate } from "react-router-dom"
+import { z } from "zod/v4"
+
+import { PageHeader } from "@/components/console"
+import { useNamingRule } from "@/modules/governance/governance.hooks"
+import type { NamingRule } from "@/modules/governance/governance.types"
+import { namingNameSchema } from "@/modules/governance/governance.validation"
+import { useScreen } from "@/services/api/screen"
+
 import {
   Button,
   Input,
@@ -11,18 +24,6 @@ import {
   SelectValue,
   Textarea,
 } from "@datadack/common-ui"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Loader2, Lock } from "lucide-react"
-import { Controller, useForm } from "react-hook-form"
-import { useTranslation } from "react-i18next"
-import { useNavigate } from "react-router-dom"
-import { z } from "zod/v4"
-
-import { PageHeader } from "@/components/console"
-import { useNamingRule } from "@/modules/governance/governance.hooks"
-import type { NamingRule } from "@/modules/governance/governance.types"
-import { namingNameSchema } from "@/modules/governance/governance.validation"
-import { useScreen } from "@/services/api/screen"
 
 import { VPC_ROUTES } from "../vpc.constants"
 import { useCreateSecurityGroup, useVPCs } from "../vpc.hooks"
@@ -152,7 +153,6 @@ export function SecurityGroupCreatePage() {
               {t("console.wizard.cancel")}
             </Button>
             <Button type="submit" variant="gold" disabled={isPending} loading={isPending}>
-              {isPending && <Loader2 className="size-3.5 animate-spin" />}
               {isPending ? t("vpc.sgForm.creating") : t("vpc.sgForm.create")}
             </Button>
           </div>

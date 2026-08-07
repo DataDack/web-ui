@@ -1,31 +1,5 @@
 import { useEffect, useRef, useState } from "react"
 
-import {
-  Button,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  EmptyState,
-  Input,
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  Skeleton,
-} from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
   ArrowLeftRight,
@@ -70,6 +44,33 @@ import { CountrySelect } from "@/modules/countries/CountrySelect"
 import { InviteMemberDialog } from "@/modules/iam/partials/InviteMemberDialog"
 import { useOnboardingStatus } from "@/modules/onboarding/onboarding.hooks"
 import { useScreen } from "@/services/api/screen"
+
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  EmptyState,
+  Input,
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+  Label,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  Skeleton,
+} from "@datadack/common-ui"
 
 import { useOrganization, useUpdateOrganization } from "../organizations.hooks"
 import type { BillingAddress, Organization } from "../organizations.types"
@@ -255,7 +256,6 @@ function AccountDetailsSection({
                 setEditing(false)
               }}
               disabled={isPending}
-              loading={isPending}
             >
               {t("common.cancel", { defaultValue: "Cancel" })}
             </Button>
@@ -413,7 +413,6 @@ function OrgDetailsSection({ org, canEdit }: Readonly<{ org: Organization; canEd
                 setEditing(false)
               }}
               disabled={isPending}
-              loading={isPending}
             >
               {t("common.cancel", { defaultValue: "Cancel" })}
             </Button>
@@ -640,7 +639,6 @@ function BillingAddressSection({
                 setEditing(false)
               }}
               disabled={isPending}
-              loading={isPending}
             >
               {t(k("cancel"))}
             </Button>
@@ -825,7 +823,6 @@ function AccountAddressSection({
                 setEditing(false)
               }}
               disabled={isPending}
-              loading={isPending}
             >
               {t(k("cancel"))}
             </Button>
@@ -1162,13 +1159,7 @@ function ConvertToBusinessSheet({
           </div>
 
           <div className="flex items-center justify-end gap-3 pt-1">
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={close}
-              disabled={isPending}
-              loading={isPending}
-            >
+            <Button type="button" variant="ghost" onClick={close} disabled={isPending}>
               {t(k("cancel"))}
             </Button>
             <Button type="submit" variant="gold" disabled={isPending} loading={isPending}>

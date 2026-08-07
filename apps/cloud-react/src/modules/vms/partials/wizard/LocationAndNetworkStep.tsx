@@ -1,27 +1,10 @@
 import { useEffect, useMemo } from "react"
 
 import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-  Button,
-  Checkbox,
-  cn,
-  Input,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Switch,
-} from "@datadack/common-ui"
-import {
   Anchor,
   CheckCircle2,
   Globe,
   Layers,
-  Loader2,
   MapPin,
   Network,
   ShieldCheck,
@@ -40,6 +23,23 @@ import {
   useVPCSubnets,
 } from "@/modules/vpc/vpc.hooks"
 import type { VPCNetwork } from "@/modules/vpc/vpc.types"
+
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+  Button,
+  Checkbox,
+  cn,
+  Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Switch,
+} from "@datadack/common-ui"
 
 import { formatPrice } from "./wizard.format"
 import { FieldLabel, FieldError } from "./wizard.shared"
@@ -515,7 +515,6 @@ function SecurityGroupPicker({ form }: Readonly<{ form: UseFormReturn<FormValues
             onClick={createDefaultGroup}
             loading={isCreatingDefault}
           >
-            {isCreatingDefault && <Loader2 className="size-3.5 animate-spin" />}
             {t("vms.wizard.createDefaultSg")}
           </Button>
         </div>

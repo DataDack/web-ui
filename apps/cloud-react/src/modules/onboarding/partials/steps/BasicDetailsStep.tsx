@@ -1,6 +1,5 @@
 import { useState } from "react"
 
-import { Button, Input, InputOTP, InputOTPGroup, InputOTPSlot, Label } from "@datadack/common-ui"
 import { useQueryClient } from "@tanstack/react-query"
 import { Loader2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
@@ -11,6 +10,8 @@ import { useUpdateProfile } from "@/modules/auth/auth.hooks"
 import { PhoneField } from "@/modules/auth/components/PhoneField"
 import { usePhoneInput } from "@/modules/auth/phone"
 import { extractError } from "@/services/api/client"
+
+import { Button, Input, InputOTP, InputOTPGroup, InputOTPSlot, Label } from "@datadack/common-ui"
 
 import { ONBOARDING_QUERY_KEYS, useConfirmPhoneOTP, useSendPhoneOTP } from "../../onboarding.hooks"
 
@@ -131,16 +132,10 @@ export function BasicDetailsStep({ onNext }: Readonly<{ onNext: () => void }>) {
             className="btn-gold rounded-full font-bold"
             loading={confirm.isPending}
           >
-            {confirm.isPending && <Loader2 className="size-4 animate-spin" />}
             {t("onboarding.details.verify")}
           </Button>
           {/* The number is already saved — verifying it can wait. */}
-          <Button
-            variant="ghost"
-            onClick={onNext}
-            disabled={confirm.isPending}
-            loading={confirm.isPending}
-          >
+          <Button variant="ghost" onClick={onNext} disabled={confirm.isPending}>
             {t("onboarding.details.skipVerify")}
           </Button>
         </div>

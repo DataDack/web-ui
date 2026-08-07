@@ -1,5 +1,11 @@
 import { useMemo, useState } from "react"
 
+import type { ColumnDef } from "@tanstack/react-table"
+import { Lock, Plus, Trash2 } from "lucide-react"
+import { useTranslation } from "react-i18next"
+
+import { ConfirmDialog, staggerDelay } from "@/components/console"
+
 import {
   Badge,
   Button,
@@ -17,11 +23,6 @@ import {
   textColumn,
   type DataTableColumnMeta,
 } from "@datadack/common-ui"
-import type { ColumnDef } from "@tanstack/react-table"
-import { Loader2, Lock, Plus, Trash2 } from "lucide-react"
-import { useTranslation } from "react-i18next"
-
-import { ConfirmDialog, staggerDelay } from "@/components/console"
 
 import { CreateSecurityGroupSheet } from "./CreateSecurityGroupSheet"
 import { sgProtocolUsesPorts } from "../../api/shared"
@@ -198,7 +199,7 @@ function AddRuleRow({ sgId }: Readonly<{ sgId: string }>) {
           onClick={submit}
           loading={isPending}
         >
-          {isPending ? <Loader2 className="size-3 animate-spin" /> : <Plus className="size-3" />}
+          <Plus className="size-3" />
           {t("vpc.rules.add")}
         </Button>
       </TableCell>

@@ -1,10 +1,11 @@
-import { useTranslation } from "react-i18next"
 import { useState } from "react"
 
-import { Button } from "@datadack/common-ui"
-import { Info, Loader2 } from "lucide-react"
+import { Info } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
 import { Section } from "@/components/console"
+
+import { Button } from "@datadack/common-ui"
 
 import { BuildSettingsSection, type BuildSettingsValue } from "../../../components"
 import { useUpdateProject } from "../../../managed-apps.hooks"
@@ -57,7 +58,6 @@ export function BuildOutputSection({ project }: Readonly<{ project: Project }>) 
             }}
             loading={update.isPending}
           >
-            {update.isPending && <Loader2 className="size-3.5 animate-spin" />}
             Save changes
           </Button>
           <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground">

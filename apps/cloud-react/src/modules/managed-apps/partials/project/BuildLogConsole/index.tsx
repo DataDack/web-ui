@@ -1,4 +1,6 @@
+import { X } from "lucide-react"
 import { useTranslation } from "react-i18next"
+
 import {
   Button,
   CopyButton,
@@ -8,7 +10,6 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@datadack/common-ui"
-import { Loader2, X } from "lucide-react"
 
 import { LogBody } from "./LogBody"
 import { LogToolbar } from "./LogToolbar"
@@ -82,11 +83,7 @@ export function BuildLogConsole({ buildId, open, onOpenChange }: Readonly<BuildL
                     }}
                     loading={cancelBuild.isPending}
                   >
-                    {cancelBuild.isPending ? (
-                      <Loader2 className="size-3 animate-spin" />
-                    ) : (
-                      <X className="size-3" />
-                    )}
+                    <X className="size-3" />
                     Cancel build
                   </Button>
                 )}

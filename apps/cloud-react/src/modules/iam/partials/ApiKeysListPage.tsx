@@ -1,5 +1,12 @@
 import { useMemo, useState } from "react"
 
+import type { ColumnDef } from "@tanstack/react-table"
+import { KeySquare, Plus, RefreshCw, Trash2, TriangleAlert } from "lucide-react"
+import { useTranslation } from "react-i18next"
+
+import { ConfirmDialog, PageHeader } from "@/components/console"
+import { useScreen } from "@/services/api/screen"
+
 import {
   actionsColumn,
   Button,
@@ -23,12 +30,6 @@ import {
   SelectValue,
   statusColumn,
 } from "@datadack/common-ui"
-import type { ColumnDef } from "@tanstack/react-table"
-import { KeySquare, Loader2, Plus, RefreshCw, Trash2, TriangleAlert } from "lucide-react"
-import { useTranslation } from "react-i18next"
-
-import { ConfirmDialog, PageHeader } from "@/components/console"
-import { useScreen } from "@/services/api/screen"
 
 import { useAPIKeys, useCreateAPIKey, useDeleteAPIKey } from "../iam.hooks"
 import type { APIKey, CreatedAPIKey } from "../iam.types"
@@ -308,7 +309,6 @@ function CreateApiKeyDialog({
               close(false)
             }}
             disabled={isPending}
-            loading={isPending}
           >
             {t("console.confirm.cancel")}
           </Button>
@@ -319,7 +319,6 @@ function CreateApiKeyDialog({
             onClick={submit}
             loading={isPending}
           >
-            {isPending && <Loader2 className="size-3.5 animate-spin" />}
             {t("iam.apiKeys.create")}
           </Button>
         </DialogFooter>

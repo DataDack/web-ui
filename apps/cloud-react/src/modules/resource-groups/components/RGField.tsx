@@ -1,5 +1,11 @@
 import { useEffect, useMemo, useState } from "react"
 
+import { Check, ChevronsUpDown, FolderTree, Plus } from "lucide-react"
+import { useTranslation } from "react-i18next"
+
+import { useNamingRule } from "@/modules/governance/governance.hooks"
+import { namingNameSchema } from "@/modules/governance/governance.validation"
+
 import {
   Button,
   cn,
@@ -10,11 +16,6 @@ import {
   PopoverTrigger,
   Textarea,
 } from "@datadack/common-ui"
-import { Check, ChevronsUpDown, FolderTree, Loader2, Plus } from "lucide-react"
-import { useTranslation } from "react-i18next"
-
-import { useNamingRule } from "@/modules/governance/governance.hooks"
-import { namingNameSchema } from "@/modules/governance/governance.validation"
 
 import { useResourceGroup } from "../resource-group.context"
 import { useCreateResourceGroup, useResourceGroups } from "../resource-groups.hooks"
@@ -257,7 +258,6 @@ function CreateRGPopoverForm({
           onClick={submit}
           loading={isPending}
         >
-          {isPending && <Loader2 className="size-3.5 animate-spin" />}
           {t("resourceGroups.form.create")}
         </Button>
       </div>

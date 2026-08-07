@@ -1,5 +1,12 @@
 import { useState } from "react"
 
+import { Activity, Gauge, Info, Trash2 } from "lucide-react"
+import { useTranslation } from "react-i18next"
+import { useNavigate, useParams } from "react-router-dom"
+
+import { ConfirmDialog, DetailPage, KeyValueGrid, Section } from "@/components/console"
+import { useScreen } from "@/services/api/screen"
+
 import {
   Button,
   Dialog,
@@ -14,12 +21,6 @@ import {
   Skeleton,
   TagList,
 } from "@datadack/common-ui"
-import { Activity, Gauge, Info, Loader2, Trash2 } from "lucide-react"
-import { useTranslation } from "react-i18next"
-import { useNavigate, useParams } from "react-router-dom"
-
-import { ConfirmDialog, DetailPage, KeyValueGrid, Section } from "@/components/console"
-import { useScreen } from "@/services/api/screen"
 
 import { ASG_ROUTES } from "../autoscaling.constants"
 import { useASG, useDeleteASG, useSetASGCapacity } from "../autoscaling.hooks"
@@ -230,7 +231,6 @@ function SetCapacityDialog({
               onOpenChange(false)
             }}
             disabled={isPending}
-            loading={isPending}
           >
             {t("console.confirm.cancel")}
           </Button>
@@ -250,7 +250,6 @@ function SetCapacityDialog({
             }}
             loading={isPending}
           >
-            {isPending && <Loader2 className="size-3.5 animate-spin" />}
             {t("autoscaling.actions.setCapacity")}
           </Button>
         </DialogFooter>

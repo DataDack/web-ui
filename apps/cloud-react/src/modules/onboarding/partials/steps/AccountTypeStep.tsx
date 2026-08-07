@@ -1,12 +1,13 @@
 import { useState } from "react"
 
-import { Button, cn, Input, Label } from "@datadack/common-ui"
 import { useMutation } from "@tanstack/react-query"
-import { Building2, Check, Loader2, User } from "lucide-react"
+import { Building2, Check, User } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 import { extractError } from "@/services/api/client"
+
+import { Button, cn, Input, Label } from "@datadack/common-ui"
 
 import { useOnboardingFlow } from "../../onboarding.flow"
 
@@ -128,16 +129,10 @@ export function AccountTypeStep({
           className="btn-gold rounded-full font-bold"
           loading={setType.isPending}
         >
-          {setType.isPending && <Loader2 className="size-4 animate-spin" />}
           {t("onboarding.continue")}
         </Button>
         {onSkip && (
-          <Button
-            variant="ghost"
-            onClick={onSkip}
-            disabled={setType.isPending}
-            loading={setType.isPending}
-          >
+          <Button variant="ghost" onClick={onSkip} disabled={setType.isPending}>
             {t("onboarding.type.skip")}
           </Button>
         )}

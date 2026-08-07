@@ -16,6 +16,11 @@ import { useScreen } from "@/services/api/screen"
 import { SERVERLESS_ROUTES } from "../serverless.constants"
 import { SERVERLESS_QUERY_KEYS } from "../serverless.hooks"
 
+// Configures the Code tab's editor to use this app's bundled Monaco instead of
+// the wrapper's CDN loader. Imported here — the only route that can reach the
+// editor — so Monaco lands in this route's chunk, not the entry bundle.
+import "@/lib/monaco-setup"
+
 // Thin wrapper over the shared @datadack/serverless detail page. Everything
 // app-specific stays here — the route param, the ?tab= URL state, navigation
 // and the i18n-built labels — while the tabs, testers and dialogs live in the
@@ -78,6 +83,119 @@ export function ServerlessFunctionDetailPage() {
       code: {
         title: t("serverless.detail.code.title"),
         message: t("serverless.detail.code.message"),
+        toolbar: {
+          save: t("serverless.detail.code.toolbar.save"),
+          saving: t("serverless.detail.code.toolbar.saving"),
+          deploy: t("serverless.detail.code.toolbar.deploy"),
+          deploying: t("serverless.detail.code.toolbar.deploying"),
+          discard: t("serverless.detail.code.toolbar.discard"),
+          draft: t("serverless.detail.code.toolbar.draft"),
+          draftSince: (relative: string) =>
+            t("serverless.detail.code.toolbar.draftSince", { relative }),
+          deployed: t("serverless.detail.code.toolbar.deployed"),
+          // Pluralised here rather than through i18next's count suffixes, so
+          // the two forms are explicit keys a translator can see and fill.
+          unsaved: (count: number) =>
+            t(
+              count === 1
+                ? "serverless.detail.code.toolbar.unsavedOne"
+                : "serverless.detail.code.toolbar.unsavedOther",
+              { count },
+            ),
+          readOnly: t("serverless.detail.code.toolbar.readOnly"),
+          close: t("serverless.detail.code.toolbar.close"),
+        },
+        tree: {
+          heading: t("serverless.detail.code.tree.heading"),
+          filter: t("serverless.detail.code.tree.filter"),
+          newFile: t("serverless.detail.code.tree.newFile"),
+          newFolder: t("serverless.detail.code.tree.newFolder"),
+          rename: t("serverless.detail.code.tree.rename"),
+          delete: t("serverless.detail.code.tree.delete"),
+          binary: t("serverless.detail.code.tree.binary"),
+          empty: t("serverless.detail.code.tree.empty"),
+          noMatches: t("serverless.detail.code.tree.noMatches"),
+        },
+        dialogs: {
+          cancel: t("serverless.detail.code.dialogs.cancel"),
+          newFile: {
+            title: t("serverless.detail.code.dialogs.newFile.title"),
+            label: t("serverless.detail.code.dialogs.newFile.label"),
+            placeholder: t("serverless.detail.code.dialogs.newFile.placeholder"),
+            confirm: t("serverless.detail.code.dialogs.newFile.confirm"),
+          },
+          newFolder: {
+            title: t("serverless.detail.code.dialogs.newFolder.title"),
+            label: t("serverless.detail.code.dialogs.newFolder.label"),
+            hint: t("serverless.detail.code.dialogs.newFolder.hint"),
+            confirm: t("serverless.detail.code.dialogs.newFolder.confirm"),
+          },
+          rename: {
+            title: t("serverless.detail.code.dialogs.rename.title"),
+            label: t("serverless.detail.code.dialogs.rename.label"),
+            confirm: t("serverless.detail.code.dialogs.rename.confirm"),
+          },
+          deleteFile: {
+            title: (path: string) =>
+              t("serverless.detail.code.dialogs.deleteFile.title", { path }),
+            description: t("serverless.detail.code.dialogs.deleteFile.description"),
+            confirm: t("serverless.detail.code.dialogs.deleteFile.confirm"),
+          },
+          discard: {
+            title: t("serverless.detail.code.dialogs.discard.title"),
+            description: t("serverless.detail.code.dialogs.discard.description"),
+            confirm: t("serverless.detail.code.dialogs.discard.confirm"),
+          },
+          stale: {
+            title: t("serverless.detail.code.dialogs.stale.title"),
+            description: t("serverless.detail.code.dialogs.stale.description"),
+            reload: t("serverless.detail.code.dialogs.stale.reload"),
+            overwrite: t("serverless.detail.code.dialogs.stale.overwrite"),
+          },
+        },
+        status: {
+          position: (line: number, column: number) =>
+            t("serverless.detail.code.status.position", { line, column }),
+          encoding: t("serverless.detail.code.status.encoding"),
+          readOnly: t("serverless.detail.code.status.readOnly"),
+        },
+        binaryFile: t("serverless.detail.code.binaryFile"),
+        noFileOpen: t("serverless.detail.code.noFileOpen"),
+        notEditable: {
+          title: t("serverless.detail.code.notEditable.title"),
+          ImagePackage: t("serverless.detail.code.notEditable.ImagePackage"),
+          NoCodeArtifact: t("serverless.detail.code.notEditable.NoCodeArtifact"),
+          ArchiveMissing: t("serverless.detail.code.notEditable.ArchiveMissing"),
+          PackageTooLarge: (limit: string) =>
+            t("serverless.detail.code.notEditable.PackageTooLarge", { limit }),
+          NotAZipArchive: t("serverless.detail.code.notEditable.NotAZipArchive"),
+          unknown: t("serverless.detail.code.notEditable.unknown"),
+        },
+        errors: {
+          loadFailed: t("serverless.detail.code.errors.loadFailed"),
+          openFailed: t("serverless.detail.code.errors.openFailed"),
+          saveFailed: t("serverless.detail.code.errors.saveFailed"),
+          createFailed: t("serverless.detail.code.errors.createFailed"),
+          renameFailed: t("serverless.detail.code.errors.renameFailed"),
+          deleteFailed: t("serverless.detail.code.errors.deleteFailed"),
+          discardFailed: t("serverless.detail.code.errors.discardFailed"),
+          deployFailed: t("serverless.detail.code.errors.deployFailed"),
+          fileTooLarge: (limit: string) =>
+            t("serverless.detail.code.errors.fileTooLarge", { limit }),
+          nothingToDeploy: t("serverless.detail.code.errors.nothingToDeploy"),
+          duplicatePath: t("serverless.detail.code.errors.duplicatePath"),
+          invalidPath: t("serverless.detail.code.errors.invalidPath"),
+        },
+        toasts: {
+          saved: (path: string) => t("serverless.detail.code.toasts.saved", { path }),
+          savedAll: (count: number) => t("serverless.detail.code.toasts.savedAll", { count }),
+          created: (path: string) => t("serverless.detail.code.toasts.created", { path }),
+          renamed: (path: string) => t("serverless.detail.code.toasts.renamed", { path }),
+          deleted: (path: string) => t("serverless.detail.code.toasts.deleted", { path }),
+          discarded: t("serverless.detail.code.toasts.discarded"),
+          deployed: (version: string) =>
+            t("serverless.detail.code.toasts.deployed", { version }),
+        },
       },
       actions: { delete: t("serverless.detail.actions.delete") },
       deleteConfirm: {

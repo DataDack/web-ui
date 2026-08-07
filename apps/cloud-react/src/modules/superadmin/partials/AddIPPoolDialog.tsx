@@ -1,5 +1,13 @@
 import { useEffect, useMemo } from "react"
 
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Network } from "lucide-react"
+import { Controller, useForm, useWatch } from "react-hook-form"
+import { useTranslation } from "react-i18next"
+import { z } from "zod/v4"
+
+import { CidrInput } from "@/components/console"
+
 import {
   Button,
   cn,
@@ -16,13 +24,6 @@ import {
   SelectValue,
   Textarea,
 } from "@datadack/common-ui"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Loader2, Network } from "lucide-react"
-import { Controller, useForm, useWatch } from "react-hook-form"
-import { useTranslation } from "react-i18next"
-import { z } from "zod/v4"
-
-import { CidrInput } from "@/components/console"
 
 import { Field } from "../components/form-fields"
 import { describeCidr } from "../ip-utils"
@@ -186,7 +187,6 @@ export function AddIPPoolDialog({ open, onOpenChange }: Readonly<Props>) {
             </Field>
 
             <Button type="submit" disabled={isPending} className="mt-1 gap-2" loading={isPending}>
-              {isPending && <Loader2 className="size-4 animate-spin" />}
               {t("superAdmin.staticIps.pools.add")}
             </Button>
           </form>

@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react"
 
-import { Button, type TagRow, tagRowsToRecord } from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
   Box,
@@ -8,7 +7,6 @@ import {
   CreditCard,
   Globe,
   HardDrive,
-  Loader2,
   Lock,
   Server,
   Settings,
@@ -43,6 +41,8 @@ import { useActiveRegion } from "@/modules/region/region.context"
 import { SUPPORT_ROUTES } from "@/modules/support-tickets/support-tickets.constants"
 import { useVPCs } from "@/modules/vpc/vpc.hooks"
 import { useScreen } from "@/services/api/screen"
+
+import { Button, type TagRow, tagRowsToRecord } from "@datadack/common-ui"
 
 import { VMS_ROUTES } from "../vms.constants"
 import { useCreateInstance } from "../vms.hooks"
@@ -716,7 +716,6 @@ function CostSummary({
             onClick={onDeploy}
             loading={isPending}
           >
-            {isPending ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
             Deploy Now
           </Button>
         </div>

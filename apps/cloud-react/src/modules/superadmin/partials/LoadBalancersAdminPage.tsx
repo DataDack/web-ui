@@ -1,16 +1,5 @@
 import { Fragment, useMemo, useState } from "react"
 
-import {
-  Badge,
-  Button,
-  cn,
-  CopyButton,
-  DataTable,
-  Input,
-  Switch,
-  TableCell,
-  TableRow,
-} from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQueryClient } from "@tanstack/react-query"
 import type { ColumnDef } from "@tanstack/react-table"
@@ -34,6 +23,18 @@ import { z } from "zod/v4"
 import { PageHeader, Section } from "@/components/console"
 import { TONE_CLASSES, TONE_DOT_CLASSES, type StatusTone } from "@/components/console/status-config"
 import { useScreen } from "@/services/api/screen"
+
+import {
+  Badge,
+  Button,
+  cn,
+  CopyButton,
+  DataTable,
+  Input,
+  Switch,
+  TableCell,
+  TableRow,
+} from "@datadack/common-ui"
 
 import { Field } from "../components/form-fields"
 import { SUPERADMIN_QUERY_KEYS } from "../superadmin.constants"
@@ -223,18 +224,12 @@ function FleetConfiguration({ settings }: Readonly<{ settings: LBSettings }>) {
               ? t("superAdmin.loadBalancers.fleet.unsaved")
               : t("superAdmin.loadBalancers.fleet.saved")}
           </span>
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={onReset}
-            disabled={!isDirty || isPending}
-            loading={isPending}
-          >
+          <Button type="button" variant="ghost" onClick={onReset} disabled={!isDirty || isPending}>
             <RotateCcw className="size-4" />
             {t("superAdmin.loadBalancers.actions.reset")}
           </Button>
           <Button type="submit" variant="gold" disabled={!isDirty || isPending} loading={isPending}>
-            {isPending ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
+            <Save className="size-4" />
             {t("superAdmin.loadBalancers.actions.save")}
           </Button>
         </div>

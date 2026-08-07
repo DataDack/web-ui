@@ -1,8 +1,7 @@
 import { useState } from "react"
 
-import { Button, cn, Input, Label } from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Building2, Check, Loader2, User } from "lucide-react"
+import { Building2, Check, User } from "lucide-react"
 import { Controller, useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { z } from "zod/v4"
@@ -12,6 +11,8 @@ import { PolicyConsent } from "@/modules/auth/components/PolicyConsent"
 import { CountrySelect } from "@/modules/countries/CountrySelect"
 import { OnboardingLayout } from "@/modules/onboarding/partials/OnboardingLayout"
 import { useScreen } from "@/services/api/screen"
+
+import { Button, cn, Input, Label } from "@datadack/common-ui"
 
 import { useCreateOrganization } from "../organizations.hooks"
 import type { ProvisionOrganizationPayload } from "../organizations.types"
@@ -272,7 +273,6 @@ export function NewOrgWizardPage() {
           className="btn-gold rounded-full font-bold"
           loading={create.isPending}
         >
-          {create.isPending && <Loader2 className="size-4 animate-spin" />}
           {t("org.newOrg.submit")}
         </Button>
       </form>

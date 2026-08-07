@@ -1,6 +1,16 @@
 import { useState } from "react"
 
 import {
+  CircleCheck,
+  CircleSlash,
+  Clock,
+  MoreHorizontal,
+  ShieldCheck,
+  ShieldAlert,
+} from "lucide-react"
+import { useTranslation } from "react-i18next"
+
+import {
   Badge,
   Button,
   Dialog,
@@ -18,15 +28,6 @@ import {
   Input,
   Label,
 } from "@datadack/common-ui"
-import {
-  CircleCheck,
-  CircleSlash,
-  Clock,
-  MoreHorizontal,
-  ShieldCheck,
-  ShieldAlert,
-} from "lucide-react"
-import { useTranslation } from "react-i18next"
 
 import { useSetKycStatus } from "../superadmin.hooks"
 
@@ -196,7 +197,7 @@ export function KycActions({ user }: Readonly<{ user: KycSubject }>) {
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={close} disabled={isPending} loading={isPending}>
+            <Button variant="outline" onClick={close} disabled={isPending}>
               {t("common.cancel")}
             </Button>
             <Button

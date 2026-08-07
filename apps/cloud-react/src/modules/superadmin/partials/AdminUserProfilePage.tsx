@@ -1,16 +1,5 @@
-import { useTranslation } from "react-i18next"
 import { useMemo } from "react"
 
-import {
-  Badge,
-  Button,
-  DataTable,
-  EmptyState,
-  Skeleton,
-  StatusBadge,
-  dateColumn,
-  textColumn,
-} from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import {
   ArrowLeft,
@@ -22,13 +11,29 @@ import {
   Star,
   UserRound,
 } from "lucide-react"
-import { useNavigate, useParams } from "react-router-dom"
+import { useTranslation } from "react-i18next"
+import { useNavigate, useParams, useSearchParams } from "react-router-dom"
 
 import { KeyValueGrid, PageHeader, Section, type KeyValueItem } from "@/components/console"
 import { useAuth } from "@/modules/auth/auth.context"
 import { useAllSupportTickets } from "@/modules/support-tickets/support-tickets.hooks"
 import type { SupportTicket } from "@/modules/support-tickets/support-tickets.types"
 import { useScreen } from "@/services/api/screen"
+
+import {
+  Badge,
+  Button,
+  DataTable,
+  EmptyState,
+  Skeleton,
+  StatusBadge,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  dateColumn,
+  textColumn,
+} from "@datadack/common-ui"
 
 import { ActiveBadge } from "../components/ActiveBadge"
 import { KycActions, KycBadge } from "../components/KycCell"
@@ -41,6 +46,19 @@ import type { AdminQuotaRequest, OverviewAccount, OverviewUser } from "../supera
 
 // The old /admin/organizations now redirects here.
 const TENANCY_PATH = "/admin/tenancy"
+
+// The two things this user has asked the platform for. They are the same kind of
+// record — a request an operator had to decide on — so they share one panel and
+// the operator picks which queue to look at instead of scrolling past both.
+const ACTIVITY_TABS = ["tickets", "quota"] as const
+type ActivityTab = (typeof ACTIVITY_TABS)[number]
+const DEFAULT_ACTIVITY_TAB: ActivityTab = "tickets"
+
+function parseActivityTab(value: string | null): ActivityTab {
+  return ACTIVITY_TABS.includes(value as ActivityTab)
+    ? (value as ActivityTab)
+    : DEFAULT_ACTIVITY_TAB
+}
 
 // "8 Jul 2026" — matches the admin tables' dateColumn format.
 function fmtDate(raw?: string | null): string {
@@ -88,6 +106,22 @@ export function AdminUserProfilePage() {
   const navigate = useNavigate()
   const { userId } = useParams<{ userId: string }>()
   const { user: operator } = useAuth()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const activityTab = parseActivityTab(searchParams.get("tab"))
+
+  // Replacing rather than pushing: flipping a tab is not a navigation, and
+  // stacking history entries would make Back feel broken.
+  const changeActivityTab = (value: ActivityTab) => {
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev)
+        if (value === DEFAULT_ACTIVITY_TAB) next.delete("tab")
+        else next.set("tab", value)
+        return next
+      },
+      { replace: true },
+    )
+  }
 
   const { data: overview, isLoading } = useAdminPlatformOverview()
   const { mutate: setSuperAdmin, isPending: isTogglingSuperAdmin } = useSetSuperAdmin()
@@ -233,7 +267,7 @@ export function AdminUserProfilePage() {
           icon={UserRound}
           title={t("superAdmin.adminUserProfilePage.userNotFound2")}
           description={t(
-            "superadmin.adminUserProfilePage.thisUserIsnTPartOfTheCurrentPlatformOverview",
+            "superAdmin.adminUserProfilePage.thisUserIsnTPartOfTheCurrentPlatformOverview",
           )}
         />
       </div>
@@ -385,60 +419,84 @@ export function AdminUserProfilePage() {
 
       <Section
         variant="panel"
-        title={t("superAdmin.adminUserProfilePage.supportTickets")}
-        description={t("superAdmin.adminUserProfilePage.everythingThisUserHasRaisedNewestFirst")}
+        title={t("superAdmin.adminUserProfilePage.activity")}
+        description={
+          activityTab === "tickets"
+            ? t("superAdmin.adminUserProfilePage.everythingThisUserHasRaisedNewestFirst")
+            : t("superAdmin.adminUserProfilePage.increasesThisUserHasAskedForAndWhatWasDecide")
+        }
       >
-        <DataTable<SupportTicket>
-          data={theirTickets}
-          columns={ticketColumns}
-          loading={tickets.isLoading}
-          error={tickets.isError ? "Their tickets could not be read." : undefined}
-          onRetry={() => void tickets.refetch()}
-          getRowId={(ticket) => ticket.id}
-          onRowClick={(ticket) => void navigate(`/admin/support/${ticket.id}`)}
-          defaultSorting={[{ id: "opened", desc: true }]}
-          empty={
-            <EmptyState
-              icon={LifeBuoy}
-              title={t("superAdmin.adminUserProfilePage.noTicketsFromThisUser")}
-              description={t(
-                "superadmin.adminUserProfilePage.theyHaveNotAskedSupportForAnythingYet",
-              )}
-            />
-          }
-          onRefresh={() => void tickets.refetch()}
-          refreshing={tickets.isFetching}
-        />
-      </Section>
+        <Tabs
+          value={activityTab}
+          onValueChange={(value) => {
+            changeActivityTab(value as ActivityTab)
+          }}
+          className="gap-4"
+        >
+          <TabsList>
+            {/* The count is omitted until a response lands, so a label never
+                flashes "(0)" and reads as an empty queue before anything has
+                been fetched. */}
+            <TabsTrigger value="tickets">
+              <LifeBuoy />
+              {t("superAdmin.adminUserProfilePage.supportTickets")}
+              {tickets.data ? ` (${String(theirTickets.length)})` : ""}
+            </TabsTrigger>
+            <TabsTrigger value="quota">
+              <Gauge />
+              {t("superAdmin.adminUserProfilePage.quotaRequests")}
+              {quota.data ? ` (${String(theirQuotaRequests.length)})` : ""}
+            </TabsTrigger>
+          </TabsList>
 
-      <Section
-        variant="panel"
-        title={t("superAdmin.adminUserProfilePage.quotaRequests")}
-        description={t(
-          "superadmin.adminUserProfilePage.increasesThisUserHasAskedForAndWhatWasDecide",
-        )}
-      >
-        <DataTable<AdminQuotaRequest>
-          data={theirQuotaRequests}
-          columns={quotaColumns}
-          loading={quota.isLoading}
-          error={quota.isError ? "Their quota requests could not be read." : undefined}
-          onRetry={() => void quota.refetch()}
-          getRowId={(request) => request.id}
-          onRowClick={() => void navigate("/admin/requests?tab=quota")}
-          defaultSorting={[{ id: "requested", desc: true }]}
-          empty={
-            <EmptyState
-              icon={Gauge}
-              title={t("superAdmin.adminUserProfilePage.noQuotaRequestsFromThisUser")}
-              description={t(
-                "superadmin.adminUserProfilePage.theyHaveNotAskedForAnIncreaseToAnyLimit",
-              )}
+          <TabsContent value="tickets">
+            <DataTable<SupportTicket>
+              data={theirTickets}
+              columns={ticketColumns}
+              loading={tickets.isLoading}
+              error={tickets.isError ? "Their tickets could not be read." : undefined}
+              onRetry={() => void tickets.refetch()}
+              getRowId={(ticket) => ticket.id}
+              onRowClick={(ticket) => void navigate(`/admin/support/${ticket.id}`)}
+              defaultSorting={[{ id: "opened", desc: true }]}
+              empty={
+                <EmptyState
+                  icon={LifeBuoy}
+                  title={t("superAdmin.adminUserProfilePage.noTicketsFromThisUser")}
+                  description={t(
+                    "superAdmin.adminUserProfilePage.theyHaveNotAskedSupportForAnythingYet",
+                  )}
+                />
+              }
+              onRefresh={() => void tickets.refetch()}
+              refreshing={tickets.isFetching}
             />
-          }
-          onRefresh={() => void quota.refetch()}
-          refreshing={quota.isFetching}
-        />
+          </TabsContent>
+
+          <TabsContent value="quota">
+            <DataTable<AdminQuotaRequest>
+              data={theirQuotaRequests}
+              columns={quotaColumns}
+              loading={quota.isLoading}
+              error={quota.isError ? "Their quota requests could not be read." : undefined}
+              onRetry={() => void quota.refetch()}
+              getRowId={(request) => request.id}
+              onRowClick={() => void navigate("/admin/requests?tab=quota")}
+              defaultSorting={[{ id: "requested", desc: true }]}
+              empty={
+                <EmptyState
+                  icon={Gauge}
+                  title={t("superAdmin.adminUserProfilePage.noQuotaRequestsFromThisUser")}
+                  description={t(
+                    "superAdmin.adminUserProfilePage.theyHaveNotAskedForAnIncreaseToAnyLimit",
+                  )}
+                />
+              }
+              onRefresh={() => void quota.refetch()}
+              refreshing={quota.isFetching}
+            />
+          </TabsContent>
+        </Tabs>
       </Section>
     </div>
   )

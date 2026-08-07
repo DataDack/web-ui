@@ -56,6 +56,37 @@ export interface PVENode {
   // returned by GET/list — only once at generate/regenerate time).
   agent_client_id?: string
   has_agent_secret?: boolean
+  // Inbound-webhook state. has_webhook_secret means the node CAN authenticate a
+  // delivery; webhook_registered_at means we actually pushed the notification
+  // target onto the node. They differ when a secret was planted by hand, so the
+  // UI reports them separately.
+  has_webhook_secret?: boolean
+  webhook_registered_at?: string | null
+  // VMID of the golden VyOS LXC template on THIS node, cloned for every VPC
+  // gateway placed here. Per node rather than per region because a VMID only
+  // identifies a guest inside one Proxmox cluster. 0 means the node carries no
+  // gateway image — gateway provisioning on it fails until one is set.
+  vyos_template_vmid?: number
+}
+
+// Result of POST /pve-nodes/:id/webhook. `secret` is present ONLY when this call
+// minted one (first registration, or an explicit rotate) — it is never
+// re-readable, so surface it immediately.
+export interface NodeWebhookRegistration {
+  target_name: string
+  matcher_name: string
+  callback_url: string
+  secret?: string
+  rotated: boolean
+  created: boolean
+  registered_at: string | null
+}
+
+// Body for the register action. Both fields optional: a plain press sends `{}`
+// and gets the server-resolved callback URL with the stored secret reused.
+export interface RegisterNodeWebhookRequest {
+  callback_url?: string
+  rotate?: boolean
 }
 
 // The per-node lbagent credential pair, returned ONLY by
@@ -78,6 +109,7 @@ export interface CreatePVENodeRequest {
   ram_total_mb: number
   storage_total_gb: number
   status?: PVENodeStatus
+  vyos_template_vmid?: number
 }
 
 export interface UpdatePVENodeRequest {
@@ -95,6 +127,9 @@ export interface UpdatePVENodeRequest {
   cpu_total?: number
   ram_total_mb?: number
   storage_total_gb?: number
+  // 0 is a meaningful value here ("this node has no gateway template"), so the
+  // API distinguishes it from the field being omitted, which keeps the stored id.
+  vyos_template_vmid?: number
 }
 
 /* ── Load balancer fleet settings ──────────────────────────────────────── */

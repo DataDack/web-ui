@@ -7,11 +7,12 @@
 //
 // Stateless on purpose so it can live next to the page component.
 
-import { Button, cn } from "@datadack/common-ui"
-import { Check, Circle, Loader2, Send } from "lucide-react"
+import { Check, Circle, Send } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { Section } from "@/components/console"
+
+import { Button, cn } from "@datadack/common-ui"
 
 import type { ReadinessRow, SectionId } from "./schema"
 import { SeverityChip } from "../../components/StateChips"
@@ -124,11 +125,7 @@ export function SummaryRail({
             disabled={isSubmitting || blocker !== null}
             loading={isSubmitting}
           >
-            {isSubmitting ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
-              <Send className="size-4" />
-            )}
+            <Send className="size-4" />
             {submitLabel}
           </Button>
         </div>

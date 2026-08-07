@@ -2819,7 +2819,11 @@
         "ramTotal": "RAM total (MB)",
         "storageTotal": "Storage total (GB)",
         "noAZs": "No availability zones yet — create one in Admin → Availability Zones first.",
-        "unchanged": "Unchanged"
+        "unchanged": "Unchanged",
+        "vyosTemplateVmid": "VyOS gateway template (VMID)",
+        "vyosTemplateVmidHint": "VMID of the VyOS LXC template on THIS node, cloned for every VPC gateway placed here. 0 means the node carries no gateway image.",
+        "vyosTemplateNone": "None",
+        "vyosTemplateUnsetWarning": "With no template set, provisioning a VPC gateway on this node fails. Build the VyOS LXC template on the node, then enter its VMID here."
       },
       "status": {
         "online": "Online",
@@ -2832,7 +2836,9 @@
         "connection": "Connection",
         "connectionDesc": "How the platform reaches the Proxmox API.",
         "capacity": "Capacity",
-        "capacityDesc": "Total resources this node provides for scheduling."
+        "capacityDesc": "Total resources this node provides for scheduling.",
+        "gateway": "VPC gateway",
+        "gatewayDesc": "The VyOS image on this node that tenant gateways are cloned from."
       },
       "agentCredentials": {
         "title": "Agent credentials",
@@ -2849,6 +2855,28 @@
         "regenerateHint": "Regenerating mints a new secret and invalidates the old one. Existing load-balancer containers on this node keep working until the control plane re-pushes the new secret (or they're reprovisioned).",
         "shownOnceTitle": "Copy the secret now — it won't be shown again",
         "shownOnceBody": "The secret is only displayed here, once. Store it securely. If you lose it, regenerate to mint a new pair."
+      },
+      "webhook": {
+        "title": "Node webhook",
+        "subtitle": "Make this node deliver its Proxmox notifications to the control plane. Registering creates the webhook target and the matcher that fires it, and stores the shared secret encrypted.",
+        "register": "Register webhook",
+        "reregister": "Re-register",
+        "rotate": "Rotate secret",
+        "secretState": "Shared secret",
+        "secretSet": "Set — deliveries can authenticate",
+        "secretUnset": "Not set — the node cannot deliver yet",
+        "registeredState": "Last registered",
+        "neverRegistered": "Never registered from the console",
+        "callbackUrl": "Callback URL override",
+        "callbackUrlPlaceholder": "Leave empty to use the server default",
+        "callbackUrlHint": "Only needed when the node reaches the backend on a different address than the console does. The node must be able to resolve and reach whatever is used here.",
+        "appliedUrl": "Applied callback URL",
+        "appliedObjects": "Applied on the node as target “{{target}}” with matcher “{{matcher}}”.",
+        "shownOnceTitle": "Copy this secret now",
+        "shownOnceBody": "It is stored encrypted and can never be read again. Losing it means rotating, not recovering.",
+        "secret": "Webhook secret",
+        "registerHint": "This node has never been registered. Pressing Register configures it end to end — no manual Proxmox setup needed.",
+        "reregisterHint": "Safe to press again: the target and matcher are updated in place and the stored secret is reused. Use Rotate only when the secret must change."
       }
     },
     "loadBalancers": {
@@ -3104,25 +3132,52 @@
         "monthly": "Monthly"
       },
       "stats": {
-        "total": "Usable addresses",
+        "total": "Total IPs",
         "available": "Available",
-        "inUse": "In use",
-        "pools": "Pools"
+        "inUse": "Allocated",
+        "pools": "Pools",
+        "availableShare": "{{percent}}% available",
+        "activeCount": "{{active}} active"
       },
       "pools": {
         "add": "Add IP Pool",
-        "empty": "No IP pools yet",
+        "createFirst": "Create first pool",
+        "empty": "No IP pools found",
         "emptySubtitle": "Register a CIDR block (e.g. 167.0.1.12/30) to start allocating static IPs.",
+        "noMatches": "No pools match this search",
+        "noMatchesSubtitle": "Clear the filters, or search by pool name, CIDR, gateway or a single IP address.",
+        "searchPlaceholder": "Search pool, CIDR, gateway or IP",
+        "zone": "Zone {{zone}}",
+        "exhausted": "Full",
+        "free": "Free",
+        "edit": "Edit pool",
+        "editTitle": "Edit IP pool",
+        "save": "Save changes",
+        "activeHint": "Inactive pools stay in inventory but no new addresses are allocated from them.",
+        "viewAddresses": "View addresses",
+        "addressesSubtitle": "Every usable address in {{cidr}}, and what is holding it.",
         "delete": "Delete pool",
         "confirmDeleteTitle": "Delete this IP pool?",
         "confirmDeleteBody": "The block {{cidr}} will be removed from inventory. This is only allowed when none of its addresses are in use.",
+        "forceDeleteTitle": "Force delete this IP pool?",
+        "forceDelete": "Force delete",
+        "forceDeleteBody": "The block {{cidr}} still has {{allocated}} allocated address(es). Deleting it anyway releases every one of them — including addresses attached to running VMs.",
+        "forceDeleteAllocations": "Allocations released",
+        "forceDeleteAttached": "Attached to a running resource",
+        "forceDeleteHint": "Affected VMs lose their public address and their billing for it is cancelled. Nothing reconfigures the guest, so it keeps the address on its interface until it is rebuilt.",
+        "status": {
+          "active": "Active",
+          "disabled": "Disabled",
+          "depleted": "Depleted"
+        },
+        "filters": {
+          "allRegions": "All regions",
+          "allStatuses": "All statuses"
+        },
         "columns": {
           "pool": "Pool / CIDR",
-          "region": "Region",
-          "az": "Availability zone",
-          "total": "Usable",
-          "used": "Used",
-          "available": "Available",
+          "location": "Location",
+          "usage": "Usage",
           "gateway": "Gateway",
           "status": "Status"
         }
@@ -3279,7 +3334,9 @@
       "bandwidthPriceUpdated": "Bandwidth price updated",
       "bandwidthPriceFailed": "Couldn’t save the bandwidth price",
       "lbSettingsUpdated": "Load balancer settings saved",
-      "lbSettingsFailed": "Couldn't save load balancer settings"
+      "lbSettingsFailed": "Couldn't save load balancer settings",
+      "nodeWebhookRegistered": "Node webhook registered",
+      "nodeWebhookFailed": "Could not register the node webhook"
     },
     "shell": {
       "console": "Console",
@@ -3492,6 +3549,7 @@
       "authUsersAreNotDeleted": "Auth users are not deleted."
     },
     "adminUserProfilePage": {
+      "activity": "Activity",
       "userNotFound": "User not found",
       "userNotFound2": "User not found",
       "thisUserIsnTPartOfTheCurrentPlatformOverview": "This user isn't part of the current platform overview.",
@@ -4165,8 +4223,108 @@
         "description": "This console can’t reach the serverless API for the active region, so function details can’t be shown here."
       },
       "code": {
-        "title": "Coming soon",
-        "message": "Inline code editing isn’t available yet. Deploy updates through the API or CLI in the meantime."
+        "title": "Code editing is unavailable",
+        "message": "This console can’t reach the code API for this function. Deploy updates through the API or CLI in the meantime.",
+        "toolbar": {
+          "save": "Save",
+          "saving": "Saving…",
+          "deploy": "Deploy",
+          "deploying": "Deploying…",
+          "discard": "Discard",
+          "draft": "Draft",
+          "draftSince": "edited {{relative}}",
+          "deployed": "Deployed",
+          "unsavedOne": "1 unsaved file",
+          "unsavedOther": "{{count}} unsaved files",
+          "readOnly": "Read only",
+          "close": "Close"
+        },
+        "tree": {
+          "heading": "Files",
+          "filter": "Search files",
+          "newFile": "New file",
+          "newFolder": "New folder",
+          "rename": "Rename",
+          "delete": "Delete",
+          "binary": "binary",
+          "empty": "This package has no files.",
+          "noMatches": "No files match that search."
+        },
+        "dialogs": {
+          "cancel": "Cancel",
+          "newFile": {
+            "title": "New file",
+            "label": "File path",
+            "placeholder": "lib/transform.js",
+            "confirm": "Create file"
+          },
+          "newFolder": {
+            "title": "New folder",
+            "label": "Folder path",
+            "hint": "A deployment package stores no empty folders, so this creates the folder with a .gitkeep placeholder inside it.",
+            "confirm": "Create folder"
+          },
+          "rename": {
+            "title": "Rename",
+            "label": "New path",
+            "confirm": "Rename"
+          },
+          "deleteFile": {
+            "title": "Delete {{path}}?",
+            "description": "The file is removed from the draft. Nothing changes for the deployed function until you deploy.",
+            "confirm": "Delete file"
+          },
+          "discard": {
+            "title": "Discard draft?",
+            "description": "Every staged edit is thrown away and the editor returns to the deployed package. This cannot be undone.",
+            "confirm": "Discard draft"
+          },
+          "stale": {
+            "title": "This function was deployed elsewhere",
+            "description": "The deployed package changed after this draft was opened. Reload to see what landed, or deploy anyway and replace it.",
+            "reload": "Reload",
+            "overwrite": "Deploy anyway"
+          }
+        },
+        "status": {
+          "position": "Ln {{line}}, Col {{column}}",
+          "encoding": "UTF-8",
+          "readOnly": "Read only"
+        },
+        "binaryFile": "This is a binary file and can’t be shown in the editor.",
+        "noFileOpen": "Select a file to start editing.",
+        "notEditable": {
+          "title": "This package can’t be edited here",
+          "ImagePackage": "The function runs from a container image. Update the image and redeploy to change its code.",
+          "NoCodeArtifact": "This function has no deployment package to open.",
+          "ArchiveMissing": "The deployment package is no longer in the artifact store.",
+          "PackageTooLarge": "The deployment package is larger than {{limit}}, the inline editing limit. Deploy updates through the API or CLI.",
+          "NotAZipArchive": "The deployment package isn’t a zip archive, so it can’t be opened as files.",
+          "unknown": "The deployment package can’t be opened in the editor."
+        },
+        "errors": {
+          "loadFailed": "Could not load the function’s code",
+          "openFailed": "Could not open the file",
+          "saveFailed": "Could not save the file",
+          "createFailed": "Could not create the file",
+          "renameFailed": "Could not rename the file",
+          "deleteFailed": "Could not delete the file",
+          "discardFailed": "Could not discard the draft",
+          "deployFailed": "Could not deploy the draft",
+          "fileTooLarge": "This file is larger than the {{limit}} per-file limit.",
+          "nothingToDeploy": "There are no staged edits to deploy.",
+          "duplicatePath": "A file already exists at that path.",
+          "invalidPath": "Enter a relative path using forward slashes."
+        },
+        "toasts": {
+          "saved": "Saved {{path}}",
+          "savedAll": "Saved {{count}} files",
+          "created": "Created {{path}}",
+          "renamed": "Renamed to {{path}}",
+          "deleted": "Deleted {{path}}",
+          "discarded": "Draft discarded",
+          "deployed": "Deployed version {{version}}"
+        }
       },
       "actions": {
         "delete": "Delete"

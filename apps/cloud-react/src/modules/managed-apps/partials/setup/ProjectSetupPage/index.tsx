@@ -1,5 +1,3 @@
-import { useTranslation } from "react-i18next"
-import { Button, EmptyState, Skeleton } from "@datadack/common-ui"
 import {
   AlertTriangle,
   ArrowLeft,
@@ -10,9 +8,12 @@ import {
   RefreshCw,
   Sparkles,
 } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { Link, useNavigate, useParams } from "react-router-dom"
 
 import { useScreen } from "@/services/api/screen"
+
+import { Button, EmptyState, Skeleton } from "@datadack/common-ui"
 
 import { SetupFlowGraphic } from "./SetupFlowGraphic"
 import { SetupWorkPanel } from "./SetupWorkPanel"
@@ -203,11 +204,7 @@ export function ProjectSetupPage() {
                     }}
                     loading={retry.isPending}
                   >
-                    {retry.isPending ? (
-                      <Loader2 className="size-3.5 animate-spin" />
-                    ) : (
-                      <RefreshCw className="size-3.5" />
-                    )}
+                    <RefreshCw className="size-3.5" />
                     Open it again
                   </Button>
                 )}
@@ -258,11 +255,7 @@ export function ProjectSetupPage() {
                   }}
                   loading={retry.isPending}
                 >
-                  {retry.isPending ? (
-                    <Loader2 className="size-3.5 animate-spin" />
-                  ) : (
-                    <RefreshCw className="size-3.5" />
-                  )}
+                  <RefreshCw className="size-3.5" />
                   Open an update pull request
                 </Button>
               </div>

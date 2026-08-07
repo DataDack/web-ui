@@ -40,8 +40,89 @@ export interface FunctionDetailLabels {
     description: string
   }
   code: {
+    /** The card shown when this console cannot reach the code API at all. */
     title: string
     message: string
+    toolbar: {
+      save: string
+      saving: string
+      deploy: string
+      deploying: string
+      discard: string
+      /** Badge on the toolbar while a draft exists. */
+      draft: string
+      /** e.g. "edited 2 minutes ago" — the app supplies the relative time. */
+      draftSince: (relative: string) => string
+      deployed: string
+      unsaved: (count: number) => string
+      readOnly: string
+      /** Accessible name for a file tab's close button. */
+      close: string
+    }
+    tree: {
+      heading: string
+      filter: string
+      newFile: string
+      newFolder: string
+      rename: string
+      delete: string
+      binary: string
+      empty: string
+      noMatches: string
+    }
+    dialogs: {
+      cancel: string
+      newFile: { title: string; label: string; placeholder: string; confirm: string }
+      newFolder: { title: string; label: string; hint: string; confirm: string }
+      rename: { title: string; label: string; confirm: string }
+      deleteFile: { title: (path: string) => string; description: string; confirm: string }
+      discard: { title: string; description: string; confirm: string }
+      /** Another deploy landed while this draft was open. */
+      stale: { title: string; description: string; reload: string; overwrite: string }
+    }
+    status: {
+      position: (line: number, column: number) => string
+      encoding: string
+      readOnly: string
+    }
+    /** Placeholder for a file the editor refuses to open as text. */
+    binaryFile: string
+    /** Placeholder when no file is open. */
+    noFileOpen: string
+    /** One entry per control-plane reason a package is not inline-editable. */
+    notEditable: {
+      title: string
+      ImagePackage: string
+      NoCodeArtifact: string
+      ArchiveMissing: string
+      /** The app formats the limit; the package passes it pre-formatted. */
+      PackageTooLarge: (limit: string) => string
+      NotAZipArchive: string
+      unknown: string
+    }
+    errors: {
+      loadFailed: string
+      openFailed: string
+      saveFailed: string
+      createFailed: string
+      renameFailed: string
+      deleteFailed: string
+      discardFailed: string
+      deployFailed: string
+      fileTooLarge: (limit: string) => string
+      nothingToDeploy: string
+      duplicatePath: string
+      invalidPath: string
+    }
+    toasts: {
+      saved: (path: string) => string
+      savedAll: (count: number) => string
+      created: (path: string) => string
+      renamed: (path: string) => string
+      deleted: (path: string) => string
+      discarded: string
+      deployed: (version: string) => string
+    }
   }
   actions: {
     delete: string
@@ -199,9 +280,108 @@ export const DEFAULT_FUNCTION_DETAIL_LABELS: FunctionDetailLabels = {
       "This console can’t reach the serverless API for the active region, so function details can’t be shown here.",
   },
   code: {
-    title: "Coming soon",
+    title: "Code editing is unavailable",
     message:
-      "Inline code editing isn’t available yet. Deploy updates through the API or CLI in the meantime.",
+      "This console can’t reach the code API for this function. Deploy updates through the API or CLI in the meantime.",
+    toolbar: {
+      save: "Save",
+      saving: "Saving…",
+      deploy: "Deploy",
+      deploying: "Deploying…",
+      discard: "Discard",
+      draft: "Draft",
+      draftSince: (relative) => `edited ${relative}`,
+      deployed: "Deployed",
+      unsaved: (count) => (count === 1 ? "1 unsaved file" : `${String(count)} unsaved files`),
+      readOnly: "Read only",
+      close: "Close",
+    },
+    tree: {
+      heading: "Files",
+      filter: "Search files",
+      newFile: "New file",
+      newFolder: "New folder",
+      rename: "Rename",
+      delete: "Delete",
+      binary: "binary",
+      empty: "This package has no files.",
+      noMatches: "No files match that search.",
+    },
+    dialogs: {
+      cancel: "Cancel",
+      newFile: {
+        title: "New file",
+        label: "File path",
+        placeholder: "lib/transform.js",
+        confirm: "Create file",
+      },
+      newFolder: {
+        title: "New folder",
+        label: "Folder path",
+        hint: "A deployment package stores no empty folders, so this creates the folder with a .gitkeep placeholder inside it.",
+        confirm: "Create folder",
+      },
+      rename: { title: "Rename", label: "New path", confirm: "Rename" },
+      deleteFile: {
+        title: (path) => `Delete ${path}?`,
+        description: "The file is removed from the draft. Nothing changes for the deployed function until you deploy.",
+        confirm: "Delete file",
+      },
+      discard: {
+        title: "Discard draft?",
+        description:
+          "Every staged edit is thrown away and the editor returns to the deployed package. This cannot be undone.",
+        confirm: "Discard draft",
+      },
+      stale: {
+        title: "This function was deployed elsewhere",
+        description:
+          "The deployed package changed after this draft was opened. Reload to see what landed, or deploy anyway and replace it.",
+        reload: "Reload",
+        overwrite: "Deploy anyway",
+      },
+    },
+    status: {
+      position: (line, column) => `Ln ${String(line)}, Col ${String(column)}`,
+      encoding: "UTF-8",
+      readOnly: "Read only",
+    },
+    binaryFile: "This is a binary file and can’t be shown in the editor.",
+    noFileOpen: "Select a file to start editing.",
+    notEditable: {
+      title: "This package can’t be edited here",
+      ImagePackage:
+        "The function runs from a container image. Update the image and redeploy to change its code.",
+      NoCodeArtifact: "This function has no deployment package to open.",
+      ArchiveMissing: "The deployment package is no longer in the artifact store.",
+      PackageTooLarge: (limit) =>
+        `The deployment package is larger than ${limit}, the inline editing limit. Deploy updates through the API or CLI.`,
+      NotAZipArchive: "The deployment package isn’t a zip archive, so it can’t be opened as files.",
+      unknown: "The deployment package can’t be opened in the editor.",
+    },
+    errors: {
+      loadFailed: "Could not load the function’s code",
+      openFailed: "Could not open the file",
+      saveFailed: "Could not save the file",
+      createFailed: "Could not create the file",
+      renameFailed: "Could not rename the file",
+      deleteFailed: "Could not delete the file",
+      discardFailed: "Could not discard the draft",
+      deployFailed: "Could not deploy the draft",
+      fileTooLarge: (limit) => `This file is larger than the ${limit} per-file limit.`,
+      nothingToDeploy: "There are no staged edits to deploy.",
+      duplicatePath: "A file already exists at that path.",
+      invalidPath: "Enter a relative path using forward slashes.",
+    },
+    toasts: {
+      saved: (path) => `Saved ${path}`,
+      savedAll: (count) => `Saved ${String(count)} files`,
+      created: (path) => `Created ${path}`,
+      renamed: (path) => `Renamed to ${path}`,
+      deleted: (path) => `Deleted ${path}`,
+      discarded: "Draft discarded",
+      deployed: (version) => `Deployed version ${version}`,
+    },
   },
   actions: { delete: "Delete" },
   deleteConfirm: {

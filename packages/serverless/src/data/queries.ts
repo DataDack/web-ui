@@ -7,6 +7,8 @@ import type {
   CreateFromSourceInput,
   CreatedFunction,
   FunctionAlias,
+  FunctionCode,
+  FunctionCodeFile,
   FunctionEntity,
   FunctionVersion,
   InvokeResult,
@@ -38,6 +40,10 @@ export const serverlessKeys = {
     [...serverlessKeys.functions(scope), name, "aliases"] as const,
   triggers: (name: string, scope?: string) =>
     [...serverlessKeys.functions(scope), name, "triggers"] as const,
+  code: (name: string, scope?: string) =>
+    [...serverlessKeys.functions(scope), name, "code"] as const,
+  codeFile: (name: string, path: string, scope?: string) =>
+    [...serverlessKeys.code(name, scope), "file", path] as const,
 }
 
 /**
@@ -218,6 +224,152 @@ export function useDeleteFunction(scope?: string) {
       return transport.deleteFunction(name)
     },
     onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: serverlessKeys.functions(scope) })
+    },
+  })
+}
+
+/* ── Inline code editing ────────────────────────────────────────────────────
+ *
+ * The control plane owns the draft: every mutating call returns the refreshed
+ * `FunctionCode`, so these hooks write it straight into the cache instead of
+ * invalidating and refetching. That matters more here than elsewhere — a
+ * refetch flash in an editor loses the reader's place in the tree.
+ */
+
+/** The package tree, and whether it can be edited inline at all. */
+export function useFunctionCode(name: string, scope?: string) {
+  const { transport } = useServerlessContext()
+  return useQuery<FunctionCode>({
+    queryKey: serverlessKeys.code(name, scope),
+    queryFn: () => {
+      if (!transport.getFunctionCode) {
+        throw new Error("This console's serverless transport has no getFunctionCode")
+      }
+      return transport.getFunctionCode(name)
+    },
+    enabled: name !== "" && !!transport.getFunctionCode,
+  })
+}
+
+/**
+ * One file's contents. Never goes stale on its own: the draft archive is the
+ * source of truth and every write below rewrites this cache explicitly, so a
+ * background refetch could only ever clobber the buffer someone is typing in.
+ */
+export function useFunctionCodeFile(name: string, path: string, scope?: string) {
+  const { transport } = useServerlessContext()
+  return useQuery<FunctionCodeFile>({
+    queryKey: serverlessKeys.codeFile(name, path, scope),
+    queryFn: () => {
+      if (!transport.getFunctionCodeFile) {
+        throw new Error("This console's serverless transport has no getFunctionCodeFile")
+      }
+      return transport.getFunctionCodeFile(name, path)
+    },
+    enabled: name !== "" && path !== "" && !!transport.getFunctionCodeFile,
+    staleTime: Infinity,
+    gcTime: 30 * 60 * 1000,
+  })
+}
+
+/** What a file write carries: the path and its full new contents. */
+export interface PutCodeFileInput {
+  path: string
+  content: string
+}
+
+/** Stage a file write into the draft archive. */
+export function usePutFunctionCodeFile(name: string, scope?: string) {
+  const { transport } = useServerlessContext()
+  const queryClient = useQueryClient()
+  return useMutation<FunctionCode, unknown, PutCodeFileInput>({
+    mutationFn: ({ path, content }) => {
+      if (!transport.putFunctionCodeFile) {
+        throw new Error("This console's serverless transport has no putFunctionCodeFile")
+      }
+      return transport.putFunctionCodeFile(name, path, content)
+    },
+    onSuccess: (code, { path, content }) => {
+      queryClient.setQueryData(serverlessKeys.code(name, scope), code)
+      // The saved bytes ARE the file now; seeding the cache keeps a later
+      // reopen of this tab from refetching what the browser just sent.
+      queryClient.setQueryData<FunctionCodeFile>(serverlessKeys.codeFile(name, path, scope), {
+        path,
+        content,
+        sizeBytes: new TextEncoder().encode(content).length,
+        binary: false,
+        draft: true,
+      })
+    },
+  })
+}
+
+/** Stage a file deletion. The mutation variable is the path. */
+export function useDeleteFunctionCodeFile(name: string, scope?: string) {
+  const { transport } = useServerlessContext()
+  const queryClient = useQueryClient()
+  return useMutation<FunctionCode, unknown, string>({
+    mutationFn: (path) => {
+      if (!transport.deleteFunctionCodeFile) {
+        throw new Error("This console's serverless transport has no deleteFunctionCodeFile")
+      }
+      return transport.deleteFunctionCodeFile(name, path)
+    },
+    onSuccess: (code, path) => {
+      queryClient.setQueryData(serverlessKeys.code(name, scope), code)
+      queryClient.removeQueries({ queryKey: serverlessKeys.codeFile(name, path, scope) })
+    },
+  })
+}
+
+/**
+ * Throw the draft away. Every cached file goes with it — they were read from
+ * the draft, and what replaces them is the deployed package.
+ */
+export function useDiscardCodeDraft(name: string, scope?: string) {
+  const { transport } = useServerlessContext()
+  const queryClient = useQueryClient()
+  // No third type argument: the mutation takes no variables, which is already
+  // this hook's default.
+  return useMutation<FunctionCode, unknown>({
+    mutationFn: () => {
+      if (!transport.discardFunctionCodeDraft) {
+        throw new Error("This console's serverless transport has no discardFunctionCodeDraft")
+      }
+      return transport.discardFunctionCodeDraft(name)
+    },
+    onSuccess: (code) => {
+      queryClient.setQueryData(serverlessKeys.code(name, scope), code)
+      queryClient.removeQueries({ queryKey: [...serverlessKeys.code(name, scope), "file"] })
+    },
+  })
+}
+
+/**
+ * Publish the draft as a new version.
+ *
+ * The mutation variable is the deployed digest the session opened against;
+ * pass undefined to deploy unconditionally. A stale digest comes back as the
+ * control plane's 409 CodeStale, which the editor renders as a choice rather
+ * than an error.
+ */
+export function useDeployCodeDraft(name: string, scope?: string) {
+  const { transport } = useServerlessContext()
+  const queryClient = useQueryClient()
+  return useMutation<FunctionEntity, unknown, string | undefined>({
+    mutationFn: (baseSha256) => {
+      if (!transport.deployFunctionCodeDraft) {
+        throw new Error("This console's serverless transport has no deployFunctionCodeDraft")
+      }
+      return transport.deployFunctionCodeDraft(name, baseSha256)
+    },
+    onSuccess: (fn) => {
+      queryClient.setQueryData(serverlessKeys.function(name, scope), fn)
+      // The draft is gone and the package digest moved, so the editor's view
+      // and every cached file must be re-read against the new deployment.
+      void queryClient.invalidateQueries({ queryKey: serverlessKeys.code(name, scope) })
+      void queryClient.invalidateQueries({ queryKey: serverlessKeys.versions(name, scope) })
       void queryClient.invalidateQueries({ queryKey: serverlessKeys.functions(scope) })
     },
   })

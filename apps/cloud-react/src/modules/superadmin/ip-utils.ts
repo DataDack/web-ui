@@ -34,6 +34,29 @@ function intToIp(n: number): string {
 }
 
 /**
+ * Does `ip` fall inside `cidr`? Lets the pool list answer "which pool owns
+ * 167.104.222.26?" without expanding every block — the search box accepts a bare
+ * address and this is what matches it to a row.
+ *
+ * Unlike describeCidr this has no size ceiling: it is pure arithmetic on the
+ * mask, so a /8 costs the same as a /30.
+ */
+export function cidrContains(cidr: string, ip: string): boolean {
+  const [base, prefixText] = cidr.split("/")
+  const prefix = Number(prefixText)
+  if (!Number.isInteger(prefix) || prefix < 0 || prefix > 32) return false
+
+  const networkBase = ipToInt(base)
+  const address = ipToInt(ip)
+  if (networkBase === null || address === null) return false
+
+  // A /0 masks nothing; the shift below would be a no-op rather than zero.
+  if (prefix === 0) return true
+  const mask = (0xffffffff << (32 - prefix)) >>> 0
+  return (networkBase & mask) >>> 0 === (address & mask) >>> 0
+}
+
+/**
  * Parse an IPv4 CIDR string. Returns the derived block info, or an error message
  * for a complete-but-invalid value, or `null` while the value is still being
  * typed (so the UI can show a neutral placeholder rather than an error).

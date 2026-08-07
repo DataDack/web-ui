@@ -1,5 +1,11 @@
 import { useState } from "react"
 
+import { CheckCircle2, FlaskConical, XCircle } from "lucide-react"
+import { useTranslation } from "react-i18next"
+
+import { PageHeader, Section } from "@/components/console"
+import { useScreen } from "@/services/api/screen"
+
 import {
   Button,
   Input,
@@ -10,11 +16,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@datadack/common-ui"
-import { CheckCircle2, FlaskConical, Loader2, XCircle } from "lucide-react"
-import { useTranslation } from "react-i18next"
-
-import { PageHeader, Section } from "@/components/console"
-import { useScreen } from "@/services/api/screen"
 
 import { useIAMUsers, usePermissions, useSimulate } from "../iam.hooks"
 
@@ -104,7 +105,6 @@ export function PolicySimulatorPage() {
             disabled={!userId || !action || simulate.isPending}
             loading={simulate.isPending}
           >
-            {simulate.isPending && <Loader2 className="size-4 animate-spin mr-1.5" />}
             {t("iam.simulator.run")}
           </Button>
         </div>

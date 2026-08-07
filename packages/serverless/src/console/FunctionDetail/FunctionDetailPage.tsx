@@ -17,10 +17,10 @@ import {
 
 import { useDeleteFunction, useFunction } from "../../data/queries"
 import { useServerlessContext } from "../../data/transport"
-import { CodeEditorPlaceholder } from "../CodeEditorPlaceholder"
 import { ConfirmDialog } from "../ConfirmDialog"
 import { fullHeightPane } from "../layoutConstants"
 import { AliasesTab } from "./AliasesTab"
+import { CodeTab } from "./code"
 import { ConfigurationTab, type ConfigurationSectionValue } from "./ConfigurationTab"
 import { errorMessage } from "./errorMessage"
 import { FunctionDetailHeader } from "./FunctionDetailHeader"
@@ -279,16 +279,7 @@ export function FunctionDetailPage({
               value={tab.value}
               className={fillsPage ? fillTabContent : undefined}
             >
-              {tab.value === "code" && (
-                <CodeEditorPlaceholder
-                  functionName={fn.name}
-                  runtime={fn.runtime}
-                  sizeBytes={fn.version?.codeArtifact?.sizeBytes}
-                  version={fn.version?.version}
-                  title={merged.code.title}
-                  message={merged.code.message}
-                />
-              )}
+              {tab.value === "code" && <CodeTab fn={fn} scope={scope} labels={merged} />}
               {tab.value === "test" && <TestTab fn={fn} scope={scope} labels={merged} />}
               {tab.value === "monitor" && <MonitorTab fn={fn} labels={merged} />}
               {tab.value === "configuration" && (

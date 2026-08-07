@@ -1,10 +1,10 @@
-import { useTranslation } from "react-i18next"
 import { useState } from "react"
 
-import { Button, Input } from "@datadack/common-ui"
-import { Loader2 } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
 import { FieldRow, Section } from "@/components/console"
+
+import { Button, Input } from "@datadack/common-ui"
 
 import { PROJECT_TYPE_META } from "../../../components"
 import { useUpdateProject } from "../../../managed-apps.hooks"
@@ -87,7 +87,6 @@ export function GeneralSection({ project }: Readonly<{ project: Project }>) {
           }}
           loading={update.isPending}
         >
-          {update.isPending && <Loader2 className="size-3.5 animate-spin" />}
           Save changes
         </Button>
       </div>

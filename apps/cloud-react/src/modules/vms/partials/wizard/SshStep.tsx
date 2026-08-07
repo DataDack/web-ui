@@ -1,5 +1,16 @@
 import { useState, useMemo, useRef } from "react"
 
+import { KeyRound, Sparkles, Upload, Loader2, Plus } from "lucide-react"
+import type { UseFormReturn } from "react-hook-form"
+import { useTranslation } from "react-i18next"
+import { toast } from "sonner"
+
+import { canGenerateKeyPair, generateEd25519KeyPair } from "@/lib/ssh-keygen"
+import { useNamingRule } from "@/modules/governance/governance.hooks"
+import { namingNameSchema } from "@/modules/governance/governance.validation"
+import { useSSHKeys, useCreateSSHKey } from "@/modules/ssh-keys/ssh-keys.hooks"
+import type { SSHKey } from "@/modules/ssh-keys/ssh-keys.types"
+
 import {
   Button,
   cn,
@@ -16,16 +27,6 @@ import {
   SheetTitle,
   Textarea,
 } from "@datadack/common-ui"
-import { KeyRound, Sparkles, Upload, Loader2, Plus } from "lucide-react"
-import type { UseFormReturn } from "react-hook-form"
-import { useTranslation } from "react-i18next"
-import { toast } from "sonner"
-
-import { canGenerateKeyPair, generateEd25519KeyPair } from "@/lib/ssh-keygen"
-import { useNamingRule } from "@/modules/governance/governance.hooks"
-import { namingNameSchema } from "@/modules/governance/governance.validation"
-import { useSSHKeys, useCreateSSHKey } from "@/modules/ssh-keys/ssh-keys.hooks"
-import type { SSHKey } from "@/modules/ssh-keys/ssh-keys.types"
 
 import { FieldLabel, FieldError } from "./wizard.shared"
 import { PUBLIC_KEY_PATTERN, type FormValues } from "./wizard.types"
@@ -378,11 +379,7 @@ function SshKeyCreate({ method, onCreated }: Readonly<SshKeyCreateProps>) {
               onClick={() => void submit()}
               loading={isPending}
             >
-              {isPending ? (
-                <Loader2 className="size-3.5 animate-spin" />
-              ) : (
-                <Plus className="size-3.5" />
-              )}
+              <Plus className="size-3.5" />
               Save & select
             </Button>
           </div>

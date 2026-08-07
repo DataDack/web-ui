@@ -39,6 +39,14 @@ const base = css`
     width: 16px;
     height: 16px;
   }
+
+  /* The spinner stands in for the button's icons rather than joining them, so
+     the button keeps its width and an icon-only button stays square. It also
+     means a caller that renders its own spinner alongside \`loading\` shows one
+     spinner, not two. */
+  &[data-loading] > svg {
+    display: none;
+  }
 `
 
 const variants = {
@@ -253,7 +261,9 @@ function Button({
       data-slot="button"
       data-variant={variant}
       data-size={size}
-      data-loading={loading || undefined}
+      // Not set under `asChild`: no spinner is rendered there, and the styling
+      // keyed off this attribute hides the icons the spinner would stand in for.
+      data-loading={(!asChild && loading) || undefined}
       // aria-busy tells a screen reader the press was received and is being
       // worked on, which the visual spinner alone does not convey.
       aria-busy={loading || undefined}

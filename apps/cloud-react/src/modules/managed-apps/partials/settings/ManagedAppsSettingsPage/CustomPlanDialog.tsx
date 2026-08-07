@@ -1,5 +1,11 @@
-import { useTranslation } from "react-i18next"
 import { useState } from "react"
+
+import { MessageSquare } from "lucide-react"
+import { useTranslation } from "react-i18next"
+import { useNavigate } from "react-router-dom"
+
+import { SUPPORT_ROUTES } from "@/modules/support-tickets/support-tickets.constants"
+import { useCreateSupportTicket } from "@/modules/support-tickets/support-tickets.hooks"
 
 import {
   Button,
@@ -13,11 +19,6 @@ import {
   Label,
   Textarea,
 } from "@datadack/common-ui"
-import { Loader2, MessageSquare } from "lucide-react"
-import { useNavigate } from "react-router-dom"
-
-import { SUPPORT_ROUTES } from "@/modules/support-tickets/support-tickets.constants"
-import { useCreateSupportTicket } from "@/modules/support-tickets/support-tickets.hooks"
 
 const NEEDS_MAX = 4000
 
@@ -155,13 +156,7 @@ export function CustomPlanDialog({
         </div>
 
         <DialogFooter>
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={close}
-            disabled={create.isPending}
-            loading={create.isPending}
-          >
+          <Button type="button" variant="ghost" onClick={close} disabled={create.isPending}>
             Cancel
           </Button>
           <Button
@@ -172,7 +167,6 @@ export function CustomPlanDialog({
             onClick={submit}
             loading={create.isPending}
           >
-            {create.isPending && <Loader2 className="size-3.5 animate-spin" />}
             Send request
           </Button>
         </DialogFooter>

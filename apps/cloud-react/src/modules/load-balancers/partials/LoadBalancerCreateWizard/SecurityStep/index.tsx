@@ -1,12 +1,12 @@
 import { useEffect, useMemo } from "react"
 
-import { Button, Checkbox, Label } from "@datadack/common-ui"
-import { Loader2 } from "lucide-react"
 import type { UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 
 import { Section } from "@/components/console"
 import { useAllSecurityGroups, useCreateDefaultSecurityGroup } from "@/modules/vpc/vpc.hooks"
+
+import { Button, Checkbox, Label } from "@datadack/common-ui"
 
 import type { FormValues } from "../schema"
 import { EffectiveFirewall } from "./EffectiveFirewall"
@@ -91,7 +91,6 @@ export function SecurityStep({ form }: Readonly<{ form: UseFormReturn<FormValues
               onClick={addDefaultGroup}
               loading={isCreatingDefault}
             >
-              {isCreatingDefault && <Loader2 className="size-3.5 animate-spin" />}
               {t("loadBalancers.wizard.createDefaultSg")}
             </Button>
           </div>

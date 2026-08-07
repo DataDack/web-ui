@@ -1,5 +1,15 @@
 import { useMemo, useState } from "react"
 
+import { zodResolver } from "@hookform/resolvers/zod"
+import { AlertTriangle, KeyRound, Loader2, Server, ShieldCheck, Webhook } from "lucide-react"
+import { Controller, useForm, type UseFormReturn } from "react-hook-form"
+import { useTranslation } from "react-i18next"
+import { useNavigate, useParams } from "react-router-dom"
+import { z } from "zod/v4"
+
+import { CreateWizard, PageHeader, Section, type WizardStep } from "@/components/console"
+import { useScreen } from "@/services/api/screen"
+
 import {
   Button,
   CopyButton,
@@ -10,26 +20,19 @@ import {
   SelectItem,
   SelectTrigger,
 } from "@datadack/common-ui"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { AlertTriangle, KeyRound, Loader2, Server, ShieldCheck } from "lucide-react"
-import { Controller, useForm, type UseFormReturn } from "react-hook-form"
-import { useTranslation } from "react-i18next"
-import { useNavigate, useParams } from "react-router-dom"
-import { z } from "zod/v4"
-
-import { CreateWizard, PageHeader, Section, type WizardStep } from "@/components/console"
-import { useScreen } from "@/services/api/screen"
 
 import {
   useAdminAvailabilityZones,
   useAdminPVENode,
   useGenerateAgentCredentials,
+  useRegisterNodeWebhook,
   useSavePVENode,
 } from "../superadmin.hooks"
 import type {
   AgentCredentials,
   AvailabilityZone,
   CreatePVENodeRequest,
+  NodeWebhookRegistration,
   PVENode,
   UpdatePVENodeRequest,
 } from "../superadmin.types"
@@ -49,6 +52,14 @@ const schema = z.object({
   cpu_total: z.coerce.number().int().min(0),
   ram_total_mb: z.coerce.number().int().min(0),
   storage_total_gb: z.coerce.number().int().min(0),
+  // Proxmox guest ids start at 100; 0 is the sentinel for "this node carries no
+  // gateway image", so the range is 0 or 100+ rather than a plain min.
+  vyos_template_vmid: z.coerce
+    .number()
+    .int()
+    .min(0)
+    .max(999999999)
+    .refine((v) => v === 0 || v >= 100, "Use 0 for none, or a VMID of 100 or above"),
 })
 
 type FormValues = z.infer<typeof schema>
@@ -65,6 +76,7 @@ const EMPTY: FormValues = {
   cpu_total: 0,
   ram_total_mb: 0,
   storage_total_gb: 0,
+  vyos_template_vmid: 0,
 }
 
 // Secrets are never read back from the API, so the review step can only report
@@ -90,6 +102,7 @@ function nodeToValues(node: PVENode): FormValues {
     cpu_total: node.cpu_total,
     ram_total_mb: node.ram_total_mb,
     storage_total_gb: node.storage_total_gb,
+    vyos_template_vmid: node.vyos_template_vmid ?? 0,
   }
 }
 
@@ -237,6 +250,23 @@ function PVENodeForm({
           },
         ],
       },
+      {
+        id: "gateway",
+        title: t("superAdmin.pveNodes.wizard.gateway"),
+        description: t("superAdmin.pveNodes.wizard.gatewayDesc"),
+        fields: ["vyos_template_vmid"],
+        render: (f) => <GatewayStep form={f} />,
+        reviewItems: (v) => [
+          {
+            label: t("superAdmin.pveNodes.fields.vyosTemplateVmid"),
+            value:
+              v.vyos_template_vmid > 0
+                ? String(v.vyos_template_vmid)
+                : t("superAdmin.pveNodes.fields.vyosTemplateNone"),
+            mono: v.vyos_template_vmid > 0,
+          },
+        ],
+      },
     ],
     [t, isEdit, azCode, azs],
   )
@@ -260,6 +290,10 @@ function PVENodeForm({
           cpu_total: values.cpu_total,
           ram_total_mb: values.ram_total_mb,
           storage_total_gb: values.storage_total_gb,
+          // Always sent, including 0 — unlike the secrets above, 0 is a real
+          // value ("no gateway template on this node") and must be able to
+          // clear a previously set id, so it is never omitted.
+          vyos_template_vmid: values.vyos_template_vmid,
         }
       : {
           availability_zone_id: values.availability_zone_id,
@@ -273,6 +307,7 @@ function PVENodeForm({
           cpu_total: values.cpu_total,
           ram_total_mb: values.ram_total_mb,
           storage_total_gb: values.storage_total_gb,
+          vyos_template_vmid: values.vyos_template_vmid,
         }
     save({ id, payload: body }, { onSuccess: back })
   }
@@ -304,8 +339,9 @@ function PVENodeForm({
       />
 
       {node && (
-        <div className="mx-auto mt-6 max-w-2xl">
+        <div className="mx-auto mt-6 max-w-2xl space-y-6">
           <AgentCredentialsSection node={node} />
+          <NodeWebhookSection node={node} />
         </div>
       )}
     </div>
@@ -353,11 +389,7 @@ function AgentCredentialsSection({ node }: Readonly<{ node: PVENode }>) {
           disabled={isPending}
           loading={isPending}
         >
-          {isPending ? (
-            <Loader2 className="size-4 animate-spin" />
-          ) : (
-            <KeyRound className="size-4" />
-          )}
+          <KeyRound className="size-4" />
           {hasSecret
             ? t("superAdmin.pveNodes.agentCredentials.regenerate")
             : t("superAdmin.pveNodes.agentCredentials.generate")}
@@ -422,6 +454,168 @@ function AgentCredentialsSection({ node }: Readonly<{ node: PVENode }>) {
             {hasSecret
               ? t("superAdmin.pveNodes.agentCredentials.regenerateHint")
               : t("superAdmin.pveNodes.agentCredentials.generateHint")}
+          </p>
+        )}
+      </div>
+    </Section>
+  )
+}
+
+/* ── Node webhook registration ─────────────────────────────────────────── */
+
+// One button that does the whole outbound-notification setup on the node: mint
+// (or reuse) its inbound-webhook secret, then push the Proxmox notification
+// target and the matcher that makes it fire. Idempotent, so it doubles as the
+// repair action — press it again after someone edits notifications.cfg by hand,
+// or to correct the callback URL.
+//
+// Register and Rotate are deliberately separate buttons. Re-registering a node
+// that is already delivering must not invalidate its secret, so the common
+// repair press reuses what is stored; rotating is the explicit, destructive
+// choice and is the only path that returns a plaintext secret.
+function NodeWebhookSection({ node }: Readonly<{ node: PVENode }>) {
+  const { t } = useTranslation()
+  const { mutate: register, isPending } = useRegisterNodeWebhook()
+  // The one-time secret from a rotate, held until navigation. Registrations that
+  // reuse the stored secret return nothing here, which is the point.
+  const [issued, setIssued] = useState<NodeWebhookRegistration | null>(null)
+  // Optional override for split-horizon setups where the node reaches us on a
+  // different address than the console does. Empty = server-resolved default.
+  const [callbackUrl, setCallbackUrl] = useState("")
+
+  const hasSecret = !!node.has_webhook_secret
+  const registeredAt = issued?.registered_at ?? node.webhook_registered_at
+
+  const run = (rotate: boolean) => {
+    register(
+      { id: node.id, rotate, callbackUrl: callbackUrl.trim() || undefined },
+      {
+        onSuccess: (res) => {
+          setIssued(res)
+        },
+      },
+    )
+  }
+
+  return (
+    <Section
+      variant="panel"
+      title={t("superAdmin.pveNodes.webhook.title")}
+      description={t("superAdmin.pveNodes.webhook.subtitle")}
+      actions={
+        <div className="flex items-center gap-2">
+          {hasSecret && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                run(true)
+              }}
+              disabled={isPending}
+            >
+              <KeyRound className="size-4" />
+              {t("superAdmin.pveNodes.webhook.rotate")}
+            </Button>
+          )}
+          <Button
+            type="button"
+            variant={registeredAt ? "outline" : "default"}
+            size="sm"
+            onClick={() => {
+              run(false)
+            }}
+            disabled={isPending}
+            loading={isPending}
+          >
+            <Webhook className="size-4" />
+            {registeredAt
+              ? t("superAdmin.pveNodes.webhook.reregister")
+              : t("superAdmin.pveNodes.webhook.register")}
+          </Button>
+        </div>
+      }
+    >
+      <div className="space-y-4">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-1.5">
+            <FieldLabel>{t("superAdmin.pveNodes.webhook.secretState")}</FieldLabel>
+            <div className="flex items-center gap-1.5 text-[13px]">
+              {hasSecret ? (
+                <>
+                  <ShieldCheck className="size-4 text-status-success" />
+                  <span className="text-foreground">
+                    {t("superAdmin.pveNodes.webhook.secretSet")}
+                  </span>
+                </>
+              ) : (
+                <span className="text-muted-foreground">
+                  {t("superAdmin.pveNodes.webhook.secretUnset")}
+                </span>
+              )}
+            </div>
+          </div>
+          <div className="space-y-1.5">
+            <FieldLabel>{t("superAdmin.pveNodes.webhook.registeredState")}</FieldLabel>
+            <p className="text-[13px] text-muted-foreground">
+              {registeredAt
+                ? new Date(registeredAt).toLocaleString()
+                : t("superAdmin.pveNodes.webhook.neverRegistered")}
+            </p>
+          </div>
+        </div>
+
+        <div className="space-y-1.5">
+          <FieldLabel>{t("superAdmin.pveNodes.webhook.callbackUrl")}</FieldLabel>
+          <Input
+            value={callbackUrl}
+            onChange={(e) => {
+              setCallbackUrl(e.target.value)
+            }}
+            placeholder={t("superAdmin.pveNodes.webhook.callbackUrlPlaceholder")}
+          />
+          <p className="text-[12px] text-muted-foreground">
+            {t("superAdmin.pveNodes.webhook.callbackUrlHint")}
+          </p>
+        </div>
+
+        {issued ? (
+          <div className="space-y-3 rounded-md border border-status-warning/40 bg-status-warning/10 p-4">
+            <div className="space-y-1.5">
+              <FieldLabel>{t("superAdmin.pveNodes.webhook.appliedUrl")}</FieldLabel>
+              <CopyButton value={issued.callback_url} className="text-[13px] break-all" />
+            </div>
+            <p className="text-[12px] text-muted-foreground">
+              {t("superAdmin.pveNodes.webhook.appliedObjects", {
+                target: issued.target_name,
+                matcher: issued.matcher_name,
+              })}
+            </p>
+            {issued.secret && (
+              <>
+                <div className="flex items-start gap-2">
+                  <AlertTriangle className="mt-0.5 size-4 shrink-0 text-status-warning" />
+                  <div className="space-y-0.5">
+                    <p className="text-[13px] font-semibold text-foreground">
+                      {t("superAdmin.pveNodes.webhook.shownOnceTitle")}
+                    </p>
+                    <p className="text-[12px] text-muted-foreground">
+                      {t("superAdmin.pveNodes.webhook.shownOnceBody")}
+                    </p>
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <FieldLabel>{t("superAdmin.pveNodes.webhook.secret")}</FieldLabel>
+                  <CopyButton value={issued.secret} className="text-[13px] break-all" />
+                </div>
+              </>
+            )}
+          </div>
+        ) : (
+          <p className="text-[12px] text-muted-foreground">
+            {registeredAt
+              ? t("superAdmin.pveNodes.webhook.reregisterHint")
+              : t("superAdmin.pveNodes.webhook.registerHint")}
           </p>
         )}
       </div>
@@ -591,6 +785,43 @@ function ConnectionStep({
           )}
         />
       </div>
+    </div>
+  )
+}
+
+// The VyOS golden template this node clones VPC gateways from. It lives on the
+// node — not on a regional setting — because a VMID only identifies a guest
+// inside one Proxmox cluster and the image sits on this node's storage, so two
+// nodes can carry the same image at different ids.
+function GatewayStep({ form }: Readonly<{ form: UseFormReturn<FormValues> }>) {
+  const { t } = useTranslation()
+  const vmid = form.watch("vyos_template_vmid")
+
+  return (
+    <div className="space-y-5">
+      <div className="space-y-1.5 max-w-xs">
+        <FieldLabel>{t("superAdmin.pveNodes.fields.vyosTemplateVmid")}</FieldLabel>
+        <Input
+          type="number"
+          min={0}
+          {...form.register("vyos_template_vmid")}
+          placeholder="9161"
+          className="font-mono"
+        />
+        <p className="text-[11px] text-muted-foreground">
+          {t("superAdmin.pveNodes.fields.vyosTemplateVmidHint")}
+        </p>
+        <FieldError message={form.formState.errors.vyos_template_vmid?.message} />
+      </div>
+
+      {Number(vmid) === 0 && (
+        <div className="flex items-start gap-2 rounded-md border border-status-warning/40 bg-status-warning/10 p-3">
+          <AlertTriangle className="mt-0.5 size-4 shrink-0 text-status-warning" />
+          <p className="text-[12px] text-muted-foreground">
+            {t("superAdmin.pveNodes.fields.vyosTemplateUnsetWarning")}
+          </p>
+        </div>
+      )}
     </div>
   )
 }

@@ -1,5 +1,11 @@
 import { useMemo } from "react"
 
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Wallet } from "lucide-react"
+import { Controller, useForm, useWatch } from "react-hook-form"
+import { useTranslation } from "react-i18next"
+import { z } from "zod/v4"
+
 import {
   Button,
   Dialog,
@@ -15,11 +21,6 @@ import {
   SelectValue,
   Textarea,
 } from "@datadack/common-ui"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Loader2, Wallet } from "lucide-react"
-import { Controller, useForm, useWatch } from "react-hook-form"
-import { useTranslation } from "react-i18next"
-import { z } from "zod/v4"
 
 import { Field } from "../components/form-fields"
 import { useAdjustAccountBalance } from "../superadmin.hooks"
@@ -206,12 +207,10 @@ export function AccountBalanceDialog({ account, refId, onOpenChange }: Readonly<
               onClick={() => {
                 onOpenChange(false)
               }}
-              loading={isPending}
             >
               {t("console.wizard.cancel")}
             </Button>
             <Button type="submit" disabled={isPending} className="gap-2" loading={isPending}>
-              {isPending && <Loader2 className="size-4 animate-spin" />}
               {t("superAdmin.organizations.balance.submit")}
             </Button>
           </div>

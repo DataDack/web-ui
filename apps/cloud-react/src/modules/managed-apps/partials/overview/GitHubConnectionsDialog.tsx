@@ -1,5 +1,9 @@
-import { useTranslation } from "react-i18next"
 import { useState } from "react"
+
+import { ExternalLink, Plus, Unlink } from "lucide-react"
+import { useTranslation } from "react-i18next"
+
+import { ConfirmDialog } from "@/components/console"
 
 import {
   Badge,
@@ -13,9 +17,6 @@ import {
   Label,
   Skeleton,
 } from "@datadack/common-ui"
-import { ExternalLink, Loader2, Plus, Unlink } from "lucide-react"
-
-import { ConfirmDialog } from "@/components/console"
 
 import { GitHubMark } from "../../components/GitHubMark"
 import { GITHUB_INSTALLATIONS_URL } from "../../managed-apps.constants"
@@ -133,11 +134,7 @@ export function GitHubConnectionsDialog({
               onClick={connect}
               loading={installUrl.isPending}
             >
-              {installUrl.isPending ? (
-                <Loader2 className="size-3.5 animate-spin" />
-              ) : (
-                <Plus className="size-3.5" />
-              )}
+              <Plus className="size-3.5" />
               Connect an account
             </Button>
             <Button size="sm" variant="ghost" asChild className="gap-1.5">

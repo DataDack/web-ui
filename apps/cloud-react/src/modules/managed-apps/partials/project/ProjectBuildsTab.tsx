@@ -1,12 +1,13 @@
-import { useTranslation } from "react-i18next"
 import { useMemo } from "react"
 
-import { Button, DataTable, EmptyState, type DataTableColumnMeta } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
-import { Hammer, Loader2, RotateCcw, X } from "lucide-react"
+import { Hammer, RotateCcw, X } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { useSearchParams } from "react-router-dom"
 
 import { Section } from "@/components/console"
+
+import { Button, DataTable, EmptyState, type DataTableColumnMeta } from "@datadack/common-ui"
 
 import { formatDuration, isTimeSet, shortSha, timeSince, triggerLabel } from "./build-format"
 import { BuildLogConsole } from "./BuildLogConsole"
@@ -143,6 +144,14 @@ export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
         meta: { interactive: true } satisfies DataTableColumnMeta,
         cell: ({ row }) => {
           const build = row.original
+          // One mutation object backs every row, so its bare `isPending` is
+          // true for the whole column. Match it against the row it was fired
+          // for, or all the buttons spin whenever any one of them is clicked.
+          const cancelling = cancelBuild.isPending && cancelBuild.variables === build.id
+          const rebuilding =
+            createBuild.isPending &&
+            typeof createBuild.variables === "object" &&
+            createBuild.variables.commitSha === build.commit_sha
           if (build.status === "queued") {
             return (
               <div className="text-right">
@@ -150,17 +159,13 @@ export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
                   size="sm"
                   variant="ghost"
                   className="h-7 gap-1 px-2 text-[12px] text-destructive hover:text-destructive"
-                  disabled={cancelBuild.isPending}
+                  disabled={cancelling}
                   onClick={() => {
                     cancelBuild.mutate(build.id)
                   }}
-                  loading={cancelBuild.isPending}
+                  loading={cancelling}
                 >
-                  {cancelBuild.isPending ? (
-                    <Loader2 className="size-3 animate-spin" />
-                  ) : (
-                    <X className="size-3" />
-                  )}
+                  <X className="size-3" />
                   Cancel
                 </Button>
               </div>
@@ -175,17 +180,13 @@ export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
                 size="sm"
                 variant="ghost"
                 className="h-7 gap-1 px-2 text-[12px] opacity-0 transition-opacity group-hover/row:opacity-100 focus-visible:opacity-100"
-                disabled={createBuild.isPending}
+                disabled={rebuilding}
                 onClick={() => {
                   createBuild.mutate({ projectId: project.id, commitSha: build.commit_sha })
                 }}
-                loading={createBuild.isPending}
+                loading={rebuilding}
               >
-                {createBuild.isPending ? (
-                  <Loader2 className="size-3 animate-spin" />
-                ) : (
-                  <RotateCcw className="size-3" />
-                )}
+                <RotateCcw className="size-3" />
                 Redeploy
               </Button>
             </div>

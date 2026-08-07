@@ -1,5 +1,9 @@
 import { useState } from "react"
 
+import { useTranslation } from "react-i18next"
+
+import { useInstances } from "@/modules/vms/vms.hooks"
+
 import {
   Button,
   Dialog,
@@ -15,10 +19,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@datadack/common-ui"
-import { Loader2 } from "lucide-react"
-import { useTranslation } from "react-i18next"
-
-import { useInstances } from "@/modules/vms/vms.hooks"
 
 import { useAttachDisk } from "../disks.hooks"
 import type { Disk } from "../disks.types"
@@ -84,7 +84,6 @@ export function AttachDiskDialog({ disk, onOpenChange }: Readonly<Props>) {
               close(false)
             }}
             disabled={isPending}
-            loading={isPending}
           >
             {t("console.confirm.cancel")}
           </Button>
@@ -105,7 +104,6 @@ export function AttachDiskDialog({ disk, onOpenChange }: Readonly<Props>) {
             }}
             loading={isPending}
           >
-            {isPending && <Loader2 className="size-3.5 animate-spin" />}
             {t("disks.actions.attach")}
           </Button>
         </DialogFooter>

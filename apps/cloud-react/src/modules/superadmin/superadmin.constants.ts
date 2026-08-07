@@ -13,6 +13,7 @@ export const SUPERADMIN_QUERY_KEYS = {
   vmPrices: ["superadmin", "vm-prices"] as const,
   staticIpPrices: ["superadmin", "static-ip-prices"] as const,
   ipPools: ["superadmin", "ip-pools"] as const,
+  ipPoolAddresses: ["superadmin", "ip-pool-addresses"] as const,
   staticIpAllocations: ["superadmin", "static-ip-allocations"] as const,
   bandwidthPrices: ["superadmin", "bandwidth-prices"] as const,
   storagePrices: ["superadmin", "storage-prices"] as const,

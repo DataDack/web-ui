@@ -99,6 +99,12 @@ export default defineConfig({
       // costs a re-optimize + full reload on the first render.
       "@emotion/react/jsx-runtime",
       "@emotion/react/jsx-dev-runtime",
+      // The serverless Code tab's editor. @monaco-editor/react is reached only
+      // through a lazy import inside @datadack/serverless, so without this it
+      // would be discovered mid-session and trigger exactly the re-optimize
+      // described above.
+      "@monaco-editor/react",
+      "monaco-editor",
       "@tanstack/react-table",
       "clsx",
       "cmdk",

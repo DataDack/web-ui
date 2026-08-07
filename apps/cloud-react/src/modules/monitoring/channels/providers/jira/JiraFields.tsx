@@ -1,5 +1,19 @@
 import { useEffect } from "react"
 
+import { CheckCircle2, Plus, Unlink } from "lucide-react"
+import { useWatch, type UseFormReturn } from "react-hook-form"
+import { useTranslation } from "react-i18next"
+import { SiJira } from "react-icons/si"
+
+import {
+  useDisconnectJira,
+  useJiraConnections,
+  useJiraIssueTypes,
+  useJiraLabels,
+  useJiraProjects,
+  useStartJiraOAuth,
+} from "@/modules/monitoring/monitoring.hooks"
+
 import {
   Badge,
   Button,
@@ -13,19 +27,6 @@ import {
   SelectValue,
   Skeleton,
 } from "@datadack/common-ui"
-import { CheckCircle2, Loader2, Plus, Unlink } from "lucide-react"
-import { useWatch, type UseFormReturn } from "react-hook-form"
-import { useTranslation } from "react-i18next"
-import { SiJira } from "react-icons/si"
-
-import {
-  useDisconnectJira,
-  useJiraConnections,
-  useJiraIssueTypes,
-  useJiraLabels,
-  useJiraProjects,
-  useStartJiraOAuth,
-} from "@/modules/monitoring/monitoring.hooks"
 
 import type { JiraConnection } from "../../../monitoring.types"
 import { splitJiraLabels, type ChannelFormValues } from "../../channels.form"
@@ -71,11 +72,7 @@ function JiraOAuthConnect({
           onClick={beginJiraOAuth}
           loading={startJiraOAuth.isPending}
         >
-          {startJiraOAuth.isPending ? (
-            <Loader2 className="size-4 animate-spin" />
-          ) : (
-            <SiJira className="size-4" />
-          )}
+          <SiJira className="size-4" />
           Continue with Jira
         </Button>
       </div>
@@ -122,11 +119,7 @@ function JiraOAuthConnect({
           onClick={beginJiraOAuth}
           loading={startJiraOAuth.isPending}
         >
-          {startJiraOAuth.isPending ? (
-            <Loader2 className="size-3.5 animate-spin" />
-          ) : (
-            <Plus className="size-3.5" />
-          )}
+          <Plus className="size-3.5" />
           Connect another site
         </Button>
         {activeCloudId && (
@@ -139,13 +132,9 @@ function JiraOAuthConnect({
             onClick={() => {
               disconnectJira.mutate(activeCloudId)
             }}
-            loading={disconnectJira.isPending}
+            loading={disconnectJira.isPending && disconnectJira.variables === activeCloudId}
           >
-            {disconnectJira.isPending && disconnectJira.variables === activeCloudId ? (
-              <Loader2 className="size-3.5 animate-spin" />
-            ) : (
-              <Unlink className="size-3.5" />
-            )}
+            <Unlink className="size-3.5" />
             Disconnect
           </Button>
         )}

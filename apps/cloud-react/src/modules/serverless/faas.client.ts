@@ -2,6 +2,8 @@ import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios"
 
 import type {
   FunctionAlias,
+  FunctionCode,
+  FunctionCodeFile,
   FunctionEntity,
   FunctionVersion,
   InvokeResult,
@@ -107,6 +109,12 @@ export type FaasDirectTransport = Required<
     | "invokeFunction"
     | "listTriggers"
     | "updateFunctionConfig"
+    | "getFunctionCode"
+    | "getFunctionCodeFile"
+    | "putFunctionCodeFile"
+    | "deleteFunctionCodeFile"
+    | "discardFunctionCodeDraft"
+    | "deployFunctionCodeDraft"
   >
 >
 
@@ -249,6 +257,70 @@ export function createFaasTransport(opts: FaasTransportOptions): FaasDirectTrans
           .get<{ triggers?: Trigger[] }>("/v1/triggers", { params: { functionName } })
           .then((res) => res.data.triggers ?? []),
         "Could not load the triggers",
+      ),
+
+    // Inline code editing. The file path travels as a `path` QUERY param, not
+    // a path segment — that is what the control plane's handlers read, and it
+    // is the only form that survives a nested path like lib/transform.js.
+    getFunctionCode: (name) =>
+      run(
+        faas
+          .get<FunctionCode>(`/v1/functions/${encodeURIComponent(name)}/code`)
+          .then((res) => res.data),
+        "Could not load the function’s code",
+      ),
+
+    getFunctionCodeFile: (name, path) =>
+      run(
+        faas
+          .get<FunctionCodeFile>(`/v1/functions/${encodeURIComponent(name)}/code/file`, {
+            params: { path },
+          })
+          .then((res) => res.data),
+        "Could not open the file",
+      ),
+
+    putFunctionCodeFile: (name, path, content) =>
+      run(
+        faas
+          .put<FunctionCode>(
+            `/v1/functions/${encodeURIComponent(name)}/code/file`,
+            { content },
+            { params: { path } },
+          )
+          .then((res) => res.data),
+        "Could not save the file",
+      ),
+
+    deleteFunctionCodeFile: (name, path) =>
+      run(
+        faas
+          .delete<FunctionCode>(`/v1/functions/${encodeURIComponent(name)}/code/file`, {
+            params: { path },
+          })
+          .then((res) => res.data),
+        "Could not delete the file",
+      ),
+
+    discardFunctionCodeDraft: (name) =>
+      run(
+        faas
+          .post<FunctionCode>(`/v1/functions/${encodeURIComponent(name)}/code/discard`)
+          .then((res) => res.data),
+        "Could not discard the draft",
+      ),
+
+    // An absent digest is a legitimate unconditional deploy; sending the key
+    // with an empty value would read as one too, so it is omitted entirely.
+    deployFunctionCodeDraft: (name, baseSha256) =>
+      run(
+        faas
+          .post<FunctionEntity>(
+            `/v1/functions/${encodeURIComponent(name)}/code/deploy`,
+            baseSha256 ? { baseSha256 } : {},
+          )
+          .then((res) => res.data),
+        "Could not deploy the draft",
       ),
 
     /**

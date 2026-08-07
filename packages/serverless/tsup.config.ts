@@ -34,6 +34,12 @@ const options: Options = {
     "react-icons",
     "react-icons/si",
     "@tanstack/react-table",
+    // The app owns the Monaco instance: it bundles `monaco-editor`, wires the
+    // web workers through its own bundler, and hands the result to
+    // `loader.config({ monaco })`. Bundling the React wrapper here would give
+    // this package a second loader that never receives that config and would
+    // fall back to fetching Monaco from a CDN.
+    "@monaco-editor/react",
     "radix-ui",
     "@emotion/css",
     "clsx",

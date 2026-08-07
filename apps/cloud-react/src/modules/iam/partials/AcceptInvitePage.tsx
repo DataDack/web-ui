@@ -1,6 +1,5 @@
 import { useState } from "react"
 
-import { Button, Input, Label } from "@datadack/common-ui"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { CheckCircle2, Loader2, MailX } from "lucide-react"
 import { useTranslation } from "react-i18next"
@@ -9,6 +8,8 @@ import { useNavigate, useSearchParams } from "react-router-dom"
 import { useAuth } from "@/modules/auth/auth.context"
 import type { AuthTokenResponse } from "@/modules/auth/auth.types"
 import { useScreen } from "@/services/api/screen"
+
+import { Button, Input, Label } from "@datadack/common-ui"
 
 import { iamService } from "../iam.service"
 
@@ -104,7 +105,6 @@ export function AcceptInvitePage() {
           }}
           loading={accept.isPending}
         >
-          {accept.isPending && <Loader2 className="size-4 animate-spin" />}
           {t("iam.invitations.accept.cta")}
         </Button>
       </>

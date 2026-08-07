@@ -100,6 +100,17 @@ export function useAdminIPPools() {
   })
 }
 
+// Every address in one pool, tagged with its allocation state. Only fetched
+// while the address drill-in is open — the expansion is server-side work that
+// nothing on the list view needs.
+export function useAdminIPPoolAddresses(poolId: string | undefined) {
+  return useQuery({
+    queryKey: [...SUPERADMIN_QUERY_KEYS.ipPoolAddresses, poolId ?? ""] as const,
+    queryFn: () => superAdminApi.poolAddresses(poolId ?? ""),
+    enabled: !!poolId,
+  })
+}
+
 // Platform-wide static IPs in use (reserved + associated). Optional name/IP query.
 export function useAdminStaticIPAllocations(q?: string) {
   return useQuery({
@@ -233,6 +244,35 @@ export function useGenerateAgentCredentials() {
       toast.success(t("superAdmin.toasts.agentCredentialsGenerated"))
     },
     onError: (e) => toast.error(extractError(e, t("superAdmin.toasts.agentCredentialsFailed"))),
+  })
+}
+
+/**
+ * Register (or re-register) a node's webhook notification target on the node
+ * itself. Idempotent, so this doubles as the repair action after someone edits
+ * notifications.cfg by hand. A rotate returns a one-time secret the caller
+ * surfaces from onSuccess; this hook only toasts and refreshes the node caches
+ * (has_webhook_secret / webhook_registered_at change).
+ */
+export function useRegisterNodeWebhook() {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (vars: { id: string; rotate?: boolean; callbackUrl?: string }) =>
+      superAdminApi.registerNodeWebhook(vars.id, {
+        rotate: vars.rotate,
+        // Omit rather than send "" — the server treats absent as "resolve the
+        // default", and an empty string would fail its url validation.
+        ...(vars.callbackUrl ? { callback_url: vars.callbackUrl } : {}),
+      }),
+    onSuccess: (_res, vars) => {
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.pveNodes })
+      void queryClient.invalidateQueries({
+        queryKey: [...SUPERADMIN_QUERY_KEYS.pveNodes, vars.id],
+      })
+      toast.success(t("superAdmin.toasts.nodeWebhookRegistered"))
+    },
+    onError: (e) => toast.error(extractError(e, t("superAdmin.toasts.nodeWebhookFailed"))),
   })
 }
 
@@ -438,9 +478,15 @@ export function useDeleteIPPool() {
   const queryClient = useQueryClient()
   const { t } = useTranslation()
   return useMutation({
-    mutationFn: (vars: { id: string }) => superAdminApi.deleteIPPool(vars.id),
-    onSuccess: () => {
+    mutationFn: (vars: { id: string; force?: boolean }) =>
+      superAdminApi.deleteIPPool(vars.id, vars.force),
+    onSuccess: (_result, vars) => {
       void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.ipPools })
+      // A forced delete also released live allocations, so the "IPs in use"
+      // list is stale too.
+      if (vars.force) {
+        void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.staticIpAllocations })
+      }
       toast.success(t("superAdmin.toasts.ipPoolDeleted"))
     },
     onError: (e) => toast.error(extractError(e, t("superAdmin.toasts.ipPoolFailed"))),

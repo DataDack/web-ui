@@ -20,6 +20,8 @@ import type {
   AdminUser,
   AdjustBalanceRequest,
   AgentCredentials,
+  NodeWebhookRegistration,
+  RegisterNodeWebhookRequest,
   ApproveQuotaRequestInput,
   AvailabilityZone,
   BandwidthPrice,
@@ -120,6 +122,11 @@ export const superAdminApi = {
   // the previous secret.
   generateAgentCredentials: (id: string) =>
     apiPost<AgentCredentials>(`${BASE}/pve-nodes/${id}/agent-credentials`, {}),
+  // One-button setup of this node's outbound notifications: mints/reuses the
+  // inbound-webhook secret and pushes the notification target + matcher onto the
+  // node over its API. Idempotent — safe to press again to repair config.
+  registerNodeWebhook: (id: string, payload: RegisterNodeWebhookRequest = {}) =>
+    apiPost<NodeWebhookRegistration>(`${BASE}/pve-nodes/${id}/webhook`, payload),
   // Live reachability of a node's LB manager (healthy / unreachable / no_manager).
   getManagerStatus: (id: string) => apiGet<ManagerStatus>(`${BASE}/pve-nodes/${id}/manager-status`),
 
@@ -176,7 +183,10 @@ export const superAdminApi = {
   createIPPool: (payload: CreateIPPoolRequest) => apiPost<IpPool>(IPPOOL_BASE, payload),
   updateIPPool: (id: string, payload: UpdateIPPoolRequest) =>
     apiPut<IpPool>(`${IPPOOL_BASE}/${id}`, payload),
-  deleteIPPool: (id: string) => apiDelete(`${IPPOOL_BASE}/${id}`),
+  // `force` releases every static IP drawn from the block — including addresses
+  // attached to running VMs — instead of refusing the delete.
+  deleteIPPool: (id: string, force = false) =>
+    apiDelete(`${IPPOOL_BASE}/${id}${force ? "?force=true" : ""}`),
   // Server-side CIDR expansion (used for an existing pool's address drill-in).
   poolAddresses: (id: string) => apiGet<PoolExpansion>(`${IPPOOL_BASE}/${id}/addresses`),
   // Platform-wide list of static IPs in use (reserved + associated).

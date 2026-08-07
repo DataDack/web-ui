@@ -1,11 +1,12 @@
-import { useTranslation } from "react-i18next"
 import { useState } from "react"
 
-import { Badge, Button } from "@datadack/common-ui"
-import { ExternalLink, GitPullRequest, Loader2 } from "lucide-react"
+import { ExternalLink, GitPullRequest } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
 import { FieldRow, KeyValueGrid, Section } from "@/components/console"
+
+import { Badge, Button } from "@datadack/common-ui"
 
 import { BranchSelect } from "../../../components"
 import { MANAGED_APPS_ROUTES } from "../../../managed-apps.constants"
@@ -121,7 +122,6 @@ export function GitSection({ project }: Readonly<{ project: Project }>) {
           }}
           loading={update.isPending}
         >
-          {update.isPending && <Loader2 className="size-3.5 animate-spin" />}
           Save branch
         </Button>
       </div>
