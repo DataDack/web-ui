@@ -132,6 +132,51 @@ export interface UpdatePVENodeRequest {
   vyos_template_vmid?: number
 }
 
+/* ── Platform policy switches ──────────────────────────────────────────── */
+// The two platform-wide gates on resource creation (cloud-be-go:
+// /platform/settings, super-admin only). One row for the whole fleet; the PATCH
+// carries only the switches being changed.
+
+export interface PlatformSettings {
+  // The stored overrides. null is a real, distinct state: "no override — follow
+  // whatever this deployment's environment says". A UI that renders null as
+  // false would report a gate as off while the backend is still enforcing it.
+  kyc_required: boolean | null
+  permissions_required: boolean | null
+
+  // What the backend is ACTUALLY enforcing right now. This is what a status
+  // badge must read from — it can disagree with the override above, because
+  // the KYC gate additionally requires a configured KYC service.
+  effective_kyc_required: boolean
+  effective_permissions_required: boolean
+
+  // What an unset override resolves to on this deployment.
+  default_kyc_required: boolean
+  default_permissions_required: boolean
+
+  // False when no KYC service is wired up (USER_KYC_SERVICE_URL and its client
+  // credentials). Requiring KYC is then impossible — nobody could verify — and
+  // the backend answers 409, so the control is rendered locked instead.
+  kyc_configured: boolean
+
+  updated_by?: string
+  updated_at: string
+
+  // Upper bound, in seconds, on how long other API replicas keep enforcing the
+  // previous values (the backend caches the row per process). Surfaced so the
+  // page can say a change is fleet-wide "within Ns" rather than instantly.
+  propagation_seconds: number
+}
+
+// Partial patch: an omitted switch is left untouched. `reason` is an optional
+// operator note the backend writes to its audit line — turning a gate off is
+// security-relevant, so the page collects one.
+export interface UpdatePlatformSettings {
+  kyc_required?: boolean
+  permissions_required?: boolean
+  reason?: string
+}
+
 /* ── Load balancer fleet settings ──────────────────────────────────────── */
 // DB-backed, platform-wide configuration for the load-balancer fleet
 // (cloud-be-go: /platform/infra/lb-settings, super-admin only). One row for the

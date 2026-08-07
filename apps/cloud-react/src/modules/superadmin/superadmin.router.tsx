@@ -166,6 +166,15 @@ export const superadminRoutes: RouteObject[] = [
         },
       },
       {
+        // The KYC and permission gates on resource creation, flipped at
+        // runtime instead of by redeploy.
+        path: "platform-settings",
+        lazy: async () => {
+          const { PlatformSettingsPage } = await import("./partials/PlatformSettingsPage")
+          return { Component: PlatformSettingsPage }
+        },
+      },
+      {
         // Support tickets and quota requests are one queue from the operator's
         // side: both are somebody waiting on a decision.
         path: "requests",

@@ -40,7 +40,9 @@ import type {
   IpPool,
   LBSettings,
   ManagerStatus,
+  PlatformSettings,
   UpdateLBSettings,
+  UpdatePlatformSettings,
   AccountResource,
   AccountSpend,
   OverviewSection,
@@ -71,6 +73,7 @@ import type {
 const BASE = "/platform/infra"
 const CATALOG_BASE = "/platform/catalog"
 const CACHE_BASE = "/platform/cache"
+const SETTINGS_BASE = "/platform/settings"
 // IP pools live in the VPC (regional) domain, not the platform catalog.
 const IPPOOL_BASE = "/vpc/ippools"
 
@@ -306,4 +309,11 @@ export const superAdminApi = {
   getCacheStats: () => apiGet<CacheStats>(`${CACHE_BASE}/stats`),
   clearCache: (payload: ClearCacheRequest) =>
     apiPost<ClearCacheResponse>(`${CACHE_BASE}/clear`, payload),
+
+  /* platform policy switches — the KYC and permission gates on resource
+	   creation. One row for the whole fleet; the PATCH is partial, so a page
+	   editing one switch never has to send (and risk clobbering) the other. */
+  getPlatformSettings: () => apiGet<PlatformSettings>(SETTINGS_BASE),
+  updatePlatformSettings: (payload: UpdatePlatformSettings) =>
+    apiPatch<PlatformSettings>(SETTINGS_BASE, payload),
 }

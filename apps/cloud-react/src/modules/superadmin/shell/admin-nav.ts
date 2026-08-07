@@ -16,6 +16,7 @@ import {
   Network,
   Scale,
   Server,
+  SlidersHorizontal,
 } from "lucide-react"
 
 export interface AdminNavItem {
@@ -116,7 +117,14 @@ export const ADMIN_NAV: AdminNavGroup[] = [
   },
   {
     labelKey: "superAdmin.nav.groups.platform",
-    items: [{ labelKey: "superAdmin.cache.title", icon: Flame, path: "/admin/cache" }],
+    items: [
+      {
+        labelKey: "superAdmin.platformSettings.title",
+        icon: SlidersHorizontal,
+        path: "/admin/platform-settings",
+      },
+      { labelKey: "superAdmin.cache.title", icon: Flame, path: "/admin/cache" },
+    ],
   },
 ]
 

@@ -3237,6 +3237,49 @@
         "currency": "Currency"
       }
     },
+    "platformSettings": {
+      "title": "Platform policy",
+      "subtitle": "The two gates every tenant passes before a resource exists. Changes apply at runtime — no redeploy.",
+      "loadFailed": "Couldn't load the platform policy",
+      "loadFailedSubtitle": "The platform service may be unreachable. Retry, or check the console API.",
+      "propagation": "Applies across every API replica within {{count}}s",
+      "lastChanged": "Last changed {{when}}",
+      "state": {
+        "enforced": "Enforced",
+        "notEnforced": "Not enforced",
+        "on": "On",
+        "off": "Off"
+      },
+      "source": {
+        "overridden": "Set here",
+        "inherited": "Inherited from deployment · {{value}}"
+      },
+      "kyc": {
+        "title": "Require KYC verification",
+        "description": "The account owner must complete identity verification before anyone on the account can create billable resources. Browsing and configuring stay open either way.",
+        "offConsequence": "Unverified accounts can create billable resources right now.",
+        "notConfigured": "No KYC service is configured on this deployment, so nobody could complete verification. Set USER_KYC_SERVICE_URL, USER_KYC_CLIENT_ID and USER_KYC_CLIENT_SECRET to enable this gate.",
+        "disableTitle": "Stop requiring KYC verification?",
+        "disableBody": "Unverified accounts will immediately be able to create billable resources — VMs, disks, load balancers, VPCs. Verification itself keeps running; only the gate on creation is lifted."
+      },
+      "permissions": {
+        "title": "Enforce IAM permissions",
+        "description": "A request must match an Allow in the caller's effective policy. With this off the engine still evaluates and logs every would-be denial, but lets the request through.",
+        "offConsequence": "Users can create resources without holding the permission.",
+        "disableTitle": "Stop enforcing IAM permissions?",
+        "disableBody": "Every authenticated user will be able to act beyond their granted permissions, including creating resources. Denials keep being written to the audit log, so you can see what would have been blocked."
+      },
+      "disable": {
+        "confirm": "Turn off",
+        "reasonLabel": "Reason (optional)",
+        "reasonPlaceholder": "e.g. KYC provider outage — re-enabling once verification is back",
+        "reasonHint": "Recorded with your user id on the platform audit line."
+      },
+      "toasts": {
+        "saved": "Platform policy updated",
+        "failed": "Couldn't update the platform policy"
+      }
+    },
     "cache": {
       "title": "Burst Cache",
       "subtitle": "Clear Redis by module, by key family, or by raw glob. Counts are live.",

@@ -31,6 +31,7 @@ import type {
   UpdateImageVersionRequest,
   UpdateIPPoolRequest,
   UpdateLBSettings,
+  UpdatePlatformSettings,
   UpdatePVENodeRequest,
   UpdateServiceRequest,
   UpdateServiceStateRequest,
@@ -273,6 +274,41 @@ export function useRegisterNodeWebhook() {
       toast.success(t("superAdmin.toasts.nodeWebhookRegistered"))
     },
     onError: (e) => toast.error(extractError(e, t("superAdmin.toasts.nodeWebhookFailed"))),
+  })
+}
+
+/* ── Platform policy switches ──────────────────────────────────────────── */
+
+// The two platform-wide gates on resource creation. staleTime is 0 because
+// another operator (or another replica's cache) can have moved them since the
+// page was opened, and this page's entire job is showing what is enforced right
+// now — a cached "off" next to a live "on" is the one thing it must not do.
+export function usePlatformSettings() {
+  return useQuery({
+    queryKey: SUPERADMIN_QUERY_KEYS.platformSettings,
+    queryFn: superAdminApi.getPlatformSettings,
+    staleTime: 0,
+  })
+}
+
+// Flips one or both switches. The server's response is authoritative — it
+// resolves overrides against the deployment defaults — so it is written
+// straight into the cache rather than the optimistic value the toggle sent.
+export function useUpdatePlatformSettings() {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (payload: UpdatePlatformSettings) => superAdminApi.updatePlatformSettings(payload),
+    onSuccess: (settings) => {
+      queryClient.setQueryData(SUPERADMIN_QUERY_KEYS.platformSettings, settings)
+      toast.success(t("superAdmin.platformSettings.toasts.saved"))
+    },
+    // The 409 for "cannot require KYC without a configured service" carries a
+    // precise message; surfacing the server's text beats a generic failure.
+    onError: (e) => toast.error(extractError(e, t("superAdmin.platformSettings.toasts.failed"))),
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.platformSettings })
+    },
   })
 }
 
