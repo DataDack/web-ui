@@ -3977,14 +3977,14 @@
           "timeout": "टाइमआउट",
           "ephemeral": "अस्थायी स्टोरेज",
           "packageType": "पैकेज प्रकार",
-          "namespace": "नेमस्पेस",
           "region": "क्षेत्र",
           "lastModified": "अंतिम संशोधन",
           "imageUri": "कंटेनर इमेज",
           "reserved": "आरक्षित समवर्तिता",
           "provisioned": "प्रोविज़न की गई समवर्तिता",
           "maxEventAge": "इवेंट की अधिकतम आयु",
-          "retryAttempts": "पुनर्प्रयास"
+          "retryAttempts": "पुनर्प्रयास",
+          "resourceGroupId": "रिसोर्स ग्रुप"
         },
         "envEmpty": "कोई सेट नहीं।",
         "envHint": "खाली पंक्तियाँ अनदेखी की जाती हैं।",

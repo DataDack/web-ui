@@ -27,7 +27,7 @@ export const queryKeys = {
  * data the operator had already been shown.
  */
 function scopeKey(): string {
-  return `${connection.accountId()}/${connection.namespace()}`
+  return `${connection.accountId()}/${connection.resourceGroup()}`
 }
 
 /**

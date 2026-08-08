@@ -27,7 +27,7 @@ export interface FunctionVersion {
 export interface FunctionEntity {
   id: string
   name: string
-  namespace?: string
+  resourceGroupId?: string
   region?: string
   packageType: string
   imageUri?: string

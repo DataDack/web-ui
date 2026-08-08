@@ -4465,14 +4465,14 @@
           "timeout": "Timeout",
           "ephemeral": "Ephemeral storage",
           "packageType": "Package type",
-          "namespace": "Namespace",
           "region": "Region",
           "lastModified": "Last modified",
           "imageUri": "Container image",
           "reserved": "Reserved concurrency",
           "provisioned": "Provisioned concurrency",
           "maxEventAge": "Maximum age of event",
-          "retryAttempts": "Retry attempts"
+          "retryAttempts": "Retry attempts",
+          "resourceGroupId": "Resource group"
         },
         "envEmpty": "None set.",
         "envHint": "Blank rows are ignored.",

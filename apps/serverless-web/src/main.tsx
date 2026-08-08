@@ -42,7 +42,7 @@ ReactDOM.createRoot(rootElement).render(
       <QueryClientProvider client={queryClient}>
         {/* The shared serverless components fetch through this transport. The
             hooks' default "default" scope is fine here: the ScopeSwitcher does
-            a wholesale invalidateQueries() on account/namespace switch, so the
+            a wholesale invalidateQueries() on account/resource-group switch, so the
             cache never serves one tenant's data to another. */}
         <ServerlessProvider transport={faasTransport}>
           {/* The control plane serves this SPA from /admin, so the router shares

@@ -108,7 +108,7 @@ export interface FunctionEntity {
   id?: string
   accountId?: string
   name: string
-  namespace?: string
+  resourceGroupId?: string
   region?: string
   functionArn?: string
   packageType: string

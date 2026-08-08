@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
+import { getStatusConfig } from "@/components/console/status-config"
 import { handleQuotaGateError } from "@/modules/governance/quota-gate"
 import { useActiveRegion } from "@/modules/region/region.context"
 import { extractError } from "@/services/api/client"
@@ -46,6 +47,13 @@ export function useServerlessFunction(name: string) {
     queryKey: SERVERLESS_QUERY_KEYS.fn(activeRegionCode, name),
     queryFn: () => serverlessApi.getFunction(activeRegionCode, name),
     enabled: name !== "",
+    // The list above polls; the detail page used not to, so a function opened
+    // while it was still Draft kept that badge for the life of the page. Draft
+    // ends when a worker reports a ready sandbox — seconds later, on a
+    // heartbeat, with nothing the console can react to. Poll only while the
+    // state is one the badge already renders as in-flight, and go quiet once
+    // it settles.
+    refetchInterval: (query) => (getStatusConfig(query.state.data?.state).busy ? 5_000 : false),
   })
 }
 

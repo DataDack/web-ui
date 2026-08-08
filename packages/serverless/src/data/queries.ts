@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
+import { getStatusConfig } from "@datadack/common-ui"
+
 import { useServerlessContext } from "./transport"
 import type {
   ArtifactRef,
@@ -110,6 +112,27 @@ export function useUploadArtifact() {
   })
 }
 
+/** How often a detail query re-asks while the resource is still settling. */
+const SETTLING_POLL_MS = 5_000
+
+/**
+ * Poll interval for a resource whose state may still change on its own.
+ *
+ * A function is created Draft and only becomes Active when a worker reports a
+ * ready sandbox — which happens on a heartbeat some seconds after the deploy
+ * call returns, with nothing for the console to react to. A one-shot fetch
+ * therefore left the badge reading "draft" on a function that was already
+ * serving invocations, and only a manual reload corrected it.
+ *
+ * The condition is the shared in-flight vocabulary rather than a literal
+ * "draft", so every transitional state the badge already renders with a
+ * spinner — pending, updating, creating — resolves itself too. Settled states
+ * return false and the query goes quiet.
+ */
+function settlingPollInterval(state?: string | null): number | false {
+  return getStatusConfig(state).busy ? SETTLING_POLL_MS : false
+}
+
 /**
  * One function, by name.
  *
@@ -128,6 +151,7 @@ export function useFunction(name: string, scope?: string) {
       return transport.getFunction(name)
     },
     enabled: name !== "" && !!transport.getFunction,
+    refetchInterval: (query) => settlingPollInterval(query.state.data?.state),
   })
 }
 

@@ -144,7 +144,7 @@ export function GeneralSection({ fn, scope, labels, className }: Readonly<Genera
       mono: true,
     },
     { label: fields.packageType, value: fn.packageType, mono: true },
-    { label: fields.namespace, value: fn.namespace, mono: true },
+    { label: fields.resourceGroupId, value: fn.resourceGroupId, mono: true },
     { label: fields.region, value: fn.region, mono: true },
     {
       label: fields.lastModified,

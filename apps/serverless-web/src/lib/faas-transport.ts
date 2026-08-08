@@ -30,6 +30,11 @@ import type {
 
 const fnPath = (name: string) => `/v1/functions/${encodeURIComponent(name)}`
 
+// Invoke is the one call that does not live under /v1: it is the Lambda-compatible
+// surface the router role serves. The old `/function/{name}` shorthand was removed
+// and answers 404.
+const invokePath = (name: string) => `/2015-03-31/functions/${encodeURIComponent(name)}/invocations`
+
 /** A response header as a non-empty string, or nothing worth reporting. */
 function header(headers: Record<string, unknown>, name: string): string | undefined {
   const value = headers[name]
@@ -112,7 +117,7 @@ export const faasTransport: ServerlessTransport = {
     // showing, not a transport failure, so nothing here throws on status —
     // and the body is kept as raw text rather than parsed out from under the
     // response panel.
-    const response = await http.post<unknown>(`/function/${encodeURIComponent(name)}`, payload, {
+    const response = await http.post<unknown>(invokePath(name), payload, {
       headers: { "Content-Type": "application/json" },
       responseType: "text",
       transformResponse: (raw: unknown) => raw,

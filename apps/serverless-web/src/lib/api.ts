@@ -26,7 +26,7 @@ const TOKEN_KEY = "faas.admin.token"
 // Removed on sight rather than read.
 const LEGACY_TOKEN_EXPIRY_KEY = "faas.admin.tokenExpiresAt"
 const ACCOUNT_KEY = "faas.admin.accountId"
-const NAMESPACE_KEY = "faas.admin.namespace"
+const RESOURCE_GROUP_KEY = "faas.admin.resourceGroupId"
 
 /**
  * Reads the `exp` claim out of a JWT, in milliseconds, or null when there is
@@ -132,8 +132,8 @@ export const connection = {
   accountId(): string {
     return localStorage.getItem(ACCOUNT_KEY) ?? ""
   },
-  namespace(): string {
-    return localStorage.getItem(NAMESPACE_KEY) ?? ""
+  resourceGroup(): string {
+    return localStorage.getItem(RESOURCE_GROUP_KEY) ?? ""
   },
   /**
    * Persists the connection settings, reporting whether the write survived.
@@ -176,9 +176,9 @@ export const connection = {
       // Nothing useful to do: the token is unreadable either way.
     }
   },
-  setScope(accountId: string, namespace: string) {
+  setScope(accountId: string, resourceGroupId: string) {
     localStorage.setItem(ACCOUNT_KEY, accountId)
-    localStorage.setItem(NAMESPACE_KEY, namespace)
+    localStorage.setItem(RESOURCE_GROUP_KEY, resourceGroupId)
   },
 }
 
@@ -302,8 +302,8 @@ function logParams(query: LogQuery): Record<string, string> {
   if (query.stream) params.stream = query.stream
   if (query.search) params.search = query.search
   if (query.limit) params.limit = String(query.limit)
-  const namespace = connection.namespace()
-  if (namespace) params.namespace = namespace
+  const resourceGroupId = connection.resourceGroup()
+  if (resourceGroupId) params.resourceGroupId = resourceGroupId
   return params
 }
 
@@ -420,8 +420,8 @@ export async function fetchMetricSeries(query: MetricQuery): Promise<MetricSerie
   const params: Record<string, string> = { since: query.since }
   if (query.function) params.function = query.function
   if (query.step) params.step = query.step
-  const namespace = connection.namespace()
-  if (namespace) params.namespace = namespace
+  const resourceGroupId = connection.resourceGroup()
+  if (resourceGroupId) params.resourceGroupId = resourceGroupId
 
   const { data } = await http.get<unknown>("/v1/metrics/series", { params })
   return metricSeriesSchema.parse(data)

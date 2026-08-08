@@ -190,7 +190,7 @@ export interface FunctionDetailLabels {
       timeout: string
       ephemeral: string
       packageType: string
-      namespace: string
+      resourceGroupId: string
       region: string
       lastModified: string
       imageUri: string
@@ -448,7 +448,7 @@ export const DEFAULT_FUNCTION_DETAIL_LABELS: FunctionDetailLabels = {
       timeout: "Timeout",
       ephemeral: "Ephemeral storage",
       packageType: "Package type",
-      namespace: "Namespace",
+      resourceGroupId: "Resource group",
       region: "Region",
       lastModified: "Last modified",
       imageUri: "Container image",

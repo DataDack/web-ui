@@ -32,7 +32,9 @@ export const functionVersionSchema = z.object({
 export const functionSchema = z.object({
   id: z.string(),
   accountId: z.string(),
-  namespace: z.string(),
+  // Grouping is resourceGroupId, owned by the central platform. Omitted by the
+  // API when unset, so optional rather than defaulted.
+  resourceGroupId: z.string().optional(),
   region: z.string(),
   name: z.string(),
   functionArn: z.string().optional(),
@@ -101,7 +103,6 @@ export const dashboardSchema = z.object({
 export const logLineSchema = z.object({
   sequence: z.number(),
   accountId: z.string().optional(),
-  namespace: z.string().optional(),
   functionName: z.string().optional(),
   functionVersion: z.string().optional(),
   requestId: z.string().optional(),
@@ -200,7 +201,7 @@ export const auditListSchema = z.object({
 
 export const tenantSchema = z.object({
   accountId: z.string(),
-  namespaces: z.array(z.string()).default([]),
+  resourceGroupIds: z.array(z.string()).default([]),
   functions: z.number().default(0),
   layers: z.number().default(0),
   triggers: z.number().default(0),
@@ -210,7 +211,8 @@ export const tenantListSchema = z.object({
   accounts: z.array(tenantSchema).default([]),
   current: z.string().default(""),
   // switchable is false when the credential is pinned to one account, in which
-  // case the console hides the switcher rather than offering a no-op control.
+  // case the console still renders the switcher but disables it, so the pinning
+  // is visible rather than indistinguishable from a missing control.
   switchable: z.boolean().default(false),
 })
 

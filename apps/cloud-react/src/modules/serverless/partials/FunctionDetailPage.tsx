@@ -293,7 +293,7 @@ export function ServerlessFunctionDetailPage() {
           timeout: t("serverless.detail.configuration.fields.timeout"),
           ephemeral: t("serverless.detail.configuration.fields.ephemeral"),
           packageType: t("serverless.detail.configuration.fields.packageType"),
-          namespace: t("serverless.detail.configuration.fields.namespace"),
+          resourceGroupId: t("serverless.detail.configuration.fields.resourceGroupId"),
           region: t("serverless.detail.configuration.fields.region"),
           lastModified: t("serverless.detail.configuration.fields.lastModified"),
           imageUri: t("serverless.detail.configuration.fields.imageUri"),

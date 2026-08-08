@@ -16,7 +16,7 @@ const queryClient = new QueryClient()
 
 const fn: FunctionEntity = {
   name: "test",
-  namespace: "default",
+  resourceGroupId: "",
   region: "ap-south-1",
   functionArn: "arn:aws:lambda:ap-south-1:000000000001:function:test",
   packageType: "zip",

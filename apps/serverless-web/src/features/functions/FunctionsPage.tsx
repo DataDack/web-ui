@@ -87,9 +87,9 @@ export function FunctionsPage() {
           cellMono(row.original.timeout ? `${String(row.original.timeout)}s` : undefined),
       },
       {
-        accessorKey: "namespace",
-        header: "Namespace",
-        cell: ({ row }) => cellText(row.original.namespace),
+        accessorKey: "resourceGroupId",
+        header: "Resource group",
+        cell: ({ row }) => cellText(row.original.resourceGroupId),
       },
     ],
     [],
@@ -102,7 +102,7 @@ export function FunctionsPage() {
       <PageHeader
         title="Functions"
         icon={Zap}
-        description="Every function deployed to this control plane, across all namespaces."
+        description="Every function deployed to this control plane, across all resource groups."
         actions={
           <Button
             variant="gold"
