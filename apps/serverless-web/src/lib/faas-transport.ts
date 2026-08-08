@@ -1,4 +1,4 @@
-import { http } from "@/lib/api"
+import { connection, http } from "@/lib/api"
 
 import type {
   CreatedFunction,
@@ -63,8 +63,17 @@ export const faasTransport: ServerlessTransport = {
   },
 
   async createFromSource(input: CreateFromSourceInput): Promise<CreatedFunction> {
+    // File the function under whichever group the scope switcher has selected,
+    // so creating while scoped to a group does not immediately hide the result
+    // from the filter that was active when you created it. The key is omitted
+    // when there is no selection — the control plane rejects unknown fields but
+    // reads an absent one as "no group".
+    const resourceGroupId = input.resourceGroupId ?? connection.resourceGroup()
     // 201 with the bare deployed Function; only the name is needed to route on.
-    const { data } = await http.post<{ name?: string }>("/v1/functions/source", input)
+    const { data } = await http.post<{ name?: string }>("/v1/functions/source", {
+      ...input,
+      ...(resourceGroupId ? { resourceGroupId } : {}),
+    })
     return { name: data.name ?? input.name }
   },
 

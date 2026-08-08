@@ -76,14 +76,19 @@ function mount() {
             <TooltipProvider delayDuration={300}>
               <AuthProvider>
                 <RegionProvider>
-                  {/* Below QueryClientProvider + RegionProvider: the serverless
-                      transport resolves its FaaS base per active region. */}
-                  <ServerlessDataProvider>
-                    <ResourceGroupProvider>
+                  {/* ResourceGroupProvider sits ABOVE the serverless transport:
+                      creating a function stamps the active resource group onto
+                      it, so the transport has to be able to read the group.
+                      Nothing here depends on the transport in return — the
+                      provider only reads localStorage. */}
+                  <ResourceGroupProvider>
+                    {/* Below QueryClientProvider + RegionProvider: the serverless
+                        transport resolves its FaaS base per active region. */}
+                    <ServerlessDataProvider>
                       <App />
                       <Toaster richColors position="top-right" />
-                    </ResourceGroupProvider>
-                  </ServerlessDataProvider>
+                    </ServerlessDataProvider>
+                  </ResourceGroupProvider>
                 </RegionProvider>
               </AuthProvider>
             </TooltipProvider>

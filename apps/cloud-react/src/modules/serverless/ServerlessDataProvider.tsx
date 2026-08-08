@@ -11,6 +11,7 @@ import { useQuery } from "@tanstack/react-query"
 import { env } from "@/env"
 import { useAuth } from "@/modules/auth/auth.context"
 import { useActiveRegion } from "@/modules/region/region.context"
+import { useResourceGroup } from "@/modules/resource-groups/resource-group.context"
 import { apiGet } from "@/services/api/client"
 
 import { createFaasTransport } from "./faas.client"
@@ -49,6 +50,7 @@ function trimBase(url: string): string {
 export function ServerlessDataProvider({ children }: Readonly<{ children: ReactNode }>) {
   const { isAuthenticated } = useAuth()
   const { activeRegionCode } = useActiveRegion()
+  const { activeRG } = useResourceGroup()
 
   const envBase = env.VITE_SERVERLESS_API_BASE
 
@@ -81,8 +83,16 @@ export function ServerlessDataProvider({ children }: Readonly<{ children: ReactN
   // One transport per resolved base (and region, which the gateway-side create
   // closes over). A region switch swaps the closure, not the axios instance.
   const transport = useMemo<ServerlessTransport>(() => {
+    // Stamp the console's active resource group onto the new function. Nothing
+    // else ever sets it, so without this every function is created ungrouped and
+    // the group filters have nothing to offer. An explicit id on the input wins,
+    // and no active group sends no field rather than an empty one.
     const createFromSource = async (input: CreateFromSourceInput): Promise<CreatedFunction> => {
-      await serverlessApi.createFunctionFromSource(activeRegionCode, input)
+      const resourceGroupId = input.resourceGroupId ?? activeRG?.id
+      await serverlessApi.createFunctionFromSource(activeRegionCode, {
+        ...input,
+        ...(resourceGroupId ? { resourceGroupId } : {}),
+      })
       return { name: input.name }
     }
     if (baseUrl === null) {
@@ -98,7 +108,7 @@ export function ServerlessDataProvider({ children }: Readonly<{ children: ReactN
       ...createFaasTransport({ getBaseUrl: () => baseUrl }),
       createFromSource,
     }
-  }, [baseUrl, activeRegionCode])
+  }, [baseUrl, activeRegionCode, activeRG?.id])
 
   return <ServerlessProvider transport={transport}>{children}</ServerlessProvider>
 }

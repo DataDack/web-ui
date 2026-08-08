@@ -113,6 +113,8 @@ export interface CreateFunctionRequest {
 /** Blank-starter deploy: inline files the control plane zips server-side. */
 export interface CreateFunctionFromSourceRequest {
   name: string
+  /** Central resource group to file the function under; omitted when none. */
+  resourceGroupId?: string
   runtime: string
   handler: string
   architecture?: string

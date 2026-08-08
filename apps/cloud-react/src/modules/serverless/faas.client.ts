@@ -29,6 +29,12 @@ import { authToken, refreshAccessToken } from "@/services/api/auth-token"
 // package components — which only ever read `e.message` — show the server's
 // words instead of axios's generic "Request failed with status code N".
 
+// Invoke is the only call that does not live under /v1: it is the
+// Lambda-compatible surface the router role serves. The old `/function/{name}`
+// shorthand was removed upstream and answers 404 — which `validateStatus: () =>
+// true` would have rendered as the function's own response rather than an error.
+const invokePath = (name: string) => `/2015-03-31/functions/${encodeURIComponent(name)}/invocations`
+
 /** Native FaaS error body (common/core/httpx). */
 interface FaasErrorBody {
   error?: { code?: string; message?: string; status?: number }
@@ -334,7 +340,7 @@ export function createFaasTransport(opts: FaasTransportOptions): FaasDirectTrans
       let started = performance.now()
       const invoke = () =>
         run(
-          faas.post<string>(`/function/${encodeURIComponent(name)}`, payload, {
+          faas.post<string>(invokePath(name), payload, {
             headers: { "Content-Type": "application/json" },
             responseType: "text",
             transformResponse: [(data: string) => data],

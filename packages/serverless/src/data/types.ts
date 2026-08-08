@@ -50,6 +50,13 @@ export interface ArtifactRef {
  */
 export interface CreateFromSourceInput {
   name: string
+  /**
+   * The central resource group the function belongs to. Optional because not
+   * every host has one to give: the admin console can run against a control
+   * plane with no central at all. Omitted rather than sent empty — the control
+   * plane rejects unknown fields but treats an absent one as "no group".
+   */
+  resourceGroupId?: string
   runtime: string
   handler: string
   architecture?: string
