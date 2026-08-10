@@ -20,6 +20,16 @@ export interface RuntimeInfo {
   bundledRic: boolean
   deprecatedForCreate: boolean
   deprecatedForUpdate: boolean
+  /**
+   * The platform cannot honour this runtime yet — no worker installs an
+   * interpreter matching the version its name claims. Existing functions on it
+   * keep working; it is only withheld from the create picker.
+   *
+   * `GET /v1/runtimes` already omits these, so this is false on every runtime a
+   * console normally receives. It is only ever true under `?includeHidden=true`,
+   * which is for operator views.
+   */
+  hidden: boolean
   successorRuntime?: string
 }
 

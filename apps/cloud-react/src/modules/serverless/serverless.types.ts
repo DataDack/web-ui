@@ -82,6 +82,12 @@ export interface RuntimeInfo {
   bundledRic: boolean
   deprecatedForCreate: boolean
   deprecatedForUpdate: boolean
+  /**
+   * Withheld from the create picker because no worker can run it under the
+   * version its name claims. Already filtered out by GET /v1/runtimes, so it is
+   * only true under ?includeHidden=true.
+   */
+  hidden: boolean
   successorRuntime?: string
 }
 

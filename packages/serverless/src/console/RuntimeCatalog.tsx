@@ -22,6 +22,13 @@ export interface RuntimeCatalogProps {
   onSelect: (runtime: RuntimeInfo) => void
   /** Hide runtimes that can no longer back a new function. */
   hideDeprecated?: boolean
+  /**
+   * Render runtimes the platform has withheld — ones no worker can run under
+   * the version their name claims. Off by default and only meaningful against
+   * `?includeHidden=true`, since the plain catalog response omits them. For an
+   * operator view auditing the catalog, not for a create form.
+   */
+  showHidden?: boolean
   className?: string
 }
 
@@ -211,12 +218,16 @@ export function RuntimeCatalog({
   value,
   onSelect,
   hideDeprecated = false,
+  showHidden = false,
   className,
 }: Readonly<RuntimeCatalogProps>) {
   const [filter, setFilter] = useState("")
 
   const groups = useMemo(() => {
     const visible = runtimes.filter((runtime) => {
+      // Belt and braces: the control plane already drops these, but the picker
+      // is the surface that makes the promise, so it does not rely on that.
+      if (!showHidden && runtime.hidden) return false
       if (hideDeprecated && runtime.deprecatedForCreate) return false
       if (!filter) return true
       const haystack = `${runtime.name} ${runtime.family} ${runtime.osRelease}`.toLowerCase()

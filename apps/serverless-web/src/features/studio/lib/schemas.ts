@@ -15,6 +15,13 @@ export const runtimeSchema = z.object({
   bundledRic: z.boolean(),
   deprecatedForCreate: z.boolean(),
   deprecatedForUpdate: z.boolean(),
+  /**
+   * Withheld from the picker: no worker runs this under the version its name
+   * claims. Defaulted rather than required so a console pointed at a control
+   * plane that predates the flag parses its catalog instead of rejecting it —
+   * such a control plane has nothing hidden to report.
+   */
+  hidden: z.boolean().default(false),
   successorRuntime: z.string().optional(),
 })
 
