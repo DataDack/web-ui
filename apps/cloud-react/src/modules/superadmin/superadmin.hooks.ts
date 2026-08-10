@@ -121,6 +121,27 @@ export function useAdminStaticIPAllocations(q?: string) {
   })
 }
 
+/**
+ * Reclaim one static IP from whatever holds it.
+ *
+ * The address returns to its pool, so the pool stock figures and the address
+ * drill-in are both stale on success — not just this list.
+ */
+export function useReleaseStaticIPAllocation() {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (id: string) => superAdminApi.releaseStaticIPAllocation(id),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.staticIpAllocations })
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.ipPools })
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.ipPoolAddresses })
+      toast.success(t("superAdmin.toasts.staticIpReleased"))
+    },
+    onError: (e) => toast.error(extractError(e, t("superAdmin.toasts.staticIpReleaseFailed"))),
+  })
+}
+
 export function useAdminBandwidthPrices() {
   return useQuery({
     queryKey: SUPERADMIN_QUERY_KEYS.bandwidthPrices,

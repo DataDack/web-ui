@@ -206,6 +206,10 @@ export const superAdminApi = {
     const search = q ? `&q=${encodeURIComponent(q)}` : ""
     return apiGet<StaticIPAllocation[]>(`${IPPOOL_BASE}/allocations?page=1&limit=500${search}`)
   },
+  // Reclaim one address from whatever holds it and return it to its pool. The
+  // single-address form of a forced pool delete, and just as destructive: the
+  // resource is not reconfigured, it simply stops owning the address.
+  releaseStaticIPAllocation: (id: string) => apiDelete(`${IPPOOL_BASE}/allocations/${id}`),
 
   /* storage prices */
   listStoragePrices: () => apiGet<StoragePrice[]>(`${BASE}/storage-prices/all`),

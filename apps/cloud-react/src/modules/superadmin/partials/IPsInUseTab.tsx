@@ -1,6 +1,13 @@
 import { useEffect, useMemo, useState } from "react"
 
+import type { ColumnDef } from "@tanstack/react-table"
+import { Globe, RefreshCw, Search, Unlink } from "lucide-react"
+import { useTranslation } from "react-i18next"
+
+import { ConfirmDialog } from "@/components/console"
+
 import {
+  actionsColumn,
   Button,
   cn,
   copyColumn,
@@ -10,11 +17,8 @@ import {
   Input,
   textColumn,
 } from "@datadack/common-ui"
-import type { ColumnDef } from "@tanstack/react-table"
-import { Globe, RefreshCw, Search } from "lucide-react"
-import { useTranslation } from "react-i18next"
 
-import { useAdminStaticIPAllocations } from "../superadmin.hooks"
+import { useAdminStaticIPAllocations, useReleaseStaticIPAllocation } from "../superadmin.hooks"
 import type { StaticIPAllocation } from "../superadmin.types"
 
 /** First non-empty value, else "" (so textColumn renders a muted dash). */
@@ -25,10 +29,36 @@ function firstNonEmpty(...values: (string | undefined)[]): string {
   return ""
 }
 
-function vmLabel(a: StaticIPAllocation): string {
-  if (a.instance_name) return a.instance_name
-  if (a.instance_id) return a.instance_id.slice(0, 8)
-  return ""
+/**
+ * What the address is attached to.
+ *
+ * An address can be held by a VM, a load balancer, a NAT gateway, a VPC gateway
+ * router or a managed app — so the kind is rendered alongside the name rather
+ * than assumed. A held address whose owner row is gone is a leak, and is called
+ * out as such: that is the row an operator is here to release.
+ */
+function AttachedTo({ allocation }: Readonly<{ allocation: StaticIPAllocation }>) {
+  const { t } = useTranslation()
+  const kind = allocation.association_type
+  if (!kind) return <span className="text-muted-foreground">—</span>
+
+  const name = firstNonEmpty(allocation.owner_name, allocation.owner_id?.slice(0, 8))
+  return (
+    <div className="flex flex-col gap-0.5">
+      <span className={cn("truncate", allocation.owner_deleted && "text-muted-foreground")}>
+        {name || "—"}
+      </span>
+      <span className="text-[11px] text-muted-foreground">
+        {t(`superAdmin.staticIps.inUse.ownerKinds.${kind}`, { defaultValue: kind })}
+        {allocation.owner_deleted && (
+          <span className="text-destructive">
+            {" · "}
+            {t("superAdmin.staticIps.inUse.ownerGone")}
+          </span>
+        )}
+      </span>
+    </div>
+  )
 }
 
 function accountLabel(a: StaticIPAllocation): string {
@@ -65,6 +95,7 @@ export function IPsInUseTab() {
   const { t } = useTranslation()
   const [query, setQuery] = useState("")
   const [debounced, setDebounced] = useState("")
+  const [releasing, setReleasing] = useState<StaticIPAllocation | null>(null)
 
   useEffect(() => {
     const id = setTimeout(() => {
@@ -96,11 +127,12 @@ export function IPsInUseTab() {
         enableSorting: false,
         cell: ({ row }) => <AllocationStatus status={row.original.status} />,
       },
-      textColumn<StaticIPAllocation>({
-        id: "vm",
-        header: t("superAdmin.staticIps.inUse.columns.vm"),
-        accessor: (a) => vmLabel(a),
-      }),
+      {
+        id: "attached",
+        header: () => t("superAdmin.staticIps.inUse.columns.vm"),
+        enableSorting: false,
+        cell: ({ row }) => <AttachedTo allocation={row.original} />,
+      },
       textColumn<StaticIPAllocation>({
         id: "account",
         header: t("superAdmin.staticIps.inUse.columns.account"),
@@ -131,6 +163,19 @@ export function IPsInUseTab() {
         header: t("superAdmin.staticIps.inUse.columns.assigned"),
         accessor: (a) => a.created_at,
         responsive: "md",
+      }),
+      actionsColumn<StaticIPAllocation>({
+        ariaLabel: t("console.table.actions"),
+        actions: (a) => [
+          {
+            label: t("superAdmin.staticIps.inUse.release"),
+            icon: Unlink,
+            destructive: true,
+            onAction: () => {
+              setReleasing(a)
+            },
+          },
+        ],
       }),
     ],
     [t],
@@ -180,6 +225,70 @@ export function IPsInUseTab() {
         refreshLabel={t("console.table.refresh")}
         refreshing={isFetching}
       />
+
+      <ReleaseIPDialog
+        allocation={releasing}
+        onOpenChange={(open) => {
+          if (!open) setReleasing(null)
+        }}
+      />
     </div>
+  )
+}
+
+/**
+ * Reclaiming one address.
+ *
+ * Nothing reconfigures the resource that holds it — it keeps the address on its
+ * interface until it is rebuilt, while the platform hands the address to the
+ * next tenant who asks. That is a duplicate-address collision on the public
+ * bridge, so the operator types the address to confirm, exactly as force-delete
+ * makes them type the pool name.
+ */
+function ReleaseIPDialog({
+  allocation,
+  onOpenChange,
+}: Readonly<{
+  allocation: StaticIPAllocation | null
+  onOpenChange: (open: boolean) => void
+}>) {
+  const { t } = useTranslation()
+  const { mutate: release, isPending } = useReleaseStaticIPAllocation()
+
+  const close = () => {
+    onOpenChange(false)
+  }
+
+  return (
+    <ConfirmDialog
+      open={!!allocation}
+      onOpenChange={(open) => {
+        if (!open) close()
+      }}
+      title={t("superAdmin.staticIps.inUse.releaseTitle")}
+      description={
+        <div className="space-y-2">
+          <p>
+            {t("superAdmin.staticIps.inUse.releaseBody", {
+              ip: allocation?.ip_address ?? "",
+              owner: firstNonEmpty(
+                allocation?.owner_name,
+                allocation?.name,
+                allocation?.ip_address,
+              ),
+            })}
+          </p>
+          <p className="text-[12px] text-muted-foreground">
+            {t("superAdmin.staticIps.inUse.releaseHint")}
+          </p>
+        </div>
+      }
+      confirmText={allocation?.ip_address}
+      confirmLabel={t("superAdmin.staticIps.inUse.release")}
+      loading={isPending}
+      onConfirm={() => {
+        if (allocation) release(allocation.id, { onSuccess: close })
+      }}
+    />
   )
 }

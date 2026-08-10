@@ -749,7 +749,13 @@ export interface ReserveAddressesRequest {
 }
 
 // A static IP currently in use somewhere on the platform (reserved or attached),
-// enriched with the pool it came from and the tenant/VM that holds it.
+// enriched with the pool it came from and the tenant/resource that holds it.
+//
+// owner_* describes whatever the address is attached to, keyed by
+// association_type: a VM ("instance"), a load balancer, a NAT gateway, a VPC
+// gateway router ("vpc_gateway") or a managed app. owner_deleted means the
+// owning row is gone while the address is still held — a leak, and the case the
+// release action exists for.
 export interface StaticIPAllocation {
   id: string
   ip_address: string
@@ -759,8 +765,9 @@ export interface StaticIPAllocation {
   pool_id?: string
   pool_cidr?: string
   association_type?: string
-  instance_id?: string
-  instance_name?: string
+  owner_id?: string
+  owner_name?: string
+  owner_deleted?: boolean
   account_id: string
   account_number?: string
   account_name?: string

@@ -2981,7 +2981,9 @@
       "ipAddressesBlocked_one": "पता अनुपयोगी चिह्नित किया गया",
       "ipAddressesBlocked_other": "{{count}} पते अनुपयोगी चिह्नित किए गए",
       "ipAddressUnblocked": "पता पूल में वापस आ गया",
-      "ipAddressBlockFailed": "पता बदला नहीं जा सका"
+      "ipAddressBlockFailed": "पता बदला नहीं जा सका",
+      "staticIpReleased": "स्टैटिक IP छोड़ दिया गया",
+      "staticIpReleaseFailed": "स्टैटिक IP नहीं छोड़ा जा सका"
     },
     "shell": {
       "console": "Console",
@@ -3412,6 +3414,18 @@
           "user": "स्वामी",
           "pool": "पूल",
           "assigned": "आवंटित"
+        },
+        "release": "IP छोड़ें",
+        "releaseTitle": "यह स्टैटिक IP छोड़ें?",
+        "releaseBody": "{{ip}} अपने पूल में लौट जाएगा और किसी भी टेनेंट को दिया जा सकता है। {{owner}} इसे खो देगा।",
+        "releaseHint": "संसाधन को पुनः कॉन्फ़िगर नहीं किया जाता, इसलिए रीबिल्ड होने तक पता उसके इंटरफ़ेस पर बना रहता है — जबकि प्लेटफ़ॉर्म वही पता किसी और को दे सकता है। पते की बिलिंग रद्द कर दी जाती है।",
+        "ownerGone": "संसाधन हटा दिया गया",
+        "ownerKinds": {
+          "instance": "वर्चुअल मशीन",
+          "load_balancer": "लोड बैलेंसर",
+          "nat_gateway": "NAT गेटवे",
+          "vpc_gateway": "VPC गेटवे राउटर",
+          "managed_app": "मैनेज्ड ऐप"
         }
       },
       "addresses": {

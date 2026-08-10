@@ -3219,6 +3219,18 @@
           "user": "Owner",
           "pool": "Pool",
           "assigned": "Allocated"
+        },
+        "release": "Release IP",
+        "releaseTitle": "Release this static IP?",
+        "releaseBody": "{{ip}} is returned to its pool and can be handed to any tenant. {{owner}} loses it.",
+        "releaseHint": "Nothing reconfigures the resource, so it keeps the address on its interface until it is rebuilt — while the platform may hand the same address to someone else. Billing for the address is cancelled.",
+        "ownerGone": "resource deleted",
+        "ownerKinds": {
+          "instance": "Virtual machine",
+          "load_balancer": "Load balancer",
+          "nat_gateway": "NAT gateway",
+          "vpc_gateway": "VPC gateway router",
+          "managed_app": "Managed app"
         }
       },
       "addresses": {
@@ -3416,7 +3428,9 @@
       "ipAddressesBlocked_one": "Address marked not usable",
       "ipAddressesBlocked_other": "{{count}} addresses marked not usable",
       "ipAddressUnblocked": "Address returned to the pool",
-      "ipAddressBlockFailed": "Couldn’t change the address"
+      "ipAddressBlockFailed": "Couldn’t change the address",
+      "staticIpReleased": "Static IP released",
+      "staticIpReleaseFailed": "Couldn’t release the static IP"
     },
     "shell": {
       "console": "Console",
