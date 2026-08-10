@@ -66,6 +66,9 @@ export function OnboardingPage() {
   const [step, setStep] = useState(0)
   const [choice, setChoice] = useState<Choice | "">("")
   const [orgName, setOrgName] = useState("")
+  // Why the last /complete was refused, kept on the review step until the next
+  // attempt so the reason outlives the toast.
+  const [failure, setFailure] = useState<string | null>(null)
 
   const steps = useMemo(
     () => STEP_META.map((s) => ({ id: s.id, title: t(s.titleKey), description: t(s.descKey) })),
@@ -80,6 +83,7 @@ export function OnboardingPage() {
   // Provision the tenancy, then go straight to the console — verification is
   // offered there, whenever the user chooses.
   const provision = async (type: Choice, name?: string) => {
+    setFailure(null)
     try {
       await complete.mutateAsync({
         account_type: type,
@@ -103,9 +107,14 @@ export function OnboardingPage() {
       toast.success(t("onboarding.success.title"))
       void navigate("/", { replace: true })
     } catch (e) {
-      // Fallback for the backend's own gate ("mobile number is required to
-      // sign up") and any other provisioning failure.
-      toast.error(extractError(e, t("onboarding.review.failed")))
+      // Surface the backend's own gate ("mobile number is required to sign up",
+      // "no regions are available yet", …) verbatim. It is also held on the
+      // review step (see failure below) — a toast that fades leaves the user
+      // staring at a button that "does nothing", which is exactly how a
+      // refusable, actionable error reads as a broken signup.
+      const message = extractError(e, t("onboarding.review.failed"))
+      setFailure(message)
+      toast.error(message, { duration: 10_000 })
     }
   }
 
@@ -151,6 +160,7 @@ export function OnboardingPage() {
             accountType={choice || "individual"}
             orgName={orgName}
             isCompleting={complete.isPending}
+            error={failure}
             onBack={() => {
               setStep(step - 1)
             }}

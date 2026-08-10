@@ -1,11 +1,12 @@
 import { useState } from "react"
 
-import { Button } from "@datadack/common-ui"
-import { CheckCircle2, Loader2, Rocket, ShieldCheck } from "lucide-react"
+import { AlertCircle, CheckCircle2, Loader2, Rocket, ShieldCheck } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { useAuth } from "@/modules/auth/auth.context"
 import { PolicyConsent } from "@/modules/auth/components/PolicyConsent"
+
+import { Button } from "@datadack/common-ui"
 
 import type { OnboardingStatusResponse } from "../../onboarding.types"
 
@@ -15,6 +16,7 @@ export function ReviewStep({
   orgName,
   isCompleting,
   requireConsent = false,
+  error,
   onBack,
   onComplete,
 }: Readonly<{
@@ -26,6 +28,13 @@ export function ReviewStep({
    *  account is created (used for the "create a new account/organization"
    *  flow; initial signup already captured consent at sign-up). */
   requireConsent?: boolean
+  /** Why the last provisioning attempt was refused, verbatim from the API.
+   *  Rendered inline and persistently: this is the last step of signup, and a
+   *  toast that fades takes the only explanation of "nothing happened" with
+   *  it — the reasons are all actionable ("mobile number is required",
+   *  "no regions are available yet") and the user cannot act on one they
+   *  never saw. */
+  error?: string | null
   onBack: () => void
   onComplete: () => void
 }>) {
@@ -84,6 +93,19 @@ export function ReviewStep({
 
       {requireConsent && (
         <PolicyConsent checked={consent} onCheckedChange={setConsent} disabled={isCompleting} />
+      )}
+
+      {error && (
+        <div
+          role="alert"
+          className="flex items-start gap-2 rounded-xl border border-destructive/40 bg-destructive/10 p-4 text-sm"
+        >
+          <AlertCircle className="mt-0.5 size-4 shrink-0 text-destructive" />
+          <div>
+            <p className="font-semibold">{t("onboarding.review.failed")}</p>
+            <p className="mt-0.5 text-muted-foreground">{error}</p>
+          </div>
+        </div>
       )}
 
       <div className="flex items-center gap-3">
