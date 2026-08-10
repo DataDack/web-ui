@@ -55,20 +55,31 @@ export function useIsDarkDocument(): boolean {
   return dark
 }
 
-/** A computed token as `#rrggbb`, or the fallback when it resolves to nothing. */
+/**
+ * A computed token as `#rrggbb`, or the fallback when it resolves to anything
+ * else. The result is validated rather than trusted: a malformed colour reaching
+ * Monaco's token rules throws and unmounts the editor, so an approximate colour
+ * is strictly better than a crash.
+ */
 function token(styles: CSSStyleDeclaration, name: string, fallback: string): string {
-  return toHex(styles.getPropertyValue(name).trim()) || fallback
+  const resolved = toHex(styles.getPropertyValue(name).trim())
+  return /^#[0-9a-f]{6}$/.test(resolved) ? resolved : fallback
 }
 
 /**
- * Whatever the browser resolved a token to, as a hex string Monaco accepts.
- * getComputedStyle normalises hex to `rgb()`/`rgba()`, so those two forms plus
- * a literal hex cover every token in the kit. Anything else (a token left as a
- * `color-mix()` the browser could not resolve) returns "" and takes the caller's
- * fallback.
+ * Whatever the browser resolved a token to, as a `#rrggbb` string Monaco
+ * accepts. Returns "" for anything it cannot express that way, so the caller
+ * falls back.
+ *
+ * Two forms have to be handled. `getComputedStyle` normalises real CSS
+ * properties to `rgb()`/`rgba()`, but a CUSTOM property is returned exactly as
+ * authored — so a token written `#fff` arrives as `#fff`, not `rgb(...)`.
+ * Monaco's token rules reject anything but six hex digits and throw
+ * "Illegal value for token color", which takes the whole editor down.
  */
 function toHex(value: string): string {
-  if (value.startsWith("#")) return value
+  if (value.startsWith("#")) return expandHex(value)
+
   const match = /^rgba?\(([^)]+)\)$/.exec(value)
   if (!match?.[1]) return ""
   const parts = match[1]
@@ -81,6 +92,34 @@ function toHex(value: string): string {
     .map((channel) => Math.max(0, Math.min(255, Math.round(channel))).toString(16).padStart(2, "0"))
     .join("")
   return `#${hex}`
+}
+
+/**
+ * Normalises any authored hex form to `#rrggbb`.
+ *
+ * Shorthand doubles each digit (`#fff` -> `#ffffff`). Alpha is dropped rather
+ * than encoded: Monaco's token rules take RGB only, and the editor's own
+ * opacity comes from the panel it sits in.
+ */
+function expandHex(value: string): string {
+  const digits = value.slice(1).trim()
+  if (!/^[0-9a-fA-F]+$/.test(digits)) return ""
+
+  switch (digits.length) {
+    case 3:
+    case 4: // #rgba - drop the alpha nibble
+      return `#${digits
+        .slice(0, 3)
+        .split("")
+        .map((d) => d + d)
+        .join("")}`.toLowerCase()
+    case 6:
+      return `#${digits}`.toLowerCase()
+    case 8: // #rrggbbaa - drop the alpha byte
+      return `#${digits.slice(0, 6)}`.toLowerCase()
+    default:
+      return ""
+  }
 }
 
 /**
