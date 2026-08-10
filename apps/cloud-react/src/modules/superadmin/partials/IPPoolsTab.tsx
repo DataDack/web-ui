@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 
 import {
   actionsColumn,
@@ -19,6 +19,7 @@ import {
   CircleSlash,
   Globe,
   Layers,
+  Lock,
   Network,
   Pencil,
   Search,
@@ -28,6 +29,7 @@ import {
   type LucideIcon,
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
+import { useNavigate } from "react-router-dom"
 
 import { AnimatedNumber } from "@/components/console"
 
@@ -38,7 +40,6 @@ import type { IpPool } from "../superadmin.types"
 import { AddIPPoolDialog } from "./AddIPPoolDialog"
 import { DeleteIPPoolDialog } from "./DeleteIPPoolDialog"
 import { EditIPPoolDialog } from "./EditIPPoolDialog"
-import { PoolAddressesSheet } from "./PoolAddressesSheet"
 
 const ALL = "all"
 
@@ -72,6 +73,7 @@ interface Props {
 
 export function IPPoolsTab({ addOpen, onAddOpenChange }: Readonly<Props>) {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const { data: pools = [], isLoading, isError, refetch, isFetching } = useAdminIPPools()
   const { data: azs = [] } = useAdminAvailabilityZones()
 
@@ -81,7 +83,15 @@ export function IPPoolsTab({ addOpen, onAddOpenChange }: Readonly<Props>) {
 
   const [pendingDelete, setPendingDelete] = useState<IpPool | null>(null)
   const [editing, setEditing] = useState<IpPool | null>(null)
-  const [viewing, setViewing] = useState<IpPool | null>(null)
+
+  // The block's addresses are a page, not a panel: an operator holding addresses
+  // back for platform use works through the list, and that deserves a URL.
+  const openPool = useCallback(
+    (pool: IpPool) => {
+      void navigate(`/admin/static-ips/pools/${pool.id}`)
+    },
+    [navigate],
+  )
 
   const azCode = useMemo(() => {
     const byId = new Map(azs.map((a) => [a.id, a.code]))
@@ -164,7 +174,7 @@ export function IPPoolsTab({ addOpen, onAddOpenChange }: Readonly<Props>) {
           {
             label: t("superAdmin.staticIps.pools.viewAddresses"),
             icon: Waypoints,
-            onAction: setViewing,
+            onAction: openPool,
           },
           {
             label: t("superAdmin.staticIps.pools.edit"),
@@ -180,7 +190,7 @@ export function IPPoolsTab({ addOpen, onAddOpenChange }: Readonly<Props>) {
         ],
       }),
     ],
-    [t, azCode],
+    [t, azCode, openPool],
   )
 
   return (
@@ -237,7 +247,8 @@ export function IPPoolsTab({ addOpen, onAddOpenChange }: Readonly<Props>) {
           "[&_th]:h-10 [&_th]:text-[10.5px] [&_th]:font-semibold",
           "[&_[data-slot=table-container]]:max-h-[36rem]",
         )}
-        rowClassName="even:bg-foreground/[0.015] hover:bg-muted/40 [&>td]:py-3"
+        rowClassName="even:bg-foreground/[0.015] hover:bg-muted/40 [&>td]:py-3 cursor-pointer"
+        onRowClick={openPool}
         error={isError ? t("console.table.error") : undefined}
         onRetry={() => void refetch()}
         retryLabel={t("console.table.retry")}
@@ -311,13 +322,6 @@ export function IPPoolsTab({ addOpen, onAddOpenChange }: Readonly<Props>) {
         pool={editing}
         onOpenChange={(open) => {
           if (!open) setEditing(null)
-        }}
-      />
-
-      <PoolAddressesSheet
-        pool={viewing}
-        onOpenChange={(open) => {
-          if (!open) setViewing(null)
         }}
       />
 
@@ -507,6 +511,14 @@ function UsageCell({ pool }: Readonly<{ pool: IpPool }>) {
           style={{ width: `${String(Math.round(ratio * 100))}%` }}
         />
       </div>
+      {/* Withheld addresses are neither used nor available, so without this the
+          two numbers above simply fail to add up to the block's size. */}
+      {pool.blocked > 0 && (
+        <span className="flex items-center gap-1 text-[11px] text-sky-500">
+          <Lock className="size-3" />
+          {t("superAdmin.staticIps.pools.blockedCount", { count: pool.blocked })}
+        </span>
+      )}
     </div>
   )
 }

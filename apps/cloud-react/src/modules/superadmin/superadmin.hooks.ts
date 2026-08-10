@@ -25,6 +25,7 @@ import type {
   OverviewSection,
   QuotaRequestStatus,
   RejectQuotaRequestInput,
+  ReserveAddressesRequest,
   UpdateAvailabilityZoneRequest,
   UpdateBandwidthPriceRequest,
   UpdateImageRequest,
@@ -526,6 +527,44 @@ export function useDeleteIPPool() {
       toast.success(t("superAdmin.toasts.ipPoolDeleted"))
     },
     onError: (e) => toast.error(extractError(e, t("superAdmin.toasts.ipPoolFailed"))),
+  })
+}
+
+/**
+ * Hold addresses back from tenant allocation, or hand them back.
+ *
+ * Both invalidate the pool LIST as well as the drill-in: a reservation moves an
+ * address out of `available`, so the stock figures on the pools table are stale
+ * the moment either one succeeds.
+ */
+export function useReservePoolAddresses(poolId: string | undefined) {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (payload: ReserveAddressesRequest) =>
+      superAdminApi.reservePoolAddresses(poolId ?? "", payload),
+    onSuccess: (_created, payload) => {
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.ipPoolAddresses })
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.ipPools })
+      toast.success(
+        t("superAdmin.toasts.ipAddressesBlocked", { count: payload.ip_addresses.length }),
+      )
+    },
+    onError: (e) => toast.error(extractError(e, t("superAdmin.toasts.ipAddressBlockFailed"))),
+  })
+}
+
+export function useReleasePoolAddress(poolId: string | undefined) {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (ip: string) => superAdminApi.releasePoolAddress(poolId ?? "", ip),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.ipPoolAddresses })
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.ipPools })
+      toast.success(t("superAdmin.toasts.ipAddressUnblocked"))
+    },
+    onError: (e) => toast.error(extractError(e, t("superAdmin.toasts.ipAddressBlockFailed"))),
   })
 }
 

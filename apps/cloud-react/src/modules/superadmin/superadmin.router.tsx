@@ -146,6 +146,15 @@ export const superadminRoutes: RouteObject[] = [
           return { Component: StaticIPsPage }
         },
       },
+      {
+        // Inside one block: every address it contains, allocated or not, and the
+        // controls to hold addresses back from tenant allocation.
+        path: "static-ips/pools/:poolId",
+        lazy: async () => {
+          const { PoolDetailPage } = await import("./partials/PoolDetailPage")
+          return { Component: PoolDetailPage }
+        },
+      },
       // Legacy path → the redesigned Static IPs hub (pools + usage + pricing).
       {
         path: "static-ip-prices",

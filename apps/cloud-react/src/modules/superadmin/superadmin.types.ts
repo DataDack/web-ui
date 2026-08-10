@@ -686,6 +686,10 @@ export interface IpPool {
   updated_at: string
   // Computed live by the backend from current allocations.
   used: number
+  // Addresses an operator marked "not usable" — held back from tenant
+  // allocation for the platform's own use. Counted apart from `used` so a pool
+  // never reports withheld stock as customer stock.
+  blocked: number
   available: number
 }
 
@@ -708,14 +712,18 @@ export interface UpdateIPPoolRequest {
 }
 
 // A single address within a block. `free` = unallocated; `available` = reserved
-// (allocated to a tenant but not attached); `associated` = attached to a VM.
-export type PoolAddressStatus = "free" | "available" | "associated"
+// (allocated to a tenant but not attached); `associated` = attached to a VM;
+// `blocked` = withheld by the platform and never offered to a tenant.
+export type PoolAddressStatus = "free" | "available" | "associated" | "blocked"
 
 export interface PoolAddress {
   ip_address: string
   status: PoolAddressStatus
   static_ip_id?: string
   name?: string
+  /** Blocked addresses only: the operator's note and when it was held back. */
+  reason?: string
+  reserved_at?: string
 }
 
 export interface PoolExpansion {
@@ -727,6 +735,17 @@ export interface PoolExpansion {
   total_count: number
   usable_count: number
   addresses: PoolAddress[]
+  // Present when expanding an EXISTING pool (the drill-in), absent for the
+  // Add-pool dialog's preview of a block that has no pool yet.
+  pool?: IpPool
+}
+
+// Marks addresses not usable. A list rather than one address so a selection is
+// one request; the backend refuses the whole batch if any address is allocated
+// or outside the pool.
+export interface ReserveAddressesRequest {
+  ip_addresses: string[]
+  reason?: string
 }
 
 // A static IP currently in use somewhere on the platform (reserved or attached),

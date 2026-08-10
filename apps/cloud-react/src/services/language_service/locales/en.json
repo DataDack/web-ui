@@ -3180,7 +3180,9 @@
           "usage": "Usage",
           "gateway": "Gateway",
           "status": "Status"
-        }
+        },
+        "blockedCount_one": "{{count}} held",
+        "blockedCount_other": "{{count}} held"
       },
       "dialog": {
         "title": "Add IP Pool",
@@ -3217,6 +3219,37 @@
           "user": "Owner",
           "pool": "Pool",
           "assigned": "Allocated"
+        }
+      },
+      "addresses": {
+        "title": "Pool addresses",
+        "blocked": "Not usable",
+        "block": "Mark not usable",
+        "blockCount_one": "Mark {{count}} address not usable",
+        "blockCount_other": "Mark {{count}} addresses not usable",
+        "unblock": "Make usable again",
+        "blockTitle": "Mark these addresses not usable?",
+        "blockBody": "They stay in the block but are never allocated to a tenant, so you can use them yourself. Reverse it any time.",
+        "reason": "Reason (optional)",
+        "reasonPlaceholder": "e.g. jump host, monitoring endpoint",
+        "noReason": "No reason given",
+        "empty": "This block has no addresses",
+        "emptySubtitle": "The pool's CIDR expands to nothing — check the block it was registered with.",
+        "noMatches": "No addresses in this state",
+        "noMatchesSubtitle": "Switch the filter back to see the rest of the block.",
+        "filters": {
+          "all": "All addresses"
+        },
+        "stats": {
+          "total": "Addresses",
+          "free": "Free",
+          "allocated": "Allocated",
+          "blocked": "Not usable"
+        },
+        "columns": {
+          "address": "IP address",
+          "status": "Status",
+          "holder": "Held by"
         }
       }
     },
@@ -3379,7 +3412,11 @@
       "lbSettingsUpdated": "Load balancer settings saved",
       "lbSettingsFailed": "Couldn't save load balancer settings",
       "nodeWebhookRegistered": "Node webhook registered",
-      "nodeWebhookFailed": "Could not register the node webhook"
+      "nodeWebhookFailed": "Could not register the node webhook",
+      "ipAddressesBlocked_one": "Address marked not usable",
+      "ipAddressesBlocked_other": "{{count}} addresses marked not usable",
+      "ipAddressUnblocked": "Address returned to the pool",
+      "ipAddressBlockFailed": "Couldn’t change the address"
     },
     "shell": {
       "console": "Console",

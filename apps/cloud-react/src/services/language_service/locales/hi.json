@@ -2977,7 +2977,11 @@
       "lbSettingsUpdated": "लोड बैलेंसर सेटिंग्स सहेजी गईं",
       "lbSettingsFailed": "लोड बैलेंसर सेटिंग्स सहेजी नहीं जा सकीं",
       "nodeWebhookRegistered": "नोड वेबहुक रजिस्टर हो गया",
-      "nodeWebhookFailed": "नोड वेबहुक रजिस्टर नहीं हो सका"
+      "nodeWebhookFailed": "नोड वेबहुक रजिस्टर नहीं हो सका",
+      "ipAddressesBlocked_one": "पता अनुपयोगी चिह्नित किया गया",
+      "ipAddressesBlocked_other": "{{count}} पते अनुपयोगी चिह्नित किए गए",
+      "ipAddressUnblocked": "पता पूल में वापस आ गया",
+      "ipAddressBlockFailed": "पता बदला नहीं जा सका"
     },
     "shell": {
       "console": "Console",
@@ -3369,7 +3373,9 @@
           "usage": "उपयोग",
           "gateway": "गेटवे",
           "status": "स्थिति"
-        }
+        },
+        "blockedCount_one": "{{count}} रोका",
+        "blockedCount_other": "{{count}} रोके"
       },
       "dialog": {
         "title": "IP पूल जोड़ें",
@@ -3406,6 +3412,37 @@
           "user": "स्वामी",
           "pool": "पूल",
           "assigned": "आवंटित"
+        }
+      },
+      "addresses": {
+        "title": "पूल के पते",
+        "blocked": "अनुपयोगी",
+        "block": "अनुपयोगी चिह्नित करें",
+        "blockCount_one": "{{count}} पता अनुपयोगी चिह्नित करें",
+        "blockCount_other": "{{count}} पते अनुपयोगी चिह्नित करें",
+        "unblock": "फिर से उपयोग योग्य करें",
+        "blockTitle": "इन पतों को अनुपयोगी चिह्नित करें?",
+        "blockBody": "ये ब्लॉक में बने रहेंगे पर किसी टेनेंट को कभी आवंटित नहीं होंगे, ताकि आप इन्हें स्वयं उपयोग कर सकें। इसे कभी भी पलटा जा सकता है।",
+        "reason": "कारण (वैकल्पिक)",
+        "reasonPlaceholder": "जैसे जंप होस्ट, मॉनिटरिंग एंडपॉइंट",
+        "noReason": "कोई कारण नहीं दिया गया",
+        "empty": "इस ब्लॉक में कोई पता नहीं",
+        "emptySubtitle": "पूल का CIDR किसी पते में नहीं फैलता — पंजीकृत ब्लॉक जाँचें।",
+        "noMatches": "इस स्थिति में कोई पता नहीं",
+        "noMatchesSubtitle": "बाकी ब्लॉक देखने के लिए फ़िल्टर वापस बदलें।",
+        "filters": {
+          "all": "सभी पते"
+        },
+        "stats": {
+          "total": "पते",
+          "free": "खाली",
+          "allocated": "आवंटित",
+          "blocked": "अनुपयोगी"
+        },
+        "columns": {
+          "address": "IP पता",
+          "status": "स्थिति",
+          "holder": "किसके पास"
         }
       }
     },

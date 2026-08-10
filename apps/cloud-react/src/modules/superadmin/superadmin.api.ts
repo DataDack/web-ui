@@ -47,9 +47,11 @@ import type {
   AccountSpend,
   OverviewSection,
   PlatformOverview,
+  PoolAddress,
   PoolExpansion,
   PVENode,
   RejectQuotaRequestInput,
+  ReserveAddressesRequest,
   StaticIPAllocation,
   StaticIPPrice,
   StoragePrice,
@@ -192,6 +194,13 @@ export const superAdminApi = {
     apiDelete(`${IPPOOL_BASE}/${id}${force ? "?force=true" : ""}`),
   // Server-side CIDR expansion (used for an existing pool's address drill-in).
   poolAddresses: (id: string) => apiGet<PoolExpansion>(`${IPPOOL_BASE}/${id}/addresses`),
+  // Hold addresses back from tenant allocation (platform's own use).
+  reservePoolAddresses: (id: string, payload: ReserveAddressesRequest) =>
+    apiPost<PoolAddress[]>(`${IPPOOL_BASE}/${id}/reservations`, payload),
+  // An IPv4 address is a single path segment — the dots are not separators —
+  // so it needs no encoding.
+  releasePoolAddress: (id: string, ip: string) =>
+    apiDelete(`${IPPOOL_BASE}/${id}/reservations/${ip}`),
   // Platform-wide list of static IPs in use (reserved + associated).
   listStaticIPAllocations: (q?: string) => {
     const search = q ? `&q=${encodeURIComponent(q)}` : ""
