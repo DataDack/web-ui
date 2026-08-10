@@ -29,10 +29,20 @@ const contentEnterFrames = keyframes`
   to { opacity: 1; transform: translateY(0); }
 `
 
-/** Skeleton → data swap. Same recipe the consoles' animate-content-enter uses. */
+/**
+ * Skeleton → data swap. Same recipe the consoles' animate-content-enter uses.
+ *
+ * `backwards`, not `both`: the last keyframe is the element's natural state, so
+ * retaining it buys nothing and costs a permanent `transform: translateY(0)` —
+ * and any transform other than `none` makes the element a containing block for
+ * `position: fixed` descendants. That silently re-anchors a full-screen overlay
+ * (the Code tab's editor) to whichever panel this class happens to sit on.
+ * `backwards` still holds the first keyframe before the animation starts, which
+ * is the only part of `both` that was doing any work.
+ */
 export const contentEnter = css`
   animation: ${contentEnterFrames} var(--dur-base, 250ms)
-    var(--ease-out-expo, cubic-bezier(0.16, 1, 0.3, 1)) both;
+    var(--ease-out-expo, cubic-bezier(0.16, 1, 0.3, 1)) backwards;
 `
 
 const pulseFrames = keyframes`

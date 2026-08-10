@@ -8,7 +8,13 @@ export interface TestEventTemplate {
 const pretty = (value: unknown) => JSON.stringify(value, null, 2)
 
 /**
- * Starter payloads for the Test tab, mirroring Lambda's canned test events.
+ * Starter payloads for the Test tab.
+ *
+ * Only HTTP-shaped events: the tab calls the function's public URL, so the
+ * payload is a request body. An S3 notification or a scheduled event never
+ * arrives that way — those come from a trigger, and offering them here invited
+ * people to "test" a delivery path this tab cannot exercise.
+ *
  * Data rather than labels: a console that wants different starters passes its
  * own list through `TestTabProps.templates`.
  */
@@ -28,24 +34,5 @@ export const TEST_EVENT_TEMPLATES: readonly TestEventTemplate[] = [
       headers: { "content-type": "application/json" },
       body: '{"orderId":"1234"}',
     }),
-  },
-  {
-    id: "s3-put",
-    label: "S3 put",
-    body: pretty({
-      Records: [
-        {
-          s3: {
-            bucket: { name: "example-bucket" },
-            object: { key: "uploads/photo.png", size: 1024 },
-          },
-        },
-      ],
-    }),
-  },
-  {
-    id: "scheduled-event",
-    label: "Scheduled event",
-    body: pretty({ source: "aws.events", "detail-type": "Scheduled Event", detail: {} }),
   },
 ]
