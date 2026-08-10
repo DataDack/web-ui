@@ -206,9 +206,12 @@ export interface FunctionDetailLabels {
     tagsEmpty: string
     tagsHint: string
     triggersEmpty: string
+    functionUrlEmpty: string
+    functionUrlGenerated: string
+    functionUrlCustom: string
+    functionUrlDisabled: string
     unreserved: string
     comingSoon: {
-      functionUrl: { title: string; message: string }
       permissions: { title: string; message: string }
       vpc: { title: string; message: string }
     }
@@ -464,12 +467,12 @@ export const DEFAULT_FUNCTION_DETAIL_LABELS: FunctionDetailLabels = {
     tagsEmpty: "No tags.",
     tagsHint: "Tags are stored as the function’s labels.",
     triggersEmpty: "No triggers",
+    functionUrlEmpty: "No hostname is mapped to this function.",
+    functionUrlGenerated: "generated",
+    functionUrlCustom: "custom",
+    functionUrlDisabled: "disabled",
     unreserved: "Not set",
     comingSoon: {
-      functionUrl: {
-        title: "Function URL",
-        message: "A stable HTTPS endpoint for this function isn’t available yet.",
-      },
       permissions: {
         title: "Permissions",
         message: "Resource-based policies aren’t available yet.",

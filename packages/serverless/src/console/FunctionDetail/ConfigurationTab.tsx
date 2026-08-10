@@ -1,11 +1,12 @@
 import { useState } from "react"
 
-import { Link2, Network, ShieldCheck } from "lucide-react"
+import { Network, ShieldCheck } from "lucide-react"
 
 import { css, cx, fontMono, media, mix } from "@datadack/common-ui"
 
 import { AsyncSection } from "./configuration/AsyncSection"
 import { ComingSoonSection } from "./configuration/ComingSoonSection"
+import { FunctionUrlSection } from "./configuration/FunctionUrlSection"
 import { ConcurrencySection } from "./configuration/ConcurrencySection"
 import { EnvSection } from "./configuration/EnvSection"
 import { GeneralSection } from "./configuration/GeneralSection"
@@ -34,7 +35,7 @@ const SECTION_ORDER: readonly { value: ConfigurationSectionValue; soon: boolean 
   { value: "tags", soon: false },
   { value: "concurrency", soon: false },
   { value: "async", soon: false },
-  { value: "functionUrl", soon: true },
+  { value: "functionUrl", soon: false },
   { value: "permissions", soon: true },
   { value: "vpc", soon: true },
 ]
@@ -171,12 +172,7 @@ export function ConfigurationTab({
         {active === "concurrency" && <ConcurrencySection fn={fn} scope={scope} labels={labels} />}
         {active === "async" && <AsyncSection fn={fn} scope={scope} labels={labels} />}
         {active === "functionUrl" && (
-          <ComingSoonSection
-            icon={Link2}
-            title={config.comingSoon.functionUrl.title}
-            message={config.comingSoon.functionUrl.message}
-            soonLabel={config.soon}
-          />
+          <FunctionUrlSection fn={fn} scope={scope} labels={labels} />
         )}
         {active === "permissions" && (
           <ComingSoonSection
