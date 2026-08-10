@@ -17,45 +17,9 @@ import type {
   UpdateFunctionConfigInput,
 } from "@datadack/serverless"
 
-/**
- * The shared serverless UI's transport, implemented over this console's `http`
- * instance — which already attaches the operator bearer token, the
- * `X-Faas-Account-Id` scope header and the configurable API base per request.
- *
- * Every method speaks the control plane's native shapes: bare objects from the
- * single-resource routes, keyed lists (`{versions: [...]}`) from the
- * collections, and a raw passthrough from the invoke path. There is no
- * envelope to unwrap here — that is the gateway console's concern, not this
- * one's.
- */
+
 
 const fnPath = (name: string) => `/v1/functions/${encodeURIComponent(name)}`
-
-// Invoke is the one call that does not live under /v1: it is the Lambda-compatible
-// surface the router role serves. The old `/function/{name}` shorthand was removed
-// and answers 404.
-const invokePath = (name: string) => `/2015-03-31/functions/${encodeURIComponent(name)}/invocations`
-
-/** A response header as a non-empty string, or nothing worth reporting. */
-function header(headers: Record<string, unknown>, name: string): string | undefined {
-  const value = headers[name]
-  return typeof value === "string" && value !== "" ? value : undefined
-}
-
-/**
- * `X-Amz-Log-Result` carries the invocation's log tail base64-encoded, and the
- * bytes underneath are UTF-8 — `atob` alone would mangle anything outside
- * latin1. A header that fails to decode is dropped rather than shown garbled.
- */
-function decodeLogResult(encoded: string | undefined): string | undefined {
-  if (!encoded) return undefined
-  try {
-    const bytes = Uint8Array.from(atob(encoded), (char) => char.charCodeAt(0))
-    return new TextDecoder().decode(bytes)
-  } catch {
-    return undefined
-  }
-}
 
 export const faasTransport: ServerlessTransport = {
   async listRuntimes(): Promise<RuntimeInfo[]> {
@@ -128,28 +92,49 @@ export const faasTransport: ServerlessTransport = {
   },
 
   async invokeFunction(name: string, payload: string): Promise<InvokeResult> {
+    // Test through the function URL, not the control plane's invoke route.
+    //
+    // Invoking directly would exercise a path no real caller uses: it skips the
+    // API gateway, the hostname mapping and TLS, so a function could pass here
+    // and 404 for everyone on the internet. Testing what is actually published
+    // is the point of the tab.
+    const urls = await this.listFunctionUrls!(name)
+    const live = urls.find((u) => !u.disabled)
+    if (!live) {
+      throw new Error(
+        `${name} has no function URL, so there is nothing to call. ` +
+          `A URL is minted when the function is deployed; map one explicitly if it was removed.`,
+      )
+    }
+
     const startedAt = performance.now()
-    // The invoke route is a verbatim passthrough of whatever the function
-    // returned: any status, any content type. A non-2xx is an answer worth
-    // showing, not a transport failure, so nothing here throws on status —
-    // and the body is kept as raw text rather than parsed out from under the
-    // response panel.
-    const response = await http.post<unknown>(invokePath(name), payload, {
-      headers: { "Content-Type": "application/json" },
-      responseType: "text",
-      transformResponse: (raw: unknown) => raw,
-      validateStatus: () => true,
-    })
+    let response: Response
+    try {
+      response = await fetch(`https://${live.domain}/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      })
+    } catch (cause) {
+      // fetch rejects without a status for DNS, TLS and CORS alike. CORS is by
+      // far the most common of the three here — the console and the function
+      // are different origins — and a bare "Failed to fetch" sends people
+      // hunting the wrong problem.
+      throw new Error(
+        `Could not reach https://${live.domain}. The function must return ` +
+          `Access-Control-Allow-Origin for the browser to read its response; ` +
+          `check DNS and the certificate too. (${String(cause)})`,
+      )
+    }
+
     const durationMs = Math.round(performance.now() - startedAt)
-    const headers = response.headers as Record<string, unknown>
+    const body = await response.text()
     return {
       status: response.status,
       durationMs,
-      body: typeof response.data === "string" ? response.data : "",
-      contentType: header(headers, "content-type"),
-      executedVersion: header(headers, "x-amz-executed-version"),
-      functionError: header(headers, "x-amz-function-error"),
-      logs: decodeLogResult(header(headers, "x-amz-log-result")),
+      body,
+      contentType: response.headers.get("content-type") ?? undefined,
+      functionError: response.headers.get("x-amz-function-error") ?? undefined,
     }
   },
 

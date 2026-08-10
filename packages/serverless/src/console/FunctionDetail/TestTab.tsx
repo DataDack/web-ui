@@ -24,7 +24,7 @@ import {
 import { errorMessage } from "./errorMessage"
 import type { FunctionDetailLabels } from "./labels"
 import { TEST_EVENT_TEMPLATES, type TestEventTemplate } from "./testEvents"
-import { useInvokeFunction } from "../../data/queries"
+import { useFunctionUrls, useInvokeFunction } from "../../data/queries"
 import type { FunctionEntity, InvokeResult } from "../../data/types"
 
 const grid = css`
@@ -150,6 +150,11 @@ export function TestTab({
   className,
 }: Readonly<TestTabProps>) {
   const invoke = useInvokeFunction(fn.name, scope)
+  // The test calls the function's public URL, so without one there is nothing
+  // to call. Say so up front instead of letting Run fail.
+  const { data: urls } = useFunctionUrls(fn.name, scope)
+  const liveUrl = urls?.find((u) => !u.disabled)
+  const testable = liveUrl !== undefined
   const [templateId, setTemplateId] = useState(templates[0]?.id ?? "")
   const [payload, setPayload] = useState(templates[0]?.body ?? "{}")
   const [invalidJson, setInvalidJson] = useState(false)
@@ -209,7 +214,7 @@ export function TestTab({
         />
         {invalidJson && <p className={inlineError}>{labels.test.invalidJson}</p>}
 
-        <Button className={runButton} loading={invoke.isPending} onClick={run}>
+        <Button className={runButton} loading={invoke.isPending} onClick={run} disabled={!testable}>
           <Play size={14} />
           {invoke.isPending ? labels.test.running : labels.test.run}
         </Button>
