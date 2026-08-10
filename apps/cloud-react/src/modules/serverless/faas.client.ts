@@ -1,21 +1,22 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios"
 
+
+import { activeScope } from "@/services/api/active-scope"
+import { authToken, refreshAccessToken } from "@/services/api/auth-token"
+
 import type {
   FunctionAlias,
   FunctionCode,
   FunctionCodeFile,
   FunctionEntity,
+  FunctionUrl,
   FunctionVersion,
-  InvokeResult,
   PutAliasInput,
   RuntimeInfo,
   ServerlessTransport,
   Trigger,
   UpdateFunctionConfigInput,
 } from "@datadack/serverless"
-
-import { activeScope } from "@/services/api/active-scope"
-import { authToken, refreshAccessToken } from "@/services/api/auth-token"
 
 // Direct browser → FaaS control-plane client. This is NOT the gateway client
 // (services/api/client.ts): that one is pinned to /api/v1, cookie-oriented,
@@ -33,8 +34,6 @@ import { authToken, refreshAccessToken } from "@/services/api/auth-token"
 // Lambda-compatible surface the router role serves. The old `/function/{name}`
 // shorthand was removed upstream and answers 404 — which `validateStatus: () =>
 // true` would have rendered as the function's own response rather than an error.
-const invokePath = (name: string) => `/2015-03-31/functions/${encodeURIComponent(name)}/invocations`
-
 /** Native FaaS error body (common/core/httpx). */
 interface FaasErrorBody {
   error?: { code?: string; message?: string; status?: number }
@@ -47,45 +46,6 @@ export function faasErrorMessage(e: unknown, fallback: string): string {
     if (body?.error?.message) return body.error.message
   }
   return fallback
-}
-
-/**
- * X-Amz-Log-Result is base64(UTF-8 log tail). atob yields latin1 code units,
- * so decode the bytes properly; undecodable input is returned raw rather than
- * dropped — a mangled log tail beats no log tail.
- */
-function decodeLogResult(value: string): string {
-  try {
-    const bin = atob(value)
-    return new TextDecoder().decode(Uint8Array.from(bin, (c) => c.charCodeAt(0)))
-  } catch {
-    return value
-  }
-}
-
-/** Read an axios response header, tolerating axios's loose header typing. */
-function headerString(headers: Record<string, unknown>, name: string): string | undefined {
-  const value: unknown = headers[name]
-  return typeof value === "string" && value !== "" ? value : undefined
-}
-
-/**
- * The invoke passthrough fulfils every status (validateStatus true), which also
- * swallows the FaaS auth middleware's own 401 — the 401-refresh interceptor
- * only sees rejections, so the platform's auth failure would render in the Test
- * tab as the function's execution result. This sniffs a 401 body for the
- * platform's {error:{message}} envelope so invokeFunction can refresh and
- * replay explicitly; a function that itself answers 401 with its own body shape
- * is left alone and shown verbatim.
- */
-function platformAuthError(raw: unknown): string | undefined {
-  if (typeof raw !== "string") return undefined
-  try {
-    const body = JSON.parse(raw) as FaasErrorBody
-    return typeof body.error?.message === "string" ? body.error.message : undefined
-  } catch {
-    return undefined
-  }
 }
 
 export interface FaasTransportOptions {
@@ -107,6 +67,7 @@ export type FaasDirectTransport = Required<
     ServerlessTransport,
     | "listRuntimes"
     | "getFunction"
+    | "listFunctionUrls"
     | "listVersions"
     | "listAliases"
     | "putAlias"
@@ -192,6 +153,19 @@ export function createFaasTransport(opts: FaasTransportOptions): FaasDirectTrans
           .get<FunctionEntity>(`/v1/functions/${encodeURIComponent(name)}`)
           .then((res) => res.data),
         "Could not load the function",
+      ),
+
+    // The hostnames that invoke this function. Read from FaaS directly, like
+    // versions and aliases: the mapping is the control plane's, and routing to
+    // it is the API gateway's job — nothing here needs the cloud gateway.
+    listFunctionUrls: (name) =>
+      run(
+        faas
+          .get<{ functionUrls?: FunctionUrl[] }>(
+            `/v1/functions/${encodeURIComponent(name)}/urls`,
+          )
+          .then((res) => res.data.functionUrls ?? []),
+        "Could not load the function URLs",
       ),
 
     listVersions: (name) =>
@@ -336,46 +310,59 @@ export function createFaasTransport(opts: FaasTransportOptions): FaasDirectTrans
      * X-Amz-* metadata headers are CORS-exposed and optional — absent fields
      * stay absent.
      */
+    // Test through the function's public URL, not the platform invoke route.
+    //
+    // Invoking directly exercises a path no real caller uses: it skips the API
+    // gateway, the hostname mapping and TLS, so a function can pass here and
+    // 404 for everyone on the internet. Testing what is actually published is
+    // the point.
+    //
+    // No auth refresh dance either — a function URL is public, so the access
+    // token is irrelevant to it.
     invokeFunction: async (name, payload) => {
-      let started = performance.now()
-      const invoke = () =>
-        run(
-          faas.post<string>(invokePath(name), payload, {
-            headers: { "Content-Type": "application/json" },
-            responseType: "text",
-            transformResponse: [(data: string) => data],
-            validateStatus: () => true,
-          }),
-          "Invoke did not reach the platform",
+      const urls = await run(
+        faas
+          .get<{ functionUrls?: FunctionUrl[] }>(
+            `/v1/functions/${encodeURIComponent(name)}/urls`,
+          )
+          .then((res) => res.data.functionUrls ?? []),
+        "Could not look up the function URL",
+      )
+      const live = urls.find((u) => !u.disabled)
+      if (!live) {
+        throw new Error(
+          `${name} has no function URL, so there is nothing to call. ` +
+            `A URL is created when the function is deployed.`,
         )
-      let res = await invoke()
-      // validateStatus keeps the 401-refresh interceptor from ever seeing an
-      // expired-token rejection here, so handle it in-line: refresh once (the
-      // request interceptor re-reads the token store) and replay. If refresh
-      // fails or the replay still 401s, throw the platform's message — an auth
-      // failure must not impersonate the function's own result.
-      const authError = res.status === 401 ? platformAuthError(res.data) : undefined
-      if (authError) {
-        const fresh = await refreshAccessToken()
-        started = performance.now() // time the replay, not the refresh
-        const replayed = fresh ? await invoke() : undefined
-        const replayError =
-          replayed && replayed.status === 401 ? platformAuthError(replayed.data) : undefined
-        if (!replayed || replayError) throw new Error(replayError ?? authError)
-        res = replayed
       }
-      const headers = res.headers as Record<string, unknown>
-      const logResult = headerString(headers, "x-amz-log-result")
-      const result: InvokeResult = {
-        status: res.status,
+
+      const started = performance.now()
+      let response: Response
+      try {
+        response = await fetch(`https://${live.domain}/`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: payload,
+        })
+      } catch (cause) {
+        // fetch rejects without a status for DNS, TLS and CORS alike. CORS is
+        // much the most likely here — the console and the function are
+        // different origins — and a bare "Failed to fetch" sends people
+        // hunting the wrong problem.
+        throw new Error(
+          `Could not reach https://${live.domain}. The function must return ` +
+            `Access-Control-Allow-Origin for the browser to read its response. ` +
+            `(${String(cause)})`,
+        )
+      }
+
+      return {
+        status: response.status,
         durationMs: Math.round(performance.now() - started),
-        body: res.data,
-        contentType: headerString(headers, "content-type"),
-        executedVersion: headerString(headers, "x-amz-executed-version"),
-        functionError: headerString(headers, "x-amz-function-error"),
+        body: await response.text(),
+        contentType: response.headers.get("content-type") ?? undefined,
+        functionError: response.headers.get("x-amz-function-error") ?? undefined,
       }
-      if (logResult) result.logs = decodeLogResult(logResult)
-      return result
     },
   }
 }
