@@ -12,6 +12,7 @@ import type {
   FunctionCode,
   FunctionCodeFile,
   FunctionEntity,
+  FunctionUrl,
   FunctionVersion,
   InvokeResult,
   PutAliasInput,
@@ -36,6 +37,8 @@ export const serverlessKeys = {
   runtimes: (scope = "default") => ["datadack-serverless", "runtimes", scope] as const,
   functions: (scope = "default") => ["datadack-serverless", "functions", scope] as const,
   function: (name: string, scope?: string) => [...serverlessKeys.functions(scope), name] as const,
+  functionUrls: (name: string, scope?: string) =>
+    [...serverlessKeys.functions(scope), name, "urls"] as const,
   versions: (name: string, scope?: string) =>
     [...serverlessKeys.functions(scope), name, "versions"] as const,
   aliases: (name: string, scope?: string) =>
@@ -152,6 +155,27 @@ export function useFunction(name: string, scope?: string) {
     },
     enabled: name !== "" && !!transport.getFunction,
     refetchInterval: (query) => settlingPollInterval(query.state.data?.state),
+  })
+}
+
+/**
+ * The hostnames that invoke a function.
+ *
+ * Gated on the transport implementing `listFunctionUrls`: a console wired to a
+ * control plane without a function-URL surface must not fire this and fill the
+ * cache with thrown errors.
+ */
+export function useFunctionUrls(name: string, scope?: string) {
+  const { transport } = useServerlessContext()
+  return useQuery<FunctionUrl[]>({
+    queryKey: serverlessKeys.functionUrls(name, scope),
+    queryFn: () => {
+      if (!transport.listFunctionUrls) {
+        throw new Error("This console's serverless transport has no listFunctionUrls")
+      }
+      return transport.listFunctionUrls(name)
+    },
+    enabled: name !== "" && !!transport.listFunctionUrls,
   })
 }
 

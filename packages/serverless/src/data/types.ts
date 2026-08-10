@@ -111,6 +111,27 @@ export interface FunctionVersion {
   createdAt?: string
 }
 
+/**
+ * A hostname that invokes a function. The Lambda API addresses a function by
+ * name in a signed request; a function URL is the other way in — an HTTPS
+ * endpoint an ordinary client can call.
+ */
+export interface FunctionUrl {
+  domain: string
+  accountId?: string
+  functionName: string
+  /** Pins a version or alias. Absent targets $LATEST. */
+  qualifier?: string
+  /** "NONE" is public; "AWS_IAM" requires the caller to sign. */
+  authType: string
+  /** Parked: the mapping is kept so nobody else can claim the hostname. */
+  disabled?: boolean
+  /** True when the platform minted this domain from the function name. */
+  generated?: boolean
+  createdAt?: string
+  updatedAt?: string
+}
+
 export interface FunctionEntity {
   id?: string
   accountId?: string

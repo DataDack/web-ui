@@ -7,6 +7,7 @@ import type {
   FunctionCode,
   FunctionCodeFile,
   FunctionEntity,
+  FunctionUrl,
   FunctionVersion,
   InvokeResult,
   PutAliasInput,
@@ -75,6 +76,13 @@ export const faasTransport: ServerlessTransport = {
       ...(resourceGroupId ? { resourceGroupId } : {}),
     })
     return { name: data.name ?? input.name }
+  },
+
+  async listFunctionUrls(name: string): Promise<FunctionUrl[]> {
+    const { data } = await http.get<{ functionUrls?: FunctionUrl[] }>(
+      `${fnPath(name)}/urls`,
+    )
+    return data.functionUrls ?? []
   },
 
   async getFunction(name: string): Promise<FunctionEntity> {

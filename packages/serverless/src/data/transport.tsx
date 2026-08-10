@@ -9,6 +9,7 @@ import type {
   FunctionCode,
   FunctionCodeFile,
   FunctionEntity,
+  FunctionUrl,
   FunctionVersion,
   InvokeResult,
   PutAliasInput,
@@ -57,6 +58,11 @@ export interface ServerlessTransport {
    * to every optional method below.
    */
   getFunction?: (name: string) => Promise<FunctionEntity>
+  /**
+   * The hostnames that invoke a function. Omit when the control plane has no
+   * function-URL surface; the detail header simply shows nothing.
+   */
+  listFunctionUrls?: (name: string) => Promise<FunctionUrl[]>
   /** Published versions of a function, unwrapped from the native keyed list. */
   listVersions?: (name: string) => Promise<FunctionVersion[]>
   /** Aliases of a function, unwrapped from the native keyed list. */

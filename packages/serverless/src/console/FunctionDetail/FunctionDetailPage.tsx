@@ -15,7 +15,7 @@ import {
   cx,
 } from "@datadack/common-ui"
 
-import { useDeleteFunction, useFunction } from "../../data/queries"
+import { useDeleteFunction, useFunction, useFunctionUrls } from "../../data/queries"
 import { useServerlessContext } from "../../data/transport"
 import { ConfirmDialog } from "../ConfirmDialog"
 import { fullHeightPane } from "../layoutConstants"
@@ -134,6 +134,10 @@ export function FunctionDetailPage({
   const merged = useMemo(() => mergeLabels(labels), [labels])
   const { capabilities } = useServerlessContext()
   const { data: fn, isLoading, isError, error } = useFunction(name, scope)
+  // Its own query rather than a field on the function: URLs are a separate
+  // resource in the control plane, and a console wired to one without a
+  // function-URL surface simply never fires this.
+  const { data: functionUrls } = useFunctionUrls(name, scope)
   const deleteFunction = useDeleteFunction(scope)
   const [confirmingDelete, setConfirmingDelete] = useState(false)
 
@@ -235,6 +239,7 @@ export function FunctionDetailPage({
 
       <FunctionDetailHeader
         fn={fn}
+        urls={functionUrls}
         labels={merged}
         actions={
           <>
