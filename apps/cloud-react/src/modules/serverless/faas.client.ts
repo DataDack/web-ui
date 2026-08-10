@@ -1,9 +1,3 @@
-import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios"
-
-
-import { activeScope } from "@/services/api/active-scope"
-import { authToken, refreshAccessToken } from "@/services/api/auth-token"
-
 import type {
   FunctionAlias,
   FunctionCode,
@@ -11,12 +5,20 @@ import type {
   FunctionEntity,
   FunctionUrl,
   FunctionVersion,
+  MetricSeries,
+  MetricSeriesQuery,
   PutAliasInput,
   RuntimeInfo,
   ServerlessTransport,
   Trigger,
   UpdateFunctionConfigInput,
 } from "@datadack/serverless"
+import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios"
+
+
+import { activeScope } from "@/services/api/active-scope"
+import { authToken, refreshAccessToken } from "@/services/api/auth-token"
+
 
 // Direct browser → FaaS control-plane client. This is NOT the gateway client
 // (services/api/client.ts): that one is pinned to /api/v1, cookie-oriented,
@@ -76,6 +78,7 @@ export type FaasDirectTransport = Required<
     | "invokeFunction"
     | "listTriggers"
     | "updateFunctionConfig"
+    | "getMetricSeries"
     | "getFunctionCode"
     | "getFunctionCodeFile"
     | "putFunctionCodeFile"
@@ -229,6 +232,24 @@ export function createFaasTransport(opts: FaasTransportOptions): FaasDirectTrans
           .patch<FunctionEntity>(`/v1/functions/${encodeURIComponent(name)}`, patch)
           .then((res) => res.data),
         "Could not save the configuration",
+      ),
+
+    // Bucketed metrics for one function. Read straight from FaaS like the other
+    // detail-page reads: the credential already carries faas:metrics.read (the
+    // gateway mints it in the serverless internal API's scope set), so the extra
+    // hop would buy nothing.
+    getMetricSeries: (query: MetricSeriesQuery) =>
+      run(
+        faas
+          .get<MetricSeries>("/v1/metrics/series", {
+            params: {
+              function: query.functionName,
+              since: query.since,
+              ...(query.step ? { step: query.step } : {}),
+            },
+          })
+          .then((res) => res.data),
+        "Could not load the metrics",
       ),
 
     listTriggers: (functionName) =>

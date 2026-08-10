@@ -286,7 +286,7 @@ export function FunctionDetailPage({
             >
               {tab.value === "code" && <CodeTab fn={fn} scope={scope} labels={merged} />}
               {tab.value === "test" && <TestTab fn={fn} scope={scope} labels={merged} />}
-              {tab.value === "monitor" && <MonitorTab fn={fn} labels={merged} />}
+              {tab.value === "monitor" && <MonitorTab fn={fn} scope={scope} labels={merged} />}
               {tab.value === "configuration" && (
                 <ConfigurationTab
                   fn={fn}

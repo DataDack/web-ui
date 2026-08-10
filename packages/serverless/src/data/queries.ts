@@ -15,6 +15,8 @@ import type {
   FunctionUrl,
   FunctionVersion,
   InvokeResult,
+  MetricSeries,
+  MetricSeriesQuery,
   PutAliasInput,
   RuntimeInfo,
   Trigger,
@@ -49,6 +51,8 @@ export const serverlessKeys = {
     [...serverlessKeys.functions(scope), name, "code"] as const,
   codeFile: (name: string, path: string, scope?: string) =>
     [...serverlessKeys.code(name, scope), "file", path] as const,
+  metrics: (name: string, window: string, scope?: string) =>
+    [...serverlessKeys.functions(scope), name, "metrics", window] as const,
 }
 
 /**
@@ -221,6 +225,33 @@ export function useFunctionTriggers(name: string, scope?: string) {
       return transport.listTriggers(name)
     },
     enabled: name !== "" && !!transport.listTriggers,
+  })
+}
+
+/**
+ * Bucketed metrics for one function.
+ *
+ * Polls rather than sitting still: a Monitor tab left open is the one surface
+ * where "nothing has changed since you opened it" is the wrong answer. The
+ * interval is a bucket-independent 30s — the series is cheap (one bucketed read,
+ * not one row per invocation) and a shorter poll would only re-render the same
+ * partial trailing bucket.
+ *
+ * The window is part of the key, so switching range refetches instead of
+ * redrawing the previous range's buckets against the new axis.
+ */
+export function useFunctionMetrics(name: string, query: MetricSeriesQuery, scope?: string) {
+  const { transport } = useServerlessContext()
+  return useQuery<MetricSeries>({
+    queryKey: serverlessKeys.metrics(name, `${query.since}/${query.step ?? "auto"}`, scope),
+    queryFn: () => {
+      if (!transport.getMetricSeries) {
+        throw new Error("This console's serverless transport has no getMetricSeries")
+      }
+      return transport.getMetricSeries({ ...query, functionName: name })
+    },
+    enabled: name !== "" && !!transport.getMetricSeries,
+    refetchInterval: 30_000,
   })
 }
 

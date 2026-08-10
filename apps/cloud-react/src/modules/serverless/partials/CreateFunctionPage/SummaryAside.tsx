@@ -13,7 +13,6 @@ interface SummaryAsideProps {
   architecture: string
   memorySize: number
   timeout: number
-  envCount: number
   selectedRuntime: RuntimeInfo | undefined
 }
 
@@ -46,8 +45,9 @@ function Stat({
  *
  * The wizard asks its questions one step at a time, which means that without
  * this the only place the whole thing is visible is the review step — after
- * every decision has already been made. Showing it throughout is what makes
- * "128 MB" register as a choice while the memory field is still on screen.
+ * every decision has already been made. The memory and timeout tiles are not
+ * asked for anywhere in the wizard, so this is the only place the defaults a
+ * function is created with are stated before it exists.
  *
  * Deliberately has no submit button: the wizard footer owns advancing and
  * submitting, and a second way to submit sitting next to the first is a way to
@@ -63,7 +63,6 @@ export function SummaryAside({
   architecture,
   memorySize,
   timeout,
-  envCount,
   selectedRuntime,
 }: Readonly<SummaryAsideProps>) {
   // An image carries its own entrypoint, so runtime/handler are not part of
@@ -86,10 +85,6 @@ export function SummaryAside({
               <Row label="Architecture" value={architecture} />
             </>
           )}
-          <Row
-            label="Env"
-            value={envCount === 1 ? "1 variable" : `${String(envCount)} variables`}
-          />
         </div>
       </div>
 

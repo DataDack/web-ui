@@ -4280,7 +4280,9 @@
           "unsavedOne": "1 unsaved file",
           "unsavedOther": "{{count}} unsaved files",
           "readOnly": "Read only",
-          "close": "Close"
+          "close": "Close",
+          "fullscreen": "Full screen",
+          "exitFullscreen": "Exit full screen"
         },
         "tree": {
           "heading": "Files",
@@ -4394,12 +4396,31 @@
         "failed": "The invocation failed"
       },
       "monitor": {
-        "blurb": "Per-function metrics are on the way. Each card below shows what will land here.",
+        "blurb": "Counts and durations come from execution records, so they are exact rather than sampled. The cards still marked coming soon have no data source yet.",
         "comingSoon": "Coming soon",
+        "unavailable": "This console can’t reach the metrics API for the active region, so the charts stay empty.",
+        "loadFailed": "Could not load the metrics",
+        "truncated": "The control plane hit its row cap, so this covers less than the range asked for.",
+        "noSamples": "No worker samples in this window",
+        "refresh": "Refresh",
+        "summary": {
+          "total": "{{value}} total",
+          "successRate": "{{value}} success",
+          "average": "avg {{value}}",
+          "peak": "peak {{value}}"
+        },
         "metrics": {
           "invocations": {
             "title": "Invocations",
             "unit": "Count"
+          },
+          "coldStarts": {
+            "title": "Cold starts",
+            "unit": "Count"
+          },
+          "compute": {
+            "title": "Billed compute",
+            "unit": "GB-seconds"
           },
           "duration": {
             "title": "Duration",
@@ -4549,8 +4570,6 @@
       "basicsDescription": "Name the function.",
       "package": "Package & runtime",
       "packageDescription": "Where the code comes from, and the runtime it runs on.",
-      "sizing": "Sizing & environment",
-      "sizingDescription": "Memory, timeout and environment variables.",
       "submit": "Deploy function",
       "layer": "Layer",
       "layerDescription": "Name the layer and upload its archive.",

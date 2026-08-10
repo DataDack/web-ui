@@ -10,6 +10,8 @@ import type {
   FunctionUrl,
   FunctionVersion,
   InvokeResult,
+  MetricSeries,
+  MetricSeriesQuery,
   PutAliasInput,
   RuntimeInfo,
   ServerlessTransport,
@@ -153,6 +155,22 @@ export const faasTransport: ServerlessTransport = {
     // nothing but changed fields, and JSON serialisation drops the `undefined`
     // ones, so the patch goes over the wire as-is.
     const { data } = await http.patch<FunctionEntity>(fnPath(name), patch)
+    return data
+  },
+
+  async getMetricSeries(query: MetricSeriesQuery): Promise<MetricSeries> {
+    // The same bucketed series the Metrics page charts, narrowed to one
+    // function. Scoped to the selected resource group like every other read
+    // here, so a group-scoped session does not chart a function it cannot see.
+    const params: Record<string, string> = {
+      function: query.functionName,
+      since: query.since,
+    }
+    if (query.step) params.step = query.step
+    const resourceGroupId = connection.resourceGroup()
+    if (resourceGroupId) params.resourceGroupId = resourceGroupId
+
+    const { data } = await http.get<MetricSeries>("/v1/metrics/series", { params })
     return data
   },
 

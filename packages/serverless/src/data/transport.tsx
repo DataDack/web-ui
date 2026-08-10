@@ -12,6 +12,8 @@ import type {
   FunctionUrl,
   FunctionVersion,
   InvokeResult,
+  MetricSeries,
+  MetricSeriesQuery,
   PutAliasInput,
   RuntimeInfo,
   Trigger,
@@ -87,6 +89,12 @@ export interface ServerlessTransport {
    * ones.
    */
   updateFunctionConfig?: (name: string, patch: UpdateFunctionConfigInput) => Promise<FunctionEntity>
+  /**
+   * Bucketed metrics for one function. Omit when the control plane behind this
+   * console has no metrics surface — `capabilities.metrics` is what turns the
+   * Monitor tab's charts back into coming-soon previews.
+   */
+  getMetricSeries?: (query: MetricSeriesQuery) => Promise<MetricSeries>
 
   /* ── Inline code editing ───────────────────────────────────────────────
    *
@@ -147,6 +155,8 @@ export interface ServerlessCapabilities {
   triggers: boolean
   /** Offer configuration editing. Requires `updateFunctionConfig`. */
   configEdit: boolean
+  /** Chart the Monitor tab from real data. Requires `getMetricSeries`. */
+  metrics: boolean
   /** Show the inline code editor. Requires `getFunctionCode` + `getFunctionCodeFile`. */
   codeRead: boolean
   /**
@@ -206,6 +216,7 @@ export function ServerlessProvider({
         functionDelete: typeof transport.deleteFunction === "function",
         triggers: typeof transport.listTriggers === "function",
         configEdit: typeof transport.updateFunctionConfig === "function",
+        metrics: typeof transport.getMetricSeries === "function",
         codeRead:
           typeof transport.getFunctionCode === "function" &&
           typeof transport.getFunctionCodeFile === "function",

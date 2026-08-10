@@ -1,6 +1,5 @@
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 
-import { type TagRow, tagRowsToRecord } from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Zap } from "lucide-react"
 import { useForm } from "react-hook-form"
@@ -15,7 +14,6 @@ import { useScreen } from "@/services/api/screen"
 import { BasicsStep } from "./BasicsStep"
 import { PackageStep } from "./PackageStep"
 import { makeSchema, type FormValues } from "./schema"
-import { SizingStep } from "./SizingStep"
 import { SummaryAside } from "./SummaryAside"
 import { SERVERLESS_ROUTES } from "../../serverless.constants"
 import {
@@ -27,8 +25,12 @@ import { templateForFamily } from "../../serverless.templates"
 import type { CreateFunctionRequest } from "../../serverless.types"
 
 /**
- * Create a function: name it, say where the code comes from, pick a runtime,
- * size it.
+ * Create a function: name it, say where the code comes from, pick a runtime.
+ *
+ * Sizing and environment variables are deliberately not asked for. Memory and
+ * timeout are created at the platform defaults and every one of those settings
+ * is editable on the function's Configuration tab, so making them a step only
+ * put three fields nobody changes between the user and a deployed function.
  *
  * The wizard owns stepping and validation; each step is its own component so
  * that the page here is only the wiring — the form, the catalog-aware schema,
@@ -51,8 +53,6 @@ export function CreateFunctionPage() {
   // they are known rather than only after a rejected submit.
   const schema = useMemo(() => makeSchema(rule, allRuntimes ?? []), [rule, allRuntimes])
 
-  const [envRows, setEnvRows] = useState<TagRow[]>([{ key: "", value: "" }])
-
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -62,6 +62,10 @@ export function CreateFunctionPage() {
       runtime: "",
       handler: "",
       architecture: "x86_64",
+      // No step asks for these any more: creation uses the platform defaults,
+      // and both are editable on the function's Configuration tab straight
+      // after. They stay in the form so the summary states what is being
+      // created and the POST keeps sending explicit values.
       memorySize: 128,
       timeout: 3,
     },
@@ -114,31 +118,9 @@ export function CreateFunctionPage() {
           return items
         },
       },
-      {
-        id: "sizing",
-        title: t("serverless.wizard.sizing"),
-        description: t("serverless.wizard.sizingDescription"),
-        fields: ["memorySize", "timeout"],
-        render: (f) => <SizingStep form={f} envRows={envRows} setEnvRows={setEnvRows} />,
-        reviewItems: (values) => {
-          const env = Object.entries(tagRowsToRecord(envRows))
-          return [
-            {
-              label: t("serverless.form.memory"),
-              value: `${String(values.memorySize)} MB`,
-            },
-            { label: t("serverless.form.timeout"), value: `${String(values.timeout)}s` },
-            {
-              label: t("serverless.form.env"),
-              value: env.length > 0 ? env.map(([k]) => k).join(", ") : "—",
-              mono: true,
-            },
-          ]
-        },
-      },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [t, envRows, form],
+    [t, form],
   )
 
   // Watched rather than read once, so the aside tracks the form as it is filled
@@ -176,12 +158,10 @@ export function CreateFunctionPage() {
             architecture={watched.architecture}
             memorySize={watched.memorySize}
             timeout={watched.timeout}
-            envCount={envRows.filter((row) => row.key.trim() !== "").length}
             selectedRuntime={selectedRuntime}
           />
         }
         onSubmit={(values) => {
-          const env = tagRowsToRecord(envRows)
           if (values.packageType === "blank") {
             const family = (allRuntimes ?? []).find((info) => info.name === values.runtime)?.family
             const template = templateForFamily(family)
@@ -203,7 +183,6 @@ export function CreateFunctionPage() {
                 architecture: values.architecture,
                 memorySize: values.memorySize,
                 timeout: values.timeout,
-                env: Object.keys(env).length > 0 ? env : undefined,
                 files: template.files,
               },
               {
@@ -219,7 +198,6 @@ export function CreateFunctionPage() {
             memorySize: values.memorySize,
             timeout: values.timeout,
           }
-          if (Object.keys(env).length > 0) body.env = env
           create(body, {
             onSuccess: () => void navigate(SERVERLESS_ROUTES.detail(values.name)),
           })

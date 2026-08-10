@@ -7,6 +7,7 @@ import { toast } from "sonner"
 
 import { OnboardingStepSkeleton } from "@/components/console/feedback/Skeletons"
 import { AUTH_QUERY_KEYS } from "@/modules/auth/auth.constants"
+import type { UserProfile } from "@/modules/auth/auth.types"
 import { extractError } from "@/services/api/client"
 import { useScreen } from "@/services/api/screen"
 
@@ -18,6 +19,7 @@ import {
   useCompleteOnboarding,
   useOnboardingStatus,
 } from "../onboarding.hooks"
+import type { OnboardingStatusResponse } from "../onboarding.types"
 import { AccountTypeStep } from "./steps/AccountTypeStep"
 import { BasicDetailsStep } from "./steps/BasicDetailsStep"
 import { ReviewStep } from "./steps/ReviewStep"
@@ -86,6 +88,18 @@ export function OnboardingPage() {
         // account created here.
         accept_terms: true,
       })
+      // The mutation already awaited a session/status refetch, but stamp the
+      // completed state onto both caches anyway: RequireAuth reads
+      // onboarding_status off the cached session on the very next render, and a
+      // slow or failed refresh there would bounce the freshly onboarded user
+      // straight back into this wizard (landing on step 1) instead of the
+      // console.
+      qc.setQueryData<UserProfile>(AUTH_QUERY_KEYS.session, (prev) =>
+        prev ? { ...prev, onboarding_status: "completed", user_type: type } : prev,
+      )
+      qc.setQueryData<OnboardingStatusResponse>(ONBOARDING_QUERY_KEYS.status, (prev) =>
+        prev ? { ...prev, onboarding_status: "completed", user_type: type } : prev,
+      )
       toast.success(t("onboarding.success.title"))
       void navigate("/", { replace: true })
     } catch (e) {

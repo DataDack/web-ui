@@ -18,13 +18,21 @@ export function useOnboardingStatus() {
 }
 
 /** Refresh both the onboarding status and the auth session (so the gate sees
- *  the new onboarding_status) after a step completes. */
+ *  the new onboarding_status) after a step completes.
+ *
+ *  AWAITED on purpose: react-query settles a mutation only after the promise
+ *  returned from onSuccess resolves, so `await mutateAsync(...)` now guarantees
+ *  both caches carry the post-write state. Without that, the caller navigating
+ *  straight after /complete raced RequireAuth, which still read the stale
+ *  `onboarding_status` off the cached session and bounced the freshly onboarded
+ *  user back into the wizard. */
 function useInvalidateOnboarding() {
   const qc = useQueryClient()
-  return () => {
-    void qc.invalidateQueries({ queryKey: ONBOARDING_QUERY_KEYS.status })
-    void qc.invalidateQueries({ queryKey: AUTH_QUERY_KEYS.session })
-  }
+  return () =>
+    Promise.all([
+      qc.invalidateQueries({ queryKey: ONBOARDING_QUERY_KEYS.status }),
+      qc.invalidateQueries({ queryKey: AUTH_QUERY_KEYS.session }),
+    ])
 }
 
 export function useSendEmailOTP() {
@@ -86,8 +94,8 @@ export function useStartKyc() {
   const invalidate = useInvalidateOnboarding()
   return useMutation({
     mutationFn: startVerification,
-    onSuccess: (result) => {
-      if (result.outcome === "already-verified") invalidate()
+    onSuccess: async (result) => {
+      if (result.outcome === "already-verified") await invalidate()
     },
   })
 }

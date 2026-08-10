@@ -90,7 +90,7 @@ export function useUpdateProfile() {
   return useMutation({
     mutationFn: (name: string) => authApi.updateProfile(name),
     onSuccess: (user: UserProfile) => {
-      queryClient.setQueryData(AUTH_QUERY_KEYS.session, user)
+      queryClient.setQueryData(AUTH_QUERY_KEYS.session, mergeSession(user))
     },
   })
 }
@@ -103,9 +103,19 @@ export function useUpdatePhone() {
   return useMutation({
     mutationFn: (phone: string) => authApi.updatePhone(phone),
     onSuccess: (user: UserProfile) => {
-      queryClient.setQueryData(AUTH_QUERY_KEYS.session, user)
+      queryClient.setQueryData(AUTH_QUERY_KEYS.session, mergeSession(user))
     },
   })
+}
+
+/** Fold a self-update response into the cached session. PUT /me and
+ *  PUT /me/phone answer the bare profile — no `accounts` / `organizations`,
+ *  which only GET /session?include=… carries — so replacing the cache outright
+ *  would silently drop the user's account list mid-session (e.g. from the
+ *  onboarding name step). Keep whatever the session already resolved. */
+function mergeSession(user: UserProfile) {
+  return (prev: UserProfile | undefined): UserProfile =>
+    prev ? { ...prev, ...user, accounts: prev.accounts, organizations: prev.organizations } : user
 }
 
 export { extractError }

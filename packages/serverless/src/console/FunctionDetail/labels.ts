@@ -58,6 +58,9 @@ export interface FunctionDetailLabels {
       readOnly: string
       /** Accessible name for a file tab's close button. */
       close: string
+      /** The editor-size toggle, in each of its two states. */
+      fullscreen: string
+      exitFullscreen: string
     }
     tree: {
       heading: string
@@ -151,12 +154,29 @@ export interface FunctionDetailLabels {
   monitor: {
     blurb: string
     comingSoon: string
+    /** Shown instead of the charts when the console wired no metrics transport. */
+    unavailable: string
+    loadFailed: string
+    /** The control plane hit its row cap, so the window is short of the range. */
+    truncated: string
+    /** Empty gauge charts: nobody sampled, which is not the same as zero. */
+    noSamples: string
+    refresh: string
+    /** Right-hand figure on each real card, for the whole window. */
+    summary: {
+      total: (value: string) => string
+      successRate: (value: string) => string
+      average: (value: string) => string
+      peak: (value: string) => string
+    }
     metrics: {
       invocations: MetricLabel
       duration: MetricLabel
       errors: MetricLabel
       throttles: MetricLabel
       concurrent: MetricLabel
+      coldStarts: MetricLabel
+      compute: MetricLabel
       recursive: MetricLabel
       asyncEventAge: MetricLabel
       asyncEvents: MetricLabel
@@ -298,6 +318,8 @@ export const DEFAULT_FUNCTION_DETAIL_LABELS: FunctionDetailLabels = {
       unsaved: (count) => (count === 1 ? "1 unsaved file" : `${String(count)} unsaved files`),
       readOnly: "Read only",
       close: "Close",
+      fullscreen: "Full screen",
+      exitFullscreen: "Exit full screen",
     },
     tree: {
       heading: "Files",
@@ -410,14 +432,29 @@ export const DEFAULT_FUNCTION_DETAIL_LABELS: FunctionDetailLabels = {
     failed: "The invocation failed",
   },
   monitor: {
-    blurb: "Per-function metrics are on the way. Each card below shows what will land here.",
+    blurb:
+      "Counts and durations come from execution records, so they are exact rather than sampled. " +
+      "The cards still marked coming soon have no data source yet.",
     comingSoon: "Coming soon",
+    unavailable: "This console is not wired to a metrics endpoint, so the charts stay empty.",
+    loadFailed: "Could not load the metrics",
+    truncated: "The control plane hit its row cap, so this covers less than the range asked for.",
+    noSamples: "No worker samples in this window",
+    refresh: "Refresh",
+    summary: {
+      total: (value) => `${value} total`,
+      successRate: (value) => `${value} success`,
+      average: (value) => `avg ${value}`,
+      peak: (value) => `peak ${value}`,
+    },
     metrics: {
       invocations: { title: "Invocations", unit: "Count" },
       duration: { title: "Duration", unit: "Milliseconds" },
       errors: { title: "Error count and success rate", unit: "Count / %" },
       throttles: { title: "Throttles", unit: "Count" },
       concurrent: { title: "Concurrent executions", unit: "Count" },
+      coldStarts: { title: "Cold starts", unit: "Count" },
+      compute: { title: "Billed compute", unit: "GB-seconds" },
       recursive: { title: "Recursive invocations detected", unit: "Count" },
       asyncEventAge: { title: "Async invocation event age", unit: "Milliseconds" },
       asyncEvents: { title: "Async events received", unit: "Count" },

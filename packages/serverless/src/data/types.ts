@@ -289,3 +289,93 @@ export interface UpdateFunctionConfigInput {
   maxRetryAttempts?: number
   maxEventAgeSeconds?: number
 }
+
+/* ── Metrics ────────────────────────────────────────────────────────────
+ *
+ * The bucketed series behind GET /v1/metrics/series. Two sources feed it and
+ * the difference matters when reading a card:
+ *
+ *   - Counts and durations come from execution records — one row per
+ *     invocation, so they are exact rather than sampled.
+ *   - Concurrency and memory are gauges reported by workers. `samples` is how
+ *     many backed a bucket, which is what separates "zero" from "nobody
+ *     reported"; a chart that ignores it draws a flat line through a gap.
+ */
+
+/** One time bucket, covering [timestamp, timestamp + stepSeconds). */
+export interface MetricBucket {
+  timestamp: string
+  invocations: number
+  errors: number
+  throttles: number
+  coldStarts: number
+  /** Milliseconds, over the invocations that ENDED in this bucket. */
+  avgDurationMs: number
+  p50DurationMs: number
+  p95DurationMs: number
+  p99DurationMs: number
+  maxDurationMs: number
+  /** Billed compute for the bucket. */
+  gbSeconds: number
+  /** How many worker samples backed the gauges below. Zero means none. */
+  samples: number
+  avgCpuSeconds: number
+  avgMemoryMb: number
+  peakMemoryMb: number
+  avgInflight: number
+  peakInflight: number
+}
+
+/** The whole window, summarized. */
+export interface MetricTotals {
+  invocations: number
+  errors: number
+  /** Fraction, not a percentage: 0.05 is 5%. */
+  errorRate: number
+  coldStarts: number
+  coldStartRate: number
+  avgDurationMs: number
+  p50DurationMs: number
+  p95DurationMs: number
+  p99DurationMs: number
+  maxDurationMs: number
+  gbSeconds: number
+}
+
+/** One function's share of the window; empty when a series is function-scoped. */
+export interface FunctionMetricTotal {
+  functionName: string
+  invocations: number
+  errors: number
+  avgDurationMs: number
+  p95DurationMs: number
+  gbSeconds: number
+}
+
+export interface MetricSeries {
+  since: string
+  until: string
+  stepSeconds: number
+  functionName?: string
+  buckets: MetricBucket[]
+  totals: MetricTotals
+  topFunctions: FunctionMetricTotal[]
+  /**
+   * The store hit its row cap, so the series covers less than the window that
+   * was asked for. Worth surfacing: silently returning a partial chart reads as
+   * "traffic stopped".
+   */
+  truncated: boolean
+}
+
+/**
+ * What to chart. `since` and `step` are the control plane's own spellings —
+ * `since` takes an RFC3339 stamp or a negative Go duration ("-3h"), `step` a
+ * positive one ("5m") or bare seconds — so a poll never has to recompute a
+ * timestamp.
+ */
+export interface MetricSeriesQuery {
+  functionName: string
+  since: string
+  step?: string
+}

@@ -106,6 +106,8 @@ export function ServerlessFunctionDetailPage() {
             ),
           readOnly: t("serverless.detail.code.toolbar.readOnly"),
           close: t("serverless.detail.code.toolbar.close"),
+          fullscreen: t("serverless.detail.code.toolbar.fullscreen"),
+          exitFullscreen: t("serverless.detail.code.toolbar.exitFullscreen"),
         },
         tree: {
           heading: t("serverless.detail.code.tree.heading"),
@@ -224,10 +226,30 @@ export function ServerlessFunctionDetailPage() {
       monitor: {
         blurb: t("serverless.detail.monitor.blurb"),
         comingSoon: t("serverless.detail.monitor.comingSoon"),
+        unavailable: t("serverless.detail.monitor.unavailable"),
+        loadFailed: t("serverless.detail.monitor.loadFailed"),
+        truncated: t("serverless.detail.monitor.truncated"),
+        noSamples: t("serverless.detail.monitor.noSamples"),
+        refresh: t("serverless.detail.monitor.refresh"),
+        summary: {
+          total: (value: string) => t("serverless.detail.monitor.summary.total", { value }),
+          successRate: (value: string) =>
+            t("serverless.detail.monitor.summary.successRate", { value }),
+          average: (value: string) => t("serverless.detail.monitor.summary.average", { value }),
+          peak: (value: string) => t("serverless.detail.monitor.summary.peak", { value }),
+        },
         metrics: {
           invocations: {
             title: t("serverless.detail.monitor.metrics.invocations.title"),
             unit: t("serverless.detail.monitor.metrics.invocations.unit"),
+          },
+          coldStarts: {
+            title: t("serverless.detail.monitor.metrics.coldStarts.title"),
+            unit: t("serverless.detail.monitor.metrics.coldStarts.unit"),
+          },
+          compute: {
+            title: t("serverless.detail.monitor.metrics.compute.title"),
+            unit: t("serverless.detail.monitor.metrics.compute.unit"),
           },
           duration: {
             title: t("serverless.detail.monitor.metrics.duration.title"),

@@ -1,4 +1,4 @@
-import { Rocket, Save, Undo2 } from "lucide-react"
+import { Maximize2, Minimize2, Rocket, Save, Undo2 } from "lucide-react"
 
 import {
   Button,
@@ -97,9 +97,11 @@ export interface CodeToolbarProps {
   saving: boolean
   deploying: boolean
   discarding: boolean
+  fullscreen: boolean
   onSave: () => void
   onDiscard: () => void
   onDeploy: () => void
+  onToggleFullscreen: () => void
 }
 
 /**
@@ -119,9 +121,11 @@ export function CodeToolbar({
   saving,
   deploying,
   discarding,
+  fullscreen,
   onSave,
   onDiscard,
   onDeploy,
+  onToggleFullscreen,
 }: Readonly<CodeToolbarProps>) {
   const copy = labels.code.toolbar
   const metaLine = [
@@ -156,39 +160,53 @@ export function CodeToolbar({
 
       <span className={spacer} />
 
-      {canEdit && (
-        <div className={actions}>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onSave}
-            disabled={busy || unsavedCount === 0}
-            loading={saving}
-          >
-            <Save size={14} />
-            {saving ? copy.saving : copy.save}
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onDiscard}
-            disabled={busy || (!hasDraft && unsavedCount === 0)}
-          >
-            <Undo2 size={14} />
-            {copy.discard}
-          </Button>
-          <Button
-            variant="gold"
-            size="sm"
-            onClick={onDeploy}
-            disabled={busy || (!hasDraft && unsavedCount === 0)}
-            loading={deploying}
-          >
-            <Rocket size={14} />
-            {deploying ? copy.deploying : copy.deploy}
-          </Button>
-        </div>
-      )}
+      <div className={actions}>
+        {canEdit && (
+          <>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onSave}
+              disabled={busy || unsavedCount === 0}
+              loading={saving}
+            >
+              <Save size={14} />
+              {saving ? copy.saving : copy.save}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onDiscard}
+              disabled={busy || (!hasDraft && unsavedCount === 0)}
+            >
+              <Undo2 size={14} />
+              {copy.discard}
+            </Button>
+            <Button
+              variant="gold"
+              size="sm"
+              onClick={onDeploy}
+              disabled={busy || (!hasDraft && unsavedCount === 0)}
+              loading={deploying}
+            >
+              <Rocket size={14} />
+              {deploying ? copy.deploying : copy.deploy}
+            </Button>
+          </>
+        )}
+        {/* Outside the canEdit gate: a package someone can only read is
+            exactly the one worth opening wide to read. */}
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          onClick={onToggleFullscreen}
+          title={fullscreen ? copy.exitFullscreen : copy.fullscreen}
+          aria-label={fullscreen ? copy.exitFullscreen : copy.fullscreen}
+          aria-pressed={fullscreen}
+        >
+          {fullscreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
+        </Button>
+      </div>
     </div>
   )
 }

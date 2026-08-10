@@ -1,7 +1,7 @@
 import { useMemo } from "react"
 
 import { Input, Label } from "@datadack/common-ui"
-import { CodeEditorPlaceholder, familyLabel, RuntimeIcon, type RuntimeInfo } from "@datadack/serverless"
+import { familyLabel, RuntimeIcon, type RuntimeInfo } from "@datadack/serverless"
 import { Container, Sparkles } from "lucide-react"
 import type { UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
@@ -24,7 +24,6 @@ interface PackageStepProps {
 export function PackageStep({ form }: Readonly<PackageStepProps>) {
   const { t } = useTranslation()
   const packageType = form.watch("packageType")
-  const name = form.watch("name")
   const runtime = form.watch("runtime")
   const architecture = form.watch("architecture")
   const { data: runtimes, isLoading, isError } = useServerlessRuntimes()
@@ -172,22 +171,10 @@ export function PackageStep({ form }: Readonly<PackageStepProps>) {
               runtime rather than one the user types. */}
           <FieldError message={handlerRequired ? form.formState.errors.handler?.message : undefined} />
 
-          {packageType === "blank" && (
-            <div className="space-y-3">
-              <p className="text-muted-foreground text-[13px]">{t("serverless.form.blankHint")}</p>
-              {/* Same placeholder the function's Code tab uses in serverless-web,
-                  with copy for this context: here it is showing what the generated
-                  function will look like once it exists, not an editor that is
-                  disabled. Name and runtime are whatever has been chosen above;
-                  the component mocks the rest. */}
-              <CodeEditorPlaceholder
-                functionName={name || "my-function"}
-                runtime={runtime || undefined}
-                title="Editor coming soon"
-                message="Your function deploys with a working template for the runtime you picked above. Inline editing isn’t available yet — update the code through the API or CLI."
-              />
-            </div>
-          )}
+          {/* Blank is the only package left once image is ruled out. No editor
+              preview here — the function's own Code tab is a real editor now,
+              so a mock of one on the way in is only noise. */}
+          <p className="text-muted-foreground text-[13px]">{t("serverless.form.blankHint")}</p>
         </div>
       )}
     </div>

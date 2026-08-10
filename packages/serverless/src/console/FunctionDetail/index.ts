@@ -19,6 +19,7 @@ export {
   type DeepPartial,
   type FunctionDetailLabels,
 } from "./labels"
+export { MetricCard, type MetricCardProps } from "./MetricCard"
 export { MetricComingSoonCard, type MetricComingSoonCardProps } from "./MetricComingSoonCard"
 export { MonitorTab, type MonitorTabProps } from "./MonitorTab"
 export { FUNCTION_DETAIL_TABS, type FunctionDetailTabValue } from "./tabs"

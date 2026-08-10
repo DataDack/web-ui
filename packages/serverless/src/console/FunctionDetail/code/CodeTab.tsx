@@ -58,6 +58,23 @@ const shell = css`
   box-shadow: 0 0 0 1px ${mix("--border", 60)};
 `
 
+/**
+ * Full screen is this panel pinned over the viewport rather than the browser's
+ * Fullscreen API: the console's own dialogs, toasts and command palette keep
+ * working, where a real fullscreen element would render them all beneath it.
+ * z-index stays under the kit's overlays (50) so a dialog opened from in here
+ * still lands on top.
+ */
+const fullscreenShell = css`
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  border-radius: 0;
+  border: 0;
+  background: var(--background);
+  box-shadow: none;
+`
+
 const workbench = css`
   display: flex;
   flex: 1;
@@ -162,6 +179,7 @@ export function CodeTab({ fn, scope, labels, className }: Readonly<CodeTabProps>
   const [deletingPath, setDeletingPath] = useState<string>()
   const [confirmingDiscard, setConfirmingDiscard] = useState(false)
   const [staleDeploy, setStaleDeploy] = useState(false)
+  const [fullscreen, setFullscreen] = useState(false)
 
   const entries = useMemo(() => code.data?.files ?? [], [code.data])
   const editable = code.data?.editable === true
@@ -214,6 +232,33 @@ export function CodeTab({ fn, scope, labels, className }: Readonly<CodeTabProps>
       window.removeEventListener("beforeunload", handler)
     }
   }, [dirtyPaths.size])
+
+  // While the panel covers the viewport the page behind it must not scroll —
+  // otherwise closing full screen lands somewhere the reader never scrolled to.
+  useEffect(() => {
+    if (!fullscreen) return undefined
+    const previous = document.body.style.overflow
+    document.body.style.overflow = "hidden"
+    return () => {
+      document.body.style.overflow = previous
+    }
+  }, [fullscreen])
+
+  // Escape leaves full screen, but only when it is not already spoken for:
+  // Monaco marks its own uses (find widget, suggest popup) as handled, and a
+  // dialog open over the editor should close before the editor shrinks.
+  const dialogOpen =
+    prompt !== undefined || deletingPath !== undefined || confirmingDiscard || staleDeploy
+  useEffect(() => {
+    if (!fullscreen || dialogOpen) return undefined
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && !event.defaultPrevented) setFullscreen(false)
+    }
+    window.addEventListener("keydown", onKeyDown)
+    return () => {
+      window.removeEventListener("keydown", onKeyDown)
+    }
+  }, [fullscreen, dialogOpen])
 
   const openFile = (path: string) => {
     setOpenPaths((prev) => (prev.includes(path) ? prev : [...prev, path]))
@@ -430,7 +475,7 @@ export function CodeTab({ fn, scope, labels, className }: Readonly<CodeTabProps>
   const promptPath = prompt?.kind === "rename" ? prompt.path : ""
 
   return (
-    <div className={cx(glass2, shell, className)}>
+    <div className={cx(glass2, shell, fullscreen && fullscreenShell, className)}>
       <CodeToolbar
         code={codeView}
         labels={labels}
@@ -439,12 +484,16 @@ export function CodeTab({ fn, scope, labels, className }: Readonly<CodeTabProps>
         saving={putFile.isPending}
         deploying={deployDraft.isPending}
         discarding={discardDraft.isPending}
+        fullscreen={fullscreen}
         onSave={handleSave}
         onDiscard={() => {
           setConfirmingDiscard(true)
         }}
         onDeploy={() => {
           runDeploy(codeView.baseSha256)
+        }}
+        onToggleFullscreen={() => {
+          setFullscreen((on) => !on)
         }}
       />
 
