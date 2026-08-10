@@ -26,7 +26,6 @@ import {
   Zap,
   Router,
   ScrollText,
-  Package,
   Server,
   Settings2,
   ShieldCheck,
@@ -180,6 +179,11 @@ export const CONSOLE_SERVICES: ConsoleService[] = [
     // /github/callback; the tab items are longer and more specific, so
     // isItemActiveAmong hands each of them the active state on its own tab.
     //
+    // Plans & pricing is NOT an item: buying hosting is what the cPanel Hosting
+    // view shows an account that has none, so a fourth item selling the same
+    // thing was a second door into one room — and a permanent one, still in the
+    // sidebar long after every plan on it had been bought.
+    //
     // extraMatch keeps the hosting routes that are NOT tabs — the buy flow at
     // /hosting/plans and an account's detail page at /hosting/:id — inside
     // this service's sidebar rather than dropping the user into no service.
@@ -199,11 +203,6 @@ export const CONSOLE_SERVICES: ConsoleService[] = [
         labelKey: "console.nav.items.cpanelHosting",
         icon: Globe,
         path: "/managed-apps?tab=hosting",
-      },
-      {
-        labelKey: "hosting.nav.plans",
-        icon: Package,
-        path: "/hosting/plans",
       },
       {
         labelKey: "console.nav.items.settings",

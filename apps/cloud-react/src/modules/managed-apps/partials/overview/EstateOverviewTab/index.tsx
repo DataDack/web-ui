@@ -10,20 +10,9 @@ import { estateAttention } from "./estate-attention"
 import { EstateAttention } from "./EstateAttention"
 import { HostingSummaryCard } from "./HostingSummaryCard"
 import { RecentDeploys } from "./RecentDeploys"
-import {
-  useAccountPlan,
-  useGitHubConnections,
-  useGitHubInstallUrl,
-  useManagedAppsOverview,
-  useProjects,
-} from "../../../managed-apps.hooks"
+import { useAccountPlan, useManagedAppsOverview, useProjects } from "../../../managed-apps.hooks"
 import type { Build } from "../../../managed-apps.types"
-import { GetStartedHero } from "../GetStartedHero"
 import { buildProjectEntries } from "../project-list"
-
-interface EstateOverviewTabProps {
-  onCreateProject: () => void
-}
 
 /**
  * The section's landing view: one answer to "what am I running, and is any of
@@ -36,18 +25,17 @@ interface EstateOverviewTabProps {
  *
  * Reading order is deliberate: what you have (tiles) → what is wrong
  * (attention) → each half in its own words (cards) → what just happened
- * (deploys). A first-time account skips straight to the onboarding hero: there
- * is nothing to summarise and the tiles would all read zero.
+ * (deploys). The shape does NOT change when a half is empty: onboarding belongs
+ * to the tab that owns it — the GitHub steps to Apps, the plans to cPanel
+ * Hosting — so the overview always summarises and never sells. An account with
+ * one cPanel site and no apps was otherwise reading a page about how to start,
+ * for a product it had already started.
  */
-export function EstateOverviewTab({ onCreateProject }: Readonly<EstateOverviewTabProps>) {
+export function EstateOverviewTab() {
   const { data: overview } = useManagedAppsOverview()
   const { data: projects = [], isLoading: projectsLoading } = useProjects()
   const { data: plan } = useAccountPlan()
   const { data: accounts = [], isLoading: hostingLoading } = useHostingAccounts()
-
-  const { data: connections = [] } = useGitHubConnections()
-  const hasConnection = connections.some((connection) => !connection.revoked)
-  const installUrl = useGitHubInstallUrl()
 
   // Newest known build per project — the overview endpoint caps this at five,
   // so projects outside that window carry no build detail. Their state still
@@ -75,26 +63,6 @@ export function EstateOverviewTab({ onCreateProject }: Readonly<EstateOverviewTa
   const live =
     entries.filter((entry) => entry.state.urlReachable).length +
     accounts.filter((account) => account.status === "ACTIVE").length
-
-  // Nothing at all, anywhere: there is no estate to summarise, so the page is
-  // onboarding. Tiles reading 0/0/0/0 over two empty cards is a worse first
-  // impression than the thing that explains the product.
-  if (!loading && projects.length === 0 && accounts.length === 0) {
-    return (
-      <GetStartedHero
-        connected={hasConnection}
-        connecting={installUrl.isPending}
-        onConnect={() => {
-          installUrl.mutate(undefined, {
-            onSuccess: ({ url }) => {
-              window.location.assign(url)
-            },
-          })
-        }}
-        onCreate={onCreateProject}
-      />
-    )
-  }
 
   return (
     <div>

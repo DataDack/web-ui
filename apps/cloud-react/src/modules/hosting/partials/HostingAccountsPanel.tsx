@@ -1,13 +1,14 @@
 import { useMemo, useState } from "react"
 
 import { Badge, Button, cn, EmptyState, Input, Skeleton, StatusBadge } from "@datadack/common-ui"
-import { ExternalLink, Globe, Loader2, Search, Server } from "lucide-react"
+import { ExternalLink, Globe, Loader2, Search } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 
 import { staggerDelay } from "@/components/console"
 import { TONE_CLASSES, TONE_DOT_CLASSES } from "@/components/console/status-config"
 import { useQueryParamState } from "@/hooks/use-query-param-state"
 
+import { HostingPlanPicker } from "./HostingPlanPicker"
 import { ACCOUNT_STATUS_TONE, HOSTING_ROUTES } from "../hosting.constants"
 import { useHostingAccounts, useHostingLogin } from "../hosting.hooks"
 import type { AccountStatus, HostingAccount } from "../hosting.types"
@@ -45,11 +46,6 @@ function searchIndex(account: HostingAccount): string {
     .toLowerCase()
 }
 
-interface HostingAccountsPanelProps {
-  /** Where "See plans" goes. Defaults to the pricing page. */
-  onNewHosting?: () => void
-}
-
 /**
  * The customer's cPanel accounts, as a list they can search and filter.
  *
@@ -61,7 +57,7 @@ interface HostingAccountsPanelProps {
  * The list polls itself while anything is provisioning and stops the moment
  * everything has settled — see useHostingAccounts.
  */
-export function HostingAccountsPanel({ onNewHosting }: Readonly<HostingAccountsPanelProps>) {
+export function HostingAccountsPanel() {
   const navigate = useNavigate()
   const { data: accounts = [], isLoading } = useHostingAccounts()
   const login = useHostingLogin()
@@ -70,8 +66,6 @@ export function HostingAccountsPanel({ onNewHosting }: Readonly<HostingAccountsP
   // floods history and re-renders every other reader of it.
   const [search, setSearch] = useState("")
   const [status, setStatus] = useQueryParamState<StatusFilter>("hstatus", STATUS_FILTERS, "all")
-
-  const seePlans = onNewHosting ?? (() => void navigate(HOSTING_ROUTES.pricing))
 
   // Only statuses actually present get a chip. A chip reading "0" is not a
   // filter, it is a dead end.
@@ -101,15 +95,22 @@ export function HostingAccountsPanel({ onNewHosting }: Readonly<HostingAccountsP
     )
   }
 
-  // Never provisioned anything: this is onboarding, not an empty filter.
+  // Never provisioned anything: this is onboarding, not an empty filter. The
+  // plans ARE the view — this is the only place they are offered, so a card
+  // whose one action was "See plans" would be a click in front of the content
+  // it was standing in for.
   if (accounts.length === 0) {
     return (
-      <EmptyState
-        icon={Server}
-        title="No hosting yet"
-        description="Pick a plan and your site can be live in about a minute."
-        action={{ label: "See plans", onClick: seePlans }}
-      />
+      <div>
+        <div className="glass-1 mb-6 rounded-xl border border-border/60 px-5 py-4">
+          <h2 className="text-[14px] font-semibold">Pick a plan to get started</h2>
+          <p className="mt-0.5 text-[12px] leading-relaxed text-muted-foreground">
+            cPanel hosting with free SSL, daily backups and one-click installs. Your site can be
+            live in about a minute.
+          </p>
+        </div>
+        <HostingPlanPicker />
+      </div>
     )
   }
 

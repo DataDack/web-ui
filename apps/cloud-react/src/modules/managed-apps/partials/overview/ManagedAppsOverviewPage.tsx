@@ -217,9 +217,7 @@ export function ManagedAppsOverviewPage() {
           exit={{ opacity: 0, y: -4 }}
           transition={{ duration: DUR.fast, ease: EASE.out }}
         >
-          {tab === "overview" && (
-            <EstateOverviewTab onCreateProject={() => void navigate(MANAGED_APPS_ROUTES.create)} />
-          )}
+          {tab === "overview" && <EstateOverviewTab />}
           {tab === "apps" && (
             <ProjectsTab
               onOpenConnections={() => {
@@ -227,9 +225,7 @@ export function ManagedAppsOverviewPage() {
               }}
             />
           )}
-          {tab === "hosting" && (
-            <HostingAccountsPanel onNewHosting={() => void navigate(HOSTING_ROUTES.pricing)} />
-          )}
+          {tab === "hosting" && <HostingAccountsPanel />}
         </motion.div>
       </AnimatePresence>
 
