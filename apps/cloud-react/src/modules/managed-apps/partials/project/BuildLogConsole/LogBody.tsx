@@ -4,7 +4,7 @@ import { cn } from "@datadack/common-ui"
 
 import type { LifecycleEvent } from "./lifecycle"
 import { LifecycleLines } from "./LifecycleLines"
-import { lineTone, type LogTone } from "./log-tone"
+import { lineTone, splitStamp, type LogTone } from "./log-tone"
 
 /** How close to the bottom still counts as "at the bottom", in pixels. */
 const BOTTOM_THRESHOLD = 32
@@ -123,14 +123,19 @@ export function LogBody({
               <td className="w-12 shrink-0 select-none border-r border-border/40 px-2 text-right text-muted-foreground/50 tabular-nums">
                 {index + firstOutputNumber}
               </td>
+              {/* Always rendered, even for a line with no stamp: an empty
+							    cell keeps the text column where the eye already is. */}
+              <td className="w-20 shrink-0 select-none px-2 text-muted-foreground/60 tabular-nums">
+                {splitStamp(line).time}
+              </td>
               <td
                 className={cn(
-                  "px-3",
-                  TONE_CLASS[lineTone(line)],
+                  "px-1",
+                  TONE_CLASS[lineTone(splitStamp(line).text)],
                   wrap ? "break-words whitespace-pre-wrap" : "whitespace-pre",
                 )}
               >
-                {line || " "}
+                {splitStamp(line).text || " "}
               </td>
             </tr>
           ))}

@@ -13,6 +13,34 @@
 
 export type LogTone = "normal" | "warning" | "danger"
 
+/**
+ * A line the runner stamped, split into its time and its text.
+ *
+ * Workflow v9 prefixes every captured line with the wall-clock time it was
+ * read, so the log carries its own timeline: a step that took four minutes is
+ * visible as a gap rather than something to infer. Rendering that in the gutter
+ * keeps the text column aligned; leaving it inline would push every line right
+ * by nine characters and read as part of the output.
+ */
+export interface SplitLine {
+  time: string
+  text: string
+}
+
+/** HH:MM:SS at the very start, exactly as dd_stamp writes it. */
+const STAMP = /^(\d{2}:\d{2}:\d{2}) (.*)$/s
+
+/**
+ * Split a stamped line. Logs from workflows before v9 carry no stamp and are
+ * returned whole with an empty time, which is what keeps an old build readable
+ * rather than showing its first eight characters in the wrong column.
+ */
+export function splitStamp(line: string): SplitLine {
+  const match = STAMP.exec(line)
+  if (!match) return { time: "", text: line }
+  return { time: match[1], text: match[2] }
+}
+
 /** GitHub Actions annotations — unambiguous, whatever printed them. */
 const ANNOTATION_ERROR = "::error"
 const ANNOTATION_WARNING = "::warning"
