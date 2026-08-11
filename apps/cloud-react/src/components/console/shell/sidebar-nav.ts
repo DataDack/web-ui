@@ -115,21 +115,25 @@ export const CONSOLE_SERVICES: ConsoleService[] = [
         labelKey: "console.nav.items.routers",
         icon: Router,
         path: "/networking/routers",
+        comingSoon: true,
       },
       {
         labelKey: "console.nav.items.internetGateways",
         icon: Waypoints,
         path: "/networking/internet-gateways",
+        comingSoon: true,
       },
       {
         labelKey: "console.nav.items.natGateways",
         icon: ArrowRightLeft,
         path: "/networking/nat-gateways",
+        comingSoon: true,
       },
       {
         labelKey: "console.nav.items.vpn",
         icon: Cable,
         path: "/networking/vpn",
+        comingSoon: true,
       },
       {
         labelKey: "console.nav.items.staticIps",
