@@ -179,10 +179,10 @@ export const managedAppsApi = {
    * The repository's file listing at a commit. `ref` is a build's commit sha —
    * omitted, the server reads the tracked branch instead.
    */
-  projectSourceTree: (id: string, ref = ""): Promise<SourceTree> =>
-    apiGet<SourceTree>(
-      `${BASE}/projects/${id}/source/tree${ref ? `?ref=${encodeURIComponent(ref)}` : ""}`,
-    ),
+  projectSourceTree: (id: string, ref = ""): Promise<SourceTree> => {
+    const query = ref === "" ? "" : `?ref=${encodeURIComponent(ref)}`
+    return apiGet<SourceTree>(`${BASE}/projects/${id}/source/tree${query}`)
+  },
 
   /**
    * One file out of that listing. The path is a query parameter because

@@ -121,6 +121,73 @@ export function FileView({ projectId, gitRef, path }: Readonly<FileViewProps>) {
     URL.revokeObjectURL(url)
   }
 
+  // The three non-readable answers first — each states what the file IS, so
+  // "nothing rendered" is never left to look like a failure.
+  const body = () => {
+    if (file.too_large) {
+      return (
+        <Notice
+          icon={FileWarning}
+          title="Too large to preview"
+          detail={`This file is ${formatBytes(file.size)} — the viewer stops at ${formatBytes(file.max_bytes)}.`}
+          action={openOnGitHub}
+        />
+      )
+    }
+    if (file.binary) {
+      return (
+        <Notice
+          icon={Binary}
+          title="Binary file"
+          detail={`${formatBytes(file.size)} of data that is not text — there is nothing to show here.`}
+          action={openOnGitHub}
+        />
+      )
+    }
+    if (lines.length === 0) {
+      return <Notice icon={FileWarning} title="Empty file" detail="This file has no contents." />
+    }
+    return (
+      <div className="min-h-0 flex-1 overflow-auto bg-muted/20">
+        <table className="w-full border-collapse font-mono text-[12px] leading-relaxed">
+          <tbody>
+            {shown.map((line, index) => (
+              // A line's identity IS its position in the file.
+              // eslint-disable-next-line react/no-array-index-key
+              <tr key={index} className="align-baseline">
+                <td className="w-12 shrink-0 border-r border-border/40 px-2 text-right text-muted-foreground/50 tabular-nums select-none">
+                  {index + 1}
+                </td>
+                <td
+                  className={cn(
+                    "px-3 text-foreground/85",
+                    wrap ? "break-words whitespace-pre-wrap" : "whitespace-pre",
+                  )}
+                >
+                  {line || " "}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {lines.length > shown.length && (
+          <div className="flex flex-wrap items-center gap-2 border-t border-border/40 px-4 py-3 text-[12px] text-muted-foreground">
+            Showing the first {MAX_RENDERED_LINES.toLocaleString()} of{" "}
+            {lines.length.toLocaleString()} lines.
+            <a
+              href={file.html_url}
+              target="_blank"
+              rel="noreferrer"
+              className="text-status-info hover:underline"
+            >
+              Read the whole file on GitHub
+            </a>
+          </div>
+        )}
+      </div>
+    )
+  }
+
   return (
     <div className="flex h-full min-h-0 min-w-0 flex-1 flex-col">
       <div className="flex items-center gap-2 border-b border-border/60 px-3 py-1.5">
@@ -176,63 +243,7 @@ export function FileView({ projectId, gitRef, path }: Readonly<FileViewProps>) {
         </Button>
       </div>
 
-      {file.too_large ? (
-        <Notice
-          icon={FileWarning}
-          title="Too large to preview"
-          detail={`This file is ${formatBytes(file.size)} — the viewer stops at ${formatBytes(
-            file.max_bytes,
-          )}.`}
-          action={openOnGitHub}
-        />
-      ) : file.binary ? (
-        <Notice
-          icon={Binary}
-          title="Binary file"
-          detail={`${formatBytes(file.size)} of data that is not text — there is nothing to show here.`}
-          action={openOnGitHub}
-        />
-      ) : lines.length === 0 ? (
-        <Notice icon={FileWarning} title="Empty file" detail="This file has no contents." />
-      ) : (
-        <div className="min-h-0 flex-1 overflow-auto bg-muted/20">
-          <table className="w-full border-collapse font-mono text-[12px] leading-relaxed">
-            <tbody>
-              {shown.map((line, index) => (
-                // A line's identity IS its position in the file.
-                // eslint-disable-next-line react/no-array-index-key
-                <tr key={index} className="align-baseline">
-                  <td className="w-12 shrink-0 border-r border-border/40 px-2 text-right text-muted-foreground/50 tabular-nums select-none">
-                    {index + 1}
-                  </td>
-                  <td
-                    className={cn(
-                      "px-3 text-foreground/85",
-                      wrap ? "break-words whitespace-pre-wrap" : "whitespace-pre",
-                    )}
-                  >
-                    {line || " "}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {lines.length > shown.length && (
-            <div className="flex flex-wrap items-center gap-2 border-t border-border/40 px-4 py-3 text-[12px] text-muted-foreground">
-              Showing the first {MAX_RENDERED_LINES.toLocaleString()} of{" "}
-              {lines.length.toLocaleString()} lines.
-              <a
-                href={file.html_url}
-                target="_blank"
-                rel="noreferrer"
-                className="text-status-info hover:underline"
-              >
-                Read the whole file on GitHub
-              </a>
-            </div>
-          )}
-        </div>
-      )}
+      {body()}
     </div>
   )
 }

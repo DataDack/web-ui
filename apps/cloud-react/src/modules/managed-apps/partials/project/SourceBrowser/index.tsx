@@ -70,6 +70,47 @@ export function SourceBrowser({
 
   const repoURL = tree ? `https://github.com/${tree.repo_owner}/${tree.repo_name}` : ""
 
+  const body = () => {
+    if (isLoading) {
+      return (
+        <div className="flex min-h-0 flex-1 gap-4 p-4">
+          <div className="w-64 shrink-0 space-y-2">
+            {["a", "b", "c", "d", "e", "f"].map((key) => (
+              <Skeleton key={key} className="h-5 w-full" />
+            ))}
+          </div>
+          <Skeleton className="min-h-0 flex-1" />
+        </div>
+      )
+    }
+    if (isError || !tree) {
+      return (
+        <EmptyState
+          icon={FileWarning}
+          title="Could not load this commit"
+          // Verbatim: "no commit … in owner/repo" after a force-push, or the
+          // revoked-installation message, is the entire explanation.
+          description={
+            error instanceof Error
+              ? error.message
+              : "The repository could not be read for this build."
+          }
+        />
+      )
+    }
+    return (
+      <div className="flex min-h-0 flex-1">
+        <FileTree
+          entries={tree.entries}
+          selected={selected}
+          onSelect={setSelected}
+          initialExpanded={expanded}
+        />
+        <FileView projectId={projectId} gitRef={tree.ref} path={selected} />
+      </div>
+    )
+  }
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="right" className="flex w-full flex-col gap-0 p-0 sm:max-w-5xl">
@@ -109,38 +150,7 @@ export function SourceBrowser({
           </div>
         )}
 
-        {isLoading ? (
-          <div className="flex min-h-0 flex-1 gap-4 p-4">
-            <div className="w-64 shrink-0 space-y-2">
-              {["a", "b", "c", "d", "e", "f"].map((key) => (
-                <Skeleton key={key} className="h-5 w-full" />
-              ))}
-            </div>
-            <Skeleton className="min-h-0 flex-1" />
-          </div>
-        ) : isError || !tree ? (
-          <EmptyState
-            icon={FileWarning}
-            title="Could not load this commit"
-            // Verbatim: "no commit … in owner/repo" after a force-push, or the
-            // revoked-installation message, is the entire explanation.
-            description={
-              error instanceof Error
-                ? error.message
-                : "The repository could not be read for this build."
-            }
-          />
-        ) : (
-          <div className="flex min-h-0 flex-1">
-            <FileTree
-              entries={tree.entries}
-              selected={selected}
-              onSelect={setSelected}
-              initialExpanded={expanded}
-            />
-            <FileView projectId={projectId} gitRef={tree.ref} path={selected} />
-          </div>
-        )}
+        {body()}
       </SheetContent>
     </Sheet>
   )

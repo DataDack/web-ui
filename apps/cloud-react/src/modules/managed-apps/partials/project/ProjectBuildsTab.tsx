@@ -1,4 +1,4 @@
-import { useMemo } from "react"
+import { useCallback, useMemo } from "react"
 
 import type { ColumnDef } from "@tanstack/react-table"
 import { Code2, Hammer, RotateCcw, X } from "lucide-react"
@@ -44,19 +44,23 @@ export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
 
   // One writer for both panels: setting either clears the other, because the
   // log sheet and the code sheet occupy the same side of the screen and only
-  // the last one asked for should be showing.
-  const setPanel = (key: "build" | "code", value: string | null) => {
-    setSearchParams(
-      (prev) => {
-        const next = new URLSearchParams(prev)
-        next.delete(key === "build" ? "code" : "build")
-        if (value) next.set(key, value)
-        else next.delete(key)
-        return next
-      },
-      { replace: true },
-    )
-  }
+  // the last one asked for should be showing. Memoized because the column
+  // definitions close over it — an unstable identity rebuilds them every render.
+  const setPanel = useCallback(
+    (key: "build" | "code", value: string | null) => {
+      setSearchParams(
+        (prev) => {
+          const next = new URLSearchParams(prev)
+          next.delete(key === "build" ? "code" : "build")
+          if (value) next.set(key, value)
+          else next.delete(key)
+          return next
+        },
+        { replace: true },
+      )
+    },
+    [setSearchParams],
+  )
 
   const setSelected = (id: string | null) => {
     setPanel("build", id)
@@ -71,22 +75,6 @@ export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
       ),
     [builds],
   )
-
-  // Guarded on isLoading: `builds` is empty on the first render too, and without
-  // this the tab claims there are no builds while the request is still in flight.
-  if (!isLoading && sortedBuilds.length === 0) {
-    return (
-      <EmptyState
-        icon={Hammer}
-        title={t("managedApps.projectBuildsTab.noBuildsYet")}
-        description={
-          project.project_type === "n8n"
-            ? "n8n instances are provisioned without a build pipeline."
-            : "Deploys show up here as soon as one is queued — push to the tracked branch or use Deploy now."
-        }
-      />
-    )
-  }
 
   const durationCell = (build: Build): string => {
     if (isBuildTransitional(build.status)) return "in progress"
@@ -236,6 +224,27 @@ export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
   // the sha rather than carried in the query string: the message can be long,
   // and a URL is not the place to store it.
   const codeBuild = sortedBuilds.find((b) => b.commit_sha === codeRef)
+
+  // Guarded on isLoading: `builds` is empty on the first render too, and without
+  // this the tab claims there are no builds while the request is still in flight.
+  //
+  // Below every hook, not above them: this branch appears only once the fetch
+  // settles, so returning from above the column memo changed the hook count
+  // between two renders of the same component — React's "rendered fewer hooks
+  // than expected" crash, on the empty state of every project's first visit.
+  if (!isLoading && sortedBuilds.length === 0) {
+    return (
+      <EmptyState
+        icon={Hammer}
+        title={t("managedApps.projectBuildsTab.noBuildsYet")}
+        description={
+          project.project_type === "n8n"
+            ? "n8n instances are provisioned without a build pipeline."
+            : "Deploys show up here as soon as one is queued — push to the tracked branch or use Deploy now."
+        }
+      />
+    )
+  }
 
   // `.at()` rather than [0]: the empty history already returned above, but the
   // component must not depend on that ordering to stay type-safe.

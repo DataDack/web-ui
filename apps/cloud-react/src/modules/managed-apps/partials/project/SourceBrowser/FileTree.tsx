@@ -108,7 +108,12 @@ function FileRow({
  * where the answer to "where is this file" matters more than where it sits in
  * the hierarchy.
  */
-export function FileTree({ entries, selected, onSelect, initialExpanded }: Readonly<FileTreeProps>) {
+export function FileTree({
+  entries,
+  selected,
+  onSelect,
+  initialExpanded,
+}: Readonly<FileTreeProps>) {
   const [query, setQuery] = useState("")
   const [expanded, setExpanded] = useState<ReadonlySet<string>>(() => new Set(initialExpanded))
 
@@ -125,17 +130,21 @@ export function FileTree({ entries, selected, onSelect, initialExpanded }: Reado
 
   const pane = () => {
     if (query.trim() === "") {
-      return nodes.map((node) => (
-        <FileRow
-          key={node.path}
-          node={node}
-          depth={0}
-          selected={selected}
-          onSelect={onSelect}
-          expanded={expanded}
-          onToggle={toggle}
-        />
-      ))
+      return (
+        <>
+          {nodes.map((node) => (
+            <FileRow
+              key={node.path}
+              node={node}
+              depth={0}
+              selected={selected}
+              onSelect={onSelect}
+              expanded={expanded}
+              onToggle={toggle}
+            />
+          ))}
+        </>
+      )
     }
     if (results.length === 0) {
       return (
@@ -144,31 +153,35 @@ export function FileTree({ entries, selected, onSelect, initialExpanded }: Reado
         </p>
       )
     }
-    return results.map((entry) => {
-      const cut = entry.path.lastIndexOf("/") + 1
-      return (
-        <button
-          key={entry.path}
-          type="button"
-          className={`${ROW} ${
-            entry.path === selected
-              ? "bg-muted font-medium text-foreground"
-              : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-          }`}
-          onClick={() => {
-            onSelect(entry.path)
-          }}
-        >
-          <File className="size-3.5 shrink-0 opacity-60" />
-          {/* The directory is muted and the file name is not: in a result
-              list the last segment is what was searched for. */}
-          <span className="min-w-0 flex-1 truncate text-left" title={entry.path}>
-            <span className="opacity-60">{entry.path.slice(0, cut)}</span>
-            {entry.path.slice(cut)}
-          </span>
-        </button>
-      )
-    })
+    return (
+      <>
+        {results.map((entry) => {
+          const cut = entry.path.lastIndexOf("/") + 1
+          return (
+            <button
+              key={entry.path}
+              type="button"
+              className={`${ROW} ${
+                entry.path === selected
+                  ? "bg-muted font-medium text-foreground"
+                  : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+              }`}
+              onClick={() => {
+                onSelect(entry.path)
+              }}
+            >
+              <File className="size-3.5 shrink-0 opacity-60" />
+              {/* The directory is muted and the file name is not: in a result
+                  list the last segment is what was searched for. */}
+              <span className="min-w-0 flex-1 truncate text-left" title={entry.path}>
+                <span className="opacity-60">{entry.path.slice(0, cut)}</span>
+                {entry.path.slice(cut)}
+              </span>
+            </button>
+          )
+        })}
+      </>
+    )
   }
 
   return (

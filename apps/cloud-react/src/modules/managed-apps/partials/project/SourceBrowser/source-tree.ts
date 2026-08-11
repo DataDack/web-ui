@@ -121,14 +121,18 @@ export function initialFile(entries: SourceEntry[], rootDir: string): string {
 export function searchPaths(entries: SourceEntry[], term: string, limit = 200): SourceEntry[] {
   const needle = term.trim().toLowerCase()
   if (needle === "") return []
-  const matches = entries.filter(
-    (e) => e.type === "blob" && e.path.toLowerCase().includes(needle),
-  )
+  const matches = entries.filter((e) => e.type === "blob" && e.path.toLowerCase().includes(needle))
   // A hit in the file NAME beats one anywhere in its directory chain — typing
   // "button" should surface Button.tsx before every file under src/button/.
   matches.sort((a, b) => {
-    const aName = a.path.slice(a.path.lastIndexOf("/") + 1).toLowerCase().includes(needle)
-    const bName = b.path.slice(b.path.lastIndexOf("/") + 1).toLowerCase().includes(needle)
+    const aName = a.path
+      .slice(a.path.lastIndexOf("/") + 1)
+      .toLowerCase()
+      .includes(needle)
+    const bName = b.path
+      .slice(b.path.lastIndexOf("/") + 1)
+      .toLowerCase()
+      .includes(needle)
     if (aName !== bName) return aName ? -1 : 1
     return a.path.length - b.path.length
   })
