@@ -9,7 +9,14 @@ import { Section } from "@/components/console"
 
 import { Button, DataTable, EmptyState, type DataTableColumnMeta } from "@datadack/common-ui"
 
-import { formatDuration, isTimeSet, shortSha, timeSince, triggerLabel } from "./build-format"
+import {
+  commitURL,
+  formatDuration,
+  isTimeSet,
+  shortSha,
+  timeSince,
+  triggerLabel,
+} from "./build-format"
 import { BuildLogConsole } from "./BuildLogConsole"
 import { LatestBuildLog } from "./LatestBuildLog"
 import { SourceBrowser } from "./SourceBrowser"
@@ -91,12 +98,31 @@ export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
       {
         id: "commit",
         header: "Commit",
+        // Deliberately NOT an interactive column: the message is the widest
+        // target in the row and clicking it should still open the log. Only the
+        // sha itself swallows the click, below.
         cell: ({ row }) => (
           <span className="flex min-w-0 max-w-72 items-baseline gap-2">
             {row.original.commit_sha !== "" && (
-              <span className="shrink-0 font-mono text-[12px] text-muted-foreground">
+              // Short here because seven characters identify a commit and forty
+              // would push the message out of the row; the full sha is on the
+              // title, which is what anyone copying one actually wants, and the
+              // link goes to the commit on GitHub — this console's own "View
+              // code" shows the tree, not the diff.
+              <a
+                href={commitURL(project.repo_owner, project.repo_name, row.original.commit_sha)}
+                target="_blank"
+                rel="noreferrer"
+                title={row.original.commit_sha}
+                // Without this the row's own handler also fires, so following
+                // the link would open the build log behind the new tab.
+                onClick={(event) => {
+                  event.stopPropagation()
+                }}
+                className="shrink-0 font-mono text-[12px] text-muted-foreground hover:text-foreground hover:underline"
+              >
                 {shortSha(row.original.commit_sha)}
-              </span>
+              </a>
             )}
             <span className="min-w-0 truncate text-[13px] text-foreground">
               {row.original.commit_message || `${triggerLabel(row.original.triggered_by)} deploy`}
@@ -217,7 +243,15 @@ export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
         },
       },
     ],
-    [cancelBuild, createBuild, durationCell, project.id, setPanel],
+    [
+      cancelBuild,
+      createBuild,
+      durationCell,
+      project.id,
+      project.repo_name,
+      project.repo_owner,
+      setPanel,
+    ],
   )
 
   // The build behind the open code panel, for the sheet's subtitle. Matched on

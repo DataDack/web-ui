@@ -28,6 +28,16 @@ export function shortSha(sha: string): string {
 }
 
 /**
+ * The commit on GitHub. Empty for a build whose commit never resolved — queued,
+ * or failed before the runner reported one — so callers render plain text
+ * rather than a link to a repository's commit page for no commit.
+ */
+export function commitURL(owner: string, repo: string, sha: string): string {
+  if (owner === "" || repo === "" || sha === "") return ""
+  return `https://github.com/${owner}/${repo}/commit/${sha}`
+}
+
+/**
  * Whether an ISO timestamp is actually set — nullable stamps (started_at,
  * finished_at) serialize as null, Go zero times as "0001-01-01T00:00:00Z"
  * (negative epoch ms), and empty strings parse as NaN.
