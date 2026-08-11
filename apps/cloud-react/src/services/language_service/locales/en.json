@@ -4940,7 +4940,6 @@
       "theAccountPlanThisProjectRunsUnderAndTheQuot": "The account plan this project runs under, and the quotas that come with it."
     },
     "runtimePanel": {
-      "notAssigned": "Not assigned",
       "noRuntimeContainerYet": "No runtime container yet."
     },
     "customPlanCard": {

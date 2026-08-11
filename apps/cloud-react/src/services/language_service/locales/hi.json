@@ -4453,7 +4453,6 @@
       "theAccountPlanThisProjectRunsUnderAndTheQuot": "वह खाता प्लान जिसके अंतर्गत यह प्रोजेक्ट चलता है, और उसके साथ मिलने वाले कोटा।"
     },
     "runtimePanel": {
-      "notAssigned": "असाइन नहीं किया गया",
       "noRuntimeContainerYet": "अभी कोई रनटाइम कंटेनर नहीं।"
     },
     "customPlanCard": {
