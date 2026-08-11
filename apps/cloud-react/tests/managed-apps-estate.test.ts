@@ -43,7 +43,7 @@ function project(overrides: Partial<Project> & { id: string }): Project {
     subnet_id: null,
     active_build_id: null,
     proxmox_ct_id: 0,
-    container_ip: "",
+    served: false,
     last_error: "",
     created_at: "2026-01-01T00:00:00Z",
     updated_at: "2026-01-01T00:00:00Z",
@@ -81,7 +81,8 @@ function account(overrides: Partial<HostingAccount> & { id: string }): HostingAc
 }
 
 /** Only emptiness is read (see deriveProjectState), so this need not be an IP. */
-const RUNTIME_ADDRESS = "ct-101"
+// "Provisioned" is now a boolean the API computes; the address is never sent.
+const RUNTIME_SERVED = true
 
 const item = (path: string): SidebarNavItem => ({
   labelKey: path,
@@ -161,7 +162,7 @@ describe("accountNeedsAttention", () => {
 describe("estateAttention", () => {
   const entries = buildProjectEntries(
     [
-      project({ id: "healthy", deploy_state: "live", container_ip: RUNTIME_ADDRESS }),
+      project({ id: "healthy", deploy_state: "live", served: RUNTIME_SERVED }),
       project({ id: "broken", deploy_state: "failed", last_error: "build blew up" }),
       project({ id: "unmerged", deploy_state: "awaiting_setup", setup_state: "pr_open" }),
     ],
@@ -206,7 +207,7 @@ describe("estateAttention", () => {
 
   test("nothing wrong means an empty list, not an all-clear row", () => {
     const healthy = buildProjectEntries(
-      [project({ id: "healthy", deploy_state: "live", container_ip: RUNTIME_ADDRESS })],
+      [project({ id: "healthy", deploy_state: "live", served: RUNTIME_SERVED })],
       new Map(),
     )
     expect(estateAttention(healthy, [account({ id: "ok" })])).toEqual([])

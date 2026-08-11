@@ -197,6 +197,7 @@ export interface FunctionDetailLabels {
       general: string
       env: string
       triggers: string
+      layers: string
       tags: string
       concurrency: string
       async: string
@@ -233,6 +234,13 @@ export interface FunctionDetailLabels {
     envRemove: (key: string) => string
     tagsEmpty: string
     tagsHint: string
+    layers: {
+      empty: string
+      hint: string
+      add: string
+      noneAvailable: string
+      remove: (name: string) => string
+    }
     triggersEmpty: string
     /** Everything the schedule picker and the trigger rows say. */
     triggers: {
@@ -572,6 +580,7 @@ export const DEFAULT_FUNCTION_DETAIL_LABELS: FunctionDetailLabels = {
       general: "General configuration",
       env: "Environment variables",
       triggers: "Triggers",
+      layers: "Layers",
       tags: "Tags",
       concurrency: "Concurrency",
       async: "Asynchronous invocation",
@@ -608,6 +617,13 @@ export const DEFAULT_FUNCTION_DETAIL_LABELS: FunctionDetailLabels = {
     envRemove: (key) => (key ? `Remove ${key}` : "Remove variable"),
     tagsEmpty: "No tags.",
     tagsHint: "Tags are stored as the function’s labels.",
+    layers: {
+      empty: "No layers attached.",
+      hint: "Shared archives overlaid onto the function at /opt, in order. Only layers matching this function’s runtime and architecture are offered.",
+      add: "Add a layer",
+      noneAvailable: "No compatible layers to add",
+      remove: (name) => `Remove ${name}`,
+    },
     triggersEmpty: "No triggers",
     triggers: {
       emptyHint: "Add one to run this function on a schedule.",

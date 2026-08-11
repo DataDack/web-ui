@@ -93,7 +93,7 @@ export function AppShell() {
           lands above this element's own background and below everything in
           the shell. Without it the wheel would sink under `bg-background`. */}
       <div className="min-h-screen isolate flex flex-col bg-background text-foreground bg-gradient-surface">
-        {freedomSale.active && <ChakraWatermark />}
+        {freedomSale.active && isHome && <ChakraWatermark />}
         {freedomSale.bannerVisible && <FreedomSaleBanner onDismiss={freedomSale.dismiss} />}
         <Topbar onOpenSearch={openSearch} seasonalAccent={freedomSale.active} />
 

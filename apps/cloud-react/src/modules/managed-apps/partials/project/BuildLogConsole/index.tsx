@@ -12,7 +12,6 @@ import {
 } from "@datadack/common-ui"
 
 import { buildLifecycle } from "./lifecycle"
-import { LifecycleLines } from "./LifecycleLines"
 import { LogBody } from "./LogBody"
 import { LogToolbar } from "./LogToolbar"
 import { useLogView } from "./useLogView"
@@ -115,20 +114,9 @@ export function BuildLogConsole({ buildId, open, onOpenChange }: Readonly<BuildL
           following={view.following}
           onLeaveTail={view.leaveTail}
           placeholder={view.placeholder}
-          leading={
-            build && (
-              <LifecycleLines events={lifecycle.leading} originIso={build.created_at} edge="top" />
-            )
-          }
-          trailing={
-            build && (
-              <LifecycleLines
-                events={lifecycle.trailing}
-                originIso={build.created_at}
-                edge="bottom"
-              />
-            )
-          }
+          leading={lifecycle.leading}
+          trailing={lifecycle.trailing}
+          originIso={build?.created_at}
         />
 
         {build && build.build_error !== "" && (

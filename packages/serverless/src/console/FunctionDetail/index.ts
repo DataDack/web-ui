@@ -3,6 +3,7 @@
 
 export { AliasDialog, type AliasDialogProps } from "./AliasDialog"
 export { CreateVersionDialog, type CreateVersionDialogProps } from "./CreateVersionDialog"
+export { LayersSection, type LayersSectionProps } from "./configuration/LayersSection"
 export { AliasesTab, type AliasesTabProps } from "./AliasesTab"
 export {
   CodeNotEditable,

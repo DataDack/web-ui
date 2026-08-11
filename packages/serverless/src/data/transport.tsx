@@ -14,6 +14,7 @@ import type {
   FunctionUrl,
   FunctionVersion,
   InvokeResult,
+  LayerVersionSummary,
   MetricSeries,
   MetricSeriesQuery,
   PutAliasInput,
@@ -87,6 +88,14 @@ export interface ServerlessTransport {
    * chose to keep this", which is the only thing the number is useful for.
    */
   createVersion?: (name: string, input?: CreateVersionInput) => Promise<FunctionEntity>
+  /**
+   * Every layer version the account can attach.
+   *
+   * Needed to offer a picker at all: a function stores layers as
+   * {name, version} refs, so without the catalogue the console can only show
+   * what is already attached and never add to it.
+   */
+  listLayers?: () => Promise<LayerVersionSummary[]>
   /** Aliases of a function, unwrapped from the native keyed list. */
   listAliases?: (name: string) => Promise<FunctionAlias[]>
   /** Create or update an alias — the control plane upserts by name. */
@@ -198,6 +207,11 @@ export interface ServerlessCapabilities {
   functionUrlWrite: boolean
   /** Offer configuration editing. Requires `updateFunctionConfig`. */
   configEdit: boolean
+  /**
+   * Offer attaching and detaching layers. Requires `listLayers` +
+   * `updateFunctionConfig` — a picker with no catalogue could only remove.
+   */
+  layerAttach: boolean
   /** Chart the Monitor tab from real data. Requires `getMetricSeries`. */
   metrics: boolean
   /** Show the inline code editor. Requires `getFunctionCode` + `getFunctionCodeFile`. */
@@ -266,6 +280,9 @@ export function ServerlessProvider({
           typeof transport.createFunctionUrl === "function" &&
           typeof transport.deleteFunctionUrl === "function",
         configEdit: typeof transport.updateFunctionConfig === "function",
+        layerAttach:
+          typeof transport.listLayers === "function" &&
+          typeof transport.updateFunctionConfig === "function",
         metrics: typeof transport.getMetricSeries === "function",
         codeRead:
           typeof transport.getFunctionCode === "function" &&

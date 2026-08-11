@@ -6,10 +6,11 @@ import { css, cx, fontMono, media, mix } from "@datadack/common-ui"
 
 import { AsyncSection } from "./configuration/AsyncSection"
 import { ComingSoonSection } from "./configuration/ComingSoonSection"
-import { FunctionUrlSection } from "./configuration/FunctionUrlSection"
 import { ConcurrencySection } from "./configuration/ConcurrencySection"
 import { EnvSection } from "./configuration/EnvSection"
+import { FunctionUrlSection } from "./configuration/FunctionUrlSection"
 import { GeneralSection } from "./configuration/GeneralSection"
+import { LayersSection } from "./configuration/LayersSection"
 import { TagsSection } from "./configuration/TagsSection"
 import { TriggersSection } from "./configuration/TriggersSection"
 import type { FunctionDetailLabels } from "./labels"
@@ -20,6 +21,7 @@ export type ConfigurationSectionValue =
   | "general"
   | "env"
   | "triggers"
+  | "layers"
   | "tags"
   | "concurrency"
   | "async"
@@ -32,6 +34,7 @@ const SECTION_ORDER: readonly { value: ConfigurationSectionValue; soon: boolean 
   { value: "general", soon: false },
   { value: "env", soon: false },
   { value: "triggers", soon: false },
+  { value: "layers", soon: false },
   { value: "tags", soon: false },
   { value: "concurrency", soon: false },
   { value: "async", soon: false },
@@ -168,6 +171,7 @@ export function ConfigurationTab({
         {active === "general" && <GeneralSection fn={fn} scope={scope} labels={labels} />}
         {active === "env" && <EnvSection fn={fn} scope={scope} labels={labels} />}
         {active === "triggers" && <TriggersSection fn={fn} scope={scope} labels={labels} />}
+        {active === "layers" && <LayersSection fn={fn} scope={scope} labels={labels} />}
         {active === "tags" && <TagsSection fn={fn} scope={scope} labels={labels} />}
         {active === "concurrency" && <ConcurrencySection fn={fn} scope={scope} labels={labels} />}
         {active === "async" && <AsyncSection fn={fn} scope={scope} labels={labels} />}

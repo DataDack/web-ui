@@ -55,6 +55,32 @@ export const makeSchema = (rule: NamingRule, runtimes: RuntimeInfo[]) =>
   z
     .object({
       name: namingNameSchema(rule),
+      // Empty means "no group" — the account's default is applied at submit,
+      // and a function may legitimately belong to none.
+      resourceGroupId: z.string(),
+      // Rows rather than a record so the editor can hold a half-typed pair
+      // without it colliding with an existing key. Blank rows are dropped at
+      // submit; a keyed row must have a key to mean anything.
+      tags: z
+        .array(z.object({ key: z.string(), value: z.string() }))
+        .superRefine((rows, ctx) => {
+          const seen = new Set<string>()
+          rows.forEach((row, index) => {
+            const key = row.key.trim()
+            if (key === "") {
+              // A wholly blank row is just an unfilled one; a value with no key
+              // would be silently discarded, which is worth saying.
+              if (row.value.trim() !== "") {
+                ctx.addIssue({ code: "custom", path: [index, "key"], message: "A tag needs a key" })
+              }
+              return
+            }
+            if (seen.has(key)) {
+              ctx.addIssue({ code: "custom", path: [index, "key"], message: `Duplicate tag ${key}` })
+            }
+            seen.add(key)
+          })
+        }),
       packageType: z.enum(["image", "blank"]),
       imageUri: z.string(),
       runtime: z.string(),

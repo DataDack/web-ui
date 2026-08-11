@@ -112,6 +112,16 @@ export interface LayerRef {
   arn?: string
 }
 
+/** One publishable layer version, as the layers list returns it. */
+export interface LayerVersionSummary {
+  name: string
+  version: number
+  description?: string
+  compatibleRuntimes?: string[]
+  compatibleArchitectures?: string[]
+  createdAt?: string
+}
+
 export interface FunctionVersion {
   version: string
   versionNumber?: number
@@ -354,6 +364,12 @@ export interface UpdateFunctionConfigInput {
   provisionedConcurrency?: number
   maxRetryAttempts?: number
   maxEventAgeSeconds?: number
+  /**
+   * Replaces the attached layer set wholesale. Omit to leave it alone; send an
+   * empty array to detach everything — the two empty cases are different, which
+   * is why the server models this as a pointer.
+   */
+  layers?: LayerRef[]
 }
 
 /* ── Metrics ────────────────────────────────────────────────────────────

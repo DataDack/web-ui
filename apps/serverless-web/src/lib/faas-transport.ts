@@ -14,6 +14,7 @@ import type {
   FunctionUrl,
   FunctionVersion,
   InvokeResult,
+  LayerVersionSummary,
   MetricSeries,
   MetricSeriesQuery,
   PutAliasInput,
@@ -137,6 +138,11 @@ export const faasTransport: ServerlessTransport = {
       input?.description ? { description: input.description } : undefined,
     )
     return data
+  },
+
+  async listLayers(): Promise<LayerVersionSummary[]> {
+    const { data } = await http.get<{ layers?: LayerVersionSummary[] }>("/v1/layers")
+    return data.layers ?? []
   },
 
   async listAliases(name: string): Promise<FunctionAlias[]> {

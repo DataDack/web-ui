@@ -27,7 +27,7 @@ export function ProjectDetailPage() {
   const { id = "" } = useParams()
 
   // The builds list already polls at 5s while anything is in flight; the
-  // project row is what gains url/container_ip when a deploy settles, so it
+  // project row is what gains url/served when a deploy settles, so it
   // follows the same cadence instead of lagging 30s behind.
   const { data: builds = [] } = useProjectBuilds(id)
   // `.at()` rather than [0] — an empty history really is undefined here.

@@ -5,6 +5,7 @@ import type {
   FunctionEntity,
   FunctionUrl,
   FunctionVersion,
+  LayerVersionSummary,
   MetricSeries,
   MetricSeriesQuery,
   PutAliasInput,
@@ -125,6 +126,7 @@ export type FaasDirectTransport = Required<
     | "deleteFunctionUrl"
     | "listVersions"
     | "createVersion"
+    | "listLayers"
     | "listAliases"
     | "putAlias"
     | "deleteAlias"
@@ -273,6 +275,16 @@ export function createFaasTransport(opts: FaasTransportOptions): FaasDirectTrans
           )
           .then((res) => res.data),
         "Could not create the version",
+      ),
+
+    // The catalogue the layers picker offers. Keyed list, same shape as the
+    // versions route.
+    listLayers: () =>
+      run(
+        faas
+          .get<{ layers?: LayerVersionSummary[] }>("/v1/layers")
+          .then((res) => res.data.layers ?? []),
+        "Could not load the layers",
       ),
 
     listAliases: (name) =>

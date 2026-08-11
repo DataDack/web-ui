@@ -4542,7 +4542,8 @@
           "async": "Asynchronous invocation",
           "functionUrl": "Function URL",
           "permissions": "Permissions",
-          "vpc": "VPC"
+          "vpc": "VPC",
+          "layers": "Layers"
         },
         "soon": "Soon",
         "edit": "Edit",
@@ -4646,6 +4647,13 @@
             "title": "VPC",
             "message": "Attaching this function to a VPC isn’t available yet."
           }
+        },
+        "layers": {
+          "empty": "No layers attached.",
+          "hint": "Shared archives overlaid onto the function at /opt, in order. Only layers matching this function's runtime and architecture are offered.",
+          "add": "Add a layer",
+          "noneAvailable": "No compatible layers to add",
+          "remove": "Remove {{name}}"
         }
       },
       "versions": {
@@ -4735,7 +4743,12 @@
       "artifact": "Artifact",
       "artifactRequired": "Upload the archive before continuing.",
       "blank": "Blank starter",
-      "blankHint": "We generate a minimal working function for the runtime you pick below — edit the code any time after it deploys."
+      "blankHint": "We generate a minimal working function for the runtime you pick below — edit the code any time after it deploys.",
+      "resourceGroup": "Resource group",
+      "resourceGroupPlaceholder": "Select a resource group",
+      "resourceGroupNone": "No resource group",
+      "resourceGroupHint": "Files the function for filtering and access. This cannot be changed from the console later.",
+      "tags": "Tags"
     },
     "invoke": {
       "payload": "Request payload",

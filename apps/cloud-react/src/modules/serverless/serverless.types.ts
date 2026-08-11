@@ -103,6 +103,10 @@ export interface PresignedUpload {
 
 export interface CreateFunctionRequest {
   name: string
+  /** Central resource group to file the function under; omitted when none. */
+  resourceGroupId?: string
+  /** Tags, as the control plane's `labels`. */
+  labels?: Record<string, string>
   packageType: "image" | "zip"
   imageUri?: string
   codeArtifact?: { bucket: string; key: string }
@@ -127,6 +131,10 @@ export interface CreateFunctionFromSourceRequest {
   memorySize?: number
   timeout?: number
   env?: Record<string, string>
+  /** Tags, as the control plane's `labels`. */
+  labels?: Record<string, string>
+  /** Shared archives to attach. Only settable at create or via the config patch. */
+  layers?: { name: string; version: number }[]
   files: { path: string; content: string }[]
 }
 

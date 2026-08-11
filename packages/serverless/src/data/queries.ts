@@ -17,6 +17,7 @@ import type {
   FunctionUrl,
   FunctionVersion,
   InvokeResult,
+  LayerVersionSummary,
   MetricSeries,
   MetricSeriesQuery,
   PutAliasInput,
@@ -56,6 +57,9 @@ export const serverlessKeys = {
     [...serverlessKeys.code(name, scope), "file", path] as const,
   metrics: (name: string, window: string, scope?: string) =>
     [...serverlessKeys.functions(scope), name, "metrics", window] as const,
+  // Account-wide rather than per-function: the same catalogue is offered on
+  // every function's picker, so one cache entry serves them all.
+  layers: (scope = "default") => ["datadack-serverless", "layers", scope] as const,
 }
 
 /**
@@ -240,6 +244,27 @@ export function useFunctionVersions(name: string, scope?: string) {
       return transport.listVersions(name)
     },
     enabled: name !== "" && !!transport.listVersions,
+  })
+}
+
+/**
+ * Every layer version the account can attach.
+ *
+ * Long stale time: layers change when someone publishes one, not while a
+ * configuration panel is open.
+ */
+export function useLayers(scope?: string) {
+  const { transport } = useServerlessContext()
+  return useQuery<LayerVersionSummary[]>({
+    queryKey: serverlessKeys.layers(scope),
+    queryFn: () => {
+      if (!transport.listLayers) {
+        throw new Error("This console's serverless transport has no listLayers")
+      }
+      return transport.listLayers()
+    },
+    enabled: !!transport.listLayers,
+    staleTime: 60 * 1000,
   })
 }
 

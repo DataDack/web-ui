@@ -238,9 +238,9 @@ function resolveKind(
   // source_disconnected, observed from the connection side instead.
   if (connection?.revoked === true) return "source_disconnected"
   if (project.project_type === "n8n") return "no_pipeline"
-  // A stored `live` only means the fleet claimed it; the runtime address is
-  // the evidence anything actually serves traffic.
-  if (project.deploy_state === "live" && project.container_ip === "") {
+  // A stored `live` only means the fleet claimed it; an address having been
+  // assigned is the evidence anything actually serves traffic.
+  if (project.deploy_state === "live" && !project.served) {
     return "built_pending_deploy"
   }
   // `deploy_state` is whatever the API actually sent, not whatever the type
@@ -311,7 +311,7 @@ export function deriveProjectState(
           "The build succeeded and the artifact is stored. No runtime container is attached yet, so this address does not serve the app.",
       }
     case "live":
-      return { kind, ...meta, detail: `Serving from ${project.container_ip}.` }
+      return { kind, ...meta, detail: "Served over HTTPS through the DataDack edge." }
     case "failed":
       return {
         kind,

@@ -189,7 +189,12 @@ export interface Project {
   /** Placement node — null until the provisioner lands. */
   pve_node_id: string | null
   /** May be empty until the first successful deploy. */
-  container_ip: string
+  // `served` replaces the old container_ip field. Neither the public nor the
+  // fabric address is sent any more: the app is reached through the edge
+  // gateway by hostname, so the origin address is not something the console can
+  // use — only something worth attacking. The boolean is what this code
+  // actually read off that field.
+  served: boolean
   last_error: string
   created_at: string
   updated_at: string

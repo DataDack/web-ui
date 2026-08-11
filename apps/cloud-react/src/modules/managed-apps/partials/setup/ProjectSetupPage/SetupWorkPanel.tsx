@@ -11,7 +11,6 @@ import { BuildStatusPill } from "../../../components"
 import { useBuild, useBuildLogs, useProject, useProjectBuilds } from "../../../managed-apps.hooks"
 import { isBuildTransitional, type ProjectSetup } from "../../../managed-apps.types"
 import { buildLifecycle } from "../../project/BuildLogConsole/lifecycle"
-import { LifecycleLines } from "../../project/BuildLogConsole/LifecycleLines"
 import { LogBody } from "../../project/BuildLogConsole/LogBody"
 
 interface SetupWorkPanelProps {
@@ -117,24 +116,9 @@ export function SetupWorkPanel({ projectId, setup }: Readonly<SetupWorkPanelProp
                 /* no-op: the sheet console owns the scroll guard */
               }}
               placeholder={logPlaceholder}
-              leading={
-                current && (
-                  <LifecycleLines
-                    events={lifecycle.leading}
-                    originIso={current.created_at}
-                    edge="top"
-                  />
-                )
-              }
-              trailing={
-                current && (
-                  <LifecycleLines
-                    events={lifecycle.trailing}
-                    originIso={current.created_at}
-                    edge="bottom"
-                  />
-                )
-              }
+              leading={lifecycle.leading}
+              trailing={lifecycle.trailing}
+              originIso={current?.created_at}
             />
           </div>
         </TabsContent>

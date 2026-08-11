@@ -9,6 +9,8 @@ import { toast } from "sonner"
 
 import { CreateWizard, PageHeader, type KeyValueItem, type WizardStep } from "@/components/console"
 import { useNamingRule } from "@/modules/governance/governance.hooks"
+import { useResourceGroup } from "@/modules/resource-groups/resource-group.context"
+import { useResourceGroups } from "@/modules/resource-groups/resource-groups.hooks"
 import { useScreen } from "@/services/api/screen"
 
 import { BasicsStep } from "./BasicsStep"
@@ -41,6 +43,27 @@ import type { CreateFunctionRequest } from "../../serverless.types"
  * The route sets `handle: { hideSidebar: true }`, so this renders full-bleed
  * with only the topbar for account context.
  */
+/**
+ * Editor rows to the record the API takes, dropping rows that say nothing.
+ *
+ * A blank row is an unfilled one rather than a tag named "", and trimming here
+ * means a stray space never becomes part of a key nobody can match on later.
+ */
+function tagRecord(rows: readonly { key: string; value: string }[]): Record<string, string> {
+  const out: Record<string, string> = {}
+  for (const row of rows) {
+    const key = row.key.trim()
+    if (key !== "") out[key] = row.value.trim()
+  }
+  return out
+}
+
+/** The labels field, omitted entirely when there are no tags. */
+function labelsFor(rows: readonly { key: string; value: string }[]): { labels?: Record<string, string> } {
+  const labels = tagRecord(rows)
+  return Object.keys(labels).length > 0 ? { labels } : {}
+}
+
 export function CreateFunctionPage() {
   useScreen("serverless.function-create-wizard")
   const { t } = useTranslation()
@@ -49,6 +72,8 @@ export function CreateFunctionPage() {
   const { mutate: createFromSource, isPending: isSourcePending } = useCreateFunctionFromSource()
   const { data: allRuntimes } = useServerlessRuntimes()
   const { rule } = useNamingRule("function")
+  const { activeRG } = useResourceGroup()
+  const { data: groups } = useResourceGroups()
   // Rebuilt as the catalog arrives, so a runtime's own rules apply the moment
   // they are known rather than only after a rejected submit.
   const schema = useMemo(() => makeSchema(rule, allRuntimes ?? []), [rule, allRuntimes])
@@ -57,6 +82,10 @@ export function CreateFunctionPage() {
     resolver: zodResolver(schema),
     defaultValues: {
       name: "",
+      // The topbar's active group is the sensible default; the step lets it be
+      // changed or cleared before anything is created.
+      resourceGroupId: activeRG?.id ?? "",
+      tags: [],
       packageType: "blank",
       imageUri: "",
       runtime: "",
@@ -83,11 +112,30 @@ export function CreateFunctionPage() {
         id: "basics",
         title: t("serverless.wizard.basics"),
         description: t("serverless.wizard.basicsDescription"),
-        fields: ["name"],
+        fields: ["name", "resourceGroupId", "tags"],
         render: (f) => <BasicsStep form={f} />,
-        reviewItems: (values) => [
-          { label: t("serverless.form.name"), value: values.name, mono: true },
-        ],
+        reviewItems: (values) => {
+          const items: KeyValueItem[] = [
+            { label: t("serverless.form.name"), value: values.name, mono: true },
+            {
+              label: t("serverless.form.resourceGroup"),
+              value:
+                groups?.find((group) => group.id === values.resourceGroupId)?.name ??
+                t("serverless.form.resourceGroupNone"),
+            },
+          ]
+          const tagged = tagRecord(values.tags)
+          if (Object.keys(tagged).length > 0) {
+            items.push({
+              label: t("serverless.form.tags"),
+              value: Object.entries(tagged)
+                .map(([key, value]) => (value === "" ? key : `${key}=${value}`))
+                .join(", "),
+              mono: true,
+            })
+          }
+          return items
+        },
       },
       {
         id: "package",
@@ -119,8 +167,10 @@ export function CreateFunctionPage() {
         },
       },
     ],
+    // groups is a real dependency: the review step resolves the selected id to
+    // a name through it, and the list arrives after the first render.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [t, form],
+    [t, form, groups],
   )
 
   // Watched rather than read once, so the aside tracks the form as it is filled
@@ -175,6 +225,8 @@ export function CreateFunctionPage() {
             createFromSource(
               {
                 name: values.name,
+                ...(values.resourceGroupId ? { resourceGroupId: values.resourceGroupId } : {}),
+                ...labelsFor(values.tags),
                 runtime: values.runtime,
                 // Required by POST /functions/source; the schema guarantees the
                 // field is filled, and the template's own handler is the
@@ -193,6 +245,8 @@ export function CreateFunctionPage() {
           }
           const body: CreateFunctionRequest = {
             name: values.name,
+            ...(values.resourceGroupId ? { resourceGroupId: values.resourceGroupId } : {}),
+            ...labelsFor(values.tags),
             packageType: "image",
             imageUri: values.imageUri.trim(),
             memorySize: values.memorySize,

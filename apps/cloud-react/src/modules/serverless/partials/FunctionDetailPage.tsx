@@ -299,6 +299,7 @@ export function ServerlessFunctionDetailPage() {
           general: t("serverless.detail.configuration.nav.general"),
           env: t("serverless.detail.configuration.nav.env"),
           triggers: t("serverless.detail.configuration.nav.triggers"),
+          layers: t("serverless.detail.configuration.nav.layers"),
           tags: t("serverless.detail.configuration.nav.tags"),
           concurrency: t("serverless.detail.configuration.nav.concurrency"),
           async: t("serverless.detail.configuration.nav.async"),
@@ -336,6 +337,13 @@ export function ServerlessFunctionDetailPage() {
           key
             ? t("serverless.detail.configuration.envRemove", { name: key })
             : t("serverless.detail.configuration.envRemoveUnnamed"),
+        layers: {
+          empty: t("serverless.detail.configuration.layers.empty"),
+          hint: t("serverless.detail.configuration.layers.hint"),
+          add: t("serverless.detail.configuration.layers.add"),
+          noneAvailable: t("serverless.detail.configuration.layers.noneAvailable"),
+          remove: (name: string) => t("serverless.detail.configuration.layers.remove", { name }),
+        },
         tagsEmpty: t("serverless.detail.configuration.tagsEmpty"),
         tagsHint: t("serverless.detail.configuration.tagsHint"),
         triggersEmpty: t("serverless.detail.configuration.triggersEmpty"),

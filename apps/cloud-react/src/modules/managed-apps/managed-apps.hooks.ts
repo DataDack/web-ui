@@ -258,7 +258,7 @@ export function useProjects(type?: ProjectType) {
 /**
  * A single project. Callers that know a build is in flight pass a shorter
  * `refetchInterval` (see projectPollInterval) — the project row is what gains
- * `container_ip` and `active_build_id` when a deploy settles.
+ * `served` and `active_build_id` when a deploy settles.
  */
 export function useProject(id: string, refetchInterval = 30_000) {
   return useQuery({

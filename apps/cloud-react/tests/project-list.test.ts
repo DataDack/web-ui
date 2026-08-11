@@ -41,7 +41,7 @@ function project(overrides: Partial<Project> & { id: string }): Project {
     active_build_id: null,
     proxmox_ct_id: 0,
     pve_node_id: null,
-    container_ip: "",
+    served: false,
     last_error: "",
     created_at: "2026-01-01T00:00:00Z",
     updated_at: "2026-01-01T00:00:00Z",

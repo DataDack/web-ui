@@ -1,5 +1,4 @@
 import { useTranslation } from "react-i18next"
-import { CopyButton } from "@datadack/common-ui"
 import { KeyValueGrid, Section } from "@/components/console"
 
 import type { Project } from "../../managed-apps.types"
@@ -14,7 +13,7 @@ import type { Project } from "../../managed-apps.types"
  */
 export function RuntimePanel({ project }: Readonly<{ project: Project }>) {
   const { t } = useTranslation()
-  const provisioned = project.container_ip !== "" || project.proxmox_ct_id !== 0
+  const provisioned = project.served || project.proxmox_ct_id !== 0
 
   return (
     <Section
@@ -24,26 +23,19 @@ export function RuntimePanel({ project }: Readonly<{ project: Project }>) {
     >
       {provisioned ? (
         <KeyValueGrid
-          columns={3}
+          columns={2}
           items={[
-            {
-              label: "Container IP",
-              value: project.container_ip ? (
-                <CopyButton value={project.container_ip} />
-              ) : (
-                <span className="text-muted-foreground">
-                  {t("managedApps.runtimePanel.notAssigned")}
-                </span>
-              ),
-            },
             {
               label: "Container ID",
               value: project.proxmox_ct_id ? String(project.proxmox_ct_id) : "—",
               mono: true,
             },
             {
+              // The container's address is deliberately absent: it sits on a
+              // private fabric only the edge gateway can reach, so there is
+              // nothing here a customer could connect to.
               label: "Networking",
-              value: project.vpc_id ? "VPC bound" : "Public only",
+              value: project.vpc_id ? "VPC bound" : "Private, behind the edge",
             },
           ]}
         />

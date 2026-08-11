@@ -10,10 +10,12 @@ import { AshokaChakra } from "./AshokaChakra"
  * the isolate the nearest stacking context is the page root and the wheel would
  * disappear underneath the shell's `bg-background` entirely.
  *
- * A consequence worth knowing: `bg-card` is opaque, so on routes that render
- * the content panel the wheel is covered and only reads on the console home
- * and behind the translucent chrome. That is the trade for never having a
- * decoration float over a data table.
+ * Mounted on the console home only — see AppShell. It stays strictly below the
+ * cards in paint order, but the console's panels are `.glass-1`/`.glass-2`,
+ * which are 97-98% transparent in dark mode, so the wheel is still faintly
+ * legible through them. That is accepted: the decoration is meant to sit under
+ * the dashboard's own surfaces, and confining it to one route keeps it away
+ * from the dense detail pages where it would compete with data.
  */
 export function ChakraWatermark() {
   return (
