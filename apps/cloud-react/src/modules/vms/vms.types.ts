@@ -121,14 +121,21 @@ export type InstanceAction = "start" | "stop" | "restart" | "pause" | "resume"
 export interface InstanceEvent {
   id: string
   instance_id: string
-  /** Proxmox worker type ("qmstart") or lifecycle key. */
+  /**
+   * Platform verb for the activity ("start", "disk", "console"). Deliberately
+   * NOT the hypervisor's worker name — the API translates those.
+   */
   type: string
   /** Human label ("Started"). */
   action: string
-  /** Who ran it ("root@pam") or "system". */
+  /** Always "system": every task on a guest is run by the platform. */
   actor: string
   status: "success" | "running" | "error"
-  /** Failure message when status is "error". */
+  /**
+   * Failure message when status is "error". Already generic and safe to render
+   * as-is — the API classifies the underlying cause and keeps the real detail in
+   * the server log, leaving a `(ref: …)` here to quote to support.
+   */
   detail?: string
   started_at: string
   ended_at?: string

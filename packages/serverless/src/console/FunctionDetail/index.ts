@@ -2,6 +2,7 @@
 // the label/template/tab constants an app composes them with.
 
 export { AliasDialog, type AliasDialogProps } from "./AliasDialog"
+export { CreateVersionDialog, type CreateVersionDialogProps } from "./CreateVersionDialog"
 export { AliasesTab, type AliasesTabProps } from "./AliasesTab"
 export {
   CodeNotEditable,

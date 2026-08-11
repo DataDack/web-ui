@@ -6,6 +6,7 @@ import type {
   CreatedFunction,
   CreateFromSourceInput,
   CreateFunctionUrlInput,
+  CreateVersionInput,
   FunctionAlias,
   FunctionCode,
   FunctionCodeFile,
@@ -126,6 +127,16 @@ export const faasTransport: ServerlessTransport = {
   async listVersions(name: string): Promise<FunctionVersion[]> {
     const { data } = await http.get<{ versions?: FunctionVersion[] }>(`${fnPath(name)}/versions`)
     return data.versions ?? []
+  },
+
+  // Deploys overwrite the working version, so this is the only thing that grows
+  // the version list. An absent description sends no body at all.
+  async createVersion(name: string, input?: CreateVersionInput): Promise<FunctionEntity> {
+    const { data } = await http.post<FunctionEntity>(
+      `${fnPath(name)}/versions`,
+      input?.description ? { description: input.description } : undefined,
+    )
+    return data
   },
 
   async listAliases(name: string): Promise<FunctionAlias[]> {

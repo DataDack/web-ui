@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef } from "react"
+import { useEffect, useLayoutEffect, useRef, type ReactNode } from "react"
 
 import { cn } from "@datadack/common-ui"
 
@@ -12,6 +12,9 @@ interface LogBodyProps {
   /** Raised when the user scrolls away from the tail, so Follow can switch off. */
   onLeaveTail: () => void
   placeholder: string
+  /** Lifecycle lines for what happened before the runner spoke, and after. */
+  leading?: ReactNode
+  trailing?: ReactNode
 }
 
 /**
@@ -29,6 +32,8 @@ export function LogBody({
   following,
   onLeaveTail,
   placeholder,
+  leading,
+  trailing,
 }: Readonly<LogBodyProps>) {
   const scrollRef = useRef<HTMLDivElement>(null)
   // Set while the component scrolls itself, so its own scroll event is not
@@ -63,16 +68,23 @@ export function LogBody({
     }
   }, [following, onLeaveTail])
 
+  // The lifecycle lines are the log too, so an empty runner stream keeps them
+  // and puts the placeholder between them — "queued, waiting for a worker"
+  // with nothing under it is the honest picture of a build that has not
+  // printed anything yet, and a bare placeholder threw all of it away.
   if (lines.length === 0) {
     return (
-      <div className="flex-1 px-4 py-6 font-mono text-[12px] text-muted-foreground">
-        {placeholder}
+      <div ref={scrollRef} className="flex-1 overflow-auto bg-muted/20">
+        {leading}
+        <div className="px-4 py-6 font-mono text-[12px] text-muted-foreground">{placeholder}</div>
+        {trailing}
       </div>
     )
   }
 
   return (
     <div ref={scrollRef} className="flex-1 overflow-auto bg-muted/20">
+      {leading}
       <table className="w-full border-collapse font-mono text-[12px] leading-relaxed">
         <tbody>
           {lines.map((line, index) => (
@@ -95,6 +107,7 @@ export function LogBody({
           ))}
         </tbody>
       </table>
+      {trailing}
     </div>
   )
 }

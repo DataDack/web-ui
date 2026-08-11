@@ -1,7 +1,7 @@
 import { useMemo } from "react"
 
 import type { ColumnDef } from "@tanstack/react-table"
-import { Hammer, RotateCcw, X } from "lucide-react"
+import { Code2, Hammer, RotateCcw, X } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useSearchParams } from "react-router-dom"
 
@@ -12,6 +12,7 @@ import { Button, DataTable, EmptyState, type DataTableColumnMeta } from "@datada
 import { formatDuration, isTimeSet, shortSha, timeSince, triggerLabel } from "./build-format"
 import { BuildLogConsole } from "./BuildLogConsole"
 import { LatestBuildLog } from "./LatestBuildLog"
+import { SourceBrowser } from "./SourceBrowser"
 import { ActivityTimeline, BuildStatusPill } from "../../components"
 import { useCancelBuild, useCreateBuild, useProjectBuilds } from "../../managed-apps.hooks"
 import { isBuildTransitional, type Build, type Project } from "../../managed-apps.types"
@@ -36,17 +37,29 @@ export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
   const [searchParams, setSearchParams] = useSearchParams()
 
   const selectedId = searchParams.get("build") ?? ""
+  // The open source browser, as a commit sha. Same reasoning as ?build= above —
+  // a commit's code is linkable, and the deployment hero on the Overview tab
+  // points straight at one rather than owning a second copy of this sheet.
+  const codeRef = searchParams.get("code") ?? ""
 
-  const setSelected = (id: string | null) => {
+  // One writer for both panels: setting either clears the other, because the
+  // log sheet and the code sheet occupy the same side of the screen and only
+  // the last one asked for should be showing.
+  const setPanel = (key: "build" | "code", value: string | null) => {
     setSearchParams(
       (prev) => {
         const next = new URLSearchParams(prev)
-        if (id) next.set("build", id)
-        else next.delete("build")
+        next.delete(key === "build" ? "code" : "build")
+        if (value) next.set(key, value)
+        else next.delete(key)
         return next
       },
       { replace: true },
     )
+  }
+
+  const setSelected = (id: string | null) => {
+    setPanel("build", id)
   }
 
   // Defensive sort — the API returns newest first, but the pills and log
@@ -102,6 +115,28 @@ export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
             </span>
           </span>
         ),
+      },
+      {
+        id: "code",
+        header: "",
+        // Its own control, so a click here opens the code and not the log.
+        meta: { interactive: true } satisfies DataTableColumnMeta,
+        // A build whose commit never resolved (queued, or failed before the
+        // runner reported one) has no revision to show code at.
+        cell: ({ row }) =>
+          row.original.commit_sha === "" ? null : (
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-7 gap-1.5 px-2 text-[12px] text-muted-foreground hover:text-foreground"
+              onClick={() => {
+                setPanel("code", row.original.commit_sha)
+              }}
+            >
+              <Code2 className="size-3.5" />
+              View code
+            </Button>
+          ),
       },
       {
         id: "trigger",
@@ -194,8 +229,13 @@ export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
         },
       },
     ],
-    [cancelBuild, createBuild, durationCell, project.id],
+    [cancelBuild, createBuild, durationCell, project.id, setPanel],
   )
+
+  // The build behind the open code panel, for the sheet's subtitle. Matched on
+  // the sha rather than carried in the query string: the message can be long,
+  // and a URL is not the place to store it.
+  const codeBuild = sortedBuilds.find((b) => b.commit_sha === codeRef)
 
   // `.at()` rather than [0]: the empty history already returned above, but the
   // component must not depend on that ordering to stay type-safe.
@@ -243,6 +283,20 @@ export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
         open={selectedId !== ""}
         onOpenChange={(open) => {
           if (!open) setSelected(null)
+        }}
+      />
+
+      <SourceBrowser
+        projectId={project.id}
+        gitRef={codeRef}
+        label={
+          codeBuild
+            ? codeBuild.commit_message || `${triggerLabel(codeBuild.triggered_by)} deploy`
+            : undefined
+        }
+        open={codeRef !== ""}
+        onOpenChange={(open) => {
+          if (!open) setPanel("code", null)
         }}
       />
     </div>

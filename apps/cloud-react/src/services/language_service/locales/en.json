@@ -2727,7 +2727,10 @@
         "save": "Save discount",
         "cancel": "Cancel",
         "saved": "Discount updated",
-        "failed": "Failed to update discount"
+        "failed": "Failed to update discount",
+        "reason": "Discount reason",
+        "reasonPlaceholder": "Why this discount? e.g. First 100 customers",
+        "reasonRequired": "A reason is required when granting a discount"
       },
       "balance": {
         "edit": "Adjust balance",
@@ -4432,7 +4435,7 @@
           "renamed": "Renamed to {{path}}",
           "deleted": "Deleted {{path}}",
           "discarded": "Draft discarded",
-          "deployed": "Deployed version {{version}}"
+          "deployed": "Deployed to v{{version}}"
         }
       },
       "actions": {
@@ -4655,7 +4658,18 @@
         },
         "empty": "No versions",
         "createAlias": "Create alias from this version",
-        "rowActions": "Version actions"
+        "rowActions": "Version actions",
+        "workingBadge": "Deploys here",
+        "workingHint": "Deploying updates the newest version in place. Create a version to keep the current code under a number of its own — later deploys will go to the new one.",
+        "create": "Create version",
+        "createTitle": "Create version",
+        "createDescription": "Saves what is deployed right now as v{{version}}. The current version stops changing, and later deploys go to v{{version}}.",
+        "createDescriptionLabel": "Description",
+        "createDescriptionPlaceholder": "What is worth keeping about this one?",
+        "createConfirm": "Create version",
+        "cancel": "Cancel",
+        "createError": "Could not create the version",
+        "created": "Created v{{version}}"
       },
       "aliases": {
         "columns": {
@@ -5091,6 +5105,11 @@
       "offer": "First 100 customers get 20% off for life",
       "cta": "Claim",
       "dismiss": "Dismiss offer"
+    },
+    "greeting": {
+      "title": "Happy Independence Day",
+      "welcome": "Welcome to DataDack Cloud — sovereign infrastructure, built in India.",
+      "dismiss": "Dismiss greeting"
     }
   }
 }

@@ -38,6 +38,7 @@ const overview = {
       status: "active",
       is_default: true,
       permanent_discount: 0,
+      permanent_discount_reason: "",
       balance: 120,
       created_at: "2026-01-01T00:00:00Z",
       members: [],

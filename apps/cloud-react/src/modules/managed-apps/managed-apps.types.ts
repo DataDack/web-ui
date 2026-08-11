@@ -334,6 +334,12 @@ export interface Build {
   /** Null until the build settles. */
   finished_at: string | null
   created_at: string
+  /**
+   * Last write to the row. Only meaningful while a status is in flight: for a
+   * build in `deploying` it is the moment the release was claimed, which is
+   * the only record of when a deployment started.
+   */
+  updated_at: string
   /** Null until an Actions runner claims the queued build. */
   claimed_at: string | null
   /** Null until the runner uploads the artifact; `artifact_bytes` is 0 until then. */
@@ -353,6 +359,56 @@ export interface Build {
 export interface BuildLogs {
   log: string
   offset: number
+}
+
+// ---------------------------------------------------------------------------
+// Source browsing — /managedapps/projects/:id/source
+// ---------------------------------------------------------------------------
+
+/** One path in a repository listing, named the way git names them. */
+export interface SourceEntry {
+  path: string
+  type: "blob" | "tree"
+  /** 0 for a directory. */
+  size: number
+}
+
+/**
+ * GET /projects/:id/source/tree?ref= — the repository's files at one commit.
+ *
+ * `ref` in the response is the commit actually read: asking for nothing
+ * resolves to the tracked branch, so it is never assumed to equal the request.
+ * `truncated` is GitHub's cap on very large repositories and must be rendered —
+ * a partial tree shown as the whole repository makes a file that exists look
+ * deleted.
+ */
+export interface SourceTree {
+  ref: string
+  repo_owner: string
+  repo_name: string
+  /** The subdirectory the project builds from — where the browser opens. */
+  root_dir: string
+  entries: SourceEntry[]
+  truncated: boolean
+}
+
+/**
+ * GET /projects/:id/source/file?path=&ref= — one file at one commit.
+ *
+ * `content` is empty whenever `binary` or `too_large` is set: those are the two
+ * answers that are not text, and the viewer states them rather than rendering
+ * bytes it cannot show. `html_url` is where the reader goes instead.
+ */
+export interface SourceFile {
+  path: string
+  ref: string
+  size: number
+  content: string
+  binary: boolean
+  too_large: boolean
+  /** The server's preview cap, in bytes — never hardcode it here. */
+  max_bytes: number
+  html_url: string
 }
 
 // ---------------------------------------------------------------------------

@@ -11,11 +11,13 @@ import {
   SheetTitle,
 } from "@datadack/common-ui"
 
+import { buildLifecycle } from "./lifecycle"
+import { LifecycleLines } from "./LifecycleLines"
 import { LogBody } from "./LogBody"
 import { LogToolbar } from "./LogToolbar"
 import { useLogView } from "./useLogView"
 import { BuildProgressBar, BuildStatusPill } from "../../../components"
-import { useBuild, useBuildLogs, useCancelBuild } from "../../../managed-apps.hooks"
+import { useBuild, useBuildLogs, useCancelBuild, useProject } from "../../../managed-apps.hooks"
 import { isBuildTransitional } from "../../../managed-apps.types"
 import { formatDuration, isTimeSet, shortSha, timeSince, triggerLabel } from "../build-format"
 
@@ -42,6 +44,9 @@ export function BuildLogConsole({ buildId, open, onOpenChange }: Readonly<BuildL
 
   const logText = logs?.text ?? ""
   const view = useLogView({ buildId, active, text: logText, isLoading })
+
+  const { data: project } = useProject(build?.project_id ?? "")
+  const lifecycle = buildLifecycle(build, project)
 
   const description = build
     ? build.commit_message || `${triggerLabel(build.triggered_by)} deploy`
@@ -110,6 +115,20 @@ export function BuildLogConsole({ buildId, open, onOpenChange }: Readonly<BuildL
           following={view.following}
           onLeaveTail={view.leaveTail}
           placeholder={view.placeholder}
+          leading={
+            build && (
+              <LifecycleLines events={lifecycle.leading} originIso={build.created_at} edge="top" />
+            )
+          }
+          trailing={
+            build && (
+              <LifecycleLines
+                events={lifecycle.trailing}
+                originIso={build.created_at}
+                edge="bottom"
+              />
+            )
+          }
         />
 
         {build && build.build_error !== "" && (

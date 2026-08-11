@@ -14,27 +14,41 @@ const bar = css`
   padding: 8px 12px;
 `
 
+/* macOS's literal traffic-light colours, not the theme's semantic tokens.
+   --destructive / --status-warning / --status-success render maroon, tan and
+   periwinkle here, which reads as three status dots rather than as window
+   chrome — and the whole point of this cluster is that it is instantly
+   recognisable. Same values in light and dark, exactly as macOS does it. */
+const MAC_RED = "#ff5f57"
+const MAC_YELLOW = "#febc2e"
+const MAC_GREEN = "#28c840"
+
+/** The rim macOS draws around each light so it holds an edge on a pale title bar. */
+const LIGHT_RIM = "inset 0 0 0 0.5px rgb(0 0 0 / 0.12)"
+
 /* 12px lights on an 8px rhythm — macOS's own metrics, which is what makes the
-   cluster read as a window chrome rather than three status dots. The extra 2px
-   over a plain dot is also what lets a glyph fit inside the zoom light. */
+   cluster read as window chrome. The extra 2px over a plain dot is also what
+   lets a glyph fit inside the zoom light. */
 const trafficLight = css`
   width: 12px;
   height: 12px;
   border-radius: 9999px;
+  box-shadow: ${LIGHT_RIM};
 `
 
 const trafficLightRed = css`
-  background: ${mix("--destructive", 60)};
+  background: ${MAC_RED};
 `
 
 const trafficLightYellow = css`
-  background: ${mix("--status-warning", 60)};
+  background: ${MAC_YELLOW};
 `
 
 /**
- * The zoom light — the real control, not decoration. Its siblings stay dim and
- * inert because close and minimise have no meaning for a panel that is always
- * open, but zoom does, and on a Mac that is the button people already reach for.
+ * The zoom light — the real control, not decoration. Its siblings are painted
+ * the same but stay inert, because close and minimise have no meaning for a
+ * panel that is always open. Zoom does, and on a Mac it is the button people
+ * already reach for.
  *
  * The glyph is transparent at rest: a traffic light that always shows its icon
  * looks like a busy toolbar, while one that reveals it on approach looks like a
@@ -47,7 +61,7 @@ const zoomLight = css`
   padding: 0;
   border: none;
   cursor: pointer;
-  background: ${mix("--status-success", 60)};
+  background: ${MAC_GREEN};
   color: transparent;
   outline: none;
   transition:
@@ -55,11 +69,14 @@ const zoomLight = css`
     color 150ms cubic-bezier(0.4, 0, 0.2, 1);
 
   &:focus-visible {
-    box-shadow: 0 0 0 3px ${mix("--ring", 50)};
+    box-shadow:
+      ${LIGHT_RIM},
+      0 0 0 3px ${mix("--ring", 50)};
   }
 
+  /* macOS darkens the light under the cursor rather than lightening it. */
   &:active {
-    background: ${mix("--status-success", 80)};
+    background: color-mix(in oklab, ${MAC_GREEN} 82%, black);
   }
 `
 
@@ -78,8 +95,7 @@ const trafficLights = css`
      own class name and a selector built from it would match nothing. */
   &:hover [data-zoom],
   & [data-zoom]:focus-visible {
-    background: var(--status-success);
-    color: color-mix(in oklab, var(--status-success) 30%, black);
+    color: rgb(0 0 0 / 0.55);
   }
 `
 

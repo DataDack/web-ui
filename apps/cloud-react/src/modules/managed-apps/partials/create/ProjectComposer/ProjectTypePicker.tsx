@@ -1,6 +1,11 @@
-import { cn } from "@datadack/common-ui"
-import { AppWindow, Atom, Check, FolderTree, Loader2, Settings2, TriangleAlert } from "lucide-react"
+import type { CSSProperties } from "react"
+
+import { Check, FolderTree, Loader2, TriangleAlert } from "lucide-react"
 import { useTranslation } from "react-i18next"
+import type { IconType } from "react-icons"
+import { SiDocker, SiNextdotjs, SiReact } from "react-icons/si"
+
+import { cn } from "@datadack/common-ui"
 
 import type { RepoDetection } from "../../../managed-apps.types"
 
@@ -12,7 +17,12 @@ interface TypeOption {
   label: string
   sub: string
   body: string
-  icon: typeof AppWindow
+  /** The framework's own mark — recognised before the label is read. */
+  icon: IconType
+  /** Official brand colour. */
+  color: string
+  /** Dark-theme override, set only where the official mark is near-black. */
+  colorDark?: string
   /** Not shippable yet — visible, never selectable. */
   comingSoon?: boolean
 }
@@ -23,21 +33,25 @@ const OPTIONS: TypeOption[] = [
     label: "Next.js",
     sub: "built with OpenNext",
     body: "SSR, API routes and static assets.",
-    icon: AppWindow,
+    icon: SiNextdotjs,
+    color: "#000000",
+    colorDark: "#FFFFFF",
   },
   {
     value: "react",
     label: "React",
     sub: "static build",
     body: "Vite or CRA, compiled once and served as files.",
-    icon: Atom,
+    icon: SiReact,
+    color: "#61DAFB",
   },
   {
     value: "custom",
     label: "Custom",
     sub: "your own Dockerfile",
     body: "Bring any stack. Not available yet.",
-    icon: Settings2,
+    icon: SiDocker,
+    color: "#2496ED",
     comingSoon: true,
   },
 ]
@@ -158,7 +172,23 @@ export function ProjectTypePicker({
                       : "border-border/60 bg-muted/40 text-muted-foreground",
                   )}
                 >
-                  <Icon className="size-4" />
+                  {/* The tile already tints itself when selected, so the brand
+									    colour steps aside there rather than fighting it. */}
+                  <Icon
+                    className={cn(
+                      "size-4",
+                      !selected && "text-[var(--fw-mark)] dark:text-[var(--fw-mark-dark)]",
+                    )}
+                    style={
+                      selected
+                        ? undefined
+                        : ({
+                            "--fw-mark": option.color,
+                            "--fw-mark-dark": option.colorDark ?? option.color,
+                          } as CSSProperties)
+                    }
+                    aria-hidden
+                  />
                 </span>
 
                 {selected && (

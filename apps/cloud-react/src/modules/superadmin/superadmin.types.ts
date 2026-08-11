@@ -876,6 +876,10 @@ export interface OverviewAccount {
   status: string
   is_default: boolean // the org's "main" account
   permanent_discount: number // per-resource discount %, super-admin editable
+  // Why that discount was granted ("First 100 customers", a negotiated rate, a
+  // goodwill credit). Mandatory server-side for any non-zero discount; "" when
+  // the account pays list price.
+  permanent_discount_reason: string
   balance: number // wallet balance in credits (1 credit = ₹1), authoritative
   created_at: string
   members: OverviewMember[]

@@ -18,7 +18,7 @@ export {
   type RuntimeCatalogProps,
   type RuntimeInfo,
 } from "./console/RuntimeCatalog"
-export { familyLabel, RuntimeIcon } from "./console/RuntimeIcon"
+export { familyFromRuntime, familyLabel, RuntimeIcon } from "./console/RuntimeIcon"
 export {
   MonitoringPlaceholder,
   type MonitoringPlaceholderProps,
@@ -34,6 +34,7 @@ export { EnvEditor, type EnvEditorProps } from "./console/CreateFunctionForm/Env
 export { ConfirmDialog, type ConfirmDialogProps } from "./console/ConfirmDialog"
 export {
   AliasDialog,
+  CreateVersionDialog,
   AliasesTab,
   CodeNotEditable,
   CodeTab,
@@ -87,6 +88,7 @@ export {
   useFunctionMetrics,
   useFunctionTriggers,
   useFunctionUrls,
+  useCreateVersion,
   useFunctionVersions,
   useInvokeFunction,
   usePutAlias,
@@ -106,6 +108,7 @@ export type {
   CreateFromPackageInput,
   CreateFromSourceInput,
   CreateFunctionUrlInput,
+  CreateVersionInput,
   CreatedFunction,
   FunctionAlias,
   FunctionCode,

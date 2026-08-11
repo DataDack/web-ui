@@ -301,12 +301,12 @@ export interface FunctionDetailLabels {
     functionUrlDisabled: string
     functionUrlCreate: string
     functionUrlCreateSubmit: string
-    functionUrlDomain: string
-    functionUrlDomainHint: string
-    functionUrlDomainPlaceholder: string
+    functionUrlGeneratedHint: string
     functionUrlAuthType: string
     functionUrlAuthNone: string
+    functionUrlAuthNoneHint: string
     functionUrlAuthIam: string
+    functionUrlAuthIamHint: string
     functionUrlCreated: (domain: string) => string
     functionUrlCreateFailed: string
     functionUrlDelete: string
@@ -331,6 +331,20 @@ export interface FunctionDetailLabels {
     empty: string
     createAlias: string
     rowActions: string
+    /** Marks the row deploys currently write to. */
+    workingBadge: string
+    workingHint: string
+    /** The "create version" action and its confirmation. */
+    create: string
+    createTitle: string
+    /** Takes the new version's number, which the user has not seen yet. */
+    createDescription: (version: string) => string
+    createDescriptionLabel: string
+    createDescriptionPlaceholder: string
+    createConfirm: string
+    cancel: string
+    createError: string
+    created: (version: string) => string
   }
   aliases: {
     columns: {
@@ -489,7 +503,9 @@ export const DEFAULT_FUNCTION_DETAIL_LABELS: FunctionDetailLabels = {
       renamed: (path) => `Renamed to ${path}`,
       deleted: (path) => `Deleted ${path}`,
       discarded: "Draft discarded",
-      deployed: (version) => `Deployed version ${version}`,
+      // "Deployed to", not "Deployed version": this fires on every deploy, and
+      // the number is where the code landed rather than something just minted.
+      deployed: (version) => `Deployed to v${version}`,
     },
   },
   actions: { delete: "Delete" },
@@ -661,12 +677,13 @@ export const DEFAULT_FUNCTION_DETAIL_LABELS: FunctionDetailLabels = {
     functionUrlDisabled: "disabled",
     functionUrlCreate: "Create function URL",
     functionUrlCreateSubmit: "Create",
-    functionUrlDomain: "Custom domain",
-    functionUrlDomainHint: "Leave blank to use the hostname the platform generates.",
-    functionUrlDomainPlaceholder: "api.example.com",
+    functionUrlGeneratedHint:
+      "The hostname is generated from this function and your account ID.",
     functionUrlAuthType: "Auth type",
-    functionUrlAuthNone: "NONE — anyone with the URL can invoke it",
-    functionUrlAuthIam: "AWS_IAM — callers must sign the request",
+    functionUrlAuthNone: "NONE",
+    functionUrlAuthNoneHint: "Public. Anyone with the URL can invoke the function.",
+    functionUrlAuthIam: "IAM",
+    functionUrlAuthIamHint: "Callers must sign the request with platform credentials.",
     functionUrlCreated: (domain) => `${domain} now invokes this function`,
     functionUrlCreateFailed: "Could not create the function URL",
     functionUrlDelete: "Delete",
@@ -699,6 +716,19 @@ export const DEFAULT_FUNCTION_DETAIL_LABELS: FunctionDetailLabels = {
     empty: "No versions",
     createAlias: "Create alias from this version",
     rowActions: "Version actions",
+    workingBadge: "Deploys here",
+    workingHint:
+      "Deploying updates the newest version in place. Create a version to keep the current code under a number of its own — later deploys will go to the new one.",
+    create: "Create version",
+    createTitle: "Create version",
+    createDescription: (version) =>
+      `Saves what is deployed right now as v${version}. The current version stops changing, and later deploys go to v${version}.`,
+    createDescriptionLabel: "Description",
+    createDescriptionPlaceholder: "What is worth keeping about this one?",
+    createConfirm: "Create version",
+    cancel: "Cancel",
+    createError: "Could not create the version",
+    created: (version) => `Created v${version}`,
   },
   aliases: {
     columns: {

@@ -731,14 +731,15 @@ export function useAdminPlatformOverview(
   })
 }
 
-// Set an account's permanent per-resource discount (0–100). Super-admin only.
-// Refetches the platform overview so the Accounts tab reflects the new value.
+// Set an account's permanent per-resource discount (0–100) and why it was
+// granted. Super-admin only. Refetches the platform overview so the Accounts tab
+// reflects the new value.
 export function useSetAccountDiscount() {
   const queryClient = useQueryClient()
   const { t } = useTranslation()
   return useMutation({
-    mutationFn: (vars: { accountId: string; permanentDiscount: number }) =>
-      superAdminApi.setAccountDiscount(vars.accountId, vars.permanentDiscount),
+    mutationFn: (vars: { accountId: string; permanentDiscount: number; reason: string }) =>
+      superAdminApi.setAccountDiscount(vars.accountId, vars.permanentDiscount, vars.reason),
     onSuccess: () => {
       void queryClient.invalidateQueries({
         queryKey: SUPERADMIN_QUERY_KEYS.platformOverview,

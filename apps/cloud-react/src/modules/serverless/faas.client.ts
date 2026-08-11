@@ -124,6 +124,7 @@ export type FaasDirectTransport = Required<
     | "createFunctionUrl"
     | "deleteFunctionUrl"
     | "listVersions"
+    | "createVersion"
     | "listAliases"
     | "putAlias"
     | "deleteAlias"
@@ -258,6 +259,20 @@ export function createFaasTransport(opts: FaasTransportOptions): FaasDirectTrans
           )
           .then((res) => res.data.versions ?? []),
         "Could not load the versions",
+      ),
+
+    // A deploy overwrites the working version; this is what adds one. The body
+    // is omitted entirely when there is no description — FaaS decodes with
+    // DisallowUnknownFields, and an empty object is as good as nothing here.
+    createVersion: (name, input) =>
+      run(
+        faas
+          .post<FunctionEntity>(
+            `/v1/functions/${encodeURIComponent(name)}/versions`,
+            input?.description ? { description: input.description } : undefined,
+          )
+          .then((res) => res.data),
+        "Could not create the version",
       ),
 
     listAliases: (name) =>

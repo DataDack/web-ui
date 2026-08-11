@@ -416,6 +416,45 @@ export function useRetryProjectSetup(id: string) {
   })
 }
 
+// ---------------------------------------------------------------------------
+// Source browsing — "View code" on a deployment
+// ---------------------------------------------------------------------------
+
+/**
+ * The repository's file listing at a commit.
+ *
+ * Cached hard and never refetched on focus: a commit's tree is immutable, so
+ * every re-render of the browser is answered from memory. `enabled` keeps the
+ * request from firing until the viewer is actually opened — the listing is one
+ * GitHub call against the installation's rate limit, not something to spend on
+ * a page nobody opened.
+ */
+export function useProjectSourceTree(projectId: string, ref: string, enabled = true) {
+  return useQuery({
+    queryKey: MANAGED_APPS_QUERY_KEYS.projectSourceTree(projectId, ref),
+    queryFn: () => managedAppsApi.projectSourceTree(projectId, ref),
+    enabled: enabled && !!projectId,
+    staleTime: Infinity,
+    // A repository we cannot read (revoked install, deleted commit) is a
+    // normal outcome the browser renders as a message — not worth retrying.
+    retry: false,
+  })
+}
+
+/**
+ * One file at a commit. Same immutability, same caching: clicking back to a
+ * file already read costs nothing.
+ */
+export function useProjectSourceFile(projectId: string, ref: string, path: string) {
+  return useQuery({
+    queryKey: MANAGED_APPS_QUERY_KEYS.projectSourceFile(projectId, ref, path),
+    queryFn: () => managedAppsApi.projectSourceFile(projectId, path, ref),
+    enabled: !!projectId && !!path,
+    staleTime: Infinity,
+    retry: false,
+  })
+}
+
 /**
  * Release a built artifact onto a runtime container. Expected to fail with a
  * 409 until that fleet exists; the server's reason is shown verbatim rather

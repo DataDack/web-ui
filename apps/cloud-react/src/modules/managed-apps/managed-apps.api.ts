@@ -19,6 +19,8 @@ import type {
   ProjectSetup,
   RepoDetection,
   ProjectType,
+  SourceFile,
+  SourceTree,
   UpdateProjectEnvRequest,
   UpdateProjectRequest,
 } from "./managed-apps.types"
@@ -31,6 +33,7 @@ import type {
 //              GET /github/repos?installation_id= · GET /github/repos/:owner/:repo/branches
 //   Projects:  GET/POST /projects · GET/PUT/DELETE /projects/:id
 //              GET/PUT /projects/:id/env
+//              GET /projects/:id/source/tree · GET /projects/:id/source/file
 //   Builds:    POST /projects/:id/builds · GET /projects/:id/builds
 //              GET /builds/:id · GET /builds/:id/logs · POST /builds/:id/cancel
 const BASE = "/managedapps"
@@ -172,6 +175,26 @@ export const managedAppsApi = {
   deployProject: (id: string): Promise<void> => apiPost(`${BASE}/projects/${id}/deploy`),
 
   /** Env variable NAMES only — values never leave the backend. */
+  /**
+   * The repository's file listing at a commit. `ref` is a build's commit sha —
+   * omitted, the server reads the tracked branch instead.
+   */
+  projectSourceTree: (id: string, ref = ""): Promise<SourceTree> =>
+    apiGet<SourceTree>(
+      `${BASE}/projects/${id}/source/tree${ref ? `?ref=${encodeURIComponent(ref)}` : ""}`,
+    ),
+
+  /**
+   * One file out of that listing. The path is a query parameter because
+   * repository paths contain slashes — as a route segment it would have to be
+   * re-escaped on every hop.
+   */
+  projectSourceFile: (id: string, path: string, ref = ""): Promise<SourceFile> => {
+    const params = new URLSearchParams({ path })
+    if (ref) params.set("ref", ref)
+    return apiGet<SourceFile>(`${BASE}/projects/${id}/source/file?${params.toString()}`)
+  },
+
   projectEnv: (id: string): Promise<ProjectEnvNames> =>
     apiGet<ProjectEnvNames>(`${BASE}/projects/${id}/env`),
 

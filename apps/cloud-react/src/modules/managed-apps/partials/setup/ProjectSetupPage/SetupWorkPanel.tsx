@@ -8,8 +8,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 import { WorkflowPreview } from "./WorkflowPreview"
 import { BuildStatusPill } from "../../../components"
-import { useBuild, useBuildLogs, useProjectBuilds } from "../../../managed-apps.hooks"
+import { useBuild, useBuildLogs, useProject, useProjectBuilds } from "../../../managed-apps.hooks"
 import { isBuildTransitional, type ProjectSetup } from "../../../managed-apps.types"
+import { buildLifecycle } from "../../project/BuildLogConsole/lifecycle"
+import { LifecycleLines } from "../../project/BuildLogConsole/LifecycleLines"
 import { LogBody } from "../../project/BuildLogConsole/LogBody"
 
 interface SetupWorkPanelProps {
@@ -42,6 +44,10 @@ export function SetupWorkPanel({ projectId, setup }: Readonly<SetupWorkPanelProp
 
   const { data: logs, isLoading: logsLoading } = useBuildLogs(current?.id ?? "", running)
   const logText = logs?.text ?? ""
+
+  // The commands and branch the lifecycle lines quote come off the project.
+  const { data: project } = useProject(projectId)
+  const lifecycle = buildLifecycle(current, project)
 
   const [selected, setSelected] = useState<string | null>(null)
   const preferred = current ? "log" : "workflow"
@@ -111,6 +117,24 @@ export function SetupWorkPanel({ projectId, setup }: Readonly<SetupWorkPanelProp
                 /* no-op: the sheet console owns the scroll guard */
               }}
               placeholder={logPlaceholder}
+              leading={
+                current && (
+                  <LifecycleLines
+                    events={lifecycle.leading}
+                    originIso={current.created_at}
+                    edge="top"
+                  />
+                )
+              }
+              trailing={
+                current && (
+                  <LifecycleLines
+                    events={lifecycle.trailing}
+                    originIso={current.created_at}
+                    edge="bottom"
+                  />
+                )
+              }
             />
           </div>
         </TabsContent>

@@ -1,4 +1,4 @@
-import { ExternalLink, GitBranch, Loader2, PackageCheck, Rocket } from "lucide-react"
+import { Code2, ExternalLink, GitBranch, Loader2, PackageCheck, Rocket } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
@@ -142,10 +142,22 @@ export function CurrentDeploymentHero({
             <span className="font-mono">{project.branch || "main"}</span>
           </span>
           {latestBuild?.commit_sha && (
-            <span className="min-w-0 truncate">
-              <span className="font-mono">{shortSha(latestBuild.commit_sha)}</span>
-              {latestBuild.commit_message && <> {latestBuild.commit_message}</>}
-            </span>
+            <>
+              <span className="min-w-0 truncate">
+                <span className="font-mono">{shortSha(latestBuild.commit_sha)}</span>
+                {latestBuild.commit_message && <> {latestBuild.commit_message}</>}
+              </span>
+              {/* The code browser lives on the Builds tab, opened by ?code=.
+                  Linking to it keeps one owner of that sheet instead of a
+                  second copy here that would fetch the same tree again. */}
+              <Link
+                to={`${MANAGED_APPS_ROUTES.project(project.id)}?tab=builds&code=${latestBuild.commit_sha}`}
+                className="flex items-center gap-1 text-status-info hover:underline"
+              >
+                <Code2 className="size-3" />
+                View code
+              </Link>
+            </>
           )}
           {settledAt && <span>settled {timeSince(settledAt)}</span>}
           <Link

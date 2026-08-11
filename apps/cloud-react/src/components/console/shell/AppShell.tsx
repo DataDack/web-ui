@@ -1,6 +1,5 @@
 import { Suspense, useCallback, useEffect, useState } from "react"
 
-import { cn, Skeleton } from "@datadack/common-ui"
 import { useLocation, useMatches, useNavigate, useOutlet } from "react-router-dom"
 
 import { useKeySequence } from "@/hooks/use-key-sequence"
@@ -9,10 +8,18 @@ import { MobileNumberPrompt } from "@/modules/auth/components/MobileNumberPrompt
 import { GlobalSearch } from "@/modules/search/partials/GlobalSearch"
 import { useConsoleBroadcastSync } from "@/services/broadcast"
 
+import { cn, Skeleton } from "@datadack/common-ui"
+
 import { Sidebar } from "./Sidebar"
 import { Topbar } from "./Topbar"
 import { MotionProvider } from "../motion/MotionProvider"
-import { FreedomSaleBanner, useFreedomSale } from "../seasonal"
+import {
+  ChakraWatermark,
+  FreedomSaleBanner,
+  IndependenceGreeting,
+  useFreedomSale,
+  useIndependenceGreeting,
+} from "../seasonal"
 
 const SIDEBAR_STORAGE_KEY = "console-sidebar-collapsed"
 
@@ -41,6 +48,7 @@ export function AppShell() {
 
   // Independence Day chrome — inert outside the seasonal window.
   const freedomSale = useFreedomSale()
+  const greeting = useIndependenceGreeting()
 
   // Work that finishes in another tab (a wallet top-up, a plan change) lands
   // here as a refetch rather than as a stale page waiting for a reload.
@@ -80,7 +88,12 @@ export function AppShell() {
 
   return (
     <MotionProvider>
-      <div className="min-h-screen flex flex-col bg-background text-foreground bg-gradient-surface">
+      {/* `isolate` is here for the seasonal watermark: it makes this div the
+          stacking context the wheel's `-z-10` resolves against, so the wheel
+          lands above this element's own background and below everything in
+          the shell. Without it the wheel would sink under `bg-background`. */}
+      <div className="min-h-screen isolate flex flex-col bg-background text-foreground bg-gradient-surface">
+        {freedomSale.active && <ChakraWatermark />}
         {freedomSale.bannerVisible && <FreedomSaleBanner onDismiss={freedomSale.dismiss} />}
         <Topbar onOpenSearch={openSearch} seasonalAccent={freedomSale.active} />
 
@@ -125,6 +138,7 @@ export function AppShell() {
 
         <GlobalSearch open={searchOpen} onOpenChange={setSearchOpen} />
         <MobileNumberPrompt />
+        {greeting.show && <IndependenceGreeting onDismiss={greeting.dismiss} />}
       </div>
     </MotionProvider>
   )

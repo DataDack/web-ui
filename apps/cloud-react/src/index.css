@@ -623,6 +623,10 @@
   );
   --freedom-rule-mid: rgba(255, 255, 255, 0.9);
   --freedom-sheen: rgba(255, 255, 255, 0.5);
+  /* Confetti's white needs a body on a near-white page; the flag's white
+     would read as a hole punched in the backdrop. */
+  --freedom-confetti-white: #d8d8de;
+  --freedom-watermark-opacity: 0.05;
 }
 
 .dark {
@@ -638,6 +642,9 @@
   );
   --freedom-rule-mid: rgba(255, 255, 255, 0.55);
   --freedom-sheen: rgba(255, 255, 255, 0.22);
+  --freedom-confetti-white: #f2f2f5;
+  /* #0a0a0d gives a faint mark far less to work with than a light page does */
+  --freedom-watermark-opacity: 0.07;
 }
 
 /* The banner strip above the topbar */
@@ -721,6 +728,88 @@
   }
 }
 
+/* Oversized chakra sunk into the bottom-right of the backdrop. Its revolution
+   is four times slower than the banner's: at 34rem, the banner's 24s would be
+   a room-filling movement rather than an ambient one. */
+.freedom-watermark {
+  opacity: var(--freedom-watermark-opacity);
+  color: var(--freedom-saffron);
+}
+
+.freedom-watermark-wheel {
+  animation: freedom-chakra-spin 96s linear infinite;
+  transform-origin: center;
+}
+
+/* ── 15 August greeting ──────────────────────────────────────────────── */
+
+/* One keyframe for every piece of paper: each carries its own trajectory in
+   --cx/--cy/--cr, so the burst costs one animation definition and stays on
+   transform + opacity, which the compositor can handle without layout. */
+.freedom-confetti-piece {
+  position: absolute;
+  top: -20px;
+  width: var(--cw);
+  height: var(--ch);
+  border-radius: 1px;
+  opacity: 0;
+  animation-name: freedom-confetti-fly;
+  animation-timing-function: cubic-bezier(0.16, 0.62, 0.36, 1);
+  animation-fill-mode: forwards;
+  animation-iteration-count: 1;
+  will-change: transform, opacity;
+}
+
+@keyframes freedom-confetti-fly {
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--cx), var(--cy), 0) rotate(var(--cr));
+  }
+}
+
+.freedom-greeting-card {
+  background: var(--glass-3-bg);
+  -webkit-backdrop-filter: blur(48px) saturate(1.4);
+  backdrop-filter: blur(48px) saturate(1.4);
+  border: 1px solid rgba(255, 153, 51, 0.35);
+  box-shadow:
+    0 18px 60px rgba(0, 0, 0, 0.28),
+    0 0 0 1px rgba(19, 136, 8, 0.12);
+  animation: freedom-greeting-in 480ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Saffron→green across the greeting itself, which is the one place in the
+   console where the tricolour is the message rather than an accent. */
+.freedom-greeting-title {
+  background-image: linear-gradient(
+    100deg,
+    var(--freedom-saffron) 0%,
+    var(--foreground) 50%,
+    var(--freedom-green-ink) 100%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+@keyframes freedom-greeting-in {
+  from {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 /* ─── Reduced motion ──────────────────────────────────────────────────── */
 /* JS-driven motion is handled by <MotionConfig reducedMotion="user"> */
 @media (prefers-reduced-motion: reduce) {
@@ -733,11 +822,18 @@
   }
   /* Seasonal chrome keeps its colour, loses its motion */
   .freedom-chakra,
-  .freedom-cta::after {
+  .freedom-watermark-wheel {
     animation: none;
   }
-  .freedom-cta::after {
+  /* The sheen and the confetti ARE their motion — with nothing to animate
+     there is nothing worth leaving on screen. The greeting card itself still
+     renders; only its entrance is dropped. */
+  .freedom-cta::after,
+  .freedom-confetti-piece {
     display: none;
+  }
+  .freedom-greeting-card {
+    animation: none;
   }
   *,
   *::before,

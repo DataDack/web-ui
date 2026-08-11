@@ -1,5 +1,5 @@
 import { Button, cn, Skeleton } from "@datadack/common-ui"
-import { AlertCircle, ArrowRight, Sparkles } from "lucide-react"
+import { AlertCircle, ExternalLink, Sparkles } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
@@ -91,11 +91,14 @@ export function PlanLimitsPanel({
         </div>
 
         {showChangeLink && (
+          // A new tab, deliberately. This panel sits inside the create flow and
+          // a project's settings — both hold unsaved form state that navigating
+          // away would discard, for a link that is only ever a detour.
           <Button asChild variant="ghost" size="sm" className="h-7 gap-1.5 text-[12px]">
-            <Link to={MANAGED_APPS_ROUTES.settings}>
+            <Link to={MANAGED_APPS_ROUTES.settings} target="_blank" rel="noreferrer">
               <Sparkles className="size-3.5" />
               {t("managedApps.index.changePlan")}
-              <ArrowRight className="size-3" />
+              <ExternalLink className="size-3" />
             </Link>
           </Button>
         )}

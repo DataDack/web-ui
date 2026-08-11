@@ -5,6 +5,7 @@ import type {
   CreateFromPackageInput,
   CreateFromSourceInput,
   CreateFunctionUrlInput,
+  CreateVersionInput,
   CreatedFunction,
   FunctionAlias,
   FunctionCode,
@@ -75,8 +76,17 @@ export interface ServerlessTransport {
   createFunctionUrl?: (name: string, input: CreateFunctionUrlInput) => Promise<FunctionUrl>
   /** Release a hostname. The variable is the domain, which is globally unique. */
   deleteFunctionUrl?: (domain: string) => Promise<void>
-  /** Published versions of a function, unwrapped from the native keyed list. */
+  /** Versions of a function, unwrapped from the native keyed list. */
   listVersions?: (name: string) => Promise<FunctionVersion[]>
+  /**
+   * Freeze the function's current state as a new numbered version.
+   *
+   * Deploying does NOT create a version — it overwrites the newest one in
+   * place — so this call is the only thing that grows the list, and after it
+   * deploys land on the number it created. That makes a version mean "someone
+   * chose to keep this", which is the only thing the number is useful for.
+   */
+  createVersion?: (name: string, input?: CreateVersionInput) => Promise<FunctionEntity>
   /** Aliases of a function, unwrapped from the native keyed list. */
   listAliases?: (name: string) => Promise<FunctionAlias[]>
   /** Create or update an alias — the control plane upserts by name. */
@@ -134,10 +144,11 @@ export interface ServerlessTransport {
   /** Throw the draft away and return to the deployed package. */
   discardFunctionCodeDraft?: (name: string) => Promise<FunctionCode>
   /**
-   * Publish the draft as a new function version. `baseSha256` is the deployed
-   * digest the session started from: sending it makes the deploy a
-   * compare-and-swap (409 CodeStale when another deploy landed underneath),
-   * omitting it opts out and last-write-wins.
+   * Deploy the draft onto the function's working version, overwriting it in
+   * place — this does NOT mint a version, `createVersion` is what does.
+   * `baseSha256` is the deployed digest the session started from: sending it
+   * makes the deploy a compare-and-swap (409 CodeStale when another deploy
+   * landed underneath), omitting it opts out and last-write-wins.
    */
   deployFunctionCodeDraft?: (name: string, baseSha256?: string) => Promise<FunctionEntity>
 }
@@ -161,6 +172,8 @@ export interface ServerlessCapabilities {
   functionRead: boolean
   /** Show the Versions tab. Requires `listVersions`. */
   versions: boolean
+  /** Offer "create version". Requires `createVersion`. */
+  versionWrite: boolean
   /** Show the Aliases tab. Requires `listAliases`. */
   aliases: boolean
   /** Offer alias create/edit/delete. Requires `putAlias` + `deleteAlias`. */
@@ -239,6 +252,7 @@ export function ServerlessProvider({
         blankTemplate: true,
         functionRead: typeof transport.getFunction === "function",
         versions: typeof transport.listVersions === "function",
+        versionWrite: typeof transport.createVersion === "function",
         aliases: typeof transport.listAliases === "function",
         aliasWrite:
           typeof transport.putAlias === "function" && typeof transport.deleteAlias === "function",

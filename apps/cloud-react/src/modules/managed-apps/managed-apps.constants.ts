@@ -73,6 +73,13 @@ export const MANAGED_APPS_QUERY_KEYS = {
   projectEnv: (id: string) => ["managed-apps", "projects", id, "env"] as const,
   projectSetup: (id: string) => ["managed-apps", "projects", id, "setup"] as const,
   projectBuilds: (id: string) => ["managed-apps", "projects", id, "builds"] as const,
+  // Source reads are keyed by the commit, not just the project: a commit's tree
+  // and its files never change, which is what makes them cacheable forever on
+  // the client and worth keeping apart per ref rather than refetching per view.
+  projectSourceTree: (id: string, ref: string) =>
+    ["managed-apps", "projects", id, "source", "tree", ref] as const,
+  projectSourceFile: (id: string, ref: string, path: string) =>
+    ["managed-apps", "projects", id, "source", "file", ref, path] as const,
   build: (id: string) => ["managed-apps", "builds", id] as const,
   buildLogs: (id: string) => ["managed-apps", "builds", id, "logs"] as const,
 }

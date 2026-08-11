@@ -8,6 +8,7 @@ import type {
   CreateFromPackageInput,
   CreateFromSourceInput,
   CreateFunctionUrlInput,
+  CreateVersionInput,
   CreatedFunction,
   FunctionAlias,
   FunctionCode,
@@ -338,6 +339,30 @@ export function useFunctionMetrics(name: string, query: MetricSeriesQuery, scope
     },
     enabled: name !== "" && !!transport.getMetricSeries,
     refetchInterval: 30_000,
+  })
+}
+
+/**
+ * Freeze the function's current state as a new numbered version.
+ *
+ * Invalidates the function itself as well as the version list: creating a
+ * version moves the function onto the new number, so a detail header still
+ * showing the old one would be wrong the moment this resolves.
+ */
+export function useCreateVersion(name: string, scope?: string) {
+  const { transport } = useServerlessContext()
+  const queryClient = useQueryClient()
+  return useMutation<FunctionEntity, unknown, CreateVersionInput | undefined>({
+    mutationFn: (input) => {
+      if (!transport.createVersion) {
+        throw new Error("This console's serverless transport has no createVersion")
+      }
+      return transport.createVersion(name, input)
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: serverlessKeys.versions(name, scope) })
+      void queryClient.invalidateQueries({ queryKey: serverlessKeys.function(name, scope) })
+    },
   })
 }
 

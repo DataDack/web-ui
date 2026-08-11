@@ -197,6 +197,15 @@ export interface CreateFunctionUrlInput {
   qualifier?: string
 }
 
+/**
+ * The body of a "create version" call. Everything about the version's content
+ * comes from what is deployed right now, so the only thing worth supplying is
+ * a note about why this state was worth keeping.
+ */
+export interface CreateVersionInput {
+  description?: string
+}
+
 export interface PutAliasInput {
   name: string
   functionVersion: string

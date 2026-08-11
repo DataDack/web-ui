@@ -437,6 +437,18 @@ export function ServerlessFunctionDetailPage() {
         empty: t("serverless.detail.versions.empty"),
         createAlias: t("serverless.detail.versions.createAlias"),
         rowActions: t("serverless.detail.versions.rowActions"),
+        workingBadge: t("serverless.detail.versions.workingBadge"),
+        workingHint: t("serverless.detail.versions.workingHint"),
+        create: t("serverless.detail.versions.create"),
+        createTitle: t("serverless.detail.versions.createTitle"),
+        createDescription: (version: string) =>
+          t("serverless.detail.versions.createDescription", { version }),
+        createDescriptionLabel: t("serverless.detail.versions.createDescriptionLabel"),
+        createDescriptionPlaceholder: t("serverless.detail.versions.createDescriptionPlaceholder"),
+        createConfirm: t("serverless.detail.versions.createConfirm"),
+        cancel: t("serverless.detail.versions.cancel"),
+        createError: t("serverless.detail.versions.createError"),
+        created: (version: string) => t("serverless.detail.versions.created", { version }),
       },
       aliases: {
         columns: {

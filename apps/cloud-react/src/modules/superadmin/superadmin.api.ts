@@ -270,11 +270,17 @@ export const superAdminApi = {
     return apiGet<PlatformOverview>(`/org/overview${search}`)
   },
 
-  /* per-account permanent resource discount (0–100), super-admin only */
-  setAccountDiscount: (accountId: string, permanentDiscount: number) =>
-    apiPost<{ id: string; permanent_discount: number }>(`/org/accounts/${accountId}/discount`, {
-      permanent_discount: permanentDiscount,
-    }),
+  /* per-account permanent resource discount (0–100), super-admin only. `reason`
+     records why it was granted and is REQUIRED by the server for any non-zero
+     percentage; setting 0 clears the discount and its reason together. */
+  setAccountDiscount: (accountId: string, permanentDiscount: number, reason: string) =>
+    apiPost<{ id: string; permanent_discount: number; permanent_discount_reason: string }>(
+      `/org/accounts/${accountId}/discount`,
+      {
+        permanent_discount: permanentDiscount,
+        reason,
+      },
+    ),
 
   /* manual wallet movement (top-up or deduction) on an account, super-admin only.
        The amount is a DELTA in credits, not the new total; the backend recomputes

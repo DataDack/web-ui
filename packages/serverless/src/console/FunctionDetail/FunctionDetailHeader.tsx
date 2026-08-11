@@ -6,6 +6,7 @@ import { Badge, StatusBadge, css, cx, fontMono, glass1 } from "@datadack/common-
 
 import type { FunctionDetailLabels } from "./labels"
 import type { FunctionEntity, FunctionUrl } from "../../data/types"
+import { familyFromRuntime, RuntimeIcon } from "../RuntimeIcon"
 
 const root = css`
   margin-bottom: 20px;
@@ -136,6 +137,9 @@ export function FunctionDetailHeader({
 }: Readonly<FunctionDetailHeaderProps>) {
   const isImage = fn.packageType === "image"
   const TileIcon = isImage ? Container : Package
+  // An image function reports no runtime, so the badge falls back to the
+  // package type and there is no language mark to put in front of it.
+  const family = familyFromRuntime(fn.runtime)
 
   // Prefer a live hostname over a parked one, so a function with both shows the
   // address that actually answers.
@@ -152,6 +156,7 @@ export function FunctionDetailHeader({
           <h1 className={heading}>{fn.name}</h1>
           <StatusBadge status={fn.state} pulse={fn.state.toLowerCase() === "active"} />
           <Badge variant="outline" className={runtimeBadge}>
+            {family && <RuntimeIcon family={family} />}
             {fn.runtime ?? fn.packageType}
           </Badge>
         </div>

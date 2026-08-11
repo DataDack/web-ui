@@ -1,22 +1,9 @@
-import { useId, useState } from "react"
+import { useState } from "react"
 
-import { ExternalLink, Trash2 } from "lucide-react"
+import { Check, ExternalLink, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 
-import {
-  Badge,
-  Button,
-  Input,
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  css,
-  cx,
-  fontMono,
-} from "@datadack/common-ui"
+import { Badge, Button, Label, css, cx, fontMono } from "@datadack/common-ui"
 
 import { SectionShell } from "./SectionShell"
 import { useCreateFunctionUrl, useDeleteFunctionUrl, useFunctionUrls } from "../../../data/queries"
@@ -104,11 +91,6 @@ const field = css`
   gap: 6px;
 `
 
-const monoInput = css`
-  font-family: ${fontMono};
-  font-size: 13px;
-`
-
 /** Separates the create form from the rows it sits under. */
 const formAfterList = css`
   margin-top: 20px;
@@ -120,8 +102,97 @@ const formFooter = css`
   gap: 8px;
 `
 
+/* The auth choice is two options with real consequences — public versus signed —
+   so it is laid out as cards rather than a dropdown: both are readable at once,
+   and the trade-off does not hide behind a closed menu. */
+const choices = css`
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr);
+
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+`
+
+const choice = css`
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 0.625rem;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 120ms ease,
+    background-color 120ms ease;
+
+  &:hover {
+    border-color: var(--primary);
+  }
+`
+
+const choiceSelected = css`
+  border-color: var(--primary);
+  background: color-mix(in oklab, var(--primary) 8%, transparent);
+`
+
+const choiceText = css`
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+`
+
+const choiceTitle = css`
+  font-family: ${fontMono};
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--foreground);
+`
+
+const choiceHint = css`
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--muted-foreground);
+`
+
+const choiceCheck = css`
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--primary);
+`
+
+const choiceCheckEmpty = css`
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+`
+
+/**
+ * The wire values the control plane accepts. `AWS_IAM` is Lambda's spelling and
+ * what is stored; the console shows it as plain "IAM" — see `authTypeLabel`.
+ */
 const AUTH_NONE = "NONE"
 const AUTH_IAM = "AWS_IAM"
+
+/** The picker's options, in the order they are offered. */
+const AUTH_CHOICES = [
+  { value: AUTH_NONE, title: "functionUrlAuthNone", hint: "functionUrlAuthNoneHint" },
+  { value: AUTH_IAM, title: "functionUrlAuthIam", hint: "functionUrlAuthIamHint" },
+] as const
+
+/** What a stored auth type is called on screen: AWS_IAM reads as "IAM" here. */
+function authTypeLabel(authType: string): string {
+  return authType === AUTH_IAM ? "IAM" : authType
+}
 
 export interface FunctionUrlSectionProps {
   fn: FunctionEntity
@@ -138,6 +209,11 @@ export interface FunctionUrlSectionProps {
  * function to the internet is a decision, not a side effect of shipping code.
  * The generated hostname carries the account ID, so two tenants can each have
  * one for a function they both called "api".
+ *
+ * Creating only ever takes that generated hostname. The control plane accepts a
+ * domain of your own, but a name nobody has pointed at this platform resolves
+ * nowhere and has no certificate, so it is not something to hand someone behind
+ * the same button — it needs its own flow with DNS and issuance in it.
  */
 export function FunctionUrlSection({
   fn,
@@ -149,10 +225,8 @@ export function FunctionUrlSection({
   const { data: urls, isLoading } = useFunctionUrls(fn.name, scope)
   const create = useCreateFunctionUrl(fn.name, scope)
   const remove = useDeleteFunctionUrl(fn.name, scope)
-  const fieldId = useId()
 
   const [creating, setCreating] = useState(false)
-  const [domain, setDomain] = useState("")
   const [authType, setAuthType] = useState(AUTH_NONE)
   // The domain pending release, or null. Holding the value (not a boolean) is
   // what lets the dialog name the hostname it is about to free.
@@ -163,15 +237,16 @@ export function FunctionUrlSection({
 
   const closeForm = () => {
     setCreating(false)
-    setDomain("")
     setAuthType(AUTH_NONE)
   }
 
   const submit = () => {
     create.mutate(
-      // An empty domain is omitted rather than sent blank: to the control plane
-      // "absent" means "generate one for me", and "" would read as a domain.
-      { domain: domain.trim() || undefined, authType },
+      // No domain is ever sent: the console only ever asks for the hostname the
+      // platform generates. Mapping a name of your own is a different act — it
+      // needs DNS you control and a certificate for it — so it does not belong
+      // behind the same button, where a typo silently becomes an unroutable URL.
+      { authType },
       {
         onSuccess: (created) => {
           toast.success(config.functionUrlCreated(created.domain))
@@ -260,7 +335,7 @@ export function FunctionUrlSection({
                 {url.generated ? config.functionUrlGenerated : config.functionUrlCustom}
               </Badge>
               <Badge variant="outline" className={badge}>
-                {url.authType}
+                {authTypeLabel(url.authType)}
               </Badge>
               {writable && (
                 <Button
@@ -282,32 +357,37 @@ export function FunctionUrlSection({
 
       {creating && (
         <div className={cx(form, urls && urls.length > 0 && formAfterList)}>
-          <div className={field}>
-            <Label htmlFor={`${fieldId}-domain`}>{config.functionUrlDomain}</Label>
-            <Input
-              id={`${fieldId}-domain`}
-              value={domain}
-              placeholder={config.functionUrlDomainPlaceholder}
-              className={monoInput}
-              autoComplete="off"
-              onChange={(event) => {
-                setDomain(event.target.value)
-              }}
-            />
-            <p className={hintLine}>{config.functionUrlDomainHint}</p>
-          </div>
+          <p className={hintLine}>{config.functionUrlGeneratedHint}</p>
 
           <div className={field}>
             <Label>{config.functionUrlAuthType}</Label>
-            <Select value={authType} onValueChange={setAuthType}>
-              <SelectTrigger aria-label={config.functionUrlAuthType}>
-                <SelectValue placeholder={config.functionUrlAuthType} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={AUTH_NONE}>{config.functionUrlAuthNone}</SelectItem>
-                <SelectItem value={AUTH_IAM}>{config.functionUrlAuthIam}</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className={choices} role="radiogroup" aria-label={config.functionUrlAuthType}>
+              {AUTH_CHOICES.map((option) => {
+                const selected = authType === option.value
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    role="radio"
+                    aria-checked={selected}
+                    className={cx(choice, selected && choiceSelected)}
+                    onClick={() => {
+                      setAuthType(option.value)
+                    }}
+                  >
+                    {selected ? (
+                      <Check className={choiceCheck} aria-hidden />
+                    ) : (
+                      <span className={choiceCheckEmpty} aria-hidden />
+                    )}
+                    <span className={choiceText}>
+                      <span className={choiceTitle}>{config[option.title]}</span>
+                      <span className={choiceHint}>{config[option.hint]}</span>
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
           </div>
 
           <div className={formFooter}>

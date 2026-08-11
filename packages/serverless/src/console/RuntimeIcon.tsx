@@ -31,6 +31,16 @@ export function familyLabel(family: string): string {
   return BRANDS[family]?.label ?? family
 }
 
+/**
+ * The family of a runtime id, for surfaces that only carry the id a function
+ * was created with (`nodejs22.x`, `python3.12`, `go1.x`, `provided.al2023`) and
+ * never see the catalog entry. Every id in the catalog is a family name
+ * followed by its version, so the leading letters are the family.
+ */
+export function familyFromRuntime(runtime: string | undefined): string | undefined {
+  return runtime?.toLowerCase().match(/^[a-z]+/)?.[0]
+}
+
 const icon = css`
   width: 16px;
   height: 16px;
