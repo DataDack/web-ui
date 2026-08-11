@@ -6,6 +6,7 @@ import { Section } from "@/components/console"
 import { formatDuration, isTimeSet, shortSha, timeSince, triggerLabel } from "./build-format"
 import { LogBody } from "./BuildLogConsole/LogBody"
 import { LogToolbar } from "./BuildLogConsole/LogToolbar"
+import { useBuildLifecycle } from "./BuildLogConsole/useBuildLifecycle"
 import { useLogView } from "./BuildLogConsole/useLogView"
 import { BuildProgressBar, BuildStatusPill } from "../../components"
 import { useBuild, useBuildLogs } from "../../managed-apps.hooks"
@@ -32,6 +33,7 @@ export function LatestBuildLog({ build }: Readonly<{ build: Build }>) {
 
   const logText = logs?.text ?? ""
   const view = useLogView({ buildId: current.id, active, text: logText, isLoading })
+  const lifecycle = useBuildLifecycle(current)
 
   return (
     <Section
@@ -87,6 +89,7 @@ export function LatestBuildLog({ build }: Readonly<{ build: Build }>) {
           following={view.following}
           onLeaveTail={view.leaveTail}
           placeholder={view.placeholder}
+          {...lifecycle}
         />
       </div>
 
