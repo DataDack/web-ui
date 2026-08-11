@@ -38,10 +38,25 @@ function toText(value: unknown): string {
 // fetch" is NOT included: that's any network error, and treating an API outage
 // as a stale deploy would silently reload the page instead of showing what
 // broke.
+//
+// The MIME-type variant is the same failure wearing a different message. When
+// the server answers a missing chunk with the SPA shell instead of a 404, the
+// browser rejects it for its content type rather than for being absent:
+//
+//	Failed to load module script: Expected a JavaScript-or-Wasm module script
+//	but the server responded with a MIME type of "text/html".
+//
+// That is always a stale deploy — nothing else serves HTML where a module was
+// expected — and until it was matched here, every stale tab landed on the
+// generic error page with a reload button, one press away from a fix it could
+// have done itself.
 function isDynamicImportError(error: unknown): boolean {
   if (isRouteErrorResponse(error)) return false
   const msg = toText(error)
-  return /dynamically imported module|importing a module script failed/i.test(msg)
+  return (
+    /dynamically imported module|importing a module script failed/i.test(msg) ||
+    /expected a javascript(-or-wasm)? module script/i.test(msg)
+  )
 }
 
 /** True when this tab already tried a recovery reload inside the guard window. */
