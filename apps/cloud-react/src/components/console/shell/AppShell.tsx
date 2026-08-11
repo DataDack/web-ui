@@ -12,6 +12,7 @@ import { useConsoleBroadcastSync } from "@/services/broadcast"
 import { Sidebar } from "./Sidebar"
 import { Topbar } from "./Topbar"
 import { MotionProvider } from "../motion/MotionProvider"
+import { FreedomSaleBanner, useFreedomSale } from "../seasonal"
 
 const SIDEBAR_STORAGE_KEY = "console-sidebar-collapsed"
 
@@ -37,6 +38,9 @@ export function AppShell() {
   const location = useLocation()
   const outlet = useOutlet()
   const matches = useMatches()
+
+  // Independence Day chrome — inert outside the seasonal window.
+  const freedomSale = useFreedomSale()
 
   // Work that finishes in another tab (a wallet top-up, a plan change) lands
   // here as a refetch rather than as a stale page waiting for a reload.
@@ -77,7 +81,8 @@ export function AppShell() {
   return (
     <MotionProvider>
       <div className="min-h-screen flex flex-col bg-background text-foreground bg-gradient-surface">
-        <Topbar onOpenSearch={openSearch} />
+        {freedomSale.bannerVisible && <FreedomSaleBanner onDismiss={freedomSale.dismiss} />}
+        <Topbar onOpenSearch={openSearch} seasonalAccent={freedomSale.active} />
 
         <div className="flex-1 flex min-w-0">
           {showSidebar && (

@@ -90,6 +90,29 @@ export interface SGRule {
 export type StaticIPStatus =
   "provisioning" | "reserved" | "assigned" | "available" | "associated" | "releasing"
 
+/**
+ * What a static IP can be attached to. The association is POLYMORPHIC on the
+ * backend (`vpc_static_ips.association_type`), so an address in use is not
+ * necessarily on an instance — it can just as well hold a load balancer's or a
+ * VPC gateway's public address. `""` means the address is attached to nothing.
+ */
+export type StaticIPAttachmentType =
+  "" | "instance" | "load_balancer" | "nat_gateway" | "vpc_gateway" | "managed_app"
+
+export interface StaticIPAttachment {
+  type: StaticIPAttachmentType
+  /** Normalized from backend `association_id`; empty string when unattached. */
+  id: string
+  /**
+   * Display name of the holder, resolved by the API (`attachment_name`). Empty
+   * when the owning row could not be read — render the id rather than nothing,
+   * because an address IS attached either way.
+   */
+  name: string
+  /** The holder was deleted and still has the address: a leaked attachment. */
+  deleted: boolean
+}
+
 export interface StaticIP {
   id: string
   tenant_serial: number
@@ -99,8 +122,14 @@ export interface StaticIP {
   ip_address: string
   region: string
   status: StaticIPStatus
-  /** Normalized from backend `association_id` (instance associations). */
+  /**
+   * Normalized from backend `association_id`, but ONLY for instance
+   * associations — it stays empty for every other holder, which is what the
+   * assign/unassign dialogs key off. To show what an address is attached to,
+   * use `attachment`.
+   */
   instance_id: string
+  attachment: StaticIPAttachment
   user_id: string
 }
 

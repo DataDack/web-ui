@@ -150,6 +150,14 @@ export interface FunctionDetailLabels {
     executedVersion: string
     logs: string
     failed: string
+    /** Re-indents the event buffer. */
+    format: string
+    copy: string
+    copied: string
+    /** Sits under the editor: what the event becomes on the other side. */
+    payloadHint: string
+    /** Badge on the result when the function itself threw. */
+    functionError: string
   }
   monitor: {
     blurb: string
@@ -226,10 +234,86 @@ export interface FunctionDetailLabels {
     tagsEmpty: string
     tagsHint: string
     triggersEmpty: string
+    /** Everything the schedule picker and the trigger rows say. */
+    triggers: {
+      emptyHint: string
+      add: string
+      addTitle: string
+      addDescription: string
+      submit: string
+      cancel: string
+      nameLabel: string
+      /** Placeholder showing the id the control plane would assign. */
+      namePlaceholder: (fallback: string) => string
+      whenLabel: string
+      modes: {
+        interval: string
+        daily: string
+        hourly: string
+        once: string
+        expression: string
+      }
+      everyLabel: string
+      units: {
+        minutes: string
+        hours: string
+        days: string
+      }
+      atLabel: string
+      expressionLabel: string
+      expressionPlaceholder: string
+      expressionHint: string
+      /** The one-line "here is what you just described" line. */
+      preview: (summary: string) => string
+      /** What the handler is handed, and that the run is asynchronous. */
+      eventNote: string
+      problems: {
+        empty: string
+        cronUnsupported: string
+        unrecognised: string
+      }
+      /** Renders a ScheduleSummary; the section and the preview share these. */
+      summary: {
+        everySeconds: (count: number) => string
+        everyMinutes: (count: number) => string
+        everyHours: (count: number) => string
+        everyDays: (count: number) => string
+        dailyAt: (time: string) => string
+        hourly: string
+        once: string
+      }
+      created: (name: string) => string
+      createFailed: string
+      delete: string
+      deleteTitle: (name: string) => string
+      deleteDescription: string
+      deleteConfirm: string
+      deleted: (name: string) => string
+      /** e.g. "next run in 4m" — the package supplies a bare duration. */
+      nextRunIn: (relative: string) => string
+      /** The fire time has passed and the scheduler has not caught up yet. */
+      nextRunDue: string
+    }
     functionUrlEmpty: string
+    functionUrlEmptyHint: string
     functionUrlGenerated: string
     functionUrlCustom: string
     functionUrlDisabled: string
+    functionUrlCreate: string
+    functionUrlCreateSubmit: string
+    functionUrlDomain: string
+    functionUrlDomainHint: string
+    functionUrlDomainPlaceholder: string
+    functionUrlAuthType: string
+    functionUrlAuthNone: string
+    functionUrlAuthIam: string
+    functionUrlCreated: (domain: string) => string
+    functionUrlCreateFailed: string
+    functionUrlDelete: string
+    functionUrlDeleteTitle: (domain: string) => string
+    functionUrlDeleteDescription: string
+    functionUrlDeleteConfirm: string
+    functionUrlDeleted: (domain: string) => string
     unreserved: string
     comingSoon: {
       permissions: { title: string; message: string }
@@ -430,6 +514,11 @@ export const DEFAULT_FUNCTION_DETAIL_LABELS: FunctionDetailLabels = {
     executedVersion: "version",
     logs: "Function logs",
     failed: "The invocation failed",
+    format: "Format",
+    copy: "Copy",
+    copied: "Copied",
+    payloadHint: "This JSON arrives as the handler’s event argument.",
+    functionError: "Function error",
   },
   monitor: {
     blurb:
@@ -504,10 +593,89 @@ export const DEFAULT_FUNCTION_DETAIL_LABELS: FunctionDetailLabels = {
     tagsEmpty: "No tags.",
     tagsHint: "Tags are stored as the function’s labels.",
     triggersEmpty: "No triggers",
+    triggers: {
+      emptyHint: "Add one to run this function on a schedule.",
+      add: "Add trigger",
+      addTitle: "Run this function on a schedule",
+      addDescription: "All times are UTC.",
+      submit: "Add trigger",
+      cancel: "Cancel",
+      nameLabel: "Name",
+      namePlaceholder: (fallback) => `${fallback} (optional)`,
+      whenLabel: "How often",
+      modes: {
+        interval: "Every so often",
+        daily: "Once a day",
+        hourly: "Every hour",
+        once: "Once, straight away",
+        expression: "Custom expression",
+      },
+      everyLabel: "Every",
+      units: {
+        minutes: "minutes",
+        hours: "hours",
+        days: "days",
+      },
+      atLabel: "At",
+      expressionLabel: "Expression",
+      expressionPlaceholder: "@every 30m",
+      expressionHint:
+        "@hourly · @daily · @once · @every 30s · rate(5 minutes) · 30 9 * * * — " +
+        "the day, month and weekday cron fields must all be *.",
+      preview: (summary) => `Runs ${summary}.`,
+      eventNote:
+        "The function is invoked asynchronously and receives an event of " +
+        "{ source, triggerId, trigger, firedAt }.",
+      problems: {
+        empty: "Enter a schedule.",
+        cronUnsupported:
+          "Only a daily time is supported — write it as “minute hour * * *”. " +
+          "Day, month and weekday have to stay *.",
+        unrecognised:
+          "Not a schedule this platform understands. Try @hourly, @every 30m or rate(5 minutes).",
+      },
+      summary: {
+        everySeconds: (count) => (count === 1 ? "every second" : `every ${String(count)} seconds`),
+        everyMinutes: (count) => (count === 1 ? "every minute" : `every ${String(count)} minutes`),
+        everyHours: (count) => (count === 1 ? "every hour" : `every ${String(count)} hours`),
+        everyDays: (count) => (count === 1 ? "every day" : `every ${String(count)} days`),
+        dailyAt: (time) => `every day at ${time} UTC`,
+        hourly: "every hour, on the hour",
+        once: "once, as soon as it is added",
+      },
+      created: (name) => `Trigger ${name} added`,
+      createFailed: "Could not add the trigger",
+      delete: "Remove trigger",
+      deleteTitle: (name) => `Remove ${name}?`,
+      deleteDescription: "The function stops running on this schedule. Nothing else changes.",
+      deleteConfirm: "Remove",
+      deleted: (name) => `Trigger ${name} removed`,
+      nextRunIn: (relative) => `next run in ${relative}`,
+      nextRunDue: "next run due",
+    },
     functionUrlEmpty: "No hostname is mapped to this function.",
+    functionUrlEmptyHint:
+      "A function URL is not created with the function. Create one to call it over HTTPS.",
     functionUrlGenerated: "generated",
     functionUrlCustom: "custom",
     functionUrlDisabled: "disabled",
+    functionUrlCreate: "Create function URL",
+    functionUrlCreateSubmit: "Create",
+    functionUrlDomain: "Custom domain",
+    functionUrlDomainHint: "Leave blank to use the hostname the platform generates.",
+    functionUrlDomainPlaceholder: "api.example.com",
+    functionUrlAuthType: "Auth type",
+    functionUrlAuthNone: "NONE — anyone with the URL can invoke it",
+    functionUrlAuthIam: "AWS_IAM — callers must sign the request",
+    functionUrlCreated: (domain) => `${domain} now invokes this function`,
+    functionUrlCreateFailed: "Could not create the function URL",
+    functionUrlDelete: "Delete",
+    functionUrlDeleteTitle: (domain) => `Release ${domain}?`,
+    functionUrlDeleteDescription:
+      "Anything calling this hostname will start failing, and the name is free for " +
+      "another account to claim.",
+    functionUrlDeleteConfirm: "Release hostname",
+    functionUrlDeleted: (domain) => `${domain} released`,
     unreserved: "Not set",
     comingSoon: {
       permissions: {

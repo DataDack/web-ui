@@ -4,6 +4,7 @@ import type {
   ArtifactRef,
   CreateFromPackageInput,
   CreateFromSourceInput,
+  CreateFunctionUrlInput,
   CreatedFunction,
   FunctionAlias,
   FunctionCode,
@@ -15,6 +16,7 @@ import type {
   MetricSeries,
   MetricSeriesQuery,
   PutAliasInput,
+  PutTriggerInput,
   RuntimeInfo,
   Trigger,
   UpdateFunctionConfigInput,
@@ -65,6 +67,14 @@ export interface ServerlessTransport {
    * function-URL surface; the detail header simply shows nothing.
    */
   listFunctionUrls?: (name: string) => Promise<FunctionUrl[]>
+  /**
+   * Give a function a hostname. Nothing mints one on deploy — publishing a
+   * function to the internet is an explicit act — so this call is the only way
+   * a URL appears. Omit `input.domain` to take the platform's generated name.
+   */
+  createFunctionUrl?: (name: string, input: CreateFunctionUrlInput) => Promise<FunctionUrl>
+  /** Release a hostname. The variable is the domain, which is globally unique. */
+  deleteFunctionUrl?: (domain: string) => Promise<void>
   /** Published versions of a function, unwrapped from the native keyed list. */
   listVersions?: (name: string) => Promise<FunctionVersion[]>
   /** Aliases of a function, unwrapped from the native keyed list. */
@@ -83,6 +93,14 @@ export interface ServerlessTransport {
   invokeFunction?: (name: string, payload: string) => Promise<InvokeResult>
   /** Event-source triggers wired to a function, unwrapped from the keyed list. */
   listTriggers?: (functionName: string) => Promise<Trigger[]>
+  /**
+   * Add a scheduled trigger. Despite the control plane's name this CREATES —
+   * it mints a new id per call rather than upserting — so the console's only
+   * offer is add and delete, never edit.
+   */
+  putTrigger?: (input: PutTriggerInput) => Promise<Trigger>
+  /** Remove one trigger by id. */
+  deleteTrigger?: (id: string) => Promise<void>
   /**
    * In-place config update (PATCH /v1/functions/{name}); does not mint a
    * version. Send only the keys being changed — the backend rejects unknown
@@ -153,6 +171,18 @@ export interface ServerlessCapabilities {
   functionDelete: boolean
   /** Show the triggers section. Requires `listTriggers`. */
   triggers: boolean
+  /**
+   * Offer adding and removing triggers. Requires `putTrigger` + `deleteTrigger`
+   * — a console with only the add half would let someone schedule a function
+   * they could not then unschedule.
+   */
+  triggerWrite: boolean
+  /**
+   * Offer creating and releasing function URLs. Requires `createFunctionUrl` +
+   * `deleteFunctionUrl` — a console with only the create half would hand out a
+   * public hostname nobody could take back.
+   */
+  functionUrlWrite: boolean
   /** Offer configuration editing. Requires `updateFunctionConfig`. */
   configEdit: boolean
   /** Chart the Monitor tab from real data. Requires `getMetricSeries`. */
@@ -215,6 +245,12 @@ export function ServerlessProvider({
         invoke: typeof transport.invokeFunction === "function",
         functionDelete: typeof transport.deleteFunction === "function",
         triggers: typeof transport.listTriggers === "function",
+        triggerWrite:
+          typeof transport.putTrigger === "function" &&
+          typeof transport.deleteTrigger === "function",
+        functionUrlWrite:
+          typeof transport.createFunctionUrl === "function" &&
+          typeof transport.deleteFunctionUrl === "function",
         configEdit: typeof transport.updateFunctionConfig === "function",
         metrics: typeof transport.getMetricSeries === "function",
         codeRead:

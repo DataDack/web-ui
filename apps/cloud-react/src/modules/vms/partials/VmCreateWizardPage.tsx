@@ -160,7 +160,7 @@ export function VmCreateWizardPage() {
   const navigate = useNavigate()
   const { mutateAsync: createInstance, isPending } = useCreateInstance()
 
-  const { data: vpcs = [] } = useVPCs()
+  const { data: vpcs = [], refetch: refetchVpcs, isFetching: vpcsFetching } = useVPCs()
   const { data: regions = [] } = useRegionCatalog()
   const { data: families = [] } = useImageCatalog()
   const { data: prices = [] } = useVMPrices()
@@ -401,6 +401,8 @@ export function VmCreateWizardPage() {
               regions={regions}
               vpcs={vpcs}
               staticIpPrice={staticIpPrice}
+              onReloadVpcs={() => void refetchVpcs()}
+              vpcsFetching={vpcsFetching}
             />
           </SectionCard>
 

@@ -7,11 +7,15 @@ import { defineConfig } from "vite"
 /**
  * Control plane origin the dev server proxies API calls to. 8085 matches the
  * FaaS dev default (serverless_faas/.env HTTP_PORT); the api and router roles
- * share that one listener, so /v1 and /function both land there.
+ * share that one listener, so the native /v1 API and the Lambda-compatible
+ * /2015-03-31 surface both land there.
  */
 const CONTROL_PLANE = process.env.CONTROL_PLANE_URL ?? "http://127.0.0.1:8085"
 
-const proxied = ["/v1", "/function", "/async-function", "/system", "/metrics"]
+// /2015-03-31 is where the Test tab's invoke goes. The old /function and
+// /async-function shorthands are gone — no route serves them upstream any more,
+// so proxying them only produced 404s.
+const proxied = ["/v1", "/2015-03-31", "/system", "/metrics"]
 
 export default defineConfig({
   // The control plane serves this bundle from /admin, so every asset URL must

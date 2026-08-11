@@ -159,6 +159,13 @@ export interface Project {
   install_command: string
   build_command: string
   output_dir: string
+  /**
+   * The build and runtime environment: the Node major the build runs on and,
+   * for opennext, the base image the runtime container is built from. Empty
+   * inherits the platform default — read `BuildDefaults.node_version` for what
+   * that currently is rather than assuming a number here.
+   */
+  node_version: string
   /** Row lifecycle only — `active` for a project's whole useful life. Never
    *  read this to answer "is it deployed?"; that is `deploy_state`. */
   status: string
@@ -213,6 +220,8 @@ export interface CreateProjectRequest {
   install_command?: string
   build_command?: string
   output_dir?: string
+  /** Omit to inherit the platform default rather than pinning today's. */
+  node_version?: string
   env?: Record<string, string>
   vpc_id?: string
   subnet_id?: string
@@ -235,6 +244,12 @@ export interface UpdateProjectRequest {
   install_command?: string
   build_command?: string
   output_dir?: string
+  /**
+   * Sending "" restores the platform default. Like the commands, this value is
+   * written into the workflow file the repository already carries, so a change
+   * reaches a build only once that file is updated.
+   */
+  node_version?: string
   vpc_id?: string
   subnet_id?: string
 }
@@ -268,10 +283,10 @@ export interface ProjectSetup {
 }
 
 /**
- * GET /projects/defaults?project_type= — what an empty build field inherits.
- * `build_editable`/`output_editable` say whether overriding is meaningful:
- * OpenNext chooses its own output directory, so offering an input would be a
- * control that changes nothing.
+ * GET /projects/defaults?project_type=&node_version= — what an empty build
+ * field inherits. `build_editable`/`output_editable` say whether overriding is
+ * meaningful: OpenNext chooses its own output directory, so offering an input
+ * would be a control that changes nothing.
  */
 export interface BuildDefaults {
   project_type: ProjectType
@@ -280,6 +295,18 @@ export interface BuildDefaults {
   output_dir: string
   build_editable: boolean
   output_editable: boolean
+  /** The Node major a project inherits when it chooses none. */
+  node_version: string
+  /** Every major a project may choose — the only values a write accepts. */
+  node_versions: string[]
+  /**
+   * The base image the runtime container is built FROM, resolved server-side
+   * for the requested type and `node_version`. Never derived here: whether the
+   * choice reaches the runtime at all is a platform rule (a static build is
+   * served by Caddy whatever Node compiled it), and duplicating it in the
+   * console is how the two start disagreeing.
+   */
+  runtime_image: string
 }
 
 /** GET /projects/:id/env — variable NAMES only, values never leave the backend. */

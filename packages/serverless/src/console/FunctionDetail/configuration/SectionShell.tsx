@@ -57,6 +57,12 @@ export interface SectionShellProps {
   editLabel?: string
   saveLabel?: string
   cancelLabel?: string
+  /**
+   * Header controls for a section whose action is not "edit these fields" —
+   * Function URL creates and releases a resource rather than saving a form, so
+   * it supplies its own button instead of borrowing the Edit/Save frame.
+   */
+  actions?: ReactNode
   children: ReactNode
   className?: string
 }
@@ -79,6 +85,7 @@ export function SectionShell({
   editLabel,
   saveLabel,
   cancelLabel,
+  actions,
   children,
   className,
 }: Readonly<SectionShellProps>) {
@@ -86,6 +93,7 @@ export function SectionShell({
     <section className={cx(glass2, panel, className)}>
       <div className={headRow}>
         <h3 className={heading}>{title}</h3>
+        {actions}
         {editable && !editing && (
           <Button variant="outline" size="sm" onClick={onEdit}>
             {editLabel}

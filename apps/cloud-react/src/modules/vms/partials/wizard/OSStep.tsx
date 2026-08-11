@@ -1,6 +1,5 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
-import { cn, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@datadack/common-ui"
 import { Box, HardDrive } from "lucide-react"
 import { motion } from "motion/react"
 import type { UseFormReturn } from "react-hook-form"
@@ -9,6 +8,8 @@ import { useTranslation } from "react-i18next"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { ImageCatalogFamily } from "@/modules/catalog/catalog.types"
 import { OSIcon } from "@/modules/catalog/os-icons"
+
+import { cn, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@datadack/common-ui"
 
 import { FieldError, FieldLabel } from "./wizard.shared"
 import type { FormValues } from "./wizard.types"
@@ -20,6 +21,11 @@ function findVersion(families: ImageCatalogFamily[], versionId: string) {
     if (version) return { family, version }
   }
   return undefined
+}
+
+/** The version a family opens on: its flagged default, else its first entry. */
+function defaultVersion(family: ImageCatalogFamily) {
+  return family.versions.find((v) => v.is_default) ?? family.versions.at(0)
 }
 
 export function OSStep({
@@ -35,6 +41,19 @@ export function OSStep({
   const [familyId, setFamilyId] = useState<string>("")
   const openFamily =
     families.find((f) => f.id === familyId) ?? selectedFamilyFromImage ?? families.at(0)
+
+  // Preselect an OS once the catalog lands: the first family (the catalog is
+  // ordered by the admin's sort_order) on its default version — the same pick
+  // clicking that family's card makes. Without it the wizard opens with the
+  // family card highlighted but no image chosen, so Deploy stays disabled on a
+  // step the user has no reason to revisit. Only fills an empty selection, so
+  // it never overrides the user or a later catalog refetch.
+  useEffect(() => {
+    if (selectedImage) return
+    const first = families.at(0)
+    const version = first ? defaultVersion(first) : undefined
+    if (version) form.setValue("image_id", version.id, { shouldValidate: true })
+  }, [families, selectedImage, form])
 
   return (
     <div className="space-y-4">
@@ -79,8 +98,7 @@ export function OSStep({
                     whileTap={{ scale: 0.98 }}
                     onClick={() => {
                       setFamilyId(family.id)
-                      const next =
-                        family.versions.find((v) => v.is_default) ?? family.versions.at(0)
+                      const next = defaultVersion(family)
                       if (next)
                         form.setValue("image_id", next.id, {
                           shouldValidate: true,

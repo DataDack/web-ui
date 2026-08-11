@@ -649,7 +649,10 @@
       "securityGroups": "Security Groups",
       "securityGroupsHint": "Optional — the instance launches without a security group unless one is selected.",
       "noSecurityGroups": "No security groups match this network scope yet.",
-      "createDefaultSg": "Create default security group"
+      "createDefaultSg": "Create default security group",
+      "reloadVpcs": "Reload VPCs",
+      "reloadSubnets": "Reload subnets",
+      "reloadSecurityGroups": "Reload security groups"
     },
     "toasts": {
       "created": "Instance \"{{name}}\" is being provisioned",
@@ -1704,7 +1707,7 @@
       "ip": "IP address",
       "region": "Region",
       "status": "Status",
-      "instance": "Attached instance"
+      "attachedTo": "Attached to"
     },
     "actions": {
       "assign": "Assign",
@@ -1746,6 +1749,16 @@
       "unassignFailed": "Failed to unassign IP",
       "released": "Static IP released",
       "releaseFailed": "Failed to release IP"
+    },
+    "attachment": {
+      "none": "Not attached",
+      "unknown": "Attached (holder unknown)",
+      "instance": "Instance",
+      "loadBalancer": "Load balancer",
+      "natGateway": "NAT gateway",
+      "vpcGateway": "VPC router",
+      "managedApp": "Managed app",
+      "deleted": "deleted"
     }
   },
   "networkInterfaces": {
@@ -4444,7 +4457,12 @@
         "invalidJson": "The event must be valid JSON.",
         "executedVersion": "version",
         "logs": "Function logs",
-        "failed": "The invocation failed"
+        "failed": "The invocation failed",
+        "format": "Format",
+        "copy": "Copy",
+        "copied": "Copied",
+        "payloadHint": "This JSON arrives as the handler’s event argument.",
+        "functionError": "Function error"
       },
       "monitor": {
         "blurb": "Counts and durations come from execution records, so they are exact rather than sampled. The cards still marked coming soon have no data source yet.",
@@ -4554,6 +4572,63 @@
         "tagsEmpty": "No tags.",
         "tagsHint": "Tags are stored as the function’s labels.",
         "triggersEmpty": "No triggers",
+        "triggers": {
+          "emptyHint": "Add one to run this function on a schedule.",
+          "add": "Add trigger",
+          "addTitle": "Run this function on a schedule",
+          "addDescription": "All times are UTC.",
+          "submit": "Add trigger",
+          "cancel": "Cancel",
+          "nameLabel": "Name",
+          "namePlaceholder": "{{fallback}} (optional)",
+          "whenLabel": "How often",
+          "modes": {
+            "interval": "Every so often",
+            "daily": "Once a day",
+            "hourly": "Every hour",
+            "once": "Once, straight away",
+            "expression": "Custom expression"
+          },
+          "everyLabel": "Every",
+          "units": {
+            "minutes": "minutes",
+            "hours": "hours",
+            "days": "days"
+          },
+          "atLabel": "At",
+          "expressionLabel": "Expression",
+          "expressionPlaceholder": "@every 30m",
+          "expressionHint": "@hourly · @daily · @once · @every 30s · rate(5 minutes) · 30 9 * * * — the day, month and weekday cron fields must all be *.",
+          "preview": "Runs {{summary}}.",
+          "eventNote": "The function is invoked asynchronously and receives an event of { source, triggerId, trigger, firedAt }.",
+          "problems": {
+            "empty": "Enter a schedule.",
+            "cronUnsupported": "Only a daily time is supported — write it as “minute hour * * *”. Day, month and weekday have to stay *.",
+            "unrecognised": "Not a schedule this platform understands. Try @hourly, @every 30m or rate(5 minutes)."
+          },
+          "summary": {
+            "everySeconds_one": "every second",
+            "everySeconds_other": "every {{count}} seconds",
+            "everyMinutes_one": "every minute",
+            "everyMinutes_other": "every {{count}} minutes",
+            "everyHours_one": "every hour",
+            "everyHours_other": "every {{count}} hours",
+            "everyDays_one": "every day",
+            "everyDays_other": "every {{count}} days",
+            "dailyAt": "every day at {{time}} UTC",
+            "hourly": "every hour, on the hour",
+            "once": "once, as soon as it is added"
+          },
+          "created": "Trigger {{name}} added",
+          "createFailed": "Could not add the trigger",
+          "delete": "Remove trigger",
+          "deleteTitle": "Remove {{name}}?",
+          "deleteDescription": "The function stops running on this schedule. Nothing else changes.",
+          "deleteConfirm": "Remove",
+          "deleted": "Trigger {{name}} removed",
+          "nextRunIn": "next run in {{relative}}",
+          "nextRunDue": "next run due"
+        },
         "unreserved": "Not set",
         "comingSoon": {
           "functionUrl": {
@@ -4666,7 +4741,8 @@
       "installCommand": "Install command",
       "buildCommand": "Build command",
       "outputDirectory": "Output directory",
-      "buildAndOutputSettings": "Build and output settings"
+      "buildAndOutputSettings": "Build and output settings",
+      "buildAndRuntimeEnvironment": "Build and runtime environment"
     },
     "gitHubAccountSelect": {
       "selectAGithubAccount": "Select a GitHub account",
@@ -4735,7 +4811,7 @@
     "networkingSection": {
       "publicOnlyNoVpc": "Public only — no VPC",
       "anySubnetInThisVpc": "Any subnet in this VPC",
-      "privateNetworking": "Private networking",
+      "networking": "Networking",
       "removeBindingDeployPublicOnly": "Remove binding — deploy public only"
     },
     "projectTypePicker": {
@@ -4809,8 +4885,7 @@
     },
     "buildOutputSection": {
       "buildOutput": "Build & output",
-      "whatRunsWhenThisProjectBuildsEmptyFieldsInhe": "What runs when this project builds. Empty fields inherit the platform default.",
-      "appliesToTheNextBuildThisDoesNotStartOne": "Applies to the next build — this does not start one."
+      "whatRunsWhenThisProjectBuildsEmptyFieldsInhe": "What runs when this project builds. Empty fields inherit the platform default."
     },
     "dangerZone": {
       "dangerZone": "Danger zone",
@@ -5006,6 +5081,16 @@
         "accounts": "Accounts",
         "queue": "Provisioning queue"
       }
+    }
+  },
+  "seasonal": {
+    "freedomSale": {
+      "regionLabel": "Independence Day offer",
+      "greeting": "Happy Independence Day",
+      "headline": "Freedom Sale is live",
+      "offer": "First 100 customers get 20% off for life",
+      "cta": "Claim",
+      "dismiss": "Dismiss offer"
     }
   }
 }

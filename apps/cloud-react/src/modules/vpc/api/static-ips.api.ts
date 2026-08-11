@@ -1,10 +1,18 @@
 import { apiDelete, apiGet, apiPost, LIST_QUERY } from "@/services/api/client"
 
-import type { ReserveStaticIPRequest, StaticIP } from "../vpc.types"
+import type { ReserveStaticIPRequest, StaticIP, StaticIPAttachmentType } from "../vpc.types"
 
 const STATIC_IPS_BASE = "/vpc/staticips"
 
-/** Backend StaticIP entity (vpc_static_ips). */
+const ATTACHMENT_TYPES: readonly StaticIPAttachmentType[] = [
+  "instance",
+  "load_balancer",
+  "nat_gateway",
+  "vpc_gateway",
+  "managed_app",
+]
+
+/** Backend StaticIP entity (vpc_static_ips) plus its resolved attachment. */
 interface RawStaticIP {
   id: string
   tenant_serial: number
@@ -14,22 +22,36 @@ interface RawStaticIP {
   ip_address: string | null // null while provisioning (not yet allocated)
   region: string
   status: string // provisioning | available | associated | releasing
-  association_type: string // instance | nat_gateway | load_balancer
+  association_type: string // instance | load_balancer | nat_gateway | vpc_gateway | managed_app
   association_id: string | null
+  /** Display name of the holder, resolved server-side; absent when unattached. */
+  attachment_name?: string
+  /** The holder row is soft-deleted and still holds the address. */
+  attachment_deleted?: boolean
   user_id: string
 }
 
 // The UI keys off the legacy reserved/assigned vocabulary; map the richer
-// backend lifecycle onto it and surface only instance associations.
-// A freshly reserved IP stays in `provisioning` until the address is
-// allocated, then settles into `reserved` (available) or `assigned`.
+// backend lifecycle onto it. A freshly reserved IP stays in `provisioning`
+// until the address is allocated, then settles into `reserved` (available) or
+// `assigned`.
+//
+// The attachment is carried WHOLE. This mapper used to keep instance
+// associations only, which left every address held by a load balancer, a NAT
+// gateway, a VPC gateway or a managed app looking attached to nothing — status
+// "assigned" against an empty owner column, which reads as a platform bug
+// rather than an address doing its job.
 function toStaticIP(raw: RawStaticIP): StaticIP {
   let status: StaticIP["status"]
   if (raw.status === "associated") status = "assigned"
   else if (raw.status === "provisioning") status = "provisioning"
   else status = "reserved"
-  const instanceId =
-    raw.association_type === "instance" && raw.association_id ? raw.association_id : ""
+  const attachmentType = (
+    ATTACHMENT_TYPES.includes(raw.association_type as StaticIPAttachmentType)
+      ? raw.association_type
+      : ""
+  ) as StaticIPAttachmentType
+  const attachmentId = attachmentType && raw.association_id ? raw.association_id : ""
   return {
     id: raw.id,
     tenant_serial: raw.tenant_serial,
@@ -39,7 +61,13 @@ function toStaticIP(raw: RawStaticIP): StaticIP {
     ip_address: raw.ip_address ?? "",
     region: raw.region,
     status,
-    instance_id: instanceId,
+    instance_id: attachmentType === "instance" ? attachmentId : "",
+    attachment: {
+      type: attachmentId ? attachmentType : "",
+      id: attachmentId,
+      name: attachmentId ? (raw.attachment_name ?? "") : "",
+      deleted: Boolean(attachmentId && raw.attachment_deleted),
+    },
     user_id: raw.user_id,
   }
 }

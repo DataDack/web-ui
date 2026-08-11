@@ -162,10 +162,23 @@ export function defineConsoleThemes(monaco: MonacoInstance): void {
     "editorError.foreground": destructive,
     "scrollbarSlider.background": accent,
     "minimap.background": card,
+    // Bracket pair colouring ships with VS Code's own yellow/purple/blue, which
+    // belongs to no console's palette. Pinned to the chart ramp for the same
+    // reason the token rules are.
+    "editorBracketHighlight.foreground1": gold,
+    "editorBracketHighlight.foreground2": chart1,
+    "editorBracketHighlight.foreground3": chart3,
+    "editorBracketHighlight.unexpectedBracket.foreground": destructive,
   }
 
   // Token colours reuse the chart palette, exactly as the old mock editor did,
   // so a console that rebrands its charts rebrands its editor with them.
+  //
+  // Monaco matches a rule by longest token PREFIX, so the bare names below cover
+  // every language; the `.json` ones are the exceptions that need to be told
+  // apart. A JSON document is nothing but strings, and painting a key the same
+  // colour as its value is what makes an unformatted event unreadable — so keys
+  // take the brand accent and values the string colour.
   const rules = [
     { token: "comment", foreground: muted.slice(1), fontStyle: "italic" },
     { token: "keyword", foreground: chart2.slice(1) },
@@ -173,6 +186,9 @@ export function defineConsoleThemes(monaco: MonacoInstance): void {
     { token: "number", foreground: chart1.slice(1) },
     { token: "type", foreground: chart1.slice(1) },
     { token: "delimiter", foreground: muted.slice(1) },
+    { token: "string.key.json", foreground: gold.slice(1) },
+    { token: "string.value.json", foreground: chart3.slice(1) },
+    { token: "keyword.json", foreground: chart2.slice(1) },
   ]
 
   monaco.editor.defineTheme(DARK_THEME, { base: "vs-dark", inherit: true, rules, colors: shared })

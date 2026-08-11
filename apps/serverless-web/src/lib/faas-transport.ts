@@ -1,8 +1,11 @@
+import axios, { type AxiosResponse } from "axios"
+
 import { connection, http } from "@/lib/api"
 
 import type {
   CreatedFunction,
   CreateFromSourceInput,
+  CreateFunctionUrlInput,
   FunctionAlias,
   FunctionCode,
   FunctionCodeFile,
@@ -13,15 +16,61 @@ import type {
   MetricSeries,
   MetricSeriesQuery,
   PutAliasInput,
+  PutTriggerInput,
   RuntimeInfo,
   ServerlessTransport,
   Trigger,
   UpdateFunctionConfigInput,
 } from "@datadack/serverless"
 
-
-
 const fnPath = (name: string) => `/v1/functions/${encodeURIComponent(name)}`
+
+/**
+ * The message out of a failed Invoke call.
+ *
+ * The Lambda route answers in AWS's shape — `{"Type": "User"|"Service",
+ * "message": "..."}` — not the control plane's `{error: {...}}` envelope, so
+ * `apiErrorMessage` cannot read it. The body also arrives unparsed, because the
+ * invoke request defeats axios's JSON transform to keep the function's own
+ * output verbatim. The x-amzn-ErrorType header is the fallback: it names the
+ * class even when the body is missing, which beats "Request failed with status
+ * code 429".
+ */
+function invokeErrorMessage(err: unknown): string {
+  if (!axios.isAxiosError(err)) return err instanceof Error ? err.message : String(err)
+  const raw: unknown = err.response?.data
+  if (typeof raw === "string" && raw !== "") {
+    try {
+      const body = JSON.parse(raw) as { message?: unknown; Message?: unknown }
+      const message = body.message ?? body.Message
+      if (typeof message === "string" && message !== "") return message
+    } catch {
+      // Not JSON — a proxy's HTML error page, say. Fall through to the header.
+    }
+  }
+  const type: unknown = err.response?.headers["x-amzn-errortype"]
+  if (typeof type === "string" && type !== "") return type
+  return err.message
+}
+
+/**
+ * X-Amz-Log-Result — the tail of the function's own logs, base64 — as text.
+ *
+ * `atob` yields one char per BYTE, so a log line containing anything outside
+ * ASCII comes back mojibake unless those bytes are re-read as UTF-8. Undefined
+ * on anything that does not decode: a garbled log tail is worth dropping, never
+ * worth failing an otherwise successful invocation over.
+ */
+function decodeLogTail(encoded: string | undefined): string | undefined {
+  if (!encoded) return undefined
+  try {
+    const binary = atob(encoded)
+    const bytes = Uint8Array.from(binary, (char) => char.codePointAt(0) ?? 0)
+    return new TextDecoder().decode(bytes)
+  } catch {
+    return undefined
+  }
+}
 
 export const faasTransport: ServerlessTransport = {
   async listRuntimes(): Promise<RuntimeInfo[]> {
@@ -49,6 +98,23 @@ export const faasTransport: ServerlessTransport = {
       `${fnPath(name)}/urls`,
     )
     return data.functionUrls ?? []
+  },
+
+  async createFunctionUrl(name: string, input: CreateFunctionUrlInput): Promise<FunctionUrl> {
+    // Keyed by function name in the body, not the path: a hostname is a
+    // top-level resource here (/v1/function-urls), because it is unique across
+    // the platform rather than under one function.
+    const { data } = await http.post<FunctionUrl>("/v1/function-urls", {
+      functionName: name,
+      ...(input.domain ? { domain: input.domain } : {}),
+      ...(input.authType ? { authType: input.authType } : {}),
+      ...(input.qualifier ? { qualifier: input.qualifier } : {}),
+    })
+    return data
+  },
+
+  async deleteFunctionUrl(domain: string): Promise<void> {
+    await http.delete(`/v1/function-urls/${encodeURIComponent(domain)}`)
   },
 
   async getFunction(name: string): Promise<FunctionEntity> {
@@ -93,50 +159,62 @@ export const faasTransport: ServerlessTransport = {
     await http.delete(fnPath(name))
   },
 
+  /**
+   * Test invoke, through the control plane's Lambda Invoke API.
+   *
+   * NOT the function URL. A URL invoke is an HTTP request, so the handler
+   * receives an HTTP-shaped event — method, rawPath, headers, and the typed
+   * payload buried inside `body` as a string. That is the right event for
+   * something the internet calls and the wrong one for a test, whose entire
+   * point is to hand the handler exactly the event in the editor. It also left
+   * the tab unusable for every function with no URL mapped, which is every
+   * function that is not HTTP-triggered at all.
+   *
+   * The body is a raw passthrough — axios's JSON transforms are defeated in
+   * both directions, so the payload goes out verbatim and the reply is shown as
+   * the bytes the function returned. A function that throws still answers 200
+   * with X-Amz-Function-Error: a successful invocation of a failing function,
+   * which belongs in the result pane. Only a platform failure (404, 413, 429,
+   * 502, 503) rejects, re-thrown carrying the message the control plane sent.
+   */
   async invokeFunction(name: string, payload: string): Promise<InvokeResult> {
-    // Test through the function URL, not the control plane's invoke route.
-    //
-    // Invoking directly would exercise a path no real caller uses: it skips the
-    // API gateway, the hostname mapping and TLS, so a function could pass here
-    // and 404 for everyone on the internet. Testing what is actually published
-    // is the point of the tab.
-    const urls = await this.listFunctionUrls!(name)
-    const live = urls.find((u) => !u.disabled)
-    if (!live) {
-      throw new Error(
-        `${name} has no function URL, so there is nothing to call. ` +
-          `A URL is minted when the function is deployed; map one explicitly if it was removed.`,
-      )
-    }
-
     const startedAt = performance.now()
-    let response: Response
+    let response: AxiosResponse<unknown>
     try {
-      response = await fetch(`https://${live.domain}/`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: payload,
-      })
-    } catch (cause) {
-      // fetch rejects without a status for DNS, TLS and CORS alike. CORS is by
-      // far the most common of the three here — the console and the function
-      // are different origins — and a bare "Failed to fetch" sends people
-      // hunting the wrong problem.
-      throw new Error(
-        `Could not reach https://${live.domain}. The function must return ` +
-          `Access-Control-Allow-Origin for the browser to read its response; ` +
-          `check DNS and the certificate too. (${String(cause)})`,
+      response = await http.post<unknown>(
+        `/2015-03-31/functions/${encodeURIComponent(name)}/invocations`,
+        payload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            // The last 4 KB of the function's own logs, base64 in the
+            // X-Amz-Log-Result response header.
+            "X-Amz-Log-Type": "Tail",
+          },
+          transformRequest: [(data: unknown) => data],
+          transformResponse: [(data: unknown) => data],
+          responseType: "text",
+        },
       )
+    } catch (err) {
+      throw new Error(invokeErrorMessage(err))
+    }
+    const durationMs = Math.round(performance.now() - startedAt)
+
+    const header = (key: string): string | undefined => {
+      const value: unknown = response.headers[key]
+      return typeof value === "string" && value !== "" ? value : undefined
     }
 
-    const durationMs = Math.round(performance.now() - startedAt)
-    const body = await response.text()
     return {
       status: response.status,
       durationMs,
-      body,
-      contentType: response.headers.get("content-type") ?? undefined,
-      functionError: response.headers.get("x-amz-function-error") ?? undefined,
+      // 202 (Event) and 204 (DryRun) answer with no body at all.
+      body: typeof response.data === "string" ? response.data : "",
+      contentType: header("content-type"),
+      executedVersion: header("x-amz-executed-version"),
+      functionError: header("x-amz-function-error"),
+      logs: decodeLogTail(header("x-amz-log-result")),
     }
   },
 
@@ -145,6 +223,25 @@ export const faasTransport: ServerlessTransport = {
       params: { functionName },
     })
     return data.triggers ?? []
+  },
+
+  /**
+   * Add a trigger. 201 with the bare trigger.
+   *
+   * Named "put" upstream but it CREATES — `PutTrigger` mints a fresh id per
+   * call rather than upserting by name — so sending the same schedule twice
+   * leaves the function running twice as often. The console offers add and
+   * remove for that reason, never an edit.
+   */
+  async putTrigger(input: PutTriggerInput): Promise<Trigger> {
+    const { data } = await http.post<Trigger>("/v1/triggers", input)
+    return data
+  },
+
+  async deleteTrigger(id: string): Promise<void> {
+    // 204, empty body. Ownership is checked before the delete upstream, so a
+    // trigger belonging to another tenant answers not-found rather than going.
+    await http.delete(`/v1/triggers/${encodeURIComponent(id)}`)
   },
 
   async updateFunctionConfig(

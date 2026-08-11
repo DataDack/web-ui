@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import axios from "axios"
 import { toast } from "sonner"
 
@@ -354,14 +354,19 @@ export function useUpdateProjectEnv(id: string) {
  * Per-type build defaults. Cached hard: they change only when the platform
  * ships a new build pipeline, and every field placeholder in the composer
  * depends on them being there before the user starts typing.
+ *
+ * `nodeVersion` widens the key because the response resolves the runtime image
+ * for it. Previous data is kept across that change: picking a Node version
+ * would otherwise blank the whole section back to skeletons to update one line.
  */
-export function useBuildDefaults(type: ProjectType | undefined) {
+export function useBuildDefaults(type: ProjectType | undefined, nodeVersion = "") {
   return useQuery({
-    queryKey: MANAGED_APPS_QUERY_KEYS.buildDefaults(type ?? "react"),
-    queryFn: () => managedAppsApi.buildDefaults(type ?? "react"),
+    queryKey: MANAGED_APPS_QUERY_KEYS.buildDefaults(type ?? "react", nodeVersion),
+    queryFn: () => managedAppsApi.buildDefaults(type ?? "react", nodeVersion),
     // n8n has no build pipeline, so there is nothing to ask for.
     enabled: type != null && type !== "n8n",
     staleTime: 30 * 60_000,
+    placeholderData: keepPreviousData,
   })
 }
 

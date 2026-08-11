@@ -48,6 +48,12 @@ export const composerSchema = z
     install_command: z.string(),
     build_command: z.string(),
     output_dir: z.string(),
+    /**
+     * The Node major to build and run on. Empty inherits the platform default;
+     * the accepted set is served with the build defaults, so the server is the
+     * one that refuses a version it does not publish.
+     */
+    node_version: z.string(),
 
     vpc_id: z.string(),
     subnet_id: z.string(),
@@ -103,6 +109,7 @@ export const COMPOSER_DEFAULTS: ComposerValues = {
   install_command: "",
   build_command: "",
   output_dir: "",
+  node_version: "",
   vpc_id: "",
   subnet_id: "",
   env: [],

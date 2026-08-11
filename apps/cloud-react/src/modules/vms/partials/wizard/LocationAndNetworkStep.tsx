@@ -7,6 +7,7 @@ import {
   Layers,
   MapPin,
   Network,
+  RefreshCw,
   ShieldCheck,
   Wifi,
   type LucideIcon,
@@ -42,7 +43,7 @@ import {
 } from "@datadack/common-ui"
 
 import { formatPrice } from "./wizard.format"
-import { FieldLabel, FieldError } from "./wizard.shared"
+import { FieldLabel, FieldError, ReloadButton } from "./wizard.shared"
 import type { FormValues } from "./wizard.types"
 
 export function LocationAndNetworkStep({
@@ -50,11 +51,16 @@ export function LocationAndNetworkStep({
   regions,
   vpcs,
   staticIpPrice,
+  onReloadVpcs,
+  vpcsFetching = false,
 }: Readonly<{
   form: UseFormReturn<FormValues>
   regions: RegionCatalog[]
   vpcs: VPCNetwork[]
   staticIpPrice?: StaticIPPriceOption | null
+  /** Refetch the VPC list, owned by the wizard page. */
+  onReloadVpcs?: () => void
+  vpcsFetching?: boolean
 }>) {
   const { t } = useTranslation()
   const region = form.watch("region")
@@ -64,7 +70,20 @@ export function LocationAndNetworkStep({
   const zone = form.watch("zone")
   const vpcId = form.watch("vpc_id")
   const subnetId = form.watch("subnet_id")
-  const { data: subnets = [] } = useVPCSubnets(vpcId)
+  const {
+    data: subnets = [],
+    refetch: refetchSubnets,
+    isFetching: subnetsFetching,
+  } = useVPCSubnets(vpcId)
+
+  // One control refreshes the whole VPC picker — a VPC created in another tab
+  // arrives with its subnets, so reloading only the networks would leave the
+  // subnet select empty.
+  const reloadNetworks = () => {
+    onReloadVpcs?.()
+    if (vpcId) void refetchSubnets()
+  }
+  const networksFetching = vpcsFetching || subnetsFetching
 
   // A subnet is availability-zone-scoped, so a VM launched into a given AZ can
   // only use a subnet in that same AZ (the backend rejects a mismatch). Resolve
@@ -261,20 +280,45 @@ export function LocationAndNetworkStep({
                 <p className="text-[12px] text-muted-foreground mb-3">
                   {t("vms.locationAndNetworkStep.youDonTHaveAnyVpcsInThisRegion")}
                 </p>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => window.open(VPC_ROUTES.CREATE, "_blank")}
-                >
-                  {t("vms.locationAndNetworkStep.createAVpcFirst")}
-                </Button>
+                <div className="flex items-center justify-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => window.open(VPC_ROUTES.CREATE, "_blank")}
+                  >
+                    {t("vms.locationAndNetworkStep.createAVpcFirst")}
+                  </Button>
+                  {/* The create link opens a new tab, so the wizard needs a way
+                      to pick the new VPC up without losing the form. */}
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="gap-1.5"
+                    onClick={reloadNetworks}
+                    disabled={networksFetching}
+                  >
+                    <RefreshCw
+                      className={cn("size-3.5", networksFetching && "animate-spin")}
+                      aria-hidden
+                    />
+                    {t("vms.wizard.reloadVpcs")}
+                  </Button>
+                </div>
               </div>
             ) : (
               <>
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <FieldLabel>{t("vms.detail.vpc")} *</FieldLabel>
+                    <div className="flex items-center justify-between gap-2">
+                      <FieldLabel>{t("vms.detail.vpc")} *</FieldLabel>
+                      <ReloadButton
+                        onClick={reloadNetworks}
+                        loading={networksFetching}
+                        label={t("vms.wizard.reloadVpcs")}
+                      />
+                    </div>
                     <Select
                       value={vpcId}
                       onValueChange={(value) => {
@@ -301,7 +345,15 @@ export function LocationAndNetworkStep({
                   </div>
 
                   <div className="space-y-1.5">
-                    <FieldLabel>{t("vms.detail.subnet")} *</FieldLabel>
+                    <div className="flex items-center justify-between gap-2">
+                      <FieldLabel>{t("vms.detail.subnet")} *</FieldLabel>
+                      <ReloadButton
+                        onClick={() => void refetchSubnets()}
+                        loading={subnetsFetching}
+                        label={t("vms.wizard.reloadSubnets")}
+                        className={cn(!vpcId && "invisible")}
+                      />
+                    </div>
                     <Select
                       value={subnetId}
                       disabled={!vpcId}
@@ -453,7 +505,7 @@ function SecurityGroupPicker({ form }: Readonly<{ form: UseFormReturn<FormValues
   const skipVpc = form.watch("skip_vpc")
   const vpcId = form.watch("vpc_id")
   const selected = form.watch("security_group_ids")
-  const { data: allGroups = [] } = useAllSecurityGroups()
+  const { data: allGroups = [], refetch: refetchGroups, isFetching } = useAllSecurityGroups()
   const { mutateAsync: createDefault, isPending: isCreatingDefault } =
     useCreateDefaultSecurityGroup()
 
@@ -495,28 +547,50 @@ function SecurityGroupPicker({ form }: Readonly<{ form: UseFormReturn<FormValues
 
   return (
     <div className="space-y-1.5 pt-2">
-      <FieldLabel>
-        <span className="flex items-center gap-1.5">
-          <ShieldCheck className="size-3.5" aria-hidden />
-          {t("vms.wizard.securityGroups")}
-        </span>
-      </FieldLabel>
+      <div className="flex items-center justify-between gap-2">
+        <FieldLabel>
+          <span className="flex items-center gap-1.5">
+            <ShieldCheck className="size-3.5" aria-hidden />
+            {t("vms.wizard.securityGroups")}
+          </span>
+        </FieldLabel>
+        <ReloadButton
+          onClick={() => void refetchGroups()}
+          loading={isFetching}
+          label={t("vms.wizard.reloadSecurityGroups")}
+        />
+      </div>
       {eligible.length === 0 ? (
         <div className="glass-1 rounded-lg border-dashed px-4 py-4 text-center">
           <p className="text-[12px] text-muted-foreground mb-3">
             {t("vms.wizard.noSecurityGroups")}
           </p>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="gap-1.5"
-            disabled={isCreatingDefault}
-            onClick={createDefaultGroup}
-            loading={isCreatingDefault}
-          >
-            {t("vms.wizard.createDefaultSg")}
-          </Button>
+          <div className="flex items-center justify-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="gap-1.5"
+              disabled={isCreatingDefault}
+              onClick={createDefaultGroup}
+              loading={isCreatingDefault}
+            >
+              {t("vms.wizard.createDefaultSg")}
+            </Button>
+            {/* Groups made on the Security Groups page (another tab) only show
+                up here after a refetch. */}
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="gap-1.5"
+              onClick={() => void refetchGroups()}
+              disabled={isFetching}
+            >
+              <RefreshCw className={cn("size-3.5", isFetching && "animate-spin")} aria-hidden />
+              {t("vms.wizard.reloadSecurityGroups")}
+            </Button>
+          </div>
         </div>
       ) : (
         <div className="glass-1 rounded-lg divide-y divide-border-glass overflow-hidden">

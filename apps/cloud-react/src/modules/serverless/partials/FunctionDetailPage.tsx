@@ -222,6 +222,11 @@ export function ServerlessFunctionDetailPage() {
         executedVersion: t("serverless.detail.test.executedVersion"),
         logs: t("serverless.detail.test.logs"),
         failed: t("serverless.detail.test.failed"),
+        format: t("serverless.detail.test.format"),
+        copy: t("serverless.detail.test.copy"),
+        copied: t("serverless.detail.test.copied"),
+        payloadHint: t("serverless.detail.test.payloadHint"),
+        functionError: t("serverless.detail.test.functionError"),
       },
       monitor: {
         blurb: t("serverless.detail.monitor.blurb"),
@@ -334,6 +339,77 @@ export function ServerlessFunctionDetailPage() {
         tagsEmpty: t("serverless.detail.configuration.tagsEmpty"),
         tagsHint: t("serverless.detail.configuration.tagsHint"),
         triggersEmpty: t("serverless.detail.configuration.triggersEmpty"),
+        triggers: {
+          emptyHint: t("serverless.detail.configuration.triggers.emptyHint"),
+          add: t("serverless.detail.configuration.triggers.add"),
+          addTitle: t("serverless.detail.configuration.triggers.addTitle"),
+          addDescription: t("serverless.detail.configuration.triggers.addDescription"),
+          submit: t("serverless.detail.configuration.triggers.submit"),
+          cancel: t("serverless.detail.configuration.triggers.cancel"),
+          nameLabel: t("serverless.detail.configuration.triggers.nameLabel"),
+          namePlaceholder: (fallback: string) =>
+            t("serverless.detail.configuration.triggers.namePlaceholder", { fallback }),
+          whenLabel: t("serverless.detail.configuration.triggers.whenLabel"),
+          modes: {
+            interval: t("serverless.detail.configuration.triggers.modes.interval"),
+            daily: t("serverless.detail.configuration.triggers.modes.daily"),
+            hourly: t("serverless.detail.configuration.triggers.modes.hourly"),
+            once: t("serverless.detail.configuration.triggers.modes.once"),
+            expression: t("serverless.detail.configuration.triggers.modes.expression"),
+          },
+          everyLabel: t("serverless.detail.configuration.triggers.everyLabel"),
+          units: {
+            minutes: t("serverless.detail.configuration.triggers.units.minutes"),
+            hours: t("serverless.detail.configuration.triggers.units.hours"),
+            days: t("serverless.detail.configuration.triggers.units.days"),
+          },
+          atLabel: t("serverless.detail.configuration.triggers.atLabel"),
+          expressionLabel: t("serverless.detail.configuration.triggers.expressionLabel"),
+          expressionPlaceholder: t(
+            "serverless.detail.configuration.triggers.expressionPlaceholder",
+          ),
+          expressionHint: t("serverless.detail.configuration.triggers.expressionHint"),
+          preview: (summary: string) =>
+            t("serverless.detail.configuration.triggers.preview", { summary }),
+          eventNote: t("serverless.detail.configuration.triggers.eventNote"),
+          problems: {
+            empty: t("serverless.detail.configuration.triggers.problems.empty"),
+            cronUnsupported: t(
+              "serverless.detail.configuration.triggers.problems.cronUnsupported",
+            ),
+            unrecognised: t("serverless.detail.configuration.triggers.problems.unrecognised"),
+          },
+          // i18next selects the _one / _other plural form from `count`, so the
+          // package's "1 minute vs 5 minutes" split is the catalog's job here
+          // rather than a ternary in this file.
+          summary: {
+            everySeconds: (count: number) =>
+              t("serverless.detail.configuration.triggers.summary.everySeconds", { count }),
+            everyMinutes: (count: number) =>
+              t("serverless.detail.configuration.triggers.summary.everyMinutes", { count }),
+            everyHours: (count: number) =>
+              t("serverless.detail.configuration.triggers.summary.everyHours", { count }),
+            everyDays: (count: number) =>
+              t("serverless.detail.configuration.triggers.summary.everyDays", { count }),
+            dailyAt: (time: string) =>
+              t("serverless.detail.configuration.triggers.summary.dailyAt", { time }),
+            hourly: t("serverless.detail.configuration.triggers.summary.hourly"),
+            once: t("serverless.detail.configuration.triggers.summary.once"),
+          },
+          created: (name: string) =>
+            t("serverless.detail.configuration.triggers.created", { name }),
+          createFailed: t("serverless.detail.configuration.triggers.createFailed"),
+          delete: t("serverless.detail.configuration.triggers.delete"),
+          deleteTitle: (name: string) =>
+            t("serverless.detail.configuration.triggers.deleteTitle", { name }),
+          deleteDescription: t("serverless.detail.configuration.triggers.deleteDescription"),
+          deleteConfirm: t("serverless.detail.configuration.triggers.deleteConfirm"),
+          deleted: (name: string) =>
+            t("serverless.detail.configuration.triggers.deleted", { name }),
+          nextRunIn: (relative: string) =>
+            t("serverless.detail.configuration.triggers.nextRunIn", { relative }),
+          nextRunDue: t("serverless.detail.configuration.triggers.nextRunDue"),
+        },
         unreserved: t("serverless.detail.configuration.unreserved"),
         comingSoon: {
           functionUrl: {

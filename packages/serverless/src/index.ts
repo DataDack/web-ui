@@ -72,9 +72,12 @@ export {
   serverlessKeys,
   useCreateFromPackage,
   useCreateFromSource,
+  useCreateFunctionUrl,
   useDeleteAlias,
   useDeleteFunction,
   useDeleteFunctionCodeFile,
+  useDeleteFunctionUrl,
+  useDeleteTrigger,
   useDeployCodeDraft,
   useDiscardCodeDraft,
   useFunction,
@@ -88,6 +91,7 @@ export {
   useInvokeFunction,
   usePutAlias,
   usePutFunctionCodeFile,
+  usePutTrigger,
   useRuntimes,
   useUpdateFunctionConfig,
   useUploadArtifact,
@@ -101,6 +105,7 @@ export type {
   CodeNotEditableReason,
   CreateFromPackageInput,
   CreateFromSourceInput,
+  CreateFunctionUrlInput,
   CreatedFunction,
   FunctionAlias,
   FunctionCode,
@@ -118,14 +123,10 @@ export type {
   MetricTotals,
   PackageType,
   PutAliasInput,
+  PutTriggerInput,
   StarterTemplate,
   TemplateFile,
   Trigger,
   UpdateFunctionConfigInput,
-} from "./data/types"
-
-// Re-exported so this package's published surface is unchanged for the repos
-// that already install it. New code should import these from
-// @datadack/common-ui directly; they are re-exported here for compatibility,
-// not because they are FaaS-specific.
+} from "./data/types";
 export * from "@datadack/common-ui"

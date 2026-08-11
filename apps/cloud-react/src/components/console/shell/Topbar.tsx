@@ -15,6 +15,12 @@ import { UserMenu } from "./UserMenu"
 
 interface TopbarProps {
   onOpenSearch: () => void
+  /**
+   * Independence Day accents — tricolour hairline along the bottom edge and a
+   * saffron/green glow on the brand mark. Owned by AppShell so the banner and
+   * the chrome can't disagree about whether the season is on.
+   */
+  seasonalAccent?: boolean
 }
 
 /** True once the page has scrolled past the very top — drives the mobile hairline. */
@@ -40,7 +46,7 @@ function useScrolled(): boolean {
  * that the single-row layout has no room for — and shows a hairline divider once
  * the page scrolls so the blurred bar reads as a surface over the content.
  */
-export function Topbar({ onOpenSearch }: Readonly<TopbarProps>) {
+export function Topbar({ onOpenSearch, seasonalAccent = false }: Readonly<TopbarProps>) {
   const { t } = useTranslation()
   const scrolled = useScrolled()
 
@@ -60,7 +66,7 @@ export function Topbar({ onOpenSearch }: Readonly<TopbarProps>) {
             className="shrink-0 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
           >
             <Logo
-              iconClassName="size-6"
+              iconClassName={cn("size-6", seasonalAccent && "freedom-glow")}
               className="text-[15px]"
               wordmarkClassName="whitespace-nowrap"
             />
@@ -114,6 +120,13 @@ export function Topbar({ onOpenSearch }: Readonly<TopbarProps>) {
           <RegionSelector />
         </div>
       </div>
+
+      {/* Tricolour hairline riding the bottom edge for the seasonal window.
+          Absolute so it sits flush on the border rather than adding 2px of
+          height to a bar the layout maths elsewhere assumes is 52px. */}
+      {seasonalAccent && (
+        <div className="freedom-rule pointer-events-none absolute inset-x-0 bottom-0" />
+      )}
     </header>
   )
 }

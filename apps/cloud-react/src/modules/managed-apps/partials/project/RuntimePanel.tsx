@@ -42,7 +42,7 @@ export function RuntimePanel({ project }: Readonly<{ project: Project }>) {
               mono: true,
             },
             {
-              label: "Private networking",
+              label: "Networking",
               value: project.vpc_id ? "VPC bound" : "Public only",
             },
           ]}
@@ -56,7 +56,7 @@ export function RuntimePanel({ project }: Readonly<{ project: Project }>) {
             Builds run and artifacts are stored, but the runtime fleet is not provisioned in this
             region — so nothing serves the public address yet.
             {project.vpc_id
-              ? " The private-networking binding you chose is stored and will be applied when it is."
+              ? " The VPC binding you chose is stored and will be applied when it is."
               : ""}
           </p>
         </div>

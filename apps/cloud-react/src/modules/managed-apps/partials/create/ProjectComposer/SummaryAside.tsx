@@ -43,7 +43,7 @@ export function SummaryAside({
   onDeploy,
 }: Readonly<SummaryAsideProps>) {
   const { t } = useTranslation()
-  const { data: defaults } = useBuildDefaults(values.project_type)
+  const { data: defaults } = useBuildDefaults(values.project_type, values.node_version)
   // The account's tier, not a choice made in this form — the project inherits
   // it. Its NAME rather than its code: "developer_pro" is a storage key, not a
   // thing to show someone about to create something under it.
@@ -64,6 +64,17 @@ export function SummaryAside({
           <Row label="Runtime" value={projectTypeLabel(values.project_type)} />
           <Row label="Plan" value={planName || "—"} />
           <Row label="Root" value={values.root_dir || "./"} />
+          {/* Both halves of the environment: what builds it, and what serves
+					    it. The image is the server's answer for this type and version —
+					    it does not always follow the choice, and a static build served
+					    by Caddy is exactly the case someone would otherwise misread. */}
+          <Row
+            label="Environment"
+            value={
+              defaults ? `Node ${inherited(values.node_version, defaults.node_version)}` : "default"
+            }
+          />
+          <Row label="Runtime image" value={defaults?.runtime_image ?? "—"} />
           <Row
             label="Install"
             value={inherited(values.install_command, defaults?.install_command)}

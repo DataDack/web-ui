@@ -637,6 +637,9 @@
       "securityGroupsHint": "वैकल्पिक — चयन न करने पर इंस्टेंस बिना सुरक्षा समूह के लॉन्च होता है।",
       "noSecurityGroups": "इस नेटवर्क स्कोप से मेल खाने वाला कोई सुरक्षा समूह नहीं है।",
       "createDefaultSg": "डिफ़ॉल्ट सुरक्षा समूह बनाएँ",
+      "reloadVpcs": "VPC पुनः लोड करें",
+      "reloadSubnets": "सबनेट पुनः लोड करें",
+      "reloadSecurityGroups": "सुरक्षा समूह पुनः लोड करें",
       "availabilityZone": "उपलब्धता क्षेत्र",
       "zoneLocked": "शीर्ष बार में चुने गए क्षेत्र से निर्धारित।",
       "billing": "बिलिंग",
@@ -1706,7 +1709,7 @@
       "ip": "IP पता",
       "region": "क्षेत्र",
       "status": "स्थिति",
-      "instance": "संलग्न इंस्टेंस"
+      "attachedTo": "संलग्न है"
     },
     "actions": {
       "assign": "आवंटित करें",
@@ -1748,6 +1751,16 @@
       "unassignFailed": "IP अनावंटित करने में विफल",
       "released": "स्टैटिक IP मुक्त किया गया",
       "releaseFailed": "IP मुक्त करने में विफल"
+    },
+    "attachment": {
+      "none": "संलग्न नहीं",
+      "unknown": "संलग्न (धारक अज्ञात)",
+      "instance": "इंस्टेंस",
+      "loadBalancer": "लोड बैलेंसर",
+      "natGateway": "NAT गेटवे",
+      "vpcGateway": "VPC राउटर",
+      "managedApp": "मैनेज्ड ऐप",
+      "deleted": "हटाया गया"
     }
   },
   "loadBalancers": {
@@ -3956,7 +3969,12 @@
         "invalidJson": "इवेंट मान्य JSON होना चाहिए।",
         "executedVersion": "वर्शन",
         "logs": "फ़ंक्शन लॉग",
-        "failed": "इनवोकेशन विफल रहा"
+        "failed": "इनवोकेशन विफल रहा",
+        "format": "फ़ॉर्मैट",
+        "copy": "कॉपी",
+        "copied": "कॉपी हो गया",
+        "payloadHint": "यह JSON हैंडलर के event आर्ग्युमेंट के रूप में पहुँचता है।",
+        "functionError": "फ़ंक्शन त्रुटि"
       },
       "monitor": {
         "blurb": "संख्याएँ और अवधि निष्पादन रिकॉर्ड से आती हैं, इसलिए ये नमूने पर नहीं, सटीक गणना पर आधारित हैं। जिन कार्डों पर अब भी “जल्द आ रहा है” लिखा है, उनके लिए अभी कोई डेटा स्रोत नहीं है।",
@@ -4066,6 +4084,63 @@
         "tagsEmpty": "कोई टैग नहीं।",
         "tagsHint": "टैग फ़ंक्शन के लेबल के रूप में संग्रहीत होते हैं।",
         "triggersEmpty": "कोई ट्रिगर नहीं",
+        "triggers": {
+          "emptyHint": "इस फ़ंक्शन को शेड्यूल पर चलाने के लिए एक ट्रिगर जोड़ें।",
+          "add": "ट्रिगर जोड़ें",
+          "addTitle": "इस फ़ंक्शन को शेड्यूल पर चलाएँ",
+          "addDescription": "सभी समय UTC में हैं।",
+          "submit": "ट्रिगर जोड़ें",
+          "cancel": "रद्द करें",
+          "nameLabel": "नाम",
+          "namePlaceholder": "{{fallback}} (वैकल्पिक)",
+          "whenLabel": "कितनी बार",
+          "modes": {
+            "interval": "हर कुछ समय में",
+            "daily": "दिन में एक बार",
+            "hourly": "हर घंटे",
+            "once": "एक बार, तुरंत",
+            "expression": "कस्टम एक्सप्रेशन"
+          },
+          "everyLabel": "हर",
+          "units": {
+            "minutes": "मिनट",
+            "hours": "घंटे",
+            "days": "दिन"
+          },
+          "atLabel": "समय",
+          "expressionLabel": "एक्सप्रेशन",
+          "expressionPlaceholder": "@every 30m",
+          "expressionHint": "@hourly · @daily · @once · @every 30s · rate(5 minutes) · 30 9 * * * — cron के दिन, महीना और सप्ताह-दिन फ़ील्ड * ही रहने चाहिए।",
+          "preview": "यह {{summary}} चलेगा।",
+          "eventNote": "फ़ंक्शन एसिंक्रोनस रूप से चलता है और उसे { source, triggerId, trigger, firedAt } वाला इवेंट मिलता है।",
+          "problems": {
+            "empty": "शेड्यूल दर्ज करें।",
+            "cronUnsupported": "केवल दैनिक समय समर्थित है — इसे “मिनट घंटा * * *” के रूप में लिखें। दिन, महीना और सप्ताह-दिन * ही रहने चाहिए।",
+            "unrecognised": "यह शेड्यूल इस प्लेटफ़ॉर्म को समझ नहीं आया। @hourly, @every 30m या rate(5 minutes) आज़माएँ।"
+          },
+          "summary": {
+            "everySeconds_one": "हर सेकंड",
+            "everySeconds_other": "हर {{count}} सेकंड",
+            "everyMinutes_one": "हर मिनट",
+            "everyMinutes_other": "हर {{count}} मिनट",
+            "everyHours_one": "हर घंटे",
+            "everyHours_other": "हर {{count}} घंटे",
+            "everyDays_one": "हर दिन",
+            "everyDays_other": "हर {{count}} दिन",
+            "dailyAt": "हर दिन {{time}} UTC पर",
+            "hourly": "हर घंटे, ठीक घंटे पर",
+            "once": "एक बार, जोड़ते ही"
+          },
+          "created": "ट्रिगर {{name}} जोड़ा गया",
+          "createFailed": "ट्रिगर नहीं जोड़ा जा सका",
+          "delete": "ट्रिगर हटाएँ",
+          "deleteTitle": "{{name}} हटाएँ?",
+          "deleteDescription": "फ़ंक्शन इस शेड्यूल पर चलना बंद कर देगा। और कुछ नहीं बदलेगा।",
+          "deleteConfirm": "हटाएँ",
+          "deleted": "ट्रिगर {{name}} हटा दिया गया",
+          "nextRunIn": "अगला रन {{relative}} में",
+          "nextRunDue": "अगला रन बकाया"
+        },
         "unreserved": "सेट नहीं",
         "comingSoon": {
           "functionUrl": {
@@ -4179,7 +4254,8 @@
       "installCommand": "इंस्टॉल कमांड",
       "buildCommand": "बिल्ड कमांड",
       "outputDirectory": "आउटपुट डायरेक्टरी",
-      "buildAndOutputSettings": "बिल्ड और आउटपुट सेटिंग्स"
+      "buildAndOutputSettings": "बिल्ड और आउटपुट सेटिंग्स",
+      "buildAndRuntimeEnvironment": "बिल्ड और रनटाइम एनवायरनमेंट"
     },
     "gitHubAccountSelect": {
       "selectAGithubAccount": "GitHub खाता चुनें",
@@ -4248,7 +4324,7 @@
     "networkingSection": {
       "publicOnlyNoVpc": "केवल सार्वजनिक — कोई VPC नहीं",
       "anySubnetInThisVpc": "इस VPC का कोई भी सबनेट",
-      "privateNetworking": "प्राइवेट नेटवर्किंग",
+      "networking": "नेटवर्किंग",
       "removeBindingDeployPublicOnly": "बाइंडिंग हटाएँ — केवल सार्वजनिक रूप से डिप्लॉय करें"
     },
     "projectTypePicker": {
@@ -4322,8 +4398,7 @@
     },
     "buildOutputSection": {
       "buildOutput": "बिल्ड और आउटपुट",
-      "whatRunsWhenThisProjectBuildsEmptyFieldsInhe": "यह प्रोजेक्ट बिल्ड होने पर क्या चलता है। खाली फ़ील्ड प्लेटफ़ॉर्म डिफ़ॉल्ट अपनाते हैं।",
-      "appliesToTheNextBuildThisDoesNotStartOne": "अगले बिल्ड पर लागू होगा — इससे कोई बिल्ड शुरू नहीं होता।"
+      "whatRunsWhenThisProjectBuildsEmptyFieldsInhe": "यह प्रोजेक्ट बिल्ड होने पर क्या चलता है। खाली फ़ील्ड प्लेटफ़ॉर्म डिफ़ॉल्ट अपनाते हैं।"
     },
     "dangerZone": {
       "dangerZone": "जोखिम क्षेत्र",
@@ -5079,6 +5154,16 @@
     },
     "serviceStatusBanner": {
       "serviceDegraded": "सेवा क्षीण"
+    }
+  },
+  "seasonal": {
+    "freedomSale": {
+      "regionLabel": "स्वतंत्रता दिवस ऑफ़र",
+      "greeting": "स्वतंत्रता दिवस की शुभकामनाएँ",
+      "headline": "फ़्रीडम सेल शुरू",
+      "offer": "पहले 100 ग्राहकों को आजीवन 20% की छूट",
+      "cta": "पाएँ",
+      "dismiss": "ऑफ़र बंद करें"
     }
   }
 }

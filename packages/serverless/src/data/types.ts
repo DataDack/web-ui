@@ -183,6 +183,20 @@ export interface FunctionAlias {
   updatedAt?: string
 }
 
+/**
+ * What creating a function URL asks for. Every field is optional: the common
+ * case is "give this function a hostname", and the control plane mints
+ * `{function}-{accountId}` under its base domain when `domain` is omitted.
+ */
+export interface CreateFunctionUrlInput {
+  /** A custom hostname to map. Omit to have the platform generate one. */
+  domain?: string
+  /** "NONE" is public; "AWS_IAM" requires the caller to sign. Defaults to NONE. */
+  authType?: string
+  /** Pins a version or alias. Omit to target $LATEST. */
+  qualifier?: string
+}
+
 export interface PutAliasInput {
   name: string
   functionVersion: string
@@ -203,6 +217,39 @@ export interface Trigger {
   prefix?: string
   suffix?: string
   createdAt?: string
+  /**
+   * When the scheduler will fire this next, and when it last did. Absent on an
+   * `s3` trigger, which has no schedule to compute one from, and absent once a
+   * `@once` trigger has run and moved to `completed`.
+   */
+  nextFireAt?: string
+  lastFireAt?: string
+  /** Pins the version or alias the trigger invokes. Absent means $LATEST. */
+  qualifier?: string
+}
+
+/**
+ * A new trigger.
+ *
+ * Note that the control plane's PUT is a CREATE: `PutTrigger` mints a fresh id
+ * on every call rather than upserting by name, so sending this twice leaves two
+ * triggers firing, not one. The console offers add and delete for that reason —
+ * there is no edit that would not silently duplicate.
+ *
+ * Only the scheduled types are modelled here. `s3` needs a bucket and an
+ * external notifier posting to /v1/events/s3; `queue` and `stream` are refused
+ * by the control plane outright, since nothing polls an event source yet.
+ */
+export interface PutTriggerInput {
+  functionName: string
+  type: "cron" | "rate"
+  /** Defaults server-side to `<type>-<functionName>`. */
+  name?: string
+  /** A control-plane schedule expression; omit when using `intervalSeconds`. */
+  schedule?: string
+  /** Seconds between runs. Takes precedence over `schedule` upstream. */
+  intervalSeconds?: number
+  qualifier?: string
 }
 
 export interface InvokeResult {

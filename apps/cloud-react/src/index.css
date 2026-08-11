@@ -601,6 +601,126 @@
   text-transform: uppercase;
 }
 
+/* ─── Independence Day / Freedom Sale ─────────────────────────────────────
+   Seasonal skin, live only inside the window in
+   components/console/seasonal/freedom-sale.ts. Kept as one contiguous block —
+   deleting this section plus that folder retires the whole treatment.
+
+   The tricolour is a fixed palette, not a theme token: the flag is the flag in
+   light and dark both. What does change per theme is how strongly it washes
+   over the surface, and which ink stays readable on top of that wash. */
+:root {
+  --freedom-saffron: #ff9933;
+  --freedom-green: #138808;
+  /* Chakra + accent ink */
+  --freedom-navy: #000080;
+  --freedom-green-ink: #0f6b06;
+  --freedom-wash: linear-gradient(
+    90deg,
+    rgba(255, 153, 51, 0.2) 0%,
+    rgba(255, 255, 255, 0.5) 50%,
+    rgba(19, 136, 8, 0.18) 100%
+  );
+  --freedom-rule-mid: rgba(255, 255, 255, 0.9);
+  --freedom-sheen: rgba(255, 255, 255, 0.5);
+}
+
+.dark {
+  /* Navy and bottle green both vanish against #0a0a0d — lift them until they
+     read as the flag rather than as two dark smudges. */
+  --freedom-navy: #a9bcff;
+  --freedom-green-ink: #62d16d;
+  --freedom-wash: linear-gradient(
+    90deg,
+    rgba(255, 153, 51, 0.16) 0%,
+    rgba(255, 255, 255, 0.045) 50%,
+    rgba(19, 136, 8, 0.16) 100%
+  );
+  --freedom-rule-mid: rgba(255, 255, 255, 0.55);
+  --freedom-sheen: rgba(255, 255, 255, 0.22);
+}
+
+/* The banner strip above the topbar */
+.freedom-banner {
+  background-image: var(--freedom-wash);
+}
+
+/* Tricolour hairline — closes off the banner, and repeats under the topbar so
+   the accent survives once the banner has scrolled away or been dismissed.
+   A soft blend rather than three hard bands: at 2px, hard stops read as a
+   glitch in the chrome, a blend reads as intent. */
+.freedom-rule {
+  height: 2px;
+  background-image: linear-gradient(
+    90deg,
+    var(--freedom-saffron) 0%,
+    var(--freedom-rule-mid) 50%,
+    var(--freedom-green) 100%
+  );
+  opacity: 0.55;
+}
+
+/* Ashoka Chakra — one slow revolution, well under the threshold where motion
+   in peripheral vision starts competing with the console for attention. */
+.freedom-chakra {
+  animation: freedom-chakra-spin 24s linear infinite;
+  transform-origin: center;
+}
+
+@keyframes freedom-chakra-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Saffron→green wash on the brand mark in the topbar. drop-shadow rather than
+   box-shadow: the logo is a transparent PNG, so the glow has to follow the
+   hexagon's alpha instead of ringing its bounding box. */
+.freedom-glow {
+  filter: drop-shadow(0 0 4px rgba(255, 153, 51, 0.55)) drop-shadow(0 0 9px rgba(19, 136, 8, 0.35));
+}
+
+/* Seasonal CTA — tricolour-tinted outline button with a periodic sheen.
+   Opt-in per call site (the banner's Claim), deliberately not applied to every
+   primary button in the console: a work surface where everything shimmers is a
+   work surface nobody can read. */
+.freedom-cta {
+  position: relative;
+  overflow: hidden;
+  border-color: rgba(255, 153, 51, 0.45);
+  background-image: linear-gradient(90deg, rgba(255, 153, 51, 0.16), rgba(19, 136, 8, 0.16));
+}
+
+.freedom-cta:hover {
+  border-color: rgba(19, 136, 8, 0.5);
+  background-image: linear-gradient(90deg, rgba(255, 153, 51, 0.26), rgba(19, 136, 8, 0.26));
+}
+
+.freedom-cta::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: linear-gradient(
+    100deg,
+    transparent 20%,
+    var(--freedom-sheen) 50%,
+    transparent 80%
+  );
+  transform: translateX(-100%);
+  animation: freedom-cta-sheen 4.5s ease-in-out 1.5s infinite;
+}
+
+@keyframes freedom-cta-sheen {
+  0% {
+    transform: translateX(-100%);
+  }
+  45%,
+  100% {
+    transform: translateX(100%);
+  }
+}
+
 /* ─── Reduced motion ──────────────────────────────────────────────────── */
 /* JS-driven motion is handled by <MotionConfig reducedMotion="user"> */
 @media (prefers-reduced-motion: reduce) {
@@ -610,6 +730,14 @@
   .animate-floating-paths {
     animation: none;
     will-change: auto;
+  }
+  /* Seasonal chrome keeps its colour, loses its motion */
+  .freedom-chakra,
+  .freedom-cta::after {
+    animation: none;
+  }
+  .freedom-cta::after {
+    display: none;
   }
   *,
   *::before,

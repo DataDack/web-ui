@@ -7,6 +7,7 @@ import type {
   ArtifactRef,
   CreateFromPackageInput,
   CreateFromSourceInput,
+  CreateFunctionUrlInput,
   CreatedFunction,
   FunctionAlias,
   FunctionCode,
@@ -18,6 +19,7 @@ import type {
   MetricSeries,
   MetricSeriesQuery,
   PutAliasInput,
+  PutTriggerInput,
   RuntimeInfo,
   Trigger,
   UpdateFunctionConfigInput,
@@ -183,6 +185,48 @@ export function useFunctionUrls(name: string, scope?: string) {
   })
 }
 
+/**
+ * Give a function a hostname.
+ *
+ * A deploy mints nothing, so this is the only way a URL appears — which is why
+ * it invalidates rather than writes the response into the cache: the list query
+ * is the one place the section reads from, and one extra read after an explicit
+ * click costs nothing.
+ */
+export function useCreateFunctionUrl(name: string, scope?: string) {
+  const { transport } = useServerlessContext()
+  const queryClient = useQueryClient()
+  return useMutation<FunctionUrl, unknown, CreateFunctionUrlInput>({
+    mutationFn: (input) => {
+      if (!transport.createFunctionUrl) {
+        throw new Error("This console's serverless transport has no createFunctionUrl")
+      }
+      return transport.createFunctionUrl(name, input)
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: serverlessKeys.functionUrls(name, scope) })
+    },
+  })
+}
+
+/** Release a hostname. The mutation variable is the domain, not the function. */
+export function useDeleteFunctionUrl(name: string, scope?: string) {
+  const { transport } = useServerlessContext()
+  const queryClient = useQueryClient()
+  // eslint-disable-next-line @typescript-eslint/no-invalid-void-type -- void mirrors the transport's Promise<void>; the rule only whitelists void on type references, not call-site generics
+  return useMutation<void, unknown, string>({
+    mutationFn: (domain) => {
+      if (!transport.deleteFunctionUrl) {
+        throw new Error("This console's serverless transport has no deleteFunctionUrl")
+      }
+      return transport.deleteFunctionUrl(domain)
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: serverlessKeys.functionUrls(name, scope) })
+    },
+  })
+}
+
 /** Published versions of a function. */
 export function useFunctionVersions(name: string, scope?: string) {
   const { transport } = useServerlessContext()
@@ -225,6 +269,48 @@ export function useFunctionTriggers(name: string, scope?: string) {
       return transport.listTriggers(name)
     },
     enabled: name !== "" && !!transport.listTriggers,
+  })
+}
+
+/**
+ * Add a scheduled trigger.
+ *
+ * A create, not an upsert: the control plane mints a fresh id per call, so
+ * firing this twice with the same values leaves the function running twice as
+ * often. The dialog behind it closes on success for that reason — an open form
+ * with a filled-in schedule invites the second submit.
+ */
+export function usePutTrigger(name: string, scope?: string) {
+  const { transport } = useServerlessContext()
+  const queryClient = useQueryClient()
+  return useMutation<Trigger, unknown, PutTriggerInput>({
+    mutationFn: (input) => {
+      if (!transport.putTrigger) {
+        throw new Error("This console's serverless transport has no putTrigger")
+      }
+      return transport.putTrigger(input)
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: serverlessKeys.triggers(name, scope) })
+    },
+  })
+}
+
+/** Remove one trigger. The mutation variable is the trigger id. */
+export function useDeleteTrigger(name: string, scope?: string) {
+  const { transport } = useServerlessContext()
+  const queryClient = useQueryClient()
+  // eslint-disable-next-line @typescript-eslint/no-invalid-void-type -- void mirrors the transport's Promise<void>; the rule only whitelists void on type references, not call-site generics
+  return useMutation<void, unknown, string>({
+    mutationFn: (id) => {
+      if (!transport.deleteTrigger) {
+        throw new Error("This console's serverless transport has no deleteTrigger")
+      }
+      return transport.deleteTrigger(id)
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: serverlessKeys.triggers(name, scope) })
+    },
   })
 }
 

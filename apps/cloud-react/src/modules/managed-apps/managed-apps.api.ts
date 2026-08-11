@@ -128,8 +128,14 @@ export const managedAppsApi = {
    * runs — the two used to drift because the defaults lived inside the build
    * runner, reachable by no endpoint.
    */
-  buildDefaults: (projectType: ProjectType): Promise<BuildDefaults> =>
-    apiGet<BuildDefaults>(`${BASE}/projects/defaults?project_type=${projectType}`),
+  // nodeVersion is the version being considered, not a stored one: it only
+  // changes the runtime image in the response. Omitted means "not chosen yet",
+  // which resolves the image against the platform default.
+  buildDefaults: (projectType: ProjectType, nodeVersion = ""): Promise<BuildDefaults> =>
+    apiGet<BuildDefaults>(
+      `${BASE}/projects/defaults?project_type=${projectType}` +
+        (nodeVersion ? `&node_version=${nodeVersion}` : ""),
+    ),
 
   listProjects: (type?: ProjectType): Promise<Project[]> => {
     const typeQuery = type ? `&project_type=${type}` : ""

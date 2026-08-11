@@ -150,6 +150,7 @@ export function ConfigurePhase({
           install_command: values.install_command,
           build_command: values.build_command,
           output_dir: values.output_dir,
+          node_version: values.node_version,
         }}
         onChange={(build) => {
           onChange(build)

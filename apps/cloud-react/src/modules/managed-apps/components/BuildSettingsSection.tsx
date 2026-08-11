@@ -9,6 +9,7 @@ import {
 
 import { OverrideField } from "@/components/console"
 
+import { BuildEnvironmentField } from "./BuildEnvironmentField"
 import { RootDirectoryInput } from "./RootDirectoryInput"
 import { useBuildDefaults } from "../managed-apps.hooks"
 import type { ProjectType } from "../managed-apps.types"
@@ -18,6 +19,8 @@ export interface BuildSettingsValue {
   install_command: string
   build_command: string
   output_dir: string
+  /** Empty inherits the platform default; never store today's default here. */
+  node_version: string
 }
 
 interface BuildSettingsSectionProps {
@@ -37,6 +40,11 @@ interface BuildSettingsSectionProps {
  * the endpoint exists: the defaults used to live inside the build runner where
  * the console could not read them, so the placeholders drifted from the
  * commands that ran.
+ *
+ * The environment sits at the top of the group rather than beside the commands,
+ * because it is the coarser decision: it picks the toolchain those commands run
+ * on and the image that serves what they produce, so it is what a reader needs
+ * before the commands below it mean anything.
  */
 export function BuildSettingsSection({
   projectType,
@@ -45,7 +53,11 @@ export function BuildSettingsSection({
   defaultOpen = false,
 }: Readonly<BuildSettingsSectionProps>) {
   const { t } = useTranslation()
-  const { data: defaults, isLoading } = useBuildDefaults(projectType)
+  // The version being considered goes with the request: the response resolves
+  // the runtime image for it, and that image is not always the choice — a
+  // static build is served by Caddy whatever Node compiled it. Sending the
+  // override (not the resolved value) keeps this non-circular.
+  const { data: defaults, isLoading } = useBuildDefaults(projectType, value.node_version)
 
   const set = (patch: Partial<BuildSettingsValue>) => {
     onChange({ ...value, ...patch })
@@ -56,6 +68,7 @@ export function BuildSettingsSection({
     value.install_command,
     value.build_command,
     value.output_dir,
+    value.node_version,
   ].filter((field) => field !== "").length
 
   return (
@@ -84,6 +97,16 @@ export function BuildSettingsSection({
             </div>
           ) : (
             <>
+              <BuildEnvironmentField
+                versions={defaults.node_versions}
+                inheritedVersion={defaults.node_version}
+                runtimeImage={defaults.runtime_image}
+                value={value.node_version}
+                onChange={(node_version) => {
+                  set({ node_version })
+                }}
+              />
+
               <OverrideField
                 id="install-command"
                 label={t("managedApps.buildSettingsSection.installCommand")}

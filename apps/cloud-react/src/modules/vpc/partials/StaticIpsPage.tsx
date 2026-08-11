@@ -23,7 +23,20 @@ import {
 } from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import type { ColumnDef } from "@tanstack/react-table"
-import { Globe, Link2, Plus, RefreshCw, Search, Trash2, Unlink } from "lucide-react"
+import {
+  Boxes,
+  Globe,
+  Link2,
+  Plus,
+  RefreshCw,
+  Router,
+  Scale,
+  Search,
+  Server,
+  Shuffle,
+  Trash2,
+  Unlink,
+} from "lucide-react"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
@@ -34,10 +47,13 @@ import { QuotaNotice, useQuotaBlocked } from "@/modules/governance/components/Qu
 import { useNamingRule } from "@/modules/governance/governance.hooks"
 import type { NamingRule } from "@/modules/governance/governance.types"
 import { namingNameSchema } from "@/modules/governance/governance.validation"
+import { LB_ROUTES } from "@/modules/load-balancers/load-balancers.constants"
+import { MANAGED_APPS_ROUTES } from "@/modules/managed-apps/managed-apps.constants"
 import { VMS_ROUTES } from "@/modules/vms/vms.constants"
 import { useInstances } from "@/modules/vms/vms.hooks"
 import { useScreen } from "@/services/api/screen"
 
+import { VPC_ROUTES } from "../vpc.constants"
 import {
   useAssignStaticIP,
   useRegions,
@@ -46,7 +62,7 @@ import {
   useStaticIPs,
   useUnassignStaticIP,
 } from "../vpc.hooks"
-import type { StaticIP } from "../vpc.types"
+import type { StaticIP, StaticIPAttachmentType } from "../vpc.types"
 
 const FIELD_LABEL_CLASS = "text-xs font-semibold tracking-wide uppercase text-muted-foreground"
 
@@ -239,6 +255,57 @@ function AssignIpDialog({
   )
 }
 
+/* ── Attachment ────────────────────────────────────────────────────────── */
+
+/**
+ * An address is attached to one of five kinds of resource, and the screen has
+ * to say which. Only instances and load balancers have a detail page; the rest
+ * link to their list, which is still better than a bare uuid.
+ */
+const ATTACHMENT_ICONS: Record<Exclude<StaticIPAttachmentType, "">, typeof Server> = {
+  instance: Server,
+  load_balancer: Scale,
+  nat_gateway: Shuffle,
+  vpc_gateway: Router,
+  managed_app: Boxes,
+}
+
+const ATTACHMENT_TYPE_LABELS: Record<Exclude<StaticIPAttachmentType, "">, string> = {
+  instance: "staticIps.attachment.instance",
+  load_balancer: "staticIps.attachment.loadBalancer",
+  nat_gateway: "staticIps.attachment.natGateway",
+  vpc_gateway: "staticIps.attachment.vpcGateway",
+  managed_app: "staticIps.attachment.managedApp",
+}
+
+function attachmentRoute(ip: StaticIP): string | null {
+  switch (ip.attachment.type) {
+    case "instance":
+      return VMS_ROUTES.detail(ip.attachment.id)
+    case "load_balancer":
+      return LB_ROUTES.detail(ip.attachment.id)
+    case "managed_app":
+      return MANAGED_APPS_ROUTES.project(ip.attachment.id)
+    case "nat_gateway":
+      return VPC_ROUTES.NAT_GATEWAYS
+    case "vpc_gateway":
+      return VPC_ROUTES.ROUTERS
+    default:
+      return null
+  }
+}
+
+/**
+ * The name the API resolved, falling back to the locally loaded instance list
+ * and finally to the raw id. The id is a poor label but an honest one — never
+ * render an attached address as attached to nothing.
+ */
+function attachmentLabel(ip: StaticIP, instanceNames: Map<string, string>): string {
+  if (!ip.attachment.type) return ""
+  if (ip.attachment.name) return ip.attachment.name
+  return instanceNames.get(ip.attachment.id) ?? ip.attachment.id
+}
+
 /* ── Page ──────────────────────────────────────────────────────────────── */
 
 export function StaticIpsPage() {
@@ -335,22 +402,42 @@ export function StaticIpsPage() {
         pulse: (ip) => ip.status === "assigned" || ip.status === "provisioning",
       }),
       {
-        id: "instance",
-        accessorFn: (ip: StaticIP) => instanceNames.get(ip.instance_id) ?? "",
-        header: () => t("staticIps.columns.instance"),
+        id: "attachment",
+        accessorFn: (ip: StaticIP) => attachmentLabel(ip, instanceNames),
+        header: () => t("staticIps.columns.attachedTo"),
         meta: { interactive: true },
         cell: ({ row }) => {
           const ip = row.original
-          if (!ip.instance_id) {
-            return <span className="text-muted-foreground">—</span>
+          if (!ip.attachment.type) {
+            // An assigned address with no resolvable holder is a data problem,
+            // not a free address — say so, rather than render it exactly like
+            // one nobody is using.
+            const key = ip.status === "assigned" ? "unknown" : "none"
+            return <span className="text-muted-foreground">{t(`staticIps.attachment.${key}`)}</span>
           }
+          const Icon = ATTACHMENT_ICONS[ip.attachment.type]
+          const label = attachmentLabel(ip, instanceNames)
+          const to = attachmentRoute(ip)
           return (
-            <Link
-              to={VMS_ROUTES.detail(ip.instance_id)}
-              className="font-mono text-[13px] text-status-info hover:underline"
-            >
-              {instanceNames.get(ip.instance_id) ?? ip.instance_id}
-            </Link>
+            <div className="flex flex-col">
+              <span className="flex items-center gap-1.5">
+                <Icon className="size-3.5 text-muted-foreground shrink-0" />
+                {to ? (
+                  <Link
+                    to={to}
+                    className="font-mono text-[13px] text-status-info hover:underline truncate"
+                  >
+                    {label}
+                  </Link>
+                ) : (
+                  <span className="font-mono text-[13px] text-foreground truncate">{label}</span>
+                )}
+              </span>
+              <span className="text-[11px] text-muted-foreground mt-0.5 ml-5">
+                {t(ATTACHMENT_TYPE_LABELS[ip.attachment.type])}
+                {ip.attachment.deleted && ` · ${t("staticIps.attachment.deleted")}`}
+              </span>
+            </div>
           )
         },
       },
@@ -487,7 +574,9 @@ export function StaticIpsPage() {
         title={t("staticIps.unassignConfirm.title")}
         description={t("staticIps.unassignConfirm.description", {
           ip: toUnassign?.ip_address ?? "",
-          instance: instanceNames.get(toUnassign?.instance_id ?? "") ?? "",
+          // Whatever holds it, not just an instance — the same reason the table
+          // resolves the whole attachment.
+          instance: toUnassign ? attachmentLabel(toUnassign, instanceNames) : "",
         })}
         confirmLabel={t("staticIps.actions.unassign")}
         destructive={false}

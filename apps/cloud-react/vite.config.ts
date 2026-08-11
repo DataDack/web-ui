@@ -30,18 +30,18 @@ export default defineConfig({
         changeOrigin: false,
       },
       // FaaS control plane, reached directly (not via cloud-be-go). Port
-      // matches serverless_faas/.env HTTP_PORT (8085); the api and router
-      // roles share that one listener in dev, so /v1 (control API) and
-      // /function + /async-function (invoke paths) all proxy to it.
+      // matches serverless_faas/.env HTTP_PORT (8085); the api and router roles
+      // share that one listener in dev, so /v1 (the native control API) and
+      // /2015-03-31 (the Lambda-compatible surface, which is where the Test
+      // tab's invoke goes) both proxy to it.
+      //
+      // The old /function and /async-function shorthands are gone: no route
+      // serves them upstream any more, so proxying them only produced 404s.
       "/v1": {
         target: process.env.VITE_FAAS_PROXY ?? "http://localhost:8085",
         changeOrigin: true,
       },
-      "/function": {
-        target: process.env.VITE_FAAS_PROXY ?? "http://localhost:8085",
-        changeOrigin: true,
-      },
-      "/async-function": {
+      "/2015-03-31": {
         target: process.env.VITE_FAAS_PROXY ?? "http://localhost:8085",
         changeOrigin: true,
       },

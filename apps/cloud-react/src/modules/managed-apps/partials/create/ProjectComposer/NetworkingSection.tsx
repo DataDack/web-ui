@@ -21,7 +21,12 @@ interface NetworkingSectionProps {
 }
 
 /**
- * Optional private networking.
+ * Optional networking.
+ *
+ * Titled "Networking", not "Private networking": what is inside is the whole
+ * networking decision for a project, and public-only — the answer most projects
+ * keep — is not a private one. The sub-label carries which of the two this
+ * project is on, so the honest reading is on the closed row either way.
  *
  * Collapsed by default and explicitly labelled optional: the overwhelming
  * majority of projects are public-only, and a required-looking network picker
@@ -73,7 +78,7 @@ export function NetworkingSection({
         <AccordionTrigger className="text-[13px] font-semibold hover:no-underline">
           <span className="flex items-center gap-2">
             <Network className="size-3.5 text-muted-foreground" />
-            {t("managedApps.networkingSection.privateNetworking")}
+            {t("managedApps.networkingSection.networking")}
             <span className="text-[11px] font-normal text-muted-foreground">
               {bound ? "bound" : "optional · public only"}
             </span>

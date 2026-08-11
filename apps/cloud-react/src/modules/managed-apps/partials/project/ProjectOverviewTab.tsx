@@ -25,7 +25,7 @@ export function ProjectOverviewTab({ project }: Readonly<{ project: Project }>) 
   const latestBuild = builds.at(0)
   const state = deriveProjectState(project, latestBuild)
   const createBuild = useCreateBuild()
-  const { data: defaults } = useBuildDefaults(project.project_type)
+  const { data: defaults } = useBuildDefaults(project.project_type, project.node_version)
 
   /** Empty build fields inherit — show what will actually run. */
   const inherited = (value: string, fallback: string | undefined) =>
@@ -160,6 +160,16 @@ export function ProjectOverviewTab({ project }: Readonly<{ project: Project }>) 
               {
                 label: "Root directory",
                 value: project.root_dir || "./",
+                mono: true,
+              },
+              {
+                // Both halves, because they are not always the same answer: the
+                // chosen major builds the project, and a static build is served
+                // by Caddy whatever compiled it.
+                label: "Environment",
+                value: defaults
+                  ? `Node ${inherited(project.node_version, defaults.node_version)} · ${defaults.runtime_image}`
+                  : "—",
                 mono: true,
               },
               {

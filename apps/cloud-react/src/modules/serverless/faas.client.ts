@@ -13,7 +13,11 @@ import type {
   Trigger,
   UpdateFunctionConfigInput,
 } from "@datadack/serverless"
-import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios"
+import axios, {
+  type AxiosError,
+  type AxiosResponse,
+  type InternalAxiosRequestConfig,
+} from "axios"
 
 
 import { activeScope } from "@/services/api/active-scope"
@@ -33,9 +37,10 @@ import { authToken, refreshAccessToken } from "@/services/api/auth-token"
 // words instead of axios's generic "Request failed with status code N".
 
 // Invoke is the only call that does not live under /v1: it is the
-// Lambda-compatible surface the router role serves. The old `/function/{name}`
-// shorthand was removed upstream and answers 404 — which `validateStatus: () =>
-// true` would have rendered as the function's own response rather than an error.
+// Lambda-compatible surface the router role serves, and it answers in AWS's
+// error shape rather than the platform's, so it gets its own message reader
+// below. The old `/function/{name}` shorthand was removed upstream and answers
+// 404.
 /** Native FaaS error body (common/core/httpx). */
 interface FaasErrorBody {
   error?: { code?: string; message?: string; status?: number }
@@ -48,6 +53,52 @@ export function faasErrorMessage(e: unknown, fallback: string): string {
     if (body?.error?.message) return body.error.message
   }
   return fallback
+}
+
+/**
+ * The message out of a failed Invoke call.
+ *
+ * The router writes `{"Type": "User"|"Service", "message": "..."}` (AWS's shape,
+ * not the platform's `{error: {...}}`), and the invoke request defeats axios's
+ * JSON parsing — so the body arrives here as an unparsed string and is decoded
+ * by hand. The x-amzn-ErrorType header is the fallback: it names the class
+ * (ResourceNotFoundException, TooManyRequestsException) even when the body is
+ * missing or unreadable, which beats "Request failed with status code 429".
+ */
+function awsErrorMessage(e: unknown, fallback: string): string {
+  if (!axios.isAxiosError(e)) return (e instanceof Error && e.message) || fallback
+  const raw: unknown = e.response?.data
+  if (typeof raw === "string" && raw !== "") {
+    try {
+      const body = JSON.parse(raw) as { message?: unknown; Message?: unknown }
+      const message = body.message ?? body.Message
+      if (typeof message === "string" && message !== "") return message
+    } catch {
+      // Not JSON — a proxy's HTML error page, say. Fall through to the header.
+    }
+  }
+  const type: unknown = e.response?.headers["x-amzn-errortype"]
+  if (typeof type === "string" && type !== "") return type
+  return e.message || fallback
+}
+
+/**
+ * X-Amz-Log-Result — the tail of the function's own logs, base64 — as text.
+ *
+ * `atob` yields one char per BYTE, so a log line containing anything outside
+ * ASCII comes back mojibake unless those bytes are re-read as UTF-8. Undefined
+ * on anything that does not decode: a garbled log tail is worth dropping, never
+ * worth failing an otherwise successful invocation over.
+ */
+function decodeLogTail(encoded: string | undefined): string | undefined {
+  if (!encoded) return undefined
+  try {
+    const binary = atob(encoded)
+    const bytes = Uint8Array.from(binary, (char) => char.codePointAt(0) ?? 0)
+    return new TextDecoder().decode(bytes)
+  } catch {
+    return undefined
+  }
 }
 
 export interface FaasTransportOptions {
@@ -70,6 +121,8 @@ export type FaasDirectTransport = Required<
     | "listRuntimes"
     | "getFunction"
     | "listFunctionUrls"
+    | "createFunctionUrl"
+    | "deleteFunctionUrl"
     | "listVersions"
     | "listAliases"
     | "putAlias"
@@ -77,6 +130,8 @@ export type FaasDirectTransport = Required<
     | "deleteFunction"
     | "invokeFunction"
     | "listTriggers"
+    | "putTrigger"
+    | "deleteTrigger"
     | "updateFunctionConfig"
     | "getMetricSeries"
     | "getFunctionCode"
@@ -171,6 +226,30 @@ export function createFaasTransport(opts: FaasTransportOptions): FaasDirectTrans
         "Could not load the function URLs",
       ),
 
+    // A function URL is created on request, never on deploy. The hostname is a
+    // top-level resource — unique platform-wide, not under one function — so the
+    // function it points at travels in the body and the domain is the delete key.
+    // Only the four allowed keys: FaaS decodes with DisallowUnknownFields.
+    createFunctionUrl: (name, input) =>
+      run(
+        faas
+          .post<FunctionUrl>("/v1/function-urls", {
+            functionName: name,
+            // Omitted, not blank: absent means "generate one for me".
+            ...(input.domain ? { domain: input.domain } : {}),
+            ...(input.authType ? { authType: input.authType } : {}),
+            ...(input.qualifier ? { qualifier: input.qualifier } : {}),
+          })
+          .then((res) => res.data),
+        "Could not create the function URL",
+      ),
+
+    deleteFunctionUrl: (domain) =>
+      run(
+        faas.delete(`/v1/function-urls/${encodeURIComponent(domain)}`).then(() => undefined),
+        "Could not release the hostname",
+      ),
+
     listVersions: (name) =>
       run(
         faas
@@ -260,6 +339,23 @@ export function createFaasTransport(opts: FaasTransportOptions): FaasDirectTrans
         "Could not load the triggers",
       ),
 
+    // 201 with the bare trigger. Named "put" upstream but it CREATES — a fresh
+    // id per call, no upsert by name — which is why the console offers add and
+    // remove and never an edit.
+    putTrigger: (input) =>
+      run(
+        faas.post<Trigger>("/v1/triggers", input).then((res) => res.data),
+        "Could not add the trigger",
+      ),
+
+    // 204, empty body. The control plane checks ownership before deleting, so a
+    // trigger belonging to another account answers not-found rather than going.
+    deleteTrigger: (id) =>
+      run(
+        faas.delete(`/v1/triggers/${encodeURIComponent(id)}`).then(() => undefined),
+        "Could not remove the trigger",
+      ),
+
     // Inline code editing. The file path travels as a `path` QUERY param, not
     // a path segment — that is what the control plane's handlers read, and it
     // is the only form that survives a nested path like lib/transform.js.
@@ -325,64 +421,72 @@ export function createFaasTransport(opts: FaasTransportOptions): FaasDirectTrans
       ),
 
     /**
-     * Test invoke — a RAW passthrough (the router role writes the function's
-     * own status, headers and body verbatim), so it never throws on a non-2xx:
-     * the function's error output IS the result the tester wants to show. The
-     * X-Amz-* metadata headers are CORS-exposed and optional — absent fields
-     * stay absent.
+     * Test invoke, through the platform's Lambda Invoke API.
+     *
+     * NOT the function's public URL. A URL invoke is an HTTP request, so the
+     * handler receives an HTTP-shaped event — method, rawPath, headers, the
+     * typed payload buried in `body` as a string. That is the right event for
+     * something the internet calls, and the wrong one for a test: the whole
+     * point of the tab is to hand the handler exactly the event the buffer on
+     * the left contains. It also made the tab untestable for every function
+     * with no URL mapped, which includes every function that is not HTTP at all.
+     *
+     * So this posts to POST /2015-03-31/functions/{name}/invocations — the same
+     * surface an AWS SDK client uses — and the payload arrives verbatim.
+     *
+     * The body is a raw passthrough — `transformResponse` is defeated so what
+     * the tab shows is the exact bytes the function returned, not a
+     * re-serialised parse of them.
+     *
+     * A function that throws still answers 200 with X-Amz-Function-Error set:
+     * that is a successful invocation of a failing function, and it belongs in
+     * the result pane, not in the error line. Only a genuine platform failure
+     * (404, 413, 429, 502, 503) rejects — deliberately through axios's default
+     * validateStatus, so a lapsed token still gets the interceptor's one silent
+     * refresh and replay instead of a 401 rendered as a test result.
      */
-    // Test through the function's public URL, not the platform invoke route.
-    //
-    // Invoking directly exercises a path no real caller uses: it skips the API
-    // gateway, the hostname mapping and TLS, so a function can pass here and
-    // 404 for everyone on the internet. Testing what is actually published is
-    // the point.
-    //
-    // No auth refresh dance either — a function URL is public, so the access
-    // token is irrelevant to it.
     invokeFunction: async (name, payload) => {
-      const urls = await run(
-        faas
-          .get<{ functionUrls?: FunctionUrl[] }>(
-            `/v1/functions/${encodeURIComponent(name)}/urls`,
-          )
-          .then((res) => res.data.functionUrls ?? []),
-        "Could not look up the function URL",
-      )
-      const live = urls.find((u) => !u.disabled)
-      if (!live) {
-        throw new Error(
-          `${name} has no function URL, so there is nothing to call. ` +
-            `A URL is created when the function is deployed.`,
-        )
-      }
-
       const started = performance.now()
-      let response: Response
+      let response: AxiosResponse<unknown>
       try {
-        response = await fetch(`https://${live.domain}/`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: payload,
-        })
-      } catch (cause) {
-        // fetch rejects without a status for DNS, TLS and CORS alike. CORS is
-        // much the most likely here — the console and the function are
-        // different origins — and a bare "Failed to fetch" sends people
-        // hunting the wrong problem.
-        throw new Error(
-          `Could not reach https://${live.domain}. The function must return ` +
-            `Access-Control-Allow-Origin for the browser to read its response. ` +
-            `(${String(cause)})`,
+        response = await faas.post(
+          `/2015-03-31/functions/${encodeURIComponent(name)}/invocations`,
+          payload,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              // The last 4 KB of the function's own logs, base64 in a response
+              // header. This request header and X-Amz-Log-Result are both in
+              // the FaaS CORS lists, so the browser may send and read them.
+              "X-Amz-Log-Type": "Tail",
+            },
+            // The payload is already the wire format; axios must not re-encode
+            // the string, and the reply must not be JSON.parsed into an object
+            // that would only be stringified again to display.
+            transformRequest: [(data: unknown) => data],
+            transformResponse: [(data: unknown) => data],
+            responseType: "text",
+          },
         )
+      } catch (e) {
+        throw new Error(awsErrorMessage(e, "The invocation failed"))
+      }
+      const durationMs = Math.round(performance.now() - started)
+
+      const header = (key: string): string | undefined => {
+        const value: unknown = response.headers[key]
+        return typeof value === "string" && value !== "" ? value : undefined
       }
 
       return {
         status: response.status,
-        durationMs: Math.round(performance.now() - started),
-        body: await response.text(),
-        contentType: response.headers.get("content-type") ?? undefined,
-        functionError: response.headers.get("x-amz-function-error") ?? undefined,
+        durationMs,
+        // 202 (Event) and 204 (DryRun) answer with no body at all.
+        body: typeof response.data === "string" ? response.data : "",
+        contentType: header("content-type"),
+        executedVersion: header("x-amz-executed-version"),
+        functionError: header("x-amz-function-error"),
+        logs: decodeLogTail(header("x-amz-log-result")),
       }
     },
   }
