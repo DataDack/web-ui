@@ -184,6 +184,16 @@ export const superadminRoutes: RouteObject[] = [
         },
       },
       {
+        // Which email domains may open an account, and what signup does with a
+        // plus-addressed alias. Kept off the platform-policy page: those two
+        // gates are DB switches, this one is a folder of lists in S3.
+        path: "email-policy",
+        lazy: async () => {
+          const { EmailPolicyPage } = await import("./partials/EmailPolicyPage")
+          return { Component: EmailPolicyPage }
+        },
+      },
+      {
         // Support tickets and quota requests are one queue from the operator's
         // side: both are somebody waiting on a decision.
         path: "requests",

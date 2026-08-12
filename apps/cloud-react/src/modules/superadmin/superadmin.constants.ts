@@ -9,6 +9,7 @@ export const SUPERADMIN_QUERY_KEYS = {
   pveNodes: ["superadmin", "pve-nodes"] as const,
   lbSettings: ["superadmin", "lb-settings"] as const,
   platformSettings: ["superadmin", "platform-settings"] as const,
+  emailPolicy: ["superadmin", "email-policy"] as const,
   managerStatus: ["superadmin", "manager-status"] as const,
   images: ["superadmin", "images"] as const,
   vmPrices: ["superadmin", "vm-prices"] as const,

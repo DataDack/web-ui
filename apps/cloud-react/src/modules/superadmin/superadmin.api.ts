@@ -41,6 +41,12 @@ import type {
   LBSettings,
   ManagerStatus,
   PlatformSettings,
+  AddBlockedDomainsRequest,
+  AddBlockedDomainsResponse,
+  EmailPolicy,
+  EmailPolicyCheck,
+  EmailPolicyCheckRequest,
+  UpdateEmailPolicy,
   UpdateLBSettings,
   UpdatePlatformSettings,
   AccountResource,
@@ -76,6 +82,7 @@ const BASE = "/platform/infra"
 const CATALOG_BASE = "/platform/catalog"
 const CACHE_BASE = "/platform/cache"
 const SETTINGS_BASE = "/platform/settings"
+const EMAIL_POLICY_BASE = "/platform/email-policy"
 // IP pools live in the VPC (regional) domain, not the platform catalog.
 const IPPOOL_BASE = "/vpc/ippools"
 
@@ -335,4 +342,20 @@ export const superAdminApi = {
   getPlatformSettings: () => apiGet<PlatformSettings>(SETTINGS_BASE),
   updatePlatformSettings: (payload: UpdatePlatformSettings) =>
     apiPatch<PlatformSettings>(SETTINGS_BASE, payload),
+
+  /* signup email policy — which email domains may open an account, and what
+	   happens to a plus-addressed alias. Backed by JSON in the service S3
+	   bucket rather than a table, which is why the read takes a `refresh`:
+	   the folder is also editable by hand, and the backend caches it. */
+  getEmailPolicy: (refresh = false) =>
+    apiGet<EmailPolicy>(`${EMAIL_POLICY_BASE}${refresh ? "?refresh=true" : ""}`),
+  updateEmailPolicy: (payload: UpdateEmailPolicy) =>
+    apiPatch<EmailPolicy>(EMAIL_POLICY_BASE, payload),
+  addBlockedDomains: (payload: AddBlockedDomainsRequest) =>
+    apiPost<AddBlockedDomainsResponse>(`${EMAIL_POLICY_BASE}/domains`, payload),
+  removeBlockedDomain: (domain: string) =>
+    apiDelete<EmailPolicy>(`${EMAIL_POLICY_BASE}/domains/${encodeURIComponent(domain)}`),
+  // Read-only dry run: creates nothing, sends nothing.
+  checkEmailPolicy: (payload: EmailPolicyCheckRequest) =>
+    apiPost<EmailPolicyCheck>(`${EMAIL_POLICY_BASE}/check`, payload),
 }

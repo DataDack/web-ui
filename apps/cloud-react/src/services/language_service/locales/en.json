@@ -3361,6 +3361,100 @@
         "failed": "Couldn't update the platform policy"
       }
     },
+    "emailPolicy": {
+      "title": "Signup email policy",
+      "subtitle": "Which email domains may open an account, and what signup does with a plus-addressed alias. Stored as JSON in the service S3 bucket, not the database.",
+      "loadFailed": "Couldn't load the signup email policy",
+      "loadFailedSubtitle": "The platform service may be unreachable, or the S3 bucket holding the lists may be. Retry, or check the console API.",
+      "readOnly": "No S3 bucket is configured on this deployment (S3_BUCKET), so the policy can be read but not edited. Signup is being gated by the built-in defaults: plus aliases are folded to the real mailbox, and RFC-reserved domains like example.com are refused.",
+      "propagation": "Applies across every API replica within {{count}}s",
+      "lastChanged": "Last changed {{when}}",
+      "usersCount": "{{count}} existing account",
+      "usersCount_other": "{{count}} existing accounts",
+      "plusAlias": {
+        "title": "Plus-addressed aliases",
+        "description": "abhishek+6773@gmail.com and abhishek+6774@gmail.com are the same mailbox, but two accounts — and two free-tier quotas. This decides what signup does about that.",
+        "modes": {
+          "allow": {
+            "label": "Allow",
+            "description": "Each alias opens its own account. What the platform did before this page existed.",
+            "example": "abhishek+6773@gmail.com → its own account"
+          },
+          "normalize": {
+            "label": "Fold to the real address",
+            "description": "The tag is dropped before the account is looked up or created, so one mailbox is one account. The code still arrives — the provider delivers it to the same inbox.",
+            "example": "abhishek+6773@gmail.com → abhishek@gmail.com"
+          },
+          "block": {
+            "label": "Refuse",
+            "description": "Signup is turned away and asked for an address without a +tag. Existing alias accounts keep signing in.",
+            "example": "abhishek+6773@gmail.com → refused"
+          }
+        }
+      },
+      "blocking": {
+        "title": "Block listed email domains",
+        "description": "Refuse signups at throwaway and placeholder domains. Existing accounts are never affected — this gate only refuses new ones.",
+        "offConsequence": "Anyone can sign up at a throwaway domain right now, including example.com.",
+        "count": "{{count}} domain blocked",
+        "count_other": "{{count}} domains blocked"
+      },
+      "check": {
+        "title": "Check an address",
+        "description": "Dry-run an address against the policy as it stands. Nothing is created and no mail is sent.",
+        "placeholder": "someone@example.com",
+        "action": "Check",
+        "matched": "matched {{domain}}",
+        "outcomes": {
+          "allowed": "Allowed",
+          "rewritten": "Folded",
+          "allowed_existing": "Allowed · existing account",
+          "blocked": "Blocked"
+        },
+        "explain": {
+          "allowed": "This address can sign up as it is.",
+          "rewritten": "The account would be created and the code sent to the folded address on the right.",
+          "allowed_existing": "The policy would refuse this address, but an account already holds it — so it can still sign in. The gate only blocks new accounts.",
+          "blocked": "Signup would be refused."
+        }
+      },
+      "add": {
+        "action": "Block domain",
+        "title": "Block email domains",
+        "description": "Signups at these domains will be refused. One per line, or pasted with commas or spaces.",
+        "domainsLabel": "Domains",
+        "domainsPlaceholder": "mailinator.com\ntemp-mail.org\nyopmail.com",
+        "domainsHint": "{{count}} domain will be added. Subdomains are covered automatically.",
+        "domainsHint_other": "{{count}} domains will be added. Subdomains are covered automatically.",
+        "hasUsersWarning": "{{count}} of these already has existing accounts. They keep working — only new signups are refused.",
+        "hasUsersWarning_other": "{{count}} of these already have existing accounts. They keep working — only new signups are refused.",
+        "reasonLabel": "Reason (optional)",
+        "reasonPlaceholder": "e.g. disposable mailbox provider seen in signup abuse",
+        "confirm": "Block domain",
+        "confirm_other": "Block {{count}} domains"
+      },
+      "table": {
+        "domain": "Domain",
+        "list": "List",
+        "users": "Accounts",
+        "reason": "Reason",
+        "added": "Added",
+        "remove": "Remove from blocklist",
+        "builtin": "Built-in",
+        "builtinHint": "Reserved by RFC and unable to receive mail, so it is always blocked. Turn blocking off entirely to allow it.",
+        "search": "Search domains…",
+        "empty": "No domains are blocked",
+        "emptySubtitle": "Add the throwaway domains you see in signups, or upload a bulk list to the S3 folder below."
+      },
+      "toasts": {
+        "saved": "Signup email policy updated",
+        "failed": "Couldn't update the signup email policy",
+        "domainsAdded": "Blocklist updated",
+        "domainsFailed": "Couldn't update the blocklist",
+        "domainRemoved": "Domain unblocked",
+        "checkFailed": "Couldn't check that address"
+      }
+    },
     "cache": {
       "title": "Burst Cache",
       "subtitle": "Clear Redis by module, by key family, or by raw glob. Counts are live.",

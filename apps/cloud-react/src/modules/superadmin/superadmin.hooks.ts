@@ -27,7 +27,11 @@ import type {
   RejectQuotaRequestInput,
   ReserveAddressesRequest,
   UpdateAvailabilityZoneRequest,
+  AddBlockedDomainsRequest,
+  EmailPolicy,
+  EmailPolicyCheckRequest,
   UpdateBandwidthPriceRequest,
+  UpdateEmailPolicy,
   UpdateImageRequest,
   UpdateImageVersionRequest,
   UpdateIPPoolRequest,
@@ -331,6 +335,94 @@ export function useUpdatePlatformSettings() {
     onSettled: () => {
       void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.platformSettings })
     },
+  })
+}
+
+/* ── Signup email policy ───────────────────────────────────────────────── */
+
+// The blocked-domain lists and the plus-alias switch. staleTime is 0 for the
+// same reason as the policy switches above — and additionally because the lists
+// live in an S3 folder somebody may have edited by hand since the page opened.
+export function useEmailPolicy() {
+  return useQuery({
+    queryKey: SUPERADMIN_QUERY_KEYS.emailPolicy,
+    queryFn: () => superAdminApi.getEmailPolicy(),
+    staleTime: 0,
+  })
+}
+
+// Every mutation below writes the server's response straight into the cache:
+// the backend returns the whole policy after a write, so the table never has to
+// guess what the folder now contains.
+function useEmailPolicyMutation<TVars, TData>(
+  mutationFn: (vars: TVars) => Promise<TData>,
+  select: (data: TData) => EmailPolicy,
+  successKey: string,
+  failureKey: string,
+) {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn,
+    onSuccess: (data) => {
+      queryClient.setQueryData(SUPERADMIN_QUERY_KEYS.emailPolicy, select(data))
+      toast.success(t(successKey))
+    },
+    onError: (e) => toast.error(extractError(e, t(failureKey))),
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.emailPolicy })
+    },
+  })
+}
+
+export function useUpdateEmailPolicy() {
+  return useEmailPolicyMutation(
+    (payload: UpdateEmailPolicy) => superAdminApi.updateEmailPolicy(payload),
+    (policy) => policy,
+    "superAdmin.emailPolicy.toasts.saved",
+    "superAdmin.emailPolicy.toasts.failed",
+  )
+}
+
+export function useAddBlockedDomains() {
+  return useEmailPolicyMutation(
+    (payload: AddBlockedDomainsRequest) => superAdminApi.addBlockedDomains(payload),
+    (res) => res.policy,
+    "superAdmin.emailPolicy.toasts.domainsAdded",
+    "superAdmin.emailPolicy.toasts.domainsFailed",
+  )
+}
+
+export function useRemoveBlockedDomain() {
+  return useEmailPolicyMutation(
+    (domain: string) => superAdminApi.removeBlockedDomain(domain),
+    (policy) => policy,
+    "superAdmin.emailPolicy.toasts.domainRemoved",
+    "superAdmin.emailPolicy.toasts.domainsFailed",
+  )
+}
+
+// The dry run is a mutation rather than a query because it is an explicit act
+// with an input the operator types — nothing should re-run it on a refocus.
+export function useCheckEmailPolicy() {
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (payload: EmailPolicyCheckRequest) => superAdminApi.checkEmailPolicy(payload),
+    onError: (e) => toast.error(extractError(e, t("superAdmin.emailPolicy.toasts.checkFailed"))),
+  })
+}
+
+// Forces a re-read of the S3 folder rather than the cached snapshot — for the
+// case where the operator uploaded a bulk list to the bucket directly.
+export function useRefreshEmailPolicy() {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: () => superAdminApi.getEmailPolicy(true),
+    onSuccess: (policy) => {
+      queryClient.setQueryData(SUPERADMIN_QUERY_KEYS.emailPolicy, policy)
+    },
+    onError: (e) => toast.error(extractError(e, t("superAdmin.emailPolicy.toasts.failed"))),
   })
 }
 

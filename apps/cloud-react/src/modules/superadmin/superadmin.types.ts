@@ -177,6 +177,98 @@ export interface UpdatePlatformSettings {
   reason?: string
 }
 
+/* ── Signup email policy ───────────────────────────────────────────────── */
+// The gate on which email addresses may open an account (cloud-be-go:
+// /platform/email-policy, super-admin only). Unlike the switches above it is
+// NOT database-backed: the policy and the domain lists are JSON files in the
+// service S3 bucket under system_data/auth/, so an operator can also upload a
+// bulk list straight to the bucket and the console picks it up.
+
+/** What signup does with an address like name+tag@gmail.com. */
+export type PlusAliasMode = "allow" | "normalize" | "block"
+
+export interface BlockedDomain {
+  domain: string
+  reason?: string
+  added_by?: string
+  added_at?: string
+  /** Shipped with the service (RFC-reserved); enforced but not removable. */
+  builtin: boolean
+  /**
+   * Existing accounts at this domain. Blocking never signs anyone out — the
+   * gate only refuses NEW accounts — but a domain with customers behind it is
+   * worth seeing before adding it.
+   */
+  users: number
+}
+
+/** One file in the blocked-domain folder, or the built-in set. */
+export interface BlockedDomainList {
+  id: string
+  about?: string
+  builtin: boolean
+  domains: BlockedDomain[]
+}
+
+export interface EmailPolicy {
+  plus_alias: PlusAliasMode
+  block_domains: boolean
+  updated_by?: string
+  updated_at?: string
+
+  /** Allowed plus_alias values, so the UI renders the backend's vocabulary. */
+  modes: PlusAliasMode[]
+
+  lists: BlockedDomainList[]
+  /** Distinct domains across every list — not the sum of their lengths. */
+  total_domains: number
+
+  /** The S3 prefix the lists are read from, shown so bulk uploads have a home. */
+  location: string
+  /** False when no S3 bucket is configured: enforced from defaults, not editable. */
+  editable: boolean
+  /** Upper bound, in seconds, on other replicas still enforcing the old policy. */
+  propagation_seconds: number
+}
+
+/** Partial patch: an omitted switch is left untouched. */
+export interface UpdateEmailPolicy {
+  plus_alias?: PlusAliasMode
+  block_domains?: boolean
+  reason?: string
+}
+
+/** Bulk by default — a pasted list is one write, not twenty. */
+export interface AddBlockedDomainsRequest {
+  domains: string[]
+  reason?: string
+}
+
+export interface AddBlockedDomainsResponse {
+  added: string[]
+  /** Already blocked by some list, so this call did not change them. */
+  skipped: string[]
+  policy: EmailPolicy
+}
+
+export interface EmailPolicyCheckRequest {
+  email: string
+}
+
+export interface EmailPolicyCheck {
+  /** The address signup would actually use (folded, under normalize). */
+  email: string
+  original: string
+  domain: string
+  rewritten: boolean
+  blocked: boolean
+  reason?: "invalid" | "plus_alias" | "domain"
+  matched_domain?: string
+  /** An account already holds this address, which is why a blocked one may pass. */
+  existing_user: boolean
+  outcome: "allowed" | "rewritten" | "blocked" | "allowed_existing"
+}
+
 /* ── Load balancer fleet settings ──────────────────────────────────────── */
 // DB-backed, platform-wide configuration for the load-balancer fleet
 // (cloud-be-go: /platform/infra/lb-settings, super-admin only). One row for the
