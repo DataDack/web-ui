@@ -133,7 +133,7 @@ export function SecurityStep({ form }: Readonly<{ form: UseFormReturn<FormValues
       </div>
 
       <Section variant="panel" title={t("loadBalancers.wizard.effectiveFirewall")}>
-        <EffectiveFirewall listeners={listeners} />
+        <EffectiveFirewall listeners={listeners} securityGroupCount={selected.length} />
       </Section>
     </div>
   )

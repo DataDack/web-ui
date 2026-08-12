@@ -9,12 +9,32 @@ import { splitCIDRs, type FormValues } from "../schema"
  * internet and nothing said so, which made "who can reach my load balancer" a
  * question with no answer in the console. Rendering it from the same form state
  * the request is built from keeps it honest.
+ *
+ * Selected security groups are summarized rather than expanded: their rules are
+ * enforced ahead of the listener rules, but this component only has the group
+ * ids, not their rules. A count is the most it can claim truthfully — leaving
+ * them out entirely would understate what reaches the container.
  */
-export function EffectiveFirewall({ listeners }: Readonly<{ listeners: FormValues["listeners"] }>) {
+export function EffectiveFirewall({
+  listeners,
+  securityGroupCount,
+}: Readonly<{
+  listeners: FormValues["listeners"]
+  securityGroupCount: number
+}>) {
   const { t } = useTranslation()
 
   return (
     <div className="overflow-hidden rounded-lg border border-border/60">
+      {securityGroupCount > 0 && (
+        <Row
+          verdict="allow"
+          port={t("loadBalancers.wizard.inbound")}
+          detail={t("loadBalancers.wizard.fromSecurityGroups", { count: securityGroupCount })}
+          origin={t("loadBalancers.wizard.originSecurityGroup")}
+        />
+      )}
+
       {listeners.map((l, i) => {
         const sources = splitCIDRs(l.allowed_cidrs)
         return (
