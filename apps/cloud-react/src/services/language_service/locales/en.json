@@ -652,7 +652,8 @@
       "createDefaultSg": "Create default security group",
       "reloadVpcs": "Reload VPCs",
       "reloadSubnets": "Reload subnets",
-      "reloadSecurityGroups": "Reload security groups"
+      "reloadSecurityGroups": "Reload security groups",
+      "createVpc": "Create VPC"
     },
     "toasts": {
       "created": "Instance \"{{name}}\" is being provisioned",
@@ -1632,6 +1633,22 @@
     "vpcDetailPage": {
       "regionZone": "Region & Zone",
       "defaultNetwork": "Default Network"
+    },
+    "quickCreate": {
+      "title": "Create VPC",
+      "subtitle": "Provision a network and its first subnet without leaving this page.",
+      "regionHint": "Created in {{region}}, the region this instance launches in.",
+      "subnetSection": "First subnet",
+      "subnetHint": "The instance launches into this subnet. Add more later from the VPC page.",
+      "noZones": "No availability zones in this region",
+      "zoneRequired": "Select an availability zone",
+      "create": "Create VPC",
+      "creating": "Creating…",
+      "cidrIssue": {
+        "format": "Enter a valid CIDR block, e.g. 10.0.0.0/16",
+        "private": "Must be a private RFC1918 range (10.x, 172.16–31.x, 192.168.x)",
+        "prefix": "Prefix must be between /16 and /24"
+      }
     }
   },
   "common": {

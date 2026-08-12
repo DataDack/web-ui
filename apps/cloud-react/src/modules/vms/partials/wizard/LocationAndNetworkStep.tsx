@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
 
 import {
   Anchor,
@@ -7,6 +7,7 @@ import {
   Layers,
   MapPin,
   Network,
+  Plus,
   RefreshCw,
   ShieldCheck,
   Wifi,
@@ -17,7 +18,7 @@ import type { UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 
 import type { RegionCatalog, StaticIPPriceOption } from "@/modules/catalog/catalog.types"
-import { VPC_ROUTES } from "@/modules/vpc/vpc.constants"
+import { CreateVpcSheet } from "@/modules/vpc/components/CreateVpcSheet"
 import {
   useAllSecurityGroups,
   useCreateDefaultSecurityGroup,
@@ -85,6 +86,14 @@ export function LocationAndNetworkStep({
   }
   const networksFetching = vpcsFetching || subnetsFetching
 
+  // Inline VPC creation. A picker with nothing to pick used to push the user
+  // into the VPC console in a second tab, abandoning a half-filled wizard; the
+  // create form now opens as a sheet over the step instead.
+  const [createVpcOpen, setCreateVpcOpen] = useState(false)
+  // The sheet creates a VPC with exactly one subnet, so adopt that subnet as
+  // soon as the query returns rather than making the user re-pick it.
+  const [adoptNewSubnet, setAdoptNewSubnet] = useState(false)
+
   // A subnet is availability-zone-scoped, so a VM launched into a given AZ can
   // only use a subnet in that same AZ (the backend rejects a mismatch). Resolve
   // the selected AZ code → its uuid and offer only matching subnets; AZ-less
@@ -112,6 +121,24 @@ export function LocationAndNetworkStep({
       form.setValue("_subnet_cidr", "")
     }
   }, [azSubnets, subnetId, form])
+
+  // Pick up the subnet that came with a just-created VPC. Gated on the query
+  // settling so the previous VPC's cached subnets aren't adopted by mistake.
+  useEffect(() => {
+    if (!adoptNewSubnet || subnetsFetching) return
+    const fresh = azSubnets.at(0)
+    if (!fresh) return
+    form.setValue("subnet_id", fresh.id, { shouldValidate: true })
+    form.setValue("_subnet_cidr", fresh.cidr)
+    setAdoptNewSubnet(false)
+  }, [adoptNewSubnet, azSubnets, subnetsFetching, form])
+
+  const handleVpcCreated = (network: VPCNetwork) => {
+    form.setValue("vpc_id", network.id, { shouldValidate: true })
+    form.setValue("subnet_id", "")
+    form.setValue("_subnet_cidr", "")
+    setAdoptNewSubnet(true)
+  }
 
   let publicIpSummary = "Disabled"
   if (publicIpType === "static") publicIpSummary = "Static IP"
@@ -285,12 +312,16 @@ export function LocationAndNetworkStep({
                     type="button"
                     variant="outline"
                     size="sm"
-                    onClick={() => window.open(VPC_ROUTES.CREATE, "_blank")}
+                    className="gap-1.5"
+                    onClick={() => {
+                      setCreateVpcOpen(true)
+                    }}
                   >
-                    {t("vms.locationAndNetworkStep.createAVpcFirst")}
+                    <Plus className="size-3.5" aria-hidden />
+                    {t("vms.wizard.createVpc")}
                   </Button>
-                  {/* The create link opens a new tab, so the wizard needs a way
-                      to pick the new VPC up without losing the form. */}
+                  {/* A VPC made elsewhere in the console (another tab) only
+                      shows up here after a refetch. */}
                   <Button
                     type="button"
                     variant="ghost"
@@ -313,11 +344,25 @@ export function LocationAndNetworkStep({
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between gap-2">
                       <FieldLabel>{t("vms.detail.vpc")} *</FieldLabel>
-                      <ReloadButton
-                        onClick={reloadNetworks}
-                        loading={networksFetching}
-                        label={t("vms.wizard.reloadVpcs")}
-                      />
+                      <div className="flex items-center gap-1">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="h-6 gap-1 px-1.5 text-[11px] text-primary hover:text-primary"
+                          onClick={() => {
+                            setCreateVpcOpen(true)
+                          }}
+                        >
+                          <Plus className="size-3.5" aria-hidden />
+                          {t("vms.wizard.createVpc")}
+                        </Button>
+                        <ReloadButton
+                          onClick={reloadNetworks}
+                          loading={networksFetching}
+                          label={t("vms.wizard.reloadVpcs")}
+                        />
+                      </div>
                     </div>
                     <Select
                       value={vpcId}
@@ -412,6 +457,16 @@ export function LocationAndNetworkStep({
                 </div>
               </>
             )}
+
+            {/* Mounted alongside the picker (not inside a branch) so it stays
+                open across the empty → populated flip its own success causes. */}
+            <CreateVpcSheet
+              open={createVpcOpen}
+              onOpenChange={setCreateVpcOpen}
+              region={region}
+              defaultZone={selectedAzId}
+              onCreated={handleVpcCreated}
+            />
           </div>
         )}
 

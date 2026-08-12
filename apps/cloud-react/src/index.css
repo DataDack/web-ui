@@ -117,6 +117,7 @@
   --color-brand-gold-hover: var(--brand-gold-hover);
   --color-brand-gold-foreground: var(--brand-gold-foreground);
   --color-brand-gold-soft: var(--brand-gold-soft);
+  --color-brand-gold-ink: var(--brand-gold-ink);
 
   /* Status tones — consumed via StatusBadge/status-config only */
   --color-status-success: var(--status-success);
@@ -268,6 +269,12 @@
   --brand-gold-foreground: #221a03;
   --brand-gold-soft: rgba(201, 151, 27, 0.12);
   --brand-gold-glow: rgba(201, 151, 27, 0.2);
+  /* Gold as *text on a light surface*. --brand-gold is a fill colour: on white
+     it is 2.4:1, and on a gold-tinted chip 2.2:1. This is the same hue taken
+     down to 4.9:1 on those chips, for the places gold has to be read rather
+     than seen. In dark mode --brand-gold already clears 7:1, so the two are
+     the same value there. */
+  --brand-gold-ink: #8a6510;
 
   /* Console chrome — light */
   --topbar: rgba(255, 255, 255, 0.6);
@@ -386,6 +393,8 @@
   --brand-gold-foreground: #1f1604;
   --brand-gold-soft: rgba(233, 185, 79, 0.12);
   --brand-gold-glow: rgba(233, 185, 79, 0.3);
+  /* On #0a0a0d the fill gold is already 7.8:1 as text — no separate ink. */
+  --brand-gold-ink: #e9b94f;
 
   /* Console chrome — dark */
   --topbar: rgba(13, 13, 17, 0.55);
@@ -615,6 +624,11 @@
   /* Chakra + accent ink */
   --freedom-navy: #000080;
   --freedom-green-ink: #0f6b06;
+  /* Secondary ink for the strip. `--muted-foreground` is tuned for a flat
+     #f5f5f6 surface; over the tinted ends of the wash it drops to 3.5:1 and
+     fails AA on the offer line. Same neutral, two steps darker — 5.4:1 at the
+     green end, 5.9:1 at the saffron end. */
+  --freedom-ink-muted: #55555b;
   --freedom-wash: linear-gradient(
     90deg,
     rgba(255, 153, 51, 0.2) 0%,
@@ -634,6 +648,10 @@
      read as the flag rather than as two dark smudges. */
   --freedom-navy: #a9bcff;
   --freedom-green-ink: #62d16d;
+  /* The dark wash is far too thin to move the ink; this matches dark
+     `--muted-foreground`, spelled out so the banner can't drift if that token
+     is ever retuned. */
+  --freedom-ink-muted: #c6c6cc;
   --freedom-wash: linear-gradient(
     90deg,
     rgba(255, 153, 51, 0.16) 0%,

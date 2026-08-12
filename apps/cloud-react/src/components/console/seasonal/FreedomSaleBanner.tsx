@@ -38,11 +38,11 @@ export function FreedomSaleBanner({ onDismiss }: Readonly<FreedomSaleBannerProps
             <span className="font-semibold text-foreground">
               {t("seasonal.freedomSale.greeting")}
             </span>
-            <span className="text-muted-foreground"> · </span>
+            <span className="text-[color:var(--freedom-ink-muted)]"> · </span>
             <span className="font-medium text-[color:var(--freedom-green-ink)]">
               {t("seasonal.freedomSale.headline")}
             </span>
-            <span className="hidden text-muted-foreground sm:inline">
+            <span className="hidden text-[color:var(--freedom-ink-muted)] sm:inline">
               {" · "}
               {t("seasonal.freedomSale.offer")}
             </span>
@@ -65,7 +65,7 @@ export function FreedomSaleBanner({ onDismiss }: Readonly<FreedomSaleBannerProps
           <Button
             variant="ghost"
             size="icon"
-            className="size-6 text-muted-foreground hover:text-foreground"
+            className="size-6 text-[color:var(--freedom-ink-muted)] hover:text-foreground"
             aria-label={t("seasonal.freedomSale.dismiss")}
             onClick={onDismiss}
           >

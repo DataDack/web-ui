@@ -74,7 +74,7 @@ function NavItemLink({
         <span className="relative truncate whitespace-nowrap">{t(item.labelKey)}</span>
       )}
       {!collapsed && item.comingSoon && (
-        <span className="relative ml-auto rounded-full border border-brand-gold/30 bg-brand-gold/10 px-1.5 py-0.5 font-mono text-[9px] font-medium tracking-wide text-brand-gold/90 uppercase">
+        <span className="relative ml-auto rounded-full border border-brand-gold/30 bg-brand-gold/10 px-1.5 py-0.5 font-mono text-[9px] font-semibold tracking-wide text-brand-gold-ink uppercase">
           {t("console.nav.soon")}
         </span>
       )}
