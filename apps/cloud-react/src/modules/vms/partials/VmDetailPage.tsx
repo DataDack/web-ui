@@ -68,7 +68,7 @@ import {
   useInstanceMetrics,
   useUpdateInstance,
 } from "../vms.hooks"
-import type { Instance } from "../vms.types"
+import type { Instance, InstanceDomain } from "../vms.types"
 
 export function VmDetailPage() {
   useScreen("vms.vm-detail")
@@ -442,6 +442,36 @@ function OverviewTab({ instance }: Readonly<{ instance: Instance }>) {
   )
 }
 
+/**
+ * The VM's platform hostname, shown beside the public address it points at.
+ *
+ * A claimed name is not necessarily a working one: the A record behind it is
+ * written by a reconciler on a later pass, so `resolves` — not the registry's
+ * own status — decides whether the name is shown bare and offered for copying.
+ * Showing it bare reads as "this works", and the first thing anyone does with a
+ * hostname is try it.
+ */
+function domainItem(domain: InstanceDomain, label: string): KeyValueItem {
+  if (domain.resolves) {
+    return { label, value: domain.hostname, copyable: true, mono: true }
+  }
+  return { label, value: <UnresolvedDomain domain={domain} />, mono: true }
+}
+
+function UnresolvedDomain({ domain }: Readonly<{ domain: InstanceDomain }>) {
+  const { t } = useTranslation()
+  return (
+    <span>
+      {domain.hostname}{" "}
+      <span className="text-[11px] text-muted-foreground">
+        {domain.status === "suspended"
+          ? t("vms.detail.domainSuspended")
+          : t("vms.detail.domainPending")}
+      </span>
+    </span>
+  )
+}
+
 function NetworkingTab({ instance }: Readonly<{ instance: Instance }>) {
   const { t } = useTranslation()
   const inVpc = !!instance.vpc_id
@@ -478,6 +508,15 @@ function NetworkingTab({ instance }: Readonly<{ instance: Instance }>) {
             : t("vms.detail.publicIpDynamic"),
       },
     )
+  }
+
+  // The registry hostname belongs with the public address: a VM only holds a
+  // name while it holds one, and the name resolves straight to it. Absent until
+  // the registry has a row for this instance, so nothing is shown rather than an
+  // empty row promising a name that was never claimed.
+  //
+  if (instance.domain) {
+    items.push(domainItem(instance.domain, t("vms.detail.domain")))
   }
 
   items.push({

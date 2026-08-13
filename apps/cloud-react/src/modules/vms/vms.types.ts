@@ -16,6 +16,25 @@ export type InstanceStatus =
   | "failed"
   | "error"
 
+/**
+ * Platform hostname held for a VM by the domain registry (`platform_domains`),
+ * under the `vm.` zone. Distinct from `hostname`, which is the guest's own
+ * internal name and resolves nowhere.
+ *
+ * A VM only holds one while it holds a public address, so this is absent for an
+ * instance with none.
+ *
+ * `status` is the registry's own lifecycle. `resolves` is the one to render on:
+ * a VM name is an A record rather than something the edge serves, so a row can
+ * be `active` — claimed, with an address — while the record behind it has not
+ * been written and the name still answers nothing.
+ */
+export interface InstanceDomain {
+  hostname: string
+  status: "pending" | "active" | "suspended"
+  resolves: boolean
+}
+
 /** Raw instance as returned by the backend (machine type & image are UUIDs). */
 export interface RawInstance {
   id: string
@@ -45,6 +64,7 @@ export interface RawInstance {
   disk_size_gb: number
   termination_protection: boolean
   iam_profile_id?: string
+  domain?: InstanceDomain
 }
 
 /** Instance enriched with catalog-resolved display fields for the UI. */
