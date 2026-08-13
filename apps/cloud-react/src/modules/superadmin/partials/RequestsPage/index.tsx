@@ -10,13 +10,26 @@ import { useAllSupportTickets } from "@/modules/support-tickets/support-tickets.
 import { useScreen } from "@/services/api/screen"
 
 import { SupportTicketsTab } from "./SupportTicketsTab"
+import { ContactSubmissionsTab } from "../ContactSubmissionsPage"
+import { OptOutRequestsTab } from "../OptOutRequestsPage"
 import { QuotaRequestsTab } from "../QuotaRequestsPage"
-import { useAdminQuotaRequestCount } from "../../superadmin.hooks"
+import {
+  useAdminContactSubmissionCount,
+  useAdminOptOutRequestCount,
+  useAdminQuotaRequestCount,
+} from "../../superadmin.hooks"
 
-// Two queues, one page. Both are "somebody is waiting on an operator to decide",
-// and splitting them across sidebar entries meant an operator had to remember to
-// check two places to know whether anything was outstanding.
-const TABS = ["support", "quota"] as const
+// Four queues, one page. All of them are "somebody is waiting on an operator to
+// decide", and splitting them across sidebar entries meant an operator had to
+// remember to check four places to know whether anything was outstanding.
+//
+// The two website forms are here rather than under a marketing heading of their
+// own for the same reason: an unanswered lead is outstanding work, and both were
+// invisible entirely while they lived in the website's Supabase project.
+//
+// Privacy is LAST in the list but is the one with a statutory clock, which is
+// why its count is the one that keeps showing even when the tab is not open.
+const TABS = ["support", "quota", "contact", "privacy"] as const
 type TabValue = (typeof TABS)[number]
 const DEFAULT_TAB: TabValue = "support"
 
@@ -25,12 +38,13 @@ function parseTab(value: string | null): TabValue {
 }
 
 /**
- * The operator's inbox: support tickets and quota-increase requests.
+ * The operator's inbox: support tickets, quota-increase requests, website
+ * contact enquiries and privacy-rights requests.
  *
  * The active tab lives in ?tab= so a view is shareable and survives a reload,
- * and the counts on the labels are the outstanding ones — open tickets and
- * pending requests — not the totals. A queue's label is only useful if it says
- * how much work is in it.
+ * and the counts on the labels are the outstanding ones — open tickets, pending
+ * requests, unanswered enquiries, unworked rights requests — not the totals. A
+ * queue's label is only useful if it says how much work is in it.
  */
 export function RequestsPage() {
   useScreen("superadmin.requests")
@@ -40,6 +54,8 @@ export function RequestsPage() {
 
   const tickets = useAllSupportTickets()
   const pendingQuota = useAdminQuotaRequestCount("pending")
+  const newContacts = useAdminContactSubmissionCount("new")
+  const newPrivacy = useAdminOptOutRequestCount("new")
 
   const openTickets = useMemo(
     () => (tickets.data ?? []).filter((ticket) => ticket.status === "open").length,
@@ -62,9 +78,16 @@ export function RequestsPage() {
 
   // The count is omitted until a response lands, so a label never flashes "(0)"
   // and reads as an empty queue before anything has been fetched.
+  const outstanding: Record<TabValue, number | undefined> = {
+    support: tickets.data ? openTickets : undefined,
+    quota: pendingQuota.data,
+    contact: newContacts.data,
+    privacy: newPrivacy.data,
+  }
+
   const label = (value: TabValue) => {
     const name = t(`superAdmin.requests.tabs.${value}`)
-    const count = value === "support" ? (tickets.data ? openTickets : undefined) : pendingQuota.data
+    const count = outstanding[value]
     return count === undefined ? name : `${name} (${String(count)})`
   }
 
@@ -99,6 +122,14 @@ export function RequestsPage() {
 
         <TabsContent value="quota">
           <QuotaRequestsTab />
+        </TabsContent>
+
+        <TabsContent value="contact">
+          <ContactSubmissionsTab />
+        </TabsContent>
+
+        <TabsContent value="privacy">
+          <OptOutRequestsTab />
         </TabsContent>
       </Tabs>
     </div>

@@ -3760,10 +3760,12 @@
     },
     "requests": {
       "title": "Requests",
-      "subtitle": "Support tickets and quota increases waiting on a decision.",
+      "subtitle": "Support tickets, quota increases, website enquiries and privacy requests waiting on a reply.",
       "tabs": {
         "support": "Support tickets",
-        "quota": "Quota requests"
+        "quota": "Quota requests",
+        "contact": "Contact form",
+        "privacy": "Privacy requests"
       }
     },
     "accountResourcesPage": {
@@ -3873,6 +3875,113 @@
     },
     "vMPricesPage": {
       "monthlyReserved": "Monthly / reserved"
+    },
+    "contactSubmissions": {
+      "title": "Contact form",
+      "subtitle": "Enquiries sent from the website contact form.",
+      "stats": {
+        "new": "New",
+        "contacted": "Contacted",
+        "closed": "Closed"
+      },
+      "status": {
+        "new": "New",
+        "contacted": "Contacted",
+        "closed": "Closed",
+        "spam": "Spam"
+      },
+      "filters": {
+        "status": "Status",
+        "all": "All statuses"
+      },
+      "columns": {
+        "from": "From",
+        "email": "Email",
+        "company": "Company",
+        "teamSize": "Team size",
+        "useCase": "Interested in",
+        "message": "Message",
+        "received": "Received",
+        "status": "Status"
+      },
+      "noCompany": "No company given",
+      "notes": "Internal notes",
+      "notesPlaceholder": "What was said, and what happens next.",
+      "firstHandled": "First handled",
+      "markContacted": "Mark contacted",
+      "markSpam": "Mark as spam",
+      "deleteTitle": "Delete this enquiry?",
+      "deleteDescription": "The enquiry from {{name}} is deleted for good — the website keeps no copy. To file junk without losing it, mark it as spam instead.",
+      "toasts": {
+        "updated": "Enquiry updated",
+        "deleted": "Enquiry deleted",
+        "actionFailed": "Couldn't update the enquiry"
+      },
+      "empty": "No enquiries",
+      "emptySubtitle": "Submissions from the website contact form will appear here."
+    },
+    "optOutRequests": {
+      "title": "Privacy requests",
+      "subtitle": "Data-rights requests sent from the website privacy form.",
+      "stats": {
+        "new": "New",
+        "inProgress": "In progress",
+        "completed": "Completed"
+      },
+      "status": {
+        "new": "New",
+        "in_progress": "In progress",
+        "completed": "Completed",
+        "rejected": "Rejected"
+      },
+      "rights": {
+        "access_info": "Access information",
+        "opt_out_comms": "Opt out of comms",
+        "delete_info": "Delete information"
+      },
+      "filters": {
+        "status": "Status",
+        "all": "All statuses"
+      },
+      "columns": {
+        "requester": "Requester",
+        "email": "Email",
+        "requested": "Requested",
+        "additionalInfo": "Additional information",
+        "received": "Received",
+        "status": "Status"
+      },
+      "unverifiedNotice": "The name and email below are as typed on the form and are NOT verified. Confirm the address belongs to the requester before acting.",
+      "noneGiven": "None given.",
+      "timing": "Timing",
+      "firstHandled": "First handled",
+      "completed": "Completed",
+      "openForDays_one": "Open for {{count}} day",
+      "openForDays_other": "Open for {{count}} days",
+      "notes": "Internal notes",
+      "notesPlaceholder": "What was done, and on what basis. Required to reject.",
+      "reasonRequired": "A note is required to reject a request — it is the only record of why.",
+      "markInProgress": "Start working",
+      "toasts": {
+        "updated": "Privacy request updated",
+        "actionFailed": "Couldn't update the request"
+      },
+      "empty": "No privacy requests",
+      "emptySubtitle": "Access, opt-out and erasure requests from the website will appear here.",
+      "submittedForm": "Submitted form",
+      "form": {
+        "firstName": "First name",
+        "lastName": "Last name",
+        "email": "Email address",
+        "requestType": "Request type",
+        "additionalInfo": "Additional information"
+      },
+      "rightsDescriptions": {
+        "access_info": "Request a copy of your personal data",
+        "opt_out_comms": "Unsubscribe from marketing communications",
+        "delete_info": "Permanently remove your data from our systems"
+      },
+      "notSelected": "Not selected"
     }
   },
   "region": {

@@ -13,6 +13,10 @@ import type {
   AdjustBalanceRequest,
   ApproveQuotaRequestInput,
   ClearCacheRequest,
+  ContactSubmissionStatus,
+  UpdateContactSubmissionRequest,
+  OptOutStatus,
+  UpdateOptOutRequestInput,
   CreateAvailabilityZoneRequest,
   CreateBandwidthPriceRequest,
   CreateImageRequest,
@@ -1065,5 +1069,102 @@ export function useClearCache() {
       // UI displaying data the server no longer has cached.
       void queryClient.invalidateQueries({ queryKey: ["superadmin"] })
     },
+  })
+}
+
+/* ── Website contact form queue ────────────────────────────────────────── */
+
+// The inbound queue from the marketing site's /contact form. Paged server-side;
+// placeholderData keeps the previous page on screen while the next one loads so
+// the table does not collapse to an empty state between pages.
+export function useAdminContactSubmissions(status = "", page = 1) {
+  return useQuery({
+    queryKey: [...SUPERADMIN_QUERY_KEYS.contactSubmissions, status, page] as const,
+    queryFn: () => superAdminApi.listContactSubmissions(status, page),
+    placeholderData: keepPreviousData,
+  })
+}
+
+// Platform-wide count in one status (meta.total off a limit=1 page) — feeds the
+// tab label and the stat tiles without shipping any rows. Under the same key
+// prefix as the list, so a triage write refreshes both.
+export function useAdminContactSubmissionCount(status: ContactSubmissionStatus) {
+  return useQuery({
+    queryKey: [...SUPERADMIN_QUERY_KEYS.contactSubmissions, "count", status] as const,
+    queryFn: () => superAdminApi.countContactSubmissions(status),
+  })
+}
+
+export function useUpdateContactSubmission() {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (vars: { id: string; payload: UpdateContactSubmissionRequest }) =>
+      superAdminApi.updateContactSubmission(vars.id, vars.payload),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.contactSubmissions })
+      toast.success(t("superAdmin.contactSubmissions.toasts.updated"))
+    },
+    onError: (e) =>
+      toast.error(extractError(e, t("superAdmin.contactSubmissions.toasts.actionFailed"))),
+  })
+}
+
+// Deletion is for genuine mistakes only — junk should be marked spam instead, so
+// the pattern stays visible in the queue.
+export function useDeleteContactSubmission() {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (id: string) => superAdminApi.deleteContactSubmission(id),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.contactSubmissions })
+      toast.success(t("superAdmin.contactSubmissions.toasts.deleted"))
+    },
+    onError: (e) =>
+      toast.error(extractError(e, t("superAdmin.contactSubmissions.toasts.actionFailed"))),
+  })
+}
+
+/* ── Website privacy-rights queue ──────────────────────────────────────── */
+
+// The privacy-rights queue from the marketing site's /opt-out form. Paged
+// server-side; placeholderData keeps the previous page on screen while the next
+// one loads so the table does not collapse to an empty state between pages.
+export function useAdminOptOutRequests(status = "", page = 1) {
+  return useQuery({
+    queryKey: [...SUPERADMIN_QUERY_KEYS.optOutRequests, status, page] as const,
+    queryFn: () => superAdminApi.listOptOutRequests(status, page),
+    placeholderData: keepPreviousData,
+  })
+}
+
+// Platform-wide count in one status (meta.total off a limit=1 page) — feeds the
+// tab label and the stat tiles without shipping any rows. Under the same key
+// prefix as the list, so working a request refreshes both.
+export function useAdminOptOutRequestCount(status: OptOutStatus) {
+  return useQuery({
+    queryKey: [...SUPERADMIN_QUERY_KEYS.optOutRequests, "count", status] as const,
+    queryFn: () => superAdminApi.countOptOutRequests(status),
+  })
+}
+
+// There is deliberately no delete hook. The backend exposes one for genuine
+// mistakes, but these rows are the evidence that somebody exercised a right and
+// that we answered — putting a delete button in the queue would make tidying it
+// the path of least resistance. Rejecting with a recorded reason is what "not
+// actionable" looks like.
+export function useUpdateOptOutRequest() {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (vars: { id: string; payload: UpdateOptOutRequestInput }) =>
+      superAdminApi.updateOptOutRequest(vars.id, vars.payload),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.optOutRequests })
+      toast.success(t("superAdmin.optOutRequests.toasts.updated"))
+    },
+    onError: (e) =>
+      toast.error(extractError(e, t("superAdmin.optOutRequests.toasts.actionFailed"))),
   })
 }

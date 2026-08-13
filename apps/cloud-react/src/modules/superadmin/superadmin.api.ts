@@ -16,6 +16,10 @@ import type {
   CacheStats,
   ClearCacheRequest,
   ClearCacheResponse,
+  ContactSubmission,
+  UpdateContactSubmissionRequest,
+  OptOutRequest,
+  UpdateOptOutRequestInput,
   AdminQuotaRequest,
   AdminUser,
   AdjustBalanceRequest,
@@ -110,6 +114,38 @@ function quotaRequestsQuery(status: string, page: number, limit: number): string
   const params = new URLSearchParams({ page: String(page), limit: String(limit) })
   if (status) params.set("status", status)
   return `${QUOTA_REQUESTS_URL}?${params.toString()}`
+}
+
+export interface ContactSubmissionList {
+  rows: ContactSubmission[]
+  total: number
+}
+
+/** Server page size for the website contact queue. */
+export const CONTACT_SUBMISSIONS_PAGE_SIZE = 50
+
+const CONTACT_BASE = "/platform/contact"
+
+function contactQuery(status: string, page: number, limit: number): string {
+  const params = new URLSearchParams({ page: String(page), limit: String(limit) })
+  if (status) params.set("status", status)
+  return `${CONTACT_BASE}?${params.toString()}`
+}
+
+export interface OptOutRequestList {
+  rows: OptOutRequest[]
+  total: number
+}
+
+/** Server page size for the privacy-rights queue. */
+export const OPTOUT_REQUESTS_PAGE_SIZE = 50
+
+const OPTOUT_BASE = "/platform/optout"
+
+function optOutQuery(status: string, page: number, limit: number): string {
+  const params = new URLSearchParams({ page: String(page), limit: String(limit) })
+  if (status) params.set("status", status)
+  return `${OPTOUT_BASE}?${params.toString()}`
 }
 
 export const superAdminApi = {
@@ -328,6 +364,50 @@ export const superAdminApi = {
     apiPost<null>(`/quotas/quotas/admin/requests/${id}/approve`, payload),
   rejectQuotaRequest: (id: string, payload: RejectQuotaRequestInput) =>
     apiPost<null>(`/quotas/quotas/admin/requests/${id}/reject`, payload),
+
+  /* website contact form — the marketing site's inbound queue
+	   (apps/platform/contact). Paginated server-side like the quota queue, so
+	   the list goes through the raw axios instance to keep meta.total. The
+	   submit endpoint on the same base is public; every read here is super-admin
+	   only. */
+  listContactSubmissions: async (status = "", page = 1): Promise<ContactSubmissionList> => {
+    const res = await api.get<{ data: ContactSubmission[] | null; meta: ListMeta }>(
+      contactQuery(status, page, CONTACT_SUBMISSIONS_PAGE_SIZE),
+    )
+    const rows = res.data.data ?? []
+    return { rows, total: res.data.meta.total ?? rows.length }
+  },
+  // Platform-wide count in one status, read off meta.total with a minimal page.
+  countContactSubmissions: async (status: string): Promise<number> => {
+    const res = await api.get<{ data: ContactSubmission[] | null; meta: ListMeta }>(
+      contactQuery(status, 1, 1),
+    )
+    return res.data.meta.total ?? 0
+  },
+  updateContactSubmission: (id: string, payload: UpdateContactSubmissionRequest) =>
+    apiPatch<ContactSubmission>(`${CONTACT_BASE}/${id}`, payload),
+  deleteContactSubmission: (id: string) => apiDelete(`${CONTACT_BASE}/${id}`),
+
+  /* website privacy-rights form — access / opt-out / erasure requests
+	   (apps/platform/optout). Same shape as the contact queue; the submit
+	   endpoint on this base is public, every read here is super-admin only.
+	   There is no delete in normal use: these rows are the record that somebody
+	   asked and that we answered. */
+  listOptOutRequests: async (status = "", page = 1): Promise<OptOutRequestList> => {
+    const res = await api.get<{ data: OptOutRequest[] | null; meta: ListMeta }>(
+      optOutQuery(status, page, OPTOUT_REQUESTS_PAGE_SIZE),
+    )
+    const rows = res.data.data ?? []
+    return { rows, total: res.data.meta.total ?? rows.length }
+  },
+  countOptOutRequests: async (status: string): Promise<number> => {
+    const res = await api.get<{ data: OptOutRequest[] | null; meta: ListMeta }>(
+      optOutQuery(status, 1, 1),
+    )
+    return res.data.meta.total ?? 0
+  },
+  updateOptOutRequest: (id: string, payload: UpdateOptOutRequestInput) =>
+    apiPatch<OptOutRequest>(`${OPTOUT_BASE}/${id}`, payload),
 
   /* redis cache — the module-wise registry of clearable key families, with
 	   live key counts, and the clear itself. Both are super-admin only. */

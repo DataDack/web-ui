@@ -23,6 +23,8 @@ export const SUPERADMIN_QUERY_KEYS = {
   serviceMetricSources: ["superadmin", "service-metric-sources"] as const,
   users: ["superadmin", "users"] as const,
   quotaRequests: ["superadmin", "quota-requests"] as const,
+  contactSubmissions: ["superadmin", "contact-submissions"] as const,
+  optOutRequests: ["superadmin", "optout-requests"] as const,
   platformOverview: ["superadmin", "platform-overview"] as const,
   accountResources: ["superadmin", "account-resources"] as const,
   accountSpend: ["superadmin", "account-spend"] as const,

@@ -1190,3 +1190,110 @@ export interface KycStatusPatch {
   /** Recorded in the server log so an override is traceable to a justification. */
   reason?: string
 }
+
+/* ── Website contact form ──────────────────────────────────────────────── */
+
+/**
+ * What the operator has done about a submission (cloud-be-go
+ * apps/platform/contact). A row starts at "new" and only ever moves by hand —
+ * nothing expires it, because a lead nobody answered is exactly what this queue
+ * has to keep showing.
+ *
+ * "spam" rather than delete: junk is kept so a pattern stays visible.
+ */
+export type ContactSubmissionStatus = "new" | "contacted" | "closed" | "spam"
+
+/**
+ * One "talk to us" form from the marketing site.
+ *
+ * Deliberately has no account_id. Whoever sent it has no account yet — that is
+ * the point of the form — so this is pre-tenancy platform data, readable only by
+ * the super admin.
+ */
+export interface ContactSubmission {
+  id: string
+  name: string
+  email: string
+  company: string
+  team_size: string
+  use_case: string
+  message: string
+  /** The surface that collected it: "website" today. */
+  source: string
+  /** Recorded for abuse triage, not analytics. */
+  ip_address: string
+  user_agent: string
+  status: ContactSubmissionStatus
+  notes: string
+  /** When the row first left "new"; absent while nobody has picked it up. */
+  handled_at?: string | null
+  created_at: string
+  updated_at: string
+}
+
+/**
+ * Body of PATCH /platform/contact/:id. Both fields are optional and independent
+ * — omitting one leaves it alone, so changing a status never clobbers notes
+ * somebody is halfway through typing in another tab.
+ */
+export interface UpdateContactSubmissionRequest {
+  status?: ContactSubmissionStatus
+  notes?: string
+}
+
+/* ── Website privacy-rights form ───────────────────────────────────────── */
+
+/**
+ * How far a rights request has got (cloud-be-go apps/platform/optout). A row
+ * starts at "new" and only ever moves by hand — nothing expires it, because an
+ * unanswered rights request is the single thing this queue exists to keep
+ * visible.
+ */
+export type OptOutStatus = "new" | "in_progress" | "completed" | "rejected"
+
+/** The three rights the website form offers, as checkboxes. */
+export type OptOutRight = "access_info" | "opt_out_comms" | "delete_info"
+
+/**
+ * One privacy-rights request from the marketing site's /opt-out form.
+ *
+ * No account_id, and that is deliberate: the requester may well have an account,
+ * but nobody has verified that at the point the form is submitted. The name and
+ * email are ASSERTED, not confirmed — treat them as a claim to check, not an
+ * identity to act on.
+ */
+export interface OptOutRequest {
+  id: string
+  first_name: string
+  last_name: string
+  email: string
+  /** One or more; a person may ask to see their data and then have it erased. */
+  request_types: OptOutRight[]
+  additional_info: string
+  source: string
+  /** The submitter's actual address, forwarded by the website. */
+  ip_address: string
+  user_agent: string
+  status: OptOutStatus
+  notes: string
+  /** The operator who acted; null until somebody does. */
+  handled_by?: string | null
+  /**
+   * The three moments that make up the compliance record: created_at is when it
+   * arrived, handled_at when somebody first picked it up (stamped once, never
+   * rewritten), completed_at when it reached a terminal status.
+   */
+  handled_at?: string | null
+  completed_at?: string | null
+  created_at: string
+  updated_at: string
+}
+
+/**
+ * Body of PATCH /platform/optout/:id. Both fields are optional and independent —
+ * omitting one leaves it alone, so advancing a status never clobbers notes.
+ */
+export interface UpdateOptOutRequestInput {
+  status?: OptOutStatus
+  notes?: string
+}
