@@ -60,6 +60,9 @@ import type {
   PoolAddress,
   PoolExpansion,
   PVENode,
+  PVENodeMetricCF,
+  PVENodeMetricRange,
+  PVENodeMetrics,
   RejectQuotaRequestInput,
   ReserveAddressesRequest,
   StaticIPAllocation,
@@ -177,6 +180,10 @@ export const superAdminApi = {
     apiPost<NodeWebhookRegistration>(`${BASE}/pve-nodes/${id}/webhook`, payload),
   // Live reachability of a node's LB manager (healthy / unreachable / no_manager).
   getManagerStatus: (id: string) => apiGet<ManagerStatus>(`${BASE}/pve-nodes/${id}/manager-status`),
+  // The node's own Proxmox rrd series for one window. Errors (rather than
+  // synthesizing) when the cluster is unreachable or the node has no API token.
+  getPVENodeMetrics: (id: string, range: PVENodeMetricRange, cf: PVENodeMetricCF) =>
+    apiGet<PVENodeMetrics>(`${BASE}/pve-nodes/${id}/metrics?range=${range}&cf=${cf}`),
 
   /* load balancer fleet settings — one platform-wide row; PUT replaces it whole */
   getLBSettings: () => apiGet<LBSettings>(`${BASE}/lb-settings`),

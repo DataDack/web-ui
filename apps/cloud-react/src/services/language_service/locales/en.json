@@ -2869,6 +2869,35 @@
         "offline": "Offline",
         "maintenance": "Maintenance"
       },
+      "graphs": {
+        "view": "View graphs",
+        "subtitle": "Live resource graphs read straight from this hypervisor.",
+        "live": "Live",
+        "cores": "Cores",
+        "rootDisk": "Root disk",
+        "cpu": "CPU usage (%)",
+        "cpuUsage": "CPU usage",
+        "ioDelay": "IO delay",
+        "load": "Server load",
+        "loadAverage": "Load average",
+        "loadHint": "across {{cores}} cores",
+        "memory": "Memory usage (%)",
+        "memoryUsed": "RAM used",
+        "network": "Network traffic (MB/s)",
+        "netIn": "In",
+        "netOut": "Out",
+        "root": "Root filesystem (%)",
+        "rootUsed": "Root used",
+        "swap": "Swap usage (%)",
+        "swapUsed": "Swap used",
+        "psiSome": "Some",
+        "psiFull": "Full",
+        "cpuPressure": "CPU pressure stall (%)",
+        "ioPressure": "IO pressure stall (%)",
+        "memPressure": "Memory pressure stall (%)",
+        "error": "Could not read this node's graphs",
+        "empty": "This node has no samples in the selected window yet."
+      },
       "wizard": {
         "placement": "Placement",
         "placementDesc": "Pick the availability zone and name this hypervisor node.",
@@ -2920,7 +2949,7 @@
     },
     "loadBalancers": {
       "title": "Load balancers",
-      "subtitle": "Fleet-wide load-balancer settings and the per-node LB managers.",
+      "subtitle": "Fleet-wide load-balancer settings applied to every balancer container.",
       "fleet": {
         "title": "Fleet configuration",
         "subtitle": "Platform-wide defaults applied to every load-balancer container. Env-var names are shown under each field.",
@@ -2934,9 +2963,31 @@
         "sendNameHint": "When on, the balancer forwards the pool/backend name to upstreams in the header below.",
         "nameHeader": "Name header",
         "agentWebhookPort": "Agent webhook port",
-        "managerPort": "Manager port",
         "templateCtid": "Template CTID",
         "controlPlaneCidr": "Control-plane CIDR"
+      },
+      "actions": {
+        "save": "Save",
+        "reset": "Reset"
+      },
+      "managerMoved": {
+        "title": "Node managers moved",
+        "body": "The per-node manager is no longer the load balancer's — it manages every LXC workload the platform places on a node. Its port, health checks and node credentials now live on their own page."
+      }
+    },
+    "proxmoxManager": {
+      "title": "Proxmox Manager",
+      "subtitle": "The management plane running on each Proxmox node — its port, its health, and the credential each node authenticates with.",
+      "connection": {
+        "title": "Manager connection",
+        "subtitle": "How the console reaches the manager on every node. Saved on its own — the load-balancer settings are left untouched.",
+        "unsaved": "You have unsaved changes.",
+        "saved": "All changes saved.",
+        "loadError": "Couldn't load the manager settings."
+      },
+      "fields": {
+        "managerPort": "Manager port",
+        "managerPortHint": "LB_MANAGER_PORT. The manager binds :{{port}} by default (LB_MANAGER_LISTEN_ADDR) — a mismatch shows every node as Unreachable while the manager is healthy."
       },
       "auth": {
         "title": "Authentication",
@@ -2944,7 +2995,7 @@
       },
       "nodes": {
         "title": "Node managers",
-        "subtitle": "Each Proxmox node runs an LB manager. Check reachability and mint the agent credential each node uses.",
+        "subtitle": "Each Proxmox node runs a Proxmox Manager. Check reachability and mint the credential each node authenticates with.",
         "empty": "No PVE nodes registered yet."
       },
       "table": {
@@ -2964,6 +3015,12 @@
         "unreachable": "Unreachable",
         "no_manager": "No manager"
       },
+      "creds": {
+        "shownOnceTitle": "Copy the secret now — it won't be shown again",
+        "shownOnceBody": "The secret is only displayed here, once. Store it securely. If you lose it, regenerate to mint a new pair.",
+        "clientId": "Client ID",
+        "secret": "Secret"
+      },
       "actions": {
         "save": "Save",
         "reset": "Reset",
@@ -2971,12 +3028,6 @@
         "recheckAll": "Re-check all",
         "generate": "Generate creds",
         "regenerate": "Regenerate"
-      },
-      "creds": {
-        "shownOnceTitle": "Copy the secret now — it won't be shown again",
-        "shownOnceBody": "The secret is only displayed here, once. Store it securely. If you lose it, regenerate to mint a new pair.",
-        "clientId": "Client ID",
-        "secret": "Secret"
       }
     },
     "images": {

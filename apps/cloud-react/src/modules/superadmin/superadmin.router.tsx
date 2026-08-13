@@ -84,10 +84,25 @@ export const superadminRoutes: RouteObject[] = [
         },
       },
       {
+        // Clicking a node opens its live graphs; editing is a step in from here.
+        path: "pve-nodes/:id",
+        lazy: async () => {
+          const { PVENodeDetailPage } = await import("./partials/PVENodeDetailPage")
+          return { Component: PVENodeDetailPage }
+        },
+      },
+      {
         path: "pve-nodes/:id/edit",
         lazy: async () => {
           const { PVENodeFormPage } = await import("./partials/PVENodeFormPage")
           return { Component: PVENodeFormPage }
+        },
+      },
+      {
+        path: "proxmox-manager",
+        lazy: async () => {
+          const { ProxmoxManagerPage } = await import("./partials/ProxmoxManagerPage")
+          return { Component: ProxmoxManagerPage }
         },
       },
       {

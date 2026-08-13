@@ -17,6 +17,7 @@ import {
   Network,
   Scale,
   Server,
+  ServerCog,
   SlidersHorizontal,
 } from "lucide-react"
 
@@ -77,6 +78,14 @@ export const ADMIN_NAV: AdminNavGroup[] = [
         path: "/admin/availability-zones",
       },
       { labelKey: "superAdmin.pveNodes.title", icon: Server, path: "/admin/pve-nodes" },
+      // Directly under the nodes it runs on: the manager is per-node
+      // infrastructure, not a setting of the load-balancer product it started
+      // out serving.
+      {
+        labelKey: "superAdmin.proxmoxManager.title",
+        icon: ServerCog,
+        path: "/admin/proxmox-manager",
+      },
       { labelKey: "superAdmin.loadBalancers.title", icon: Scale, path: "/admin/load-balancers" },
       { labelKey: "superAdmin.staticIps.title", icon: Network, path: "/admin/static-ips" },
     ],

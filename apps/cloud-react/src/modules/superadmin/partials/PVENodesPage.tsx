@@ -3,6 +3,7 @@ import { useMemo, useState } from "react"
 import { actionsColumn, Button, DataTable, EmptyState, statusColumn } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import {
+  LineChart,
   Pencil,
   Plus,
   RefreshCw,
@@ -45,6 +46,9 @@ export function PVENodesPage() {
 
   const openCreate = () => void navigate("/admin/pve-nodes/new")
   const openEdit = (node: PVENode) => void navigate(`/admin/pve-nodes/${node.id}/edit`)
+  // A row is a hypervisor an operator wants to look at, not a form they want to
+  // fill in — so the row opens the graphs and editing stays an explicit action.
+  const openDetail = (node: PVENode) => void navigate(`/admin/pve-nodes/${node.id}`)
 
   const columns = useMemo<ColumnDef<PVENode>[]>(
     () => [
@@ -181,6 +185,11 @@ export function PVENodesPage() {
       actionsColumn<PVENode>({
         ariaLabel: t("console.table.actions"),
         actions: () => [
+          {
+            label: t("superAdmin.pveNodes.graphs.view", "View graphs"),
+            icon: LineChart,
+            onAction: openDetail,
+          },
           { label: t("superAdmin.actions.edit"), icon: Pencil, onAction: openEdit },
           {
             label: t("superAdmin.actions.delete"),
@@ -235,7 +244,7 @@ export function PVENodesPage() {
         onRetry={() => void refetch()}
         retryLabel={t("console.table.retry")}
         getRowId={(n) => n.id}
-        onRowClick={openEdit}
+        onRowClick={openDetail}
         empty={
           <EmptyState
             icon={Server}

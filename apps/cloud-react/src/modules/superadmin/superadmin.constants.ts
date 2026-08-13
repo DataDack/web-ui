@@ -7,6 +7,9 @@ export const SUPERADMIN_ROUTES = {
 export const SUPERADMIN_QUERY_KEYS = {
   availabilityZones: ["superadmin", "availability-zones"] as const,
   pveNodes: ["superadmin", "pve-nodes"] as const,
+  // Per-window graph series; each (node, range, cf) caches independently.
+  pveNodeMetrics: (id: string, range: string, cf: string) =>
+    ["superadmin", "pve-node-metrics", id, range, cf] as const,
   lbSettings: ["superadmin", "lb-settings"] as const,
   platformSettings: ["superadmin", "platform-settings"] as const,
   emailPolicy: ["superadmin", "email-policy"] as const,

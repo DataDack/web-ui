@@ -27,6 +27,8 @@ import type {
   CreateStoragePriceRequest,
   CreateVMPriceRequest,
   OverviewSection,
+  PVENodeMetricCF,
+  PVENodeMetricRange,
   QuotaRequestStatus,
   RejectQuotaRequestInput,
   ReserveAddressesRequest,
@@ -82,6 +84,28 @@ export function useAdminPVENode(id?: string) {
     queryKey: [...SUPERADMIN_QUERY_KEYS.pveNodes, id],
     queryFn: () => superAdminApi.getPVENode(id ?? ""),
     enabled: !!id,
+  })
+}
+
+// Live graph series for one node. Proxmox's rrd advances one point per minute
+// on the hour window and far more slowly on the wider ones, so the poll cadence
+// follows the window rather than hammering a fixed interval. Previous data is
+// kept while a new window loads so switching the filter redraws instead of
+// blanking, and retries are off: when the cluster is unreachable the page says
+// so immediately rather than after three silent attempts.
+export function useAdminPVENodeMetrics(
+  id: string,
+  range: PVENodeMetricRange,
+  cf: PVENodeMetricCF,
+  options?: { enabled?: boolean },
+) {
+  return useQuery({
+    queryKey: SUPERADMIN_QUERY_KEYS.pveNodeMetrics(id, range, cf),
+    queryFn: () => superAdminApi.getPVENodeMetrics(id, range, cf),
+    enabled: (options?.enabled ?? true) && !!id,
+    placeholderData: keepPreviousData,
+    refetchInterval: range === "hour" ? 30_000 : 5 * 60_000,
+    retry: false,
   })
 }
 
@@ -452,6 +476,10 @@ export function useUpdateLBSettings() {
     onSuccess: (settings) => {
       queryClient.setQueryData(SUPERADMIN_QUERY_KEYS.lbSettings, settings)
       void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.lbSettings })
+      // Every node row's probe URL is built from manager_port, so a save must
+      // re-probe all mounted rows — otherwise the table keeps reporting the
+      // reachability of the port the fleet just moved off.
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.managerStatus })
       toast.success(t("superAdmin.toasts.lbSettingsUpdated"))
     },
     onError: (e) => toast.error(extractError(e, t("superAdmin.toasts.lbSettingsFailed"))),

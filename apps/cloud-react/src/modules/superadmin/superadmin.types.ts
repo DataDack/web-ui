@@ -69,6 +69,48 @@ export interface PVENode {
   vyos_template_vmid?: number
 }
 
+/* ── PVE node graphs ───────────────────────────────────────────────────── */
+// GET /pve-nodes/:id/metrics — the node's own Proxmox rrd series, the same data
+// the PVE summary page graphs. Percent fields are 0..100; net_in/net_out are
+// MB/s; loadavg is an absolute load average (read against cpu_count).
+
+/** Proxmox rrd windows, in the order the filter offers them. */
+export type PVENodeMetricRange = "hour" | "day" | "week" | "month" | "year"
+/** Consolidation function — the summary page's Average / Maximum toggle. */
+export type PVENodeMetricCF = "AVERAGE" | "MAX"
+
+export interface PVENodeMetricPoint {
+  t: number // unix seconds
+  cpu: number
+  iowait: number
+  loadavg: number
+  mem: number
+  mem_used_bytes: number
+  mem_total_bytes: number
+  swap: number
+  swap_used_bytes: number
+  swap_total_bytes: number
+  root: number
+  root_used_bytes: number
+  root_total_bytes: number
+  net_in: number
+  net_out: number
+  cpu_psi_some: number
+  cpu_psi_full: number
+  io_psi_some: number
+  io_psi_full: number
+  mem_psi_some: number
+  mem_psi_full: number
+}
+
+export interface PVENodeMetrics {
+  node: string
+  timeframe: PVENodeMetricRange
+  cf: PVENodeMetricCF
+  cpu_count: number
+  points: PVENodeMetricPoint[]
+}
+
 // Result of POST /pve-nodes/:id/webhook. `secret` is present ONLY when this call
 // minted one (first registration, or an explicit rotate) — it is never
 // re-readable, so surface it immediately.
@@ -283,7 +325,9 @@ export interface LBSettings {
   name_header: string
   // Port the per-node lbagent listens on for refresh webhooks.
   agent_webhook_port: number
-  // Port the per-node LB manager serves its control API / health on.
+  // Port the per-node Proxmox Manager serves its control API / health on. It is
+  // administered from the Proxmox Manager page, not the load-balancer one — the
+  // manager outgrew that product — but it still lives in this row.
   manager_port: number
   // LXC template CTID cloned when provisioning a load-balancer container.
   template_ctid: number
@@ -291,8 +335,12 @@ export interface LBSettings {
   control_plane_cidr: string
 }
 
-// The PUT body is the full settings shape (single fleet-wide row, replaced whole).
-export type UpdateLBSettings = LBSettings
+// The PUT body is a PARTIAL of the settings shape: the backend reads every field
+// as optional and leaves an omitted one at its stored value. That is what lets
+// two pages own different halves of the same row — the load-balancer page saves
+// the proxy fields, the Proxmox Manager page saves manager_port — without either
+// one writing back a stale copy of the other's.
+export type UpdateLBSettings = Partial<LBSettings>
 
 // Live reachability of a node's LB manager (cloud-be-go:
 // GET /platform/infra/pve-nodes/:id/manager-status). "no_manager" means the node
