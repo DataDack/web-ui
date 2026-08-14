@@ -353,8 +353,11 @@ function TargetGroupTargets({ groupId }: Readonly<{ groupId: string }>) {
 
   const group = groups.find((g) => g.id === groupId)
 
-  if (isLoading) return <Skeleton className="h-40 rounded-xl" />
-
+  // Declared before the loading early-return below. A hook after a conditional
+  // return runs on some renders and not others, and React counts hooks per
+  // render: the first pass bails at the skeleton, the next one reaches this and
+  // renders one hook more than before, which is Minified React error #310 and
+  // takes the whole tab down with the router error boundary.
   const targetColumns = useMemo<ColumnDef<Target>[]>(
     () => [
       {
@@ -395,6 +398,8 @@ function TargetGroupTargets({ groupId }: Readonly<{ groupId: string }>) {
     ],
     [instances, t],
   )
+
+  if (isLoading) return <Skeleton className="h-40 rounded-xl" />
 
   return (
     <Section
