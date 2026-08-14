@@ -75,7 +75,8 @@
         "reactApps": "React",
         "n8nAgents": "n8n Agents",
         "apps": "Apps",
-        "cpanelHosting": "cPanel Hosting"
+        "cpanelHosting": "cPanel Hosting",
+        "domains": "Domains"
       },
       "soon": "Soon",
       "collapse": "Collapse",
@@ -181,7 +182,8 @@
     "waiting_user": "Waiting on You",
     "resolved": "Resolved",
     "starting": "Starting",
-    "stopping": "Stopping"
+    "stopping": "Stopping",
+    "released": "Released"
   },
   "modules": {
     "dashboard": "Dashboard",
@@ -1781,6 +1783,54 @@
       "deleted": "deleted"
     }
   },
+  "domains": {
+    "title": "Domains",
+    "subtitle": "Every hostname on your account — what it points at and where it came from.",
+    "adminSubtitle": "Every hostname the platform answers for, across all accounts.",
+    "searchPlaceholder": "Search hostnames…",
+    "empty": "No domains",
+    "emptySubtitle": "Hostnames assigned to your resources will appear here.",
+    "adminEmptySubtitle": "No registry rows match the current filters.",
+    "primary": "Primary",
+    "tabs": {
+      "all": "All",
+      "system": "System",
+      "custom": "Custom"
+    },
+    "source": {
+      "system": "System",
+      "custom": "Custom"
+    },
+    "types": {
+      "func": "Function",
+      "vm": "VM",
+      "lb": "Load balancer",
+      "app": "App"
+    },
+    "filters": {
+      "type": "Type",
+      "allTypes": "All types",
+      "status": "Status",
+      "allStatuses": "All statuses",
+      "accountId": "Account ID",
+      "accountPlaceholder": "Filter by account ID…",
+      "types": {
+        "func": "Functions",
+        "vm": "VMs",
+        "lb": "Load balancers",
+        "app": "Apps"
+      }
+    },
+    "columns": {
+      "hostname": "Hostname",
+      "source": "Source",
+      "type": "Type",
+      "attachedTo": "Attached to",
+      "region": "Region",
+      "status": "Status",
+      "account": "Account"
+    }
+  },
   "networkInterfaces": {
     "title": "Network Interfaces",
     "subtitle": "Elastic network interfaces (ENI) for your instances.",
@@ -2683,6 +2733,9 @@
   },
   "superAdmin": {
     "title": "Super Admin",
+    "domains": {
+      "title": "Domains"
+    },
     "nav": {
       "entry": "Super Admin",
       "quotaRequests": "Quota requests",

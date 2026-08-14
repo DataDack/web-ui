@@ -145,6 +145,14 @@ export const CONSOLE_SERVICES: ConsoleService[] = [
         icon: EthernetPort,
         path: "/networking/network-interfaces",
       },
+      // The domain registry: every hostname on the account, System or Custom.
+      // Lives at /domains but belongs with networking — this item is also what
+      // scopes that route to this service's sidebar (findServiceByPath).
+      {
+        labelKey: "console.nav.items.domains",
+        icon: Globe,
+        path: "/domains",
+      },
     ],
   },
   {

@@ -77,7 +77,8 @@
         "images": "AMI",
         "targetGroups": "टारगेट ग्रुप",
         "apps": "ऐप्स",
-        "cpanelHosting": "cPanel होस्टिंग"
+        "cpanelHosting": "cPanel होस्टिंग",
+        "domains": "डोमेन"
       },
       "soon": "जल्द आ रहा है",
       "collapse": "संकुचित करें",
@@ -183,7 +184,8 @@
     "open": "खुला",
     "in_progress": "प्रगति में",
     "waiting_user": "आपकी प्रतीक्षा में",
-    "resolved": "हल हुआ"
+    "resolved": "हल हुआ",
+    "released": "मुक्त किया गया"
   },
   "modules": {
     "dashboard": "डैशबोर्ड",
@@ -1783,6 +1785,54 @@
       "deleted": "हटाया गया"
     }
   },
+  "domains": {
+    "title": "डोमेन",
+    "subtitle": "आपके खाते का हर होस्टनेम — वह किससे जुड़ा है और कहाँ से आया है।",
+    "adminSubtitle": "प्लेटफ़ॉर्म जिन होस्टनेम का उत्तर देता है, सभी खातों में।",
+    "searchPlaceholder": "होस्टनेम खोजें…",
+    "empty": "कोई डोमेन नहीं",
+    "emptySubtitle": "आपके संसाधनों को दिए गए होस्टनेम यहाँ दिखेंगे।",
+    "adminEmptySubtitle": "मौजूदा फ़िल्टर से कोई रजिस्ट्री पंक्ति मेल नहीं खाती।",
+    "primary": "प्राथमिक",
+    "tabs": {
+      "all": "सभी",
+      "system": "सिस्टम",
+      "custom": "कस्टम"
+    },
+    "source": {
+      "system": "सिस्टम",
+      "custom": "कस्टम"
+    },
+    "types": {
+      "func": "फ़ंक्शन",
+      "vm": "VM",
+      "lb": "लोड बैलेंसर",
+      "app": "ऐप"
+    },
+    "filters": {
+      "type": "प्रकार",
+      "allTypes": "सभी प्रकार",
+      "status": "स्थिति",
+      "allStatuses": "सभी स्थितियाँ",
+      "accountId": "खाता ID",
+      "accountPlaceholder": "खाता ID से फ़िल्टर करें…",
+      "types": {
+        "func": "फ़ंक्शन",
+        "vm": "VM",
+        "lb": "लोड बैलेंसर",
+        "app": "ऐप्स"
+      }
+    },
+    "columns": {
+      "hostname": "होस्टनेम",
+      "source": "स्रोत",
+      "type": "प्रकार",
+      "attachedTo": "संलग्न है",
+      "region": "क्षेत्र",
+      "status": "स्थिति",
+      "account": "खाता"
+    }
+  },
   "loadBalancers": {
     "title": "लोड बैलेंसर",
     "subtitle": "अपने इंस्टेंस पर ट्रैफ़िक वितरित करें।",
@@ -2513,6 +2563,9 @@
   },
   "superAdmin": {
     "title": "Super Admin",
+    "domains": {
+      "title": "डोमेन"
+    },
     "nav": {
       "entry": "Super Admin",
       "quotaRequests": "कोटा अनुरोध",

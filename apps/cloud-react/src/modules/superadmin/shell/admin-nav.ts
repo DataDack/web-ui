@@ -88,6 +88,8 @@ export const ADMIN_NAV: AdminNavGroup[] = [
       },
       { labelKey: "superAdmin.loadBalancers.title", icon: Scale, path: "/admin/load-balancers" },
       { labelKey: "superAdmin.staticIps.title", icon: Network, path: "/admin/static-ips" },
+      // Every hostname the platform answers for, across all accounts.
+      { labelKey: "superAdmin.domains.title", icon: Globe, path: "/admin/domains" },
     ],
   },
   {

@@ -69,6 +69,9 @@ const STATUS_TONES: Record<string, StatusTone> = {
   overdue: "warning",
   detaching: "warning",
   // terminal / inert
+  // A released domain registry row is pure history — the hostname was handed
+  // back and nothing routes through it any more.
+  released: "neutral",
   stopped: "neutral",
   inactive: "neutral",
   detached: "neutral",

@@ -1,5 +1,6 @@
 import { Navigate, type RouteObject } from "react-router-dom"
 
+import { domainsAdminRoutes } from "@/modules/domains/domains.router"
 import { hostingAdminRoutes } from "@/modules/hosting/hosting.router"
 
 import { RequireSuperAdmin } from "./components/RequireSuperAdmin"
@@ -22,6 +23,9 @@ export const superadminRoutes: RouteObject[] = [
       // Shared hosting owns its own admin surfaces; they are spread in here so
       // they inherit the admin shell and the is_super_admin gate.
       ...hostingAdminRoutes,
+      // The platform-wide domain registry, owned by modules/domains — spread in
+      // the same way so it shares the tenant page's table and types.
+      ...domainsAdminRoutes,
       {
         path: "overview",
         lazy: async () => {
