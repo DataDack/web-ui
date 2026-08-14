@@ -1829,6 +1829,12 @@
       "region": "Region",
       "status": "Status",
       "account": "Account"
+    },
+    "resourceTab": {
+      "title": "Domains",
+      "description": "Hostnames that answer for this resource — the platform-provided address and any custom domains attached to it.",
+      "empty": "No domains yet",
+      "emptySubtitle": "This resource has no hostnames registered. The platform address appears here once one is minted."
     }
   },
   "networkInterfaces": {

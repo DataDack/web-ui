@@ -77,7 +77,7 @@ function AttachedToCell({
  */
 export function buildDomainColumns(
   t: TFunction,
-  options: { withAccount?: boolean; linkResources?: boolean } = {},
+  options: { withAccount?: boolean; linkResources?: boolean; forResource?: boolean } = {},
 ): ColumnDef<Domain>[] {
   // The tenant table links each attachment to its detail page. The superadmin
   // table must NOT: those routes fetch under the operator's own X-Account-Id,
@@ -155,6 +155,14 @@ export function buildDomainColumns(
       responsive: "xl",
     }),
   ]
+
+  if (options.forResource) {
+    // Embedded in one resource's own detail page, "attached to" answers a
+    // question nobody asked — every row IS that resource — and the type column
+    // repeats the page the reader is on. Drop both, keep everything else, so
+    // the standalone and embedded tables cannot drift on how a row reads.
+    return columns.filter((c) => c.id !== "attachedTo" && c.id !== "type")
+  }
 
   if (options.withAccount) {
     // Placed right after the hostname so an operator reads "whose is it"

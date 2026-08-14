@@ -1,14 +1,16 @@
+import { GitPullRequest, Globe, Hammer, Info, PackageX, Settings } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import { Button, EmptyState, Skeleton } from "@datadack/common-ui"
-import { GitPullRequest, Hammer, Info, PackageX, Settings } from "lucide-react"
 import { Link, useNavigate, useParams } from "react-router-dom"
 
 import { DetailPage } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
+import { Button, EmptyState, Skeleton } from "@datadack/common-ui"
+
 import { ProjectBuildsTab } from "./ProjectBuildsTab"
 import { ProjectOverviewTab } from "./ProjectOverviewTab"
 import { ProjectSettingsTab } from "./ProjectSettingsTab"
+import { ResourceDomainsTab } from "../../../domains/partials/ResourceDomainsTab"
 import { PROJECT_TYPE_META, ProjectStateChip } from "../../components"
 import { MANAGED_APPS_ROUTES } from "../../managed-apps.constants"
 import { useProject, useProjectBuilds } from "../../managed-apps.hooks"
@@ -97,6 +99,14 @@ export function ProjectDetailPage() {
           label: "Builds",
           icon: Hammer,
           content: <ProjectBuildsTab project={project} />,
+        },
+        {
+          value: "domains",
+          label: "Domains",
+          icon: Globe,
+          // "mgd_app_project" is the registry's resource_type for a project —
+          // the registry keys attachments by its own identifiers, not routes.
+          content: <ResourceDomainsTab resourceType="mgd_app_project" resourceId={project.id} />,
         },
         {
           value: "settings",
