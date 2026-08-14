@@ -1,14 +1,21 @@
+import type { CSSProperties } from "react"
+
 import { cn } from "@datadack/common-ui"
+
+import type { ProjectType } from "../managed-apps.types"
+import { FRAMEWORK_MARKS } from "./project-type"
 
 /**
  * Two projects on the same repository, with the same branch and the same last
  * commit, are otherwise indistinguishable at a glance — which is exactly what
- * the overview showed. A deterministic mark per project fixes that, and brings
- * colour to a page whose only other colour is status.
+ * the overview showed. A mark per project fixes that, and brings colour to a
+ * page whose only other colour is status.
  *
- * The hue is derived from the id, so it is stable forever and needs no storage.
- * Two fixed stops apart in hue give each mark depth without a palette to
- * maintain.
+ * When the project type is known the mark is the framework's own logo: it says
+ * "this is a Next.js app" before the type label is read, and it is what every
+ * other deploy console shows in this slot. The initial below is the fallback
+ * for a type with no brand mark — its hue is derived from the id, so it is
+ * stable forever and needs no storage.
  */
 function hueOf(seed: string): number {
   let hash = 0
@@ -21,12 +28,42 @@ function hueOf(seed: string): number {
 interface ProjectAvatarProps {
   /** Stable identity — the project id, never the name (names change). */
   seed: string
-  /** Rendered inside the mark; the project's first character. */
+  /** Rendered inside the mark when there is no logo; the project's first character. */
   label: string
+  /** Which framework's logo to show. Omitted falls back to the initial. */
+  type?: ProjectType
   className?: string
 }
 
-export function ProjectAvatar({ seed, label, className }: Readonly<ProjectAvatarProps>) {
+export function ProjectAvatar({ seed, label, type, className }: Readonly<ProjectAvatarProps>) {
+  const mark = type ? FRAMEWORK_MARKS[type] : undefined
+
+  if (mark) {
+    const Icon = mark.icon
+    return (
+      <span
+        aria-hidden
+        className={cn(
+          // Background and edge are mixed from the mark's own colour, so the
+          // tile is tinted by the framework rather than by a second palette.
+          "grid size-9 shrink-0 place-items-center rounded-lg",
+          "bg-[color-mix(in_srgb,currentColor_10%,transparent)]",
+          "ring-1 ring-[color-mix(in_srgb,currentColor_22%,transparent)]",
+          "text-[var(--fw-mark)] dark:text-[var(--fw-mark-dark)]",
+          className,
+        )}
+        style={
+          {
+            "--fw-mark": mark.color,
+            "--fw-mark-dark": mark.colorDark ?? mark.color,
+          } as CSSProperties
+        }
+      >
+        <Icon className="size-[55%]" />
+      </span>
+    )
+  }
+
   const hue = hueOf(seed)
 
   return (

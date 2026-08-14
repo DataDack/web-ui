@@ -224,7 +224,9 @@ interface CardGridProps {
  *
  * Column counts are chosen so a card never drops below ~400px of content — the
  * width at which the address, the repository line and the commit subject stop
- * fitting, which is what made the old four-up grid truncate everything.
+ * fitting, which is what made the old four-up grid truncate everything. Three
+ * is the ceiling: a fourth track only narrows every card, and on the accounts
+ * with one or two projects it left them stranded in a mostly empty row.
  */
 function CardGrid({
   entries,
@@ -236,16 +238,16 @@ function CardGrid({
 }: Readonly<CardGridProps>) {
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {SKELETON_KEYS.map((key) => (
-          <Skeleton key={key} className="h-[190px] rounded-xl" />
+          <Skeleton key={key} className="h-[210px] rounded-xl" />
         ))}
       </div>
     )
   }
 
   return (
-    <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+    <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
       {entries.map((entry, index) => (
         <li key={entry.project.id} className="animate-content-enter" style={staggerDelay(index)}>
           <ProjectCard

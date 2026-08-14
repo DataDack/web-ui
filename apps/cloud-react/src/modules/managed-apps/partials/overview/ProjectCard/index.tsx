@@ -8,7 +8,6 @@ import {
   BuildProgressBar,
   ProjectAvatar,
   ProjectStateChip,
-  ProjectTypeIcon,
   projectTypeLabel,
 } from "../../../components"
 import { MANAGED_APPS_ROUTES } from "../../../managed-apps.constants"
@@ -53,7 +52,10 @@ export function ProjectCard({
   return (
     <article
       className={cn(
-        "group console-card relative flex h-full flex-col gap-2.5 rounded-xl border border-border/60 bg-card/50 px-4 py-3.5 transition-colors hover:border-border hover:bg-card/80",
+        // A solid surface on a solid page: the translucent fill and the large
+        // drop shadow this had made the card read as hovering over the
+        // background rather than sitting on it. The border is the edge now.
+        "group relative flex h-full flex-col gap-3 rounded-xl border border-border/70 bg-card px-5 py-4 transition-colors hover:border-border hover:bg-muted/20",
         // Tone is carried in text by the chip; the border is the only second
         // encoding, and only for the state that has to be findable across a
         // grid of forty.
@@ -61,32 +63,31 @@ export function ProjectCard({
       )}
     >
       {/* Identity — name, address, and the menu that never hides. */}
-      <div className="flex items-start gap-2.5">
+      <div className="flex items-start gap-3">
+        {/* The framework's logo, which doubles as the type badge — a second
+            generic glyph beside the name said the same thing twice. */}
         <ProjectAvatar
           seed={project.id}
           label={project.name}
-          className="size-8 rounded-md text-[12px]"
+          type={project.project_type}
+          className="size-9 rounded-lg"
         />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5">
             <Link
               to={MANAGED_APPS_ROUTES.project(project.id)}
-              className="truncate text-[13px] font-semibold text-foreground hover:underline"
+              className="truncate text-sm font-semibold text-foreground hover:underline"
             >
               {project.name}
               {/* Stretched click target. Inside the anchor, so the
 							    accessible name stays the project name. */}
               <span className="absolute inset-0" aria-hidden />
             </Link>
-            <ProjectTypeIcon
-              type={project.project_type}
-              className="size-3.5 shrink-0 text-muted-foreground"
-            />
             <span className="sr-only">{projectTypeLabel(project.project_type)}</span>
           </div>
 
           {project.url && (
-            <span className="relative z-10 mt-0.5 flex items-center gap-1.5">
+            <span className="relative z-10 mt-1 flex items-center gap-1.5">
               {state.urlReachable ? (
                 <a
                   href={project.url}
@@ -135,7 +136,7 @@ export function ProjectCard({
       {/* Provenance, on honest branches: the overview endpoint caps
 			    recent_builds at five account-wide, so most projects arrive with no
 			    build at all and must not imply one. */}
-      <div className="min-w-0 text-[11px] text-muted-foreground">
+      <div className="min-w-0 space-y-1 border-t border-border/50 pt-3 text-[11px] text-muted-foreground">
         {isN8n ? (
           <p>created {timeSince(project.created_at)}</p>
         ) : (
@@ -147,7 +148,7 @@ export function ProjectCard({
               </span>
               <span className="shrink-0 font-mono opacity-70">{project.branch || "main"}</span>
             </p>
-            <p className="mt-0.5 truncate">
+            <p className="truncate">
               {latestBuild?.commit_sha ? (
                 <>
                   <span className="font-mono">{shortSha(latestBuild.commit_sha)}</span>
@@ -165,7 +166,7 @@ export function ProjectCard({
 			    height on the cards whose detail is short — grid items already
 			    stretch to the tallest in their row. */}
       {action && (
-        <div className="relative z-10 mt-auto pt-1">
+        <div className="relative z-10 mt-auto pt-1.5">
           <CardActionButton
             action={action}
             deploying={deploying}

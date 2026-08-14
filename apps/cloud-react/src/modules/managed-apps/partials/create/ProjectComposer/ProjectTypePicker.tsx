@@ -3,10 +3,10 @@ import type { CSSProperties } from "react"
 import { Check, FolderTree, Loader2, TriangleAlert } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import type { IconType } from "react-icons"
-import { SiDocker, SiNextdotjs, SiReact } from "react-icons/si"
 
 import { cn } from "@datadack/common-ui"
 
+import { FRAMEWORK_MARKS } from "../../../components"
 import type { RepoDetection } from "../../../managed-apps.types"
 
 /** What a repository can be built as here. `custom` is not buildable yet. */
@@ -33,25 +33,21 @@ const OPTIONS: TypeOption[] = [
     label: "Next.js",
     sub: "built with OpenNext",
     body: "SSR, API routes and static assets.",
-    icon: SiNextdotjs,
-    color: "#000000",
-    colorDark: "#FFFFFF",
+    ...FRAMEWORK_MARKS.opennext,
   },
   {
     value: "react",
     label: "React",
     sub: "static build",
     body: "Vite or CRA, compiled once and served as files.",
-    icon: SiReact,
-    color: "#61DAFB",
+    ...FRAMEWORK_MARKS.react,
   },
   {
     value: "custom",
     label: "Custom",
     sub: "your own Dockerfile",
     body: "Bring any stack. Not available yet.",
-    icon: SiDocker,
-    color: "#2496ED",
+    ...FRAMEWORK_MARKS.custom,
     comingSoon: true,
   },
 ]
@@ -154,41 +150,50 @@ export function ProjectTypePicker({
                 onChange(option.value)
               }}
               className={cn(
-                "group relative flex h-full flex-col gap-2.5 rounded-xl border p-4 text-left transition-all",
+                "group relative flex h-full flex-col gap-3 overflow-hidden rounded-xl border bg-card p-5 text-left transition-colors",
                 "focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none",
+                // Selection is an edge, not a fill. Washing the whole card in
+                // 4% of the brand gold turned the surface a muddy olive and
+                // still read as weaker than a crisp border does.
                 selected
-                  ? "border-primary bg-primary/[0.04] shadow-sm ring-1 ring-primary/30"
-                  : "border-border/60 hover:border-border hover:bg-muted/20 hover:shadow-sm",
+                  ? "border-primary/70 ring-1 ring-primary/25"
+                  : "border-border/60 hover:border-border hover:bg-muted/20",
                 disabled &&
-                  "cursor-not-allowed opacity-50 hover:border-border/60 hover:bg-transparent hover:shadow-none",
+                  "cursor-not-allowed opacity-45 hover:border-border/60 hover:bg-card",
               )}
             >
+              {/* The one piece of colour the fill used to carry, kept where it
+								  cannot dirty the card: a hairline along the top edge. */}
+              {selected && (
+                <span
+                  aria-hidden
+                  className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent"
+                />
+              )}
+
               <div className="flex items-start justify-between gap-2">
                 <span
                   className={cn(
-                    "grid size-8 place-items-center rounded-lg border transition-colors",
+                    "grid size-10 place-items-center rounded-lg transition-colors",
+                    "bg-[color-mix(in_srgb,currentColor_10%,transparent)]",
+                    "text-[var(--fw-mark)] dark:text-[var(--fw-mark-dark)]",
                     selected
-                      ? "border-primary/40 bg-primary/10 text-primary"
-                      : "border-border/60 bg-muted/40 text-muted-foreground",
+                      ? "ring-1 ring-[color-mix(in_srgb,currentColor_32%,transparent)]"
+                      : "ring-1 ring-[color-mix(in_srgb,currentColor_18%,transparent)]",
                   )}
+                  style={
+                    {
+                      "--fw-mark": option.color,
+                      "--fw-mark-dark": option.colorDark ?? option.color,
+                    } as CSSProperties
+                  }
                 >
-                  {/* The tile already tints itself when selected, so the brand
-									    colour steps aside there rather than fighting it. */}
-                  <Icon
-                    className={cn(
-                      "size-4",
-                      !selected && "text-[var(--fw-mark)] dark:text-[var(--fw-mark-dark)]",
-                    )}
-                    style={
-                      selected
-                        ? undefined
-                        : ({
-                            "--fw-mark": option.color,
-                            "--fw-mark-dark": option.colorDark ?? option.color,
-                          } as CSSProperties)
-                    }
-                    aria-hidden
-                  />
+                  {/* The mark keeps its own colour in every state — it is how
+                      the card is recognised before the label is read, and
+                      recolouring it on selection lost that. The tile is tinted
+                      from the mark itself, so the accent never has to fight a
+                      brand colour. */}
+                  <Icon className="size-[18px]" aria-hidden />
                 </span>
 
                 {selected && (

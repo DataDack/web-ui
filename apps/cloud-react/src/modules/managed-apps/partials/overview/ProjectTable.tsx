@@ -76,6 +76,7 @@ export function ProjectTable({
               <ProjectAvatar
                 seed={project.id}
                 label={project.name}
+                type={project.project_type}
                 className="size-6 rounded text-[11px]"
               />
               <Link

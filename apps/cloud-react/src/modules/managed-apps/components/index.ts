@@ -4,7 +4,8 @@ export { BuildProgressBar } from "./BuildProgressBar"
 export { BuildStatusPill } from "./BuildStatusPill"
 export { ProjectAvatar } from "./ProjectAvatar"
 export { ProjectStateChip } from "./ProjectStateChip"
-export { PROJECT_TYPE_META, projectTypeLabel } from "./project-type"
+export { FRAMEWORK_MARKS, PROJECT_TYPE_META, projectTypeLabel } from "./project-type"
+export type { FrameworkMark } from "./project-type"
 export { ProjectTypeBadge, ProjectTypeIcon } from "./ProjectTypeBadge"
 
 // Pickers for the creation flow and the settings tab
