@@ -8,6 +8,7 @@ import { autoscalingRoutes } from "@/modules/autoscaling/autoscaling.router"
 import { billingRoutes } from "@/modules/billing/billing.router"
 import { dashboardRoutes } from "@/modules/dashboard/dashboard.router"
 import { disksRoutes } from "@/modules/disks/disks.router"
+import { domainsRoutes } from "@/modules/domains/domains.router"
 import { errorRoutes } from "@/modules/errors/errors.router"
 import { RouteErrorBoundary } from "@/modules/errors/RouteErrorBoundary"
 import { governanceRoutes } from "@/modules/governance/governance.router"
@@ -100,6 +101,7 @@ const router = createBrowserRouter([
           ...iamRoutes,
           ...billingRoutes,
           ...vpcRoutes,
+          ...domainsRoutes,
           ...monitoringRoutes,
           ...hostingRoutes,
           ...managedAppsRoutes,
