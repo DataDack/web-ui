@@ -31,6 +31,9 @@ import {
 } from "@/modules/support-tickets/support-tickets.hooks"
 import { useScreen } from "@/services/api/screen"
 
+import { QuotaReviewPanel } from "../components/QuotaReviewPanel"
+import { useQuotaTicketReview } from "../superadmin.hooks"
+
 const ADMIN_SUPPORT_ROOT = "/admin/support"
 
 // Super-admin ticket detail: full triage + thread. The admin panel is gated by
@@ -46,6 +49,12 @@ export function AdminSupportTicketDetailPage() {
   const { mutate: addComment, isPending: replying } = useAddSupportTicketComment()
   const { mutate: updateTicket, isPending: updating } = useUpdateSupportTicket()
   const { mutate: deleteTicket } = useDeleteSupportTicket()
+  // Only quota-category tickets can carry an increase request, so every other
+  // ticket page skips the lookup entirely.
+  const { data: quotaReview, isLoading: quotaReviewLoading } = useQuotaTicketReview(
+    id,
+    ticket?.category === "quota",
+  )
 
   const [reply, setReply] = useState("")
   const [internal, setInternal] = useState(false)
@@ -160,6 +169,8 @@ export function AdminSupportTicketDetailPage() {
           {ticket.description || t("supportTickets.detail.noDescription")}
         </p>
       </Section>
+
+      <QuotaReviewPanel ticketId={id} review={quotaReview} loading={quotaReviewLoading} />
 
       <TicketTriagePanel ticket={ticket} updating={updating} onSave={updateTicket} />
 

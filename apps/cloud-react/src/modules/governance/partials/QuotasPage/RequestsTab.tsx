@@ -1,8 +1,10 @@
 import { Badge, cn, EmptyState, Skeleton } from "@datadack/common-ui"
-import { ArrowRight, Check, Inbox, X } from "lucide-react"
+import { ArrowRight, Check, Inbox, MessageSquareText, X } from "lucide-react"
 import { useTranslation } from "react-i18next"
+import { Link } from "react-router-dom"
 
 import { timeAgo } from "@/modules/monitoring/monitoring.meta"
+import { SUPPORT_ROUTES } from "@/modules/support-tickets/support-tickets.constants"
 
 import type { QuotaRequest, QuotaRequestStatus } from "../../quotas.types"
 
@@ -35,9 +37,21 @@ interface RequestsTabProps {
   onRequest: () => void
 }
 
-/** The account's increase requests, newest first, with review outcomes. */
+/** −1 is a word, not a number, everywhere a limit is shown to a customer. */
+const UNLIMITED = -1
+
+/**
+ * The account's increase requests, newest first.
+ *
+ * Every request is a support ticket, so the outcome and the conversation are on
+ * the thread rather than duplicated here — each row links to it. What stays on
+ * the row is only what tells you whether to open it: which limit, what was
+ * asked, and where the request got to.
+ */
 export function RequestsTab({ requests, isLoading, onRequest }: Readonly<RequestsTabProps>) {
   const { t } = useTranslation()
+  const limitText = (value: number) =>
+    value === UNLIMITED ? t("governance.quotas.unlimited") : String(value)
 
   if (isLoading) {
     return (
@@ -86,23 +100,24 @@ export function RequestsTab({ requests, isLoading, onRequest }: Readonly<Request
                 {req.quota_code}
               </div>
             </div>
+            {/* The arrow points at what was GRANTED once a decision exists —
+                showing the ask forever would misread as still outstanding. */}
             <span className="flex items-center gap-1.5 font-mono text-[13px] tabular-nums text-foreground">
-              {req.current_limit}
+              {limitText(req.current_limit)}
               <ArrowRight className="size-3.5 text-muted-foreground" />
-              {req.requested_limit}
+              {limitText(req.granted_limit ?? req.requested_limit)}
             </span>
             <span className="w-16 text-right font-mono text-[12px] text-muted-foreground">
               {timeAgo(req.created_at)}
             </span>
           </div>
-          {req.review_note && (
-            <p className="mt-2 rounded-md bg-muted/50 px-3 py-2 text-[13px] text-muted-foreground">
-              <span className="font-medium text-foreground">
-                {t("governance.quotas.reviewNote")}:
-              </span>{" "}
-              {req.review_note}
-            </p>
-          )}
+          <Link
+            to={SUPPORT_ROUTES.detail(req.ticket_id)}
+            className="mt-2 inline-flex items-center gap-1.5 text-[12px] text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <MessageSquareText className="size-3.5" />
+            {t("governance.quotas.viewTicket")}
+          </Link>
         </div>
       ))}
     </div>

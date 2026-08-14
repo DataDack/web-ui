@@ -23,27 +23,43 @@ import {
   formatTicketPerson,
 } from "@/modules/support-tickets/components/ticket-format"
 import {
+  TICKET_CATEGORIES,
   TICKET_STATUSES,
   categoryLabelKey,
 } from "@/modules/support-tickets/support-tickets.constants"
 import { useAllSupportTickets } from "@/modules/support-tickets/support-tickets.hooks"
-import type { SupportTicket, TicketStatus } from "@/modules/support-tickets/support-tickets.types"
+import type {
+  SupportTicket,
+  TicketCategory,
+  TicketStatus,
+} from "@/modules/support-tickets/support-tickets.types"
 import { useScreen } from "@/services/api/screen"
 
 type StatusFilter = TicketStatus | "all"
+type CategoryFilter = TicketCategory | "all"
 
 // Super-admin support queue. Reuses the support-tickets data layer + cell
 // components, but lives in the /admin shell and routes to /admin/support/:id.
+//
+// The category filter is what replaced the separate quota-requests tab: quota
+// increases are tickets in the `quota` category, so narrowing to them here is
+// the same queue the old tab was, without a second list to keep in sync.
 export function SupportTicketsTab() {
   useScreen("superadmin.admin-support-tickets")
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { data: tickets = [], isLoading, isError, refetch, isFetching } = useAllSupportTickets()
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all")
+  const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("all")
 
   const visible = useMemo(
-    () => (statusFilter === "all" ? tickets : tickets.filter((tk) => tk.status === statusFilter)),
-    [tickets, statusFilter],
+    () =>
+      tickets.filter(
+        (tk) =>
+          (statusFilter === "all" || tk.status === statusFilter) &&
+          (categoryFilter === "all" || tk.category === categoryFilter),
+      ),
+    [tickets, statusFilter, categoryFilter],
   )
 
   const columns = useMemo<ColumnDef<SupportTicket>[]>(
@@ -94,24 +110,44 @@ export function SupportTicketsTab() {
   )
 
   const toolbar = (
-    <Select
-      value={statusFilter}
-      onValueChange={(v) => {
-        setStatusFilter(v as StatusFilter)
-      }}
-    >
-      <SelectTrigger className="w-44">
-        <SelectValue />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="all">{t("supportTickets.filter.allStatuses")}</SelectItem>
-        {TICKET_STATUSES.map((s) => (
-          <SelectItem key={s} value={s}>
-            {t(`status.${s}`, { defaultValue: s })}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+    <div className="flex flex-wrap items-center gap-2">
+      <Select
+        value={categoryFilter}
+        onValueChange={(v) => {
+          setCategoryFilter(v as CategoryFilter)
+        }}
+      >
+        <SelectTrigger className="w-52">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">{t("supportTickets.filter.allCategories")}</SelectItem>
+          {TICKET_CATEGORIES.map((c) => (
+            <SelectItem key={c.value} value={c.value}>
+              {t(c.labelKey)}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      <Select
+        value={statusFilter}
+        onValueChange={(v) => {
+          setStatusFilter(v as StatusFilter)
+        }}
+      >
+        <SelectTrigger className="w-44">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">{t("supportTickets.filter.allStatuses")}</SelectItem>
+          {TICKET_STATUSES.map((s) => (
+            <SelectItem key={s} value={s}>
+              {t(`status.${s}`, { defaultValue: s })}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
   )
 
   return (

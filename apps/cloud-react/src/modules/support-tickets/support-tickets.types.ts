@@ -2,8 +2,11 @@
 
 // The required classification a customer picks when filing a ticket. It seeds
 // the ticket's default priority, which orders the triage queue.
+// `quota` is the one category not filed from the support form: the Quotas page
+// opens those tickets, carrying the asked-for limit in the ticket's tags, and a
+// super admin approves or rejects them from the ticket itself.
 export type TicketCategory =
-  "outage" | "technical" | "billing" | "account" | "general" | "consultant" | "feature"
+  "outage" | "technical" | "billing" | "account" | "quota" | "general" | "consultant" | "feature"
 
 // Urgency, highest first. Drives the "resolve this next" queue order.
 export type TicketPriority = "critical" | "high" | "medium" | "low" | "scheduled" | "backlog"

@@ -3163,25 +3163,8 @@
       }
     },
     "quotaRequests": {
-      "title": "कोटा अनुरोध",
-      "subtitle": "ग्राहकों के कोटा बढ़ोतरी अनुरोधों की समीक्षा करें और कार्रवाई करें।",
-      "stats": {
-        "pending": "लंबित",
-        "approved": "स्वीकृत",
-        "rejected": "अस्वीकृत"
-      },
-      "filters": {
-        "status": "स्थिति",
-        "all": "सभी स्थितियाँ"
-      },
       "columns": {
-        "account": "खाता",
-        "requester": "अनुरोधकर्ता",
-        "quota": "कोटा",
-        "change": "बदलाव",
-        "justification": "औचित्य",
-        "age": "अवधि",
-        "status": "स्थिति"
+        "quota": "कोटा"
       },
       "approve": "स्वीकृत करें",
       "reject": "अस्वीकार करें",
@@ -3198,8 +3181,15 @@
         "rejected": "अनुरोध अस्वीकृत हुआ",
         "actionFailed": "अनुरोध अपडेट नहीं हो सका"
       },
-      "empty": "कोई कोटा अनुरोध नहीं",
-      "emptySubtitle": "ग्राहकों के कोटा बढ़ोतरी अनुरोध समीक्षा के लिए यहाँ दिखेंगे।"
+      "panelTitle": "कोटा वृद्धि अनुरोध",
+      "panelSubtitle": "स्वीकृति देने पर सीमा तुरंत लागू होती है और परिणाम इसी थ्रेड पर पोस्ट हो जाता है।",
+      "quotaCode": "कोटा कोड",
+      "currentLimit": "वर्तमान सीमा",
+      "requestedLimit": "अनुरोधित सीमा",
+      "grantedHint": "वर्तमान सीमा {{current}} से अधिक होनी चाहिए, या असीमित के लिए −1।",
+      "noteVisibleToCustomer": "यह टिप्पणी टिकट पर पोस्ट होती है, जहाँ ग्राहक इसे पढ़ सकता है।",
+      "limitDrifted": "दर्ज होने के बाद से सीमा बदल गई है: तब {{filed}} थी, अब {{current}} है।",
+      "notAdjustable": "यह कोटा अब समायोज्य नहीं है, इसलिए अनुरोध केवल अस्वीकार किया जा सकता है।"
     },
     "services": {
       "title": "सेवाएँ",
@@ -3262,7 +3252,7 @@
       "attention": {
         "title": "ध्यान चाहिए",
         "subtitle": "यहाँ सब कुछ ऐसा है जिसे केवल ऑपरेटर हल कर सकता है।",
-        "quotaRequests": "कोटा अनुरोध निर्णय की प्रतीक्षा में",
+        "quotaRequests": "निर्णय की प्रतीक्षा में कोटा अनुरोध",
         "openTickets": "सहायता टिकट अभी खुले",
         "awaitingVerification": "उपयोगकर्ता सत्यापन की प्रतीक्षा में",
         "orphanUsers": "उपयोगकर्ता किसी संगठन से नहीं जुड़े",
@@ -3304,10 +3294,9 @@
     },
     "requests": {
       "title": "अनुरोध",
-      "subtitle": "उत्तर की प्रतीक्षा में सहायता टिकट, कोटा वृद्धि, वेबसाइट पूछताछ और गोपनीयता अनुरोध।",
+      "subtitle": "उत्तर की प्रतीक्षा में सहायता टिकट, वेबसाइट पूछताछ और गोपनीयता अनुरोध।",
       "tabs": {
         "support": "सहायता टिकट",
-        "quota": "कोटा अनुरोध",
         "contact": "संपर्क फ़ॉर्म",
         "privacy": "गोपनीयता अनुरोध"
       }
@@ -3638,15 +3627,12 @@
       "userNotFound2": "उपयोगकर्ता नहीं मिला",
       "thisUserIsnTPartOfTheCurrentPlatformOverview": "यह उपयोगकर्ता वर्तमान प्लेटफ़ॉर्म अवलोकन का हिस्सा नहीं है।",
       "supportTickets": "सहायता टिकट",
-      "everythingThisUserHasRaisedNewestFirst": "इस उपयोगकर्ता द्वारा उठाया गया सब कुछ, नवीनतम पहले।",
+      "everythingThisUserHasRaisedNewestFirst": "इस उपयोगकर्ता ने जो कुछ भी उठाया है, नवीनतम पहले — कोटा वृद्धि सहित।",
       "noTicketsFromThisUser": "इस उपयोगकर्ता का कोई टिकट नहीं",
       "theyHaveNotAskedSupportForAnythingYet": "उन्होंने अभी तक सहायता से कुछ नहीं पूछा है।",
-      "quotaRequests": "कोटा अनुरोध",
-      "increasesThisUserHasAskedForAndWhatWasDecide": "इस उपयोगकर्ता द्वारा मांगी गई वृद्धि, और उन पर क्या निर्णय हुआ।",
-      "noQuotaRequestsFromThisUser": "इस उपयोगकर्ता का कोई कोटा अनुरोध नहीं",
-      "theyHaveNotAskedForAnIncreaseToAnyLimit": "उन्होंने किसी सीमा में वृद्धि नहीं मांगी है।",
       "superAdmin": "सुपर एडमिन",
-      "thisUserIsnAposTAMemberOfAnyAccount": "यह उपयोगकर्ता किसी खाते का सदस्य नहीं है।"
+      "thisUserIsnAposTAMemberOfAnyAccount": "यह उपयोगकर्ता किसी खाते का सदस्य नहीं है।",
+      "ticketsUnreadable": "इनके टिकट पढ़े नहीं जा सके।"
     },
     "bandwidthPriceFormSheet": {
       "egressDataTransfer": "एग्रेस डेटा ट्रांसफ़र",
@@ -3999,8 +3985,7 @@
       "errorSubtitle": "कोटा डेटा लाते समय कुछ गड़बड़ हुई। थोड़ी देर में फिर कोशिश करें।",
       "retry": "फिर कोशिश करें",
       "requestsEmpty": "अभी कोई अनुरोध नहीं",
-      "requestsEmptySubtitle": "आपके भेजे गए कोटा बढ़ोतरी अनुरोध यहाँ उनकी समीक्षा स्थिति के साथ दिखेंगे।",
-      "reviewNote": "समीक्षा टिप्पणी",
+      "requestsEmptySubtitle": "आपके द्वारा भेजे गए कोटा वृद्धि अनुरोध यहाँ दिखेंगे, हर एक उस सहायता टिकट के साथ जिस रूप में वह दर्ज हुआ।",
       "dialog": {
         "title": "कोटा बढ़ोतरी का अनुरोध करें",
         "description": "बताएँ कि कौन सी सीमा बढ़ानी है और क्यों। Datadack टीम हर अनुरोध की समीक्षा करती है।",
@@ -4014,7 +3999,7 @@
         "justification": "औचित्य",
         "justificationPlaceholder": "आप क्या बना रहे हैं, और वर्तमान सीमा आपको कैसे रोक रही है?",
         "charCount": "{{count}} / {{min}}",
-        "footerNote": "अनुरोधों की समीक्षा Datadack टीम करती है — स्थिति आपको यहीं दिखेगी।",
+        "footerNote": "सबमिट करने पर एक सहायता टिकट खुलता है — Datadack टीम उसी पर उत्तर देती है, और परिणाम आपको वहीं दिखेगा।",
         "submit": "अनुरोध भेजें",
         "cancel": "रद्द करें"
       },
@@ -4026,7 +4011,8 @@
         "pending": "लंबित",
         "approved": "स्वीकृत",
         "rejected": "अस्वीकृत"
-      }
+      },
+      "viewTicket": "टिकट देखें"
     }
   },
   "serverless": {
@@ -4933,7 +4919,8 @@
       "resolved": "हल हुए"
     },
     "filter": {
-      "allStatuses": "सभी स्थितियाँ"
+      "allStatuses": "सभी स्थितियाँ",
+      "allCategories": "सभी श्रेणियाँ"
     },
     "columns": {
       "subject": "विषय",
@@ -4951,7 +4938,8 @@
       "account": "खाता और पहुँच",
       "general": "सामान्य प्रश्न",
       "consultant": "परामर्श / सलाह",
-      "feature": "सुविधा का अनुरोध"
+      "feature": "सुविधा का अनुरोध",
+      "quota": "कोटा वृद्धि"
     },
     "priority": {
       "critical": "अति गंभीर",
@@ -4998,7 +4986,8 @@
       "account": "लॉगिन, पहुँच और अनुमतियाँ",
       "general": "प्रश्न और मार्गदर्शन",
       "consultant": "आर्किटेक्चर या सलाह संबंधी अनुरोध",
-      "feature": "किसी सुधार का सुझाव दें"
+      "feature": "किसी सुधार का सुझाव दें",
+      "quota": "इस खाते के लिए सेवा सीमा बढ़ाएँ"
     }
   },
   "taxSettings": {

@@ -1,6 +1,7 @@
 import {
   type LucideIcon,
   CreditCard,
+  Gauge,
   KeyRound,
   Lightbulb,
   MessageCircleQuestion,
@@ -37,6 +38,8 @@ export interface CategoryMeta {
   descKey: string
   icon: LucideIcon
   defaultPriority: TicketPriority
+  /** Absent from the "file a ticket" form — see FILEABLE_TICKET_CATEGORIES. */
+  systemFiled?: boolean
 }
 
 export const TICKET_CATEGORIES: CategoryMeta[] = [
@@ -69,6 +72,14 @@ export const TICKET_CATEGORIES: CategoryMeta[] = [
     defaultPriority: "medium",
   },
   {
+    value: "quota",
+    labelKey: "supportTickets.category.quota",
+    descKey: "supportTickets.categoryDesc.quota",
+    icon: Gauge,
+    defaultPriority: "medium",
+    systemFiled: true,
+  },
+  {
     value: "general",
     labelKey: "supportTickets.category.general",
     descKey: "supportTickets.categoryDesc.general",
@@ -90,6 +101,12 @@ export const TICKET_CATEGORIES: CategoryMeta[] = [
     defaultPriority: "backlog",
   },
 ]
+
+// What the "file a ticket" form offers. A system-filed category is still a real
+// category — it labels and filters the queue like any other — but a customer
+// choosing it by hand would produce a ticket with none of the structure the
+// category exists for, so it is not on the menu.
+export const FILEABLE_TICKET_CATEGORIES = TICKET_CATEGORIES.filter((c) => !c.systemFiled)
 
 export function categoryLabelKey(category: TicketCategory): string {
   return TICKET_CATEGORIES.find((c) => c.value === category)?.labelKey ?? category

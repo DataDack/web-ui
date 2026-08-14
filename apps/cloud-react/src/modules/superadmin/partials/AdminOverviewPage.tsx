@@ -19,7 +19,7 @@ import { useScreen } from "@/services/api/screen"
 
 import { Button, EmptyState, Skeleton } from "@datadack/common-ui"
 
-import { useAdminPlatformOverview, useAdminQuotaRequestCount } from "../superadmin.hooks"
+import { useAdminPlatformOverview } from "../superadmin.hooks"
 
 /**
  * Where an operator lands. Answers "is anything wrong, and how big is the
@@ -94,11 +94,23 @@ export function AdminOverviewPage() {
   // The unscoped read returns the whole tenancy graph, which is what the stats
   // and the KYC tally below are counted from.
   const { data, isLoading, isError, refetch, isFetching } = useAdminPlatformOverview()
-  const pendingQuota = useAdminQuotaRequestCount("pending")
   const tickets = useAllSupportTickets()
 
   const openTickets = useMemo(
     () => (tickets.data ?? []).filter((ticket) => ticket.status === "open").length,
+    [tickets.data],
+  )
+
+  // Quota increases are tickets in the `quota` category, so the count comes off
+  // the queue already fetched above rather than a second endpoint. They are also
+  // counted in openTickets — deliberately: the row below is the shortcut to the
+  // ones only a super admin can clear, not a disjoint bucket.
+  const openQuotaTickets = useMemo(
+    () =>
+      (tickets.data ?? []).filter(
+        (ticket) =>
+          ticket.category === "quota" && ticket.status !== "resolved" && ticket.status !== "closed",
+      ).length,
     [tickets.data],
   )
 
@@ -185,9 +197,9 @@ export function AdminOverviewPage() {
           <AttentionRow
             icon={Gauge}
             label={t("superAdmin.overview.attention.quotaRequests")}
-            count={pendingQuota.data ?? 0}
-            loading={pendingQuota.isLoading}
-            href="/admin/requests?tab=quota"
+            count={openQuotaTickets}
+            loading={tickets.isLoading}
+            href="/admin/requests"
             cta={t("superAdmin.overview.attention.review")}
             tone="warning"
           />

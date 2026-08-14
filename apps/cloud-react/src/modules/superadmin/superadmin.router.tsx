@@ -217,7 +217,9 @@ export const superadminRoutes: RouteObject[] = [
           return { Component: RequestsPage }
         },
       },
-      { path: "quota-requests", element: <Navigate to="/admin/requests?tab=quota" replace /> },
+      // Quota increases are support tickets now — there is no queue of their own
+      // to land on, so the old path joins the tickets one.
+      { path: "quota-requests", element: <Navigate to="/admin/requests" replace /> },
       { path: "support", element: <Navigate to="/admin/requests" replace /> },
       {
         path: "support/:id",

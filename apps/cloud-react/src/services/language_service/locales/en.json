@@ -3718,25 +3718,8 @@
       "emptySubtitle": "Customer tickets from all accounts will appear here for triage."
     },
     "quotaRequests": {
-      "title": "Quota requests",
-      "subtitle": "Review and act on customer quota increase requests.",
-      "stats": {
-        "pending": "Pending",
-        "approved": "Approved",
-        "rejected": "Rejected"
-      },
-      "filters": {
-        "status": "Status",
-        "all": "All statuses"
-      },
       "columns": {
-        "account": "Account",
-        "requester": "Requester",
-        "quota": "Quota",
-        "change": "Change",
-        "justification": "Justification",
-        "age": "Age",
-        "status": "Status"
+        "quota": "Quota"
       },
       "approve": "Approve",
       "reject": "Reject",
@@ -3753,8 +3736,15 @@
         "rejected": "Request rejected",
         "actionFailed": "Couldn't update the request"
       },
-      "empty": "No quota requests",
-      "emptySubtitle": "Customer quota increase requests will appear here for review."
+      "panelTitle": "Quota increase request",
+      "panelSubtitle": "Approving grants the limit immediately and posts the outcome to this thread.",
+      "quotaCode": "Quota code",
+      "currentLimit": "Current limit",
+      "requestedLimit": "Requested limit",
+      "grantedHint": "Must be greater than the current limit of {{current}}, or −1 for unlimited.",
+      "noteVisibleToCustomer": "The note is posted to the ticket, where the customer can read it.",
+      "limitDrifted": "The limit has changed since this was filed: it was {{filed}} then and is {{current}} now.",
+      "notAdjustable": "This quota is no longer adjustable, so the request can only be rejected."
     },
     "overview": {
       "title": "Platform overview",
@@ -3811,10 +3801,9 @@
     },
     "requests": {
       "title": "Requests",
-      "subtitle": "Support tickets, quota increases, website enquiries and privacy requests waiting on a reply.",
+      "subtitle": "Support tickets, website enquiries and privacy requests waiting on a reply.",
       "tabs": {
         "support": "Support tickets",
-        "quota": "Quota requests",
         "contact": "Contact form",
         "privacy": "Privacy requests"
       }
@@ -3834,15 +3823,12 @@
       "userNotFound2": "User not found",
       "thisUserIsnTPartOfTheCurrentPlatformOverview": "This user isn't part of the current platform overview.",
       "supportTickets": "Support tickets",
-      "everythingThisUserHasRaisedNewestFirst": "Everything this user has raised, newest first.",
+      "everythingThisUserHasRaisedNewestFirst": "Everything this user has raised, newest first — quota increases included.",
       "noTicketsFromThisUser": "No tickets from this user",
       "theyHaveNotAskedSupportForAnythingYet": "They have not asked support for anything yet.",
-      "quotaRequests": "Quota requests",
-      "increasesThisUserHasAskedForAndWhatWasDecide": "Increases this user has asked for, and what was decided.",
-      "noQuotaRequestsFromThisUser": "No quota requests from this user",
-      "theyHaveNotAskedForAnIncreaseToAnyLimit": "They have not asked for an increase to any limit.",
       "superAdmin": "Super Admin",
-      "thisUserIsnAposTAMemberOfAnyAccount": "This user isn&apos;t a member of any account."
+      "thisUserIsnAposTAMemberOfAnyAccount": "This user isn&apos;t a member of any account.",
+      "ticketsUnreadable": "Their tickets could not be read."
     },
     "availabilityZoneFormSheet": {
       "indiaNoidaNcr": "India Noida (NCR)",
@@ -4339,8 +4325,7 @@
       "errorSubtitle": "Something went wrong while fetching quota data. Try again in a moment.",
       "retry": "Try again",
       "requestsEmpty": "No requests yet",
-      "requestsEmptySubtitle": "Quota increase requests you submit will show up here with their review status.",
-      "reviewNote": "Review note",
+      "requestsEmptySubtitle": "Quota increase requests you submit will show up here, each with the support ticket it was filed as.",
       "dialog": {
         "title": "Request a quota increase",
         "description": "Tell us which limit you need raised and why. The Datadack team reviews every request.",
@@ -4354,7 +4339,7 @@
         "justification": "Justification",
         "justificationPlaceholder": "What are you building, and why does the current limit block you?",
         "charCount": "{{count}} / {{min}}",
-        "footerNote": "Requests are reviewed by the Datadack team — you'll see the status here.",
+        "footerNote": "Submitting opens a support ticket — the Datadack team replies on it, and you'll see the outcome there.",
         "submit": "Submit request",
         "cancel": "Cancel"
       },
@@ -4366,7 +4351,8 @@
         "pending": "Pending",
         "approved": "Approved",
         "rejected": "Rejected"
-      }
+      },
+      "viewTicket": "View ticket"
     }
   },
   "supportTickets": {
@@ -4381,7 +4367,8 @@
       "resolved": "Resolved"
     },
     "filter": {
-      "allStatuses": "All statuses"
+      "allStatuses": "All statuses",
+      "allCategories": "All categories"
     },
     "columns": {
       "subject": "Subject",
@@ -4399,7 +4386,8 @@
       "account": "Account & Access",
       "general": "General Query",
       "consultant": "Consultant / Advisory",
-      "feature": "Feature Request"
+      "feature": "Feature Request",
+      "quota": "Quota Increase"
     },
     "priority": {
       "critical": "Critical",
@@ -4446,7 +4434,8 @@
       "account": "Login, access, and permissions",
       "general": "Questions and how-to help",
       "consultant": "Architecture or advisory requests",
-      "feature": "Suggest an improvement"
+      "feature": "Suggest an improvement",
+      "quota": "Raise a service limit for this account"
     }
   },
   "targetGroups": {

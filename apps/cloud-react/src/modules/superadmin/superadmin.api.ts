@@ -20,7 +20,7 @@ import type {
   UpdateContactSubmissionRequest,
   OptOutRequest,
   UpdateOptOutRequestInput,
-  AdminQuotaRequest,
+  QuotaTicketReview,
   AdminUser,
   AdjustBalanceRequest,
   AgentCredentials,
@@ -103,21 +103,9 @@ type ListMeta = ApiMeta & {
   pages?: number
 }
 
-export interface AdminQuotaRequestList {
-  rows: AdminQuotaRequest[]
-  total: number
-}
-
-/** Server page size for the quota request review queue. */
-export const QUOTA_REQUESTS_PAGE_SIZE = 100
-
-const QUOTA_REQUESTS_URL = "/quotas/quotas/admin/requests"
-
-function quotaRequestsQuery(status: string, page: number, limit: number): string {
-  const params = new URLSearchParams({ page: String(page), limit: String(limit) })
-  if (status) params.set("status", status)
-  return `${QUOTA_REQUESTS_URL}?${params.toString()}`
-}
+/** Quota requests are reviewed on the ticket they were filed as; `:id` below is
+ *  always a support ticket id. */
+const QUOTA_REVIEW_URL = "/quotas/quotas/admin/tickets"
 
 export interface ContactSubmissionList {
   rows: ContactSubmission[]
@@ -348,29 +336,15 @@ export const superAdminApi = {
   getAccountSpend: (accountId: string) =>
     apiGet<AccountSpend>(`/billing/charge/accounts/${accountId}/spend`),
 
-  /* quota increase requests — the platform-wide review queue (apps/quotas).
-	   The list is paginated server-side (SendList); data is the bare row array,
-	   which Go marshals as null when the page is empty. Returned with meta.total
-	   so the console can page instead of silently truncating at one page. */
-  listQuotaRequests: async (status = "", page = 1): Promise<AdminQuotaRequestList> => {
-    const res = await api.get<{ data: AdminQuotaRequest[] | null; meta: ListMeta }>(
-      quotaRequestsQuery(status, page, QUOTA_REQUESTS_PAGE_SIZE),
-    )
-    const rows = res.data.data ?? []
-    return { rows, total: res.data.meta.total ?? rows.length }
-  },
-  // Platform-wide count of requests in one status, read off meta.total with a
-  // minimal page — the stat tiles need the number, not the rows.
-  countQuotaRequests: async (status: string): Promise<number> => {
-    const res = await api.get<{ data: AdminQuotaRequest[] | null; meta: ListMeta }>(
-      quotaRequestsQuery(status, 1, 1),
-    )
-    return res.data.meta.total ?? 0
-  },
-  approveQuotaRequest: (id: string, payload: ApproveQuotaRequestInput) =>
-    apiPost<null>(`/quotas/quotas/admin/requests/${id}/approve`, payload),
-  rejectQuotaRequest: (id: string, payload: RejectQuotaRequestInput) =>
-    apiPost<null>(`/quotas/quotas/admin/requests/${id}/reject`, payload),
+  /* quota increase requests (apps/quotas) — keyed on the support ticket the
+	   request was filed as. There is no list here on purpose: quota tickets are
+	   in the support queue, so the queue endpoint already returns them. */
+  getQuotaTicketReview: (ticketId: string) =>
+    apiGet<QuotaTicketReview>(`${QUOTA_REVIEW_URL}/${ticketId}`),
+  approveQuotaRequest: (ticketId: string, payload: ApproveQuotaRequestInput) =>
+    apiPost<null>(`${QUOTA_REVIEW_URL}/${ticketId}/approve`, payload),
+  rejectQuotaRequest: (ticketId: string, payload: RejectQuotaRequestInput) =>
+    apiPost<null>(`${QUOTA_REVIEW_URL}/${ticketId}/reject`, payload),
 
   /* website contact form — the marketing site's inbound queue
 	   (apps/platform/contact). Paginated server-side like the quota queue, so

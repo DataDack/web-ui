@@ -13,7 +13,7 @@ import { useScreen } from "@/services/api/screen"
 
 import { PriorityBadge } from "../components/PriorityBadge"
 import {
-  TICKET_CATEGORIES,
+  FILEABLE_TICKET_CATEGORIES,
   TICKET_PRIORITIES,
   defaultPriorityForCategory,
   priorityMeta,
@@ -21,7 +21,7 @@ import {
 import { useCreateSupportTicket } from "../support-tickets.hooks"
 import type { TicketCategory, TicketPriority } from "../support-tickets.types"
 
-const CATEGORY_VALUES = TICKET_CATEGORIES.map((c) => c.value) as [
+const CATEGORY_VALUES = FILEABLE_TICKET_CATEGORIES.map((c) => c.value) as [
   TicketCategory,
   ...TicketCategory[],
 ]
@@ -116,7 +116,7 @@ export function SupportTicketCreatePage() {
     }
   }, [category, setValue])
 
-  const selectedCat = TICKET_CATEGORIES.find((c) => c.value === category)
+  const selectedCat = FILEABLE_TICKET_CATEGORIES.find((c) => c.value === category)
   const isDefaultPriority = category ? priority === defaultPriorityForCategory(category) : true
 
   const onSubmit = (values: FormValues) => {
@@ -173,7 +173,7 @@ export function SupportTicketCreatePage() {
                     aria-label={t("supportTickets.columns.category")}
                     className="grid gap-2.5 sm:grid-cols-2"
                   >
-                    {TICKET_CATEGORIES.map((cat) => {
+                    {FILEABLE_TICKET_CATEGORIES.map((cat) => {
                       const Icon = cat.icon
                       const selected = field.value === cat.value
                       return (

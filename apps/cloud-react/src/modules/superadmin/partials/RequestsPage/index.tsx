@@ -12,16 +12,15 @@ import { useScreen } from "@/services/api/screen"
 import { SupportTicketsTab } from "./SupportTicketsTab"
 import { ContactSubmissionsTab } from "../ContactSubmissionsPage"
 import { OptOutRequestsTab } from "../OptOutRequestsPage"
-import { QuotaRequestsTab } from "../QuotaRequestsPage"
-import {
-  useAdminContactSubmissionCount,
-  useAdminOptOutRequestCount,
-  useAdminQuotaRequestCount,
-} from "../../superadmin.hooks"
+import { useAdminContactSubmissionCount, useAdminOptOutRequestCount } from "../../superadmin.hooks"
 
-// Four queues, one page. All of them are "somebody is waiting on an operator to
+// Three queues, one page. All of them are "somebody is waiting on an operator to
 // decide", and splitting them across sidebar entries meant an operator had to
-// remember to check four places to know whether anything was outstanding.
+// remember to check three places to know whether anything was outstanding.
+//
+// Quota increases used to be a fourth tab. They are support tickets now (in the
+// `quota` category, reviewed on the ticket itself), so they arrive in the
+// support queue and a tab of their own would have listed the same rows twice.
 //
 // The two website forms are here rather than under a marketing heading of their
 // own for the same reason: an unanswered lead is outstanding work, and both were
@@ -29,7 +28,7 @@ import {
 //
 // Privacy is LAST in the list but is the one with a statutory clock, which is
 // why its count is the one that keeps showing even when the tab is not open.
-const TABS = ["support", "quota", "contact", "privacy"] as const
+const TABS = ["support", "contact", "privacy"] as const
 type TabValue = (typeof TABS)[number]
 const DEFAULT_TAB: TabValue = "support"
 
@@ -38,7 +37,7 @@ function parseTab(value: string | null): TabValue {
 }
 
 /**
- * The operator's inbox: support tickets, quota-increase requests, website
+ * The operator's inbox: support tickets (quota increases among them), website
  * contact enquiries and privacy-rights requests.
  *
  * The active tab lives in ?tab= so a view is shareable and survives a reload,
@@ -53,7 +52,6 @@ export function RequestsPage() {
   const tab = parseTab(searchParams.get("tab"))
 
   const tickets = useAllSupportTickets()
-  const pendingQuota = useAdminQuotaRequestCount("pending")
   const newContacts = useAdminContactSubmissionCount("new")
   const newPrivacy = useAdminOptOutRequestCount("new")
 
@@ -80,7 +78,6 @@ export function RequestsPage() {
   // and reads as an empty queue before anything has been fetched.
   const outstanding: Record<TabValue, number | undefined> = {
     support: tickets.data ? openTickets : undefined,
-    quota: pendingQuota.data,
     contact: newContacts.data,
     privacy: newPrivacy.data,
   }
@@ -118,10 +115,6 @@ export function RequestsPage() {
         {/* Only the active tab mounts, so only its queue is fetched. */}
         <TabsContent value="support">
           <SupportTicketsTab />
-        </TabsContent>
-
-        <TabsContent value="quota">
-          <QuotaRequestsTab />
         </TabsContent>
 
         <TabsContent value="contact">

@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 import type { RegionCatalog } from "@/modules/catalog/catalog.types"
+import { SUPPORT_QUERY_KEYS } from "@/modules/support-tickets/support-tickets.constants"
 import { apiGet, extractError } from "@/services/api/client"
 
 import { superAdminApi } from "./superadmin.api"
@@ -29,7 +30,7 @@ import type {
   OverviewSection,
   PVENodeMetricCF,
   PVENodeMetricRange,
-  QuotaRequestStatus,
+  QuotaTicketReview,
   RejectQuotaRequestInput,
   ReserveAddressesRequest,
   UpdateAvailabilityZoneRequest,
@@ -1014,32 +1015,45 @@ export function useSetKycStatus() {
   })
 }
 
-export function useAdminQuotaRequests(status = "", page = 1) {
+/**
+ * The increase request carried by one support ticket, or null when the ticket
+ * carries none.
+ *
+ * A ticket without a request is the normal case — most tickets are not quota
+ * asks — so the backend's 400 is swallowed into `null` rather than surfaced as
+ * an error state. `enabled` keeps it off tickets that are not even categorized
+ * as quota, so the ordinary ticket page makes no extra call.
+ */
+export function useQuotaTicketReview(ticketId: string, enabled: boolean) {
   return useQuery({
-    queryKey: [...SUPERADMIN_QUERY_KEYS.quotaRequests, status, page] as const,
-    queryFn: () => superAdminApi.listQuotaRequests(status, page),
-    placeholderData: keepPreviousData,
+    queryKey: SUPERADMIN_QUERY_KEYS.quotaReview(ticketId),
+    queryFn: () =>
+      superAdminApi.getQuotaTicketReview(ticketId).catch((): QuotaTicketReview | null => null),
+    enabled: enabled && Boolean(ticketId),
   })
 }
 
-// Platform-wide count of quota requests in one status (meta.total off a
-// limit=1 page) — feeds the stat tiles without shipping any rows. Lives under
-// the quotaRequests key prefix so approve/reject invalidation refreshes it.
-export function useAdminQuotaRequestCount(status: QuotaRequestStatus) {
-  return useQuery({
-    queryKey: [...SUPERADMIN_QUERY_KEYS.quotaRequests, "count", status] as const,
-    queryFn: () => superAdminApi.countQuotaRequests(status),
-  })
+// Approve/reject refresh the review itself and the ticket (its status and tags
+// both move), plus the queues that count open tickets.
+function useReviewInvalidation() {
+  const queryClient = useQueryClient()
+  return (ticketId: string) => {
+    void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.quotaReview(ticketId) })
+    void queryClient.invalidateQueries({ queryKey: SUPPORT_QUERY_KEYS.detail(ticketId) })
+    void queryClient.invalidateQueries({ queryKey: SUPPORT_QUERY_KEYS.comments(ticketId) })
+    void queryClient.invalidateQueries({ queryKey: SUPPORT_QUERY_KEYS.listAll })
+    void queryClient.invalidateQueries({ queryKey: SUPPORT_QUERY_KEYS.list })
+  }
 }
 
 export function useApproveQuotaRequest() {
-  const queryClient = useQueryClient()
+  const invalidate = useReviewInvalidation()
   const { t } = useTranslation()
   return useMutation({
-    mutationFn: (vars: { id: string; payload: ApproveQuotaRequestInput }) =>
-      superAdminApi.approveQuotaRequest(vars.id, vars.payload),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.quotaRequests })
+    mutationFn: (vars: { ticketId: string; payload: ApproveQuotaRequestInput }) =>
+      superAdminApi.approveQuotaRequest(vars.ticketId, vars.payload),
+    onSuccess: (_data, vars) => {
+      invalidate(vars.ticketId)
       toast.success(t("superAdmin.quotaRequests.toasts.approved"))
     },
     onError: (e) => toast.error(extractError(e, t("superAdmin.quotaRequests.toasts.actionFailed"))),
@@ -1047,13 +1061,13 @@ export function useApproveQuotaRequest() {
 }
 
 export function useRejectQuotaRequest() {
-  const queryClient = useQueryClient()
+  const invalidate = useReviewInvalidation()
   const { t } = useTranslation()
   return useMutation({
-    mutationFn: (vars: { id: string; payload: RejectQuotaRequestInput }) =>
-      superAdminApi.rejectQuotaRequest(vars.id, vars.payload),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.quotaRequests })
+    mutationFn: (vars: { ticketId: string; payload: RejectQuotaRequestInput }) =>
+      superAdminApi.rejectQuotaRequest(vars.ticketId, vars.payload),
+    onSuccess: (_data, vars) => {
+      invalidate(vars.ticketId)
       toast.success(t("superAdmin.quotaRequests.toasts.rejected"))
     },
     onError: (e) => toast.error(extractError(e, t("superAdmin.quotaRequests.toasts.actionFailed"))),

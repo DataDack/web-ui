@@ -1189,29 +1189,37 @@ export interface ClearCacheResponse {
   results: ClearCacheResult[]
 }
 
-/* ── Quota increase requests (review queue) ────────────────────────────── */
+/* ── Quota increase requests ───────────────────────────────────────────── */
 
 export type QuotaRequestStatus = "pending" | "approved" | "rejected"
 
-// One row of the super-admin review queue: the tenant's request plus the
-// account/requester context needed to judge it (apps/quotas AdminQuotaRequestResponse).
-export interface AdminQuotaRequest {
-  id: string
+/**
+ * One increase request, read off the support ticket it was filed as
+ * (apps/quotas QuotaTicketReview). There is no separate review queue: quota
+ * tickets sit in the support queue like everything else, and this is what the
+ * ticket page needs to decide one.
+ *
+ * `current_limit` is resolved live by the backend, NOT read from the ticket —
+ * the subject's limit can move between filing and review, and the reviewer has
+ * to judge against what is in force now. `filed_limit` is what the requester was
+ * looking at when they asked; when the two differ, something changed since.
+ */
+export interface QuotaTicketReview {
+  ticket_id: string
   quota_code: string
   quota_name: string
+  scope: "account" | "user"
+  unit: string
+  adjustable: boolean
   current_limit: number
+  filed_limit: number
   requested_limit: number
+  /** −1 = unlimited. Present only once approved. */
+  granted_limit?: number
   justification: string
   status: QuotaRequestStatus
   created_at: string
   reviewed_at?: string | null
-  review_note: string
-  account_id: string
-  account_name: string
-  account_number: string
-  requested_by_email: string
-  requested_by_name: string
-  reviewed_by_email: string
 }
 
 export interface ApproveQuotaRequestInput {
