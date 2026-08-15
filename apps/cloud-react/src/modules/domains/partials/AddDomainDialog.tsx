@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react"
 
-import { CheckCircle2, Globe, Loader2 } from "lucide-react"
+import { Check, CheckCircle2, Copy, Globe, Loader2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
+import { toast } from "sonner"
 
 import { TONE_CLASSES } from "@/components/console/status-config"
 import { quotaGatePayload } from "@/modules/governance/quota-gate"
@@ -10,7 +11,6 @@ import { extractError } from "@/services/api/client"
 import {
   Badge,
   Button,
-  CopyButton,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -161,7 +161,11 @@ export function AddDomainDialog({
           { type: "A", name: instructions.a_name, value: instructions.a_value, alternative: !instructions.is_apex },
           { type: "CNAME", name: instructions.cname_name, value: instructions.cname_target, alternative: instructions.is_apex },
         ] satisfies DnsRecordRow[]
-      ).sort((a, b) => Number(a.alternative ?? false) - Number(b.alternative ?? false))
+      )
+        // A record card with an empty VALUE is worse than no card: it reads as
+        // broken (and did, in the first screenshot of this dialog).
+        .filter((r) => r.value !== "")
+        .sort((a, b) => Number(a.alternative ?? false) - Number(b.alternative ?? false))
     : []
 
   const verification = row?.verification
@@ -181,7 +185,7 @@ export function AddDomainDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg glass-3">
+      <DialogContent className="sm:max-w-2xl glass-3">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Globe className="size-4" />
@@ -268,16 +272,8 @@ export function AddDomainDialog({
                         </span>
                       )}
                     </div>
-                    <div className="grid grid-cols-[44px_minmax(0,1fr)] items-center gap-x-3 gap-y-1">
-                      <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
-                        {t("domains.add.recordName")}
-                      </span>
-                      <CopyButton value={record.name} copiedLabel={t("console.copy.copied")} />
-                      <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
-                        {t("domains.add.recordValue")}
-                      </span>
-                      <CopyButton value={record.value} copiedLabel={t("console.copy.copied")} />
-                    </div>
+                    <RecordLine label={t("domains.add.recordName")} value={record.name} copied={t("console.copy.copied")} />
+                    <RecordLine label={t("domains.add.recordValue")} value={record.value} copied={t("console.copy.copied")} />
                   </div>
                 ))}
               </div>
@@ -367,5 +363,44 @@ export function AddDomainDialog({
         )}
       </DialogContent>
     </Dialog>
+  )
+}
+
+/**
+ * One record field on one line: fixed label, the value in its own mono well
+ * (single line, horizontal scroll rather than wrap — DNS values are pasted,
+ * not read), and a dedicated copy button that grabs the VALUE alone.
+ */
+function RecordLine({
+  label,
+  value,
+  copied,
+}: Readonly<{ label: string; value: string; copied: string }>) {
+  const [done, setDone] = useState(false)
+  const copy = async () => {
+    await navigator.clipboard.writeText(value)
+    toast.success(copied)
+    setDone(true)
+    setTimeout(() => {
+      setDone(false)
+    }, 1500)
+  }
+  return (
+    <div className="flex items-center gap-2">
+      <span className="w-14 shrink-0 text-[10px] uppercase tracking-wide text-muted-foreground">
+        {label}
+      </span>
+      <code className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap rounded-md border border-border/60 bg-muted/30 px-2.5 py-1.5 font-mono text-[12px] text-foreground [scrollbar-width:none]">
+        {value}
+      </code>
+      <button
+        type="button"
+        onClick={() => void copy()}
+        aria-label={`${label}: copy`}
+        className="grid size-7 shrink-0 place-items-center rounded-md border border-border/60 text-muted-foreground transition-colors hover:bg-muted/40 hover:text-foreground"
+      >
+        {done ? <Check className="size-3.5 text-status-success" /> : <Copy className="size-3.5" />}
+      </button>
+    </div>
   )
 }
