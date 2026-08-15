@@ -71,6 +71,39 @@ export interface ChangeAccountPlanRequest {
 }
 
 /**
+ * GET /plans/account/estimate — what a tier actually costs THIS account.
+ *
+ * Distinct from the catalogue's `price_minor`, which is the advertised list
+ * price and identical for everyone. An account carrying a permanent discount is
+ * charged less than the sticker, and GST is added on top, so the two numbers
+ * genuinely differ — showing the list price where the charge belongs is how a
+ * customer ends up agreeing to ₹499 and seeing ₹471.06 leave their wallet.
+ *
+ * Every field is in MAJOR units (rupees), unlike `price_minor` — the server
+ * computes these and the client formats them as-is.
+ */
+export interface PlanCostBreakdown {
+  cycle: "monthly" | "hourly"
+  currency: string
+  /** The advertised price, before this account's discount. */
+  list_price: number
+  /** The account's permanent discount, 0–100. Zero means none. */
+  discount_pct: number
+  /**
+   * Why the discount was granted ("First 100 customers"). Absent when there is
+   * no discount — a price cut with no attribution is one the customer cannot
+   * check, so the reason is shown wherever the reduction is.
+   */
+  discount_reason?: string
+  /** Pre-tax amount after the discount — the base the tax is charged on. */
+  base: number
+  gst_rate: number
+  gst: number
+  /** base + gst — what is actually debited from the wallet. */
+  total: number
+}
+
+/**
  * The project lifecycle the console renders, stored server-side so the list
  * needs no per-project build query. Written at create, PR merge, build enqueue
  * and build settle — see apps/managedapps/projects/constants.

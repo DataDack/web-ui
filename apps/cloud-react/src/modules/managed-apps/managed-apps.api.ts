@@ -14,6 +14,7 @@ import type {
   GitHubRepo,
   ManagedAppsOverview,
   Plan,
+  PlanCostBreakdown,
   Project,
   ProjectEnvNames,
   ProjectSetup,
@@ -52,6 +53,17 @@ export const managedAppsApi = {
 
   /** The tier the ACTIVE ACCOUNT is on, plus how much of it is in use. */
   accountPlan: (): Promise<AccountPlan> => apiGet<AccountPlan>(`${BASE}/plans/account`),
+
+  /**
+   * What moving to `code` will actually cost this account: list price, the
+   * account's discount and why it was granted, GST, and the total debited.
+   *
+   * Account-specific where `plans()` is not — the catalogue sells one price to
+   * everyone and this applies the account's own discount, so it is the figure
+   * the confirm dialog must show rather than the advertised one.
+   */
+  planEstimate: (code: string): Promise<PlanCostBreakdown> =>
+    apiGet<PlanCostBreakdown>(`${BASE}/plans/account/estimate?code=${encodeURIComponent(code)}`),
 
   /**
    * Move the account onto another tier.

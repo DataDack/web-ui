@@ -46,6 +46,30 @@ export function formatPrice(plan: Pick<Plan, "price_minor" | "currency">): strin
   }
 }
 
+/**
+ * A money amount already in MAJOR units (rupees), for the cost breakdown.
+ *
+ * Separate from `formatPrice` because the two speak different units: catalogue
+ * prices arrive as `price_minor` (paise) while a cost estimate arrives in
+ * rupees. Routing both through one helper is how a figure ends up a hundred
+ * times too large — so the unit is in the name.
+ *
+ * Fractions are always shown here: a breakdown that renders ₹71.86 as ₹72 no
+ * longer adds up to the total printed beneath it.
+ */
+export function formatAmount(amount: number, currency: string): string {
+  try {
+    return new Intl.NumberFormat(undefined, {
+      style: "currency",
+      currency,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(amount)
+  } catch {
+    return `${currency} ${amount.toFixed(2)}`
+  }
+}
+
 export interface PlanHighlight {
   label: string
   value: string

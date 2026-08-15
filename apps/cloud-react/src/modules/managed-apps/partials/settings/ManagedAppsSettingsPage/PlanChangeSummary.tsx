@@ -1,7 +1,8 @@
 import { cn } from "@datadack/common-ui"
 import { ArrowRight, TrendingDown, TrendingUp } from "lucide-react"
 
-import { formatPrice, planQuotaDeltas } from "../../../components"
+import { formatAmount, formatPrice, planQuotaDeltas } from "../../../components"
+import { usePlanEstimate } from "../../../managed-apps.hooks"
 import type { Plan } from "../../../managed-apps.types"
 
 interface PlanChangeSummaryProps {
@@ -14,25 +15,54 @@ interface PlanChangeSummaryProps {
  * What the confirm dialog is actually confirming.
  *
  * A plan change spends money and moves quotas, so the dialog states both: the
- * monthly price either side of the move, and every quota that differs with the
- * direction it moves in. The billing sentence is the part people are entitled
- * to know before pressing the button — a paid tier is an ordinary monthly
- * subscription charged from the wallet now, and moving to the free tier cancels
- * it rather than refunding it.
+ * quotas that differ with the direction they move in, and — for a paid tier —
+ * the itemised cost, straight from the server's own quote.
+ *
+ * The cost is quoted rather than derived from the catalogue price because the
+ * two are not the same number. An account carrying a permanent discount pays
+ * less than the advertised price, and GST is added on top, so a dialog showing
+ * ₹499/mo preceded a ₹471.06 debit with nothing accounting for the difference.
+ * The quote runs through the same discount + GST math the charge does, so what
+ * is shown here is what the wallet is debited.
  */
 export function PlanChangeSummary({ from, to, projectsInUse }: Readonly<PlanChangeSummaryProps>) {
   const deltas = planQuotaDeltas(from.limits, to.limits)
   const paying = to.price_minor > 0
   const wasPaying = from.price_minor > 0
 
-  // What this move does to the wallet, in one sentence, before it is made.
+  // Only a paid move costs anything, so only a paid move is quoted.
+  const { data: cost } = usePlanEstimate(to.code, paying)
+  const discounted = Boolean(cost && cost.discount_pct > 0 && cost.list_price > cost.base)
+
+  // What this move does to the wallet, in one sentence, before it is made. When
+  // a quote is available the itemised block carries the amount, so the sentence
+  // only has to cover the recurrence.
   let billingLine = "Both plans are free — nothing is charged."
   if (paying) {
-    billingLine = `${to.name} is billed monthly and the first month is charged from your wallet now.`
+    billingLine = cost
+      ? `${to.name} is billed monthly. The first month is charged from your wallet now.`
+      : `${to.name} is billed monthly and the first month is charged from your wallet now.`
   } else if (wasPaying) {
     billingLine =
       "Your current subscription is cancelled. There is no refund for the month already paid."
   }
+
+  const costRow = (label: string, value: string, opts?: { strong?: boolean; muted?: boolean }) => (
+    <div className="flex items-baseline justify-between gap-3 text-[12px]">
+      <span className={opts?.strong ? "font-medium text-foreground" : "text-muted-foreground"}>
+        {label}
+      </span>
+      <span
+        className={cn(
+          "font-mono",
+          opts?.strong && "font-medium text-foreground",
+          opts?.muted && "text-status-success",
+        )}
+      >
+        {value}
+      </span>
+    </div>
+  )
 
   return (
     <div className="space-y-3">
@@ -74,6 +104,37 @@ export function PlanChangeSummary({ from, to, projectsInUse }: Readonly<PlanChan
             </li>
           ))}
         </ul>
+      )}
+
+      {cost && (
+        <div className="space-y-1.5 rounded-lg border border-border/60 bg-muted/20 p-3">
+          {discounted ? (
+            <>
+              {costRow(`${to.name} plan`, formatAmount(cost.list_price, cost.currency))}
+              {costRow(
+                `Discount (${String(cost.discount_pct)}% off)`,
+                `−${formatAmount(cost.list_price - cost.base, cost.currency)}`,
+                { muted: true },
+              )}
+              {/* A price cut with no attribution is one the customer cannot
+                  check — so the reason sits with the number it explains. */}
+              {cost.discount_reason && (
+                <p className="pl-0 text-[11px] text-muted-foreground">{cost.discount_reason}</p>
+              )}
+              <div className="border-t border-border/60 pt-1.5">
+                {costRow("Subtotal", formatAmount(cost.base, cost.currency))}
+              </div>
+            </>
+          ) : (
+            costRow(`${to.name} plan`, formatAmount(cost.base, cost.currency))
+          )}
+          {costRow(`GST (${String(cost.gst_rate)}%)`, formatAmount(cost.gst, cost.currency))}
+          <div className="border-t border-border/60 pt-1.5">
+            {costRow("Charged from wallet now", formatAmount(cost.total, cost.currency), {
+              strong: true,
+            })}
+          </div>
+        </div>
       )}
 
       <p className="text-[12px]">{billingLine}</p>

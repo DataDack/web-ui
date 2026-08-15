@@ -22,6 +22,7 @@ export { RootDirectoryInput } from "./RootDirectoryInput"
 export { PlanLimitsPanel } from "./PlanLimitsPanel"
 export { PlanTierArt } from "./plan/PlanTierArt"
 export {
+  formatAmount,
   formatLimit,
   formatPrice,
   isUnlimited,

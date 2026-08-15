@@ -82,6 +82,28 @@ export function useAccountPlan() {
 }
 
 /**
+ * What a tier will actually cost this account, for the confirm dialog.
+ *
+ * The catalogue price is what the tier is advertised at; this is what the
+ * wallet is debited, which differs whenever the account carries a discount or
+ * once GST is added. Enabled only when a tier is actually being confirmed —
+ * there is no reason to price every card on the page.
+ *
+ * A failure here is not fatal: the dialog falls back to the catalogue price and
+ * the generic billing sentence, which is what it showed before quotes existed.
+ */
+export function usePlanEstimate(code: string | undefined, enabled = true) {
+  return useQuery({
+    queryKey: MANAGED_APPS_QUERY_KEYS.planEstimate(code ?? ""),
+    queryFn: () => managedAppsApi.planEstimate(code ?? ""),
+    enabled: enabled && Boolean(code),
+    // The account's discount does not change while a dialog is open, but the
+    // answer is cheap to keep fresh across separate upgrade attempts.
+    staleTime: 60 * 1000,
+  })
+}
+
+/**
  * Upgrade or downgrade the account's tier.
  *
  * A paid tier is a monthly subscription, so this spends money and the server's
