@@ -1835,6 +1835,48 @@
       "description": "Hostnames that answer for this resource — the platform-provided address and any custom domains attached to it.",
       "empty": "No domains yet",
       "emptySubtitle": "This resource has no hostnames registered. The platform address appears here once one is minted."
+    },
+    "actions": {
+      "add": "Add domain",
+      "viewRecords": "View records",
+      "verifyNow": "Verify now",
+      "remove": "Remove",
+      "removeConfirmTitle": "Remove {{hostname}}?",
+      "removeConfirmBody": "The platform stops answering for this hostname immediately. The DNS records at your registrar are left as they are — clean them up yourself, or re-add the domain later.",
+      "removeConfirmLabel": "Remove domain",
+      "removed": "{{hostname}} removed",
+      "removeFailed": "Could not remove the domain",
+      "verified": "{{hostname}} is verified and active",
+      "notYetVerified": "Not verified yet — the DNS records were not found",
+      "verifyFailed": "The verification check could not run"
+    },
+    "add": {
+      "title": "Add custom domain",
+      "description": "Point a domain you own at this resource.",
+      "hostnameLabel": "Hostname",
+      "hostnamePlaceholder": "app.example.com",
+      "hostnameHint": "A domain you own, e.g. app.example.com. You'll create two DNS records at your registrar to prove ownership and route traffic.",
+      "hostnameInvalid": "Enter a valid hostname like app.example.com — lowercase letters, digits, hyphens and dots only.",
+      "submit": "Continue",
+      "createFailed": "Could not add the domain",
+      "recordsIntro": "Create these records at your DNS provider. Verification runs automatically and usually completes within minutes of the records propagating.",
+      "recordName": "Name",
+      "recordValue": "Value",
+      "waiting": "Waiting for DNS",
+      "checkedAgo": "checked {{ago}} ago",
+      "notCheckedYet": "first check pending",
+      "doneTitle": "Domain verified",
+      "doneOwnership": "Ownership verified",
+      "doneRouting": "Routing live",
+      "doneCertificate": "Certificate issues on the first request",
+      "done": "Done",
+      "close": "Close",
+      "apexAlternative": "Apex domain? Use this A record instead of the CNAME.",
+      "subdomainAlternative": "Subdomain? Use this CNAME instead of the A record.",
+      "terminal": {
+        "suspended": "This domain is suspended — its app is gone or was disabled. It will not verify until the app is back.",
+        "released": "This domain was removed. Close this dialog, or add the domain again to restart verification."
+      }
     }
   },
   "networkInterfaces": {

@@ -16,8 +16,12 @@ function serializeParams(params: AdminDomainListParams): Record<string, string> 
 }
 
 export const DOMAINS_QUERY_KEYS = {
+  /** Root of every domains query — the invalidation target after any write. */
+  all: ["domains"] as const,
   list: (params: DomainListParams) => ["domains", "list", serializeParams(params)] as const,
   admin: (params: AdminDomainListParams) => ["domains", "admin", serializeParams(params)] as const,
+  /** One row, keyed by hostname — the registry's own identifier. */
+  detail: (hostname: string) => ["domains", "detail", hostname] as const,
 }
 
 /**
