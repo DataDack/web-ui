@@ -230,6 +230,9 @@ export function actionsColumn<TData>(options: {
     meta: { interactive: true } satisfies DataTableColumnMeta,
     cell: ({ row }) => {
       const actions = options.actions(row.original)
+      // A row with nothing actionable gets no trigger at all — an ellipsis
+      // that opens an empty menu reads as broken, not as "no actions".
+      if (actions.length === 0) return null
       const destructive = actions.filter((action) => action.destructive)
       const normal = actions.filter((action) => !action.destructive)
 

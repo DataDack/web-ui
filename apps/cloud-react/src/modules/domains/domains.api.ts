@@ -1,6 +1,12 @@
-import { api, type ApiMeta } from "@/services/api/client"
+import { api, apiDelete, apiGet, apiPost, type ApiMeta } from "@/services/api/client"
 
-import type { AdminDomainListParams, Domain, DomainList, DomainListParams } from "./domains.types"
+import type {
+  AdminDomainListParams,
+  CreateDomainRequest,
+  Domain,
+  DomainList,
+  DomainListParams,
+} from "./domains.types"
 
 // cloud-be-go: app "domains", module "registry" -> base /domains/registry.
 // Tenant list:  GET /            (account-scoped via X-Account-Id)
@@ -40,4 +46,21 @@ export const domainsApi = {
 
   adminList: (params: AdminDomainListParams): Promise<DomainList> =>
     fetchList(`${BASE}/admin?${buildQuery(params)}`),
+
+  /** One enriched row, keyed by hostname (the registry's own identifier). */
+  get: (hostname: string): Promise<Domain> =>
+    apiGet<Domain>(`${BASE}/${encodeURIComponent(hostname)}`),
+
+  // Claim a CUSTOM hostname for a resource. Refusals worth surfacing verbatim:
+  // 400 invalid/platform-zone, 409 taken, 422 the resource has no platform
+  // hostname yet (deploy first), 403 quota.
+  create: (body: CreateDomainRequest): Promise<Domain> => apiPost<Domain>(`${BASE}/`, body),
+
+  /** Run the ownership check now. The server refuses re-checks within 10s (4xx). */
+  verify: (hostname: string): Promise<Domain> =>
+    apiPost<Domain>(`${BASE}/${encodeURIComponent(hostname)}/verify`),
+
+  /** CUSTOM rows only — managed hostnames retire with their resource. */
+  remove: (hostname: string): Promise<void> =>
+    apiDelete(`${BASE}/${encodeURIComponent(hostname)}`),
 }

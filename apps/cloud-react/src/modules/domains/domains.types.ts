@@ -8,6 +8,31 @@ export type DomainType = "func" | "vm" | "lb" | "app"
 // given back and the row is only history.
 export type DomainStatus = "pending" | "active" | "suspended" | "released"
 
+/** Live ownership-check state — present on CUSTOM rows only. */
+export interface DomainVerification {
+  verified: boolean
+  verified_at?: string
+  last_checked_at?: string
+  attempts: number
+  /** What the last failed check tripped on, human-readable. */
+  last_error?: string
+}
+
+/**
+ * The records the tenant must create at their registrar — present on CUSTOM
+ * rows only. TXT proves ownership; then either the CNAME (subdomain) or the
+ * A record (is_apex — apex domains cannot CNAME) routes the traffic.
+ */
+export interface DomainDnsInstructions {
+  txt_name: string
+  txt_value: string
+  cname_name: string
+  cname_target: string
+  a_name: string
+  a_value: string
+  is_apex: boolean
+}
+
 export interface Domain {
   id: string
   hostname: string
@@ -42,6 +67,16 @@ export interface Domain {
   /** Present only on superadmin rows (GET /domains/registry/admin). */
   account_name?: string
   account_number?: string
+  /** Present on CUSTOM rows only (list/get/create/verify responses). */
+  verification?: DomainVerification
+  dns_instructions?: DomainDnsInstructions
+}
+
+/** POST /domains/registry — attach the tenant's own hostname to a resource. */
+export interface CreateDomainRequest {
+  hostname: string
+  resource_type: string
+  resource_id: string
 }
 
 /** Query params for the tenant list — only set values are sent. */
