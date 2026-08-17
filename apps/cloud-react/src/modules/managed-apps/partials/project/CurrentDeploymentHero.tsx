@@ -1,13 +1,28 @@
-import { Code2, ExternalLink, GitBranch, Loader2, PackageCheck, Rocket } from "lucide-react"
+import {
+  Button,
+  CopyButton,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@datadack/common-ui"
+import {
+  ChevronDown,
+  Code2,
+  ExternalLink,
+  GitBranch,
+  Loader2,
+  PackageCheck,
+  Rocket,
+} from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
-import { Button, CopyButton } from "@datadack/common-ui"
 
-import { hostLabel, isTimeSet, shortSha, timeSince } from "./build-format"
+import { commitURL, hostLabel, isTimeSet, shortDateTime, shortSha, timeSince } from "./build-format"
 import { BuildProgressBar, ProjectStateChip } from "../../components"
 import { MANAGED_APPS_ROUTES } from "../../managed-apps.constants"
-import { useDeployProject } from "../../managed-apps.hooks"
+import { useCreateBuild, useDeployProject } from "../../managed-apps.hooks"
 import type { ProjectState } from "../../managed-apps.state"
 import { isBuildTransitional, type Build, type Project } from "../../managed-apps.types"
 
@@ -42,6 +57,10 @@ export function CurrentDeploymentHero({
   // it owns its own mutation here rather than widening this component's props
   // with a second onDeploy/deploying pair that only this branch would use.
   const deployProject = useDeployProject(project.id)
+  // Same trade for the split menu's second entry: rebuilding the release's
+  // exact commit is this component's own alternative to onDeploy, not
+  // something every caller should have to wire.
+  const rebuildRelease = useCreateBuild()
   // Only `built_pending_deploy` has an artifact sitting there with nothing
   // serving it. In every other state there is either nothing to release or
   // something already released, and the server would answer "not built yet".
@@ -109,24 +128,73 @@ export function CurrentDeploymentHero({
             </Button>
           )}
           {project.project_type !== "n8n" && (
-            <Button
-              size="sm"
-              className="gap-1.5"
-              disabled={!state.canDeploy || deploying}
-              title={
-                state.canDeploy
-                  ? `Build ${project.branch || "main"} again from its latest commit.`
-                  : state.detail
-              }
-              onClick={onDeploy}
-            >
-              {deploying ? (
-                <Loader2 className="size-3.5 animate-spin" />
-              ) : (
-                <Rocket className="size-3.5" />
-              )}
-              {state.kind === "awaiting_build" ? "Deploy now" : "Redeploy"}
-            </Button>
+            <div className="flex items-center">
+              <Button
+                size="sm"
+                className={
+                  // Squared toward the caret when the menu is present, so the
+                  // pair reads as one split control rather than two buttons.
+                  latestBuild?.commit_sha ? "gap-1.5 rounded-r-none" : "gap-1.5"
+                }
+                disabled={!state.canDeploy || deploying}
+                title={
+                  state.canDeploy
+                    ? `Build ${project.branch || "main"} again from its latest commit.`
+                    : state.detail
+                }
+                onClick={onDeploy}
+              >
+                {deploying ? (
+                  <Loader2 className="size-3.5 animate-spin" />
+                ) : (
+                  <Rocket className="size-3.5" />
+                )}
+                {state.kind === "awaiting_build" ? "Deploy now" : "Redeploy"}
+              </Button>
+              {/* The caret exists to make "Redeploy" unambiguous: the primary
+                  button builds the branch head, the menu spells that out and
+                  offers the release's exact commit as the alternative. No
+                  menu before the first build — there is no release to rebuild. */}
+              {latestBuild?.commit_sha ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      size="sm"
+                      className="rounded-l-none border-l border-l-background/30 px-1.5"
+                      disabled={!state.canDeploy || deploying}
+                      aria-label="Redeploy options"
+                    >
+                      <ChevronDown className="size-3.5" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-64">
+                    <DropdownMenuItem onClick={onDeploy}>
+                      <span className="flex flex-col gap-0.5">
+                        <span>Redeploy latest commit</span>
+                        <span className="text-[11px] text-muted-foreground">
+                          Builds {project.branch || "main"} at its current head
+                        </span>
+                      </span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        rebuildRelease.mutate({
+                          projectId: project.id,
+                          commitSha: latestBuild.commit_sha,
+                        })
+                      }}
+                    >
+                      <span className="flex flex-col gap-0.5">
+                        <span>Rebuild this release</span>
+                        <span className="font-mono text-[11px] text-muted-foreground">
+                          Re-runs the build for {shortSha(latestBuild.commit_sha)}
+                        </span>
+                      </span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : null}
+            </div>
           )}
         </div>
       </div>
@@ -144,14 +212,26 @@ export function CurrentDeploymentHero({
           {latestBuild?.commit_sha && (
             <>
               <span className="min-w-0 truncate">
-                <span className="font-mono">{shortSha(latestBuild.commit_sha)}</span>
-                {latestBuild.commit_message && <> {latestBuild.commit_message}</>}
+                {/* The sha links to the commit on GitHub — the console's own
+                    "View code" shows the tree, not the diff. The message is
+                    quoted so it reads as a commit message, not as this page's
+                    status text ("testing redeploy" looked like a state). */}
+                <a
+                  href={commitURL(project.repo_owner, project.repo_name, latestBuild.commit_sha)}
+                  target="_blank"
+                  rel="noreferrer"
+                  title={latestBuild.commit_sha}
+                  className="font-mono hover:text-foreground hover:underline"
+                >
+                  {shortSha(latestBuild.commit_sha)}
+                </a>
+                {latestBuild.commit_message && (
+                  <span className="italic"> “{latestBuild.commit_message}”</span>
+                )}
               </span>
-              {/* The code browser lives on the Builds tab, opened by ?code=.
-                  Linking to it keeps one owner of that sheet instead of a
-                  second copy here that would fetch the same tree again. */}
+              {/* The code browser lives on the build's own page now. */}
               <Link
-                to={`${MANAGED_APPS_ROUTES.project(project.id)}?tab=builds&code=${latestBuild.commit_sha}`}
+                to={`${MANAGED_APPS_ROUTES.build(project.id, latestBuild.id)}?tab=source`}
                 className="flex items-center gap-1 text-status-info hover:underline"
               >
                 <Code2 className="size-3" />
@@ -159,7 +239,11 @@ export function CurrentDeploymentHero({
               </Link>
             </>
           )}
-          {settledAt && <span>settled {timeSince(settledAt)}</span>}
+          {settledAt && (
+            <span title={new Date(settledAt).toLocaleString()}>
+              Deployed {shortDateTime(settledAt)} · {timeSince(settledAt)}
+            </span>
+          )}
           <Link
             to={`${MANAGED_APPS_ROUTES.project(project.id)}?tab=builds`}
             className="ml-auto text-status-info hover:underline"

@@ -3924,7 +3924,7 @@
       "noTicketsFromThisUser": "No tickets from this user",
       "theyHaveNotAskedSupportForAnythingYet": "They have not asked support for anything yet.",
       "superAdmin": "Super Admin",
-      "thisUserIsnAposTAMemberOfAnyAccount": "This user isn&apos;t a member of any account.",
+      "thisUserIsnAposTAMemberOfAnyAccount": "This user isn't a member of any account.",
       "ticketsUnreadable": "Their tickets could not be read."
     },
     "availabilityZoneFormSheet": {
@@ -5253,24 +5253,20 @@
     "currentDeploymentHero": {
       "buildHistory": "Build history"
     },
-    "latestBuildLog": {
-      "latestBuild": "Latest build",
-      "viewOnGithub": "View on GitHub"
-    },
     "projectBuildsTab": {
       "noBuildsYet": "No builds yet",
       "buildHistory": "Build history",
-      "newestFirstClickARowToOpenItsLog": "Newest first — click a row to open its log.",
+      "everyBuildNewestFirstOpenOneForItsLog": "Every build, newest first. Open one for its log, source and output.",
       "noBuildsYet2": "No builds yet",
       "deploymentActivity": "Deployment activity",
-      "everyLifecycleEventAcrossTheseBuildsNewestFi": "Every lifecycle event across these builds, newest first."
+      "lifecycleEventsGroupedPerBuild": "Lifecycle events grouped per build, oldest → newest inside each build."
     },
     "projectDetailPage": {
       "projectNotFound": "Project not found",
       "finishSetup": "Finish setup"
     },
     "projectOverviewTab": {
-      "emptyFieldsInheritThePlatformDefaultForThisR": "Empty fields inherit the platform default for this runtime.",
+      "fieldsMarkedDefaultUseThePlatformPreset": "Fields marked default use the platform preset for this runtime.",
       "finishSetup": "Finish setup"
     },
     "buildOutputSection": {
@@ -5306,7 +5302,7 @@
       "noRuntimeContainerYet": "No runtime container yet."
     },
     "customPlanCard": {
-      "letAposSTalk": "Let&apos;s talk",
+      "letAposSTalk": "Let's talk",
       "contactUs": "Contact us",
       "opensASupportTicketWeReplyInTheThread": "Opens a support ticket — we reply in the thread."
     },

@@ -84,8 +84,8 @@ export function formatArtifactBytes(bytes: number): string {
 /** Exhaustive by construction — a new BuildTrigger will not compile without one. */
 const TRIGGER_LABEL_MAP: Record<BuildTrigger, string> = {
   push: "Push",
-  manual: "Manual",
-  initial: "Initial",
+  manual: "Manual redeploy",
+  initial: "First deploy",
 }
 
 // Read through a Map because the value comes off the wire: an unrecognised
@@ -121,12 +121,46 @@ const TERMINAL_LOOKUP = new Map<string, { title: string; tone: StatusTone; detai
 )
 
 /** First 7 chars of a commit SHA — "" stays "". */
-function shortSha(sha: string): string {
+export function shortSha(sha: string): string {
   return sha.slice(0, 7)
 }
 
+/**
+ * Absolute wall-clock stamp for an event: "14:02:29", or "15 Aug, 14:02" once
+ * the event is not from today. Lifecycle events are seconds apart — four of
+ * them all reading "2d ago" says nothing about their order or spacing, which
+ * is the one thing a lifecycle feed exists to show.
+ *
+ * Kept local so components/ does not reach into partials/ for build-format
+ * (same trade as isTimeSet above).
+ */
+export function eventStamp(iso: string): string {
+  const date = new Date(iso)
+  const ms = date.getTime()
+  if (Number.isNaN(ms) || ms <= 0) return "—"
+  const sameDay = new Date().toDateString() === date.toDateString()
+  return sameDay
+    ? date.toLocaleTimeString(undefined, { hour12: false })
+    : date.toLocaleString(undefined, {
+        day: "numeric",
+        month: "short",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      })
+}
+
+/**
+ * A build with no commit message, described by its trigger. Mirrors
+ * build-format's triggerFallbackLabel under the same layering rule as above.
+ */
+export function buildFallbackLabel(trigger: string): string {
+  if (trigger === "push") return "Push deploy"
+  return TRIGGER_LOOKUP.get(trigger) ?? trigger
+}
+
 /** One build's events, oldest first (the `seq` values encode this order). */
-function deriveBuildEvents(build: Build): ActivityEvent[] {
+export function deriveBuildEvents(build: Build): ActivityEvent[] {
   const events: ActivityEvent[] = []
 
   // created_at is NOT gated on isTimeSet: a build row cannot exist without
@@ -137,7 +171,9 @@ function deriveBuildEvents(build: Build): ActivityEvent[] {
     buildId: build.id,
     at: build.created_at,
     title: "Build queued",
-    detail: [`${TRIGGER_LOOKUP.get(build.triggered_by) ?? build.triggered_by} trigger`]
+    // No " trigger" suffix — the labels are self-explanatory, and "First
+    // deploy trigger" reads like the pipeline talking to itself.
+    detail: [TRIGGER_LOOKUP.get(build.triggered_by) ?? build.triggered_by]
       .concat(build.commit_sha !== "" ? [shortSha(build.commit_sha)] : [])
       .join(" · "),
     tone: "info",

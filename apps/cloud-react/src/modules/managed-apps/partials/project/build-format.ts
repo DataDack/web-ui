@@ -5,8 +5,10 @@ import type { BuildTrigger } from "../../managed-apps.types"
 /** Exhaustive by construction — a new BuildTrigger will not compile without one. */
 const TRIGGER_LABEL_MAP: Record<BuildTrigger, string> = {
   push: "Push",
-  manual: "Manual",
-  initial: "Initial",
+  manual: "Manual redeploy",
+  // "Initial" is pipeline jargon; what happened, from the user's side, is the
+  // project's first deploy.
+  initial: "First deploy",
 }
 
 const TRIGGER_LOOKUP = new Map<string, string>(Object.entries(TRIGGER_LABEL_MAP))
@@ -20,6 +22,16 @@ const TRIGGER_LOOKUP = new Map<string, string>(Object.entries(TRIGGER_LABEL_MAP)
  */
 export function triggerLabel(trigger: string): string {
   return TRIGGER_LOOKUP.get(trigger) ?? trigger
+}
+
+/**
+ * A build with no commit message, described by its trigger: "Push deploy",
+ * "Manual redeploy", "First deploy". Not `${triggerLabel} deploy` — two of the
+ * three labels already end in "deploy", and "First deploy deploy" is what that
+ * template renders.
+ */
+export function triggerFallbackLabel(trigger: string): string {
+  return trigger === "push" ? "Push deploy" : triggerLabel(trigger)
 }
 
 /** First 7 chars of a commit SHA — "" stays "". */
@@ -71,6 +83,23 @@ export function formatDuration(startIso: string | null, endIso: string | null): 
   const minutes = Math.floor(seconds / 60)
   if (minutes < 60) return `${String(minutes)}m ${String(seconds % 60)}s`
   return `${String(Math.floor(minutes / 60))}h ${String(minutes % 60)}m`
+}
+
+/**
+ * Compact absolute stamp: "15 Aug, 13:56". Relative times answer "how long
+ * ago"; this answers "when", and the two are shown together wherever a reader
+ * might need to correlate builds — "2d ago" on four rows in a row says nothing.
+ */
+export function shortDateTime(iso: string): string {
+  const date = new Date(iso)
+  if (Number.isNaN(date.getTime())) return "—"
+  return date.toLocaleString(undefined, {
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  })
 }
 
 /** Public URL without the scheme — reads better next to a copy button. */

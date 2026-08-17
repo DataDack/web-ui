@@ -2,6 +2,8 @@ import { Button, cn } from "@datadack/common-ui"
 import { ArrowDownToLine, Copy, Download, WrapText } from "lucide-react"
 
 interface LogToolbarProps {
+  /** The build is still writing — Follow only exists while this is true. */
+  active: boolean
   following: boolean
   onToggleFollow: () => void
   wrap: boolean
@@ -17,9 +19,12 @@ interface LogToolbarProps {
  *
  * Follow is a toggle rather than something the component decides on its own:
  * reading a failure means scrolling back, and a view that yanks you to the
- * bottom every three seconds makes that impossible.
+ * bottom every three seconds makes that impossible. It disappears entirely
+ * once the build settles — tailing a log nothing writes to does nothing, and
+ * a control that does nothing teaches the reader not to trust the others.
  */
 export function LogToolbar({
+  active,
   following,
   onToggleFollow,
   wrap,
@@ -35,17 +40,19 @@ export function LogToolbar({
         {lineCount === 1 ? "1 line" : `${String(lineCount)} lines`}
       </span>
 
-      <Button
-        type="button"
-        variant="ghost"
-        size="sm"
-        aria-pressed={following}
-        className={cn("h-7 gap-1.5 px-2 text-[12px]", following && "text-status-info")}
-        onClick={onToggleFollow}
-      >
-        <ArrowDownToLine className="size-3.5" />
-        Follow
-      </Button>
+      {active && (
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          aria-pressed={following}
+          className={cn("h-7 gap-1.5 px-2 text-[12px]", following && "text-status-info")}
+          onClick={onToggleFollow}
+        >
+          <ArrowDownToLine className="size-3.5" />
+          Follow
+        </Button>
+      )}
 
       <Button
         type="button"

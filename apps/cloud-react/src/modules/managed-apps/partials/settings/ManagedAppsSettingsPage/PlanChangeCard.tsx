@@ -11,6 +11,8 @@ interface PlanChangeCardProps {
   direction: PlanDirection
   /** The tier every account starts on until it upgrades. */
   isDefault?: boolean
+  /** The tier below this one, for the "everything in X, plus…" line. */
+  buildsOn?: string
   /** Why this tier cannot be moved to — rendered instead of enabling the button. */
   blockedReason?: string
   disabled?: boolean
@@ -36,6 +38,7 @@ export function PlanChangeCard({
   plan,
   direction,
   isDefault,
+  buildsOn,
   blockedReason,
   disabled,
   onChoose,
@@ -47,7 +50,9 @@ export function PlanChangeCard({
   return (
     <div
       className={cn(
-        "relative flex flex-col gap-4 rounded-xl border p-4 transition-colors",
+        // min-w-0 so the quota labels below may truncate rather than force the
+        // card wider than its share of a four-across row.
+        "relative flex min-w-0 flex-col gap-4 rounded-xl border p-4 transition-colors",
         current
           ? "border-primary bg-primary/[0.04] ring-1 ring-primary/30"
           : "border-border/60 hover:border-border hover:bg-muted/20",
@@ -69,20 +74,22 @@ export function PlanChangeCard({
         )}
       </div>
 
-      <div className="space-y-1">
-        <p className="flex items-center gap-2 text-sm font-semibold">
-          {plan.name}
-          {/* Stated on the card the account starts on, so "why am I on
-					    this?" is answered where it is asked. */}
-          {isDefault && current && (
-            <span className="text-[11px] font-normal text-muted-foreground">
-              · every account starts here
-            </span>
-          )}
+      <div className="min-w-0 space-y-1">
+        {/* Name and price share a baseline: at four across the card has one
+            stack level fewer to give, and the two are read together anyway. */}
+        <p className="flex min-w-0 items-baseline justify-between gap-2">
+          <span className="truncate text-sm font-semibold">{plan.name}</span>
+          <span className="flex shrink-0 items-baseline gap-1">
+            <span className="text-xl font-semibold tracking-tight">{formatPrice(plan)}</span>
+            {!free && <span className="text-[11px] text-muted-foreground">/mo</span>}
+          </span>
         </p>
-        <p className="flex items-baseline gap-1">
-          <span className="text-xl font-semibold tracking-tight">{formatPrice(plan)}</span>
-          {!free && <span className="text-[11px] text-muted-foreground">/mo</span>}
+        {/* Stated on the card the account starts on, so "why am I on this?" is
+            answered where it is asked; otherwise, what this tier builds on. */}
+        <p className="truncate text-[11px] text-muted-foreground">
+          {isDefault
+            ? "Every account starts here"
+            : `Everything in ${buildsOn ?? "the plan below"}, plus:`}
         </p>
       </div>
 

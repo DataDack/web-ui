@@ -4,7 +4,7 @@ import { ExternalLink } from "lucide-react"
 import { staggerDelay } from "@/components/console"
 import { TONE_DOT_CLASSES } from "@/components/console/status-config"
 
-import { timeSince, type ActivityEvent } from "./activity-events"
+import { eventStamp, timeSince, type ActivityEvent } from "./activity-events"
 
 interface ActivityEventRowProps {
   event: ActivityEvent
@@ -29,11 +29,19 @@ export function ActivityEventRow({ event, index, isLast }: Readonly<ActivityEven
       <div className={cn("min-w-0 flex-1", !isLast && "pb-4")}>
         <div className="flex flex-wrap items-baseline justify-between gap-x-3">
           <span className="text-[13px] font-medium text-foreground">{event.title}</span>
+          {/* Absolute, not relative: the events in one build's lifecycle are
+              seconds apart, and four rows of "2d ago" hide exactly the
+              queue→claim→upload→serve spacing this feed exists to show. The
+              relative form moves to the title for "how long ago" readers. */}
           <span
             className="font-mono text-[11px] whitespace-nowrap text-muted-foreground"
-            title={Number.isNaN(stampMs) ? undefined : new Date(event.at).toLocaleString()}
+            title={
+              Number.isNaN(stampMs)
+                ? undefined
+                : `${new Date(event.at).toLocaleString()} · ${timeSince(event.at)}`
+            }
           >
-            {Number.isNaN(stampMs) ? "—" : timeSince(event.at)}
+            {eventStamp(event.at)}
           </span>
         </div>
 

@@ -55,6 +55,17 @@ export const managedAppsRoutes: RouteObject[] = [
     },
   },
   {
+    // One build as its own page — log, source and output tabs. Registered as a
+    // sibling rather than a child route: the project page renders its own tab
+    // chrome, and a build page nested inside it would inherit that shell.
+    path: "managed-apps/projects/:id/builds/:buildId",
+    handle: { hideSidebar: true },
+    lazy: async () => {
+      const { BuildDetailPage } = await import("./partials/project/BuildDetailPage")
+      return { Component: BuildDetailPage }
+    },
+  },
+  {
     // The GitHub App post-install redirect lands here
     // (?installation_id=&setup_action=&state=) — its own SPA route so GitHub
     // can send the browser back while the user stays authenticated.

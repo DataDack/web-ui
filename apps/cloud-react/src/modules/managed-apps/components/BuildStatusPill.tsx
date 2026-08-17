@@ -17,7 +17,10 @@ const BUILD_STATUS_META: Record<BuildStatus, { tone: StatusTone; label: string }
   // verified, with no runtime fleet to hand it to yet.
   built: { tone: "warning", label: "Built" },
   deploying: { tone: "info", label: "Deploying" },
-  ready: { tone: "success", label: "Ready" },
+  // "Ready" answered a question nobody asked (ready for what?). "Deployed" is
+  // the same claim in the vocabulary the rest of the console already speaks:
+  // the activity feed's terminal event says "Deployed and serving".
+  ready: { tone: "success", label: "Deployed" },
   failed: { tone: "danger", label: "Failed" },
   canceled: { tone: "neutral", label: "Canceled" },
   superseded: { tone: "neutral", label: "Superseded" },

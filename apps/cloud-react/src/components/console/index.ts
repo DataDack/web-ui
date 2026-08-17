@@ -18,7 +18,7 @@ export { MetricChart } from "./MetricChart"
 // EmptyState, CopyButton and TagList now live in the design system.
 export { SegmentedControl } from "./SegmentedControl"
 export type { SegmentedOption } from "./SegmentedControl"
-export { ComingSoon } from "./ComingSoon"
+export { ComingSoon, ComingSoonPanel } from "./ComingSoon"
 // KeyValueGrid now lives in the design system. The app copy is gone: the kit
 // version carries the `copyable` items and the 2-column default this console
 // relies on, so call sites did not have to change.

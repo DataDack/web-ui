@@ -13,6 +13,7 @@ import { CustomPlanCard } from "./CustomPlanCard"
 import { CustomPlanDialog } from "./CustomPlanDialog"
 import { PlanChangeCard, type PlanDirection } from "./PlanChangeCard"
 import { PlanChangeSummary } from "./PlanChangeSummary"
+import { PlanComparisonTable } from "./PlanComparisonTable"
 import { isUnlimited, PlanLimitsPanel } from "../../../components"
 import { MANAGED_APPS_ROUTES } from "../../../managed-apps.constants"
 import { useAccountPlan, useChangeAccountPlan, usePlans } from "../../../managed-apps.hooks"
@@ -88,11 +89,18 @@ export function ManagedAppsSettingsPage() {
     return `Allows ${String(limit)} project${limit === 1 ? "" : "s"} — delete ${String(excess)} more first.`
   }
 
+  // Every tier on one line, Custom included — it is a way to buy Managed Apps
+  // like the others, and wrapping it onto a second row read as an afterthought.
+  // Matches hosting's pricing grid so the two surfaces agree.
+  const gridClass = "grid gap-3 sm:grid-cols-2 xl:grid-cols-4"
+
   const renderPlanGrid = () => {
     if (plansLoading || accountLoading) {
       return (
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-          {[0, 1, 2].map((key) => (
+        <div className={gridClass}>
+          {/* Four, not three: a skeleton that does not stand in for the layout
+					    it replaces makes the page jump when the catalogue arrives. */}
+          {[0, 1, 2, 3].map((key) => (
             <Skeleton key={key} className="h-[290px] rounded-xl" />
           ))}
         </div>
@@ -110,7 +118,7 @@ export function ManagedAppsSettingsPage() {
             </p>
           </div>
           {/* Talking to us never depended on the catalogue loading. */}
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          <div className={gridClass}>
             <CustomPlanCard
               onContact={() => {
                 setContactOpen(true)
@@ -122,13 +130,17 @@ export function ManagedAppsSettingsPage() {
     }
 
     return (
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-        {plans.map((plan) => (
+      <div className={gridClass}>
+        {plans.map((plan, index) => (
           <PlanChangeCard
             key={plan.code}
             plan={plan}
             direction={directionOf(plan)}
             isDefault={plan.code === defaultPlan?.code}
+            // "Everything in X, plus…" — the one thing the comparison table
+            // below cannot say at a glance. Read off the catalogue's own order
+            // rather than a code list, so a tier added in S3 slots in.
+            buildsOn={index > 0 ? plans[index - 1].name : undefined}
             blockedReason={blockedReasonOf(plan)}
             disabled={change.isPending}
             onChoose={setPending}
@@ -176,6 +188,18 @@ export function ManagedAppsSettingsPage() {
         >
           {renderPlanGrid()}
         </Section>
+
+        {/* Only once there is a catalogue to compare. The error branch above
+				    already says why there is not, and repeating it here would be the
+				    same sentence twice. */}
+        {plans && plans.length > 0 && (
+          <Section
+            title="Compare plans"
+            description="Every quota and capability, side by side. Most of what Managed Apps does is on every plan — the numbers are where the tiers differ."
+          >
+            <PlanComparisonTable plans={plans} currentCode={current?.code} />
+          </Section>
+        )}
       </div>
 
       <ConfirmDialog

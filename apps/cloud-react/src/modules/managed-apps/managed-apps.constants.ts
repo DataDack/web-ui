@@ -40,6 +40,9 @@ export const MANAGED_APPS_ROUTES = {
   /** Section settings — the one place the account's tier can be changed. */
   settings: "/managed-apps/settings",
   project: (id: string) => `/managed-apps/projects/${id}`,
+  /** One build as a page — log, source and output tabs live on it. */
+  build: (projectId: string, buildId: string) =>
+    `/managed-apps/projects/${projectId}/builds/${buildId}`,
   /** Post-create: the pull request that has to be merged before anything builds. */
   setup: (id: string) => `/managed-apps/projects/${id}/setup`,
   githubCallback: "/managed-apps/github/callback",

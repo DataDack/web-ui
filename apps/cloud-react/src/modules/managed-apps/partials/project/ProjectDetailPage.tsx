@@ -1,11 +1,20 @@
-import { GitPullRequest, Globe, Hammer, Info, PackageX, Settings } from "lucide-react"
+import { Button, EmptyState, Skeleton } from "@datadack/common-ui"
+import {
+  Activity,
+  ChartLine,
+  GitPullRequest,
+  Globe,
+  Hammer,
+  Info,
+  PackageX,
+  Settings,
+} from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link, useNavigate, useParams } from "react-router-dom"
 
-import { DetailPage } from "@/components/console"
+import { ComingSoonPanel, DetailPage } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
-import { Button, EmptyState, Skeleton } from "@datadack/common-ui"
 
 import { ProjectBuildsTab } from "./ProjectBuildsTab"
 import { ProjectOverviewTab } from "./ProjectOverviewTab"
@@ -99,6 +108,31 @@ export function ProjectDetailPage() {
           label: "Builds",
           icon: Hammer,
           content: <ProjectBuildsTab project={project} />,
+        },
+        {
+          // Announced before built, deliberately: the tab is the promise that
+          // logs/health land here, and hiding it until then just moves the
+          // "where do I see my app's health?" question to support.
+          value: "observability",
+          label: "Observability",
+          icon: Activity,
+          content: (
+            <ComingSoonPanel
+              icon={Activity}
+              description="Runtime logs, uptime and resource usage for this app are on the way."
+            />
+          ),
+        },
+        {
+          value: "analytics",
+          label: "Analytics",
+          icon: ChartLine,
+          content: (
+            <ComingSoonPanel
+              icon={ChartLine}
+              description="Traffic and usage analytics for this app — requests, visitors, bandwidth — are on the way."
+            />
+          ),
         },
         {
           value: "domains",

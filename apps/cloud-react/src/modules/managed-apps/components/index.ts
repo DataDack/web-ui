@@ -25,12 +25,25 @@ export {
   formatAmount,
   formatLimit,
   formatPrice,
+  formatQuota,
   isUnlimited,
   planHighlights,
   planQuotaDeltas,
   planQuotaRows,
+  quotaField,
+  QUOTA_FIELDS,
 } from "./plan/plan-format"
-export type { PlanQuotaDelta } from "./plan/plan-format"
+export type { PlanQuotaDelta, QuotaField } from "./plan/plan-format"
+// What a tier sells beyond its eight numbers. Frontend copy, not catalogue
+// data: nothing in the backend gates these by plan, so they are stated as
+// included everywhere rather than invented as tier differences.
+export {
+  customFeatureCell,
+  customHighlights,
+  featureCell,
+  FEATURE_GROUPS,
+} from "./plan/plan-features"
+export type { FeatureCell, FeatureGroup, FeatureRow } from "./plan/plan-features"
 export { RuntimeSelect } from "./RuntimeSelect"
 
 // Environment variables

@@ -2,13 +2,7 @@ import { useTranslation } from "react-i18next"
 import { Button } from "@datadack/common-ui"
 import { MessagesSquare, Sparkles } from "lucide-react"
 
-/** What a Custom tier answers, in the same four slots the priced tiers use. */
-const CUSTOM_HIGHLIGHTS = [
-  { label: "Projects", value: "As many as you need" },
-  { label: "Bandwidth", value: "Negotiated" },
-  { label: "Build minutes", value: "Negotiated" },
-  { label: "Support", value: "Direct line" },
-]
+import { customHighlights } from "../../../components"
 
 /**
  * The tier that is not in the catalogue.
@@ -28,8 +22,11 @@ export function CustomPlanCard({
 }: Readonly<{ disabled?: boolean; onContact: () => void }>) {
   const { t } = useTranslation()
   return (
-    <div className="relative flex flex-col gap-4 rounded-xl border border-dashed border-brand-gold/40 bg-brand-gold-soft/40 p-4">
-      <div className="flex items-start justify-between gap-3">
+    <div className="relative flex min-w-0 flex-col gap-4 rounded-xl border border-dashed border-brand-gold/40 bg-brand-gold-soft/40 p-4">
+      {/* The priced cards put a pill opposite their glyph; there is no pill to
+          put here, so the row is just the glyph — but it keeps the same height
+          so all four cards share one horizontal rhythm across the line. */}
+      <div className="flex min-h-9 items-start gap-3">
         <span
           className="flex size-9 items-center justify-center rounded-lg border border-brand-gold/40 bg-brand-gold/10 text-brand-gold"
           aria-hidden
@@ -38,15 +35,20 @@ export function CustomPlanCard({
         </span>
       </div>
 
-      <div className="space-y-1">
-        <p className="text-sm font-semibold">Custom</p>
-        <p className="text-xl font-semibold tracking-tight">
-          {t("managedApps.customPlanCard.letAposSTalk")}
+      <div className="min-w-0 space-y-1">
+        <p className="flex min-w-0 items-baseline justify-between gap-2">
+          <span className="truncate text-sm font-semibold">Custom</span>
+          <span className="shrink-0 text-xl font-semibold tracking-tight">
+            {t("managedApps.customPlanCard.letAposSTalk")}
+          </span>
+        </p>
+        <p className="truncate text-[11px] text-muted-foreground">
+          Everything in the paid plans, on your terms
         </p>
       </div>
 
       <dl className="grid grid-cols-2 gap-x-3 gap-y-2 border-t border-brand-gold/20 pt-3">
-        {CUSTOM_HIGHLIGHTS.map((row) => (
+        {customHighlights().map((row) => (
           <div key={row.label} className="min-w-0">
             <dt className="truncate text-[10px] tracking-wide text-muted-foreground uppercase">
               {row.label}

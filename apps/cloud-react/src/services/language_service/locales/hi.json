@@ -4734,24 +4734,20 @@
     "currentDeploymentHero": {
       "buildHistory": "बिल्ड इतिहास"
     },
-    "latestBuildLog": {
-      "latestBuild": "नवीनतम बिल्ड",
-      "viewOnGithub": "GitHub पर देखें"
-    },
     "projectBuildsTab": {
       "noBuildsYet": "अभी कोई बिल्ड नहीं",
       "buildHistory": "बिल्ड इतिहास",
-      "newestFirstClickARowToOpenItsLog": "नवीनतम पहले — लॉग खोलने के लिए किसी पंक्ति पर क्लिक करें।",
+      "everyBuildNewestFirstOpenOneForItsLog": "हर बिल्ड, नवीनतम पहले। लॉग, सोर्स और आउटपुट के लिए कोई एक खोलें।",
       "noBuildsYet2": "अभी कोई बिल्ड नहीं",
       "deploymentActivity": "डिप्लॉयमेंट गतिविधि",
-      "everyLifecycleEventAcrossTheseBuildsNewestFi": "इन बिल्ड की हर जीवनचक्र घटना, नवीनतम पहले।"
+      "lifecycleEventsGroupedPerBuild": "जीवनचक्र घटनाएँ प्रति बिल्ड समूहित, हर बिल्ड में पुरानी → नई।"
     },
     "projectDetailPage": {
       "projectNotFound": "प्रोजेक्ट नहीं मिला",
       "finishSetup": "सेटअप पूरा करें"
     },
     "projectOverviewTab": {
-      "emptyFieldsInheritThePlatformDefaultForThisR": "खाली फ़ील्ड इस रनटाइम के प्लेटफ़ॉर्म डिफ़ॉल्ट को अपनाते हैं।",
+      "fieldsMarkedDefaultUseThePlatformPreset": "default चिह्नित फ़ील्ड इस रनटाइम का प्लेटफ़ॉर्म प्रीसेट उपयोग करते हैं।",
       "finishSetup": "सेटअप पूरा करें"
     },
     "buildOutputSection": {

@@ -1,6 +1,6 @@
-import { useTranslation } from "react-i18next"
 import { Badge, Button } from "@datadack/common-ui"
 import { ExternalLink, GitBranch, GitPullRequest } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
 import { KeyValueGrid, Section } from "@/components/console"
@@ -30,6 +30,32 @@ export function ProjectOverviewTab({ project }: Readonly<{ project: Project }>) 
   /** Empty build fields inherit — show what will actually run. */
   const inherited = (value: string, fallback: string | undefined) =>
     value !== "" ? value : (fallback ?? "—")
+
+  /**
+   * Whether a field is the platform preset or the user's own value, said out
+   * loud. The old panel claimed "empty fields inherit the platform default"
+   * while showing every field filled in — nothing on the page could tell a
+   * reader which fields were theirs.
+   */
+  const originBadge = (value: string) => (
+    <Badge
+      variant="outline"
+      className={
+        value === ""
+          ? "px-1.5 py-0 text-[9px] uppercase tracking-wide text-muted-foreground/70"
+          : "border-brand-gold/30 px-1.5 py-0 text-[9px] uppercase tracking-wide text-brand-gold"
+      }
+    >
+      {value === "" ? "default" : "custom"}
+    </Badge>
+  )
+
+  // The old "Build workflow: on branch" chip, as a sentence a person can
+  // read. The not-merged case keeps its warning chip in the grid — that one
+  // is a call to action, not decoration.
+  const sourceDescription = isSetupComplete(project.setup_state)
+    ? `Deploys automatically on every push to ${project.branch || "main"}.`
+    : "The branch this project builds and deploys from."
 
   return (
     <div className="space-y-5">
@@ -62,7 +88,7 @@ export function ProjectOverviewTab({ project }: Readonly<{ project: Project }>) 
       <Section
         variant="panel"
         title="Source"
-        description={isN8n ? undefined : "The branch this project builds and deploys from."}
+        description={isN8n ? undefined : sourceDescription}
         actions={
           isN8n ? undefined : (
             <Link
@@ -109,24 +135,23 @@ export function ProjectOverviewTab({ project }: Readonly<{ project: Project }>) 
                   </span>
                 ),
               },
-              {
-                label: "Build workflow",
-                value: isSetupComplete(project.setup_state) ? (
-                  <Badge
-                    variant="outline"
-                    className="border-status-success/25 text-[11px] text-status-success"
-                  >
-                    on branch
-                  </Badge>
-                ) : (
-                  <Badge
-                    variant="outline"
-                    className="border-status-warning/25 text-[11px] text-status-warning"
-                  >
-                    not merged
-                  </Badge>
-                ),
-              },
+              // Setup-complete is already the section's description sentence;
+              // only the abnormal state earns a third column here.
+              ...(isSetupComplete(project.setup_state)
+                ? []
+                : [
+                    {
+                      label: "Build workflow",
+                      value: (
+                        <Badge
+                          variant="outline"
+                          className="border-status-warning/25 text-[11px] text-status-warning"
+                        >
+                          not merged
+                        </Badge>
+                      ),
+                    },
+                  ]),
             ]}
           />
         )}
@@ -136,9 +161,7 @@ export function ProjectOverviewTab({ project }: Readonly<{ project: Project }>) 
         <Section
           variant="panel"
           title="Build"
-          description={t(
-            "managedApps.projectOverviewTab.emptyFieldsInheritThePlatformDefaultForThisR",
-          )}
+          description={t("managedApps.projectOverviewTab.fieldsMarkedDefaultUseThePlatformPreset")}
         >
           <KeyValueGrid
             columns={3}
@@ -159,37 +182,60 @@ export function ProjectOverviewTab({ project }: Readonly<{ project: Project }>) 
               },
               {
                 label: "Root directory",
-                value: project.root_dir || "./",
-                mono: true,
+                value: (
+                  <span className="flex items-center gap-1.5 font-mono text-[13px]">
+                    {project.root_dir || "./"}
+                    {originBadge(project.root_dir)}
+                  </span>
+                ),
               },
               {
                 // Both halves, because they are not always the same answer: the
                 // chosen major builds the project, and a static build is served
                 // by Caddy whatever compiled it.
                 label: "Environment",
-                value: defaults
-                  ? `Node ${inherited(project.node_version, defaults.node_version)} · ${defaults.runtime_image}`
-                  : "—",
-                mono: true,
+                value: defaults ? (
+                  <span className="font-mono text-[13px]">
+                    Node {inherited(project.node_version, defaults.node_version)}{" "}
+                    <span className="text-muted-foreground">· {defaults.runtime_image}</span>
+                  </span>
+                ) : (
+                  "—"
+                ),
               },
               {
                 label: "Install command",
-                value: inherited(project.install_command, defaults?.install_command),
-                mono: true,
+                value: (
+                  <span className="flex items-center gap-1.5 font-mono text-[13px]">
+                    {inherited(project.install_command, defaults?.install_command)}
+                    {originBadge(project.install_command)}
+                  </span>
+                ),
               },
               {
                 label: "Build command",
-                value: inherited(project.build_command, defaults?.build_command),
-                mono: true,
+                value: (
+                  <span className="flex items-center gap-1.5 font-mono text-[13px]">
+                    {inherited(project.build_command, defaults?.build_command)}
+                    {originBadge(project.build_command)}
+                  </span>
+                ),
               },
               {
                 label: "Output directory",
-                value: inherited(project.output_dir, defaults?.output_dir),
-                mono: true,
+                value: (
+                  <span className="flex items-center gap-1.5 font-mono text-[13px]">
+                    {inherited(project.output_dir, defaults?.output_dir)}
+                    {originBadge(project.output_dir)}
+                  </span>
+                ),
               },
               {
                 label: "Created",
-                value: new Date(project.created_at).toLocaleString(),
+                value: new Date(project.created_at).toLocaleString(undefined, {
+                  dateStyle: "medium",
+                  timeStyle: "short",
+                }),
                 mono: true,
               },
             ]}

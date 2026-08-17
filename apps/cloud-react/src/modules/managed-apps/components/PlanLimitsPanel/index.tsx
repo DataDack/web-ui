@@ -104,7 +104,11 @@ export function PlanLimitsPanel({
         )}
       </div>
 
-      <div className="mt-4">
+      {/* The projects meter, given the room the other seven quotas are not:
+			    it is the only one the platform actually enforces (the create
+			    endpoint answers 403 on it), so it is the only one that can be
+			    over-spent while you are reading this. */}
+      <div className="mt-4 rounded-lg border border-border/50 bg-muted/20 px-3 py-2.5">
         {usageKnown ? (
           <QuotaMeter
             label="Projects"
@@ -126,16 +130,26 @@ export function PlanLimitsPanel({
         )}
       </div>
 
-      <dl className="mt-4 grid grid-cols-2 gap-x-6 gap-y-2.5 border-t border-border/50 pt-3.5 sm:grid-cols-4">
+      <dl className="mt-3 flex flex-wrap gap-1.5">
         {rows.map((row) => (
-          <div key={row.label} className="min-w-0">
-            <dt className="truncate text-[10px] tracking-wide text-muted-foreground uppercase">
+          <div
+            key={row.label}
+            className="flex min-w-0 items-baseline gap-1.5 rounded-md border border-border/50 bg-background/40 px-2 py-1"
+          >
+            <dt className="shrink-0 text-[10px] tracking-wide text-muted-foreground uppercase">
               {row.label}
             </dt>
-            <dd className="truncate text-[13px] font-medium">{row.value}</dd>
+            <dd className="truncate text-[12px] font-medium">{row.value}</dd>
           </div>
         ))}
       </dl>
+      {/* Said plainly, because the chips above look like readings and are not.
+			    The component draws no bars for them for exactly this reason; the
+			    page should not leave the reason to be inferred from their absence. */}
+      <p className="mt-2 text-[11px] text-muted-foreground">
+        These are the plan&apos;s stated limits, not live usage — only the project count is metered
+        today.
+      </p>
     </div>
   )
 }

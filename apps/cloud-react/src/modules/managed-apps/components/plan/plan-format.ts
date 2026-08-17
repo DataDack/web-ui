@@ -75,7 +75,7 @@ export interface PlanHighlight {
   value: string
 }
 
-interface QuotaField {
+export interface QuotaField {
   key: keyof PlanLimits
   label: string
   /** Appended to the number — "GB", "MB", "s". */
@@ -90,7 +90,7 @@ interface QuotaField {
  * in each of them separately they could disagree about what a number was
  * called. The first four are the ones a tier is chosen on — see planHighlights.
  */
-const QUOTA_FIELDS: QuotaField[] = [
+export const QUOTA_FIELDS: QuotaField[] = [
   { key: "max_projects", label: "Projects" },
   { key: "bandwidth_gb", label: "Bandwidth", suffix: " GB" },
   { key: "build_minutes", label: "Build minutes" },
@@ -103,6 +103,25 @@ const QUOTA_FIELDS: QuotaField[] = [
 
 function formatField(field: QuotaField, limits: PlanLimits): string {
   return `${formatLimit(limits[field.key])}${field.suffix ?? ""}`
+}
+
+/**
+ * One quota's label and formatted value, looked up by key.
+ *
+ * The comparison table places each quota in the group it belongs to rather than
+ * in one block, so it needs them one at a time — but it must not re-declare the
+ * label or the suffix, which is exactly the disagreement QUOTA_FIELDS exists to
+ * prevent. An unknown key returns undefined rather than throwing: the key set is
+ * a compile-time union today, but this is the one seam a catalogue change could
+ * widen without the table noticing.
+ */
+export function quotaField(key: keyof PlanLimits): QuotaField | undefined {
+  return QUOTA_FIELDS.find((field) => field.key === key)
+}
+
+export function formatQuota(key: keyof PlanLimits, limits: PlanLimits): string {
+  const field = quotaField(key)
+  return field ? formatField(field, limits) : formatLimit(limits[key])
 }
 
 /**
