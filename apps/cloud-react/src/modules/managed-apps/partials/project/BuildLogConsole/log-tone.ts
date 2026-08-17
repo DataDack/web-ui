@@ -31,14 +31,44 @@ export interface SplitLine {
 const STAMP = /^(\d{2}:\d{2}:\d{2}) (.*)$/s
 
 /**
+ * Terminal escape sequences: CSI (colours, cursor movement, erase-line), OSC
+ * (titles, hyperlinks), and any other lone ESC pair. Build tools emit these
+ * freely — vite and bun colour everything — and rendered literally they turn
+ * "vite v8.2.1 building…" into "[36mvite v8.2.1 [32mbuilding…", which reads
+ * as a corrupted log rather than a styled one.
+ *
+ * Stripped rather than rendered: the viewer already colours the lines that
+ * matter (lineTone), and honouring cursor movement in a scrollback viewer is
+ * a terminal emulator, not a log pane. The download keeps the raw bytes.
+ */
+// eslint-disable-next-line no-control-regex, sonarjs/no-control-regex -- matching control bytes is this regex's whole job
+const ANSI = /\x1b\[[0-9;?]*[ -/]*[@-~]|\x1b\][^\x07\x1b]*(?:\x07|\x1b\\)?|\x1b[@-_]/g
+
+/** Remove terminal escape sequences. */
+export function stripAnsi(text: string): string {
+  return text.replace(ANSI, "")
+}
+
+/**
+ * A progress bar redraws its line with carriage returns; in a scrollback pane
+ * only the final frame is the line's content. Applied after the stamp split so
+ * the stamp - which precedes any \r the content carries - survives.
+ */
+function lastFrame(text: string): string {
+  const cr = text.lastIndexOf("\r")
+  return cr === -1 ? text : text.slice(cr + 1)
+}
+
+/**
  * Split a stamped line. Logs from workflows before v9 carry no stamp and are
  * returned whole with an empty time, which is what keeps an old build readable
  * rather than showing its first eight characters in the wrong column.
  */
 export function splitStamp(line: string): SplitLine {
-  const match = STAMP.exec(line)
-  if (!match) return { time: "", text: line }
-  return { time: match[1], text: match[2] }
+  const clean = stripAnsi(line)
+  const match = STAMP.exec(clean)
+  if (!match) return { time: "", text: lastFrame(clean) }
+  return { time: match[1], text: lastFrame(match[2]) }
 }
 
 /** GitHub Actions annotations — unambiguous, whatever printed them. */

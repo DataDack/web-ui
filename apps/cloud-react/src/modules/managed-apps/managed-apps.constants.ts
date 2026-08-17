@@ -89,4 +89,10 @@ export const MANAGED_APPS_QUERY_KEYS = {
     ["managed-apps", "projects", id, "source", "file", ref, path] as const,
   build: (id: string) => ["managed-apps", "builds", id] as const,
   buildLogs: (id: string) => ["managed-apps", "builds", id, "logs"] as const,
+  // Keyed by range because each window is a different server answer, not a
+  // client-side filter over one series.
+  projectMetrics: (id: string, range: string) =>
+    ["managed-apps", "projects", id, "metrics", range] as const,
+  projectAnalytics: (id: string, range: string) =>
+    ["managed-apps", "projects", id, "analytics", range] as const,
 }

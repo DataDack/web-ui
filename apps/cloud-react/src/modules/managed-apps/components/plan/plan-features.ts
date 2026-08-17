@@ -88,10 +88,9 @@ export const FEATURE_GROUPS: FeatureGroup[] = [
         "Active projects in the account. The only quota the platform enforces on create.",
         { kind: "text", value: "As many as you need" },
       ),
-      everyPlan(
-        "Estate overview",
-        "Every project, its state and what needs attention, on one page.",
-      ),
+      // No "Estate overview" row: that tab spans cPanel Hosting as well as
+      // Managed Apps, so it is not something a Managed Apps tier buys you —
+      // you get it for being in the console at all.
       everyPlan("Rename and delete projects"),
     ],
   },

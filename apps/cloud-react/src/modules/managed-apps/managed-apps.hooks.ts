@@ -596,3 +596,30 @@ export function useCancelBuild() {
     onError: (e) => toast.error(extractError(e, "Failed to cancel build")),
   })
 }
+
+/**
+ * The project container's resource series. Polls at 30s — the server caches
+ * the Proxmox read for 15s, and RRD points are minute-grained, so anything
+ * faster buys nothing.
+ */
+export function useProjectMetrics(id: string, range: string) {
+  return useQuery({
+    queryKey: MANAGED_APPS_QUERY_KEYS.projectMetrics(id, range),
+    queryFn: () => managedAppsApi.projectMetrics(id, range),
+    enabled: !!id,
+    refetchInterval: 30_000,
+  })
+}
+
+/**
+ * The project's edge traffic. Polls at 60s to match the gateway's flush
+ * cadence — the data cannot change faster than it arrives.
+ */
+export function useProjectAnalytics(id: string, range: string) {
+  return useQuery({
+    queryKey: MANAGED_APPS_QUERY_KEYS.projectAnalytics(id, range),
+    queryFn: () => managedAppsApi.projectAnalytics(id, range),
+    enabled: !!id,
+    refetchInterval: 60_000,
+  })
+}

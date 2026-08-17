@@ -12,11 +12,13 @@ import {
 import { useTranslation } from "react-i18next"
 import { Link, useNavigate, useParams } from "react-router-dom"
 
-import { ComingSoonPanel, DetailPage } from "@/components/console"
+import { DetailPage } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
 
+import { ProjectAnalyticsTab } from "./ProjectAnalyticsTab"
 import { ProjectBuildsTab } from "./ProjectBuildsTab"
+import { ProjectObservabilityTab } from "./ProjectObservabilityTab"
 import { ProjectOverviewTab } from "./ProjectOverviewTab"
 import { ProjectSettingsTab } from "./ProjectSettingsTab"
 import { ResourceDomainsTab } from "../../../domains/partials/ResourceDomainsTab"
@@ -110,29 +112,16 @@ export function ProjectDetailPage() {
           content: <ProjectBuildsTab project={project} />,
         },
         {
-          // Announced before built, deliberately: the tab is the promise that
-          // logs/health land here, and hiding it until then just moves the
-          // "where do I see my app's health?" question to support.
           value: "observability",
           label: "Observability",
           icon: Activity,
-          content: (
-            <ComingSoonPanel
-              icon={Activity}
-              description="Runtime logs, uptime and resource usage for this app are on the way."
-            />
-          ),
+          content: <ProjectObservabilityTab project={project} />,
         },
         {
           value: "analytics",
           label: "Analytics",
           icon: ChartLine,
-          content: (
-            <ComingSoonPanel
-              icon={ChartLine}
-              description="Traffic and usage analytics for this app — requests, visitors, bandwidth — are on the way."
-            />
-          ),
+          content: <ProjectAnalyticsTab project={project} />,
         },
         {
           value: "domains",

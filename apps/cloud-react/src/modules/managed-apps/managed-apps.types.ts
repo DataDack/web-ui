@@ -545,3 +545,60 @@ export interface ManagedAppsOverview {
   /** Most recent builds across all projects (max 5). */
   recent_builds: Build[]
 }
+
+// ---------------------------------------------------------------------------
+// Observability & analytics — /managedapps/projects/:id/{metrics,analytics}
+// ---------------------------------------------------------------------------
+
+/** One sample of the project container's resource series. */
+export interface ProjectMetricPoint {
+  /** Unix seconds. */
+  t: number
+  /** Percentages, 0..100. */
+  cpu: number
+  mem: number
+  disk: number
+  /** Throughput, MB/s. */
+  io: number
+  net: number
+}
+
+/**
+ * GET /projects/:id/metrics. "unavailable" means the container is not
+ * provisioned (or the cluster could not be read) and `points` is empty — the
+ * platform never fabricates a series, so the tab says so instead of charting.
+ */
+export interface ProjectMetrics {
+  source: "proxmox" | "unavailable"
+  node?: string
+  points: ProjectMetricPoint[]
+}
+
+/** One traffic bucket; `t` is the bucket's start in unix seconds. */
+export interface ProjectAnalyticsPoint {
+  t: number
+  requests: number
+  bytes_out: number
+  status_2xx: number
+  status_3xx: number
+  status_4xx: number
+  status_5xx: number
+}
+
+export interface ProjectAnalyticsTotals {
+  requests: number
+  bytes_out: number
+  status_2xx: number
+  status_3xx: number
+  status_4xx: number
+  status_5xx: number
+}
+
+/** GET /projects/:id/analytics — dense (zero-filled) series over the range. */
+export interface ProjectAnalytics {
+  range: string
+  /** How wide each point is: "hour" for 24h, "day" for 7d/30d. */
+  interval: "hour" | "day"
+  totals: ProjectAnalyticsTotals
+  points: ProjectAnalyticsPoint[]
+}

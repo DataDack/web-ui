@@ -16,7 +16,9 @@ import type {
   Plan,
   PlanCostBreakdown,
   Project,
+  ProjectAnalytics,
   ProjectEnvNames,
+  ProjectMetrics,
   ProjectSetup,
   RepoDetection,
   ProjectType,
@@ -206,6 +208,12 @@ export const managedAppsApi = {
     if (ref) params.set("ref", ref)
     return apiGet<SourceFile>(`${BASE}/projects/${id}/source/file?${params.toString()}`)
   },
+
+  projectMetrics: (id: string, range: string): Promise<ProjectMetrics> =>
+    apiGet<ProjectMetrics>(`${BASE}/projects/${id}/metrics?range=${encodeURIComponent(range)}`),
+
+  projectAnalytics: (id: string, range: string): Promise<ProjectAnalytics> =>
+    apiGet<ProjectAnalytics>(`${BASE}/projects/${id}/analytics?range=${encodeURIComponent(range)}`),
 
   projectEnv: (id: string): Promise<ProjectEnvNames> =>
     apiGet<ProjectEnvNames>(`${BASE}/projects/${id}/env`),
