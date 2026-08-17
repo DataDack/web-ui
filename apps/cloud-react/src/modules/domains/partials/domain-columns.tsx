@@ -77,7 +77,7 @@ function AttachedToCell({
  */
 export function buildDomainColumns(
   t: TFunction,
-  options: { withAccount?: boolean; linkResources?: boolean; forResource?: boolean } = {},
+  options: { linkResources?: boolean; forResource?: boolean } = {},
 ): ColumnDef<Domain>[] {
   // The tenant table links each attachment to its detail page. The superadmin
   // table must NOT: those routes fetch under the operator's own X-Account-Id,
@@ -164,26 +164,9 @@ export function buildDomainColumns(
     return columns.filter((c) => c.id !== "attachedTo" && c.id !== "type")
   }
 
-  if (options.withAccount) {
-    // Placed right after the hostname so an operator reads "whose is it"
-    // before "what is it".
-    columns.splice(1, 0, {
-      id: "account",
-      accessorFn: (d) => d.account_name ?? d.account_number ?? "",
-      header: () => t("domains.columns.account"),
-      enableSorting: false,
-      cell: ({ row }) => (
-        <div className="flex min-w-0 flex-col">
-          <span className="truncate text-[13px] font-medium text-foreground">
-            {row.original.account_name || "—"}
-          </span>
-          <span className="truncate font-mono text-[11px] text-muted-foreground">
-            {row.original.account_number || row.original.account_id}
-          </span>
-        </div>
-      ),
-    })
-  }
+  // There is no owning-account column. This table is tenant-scoped: every row on
+  // it belongs to the account reading it. The cross-tenant view, which is the only
+  // place that question is worth asking, moved to the serverless console.
 
   return columns
 }

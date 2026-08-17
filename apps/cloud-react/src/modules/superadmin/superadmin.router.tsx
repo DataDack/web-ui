@@ -1,6 +1,5 @@
 import { Navigate, type RouteObject } from "react-router-dom"
 
-import { domainsAdminRoutes } from "@/modules/domains/domains.router"
 import { hostingAdminRoutes } from "@/modules/hosting/hosting.router"
 
 import { RequireSuperAdmin } from "./components/RequireSuperAdmin"
@@ -23,9 +22,11 @@ export const superadminRoutes: RouteObject[] = [
       // Shared hosting owns its own admin surfaces; they are spread in here so
       // they inherit the admin shell and the is_super_admin gate.
       ...hostingAdminRoutes,
-      // The platform-wide domain registry, owned by modules/domains — spread in
-      // the same way so it shares the tenant page's table and types.
-      ...domainsAdminRoutes,
+      // The platform-wide domain listing is NOT here. Every hostname the platform
+      // hands out lives in serverless_faas now, and the operator's view of them
+      // moved to that service's own console — so there is one operator surface for
+      // hostnames rather than two that can disagree about what is registered.
+      // The tenant-facing /domains page stays here, served by a proxy.
       {
         path: "overview",
         lazy: async () => {

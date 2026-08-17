@@ -7,12 +7,7 @@ import { extractError } from "@/services/api/client"
 
 import { domainsApi } from "./domains.api"
 import { DOMAINS_QUERY_KEYS, isDomainTransitional } from "./domains.constants"
-import type {
-  AdminDomainListParams,
-  CreateDomainRequest,
-  DomainList,
-  DomainListParams,
-} from "./domains.types"
+import type { CreateDomainRequest, DomainList, DomainListParams } from "./domains.types"
 
 // Poll fast while any row is still pending (DNS/routing being realized), and
 // keep a slow background cadence otherwise — registry rows can change from
@@ -28,15 +23,6 @@ export function useDomains(params: DomainListParams) {
   return useQuery({
     queryKey: DOMAINS_QUERY_KEYS.list(params),
     queryFn: () => domainsApi.list(params),
-    placeholderData: keepPreviousData,
-    refetchInterval: (query) => refetchInterval(query.state.data),
-  })
-}
-
-export function useAdminDomains(params: AdminDomainListParams) {
-  return useQuery({
-    queryKey: DOMAINS_QUERY_KEYS.admin(params),
-    queryFn: () => domainsApi.adminList(params),
     placeholderData: keepPreviousData,
     refetchInterval: (query) => refetchInterval(query.state.data),
   })

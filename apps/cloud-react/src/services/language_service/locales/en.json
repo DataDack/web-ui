@@ -1827,8 +1827,7 @@
       "type": "Type",
       "attachedTo": "Attached to",
       "region": "Region",
-      "status": "Status",
-      "account": "Account"
+      "status": "Status"
     },
     "resourceTab": {
       "title": "Domains",
@@ -2781,9 +2780,6 @@
   },
   "superAdmin": {
     "title": "Super Admin",
-    "domains": {
-      "title": "Domains"
-    },
     "nav": {
       "entry": "Super Admin",
       "quotaRequests": "Quota requests",

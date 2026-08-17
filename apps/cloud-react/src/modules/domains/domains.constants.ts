@@ -1,6 +1,6 @@
-import type { AdminDomainListParams, DomainListParams } from "./domains.types"
+import type { DomainListParams } from "./domains.types"
 
-/** Server page size for both registry tables. */
+/** Server page size for the registry table. */
 export const DOMAINS_PAGE_SIZE = 25
 
 /**
@@ -8,7 +8,7 @@ export const DOMAINS_PAGE_SIZE = 25
  * calls that mean the same request hash to the same query key regardless of
  * which optional params the caller spelled out as undefined.
  */
-function serializeParams(params: AdminDomainListParams): Record<string, string> {
+function serializeParams(params: DomainListParams): Record<string, string> {
   const entries = Object.entries(params)
     .filter(([, value]) => value !== undefined && value !== null && value !== "")
     .map(([key, value]) => [key, String(value)] as const)
@@ -19,7 +19,6 @@ export const DOMAINS_QUERY_KEYS = {
   /** Root of every domains query — the invalidation target after any write. */
   all: ["domains"] as const,
   list: (params: DomainListParams) => ["domains", "list", serializeParams(params)] as const,
-  admin: (params: AdminDomainListParams) => ["domains", "admin", serializeParams(params)] as const,
   /** One row, keyed by hostname — the registry's own identifier. */
   detail: (hostname: string) => ["domains", "detail", hostname] as const,
 }

@@ -216,6 +216,89 @@ export const tenantListSchema = z.object({
   switchable: z.boolean().default(false),
 })
 
+// ---------------------------------------------------------------------------
+// The platform domain registry.
+//
+// snake_case, unlike everything above it: these rows are the registry's own table
+// serialized directly, and the field names are the column names. The console reads
+// them as they come rather than renaming, so a field is greppable across the two
+// services and the wire shape has one spelling.
+
+/** A custom domain's proof-of-ownership progress. Absent on platform-minted rows. */
+export const domainVerificationSchema = z.object({
+  verified: z.boolean().default(false),
+  verified_at: z.string().optional(),
+  last_checked_at: z.string().optional(),
+  attempts: z.number().default(0),
+  last_error: z.string().optional(),
+})
+
+/** What a tenant publishes in their own DNS. Absent until a challenge is minted. */
+export const domainDnsInstructionsSchema = z.object({
+  txt_name: z.string().default(""),
+  txt_value: z.string().default(""),
+  cname_name: z.string().default(""),
+  cname_target: z.string().default(""),
+  a_name: z.string().default(""),
+  a_value: z.string().default(""),
+  is_apex: z.boolean().default(false),
+})
+
+export const domainSchema = z.object({
+  hostname: z.string(),
+  label: z.string().default(""),
+  zone: z.string().default(""),
+  /** func | vm | lb | app. */
+  type: z.string().default(""),
+  /**
+   * true when the platform minted this name, false when a tenant brought their own.
+   * There is no "custom" TYPE — custom IS managed=false, and the filter tabs ride
+   * this rather than a fifth type value.
+   */
+  managed: z.boolean().default(true),
+  /** uuid.Nil ("00000000-…") is a real value here: it is the platform's own rows. */
+  account_id: z.string().default(""),
+  resource_group_id: z.string().nullish(),
+  region: z.string().default(""),
+  resource_type: z.string().default(""),
+  resource_id: z.string().default(""),
+  /** Exactly one hostname per resource is its canonical address. */
+  is_primary: z.boolean().default(false),
+  /** invoke | proxy_http | dns_a — what the EDGE does, not what the resource is. */
+  target: z.string().default(""),
+  public_ip: z.string().default(""),
+  private_ip: z.string().default(""),
+  port: z.number().default(0),
+  function_name: z.string().default(""),
+  function_qualifier: z.string().default(""),
+  auth_type: z.string().default(""),
+  endpoint: z.string().default(""),
+  /** pending | active | suspended | released. */
+  status: z.string().default(""),
+  status_reason: z.string().optional(),
+  /** wildcard | record | none. */
+  dns_mode: z.string().default(""),
+  /**
+   * What the DNS reconciler LAST WROTE — never what it should write. For a
+   * dns_mode=record name (vm, lb) an empty value means no record exists yet, so the
+   * hostname resolves nowhere even while the row reads active. See resolves().
+   */
+  dns_synced_ip: z.string().optional(),
+  dns_synced_at: z.string().optional(),
+  dns_error: z.string().optional(),
+  created_at: z.string().default(""),
+  updated_at: z.string().default(""),
+  verification: domainVerificationSchema.optional(),
+  dns_instructions: domainDnsInstructionsSchema.optional(),
+})
+
+export const domainListSchema = z.object({
+  domains: z.array(domainSchema).default([]),
+  total: z.number().default(0),
+  page: z.number().default(1),
+  limit: z.number().default(50),
+})
+
 /** One account the signed-in operator belongs to, per the identity service. */
 export const sessionAccountSchema = z.object({
   id: z.string(),
@@ -262,5 +345,9 @@ export type MetricSeries = z.infer<typeof metricSeriesSchema>
 export type AuditEvent = z.infer<typeof auditEventSchema>
 export type Tenant = z.infer<typeof tenantSchema>
 export type TenantList = z.infer<typeof tenantListSchema>
+export type Domain = z.infer<typeof domainSchema>
+export type DomainList = z.infer<typeof domainListSchema>
+export type DomainVerification = z.infer<typeof domainVerificationSchema>
+export type DomainDnsInstructions = z.infer<typeof domainDnsInstructionsSchema>
 export type Session = z.infer<typeof sessionSchema>
 export type SessionAccount = z.infer<typeof sessionAccountSchema>

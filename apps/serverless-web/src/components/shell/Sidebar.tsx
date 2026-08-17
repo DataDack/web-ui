@@ -1,5 +1,6 @@
 import {
   Activity,
+  Globe,
   Layers,
   ScrollText,
   Server,
@@ -27,6 +28,14 @@ const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
   {
     label: "Artifacts",
     items: [{ to: "/layers", label: "Layers", icon: Layers }],
+  },
+  {
+    // The platform domain registry: every hostname every product hands out, not
+    // just this service's function URLs. It is a group of its own rather than an
+    // item under Compute because it answers for four products, and an operator
+    // looking for "why does this name not resolve" is not looking at functions.
+    label: "Edge",
+    items: [{ to: "/domains", label: "Domains", icon: Globe }],
   },
   {
     label: "Observability",

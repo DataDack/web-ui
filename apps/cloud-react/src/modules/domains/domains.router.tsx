@@ -10,14 +10,7 @@ export const domainsRoutes: RouteObject[] = [
   },
 ]
 
-// Spread into superadmin.router.tsx (like hostingAdminRoutes) so the page
-// inherits the admin shell and the is_super_admin gate.
-export const domainsAdminRoutes: RouteObject[] = [
-  {
-    path: "domains",
-    lazy: async () => {
-      const { AdminDomainsPage } = await import("./partials/AdminDomainsPage")
-      return { Component: AdminDomainsPage }
-    },
-  },
-]
+// There is no admin route here any more. The operator's cross-tenant listing moved
+// to the serverless console, beside the service that owns the rows — see
+// apps/serverless-web/src/features/domains. What is left is the tenant's own page,
+// which cloud-be-go now serves by proxying the registry.

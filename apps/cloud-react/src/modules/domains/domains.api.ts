@@ -1,16 +1,17 @@
 import { api, apiDelete, apiGet, apiPost, type ApiMeta } from "@/services/api/client"
 
-import type {
-  AdminDomainListParams,
-  CreateDomainRequest,
-  Domain,
-  DomainList,
-  DomainListParams,
-} from "./domains.types"
+import type { CreateDomainRequest, Domain, DomainList, DomainListParams } from "./domains.types"
 
 // cloud-be-go: app "domains", module "registry" -> base /domains/registry.
-// Tenant list:  GET /            (account-scoped via X-Account-Id)
-// Admin list:   GET /admin       (platform-wide; rows carry account_name/number)
+//
+// These routes are a PROXY now. The rows live in serverless_faas — every hostname the
+// platform hands out moved there with the registry — and cloud-be-go forwards each call
+// under its own service credential, naming the tenant the request was authenticated as.
+// The paths, bodies and envelopes are unchanged, which is why this file did not have to
+// move with the data.
+//
+// There is no admin list here any more: the operator's cross-tenant view lives in the
+// serverless console, beside the service that owns the rows.
 const BASE = "/domains/registry"
 
 // utils.SendList envelope meta: the base ApiMeta plus the pagination block.
@@ -25,7 +26,7 @@ type ListMeta = ApiMeta & {
 
 /** Serialize only the params that are actually set — the backend treats an
  *  absent param and an empty one differently (managed= would parse as false). */
-function buildQuery(params: AdminDomainListParams): string {
+function buildQuery(params: DomainListParams): string {
   const query = new URLSearchParams()
   for (const [key, value] of Object.entries(params)) {
     if (value === undefined || value === null || value === "") continue
@@ -43,9 +44,6 @@ async function fetchList(url: string): Promise<DomainList> {
 export const domainsApi = {
   list: (params: DomainListParams): Promise<DomainList> =>
     fetchList(`${BASE}/?${buildQuery(params)}`),
-
-  adminList: (params: AdminDomainListParams): Promise<DomainList> =>
-    fetchList(`${BASE}/admin?${buildQuery(params)}`),
 
   /** One enriched row, keyed by hostname (the registry's own identifier). */
   get: (hostname: string): Promise<Domain> =>

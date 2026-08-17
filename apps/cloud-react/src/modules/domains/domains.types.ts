@@ -64,9 +64,6 @@ export interface Domain {
   tenant_serial: number
   created_at: string
   updated_at: string
-  /** Present only on superadmin rows (GET /domains/registry/admin). */
-  account_name?: string
-  account_number?: string
   /** Present on CUSTOM rows only (list/get/create/verify responses). */
   verification?: DomainVerification
   dns_instructions?: DomainDnsInstructions
@@ -90,11 +87,6 @@ export interface DomainListParams {
   resource_type?: string
   resource_id?: string
   q?: string
-}
-
-/** The admin list takes the same params plus an account scope. */
-export interface AdminDomainListParams extends DomainListParams {
-  account_id?: string
 }
 
 /** A page of rows plus the platform/account-wide total off the list meta. */

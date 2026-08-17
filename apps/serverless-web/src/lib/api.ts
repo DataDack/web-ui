@@ -3,6 +3,7 @@ import axios, { type AxiosInstance } from "axios"
 import {
   auditListSchema,
   dashboardSchema,
+  domainListSchema,
   logSnapshotSchema,
   logLineSchema,
   metricSeriesSchema,
@@ -10,6 +11,7 @@ import {
   tenantListSchema,
   type AuditEvent,
   type Dashboard,
+  type DomainList,
   type LogLine,
   type LogSnapshot,
   type MetricSeries,
@@ -447,6 +449,62 @@ export async function fetchAuditEvents(query: AuditQuery): Promise<AuditEvent[]>
 
   const { data } = await http.get<unknown>("/v1/admin/audit", { params })
   return auditListSchema.parse(data).events
+}
+
+/**
+ * Filters for the domain registry listing. Every field is optional; absent means
+ * unfiltered.
+ */
+export interface DomainQuery {
+  /** func | vm | lb | app. */
+  type?: string
+  /**
+   * true = platform-minted, false = a tenant's own custom domain, undefined =
+   * both. Custom is NOT a value of `type` — it is managed=false, so this stays a
+   * tri-state and undefined has to mean "do not send the parameter": the control
+   * plane parses `managed=` as false and would silently hide every custom row.
+   */
+  managed?: boolean
+  status?: string
+  resourceType?: string
+  resourceId?: string
+  /** Case-insensitive hostname substring. LIKE wildcards are escaped server-side. */
+  q?: string
+  accountId?: string
+  page?: number
+  limit?: number
+}
+
+/**
+ * Every hostname the platform has handed out, across every tenant and every
+ * product.
+ *
+ * This is the operator surface (`/registry/admin`), not the tenant one: it is not
+ * account-scoped, and the route behind it requires platform:admin.
+ *
+ * The tenant switcher does not narrow it. X-Faas-Account-Id rides along on every
+ * request this console makes, and this route ignores it — an operator looking at
+ * the registry is asking about the whole platform, and silently limiting the answer
+ * to whichever tenant another panel happens to be pointed at would hide most of it.
+ * Narrowing is the explicit `accountId` filter instead, so it is a visible choice.
+ *
+ * The rows carry account_id and no account NAME: the accounts table lives in the
+ * cloud console's database, and this service cannot join across it.
+ */
+export async function fetchDomains(query: DomainQuery): Promise<DomainList> {
+  const params: Record<string, string> = {}
+  if (query.type) params.type = query.type
+  if (query.managed !== undefined) params.managed = String(query.managed)
+  if (query.status) params.status = query.status
+  if (query.resourceType) params.resource_type = query.resourceType
+  if (query.resourceId) params.resource_id = query.resourceId
+  if (query.q) params.q = query.q
+  if (query.accountId) params.account_id = query.accountId
+  params.page = String(query.page ?? 1)
+  params.limit = String(query.limit ?? 100)
+
+  const { data } = await http.get<unknown>("/api/v1/domains/registry/admin", { params })
+  return domainListSchema.parse(data)
 }
 
 export async function fetchTenants(): Promise<TenantList> {

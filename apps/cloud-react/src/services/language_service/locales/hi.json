@@ -1829,8 +1829,7 @@
       "type": "प्रकार",
       "attachedTo": "संलग्न है",
       "region": "क्षेत्र",
-      "status": "स्थिति",
-      "account": "खाता"
+      "status": "स्थिति"
     },
     "resourceTab": {
       "title": "डोमेन",
@@ -2611,9 +2610,6 @@
   },
   "superAdmin": {
     "title": "Super Admin",
-    "domains": {
-      "title": "डोमेन"
-    },
     "nav": {
       "entry": "Super Admin",
       "quotaRequests": "कोटा अनुरोध",

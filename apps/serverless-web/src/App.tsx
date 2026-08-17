@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom"
 
 import { AppShell } from "@/components/shell/AppShell"
 import { AuditPage } from "@/features/audit/AuditPage"
+import { DomainsPage } from "@/features/domains/DomainsPage"
 import { DebugPreviewPage } from "@/features/functions/DebugPreviewPage"
 import { CreateFunctionPage } from "@/features/functions/CreateFunctionPage"
 import { FunctionDetailPage } from "@/features/functions/FunctionDetailPage"
@@ -24,6 +25,9 @@ export function App() {
         <Route path="/metrics" element={<MetricsPage />} />
         <Route path="/logs" element={<LogsPage />} />
         <Route path="/audit" element={<AuditPage />} />
+        {/* Every hostname the platform hands out. The registry moved into this
+            control plane, so the operator view of it lives here too. */}
+        <Route path="/domains" element={<DomainsPage />} />
         <Route path="/debug-preview" element={<DebugPreviewPage />} />
         {/* The studio moved into the function detail page's Code tab. */}
         <Route path="/studio" element={<Navigate to="/functions" replace />} />
