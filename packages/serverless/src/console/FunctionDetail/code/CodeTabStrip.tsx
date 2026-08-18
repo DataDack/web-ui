@@ -12,7 +12,7 @@ const strip = css`
   overflow-x: auto;
   overflow-y: hidden;
   border-bottom: 1px solid ${mix("--border", 60)};
-  background: ${mix("--background", 88)};
+  background: var(--glass-1-bg);
 
   /* A tab strip that grows a scrollbar changes height; keep it off-canvas. */
   scrollbar-width: none;
@@ -41,7 +41,7 @@ const tab = css`
 `
 
 const tabActive = css`
-  background: var(--card);
+  background: var(--glass-1-bg);
   color: var(--foreground);
   box-shadow: inset 0 2px 0 0 var(--brand-gold);
 `

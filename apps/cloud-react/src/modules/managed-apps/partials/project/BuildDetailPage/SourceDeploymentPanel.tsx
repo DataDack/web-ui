@@ -111,14 +111,26 @@ export function SourceDeploymentPanel({ build, project }: Readonly<SourceDeploym
 
           {!isLoading && envNames.length > 0 && (
             <div className="space-y-2">
-              {envNames.map((name) => (
+              {envNames.map((variable) => (
                 <div
-                  key={name}
+                  key={variable.key}
                   className="border border-border/60 bg-[var(--glass-3-bg)] px-3 py-2.5"
                 >
-                  <p className="truncate font-mono text-[10px] text-muted-foreground" title={name}>
-                    {name}
-                  </p>
+                  <div className="flex items-baseline justify-between gap-2">
+                    <p
+                      className="truncate font-mono text-[10px] text-muted-foreground"
+                      title={variable.key}
+                    >
+                      {variable.key}
+                    </p>
+                    {/* Only when it is narrowed: every variable being labelled
+										    "production, preview" is noise on a panel this small. */}
+                    {variable.targets.length === 1 && (
+                      <span className="shrink-0 font-mono text-[9px] tracking-wide text-muted-foreground uppercase">
+                        {variable.targets[0]}
+                      </span>
+                    )}
+                  </div>
                   <p
                     className="mt-1 font-mono text-[11px] text-primary/80"
                     aria-label="Value hidden"

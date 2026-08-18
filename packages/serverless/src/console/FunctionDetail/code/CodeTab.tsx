@@ -20,7 +20,6 @@ import {
   glass2,
   glass3,
   media,
-  mix,
 } from "@datadack/common-ui"
 
 import {
@@ -36,19 +35,25 @@ import {
   MAX_CODE_FILE_BYTES,
   type FunctionCodeFile,
   type FunctionEntity,
+  type FunctionUrl,
 } from "../../../data/types"
 import { CodeEditorPlaceholder } from "../../CodeEditorPlaceholder"
 import { ConfirmDialog } from "../../ConfirmDialog"
 import { errorMessage } from "../errorMessage"
 import type { FunctionDetailLabels } from "../labels"
+import { CodeDeployRail } from "./CodeDeployRail"
+import { CodeDock, type CodeDockPanel, type CodeLogEntry } from "./CodeDock"
 import { CodeEditorPane } from "./CodeEditorPane"
 import { CodeFileTree } from "./CodeFileTree"
 import { CodeNotEditable } from "./CodeNotEditable"
+import { CodeStatusBar } from "./CodeStatusBar"
 import { CodeTabStrip } from "./CodeTabStrip"
 import { CodeToolbar } from "./CodeToolbar"
-import { handlerFile } from "./language"
+import { handlerFile, languageFor } from "./language"
 import { PathDialog } from "./PathDialog"
 
+/* Transparent, not --card: the detail page beneath already paints the glass-1
+   surface, and a second opaque layer on top of it would cancel it out. */
 const shell = css`
   position: relative;
   display: flex;
@@ -56,9 +61,23 @@ const shell = css`
   flex-direction: column;
   min-height: 0;
   overflow: hidden;
-  border-radius: 0.625rem;
-  background: var(--card);
-  box-shadow: 0 0 0 1px ${mix("--border", 60)};
+  border-radius: 0;
+  background: transparent;
+`
+
+/* The pre-workbench states (loading, load error, not-editable) fill the same
+   square pane the workbench would have. They are composed with glass2, whose
+   radius and border are overridden here — a rounded card inset in a full-bleed
+   page reads as a mistake, not as emphasis. */
+const stateShell = css`
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 0;
+  background: var(--glass-1-bg);
 `
 
 /**
@@ -74,7 +93,7 @@ const fullscreenShell = css`
   z-index: 45;
   border-radius: 0;
   border: 0;
-  background: var(--background);
+  background: var(--glass-1-bg);
   box-shadow: none;
 `
 
@@ -156,6 +175,10 @@ export interface CodeTabProps {
   fn: FunctionEntity
   scope?: string
   labels: FunctionDetailLabels
+  /** Hostnames that invoke this function; shown in the deployment panel. */
+  urls?: readonly FunctionUrl[]
+  /** Opens Configuration → Environment variables. Omit to hide that shortcut. */
+  onManageEnv?: () => void
   className?: string
 }
 
@@ -168,7 +191,14 @@ export interface CodeTabProps {
  * does reaches a worker until that last step — which is why Save is cheap and
  * Deploy is the guarded one.
  */
-export function CodeTab({ fn, scope, labels, className }: Readonly<CodeTabProps>) {
+export function CodeTab({
+  fn,
+  scope,
+  labels,
+  urls,
+  onManageEnv,
+  className,
+}: Readonly<CodeTabProps>) {
   const copy = labels.code
   const { capabilities, transport } = useServerlessContext()
   const queryClient = useQueryClient()
@@ -188,6 +218,12 @@ export function CodeTab({ fn, scope, labels, className }: Readonly<CodeTabProps>
   const [confirmingDiscard, setConfirmingDiscard] = useState(false)
   const [staleDeploy, setStaleDeploy] = useState(false)
   const [fullscreen, setFullscreen] = useState(false)
+  const [railOpen, setRailOpen] = useState(true)
+  const [dockOpen, setDockOpen] = useState(false)
+  const [dockCollapsed, setDockCollapsed] = useState(false)
+  const [dockPanel, setDockPanel] = useState<CodeDockPanel>("output")
+  const [logEntries, setLogEntries] = useState<CodeLogEntry[]>([])
+  const [cursor, setCursor] = useState({ line: 1, column: 1 })
 
   const entries = useMemo(() => code.data?.files ?? [], [code.data])
   const editable = code.data?.editable === true
@@ -227,6 +263,12 @@ export function CodeTab({ fn, scope, labels, className }: Readonly<CodeTabProps>
       setActivePath(openPaths[openPaths.length - 1] ?? "")
     }
   }, [openPaths, activePath])
+
+  // A newly opened file starts at the top rather than wherever the last one was
+  // read. The status bar spans the workbench now, so this state lives here.
+  useEffect(() => {
+    setCursor({ line: 1, column: 1 })
+  }, [activePath])
 
   // Closing the tab with staged typing loses it; the browser's own prompt is
   // the only one that can interrupt a navigation this component does not own.
@@ -268,6 +310,34 @@ export function CodeTab({ fn, scope, labels, className }: Readonly<CodeTabProps>
     }
   }, [fullscreen, dialogOpen])
 
+  // Monotonic ids rather than Date.now(): two log lines written in the same
+  // millisecond (save-then-deploy) would otherwise collide as React keys.
+  const logSeq = useRef(0)
+  const appendLog = useCallback((level: CodeLogEntry["level"], text: string) => {
+    logSeq.current += 1
+    setLogEntries((prev) => [
+      ...prev,
+      { id: `log-${String(logSeq.current)}`, at: new Date(), level, text },
+    ])
+  }, [])
+
+  /**
+   * A toast says this for two seconds; the Output panel is where it stays. An
+   * error also raises the panel — a failed deploy is the one thing here nobody
+   * should have to go looking for.
+   */
+  const report = useCallback(
+    (level: CodeLogEntry["level"], text: string) => {
+      appendLog(level, text)
+      if (level === "error") {
+        setDockOpen(true)
+        setDockCollapsed(false)
+        setDockPanel("output")
+      }
+    },
+    [appendLog],
+  )
+
   const openFile = (path: string) => {
     setOpenPaths((prev) => (prev.includes(path) ? prev : [...prev, path]))
     setActivePath(path)
@@ -304,13 +374,17 @@ export function CodeTab({ fn, scope, labels, className }: Readonly<CodeTabProps>
     const pending = Object.entries(buffers)
     for (const [path, content] of pending) {
       if (new TextEncoder().encode(content).length > MAX_CODE_FILE_BYTES) {
-        toast.error(copy.errors.fileTooLarge(formatBytes(MAX_CODE_FILE_BYTES)))
+        const message = copy.errors.fileTooLarge(formatBytes(MAX_CODE_FILE_BYTES))
+        toast.error(message)
+        report("error", `${path}: ${message}`)
         return false
       }
       try {
         await putFile.mutateAsync({ path, content })
       } catch (error) {
-        toast.error(errorMessage(error, copy.errors.saveFailed))
+        const message = errorMessage(error, copy.errors.saveFailed)
+        toast.error(message)
+        report("error", `${path}: ${message}`)
         return false
       }
       setBuffers((prev) => withoutPath(prev, path))
@@ -323,11 +397,12 @@ export function CodeTab({ fn, scope, labels, className }: Readonly<CodeTabProps>
       const paths = Object.keys(buffers)
       if (paths.length === 0) return
       if (await saveAll()) {
-        toast.success(
+        const message =
           paths.length === 1
             ? copy.toasts.saved(paths[0] ?? "")
-            : copy.toasts.savedAll(paths.length),
-        )
+            : copy.toasts.savedAll(paths.length)
+        toast.success(message)
+        report("info", message)
       }
     })()
   }
@@ -335,17 +410,22 @@ export function CodeTab({ fn, scope, labels, className }: Readonly<CodeTabProps>
   const runDeploy = (baseSha256: string | undefined) => {
     void (async () => {
       if (Object.keys(buffers).length > 0 && !(await saveAll())) return
+      report("info", copy.toolbar.deploying)
       deployDraft.mutate(baseSha256, {
         onSuccess: (deployed) => {
           setStaleDeploy(false)
-          toast.success(copy.toasts.deployed(deployed.version?.version ?? ""))
+          const message = copy.toasts.deployed(deployed.version?.version ?? "")
+          toast.success(message)
+          report("success", message)
         },
         onError: (error) => {
           if (isStaleDeploy(error)) {
             setStaleDeploy(true)
             return
           }
-          toast.error(errorMessage(error, copy.errors.deployFailed))
+          const message = errorMessage(error, copy.errors.deployFailed)
+          toast.error(message)
+          report("error", message)
         },
       })
     })()
@@ -357,9 +437,12 @@ export function CodeTab({ fn, scope, labels, className }: Readonly<CodeTabProps>
         setBuffers({})
         setConfirmingDiscard(false)
         toast.success(copy.toasts.discarded)
+        report("info", copy.toasts.discarded)
       },
       onError: (error) => {
-        toast.error(errorMessage(error, copy.errors.discardFailed))
+        const message = errorMessage(error, copy.errors.discardFailed)
+        toast.error(message)
+        report("error", message)
       },
     })
   }
@@ -371,9 +454,12 @@ export function CodeTab({ fn, scope, labels, className }: Readonly<CodeTabProps>
         closeFile(path)
         setBuffers((prev) => withoutPath(prev, path))
         toast.success(copy.toasts.deleted(path))
+        report("info", copy.toasts.deleted(path))
       },
       onError: (error) => {
-        toast.error(errorMessage(error, copy.errors.deleteFailed))
+        const message = errorMessage(error, copy.errors.deleteFailed)
+        toast.error(message)
+        report("error", message)
       },
     })
   }
@@ -389,9 +475,12 @@ export function CodeTab({ fn, scope, labels, className }: Readonly<CodeTabProps>
           setPrompt(undefined)
           if (!folder) openFile(target)
           toast.success(copy.toasts.created(target))
+          report("info", copy.toasts.created(target))
         },
         onError: (error) => {
-          toast.error(errorMessage(error, copy.errors.createFailed))
+          const message = errorMessage(error, copy.errors.createFailed)
+          toast.error(message)
+          report("error", message)
         },
       },
     )
@@ -413,8 +502,11 @@ export function CodeTab({ fn, scope, labels, className }: Readonly<CodeTabProps>
         setBuffers((prev) => withoutPath(prev, from))
         setPrompt(undefined)
         toast.success(copy.toasts.renamed(to))
+        report("info", copy.toasts.renamed(to))
       } catch (error) {
-        toast.error(errorMessage(error, copy.errors.renameFailed))
+        const message = errorMessage(error, copy.errors.renameFailed)
+        toast.error(message)
+        report("error", message)
       }
     })()
   }
@@ -450,7 +542,7 @@ export function CodeTab({ fn, scope, labels, className }: Readonly<CodeTabProps>
 
   if (code.isLoading) {
     return (
-      <div className={cx(glass2, shell, className)}>
+      <div className={cx(glass2, stateShell, className)}>
         <Skeleton className={skeletonPane} />
       </div>
     )
@@ -458,7 +550,7 @@ export function CodeTab({ fn, scope, labels, className }: Readonly<CodeTabProps>
 
   if (code.isError || !code.data) {
     return (
-      <div className={cx(glass2, shell, className)}>
+      <div className={cx(glass2, stateShell, className)}>
         <EmptyState
           icon={Package}
           title={copy.errors.loadFailed}
@@ -470,7 +562,7 @@ export function CodeTab({ fn, scope, labels, className }: Readonly<CodeTabProps>
 
   if (!code.data.editable) {
     return (
-      <div className={cx(glass2, shell, className)}>
+      <div className={cx(glass2, stateShell, className)}>
         <CodeNotEditable reason={code.data.reason} labels={labels} />
       </div>
     )
@@ -483,7 +575,7 @@ export function CodeTab({ fn, scope, labels, className }: Readonly<CodeTabProps>
   const promptPath = prompt?.kind === "rename" ? prompt.path : ""
 
   return (
-    <div className={cx(glass2, shell, fullscreen && fullscreenShell, className)}>
+    <div className={cx(shell, fullscreen && fullscreenShell, className)}>
       <CodeToolbar
         code={codeView}
         labels={labels}
@@ -493,6 +585,8 @@ export function CodeTab({ fn, scope, labels, className }: Readonly<CodeTabProps>
         deploying={deployDraft.isPending}
         discarding={discardDraft.isPending}
         fullscreen={fullscreen}
+        railOpen={railOpen}
+        dockOpen={dockOpen}
         onSave={handleSave}
         onDiscard={() => {
           setConfirmingDiscard(true)
@@ -502,6 +596,13 @@ export function CodeTab({ fn, scope, labels, className }: Readonly<CodeTabProps>
         }}
         onToggleFullscreen={() => {
           setFullscreen((on) => !on)
+        }}
+        onToggleRail={() => {
+          setRailOpen((on) => !on)
+        }}
+        onToggleDock={() => {
+          setDockOpen((on) => !on)
+          setDockCollapsed(false)
         }}
       />
 
@@ -543,14 +644,58 @@ export function CodeTab({ fn, scope, labels, className }: Readonly<CodeTabProps>
             buffer={buffers[activePath]}
             readOnly={!canEdit}
             labels={labels}
-            sha256={codeView.sha256}
             onChange={(path, value) => {
               setBuffers((prev) => ({ ...prev, [path]: value }))
             }}
             onSave={handleSave}
+            onCursorChange={(line, column) => {
+              setCursor({ line, column })
+            }}
           />
         </div>
+
+        {railOpen && (
+          <CodeDeployRail
+            fn={fn}
+            code={codeView}
+            urls={urls}
+            labels={labels}
+            onManageEnv={onManageEnv}
+          />
+        )}
       </div>
+
+      {dockOpen && (
+        <CodeDock
+          functionName={fn.name}
+          scope={scope}
+          labels={labels}
+          entries={logEntries}
+          panel={dockPanel}
+          onPanelChange={setDockPanel}
+          collapsed={dockCollapsed}
+          onToggleCollapsed={() => {
+            setDockCollapsed((on) => !on)
+          }}
+          onClose={() => {
+            setDockOpen(false)
+          }}
+          onClear={() => {
+            setLogEntries([])
+          }}
+          canInvoke={capabilities.invoke}
+        />
+      )}
+
+      <CodeStatusBar
+        path={activeEntry?.binary === true ? "" : activePath}
+        language={languageFor(activePath)}
+        line={cursor.line}
+        column={cursor.column}
+        readOnly={!canEdit}
+        sha256={codeView.sha256}
+        labels={labels}
+      />
 
       <PathDialog
         open={prompt?.kind === "newFile"}

@@ -30,6 +30,23 @@ export interface FunctionDetailLabels {
     aliases: string
     versions: string
   }
+  /**
+   * The detail page's own chrome: the breadcrumb trail above it and the
+   * headings that group the left rail's destinations.
+   */
+  nav: {
+    /** First crumb — the service, not the console. */
+    service: string
+    /** Second crumb; also the rail's "back to the list" link. */
+    functions: string
+    groups: {
+      build: string
+      configuration: string
+      release: string
+    }
+    /** Accessible name for the rail itself. */
+    label: string
+  }
   notFound: {
     title: (name: string) => string
     description: string
@@ -61,6 +78,11 @@ export interface FunctionDetailLabels {
       /** The editor-size toggle, in each of its two states. */
       fullscreen: string
       exitFullscreen: string
+      /** The two side panels, each named by what the click will do. */
+      showRail: string
+      hideRail: string
+      showDock: string
+      hideDock: string
     }
     tree: {
       heading: string
@@ -87,6 +109,37 @@ export interface FunctionDetailLabels {
       position: (line: number, column: number) => string
       encoding: string
       readOnly: string
+    }
+    /** The right-hand panel: where this code currently runs, and on what. */
+    rail: {
+      deployment: string
+      environment: string
+      state: string
+      version: string
+      lastDeployed: string
+      region: string
+      url: string
+      noUrl: string
+      size: string
+      digest: string
+      /** Shown in place of the deployed version while a draft is staged. */
+      draft: string
+      envEmpty: string
+      revealValues: string
+      concealValues: string
+      manageEnv: string
+    }
+    /** The bottom panel: what this editor did, and a place to run the result. */
+    dock: {
+      output: string
+      test: string
+      clear: string
+      outputEmpty: string
+      collapse: string
+      expand: string
+      close: string
+      /** Prefix on the response line, e.g. "HTTP 200 · 42 ms". */
+      duration: (ms: number) => string
     }
     /** Placeholder for a file the editor refuses to open as text. */
     binaryFile: string
@@ -399,6 +452,16 @@ export const DEFAULT_FUNCTION_DETAIL_LABELS: FunctionDetailLabels = {
     aliases: "Aliases",
     versions: "Versions",
   },
+  nav: {
+    service: "Serverless",
+    functions: "Functions",
+    groups: {
+      build: "Build",
+      configuration: "Configuration",
+      release: "Release",
+    },
+    label: "Function sections",
+  },
   notFound: {
     title: (name) => `No function named ${name}`,
     description: "It may have been deleted, or it belongs to another account.",
@@ -426,6 +489,10 @@ export const DEFAULT_FUNCTION_DETAIL_LABELS: FunctionDetailLabels = {
       close: "Close",
       fullscreen: "Full screen",
       exitFullscreen: "Exit full screen",
+      showRail: "Show deployment panel",
+      hideRail: "Hide deployment panel",
+      showDock: "Show output panel",
+      hideDock: "Hide output panel",
     },
     tree: {
       heading: "Files",
@@ -476,6 +543,33 @@ export const DEFAULT_FUNCTION_DETAIL_LABELS: FunctionDetailLabels = {
       position: (line, column) => `Ln ${String(line)}, Col ${String(column)}`,
       encoding: "UTF-8",
       readOnly: "Read only",
+    },
+    rail: {
+      deployment: "Deployment",
+      environment: "Environment",
+      state: "State",
+      version: "Version",
+      lastDeployed: "Last deployed",
+      region: "Region",
+      url: "URL",
+      noUrl: "No function URL",
+      size: "Package",
+      digest: "Digest",
+      draft: "Draft staged",
+      envEmpty: "No environment variables.",
+      revealValues: "Show values",
+      concealValues: "Hide values",
+      manageEnv: "Edit environment variables",
+    },
+    dock: {
+      output: "Output",
+      test: "Test",
+      clear: "Clear",
+      outputEmpty: "Saves, deploys and errors from this session show up here.",
+      collapse: "Collapse panel",
+      expand: "Expand panel",
+      close: "Close panel",
+      duration: (ms) => `${String(ms)} ms`,
     },
     binaryFile: "This is a binary file and can’t be shown in the editor.",
     noFileOpen: "Select a file to start editing.",

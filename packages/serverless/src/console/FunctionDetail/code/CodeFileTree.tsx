@@ -29,7 +29,7 @@ const sidebar = css`
   flex-direction: column;
   min-height: 0;
   border-bottom: 1px solid ${mix("--border", 60)};
-  background: ${mix("--background", 84)};
+  background: var(--glass-1-bg);
 
   ${media.md} {
     width: 248px;

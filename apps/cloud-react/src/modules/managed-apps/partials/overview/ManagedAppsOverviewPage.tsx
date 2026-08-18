@@ -13,7 +13,6 @@ import { HostingAccountsPanel } from "@/modules/hosting/partials/HostingAccounts
 import { useScreen } from "@/services/api/screen"
 
 import { EstateOverviewTab } from "./EstateOverviewTab"
-import { GitHubConnectionsDialog } from "./GitHubConnectionsDialog"
 import { PlanUsageChip } from "./PlanUsageChip"
 import { ProjectsTab } from "./ProjectsTab"
 import { GitHubMark } from "../../components/GitHubMark"
@@ -103,7 +102,6 @@ export function ManagedAppsOverviewPage() {
     },
   }
 
-  const [connectionsOpen, setConnectionsOpen] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
 
   const refresh = () => {
@@ -128,17 +126,15 @@ export function ManagedAppsOverviewPage() {
   )
 
   // Reachable from the overview and the Apps view, because a revoked
-  // installation is discovered on either. Connections used to be managed only
-  // inside the create flow, so an account with projects had no way to add,
-  // replace or remove one.
+  // installation is discovered on either. It is a link into settings rather
+  // than a dialog: connecting an account leaves the SPA for GitHub's install
+  // flow, so a modal opened here is gone by the time the browser comes back.
   const githubButton = (
     <Button
       variant="ghost"
       size="sm"
       className="gap-1.5"
-      onClick={() => {
-        setConnectionsOpen(true)
-      }}
+      onClick={() => void navigate(MANAGED_APPS_ROUTES.connections)}
     >
       <GitHubMark className="size-3.5" />
       GitHub
@@ -219,18 +215,10 @@ export function ManagedAppsOverviewPage() {
           transition={{ duration: DUR.fast, ease: EASE.out }}
         >
           {tab === "overview" && <EstateOverviewTab />}
-          {tab === "apps" && (
-            <ProjectsTab
-              onOpenConnections={() => {
-                setConnectionsOpen(true)
-              }}
-            />
-          )}
+          {tab === "apps" && <ProjectsTab />}
           {tab === "hosting" && <HostingAccountsPanel />}
         </motion.div>
       </AnimatePresence>
-
-      <GitHubConnectionsDialog open={connectionsOpen} onOpenChange={setConnectionsOpen} />
     </div>
   )
 }

@@ -18,7 +18,7 @@ import type {
   PlanCostBreakdown,
   Project,
   ProjectAnalytics,
-  ProjectEnvNames,
+  ProjectEnvVar,
   ProjectMetrics,
   ProjectSetup,
   RepoDetection,
@@ -226,8 +226,8 @@ export const managedAppsApi = {
   projectAnalytics: (id: string, range: string): Promise<ProjectAnalytics> =>
     apiGet<ProjectAnalytics>(`${BASE}/projects/${id}/analytics?range=${encodeURIComponent(range)}`),
 
-  projectEnv: (id: string): Promise<ProjectEnvNames> =>
-    apiGet<ProjectEnvNames>(`${BASE}/projects/${id}/env`),
+  projectEnv: (id: string): Promise<ProjectEnvVar[]> =>
+    apiGet<ProjectEnvVar[]>(`${BASE}/projects/${id}/env`),
 
   updateProjectEnv: (id: string, payload: UpdateProjectEnvRequest): Promise<void> =>
     apiPut(`${BASE}/projects/${id}/env`, payload),

@@ -4712,7 +4712,11 @@
           "readOnly": "Read only",
           "close": "Close",
           "fullscreen": "Full screen",
-          "exitFullscreen": "Exit full screen"
+          "exitFullscreen": "Exit full screen",
+          "showRail": "Show deployment panel",
+          "hideRail": "Hide deployment panel",
+          "showDock": "Show output panel",
+          "hideDock": "Hide output panel"
         },
         "tree": {
           "heading": "Files",
@@ -4799,6 +4803,33 @@
           "deleted": "Deleted {{path}}",
           "discarded": "Draft discarded",
           "deployed": "Deployed to v{{version}}"
+        },
+        "rail": {
+          "deployment": "Deployment",
+          "environment": "Environment",
+          "state": "State",
+          "version": "Version",
+          "lastDeployed": "Last deployed",
+          "region": "Region",
+          "url": "URL",
+          "noUrl": "No function URL",
+          "size": "Package",
+          "digest": "Digest",
+          "draft": "Draft staged",
+          "envEmpty": "No environment variables.",
+          "revealValues": "Show values",
+          "concealValues": "Hide values",
+          "manageEnv": "Edit environment variables"
+        },
+        "dock": {
+          "output": "Output",
+          "test": "Test",
+          "clear": "Clear",
+          "outputEmpty": "Saves, deploys and errors from this session show up here.",
+          "collapse": "Collapse panel",
+          "expand": "Expand panel",
+          "close": "Close panel",
+          "duration": "{{ms}} ms"
         }
       },
       "actions": {
@@ -5074,6 +5105,16 @@
         "deleteFailed": "Could not delete",
         "invokeFailed": "Could not invoke the function",
         "loadFailed": "Could not load the function"
+      },
+      "nav": {
+        "service": "Serverless",
+        "functions": "Functions",
+        "groups": {
+          "build": "Build",
+          "configuration": "Configuration",
+          "release": "Release"
+        },
+        "label": "Function sections"
       }
     },
     "wizard": {

@@ -77,8 +77,11 @@ export function OverviewToolbar({
   onTypeFilterChange,
 }: Readonly<OverviewToolbarProps>) {
   const { t } = useTranslation()
+  // Bottom rule only. This used to be border-y, which drew a second line ~40px
+  // under the page header's own border and left an empty band between the two
+  // that read as a control strip with nothing in it.
   return (
-    <div className="mb-6 flex flex-wrap items-center gap-2 border-y border-border py-3">
+    <div className="mb-6 flex flex-wrap items-center gap-2 border-b border-border pb-3">
       <div className="relative min-w-[200px] flex-1 sm:max-w-xs">
         <Search className="absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
         <Input

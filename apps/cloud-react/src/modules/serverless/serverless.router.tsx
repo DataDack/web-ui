@@ -20,7 +20,13 @@ export const serverlessRoutes: RouteObject[] = [
     },
   },
   {
+    // The detail page carries its own navigation rail — the function's tabs and
+    // every configuration section in one list — so the console's service
+    // sidebar would be a second, redundant column of links beside it. fullBleed
+    // drops the shell's gutter too: the page is a workbench that runs to the
+    // window edges, not a card floating on the background.
     path: "serverless/functions/:name",
+    handle: { hideSidebar: true, fullBleed: true },
     lazy: async () => {
       const { ServerlessFunctionDetailPage } = await import("./partials/FunctionDetailPage")
       return { Component: ServerlessFunctionDetailPage }

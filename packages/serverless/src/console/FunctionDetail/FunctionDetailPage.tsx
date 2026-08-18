@@ -1,19 +1,9 @@
 import { useMemo, useState, type ReactNode } from "react"
 
-import { ArrowLeft, Package, Trash2 } from "lucide-react"
+import { ChevronRight, Package, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 
-import {
-  Button,
-  EmptyState,
-  Skeleton,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-  css,
-  cx,
-} from "@datadack/common-ui"
+import { Button, EmptyState, Skeleton, css, cx, fontMono, mix } from "@datadack/common-ui"
 
 import { useDeleteFunction, useFunction, useFunctionUrls } from "../../data/queries"
 import { useServerlessContext } from "../../data/transport"
@@ -21,38 +11,122 @@ import { ConfirmDialog } from "../ConfirmDialog"
 import { fullHeightPane } from "../layoutConstants"
 import { AliasesTab } from "./AliasesTab"
 import { CodeTab } from "./code"
-import { ConfigurationTab, type ConfigurationSectionValue } from "./ConfigurationTab"
+import { CONFIGURATION_SECTIONS, type ConfigurationSectionValue } from "./configuration/sections"
+import { ConfigurationTab } from "./ConfigurationTab"
 import { errorMessage } from "./errorMessage"
-import { FunctionDetailHeader } from "./FunctionDetailHeader"
+import { FunctionNavRail } from "./FunctionNavRail"
 import { mergeLabels, type DeepPartial, type FunctionDetailLabels } from "./labels"
 import { MonitorTab } from "./MonitorTab"
 import { FUNCTION_DETAIL_TABS, type FunctionDetailTabValue } from "./tabs"
 import { TestTab } from "./TestTab"
 import { VersionsTab } from "./VersionsTab"
 
+/* Square and ringless: the detail page is a full surface, not a card on one.
+   Its host mounts it edge to edge (cloud-react's route is `fullBleed`), and a
+   rounded outline inside that only draws a seam where the workbench meets the
+   window. The glass-1 tier rather than --card, so the page reads as the console
+   shell's own surface — it sits directly on the shell's gradient with nothing
+   between the two to make it look pasted on. */
 const page = css`
   display: flex;
+  flex: 1;
   flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 0;
+  background: var(--glass-1-bg);
   ${fullHeightPane}
 `
 
-const tabs = css`
+const topBar = css`
+  display: flex;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid ${mix("--border", 55)};
+  padding: 10px 16px;
+  background: var(--glass-1-bg);
+`
+
+const crumbs = css`
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 7px;
+  font-size: 15px;
+  color: var(--muted-foreground);
+`
+
+const crumbLink = css`
+  border: none;
+  background: transparent;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--foreground);
+  }
+`
+
+const crumbCurrent = css`
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--foreground);
+  font-weight: 600;
+`
+
+const crumbName = css`
+  font-family: ${fontMono};
+  color: var(--foreground);
+`
+
+const crumbCaret = css`
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  opacity: 0.55;
+`
+
+const topActions = css`
+  display: flex;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+`
+
+const body = css`
+  display: flex;
   flex: 1;
   min-height: 0;
 `
 
-/* The Code and Configuration panels grow to fill the page; the other tabs
-   (Test, Monitor, Aliases, Versions) stay their natural content height. */
-const fillTabContent = css`
+/* The Code tab is edge-to-edge — it is a workbench, and a workbench with a
+   margin round it wastes the only thing it needs. Every other pane keeps the
+   page's padding and scrolls on its own. */
+const contentFlush = css`
   display: flex;
   flex: 1;
+  min-width: 0;
   min-height: 0;
   flex-direction: column;
 `
 
-/* Same fill behavior, without asserting flex-direction — ConfigurationTab's
-   own layout class already switches column→row at its own breakpoint, and
-   merging a hardcoded flex-direction here would fight that responsive rule. */
+const contentPadded = css`
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  flex-direction: column;
+  overflow: auto;
+  padding: 20px;
+`
+
 const fillPane = css`
   display: flex;
   flex: 1;
@@ -85,7 +159,7 @@ const skeletonSubtitle = css`
 
 const skeletonBody = css`
   height: 384px;
-  border-radius: 0.75rem;
+  border-radius: 0;
 `
 
 export interface FunctionDetailPageProps {
@@ -96,7 +170,7 @@ export interface FunctionDetailPageProps {
   /** Controlled tab. The app owns ?tab= URL state. */
   activeTab: FunctionDetailTabValue
   onTabChange: (tab: FunctionDetailTabValue) => void
-  /** Renders the ghost back Button. Omit to render no back link (app supplies its own chrome). */
+  /** Renders the breadcrumb's Functions link and the rail's back row. */
   onBack?: () => void
   /** Called after a confirmed delete succeeds — the app navigates to its list route. */
   onDeleted?: () => void
@@ -113,9 +187,15 @@ export interface FunctionDetailPageProps {
 }
 
 /**
- * The shared function detail page: identity header, Lambda-ordered tabs, and a
- * type-to-confirm delete flow. Everything an app owns — routing, i18n, region
- * scoping — arrives through props; the page itself only knows the transport.
+ * The shared function detail page: a breadcrumb strip, the function's own
+ * navigation rail, and one pane.
+ *
+ * The rail is the page's spine. Both consoles render this route full-bleed —
+ * their service sidebar steps aside — so the rail carries everything the
+ * console sidebar used to: which function this is, the way back to the list,
+ * and every surface the function has, tabs and configuration sections in one
+ * list. Everything an app owns — routing, i18n, region scoping — still arrives
+ * through props; the page itself only knows the transport.
  */
 export function FunctionDetailPage({
   name,
@@ -140,6 +220,11 @@ export function FunctionDetailPage({
   const { data: functionUrls } = useFunctionUrls(name, scope)
   const deleteFunction = useDeleteFunction(scope)
   const [confirmingDelete, setConfirmingDelete] = useState(false)
+  // The section is the page's state now, not ConfigurationTab's: the rail on
+  // the left renders the section list, so it needs to know which one is lit
+  // even before the Configuration pane mounts. An app that persists ?section=
+  // still wins through activeConfigSection.
+  const [internalSection, setInternalSection] = useState<ConfigurationSectionValue>("general")
 
   const visibleTabs = useMemo(
     () =>
@@ -155,20 +240,33 @@ export function FunctionDetailPage({
           default:
             return true
         }
-      }),
+      }).map((tab) => tab.value),
     [hiddenTabs, capabilities],
+  )
+
+  const visibleSections = useMemo(
+    () =>
+      CONFIGURATION_SECTIONS.filter(
+        (section) => section.value !== "triggers" || capabilities.triggers,
+      ).map((section) => section.value),
+    [capabilities],
   )
 
   // A hidden/unknown activeTab renders the first visible tab without calling
   // onTabChange — correcting the app's URL state is not this page's business.
-  const resolvedTab = visibleTabs.some((tab) => tab.value === activeTab)
-    ? activeTab
-    : (visibleTabs[0]?.value ?? "code")
+  const resolvedTab = visibleTabs.includes(activeTab) ? activeTab : (visibleTabs[0] ?? "code")
+  const requestedSection = activeConfigSection ?? internalSection
+  const resolvedSection = visibleSections.includes(requestedSection) ? requestedSection : "general"
+
+  const selectSection = (section: ConfigurationSectionValue) => {
+    setInternalSection(section)
+    onConfigSectionChange?.(section)
+    if (resolvedTab !== "configuration") onTabChange("configuration")
+  }
 
   const back = onBack && (
     <Button variant="ghost" size="sm" className={backButton} onClick={onBack}>
-      <ArrowLeft size={14} />
-      {merged.backLabel}
+      {merged.nav.functions}
     </Button>
   )
 
@@ -202,8 +300,7 @@ export function FunctionDetailPage({
   // A genuine 404 keeps the friendlier not-found state. The transports throw
   // plain Errors carrying the server's message, so the FaaS "function not
   // found" text is the only signal available here.
-  const looksDeleted =
-    isError && error instanceof Error && /not found/i.test(error.message)
+  const looksDeleted = isError && error instanceof Error && /not found/i.test(error.message)
 
   // Any other failed fetch (network, 5xx, expired session) is not a deletion;
   // show the transport's own message when it carries one.
@@ -233,76 +330,93 @@ export function FunctionDetailPage({
     )
   }
 
+  const currentLabel =
+    resolvedTab === "configuration"
+      ? merged.configuration.nav[resolvedSection]
+      : merged.tabs[resolvedTab]
+
+  const flush = resolvedTab === "code"
+
   return (
     <div className={cx(page, className)}>
-      {back}
+      <header className={topBar}>
+        <nav className={crumbs} aria-label="Breadcrumb">
+          <span>{merged.nav.service}</span>
+          <ChevronRight className={crumbCaret} aria-hidden />
+          {onBack ? (
+            <button type="button" className={crumbLink} onClick={onBack}>
+              {merged.nav.functions}
+            </button>
+          ) : (
+            <span>{merged.nav.functions}</span>
+          )}
+          <ChevronRight className={crumbCaret} aria-hidden />
+          <span className={cx(crumbCurrent, crumbName)}>{fn.name}</span>
+          <ChevronRight className={crumbCaret} aria-hidden />
+          <span className={crumbCurrent} aria-current="page">
+            {currentLabel}
+          </span>
+        </nav>
 
-      <FunctionDetailHeader
-        fn={fn}
-        urls={functionUrls}
-        labels={merged}
-        actions={
-          <>
-            {headerActions}
-            {capabilities.functionDelete && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setConfirmingDelete(true)
-                }}
-              >
-                <Trash2 size={14} />
-                {merged.actions.delete}
-              </Button>
-            )}
-          </>
-        }
-      />
-
-      <Tabs
-        className={tabs}
-        value={resolvedTab}
-        onValueChange={(next) => {
-          onTabChange(next as FunctionDetailTabValue)
-        }}
-      >
-        <TabsList>
-          {visibleTabs.map((tab) => (
-            <TabsTrigger key={tab.value} value={tab.value}>
-              <tab.icon />
-              {merged.tabs[tab.value]}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-
-        {visibleTabs.map((tab) => {
-          const fillsPage = tab.value === "code" || tab.value === "configuration"
-          return (
-            <TabsContent
-              key={tab.value}
-              value={tab.value}
-              className={fillsPage ? fillTabContent : undefined}
+        <div className={topActions}>
+          {headerActions}
+          {capabilities.functionDelete && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setConfirmingDelete(true)
+              }}
             >
-              {tab.value === "code" && <CodeTab fn={fn} scope={scope} labels={merged} />}
-              {tab.value === "test" && <TestTab fn={fn} scope={scope} labels={merged} />}
-              {tab.value === "monitor" && <MonitorTab fn={fn} scope={scope} labels={merged} />}
-              {tab.value === "configuration" && (
-                <ConfigurationTab
-                  fn={fn}
-                  scope={scope}
-                  labels={merged}
-                  activeSection={activeConfigSection}
-                  onSectionChange={onConfigSectionChange}
-                  className={fillPane}
-                />
-              )}
-              {tab.value === "aliases" && <AliasesTab fn={fn} scope={scope} labels={merged} />}
-              {tab.value === "versions" && <VersionsTab fn={fn} scope={scope} labels={merged} />}
-            </TabsContent>
-          )
-        })}
-      </Tabs>
+              <Trash2 size={14} />
+              {merged.actions.delete}
+            </Button>
+          )}
+        </div>
+      </header>
+
+      <div className={body}>
+        <FunctionNavRail
+          fn={fn}
+          labels={merged}
+          tabs={visibleTabs}
+          sections={visibleSections}
+          activeTab={resolvedTab}
+          activeSection={resolvedSection}
+          onSelectTab={onTabChange}
+          onSelectSection={selectSection}
+          onBack={onBack}
+        />
+
+        <div className={flush ? contentFlush : contentPadded}>
+          {resolvedTab === "code" && (
+            <CodeTab
+              fn={fn}
+              scope={scope}
+              labels={merged}
+              urls={functionUrls}
+              onManageEnv={() => {
+                selectSection("env")
+              }}
+            />
+          )}
+          {resolvedTab === "test" && <TestTab fn={fn} scope={scope} labels={merged} />}
+          {resolvedTab === "monitor" && <MonitorTab fn={fn} scope={scope} labels={merged} />}
+          {resolvedTab === "configuration" && (
+            <ConfigurationTab
+              fn={fn}
+              scope={scope}
+              labels={merged}
+              activeSection={resolvedSection}
+              onSectionChange={selectSection}
+              hideNav
+              className={fillPane}
+            />
+          )}
+          {resolvedTab === "aliases" && <AliasesTab fn={fn} scope={scope} labels={merged} />}
+          {resolvedTab === "versions" && <VersionsTab fn={fn} scope={scope} labels={merged} />}
+        </div>
+      </div>
 
       <ConfirmDialog
         open={confirmingDelete}

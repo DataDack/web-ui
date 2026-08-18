@@ -28,6 +28,8 @@ function project(overrides: Partial<Project> & { id: string }): Project {
     output_dir: "",
     // Empty is inheritance, which is what an untouched project actually stores.
     node_version: "",
+    // One deployment, like every project that has not asked for a second.
+    preview_enabled: false,
     status: "active",
     deploy_state: "awaiting_build",
     setup_state: "merged",

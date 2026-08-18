@@ -41,6 +41,13 @@ export { RuntimeSelect } from "./RuntimeSelect"
 
 // Environment variables
 export { EnvVarEditor } from "./env/EnvVarEditor"
+export { PreviewEnvironmentField } from "./PreviewEnvironmentField"
 export { parseDotEnv } from "./env/EnvVarEditor/env-parse"
-export { duplicateKeys, newEnvRow, storedEnvRows, toEnvMap } from "./env/EnvVarEditor/env-types"
+export {
+  allEnvTargets,
+  duplicateKeys,
+  newEnvRow,
+  storedEnvRows,
+  toEnvMap,
+} from "./env/EnvVarEditor/env-types"
 export type { EnvRow, EnvRowState } from "./env/EnvVarEditor/env-types"

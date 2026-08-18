@@ -27,20 +27,15 @@ function parseTypeParam(raw: string | null): ProjectType | undefined {
   return PROJECT_TYPES.find((type) => type === raw)
 }
 
-interface ProjectsTabProps {
-  /** Opens the section's GitHub connections dialog, which the shell owns. */
-  onOpenConnections: () => void
-}
-
 /**
  * The repo-built projects — truthful state chips, the project grid (filterable
  * by ?type=, set from the toolbar) and the one thing worth acting on.
  *
  * Extracted from the page that used to be all of Managed Apps: this is now one
- * of three tabs, so it owns its own list state and nothing else. The header,
- * the tab bar and the GitHub connections dialog belong to the section shell.
+ * of three tabs, so it owns its own list state and nothing else. The header and
+ * the tab bar belong to the section shell; connections are a setting.
  */
-export function ProjectsTab({ onOpenConnections }: Readonly<ProjectsTabProps>) {
+export function ProjectsTab() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -147,8 +142,8 @@ export function ProjectsTab({ onOpenConnections }: Readonly<ProjectsTabProps>) {
             onDelete={setPendingDelete}
             // A revoked installation is fixed by managing connections, not
             // by starting a fresh install and hoping it lands on the right
-            // account.
-            onReconnect={onOpenConnections}
+            // account. They live in settings now, so this is navigation.
+            onReconnect={() => void navigate(MANAGED_APPS_ROUTES.connections)}
           />
         </>
       )}

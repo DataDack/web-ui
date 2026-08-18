@@ -2,9 +2,11 @@ import type { ReactNode } from "react"
 
 import { Button, css, cx, glass2 } from "@datadack/common-ui"
 
+/* Natural height, not `flex: 1`. The pane around it is as tall as the page,
+   and a section that stretches into it turns four fields into a metre of empty
+   glass. */
 const panel = css`
   display: flex;
-  flex: 1;
   flex-direction: column;
   border-radius: 0.75rem;
   padding: 20px;

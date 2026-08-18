@@ -483,20 +483,28 @@
    real dark-mode class. Component markup and state semantics remain identical
    between themes. */
 .dark .managed-apps-console {
-  --background: #101110;
-  --foreground: #f5f5f2;
-  --card: #151614;
-  --card-foreground: #f5f5f2;
-  --popover: #1b1c1a;
-  --popover-foreground: #f5f5f2;
+  /* The surfaces are NEUTRAL graphite; only the lime is coloured.
+     They used to carry a yellow-green cast of their own (#252620 muted,
+     #bfc5aa muted text, a 218,229,190 border) which, spread over a full-page
+     surface like the build workbench, read as a warm orange wash rather than
+     as brand. The accent belongs on the things that mean something — the
+     primary, the status tones, the lime wash on a card — not on the paper. */
+  --background: #0f0f10;
+  --foreground: #f4f4f3;
+  --card: #141416;
+  --card-foreground: #f4f4f3;
+  --popover: #1a1a1c;
+  --popover-foreground: #f4f4f3;
   --primary: #8bd400;
   --primary-foreground: #0b0d08;
-  --muted: #252620;
-  --muted-foreground: #bfc5aa;
-  --accent: #292b24;
-  --accent-foreground: #f5f5f2;
-  --border: rgba(218, 229, 190, 0.14);
-  --input: rgba(218, 229, 190, 0.1);
+  --muted: #232326;
+  /* Still a touch warm, so muted copy does not read as blue against the lime;
+     roughly half the previous olive. */
+  --muted-foreground: #bdbfb8;
+  --accent: #26262a;
+  --accent-foreground: #f4f4f3;
+  --border: rgba(232, 234, 229, 0.12);
+  --input: rgba(232, 234, 229, 0.09);
   --ring: #8bd400;
   --brand-gold: #8bd400;
   --brand-gold-hover: #9be51c;
@@ -506,15 +514,16 @@
   --brand-gold-ink: #9be51c;
   --glass-1-bg: rgba(255, 255, 255, 0.018);
   --glass-2-bg: rgba(255, 255, 255, 0.026);
-  --glass-3-bg: rgba(20, 21, 19, 0.94);
-  --border-glass: rgba(218, 229, 190, 0.12);
+  --glass-3-bg: rgba(19, 19, 20, 0.94);
+  --border-glass: rgba(232, 234, 229, 0.1);
   --status-success: #9be51c;
   --status-success-bg: rgba(139, 212, 0, 0.08);
   --status-info: #c3a6ff;
   --status-info-bg: rgba(142, 79, 255, 0.12);
-  --managed-panel: #151614;
-  --managed-card: #111210;
-  --managed-card-hover: #161812;
+  --managed-panel: #141416;
+  --managed-card: #101012;
+  --managed-card-hover: #151517;
+  /* The one place a lime tint is deliberate: a card, not a page. */
   --managed-lime-wash: rgba(139, 212, 0, 0.02);
   --managed-lime-border: rgba(139, 212, 0, 0.36);
 }

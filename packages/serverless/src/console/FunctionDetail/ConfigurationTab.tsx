@@ -1,18 +1,6 @@
 import { useState } from "react"
 
-import {
-  Braces,
-  Gauge,
-  Layers3,
-  Link2,
-  Network,
-  Send,
-  Settings2,
-  ShieldCheck,
-  Tags,
-  Workflow,
-  type LucideIcon,
-} from "lucide-react"
+import { Network, ShieldCheck } from "lucide-react"
 
 import { css, cx, fontMono, media, mix } from "@datadack/common-ui"
 
@@ -23,41 +11,17 @@ import { EnvSection } from "./configuration/EnvSection"
 import { FunctionUrlSection } from "./configuration/FunctionUrlSection"
 import { GeneralSection } from "./configuration/GeneralSection"
 import { LayersSection } from "./configuration/LayersSection"
+import {
+  CONFIGURATION_SECTIONS,
+  type ConfigurationSectionValue,
+} from "./configuration/sections"
 import { TagsSection } from "./configuration/TagsSection"
 import { TriggersSection } from "./configuration/TriggersSection"
 import type { FunctionDetailLabels } from "./labels"
 import { useServerlessContext } from "../../data/transport"
 import type { FunctionEntity } from "../../data/types"
 
-export type ConfigurationSectionValue =
-  | "general"
-  | "env"
-  | "triggers"
-  | "layers"
-  | "tags"
-  | "concurrency"
-  | "async"
-  | "functionUrl"
-  | "permissions"
-  | "vpc"
-
-/** Nav order; the last three have no backend yet and carry a "Soon" chip. */
-const SECTION_ORDER: readonly {
-  value: ConfigurationSectionValue
-  soon: boolean
-  icon: LucideIcon
-}[] = [
-  { value: "general", soon: false, icon: Settings2 },
-  { value: "env", soon: false, icon: Braces },
-  { value: "triggers", soon: false, icon: Workflow },
-  { value: "layers", soon: false, icon: Layers3 },
-  { value: "tags", soon: false, icon: Tags },
-  { value: "concurrency", soon: false, icon: Gauge },
-  { value: "async", soon: false, icon: Send },
-  { value: "functionUrl", soon: false, icon: Link2 },
-  { value: "permissions", soon: true, icon: ShieldCheck },
-  { value: "vpc", soon: true, icon: Network },
-]
+export type { ConfigurationSectionValue }
 
 const layout = css`
   display: flex;
@@ -82,7 +46,7 @@ const nav = css`
   padding: 4px;
   border: 1px solid ${mix("--border", 55)};
   border-radius: 0.625rem;
-  background: ${mix("--background", 92)};
+  background: var(--glass-1-bg);
 
   ${media.md} {
     width: 232px;
@@ -156,6 +120,11 @@ export interface ConfigurationTabProps {
   /** Optional controlled section (apps may persist ?section=). */
   activeSection?: ConfigurationSectionValue
   onSectionChange?: (section: ConfigurationSectionValue) => void
+  /**
+   * Drop the built-in section nav. The detail page sets this because its left
+   * rail already lists the sections — two navs for one choice is one too many.
+   */
+  hideNav?: boolean
   className?: string
 }
 
@@ -170,13 +139,14 @@ export function ConfigurationTab({
   labels,
   activeSection,
   onSectionChange,
+  hideNav = false,
   className,
 }: Readonly<ConfigurationTabProps>) {
   const { capabilities } = useServerlessContext()
   const [internal, setInternal] = useState<ConfigurationSectionValue>("general")
 
   const config = labels.configuration
-  const sections = SECTION_ORDER.filter(
+  const sections = CONFIGURATION_SECTIONS.filter(
     (section) => section.value !== "triggers" || capabilities.triggers,
   )
 
@@ -190,7 +160,8 @@ export function ConfigurationTab({
 
   return (
     <div className={cx(layout, className)}>
-      <nav className={nav}>
+      {!hideNav && (
+      <nav className={nav} aria-label={labels.nav.label}>
         {sections.map((section) => (
           <button
             key={section.value}
@@ -209,6 +180,7 @@ export function ConfigurationTab({
           </button>
         ))}
       </nav>
+      )}
 
       <div className={pane}>
         {active === "general" && <GeneralSection fn={fn} scope={scope} labels={labels} />}

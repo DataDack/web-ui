@@ -2,9 +2,11 @@ import type { LucideIcon } from "lucide-react"
 
 import { css, cx, fontMono, glass1, mix } from "@datadack/common-ui"
 
+/* A fixed floor rather than `flex: 1`: enough room for the placeholder to sit
+   centred without the panel growing to the height of the whole page. */
 const panel = css`
   display: flex;
-  flex: 1;
+  min-height: 280px;
   flex-direction: column;
   align-items: center;
   justify-content: center;

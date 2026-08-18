@@ -6,8 +6,14 @@ import { ConfirmDialog, Section } from "@/components/console"
 
 import { Button, Skeleton } from "@datadack/common-ui"
 
-import { EnvVarEditor, storedEnvRows, toEnvMap, type EnvRow } from "../../../components"
-import { useProjectEnv, useUpdateProjectEnv } from "../../../managed-apps.hooks"
+import {
+  EnvVarEditor,
+  PreviewEnvironmentField,
+  storedEnvRows,
+  toEnvMap,
+  type EnvRow,
+} from "../../../components"
+import { useProjectEnv, useUpdateProject, useUpdateProjectEnv } from "../../../managed-apps.hooks"
 import type { Project } from "../../../managed-apps.types"
 
 /**
@@ -26,8 +32,12 @@ import type { Project } from "../../../managed-apps.types"
  */
 export function EnvSection({ project }: Readonly<{ project: Project }>) {
   const { t } = useTranslation()
-  const { data: names = [], isLoading } = useProjectEnv(project.id)
+  const { data: variables = [], isLoading } = useProjectEnv(project.id)
   const update = useUpdateProjectEnv(project.id)
+  // The preview switch is a PROJECT field, not part of the variable set, so it
+  // saves on its own the moment it is flipped. Folding it into "Save variables"
+  // would tie turning preview on to a save that can clear values.
+  const updateProject = useUpdateProject(project.id)
   const [confirmOpen, setConfirmOpen] = useState(false)
 
   // Rows are derived from the server's set, with the user's edits layered on
@@ -36,7 +46,7 @@ export function EnvSection({ project }: Readonly<{ project: Project }>) {
   // the rows re-seed as `stored`, so they stop claiming to hold values. Doing
   // this during render rather than in an effect avoids a second pass that
   // would briefly show the previous project's variables.
-  const seeded = useMemo(() => storedEnvRows(names), [names])
+  const seeded = useMemo(() => storedEnvRows(variables), [variables])
   const [draft, setDraft] = useState<{ base: EnvRow[]; rows: EnvRow[] } | null>(null)
   const rows = draft?.base === seeded ? draft.rows : seeded
   const setRows = (next: EnvRow[]) => {
@@ -62,7 +72,8 @@ export function EnvSection({ project }: Readonly<{ project: Project }>) {
 
   if (isLoading) return <Skeleton className="h-52 rounded-xl" />
 
-  const countLabel = names.length === 1 ? "1 variable set" : `${String(names.length)} variables set`
+  const countLabel =
+    variables.length === 1 ? "1 variable set" : `${String(variables.length)} variables set`
 
   return (
     <>
@@ -72,10 +83,19 @@ export function EnvSection({ project }: Readonly<{ project: Project }>) {
         description={`${countLabel}. Values are write-only — only names are returned.`}
       >
         <div className="space-y-4">
+          <PreviewEnvironmentField
+            enabled={project.preview_enabled}
+            disabled={updateProject.isPending}
+            onChange={(preview_enabled) => {
+              updateProject.mutate({ preview_enabled })
+            }}
+          />
+
           <EnvVarEditor
             rows={rows}
             onChange={setRows}
-            description="Available to the build on your GitHub Actions runner and masked in its log. Changes apply to the next build."
+            previewEnabled={project.preview_enabled}
+            description="Available to the build on your GitHub Actions runner and masked in its log. Changes apply to the next build. Production and Preview say where each variable applies — a preview-only variable is kept out of production builds."
           />
 
           <Button

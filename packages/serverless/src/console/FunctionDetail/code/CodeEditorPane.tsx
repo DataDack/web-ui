@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect, useState, type ReactNode } from "react"
+import { Suspense, lazy, type ReactNode } from "react"
 
 import { FileCode2, FileLock2 } from "lucide-react"
 
@@ -7,7 +7,6 @@ import { EmptyState, Skeleton, css, fontMono, mix } from "@datadack/common-ui"
 import { useFunctionCodeFile } from "../../../data/queries"
 import { errorMessage } from "../errorMessage"
 import type { FunctionDetailLabels } from "../labels"
-import { CodeStatusBar } from "./CodeStatusBar"
 import { languageFor } from "./language"
 import { loadMonacoSetup } from "./monacoLoader"
 
@@ -68,14 +67,15 @@ export interface CodeEditorPaneProps {
   buffer?: string
   readOnly: boolean
   labels: FunctionDetailLabels
-  sha256?: string
   onChange: (path: string, value: string) => void
   onSave: () => void
+  /** Reported upward: the status bar spans the whole workbench, not this pane. */
+  onCursorChange: (line: number, column: number) => void
 }
 
 /**
- * The editor half of the Code tab: loads whichever file is open, hands it to
- * Monaco, and reports the cursor to the status bar.
+ * The editor half of the Code tab: loads whichever file is open and hands it to
+ * Monaco.
  *
  * The buffer, when present, always wins over the fetched content — it is the
  * user's unsaved typing, and a background refetch must never overwrite it.
@@ -88,21 +88,15 @@ export function CodeEditorPane({
   buffer,
   readOnly,
   labels,
-  sha256,
   onChange,
   onSave,
+  onCursorChange,
 }: Readonly<CodeEditorPaneProps>) {
   const copy = labels.code
-  const [cursor, setCursor] = useState({ line: 1, column: 1 })
 
   // Binary files are listed but never fetched: the control plane sends no
   // content for them, so asking would be a round trip for an empty string.
   const file = useFunctionCodeFile(functionName, binary ? "" : path, scope)
-
-  // A new file starts at the top rather than wherever the last one was read.
-  useEffect(() => {
-    setCursor({ line: 1, column: 1 })
-  }, [path])
 
   const language = languageFor(path)
 
@@ -133,9 +127,7 @@ export function CodeEditorPane({
             onChange(path, value)
           }}
           onSave={onSave}
-          onCursorChange={(line, column) => {
-            setCursor({ line, column })
-          }}
+          onCursorChange={onCursorChange}
         />
       </Suspense>
     )
@@ -145,15 +137,6 @@ export function CodeEditorPane({
     <div className={pane}>
       {path !== "" && <div className={breadcrumb}>{path.split("/").join("  ›  ")}</div>}
       <div className={body}>{content}</div>
-      <CodeStatusBar
-        path={binary ? "" : path}
-        language={language}
-        line={cursor.line}
-        column={cursor.column}
-        readOnly={readOnly}
-        sha256={sha256}
-        labels={labels}
-      />
     </div>
   )
 }

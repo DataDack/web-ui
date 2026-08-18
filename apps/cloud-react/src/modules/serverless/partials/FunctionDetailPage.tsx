@@ -1,18 +1,21 @@
 import { useMemo } from "react"
 
-import {
-  FUNCTION_DETAIL_TABS,
-  FunctionDetailPage,
-  registerMonacoSetup,
-  type FunctionDetailPageProps,
-  type FunctionDetailTabValue,
-} from "@datadack/serverless"
 import { useQueryClient } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { useNavigate, useParams, useSearchParams } from "react-router-dom"
 
 import { useActiveRegion } from "@/modules/region/region.context"
 import { useScreen } from "@/services/api/screen"
+
+import {
+  CONFIGURATION_SECTIONS,
+  FUNCTION_DETAIL_TABS,
+  FunctionDetailPage,
+  registerMonacoSetup,
+  type ConfigurationSectionValue,
+  type FunctionDetailPageProps,
+  type FunctionDetailTabValue,
+} from "@datadack/serverless"
 
 import { SERVERLESS_ROUTES } from "../serverless.constants"
 import { SERVERLESS_QUERY_KEYS } from "../serverless.hooks"
@@ -30,6 +33,7 @@ registerMonacoSetup(() => import("@/lib/monaco-setup"))
 // transport mounted by ServerlessDataProvider (direct FaaS reads).
 
 const DEFAULT_TAB: FunctionDetailTabValue = "code"
+const DEFAULT_SECTION: ConfigurationSectionValue = "general"
 
 export function ServerlessFunctionDetailPage() {
   useScreen("serverless.function-detail")
@@ -47,12 +51,38 @@ export function ServerlessFunctionDetailPage() {
     ? (requestedTab as FunctionDetailTabValue)
     : DEFAULT_TAB
 
+  // ?section= is the same deal one level down: the detail page's rail lists the
+  // configuration sections beside the tabs, so a section is a destination in
+  // its own right and has to survive a reload like any other.
+  const requestedSection = searchParams.get("section") ?? DEFAULT_SECTION
+  const activeSection = CONFIGURATION_SECTIONS.some(
+    (section) => section.value === requestedSection,
+  )
+    ? (requestedSection as ConfigurationSectionValue)
+    : DEFAULT_SECTION
+
   const setTab = (tab: FunctionDetailTabValue) => {
     setSearchParams(
       (prev) => {
         const next = new URLSearchParams(prev)
         if (tab === DEFAULT_TAB) next.delete("tab")
         else next.set("tab", tab)
+        // The section only means anything under Configuration; leaving it in
+        // the URL elsewhere invites a stale ?section= on a shared link.
+        if (tab !== "configuration") next.delete("section")
+        return next
+      },
+      { replace: true },
+    )
+  }
+
+  const setSection = (section: ConfigurationSectionValue) => {
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev)
+        next.set("tab", "configuration")
+        if (section === DEFAULT_SECTION) next.delete("section")
+        else next.set("section", section)
         return next
       },
       { replace: true },
@@ -66,6 +96,16 @@ export function ServerlessFunctionDetailPage() {
   const labels = useMemo<FunctionDetailPageProps["labels"]>(
     () => ({
       backLabel: t("serverless.detail.backLabel"),
+      nav: {
+        service: t("serverless.detail.nav.service"),
+        functions: t("serverless.detail.nav.functions"),
+        groups: {
+          build: t("serverless.detail.nav.groups.build"),
+          configuration: t("serverless.detail.nav.groups.configuration"),
+          release: t("serverless.detail.nav.groups.release"),
+        },
+        label: t("serverless.detail.nav.label"),
+      },
       tabs: {
         code: t("serverless.tabs.code"),
         test: t("serverless.tabs.test"),
@@ -108,6 +148,10 @@ export function ServerlessFunctionDetailPage() {
           close: t("serverless.detail.code.toolbar.close"),
           fullscreen: t("serverless.detail.code.toolbar.fullscreen"),
           exitFullscreen: t("serverless.detail.code.toolbar.exitFullscreen"),
+          showRail: t("serverless.detail.code.toolbar.showRail"),
+          hideRail: t("serverless.detail.code.toolbar.hideRail"),
+          showDock: t("serverless.detail.code.toolbar.showDock"),
+          hideDock: t("serverless.detail.code.toolbar.hideDock"),
         },
         tree: {
           heading: t("serverless.detail.code.tree.heading"),
@@ -162,6 +206,33 @@ export function ServerlessFunctionDetailPage() {
             t("serverless.detail.code.status.position", { line, column }),
           encoding: t("serverless.detail.code.status.encoding"),
           readOnly: t("serverless.detail.code.status.readOnly"),
+        },
+        rail: {
+          deployment: t("serverless.detail.code.rail.deployment"),
+          environment: t("serverless.detail.code.rail.environment"),
+          state: t("serverless.detail.code.rail.state"),
+          version: t("serverless.detail.code.rail.version"),
+          lastDeployed: t("serverless.detail.code.rail.lastDeployed"),
+          region: t("serverless.detail.code.rail.region"),
+          url: t("serverless.detail.code.rail.url"),
+          noUrl: t("serverless.detail.code.rail.noUrl"),
+          size: t("serverless.detail.code.rail.size"),
+          digest: t("serverless.detail.code.rail.digest"),
+          draft: t("serverless.detail.code.rail.draft"),
+          envEmpty: t("serverless.detail.code.rail.envEmpty"),
+          revealValues: t("serverless.detail.code.rail.revealValues"),
+          concealValues: t("serverless.detail.code.rail.concealValues"),
+          manageEnv: t("serverless.detail.code.rail.manageEnv"),
+        },
+        dock: {
+          output: t("serverless.detail.code.dock.output"),
+          test: t("serverless.detail.code.dock.test"),
+          clear: t("serverless.detail.code.dock.clear"),
+          outputEmpty: t("serverless.detail.code.dock.outputEmpty"),
+          collapse: t("serverless.detail.code.dock.collapse"),
+          expand: t("serverless.detail.code.dock.expand"),
+          close: t("serverless.detail.code.dock.close"),
+          duration: (ms: number) => t("serverless.detail.code.dock.duration", { ms }),
         },
         binaryFile: t("serverless.detail.code.binaryFile"),
         noFileOpen: t("serverless.detail.code.noFileOpen"),
@@ -515,6 +586,8 @@ export function ServerlessFunctionDetailPage() {
       scope={activeRegionCode ?? "default"}
       activeTab={activeTab}
       onTabChange={setTab}
+      activeConfigSection={activeSection}
+      onConfigSectionChange={setSection}
       onBack={goToList}
       onDeleted={handleDeleted}
       labels={labels}

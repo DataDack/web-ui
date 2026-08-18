@@ -12,6 +12,7 @@ import {
   BuildSettingsSection,
   EnvVarEditor,
   PlanLimitsPanel,
+  PreviewEnvironmentField,
   projectTypeLabel,
   type EnvRow,
 } from "../../../components"
@@ -157,11 +158,19 @@ export function ConfigurePhase({
         }}
       />
 
-      <div className="space-y-2">
+      <div className="space-y-4">
+        <PreviewEnvironmentField
+          enabled={values.preview_enabled}
+          onChange={(preview_enabled) => {
+            onChange({ preview_enabled })
+          }}
+        />
+
         <EnvVarEditor
           rows={envRows}
           onChange={onEnvChange}
-          description="Available to the build on your GitHub Actions runner and masked in its log. Values are sealed at rest — after saving, only the names come back."
+          previewEnabled={values.preview_enabled}
+          description="Available to the build on your GitHub Actions runner and masked in its log. Values are sealed at rest — after saving, only the names come back. Prod and Preview scope a variable; a preview-only one is withheld from production builds."
         />
         {errors.env && <p className="text-[11px] text-destructive">{errors.env}</p>}
       </div>

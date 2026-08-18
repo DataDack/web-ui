@@ -14,8 +14,7 @@ const bar = css`
   font-family: ${fontMono};
   font-size: 10.5px;
   color: ${mix("--muted-foreground", 85)};
-  background: ${mix("--brand-gold", 5)};
-  box-shadow: inset 2px 0 0 var(--brand-gold);
+  background: var(--glass-1-bg);
 `
 
 const item = css`

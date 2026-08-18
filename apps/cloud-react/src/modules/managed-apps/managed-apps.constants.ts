@@ -39,6 +39,11 @@ export const MANAGED_APPS_ROUTES = {
   create: "/managed-apps/create",
   /** Section settings — the one place the account's tier can be changed. */
   settings: "/managed-apps/settings",
+  /** Settings, opened on the plan comparison rather than the plan cards. */
+  comparePlans: "/managed-apps/settings?section=compare",
+  /** Settings, opened on the GitHub accounts we can build from. Every
+   *  "reconnect this repo" path ends here, so it is one constant. */
+  connections: "/managed-apps/settings?section=github",
   project: (id: string) => `/managed-apps/projects/${id}`,
   /** One build as a page — log, source and output tabs live on it. */
   build: (projectId: string, buildId: string) =>
@@ -49,6 +54,19 @@ export const MANAGED_APPS_ROUTES = {
   /** The Apps view, filtered to one project type. */
   byType: (type: ProjectType) => `/managed-apps?tab=apps&type=${type}`,
 } as const
+
+/**
+ * The deployments a variable can be scoped to, in the order the editor shows
+ * them. Mirrors envvars.AllTargets() on the backend, which is what a write is
+ * validated against.
+ */
+export const ENV_TARGETS = ["production", "preview"] as const
+
+/** How each target is written on the small toggles in an env row. */
+export const ENV_TARGET_LABELS: Record<(typeof ENV_TARGETS)[number], string> = {
+  production: "Production",
+  preview: "Preview",
+}
 
 export const MANAGED_APPS_QUERY_KEYS = {
   overview: ["managed-apps", "overview"] as const,

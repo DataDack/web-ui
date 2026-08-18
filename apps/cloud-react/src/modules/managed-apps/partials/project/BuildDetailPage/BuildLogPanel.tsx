@@ -25,7 +25,11 @@ export function BuildLogPanel({
   const lifecycle = useBuildLifecycle(build)
 
   return (
-    <div className={cn("flex min-h-0 flex-col", docked ? "h-52" : "h-full")}>
+    // Docked, the terminal is sized by what is in it, up to 13rem. A fixed
+    // height left a queued build — two lines and a "waiting" placeholder —
+    // sitting above ~150px of empty panel, which read as a broken layout
+    // rather than as a log with nothing in it yet.
+    <div className={cn("flex min-h-0 flex-col", docked ? "max-h-52" : "h-full")}>
       {active && !docked && (
         <div className="border-b border-border/60 px-4 py-3">
           <BuildProgressBar build={build} />

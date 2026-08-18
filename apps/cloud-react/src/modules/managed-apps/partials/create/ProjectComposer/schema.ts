@@ -1,5 +1,7 @@
 import { z } from "zod/v4"
 
+import { ENV_TARGETS } from "../../../managed-apps.constants"
+
 /**
  * The composer's form shape.
  *
@@ -58,7 +60,19 @@ export const composerSchema = z
     vpc_id: z.string(),
     subnet_id: z.string(),
 
-    env: z.array(z.object({ key: z.string(), value: z.string() })),
+    /** Opt into a preview environment. Off unless asked for — see
+     *  PreviewEnvironmentField for what it buys today. */
+    preview_enabled: z.boolean(),
+
+    // `targets` rides along so the scope survives the GitHub install
+    // round-trip; only the VALUES are withheld from the stashed draft.
+    env: z.array(
+      z.object({
+        key: z.string(),
+        value: z.string(),
+        targets: z.array(z.enum(ENV_TARGETS)),
+      }),
+    ),
   })
   .superRefine((values, ctx) => {
     if (values.installation_id == null) {
@@ -112,5 +126,6 @@ export const COMPOSER_DEFAULTS: ComposerValues = {
   node_version: "",
   vpc_id: "",
   subnet_id: "",
+  preview_enabled: false,
   env: [],
 }

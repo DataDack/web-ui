@@ -256,6 +256,14 @@ export interface Project {
    * that currently is rather than assuming a number here.
    */
   node_version: string
+  /**
+   * Whether this project has a preview environment at all.
+   *
+   * Env vars carry targets; this is what decides whether the preview half of
+   * that scoping means anything here. Off until someone turns it on — a
+   * project has one deployment until it is asked for a second.
+   */
+  preview_enabled: boolean
   /** Row lifecycle only — `active` for a project's whole useful life. Never
    *  read this to answer "is it deployed?"; that is `deploy_state`. */
   status: string
@@ -317,7 +325,9 @@ export interface CreateProjectRequest {
   output_dir?: string
   /** Omit to inherit the platform default rather than pinning today's. */
   node_version?: string
-  env?: Record<string, string>
+  env?: Record<string, EnvVarInput>
+  /** Opt the project into a preview environment. Omit for one deployment. */
+  preview_enabled?: boolean
   vpc_id?: string
   subnet_id?: string
 }
@@ -345,6 +355,9 @@ export interface UpdateProjectRequest {
    * reaches a build only once that file is updated.
    */
   node_version?: string
+  /** Turn the preview environment on or off. Preview-scoped variables are kept
+   *  when it goes off — inert, not rewritten — so it can be turned back on. */
+  preview_enabled?: boolean
   vpc_id?: string
   subnet_id?: string
 }
@@ -404,12 +417,33 @@ export interface BuildDefaults {
   runtime_image: string
 }
 
-/** GET /projects/:id/env — variable NAMES only, values never leave the backend. */
-export type ProjectEnvNames = string[]
+/**
+ * Where a variable applies.
+ *
+ * Managed Apps deploys production today — one branch, one deployment — so a
+ * preview-scoped variable is stored and deliberately withheld from the build
+ * and the runtime container. It is scoping that already works, waiting for the
+ * deployment kind that consumes it, not a control that does nothing: the value
+ * is genuinely kept out of the only deployment there is.
+ */
+export type EnvTarget = "production" | "preview"
+
+/** GET /projects/:id/env — names and targets; values never leave the backend. */
+export interface ProjectEnvVar {
+  key: string
+  targets: EnvTarget[]
+}
+
+/** One variable on a write. The server also accepts a bare string (= every
+ *  target), but the console always states the scope it is showing. */
+export interface EnvVarInput {
+  value: string
+  targets: EnvTarget[]
+}
 
 /** PUT /projects/:id/env — full replacement of the project's env map. */
 export interface UpdateProjectEnvRequest {
-  env: Record<string, string>
+  env: Record<string, EnvVarInput>
 }
 
 // ---------------------------------------------------------------------------

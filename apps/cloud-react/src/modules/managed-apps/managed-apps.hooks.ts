@@ -364,7 +364,7 @@ export function useDeleteProject() {
   })
 }
 
-/** Env variable NAMES only — values never leave the backend. */
+/** Env variable names and where each applies — values never leave the backend. */
 export function useProjectEnv(id: string) {
   return useQuery({
     queryKey: MANAGED_APPS_QUERY_KEYS.projectEnv(id),

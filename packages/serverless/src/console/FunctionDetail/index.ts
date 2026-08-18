@@ -12,9 +12,14 @@ export {
   type CodeNotEditableProps,
   type CodeTabProps,
 } from "./code"
-export { ConfigurationTab, type ConfigurationSectionValue, type ConfigurationTabProps } from "./ConfigurationTab"
-export { FunctionDetailHeader, type FunctionDetailHeaderProps } from "./FunctionDetailHeader"
+export { ConfigurationTab, type ConfigurationTabProps } from "./ConfigurationTab"
+export {
+  CONFIGURATION_SECTIONS,
+  type ConfigurationSectionMeta,
+  type ConfigurationSectionValue,
+} from "./configuration/sections"
 export { FunctionDetailPage, type FunctionDetailPageProps } from "./FunctionDetailPage"
+export { FunctionNavRail, type FunctionNavRailProps } from "./FunctionNavRail"
 export {
   DEFAULT_FUNCTION_DETAIL_LABELS,
   mergeLabels,

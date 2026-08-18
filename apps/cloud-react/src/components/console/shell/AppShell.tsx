@@ -86,6 +86,14 @@ export function AppShell() {
   )
   const showSidebar = !isHome && !hideSidebar
 
+  // A step further than hideSidebar: `handle: { fullBleed: true }` also drops
+  // the shell's own padding, so the route paints to the window edges. For a
+  // page that is itself a workbench — the serverless editor, with its rail,
+  // panels and status bar — that gutter is a frame around a frame.
+  const fullBleed = matches.some(
+    (m) => (m.handle as { fullBleed?: boolean } | undefined)?.fullBleed,
+  )
+
   return (
     <MotionProvider>
       {/* `isolate` is here for the seasonal watermark: it makes this div the
@@ -126,7 +134,10 @@ export function AppShell() {
                       // any wide child — a <pre> of generated YAML, a long table —
                       // stretches the column past the viewport and scrolls the
                       // whole page sideways, taking the topbar with it.
-                      "flex min-h-[calc(100vh-96px)] w-full min-w-0 flex-col px-4 py-4 md:min-h-[calc(100vh-52px)] md:px-4 lg:px-4 lg:py-4"
+                      cn(
+                        "flex min-h-[calc(100vh-96px)] w-full min-w-0 flex-col md:min-h-[calc(100vh-52px)]",
+                        !fullBleed && "px-4 py-4 md:px-4 lg:px-4 lg:py-4",
+                      )
                     : "mx-auto w-full max-w-400 px-4 py-6 md:px-6 lg:px-8"
                 }
               >

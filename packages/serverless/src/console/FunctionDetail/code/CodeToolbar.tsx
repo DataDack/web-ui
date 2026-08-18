@@ -1,6 +1,15 @@
-import { Code2, Maximize2, Minimize2, Rocket, Save, Undo2 } from "lucide-react"
+import {
+  Code2,
+  Maximize2,
+  Minimize2,
+  PanelBottom,
+  PanelRight,
+  Rocket,
+  Save,
+  Undo2,
+} from "lucide-react"
 
-import { Button, css, fontMono, formatBytes, mix, timeAgo } from "@datadack/common-ui"
+import { Button, css, cx, fontMono, formatBytes, mix, timeAgo } from "@datadack/common-ui"
 
 import type { FunctionCode } from "../../../data/types"
 import type { FunctionDetailLabels } from "../labels"
@@ -12,7 +21,7 @@ const bar = css`
   flex-wrap: wrap;
   border-bottom: 1px solid ${mix("--border", 60)};
   padding: 10px 12px;
-  background: ${mix("--background", 88)};
+  background: var(--glass-1-bg);
 `
 
 const workspaceMark = css`
@@ -93,9 +102,15 @@ const actions = css`
   flex-shrink: 0;
 `
 
-const fullscreenButton = css`
+const iconButton = css`
   width: 30px;
   height: 30px;
+`
+
+/* The panel toggles read as pressed rather than as three identical ghosts. */
+const iconButtonOn = css`
+  color: var(--brand-gold);
+  background: ${mix("--brand-gold", 10)};
 `
 
 export interface CodeToolbarProps {
@@ -108,10 +123,15 @@ export interface CodeToolbarProps {
   deploying: boolean
   discarding: boolean
   fullscreen: boolean
+  /** Right-hand deployment panel and bottom output panel, each open or not. */
+  railOpen: boolean
+  dockOpen: boolean
   onSave: () => void
   onDiscard: () => void
   onDeploy: () => void
   onToggleFullscreen: () => void
+  onToggleRail: () => void
+  onToggleDock: () => void
 }
 
 /**
@@ -133,10 +153,14 @@ export function CodeToolbar({
   deploying,
   discarding,
   fullscreen,
+  railOpen,
+  dockOpen,
   onSave,
   onDiscard,
   onDeploy,
   onToggleFullscreen,
+  onToggleRail,
+  onToggleDock,
 }: Readonly<CodeToolbarProps>) {
   const copy = labels.code.toolbar
   const metaLine = [
@@ -210,7 +234,29 @@ export function CodeToolbar({
         <Button
           variant="ghost"
           size="icon"
-          className={fullscreenButton}
+          className={cx(iconButton, dockOpen && iconButtonOn)}
+          onClick={onToggleDock}
+          title={dockOpen ? copy.hideDock : copy.showDock}
+          aria-label={dockOpen ? copy.hideDock : copy.showDock}
+          aria-pressed={dockOpen}
+        >
+          <PanelBottom size={14} />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className={cx(iconButton, railOpen && iconButtonOn)}
+          onClick={onToggleRail}
+          title={railOpen ? copy.hideRail : copy.showRail}
+          aria-label={railOpen ? copy.hideRail : copy.showRail}
+          aria-pressed={railOpen}
+        >
+          <PanelRight size={14} />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className={iconButton}
           onClick={onToggleFullscreen}
           title={fullscreen ? copy.exitFullscreen : copy.fullscreen}
           aria-label={fullscreen ? copy.exitFullscreen : copy.fullscreen}
