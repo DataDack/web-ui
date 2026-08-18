@@ -2,7 +2,7 @@ import { Suspense, lazy, useEffect, useState, type ReactNode } from "react"
 
 import { FileCode2, FileLock2 } from "lucide-react"
 
-import { EmptyState, Skeleton, css } from "@datadack/common-ui"
+import { EmptyState, Skeleton, css, fontMono, mix } from "@datadack/common-ui"
 
 import { useFunctionCodeFile } from "../../../data/queries"
 import { errorMessage } from "../errorMessage"
@@ -41,6 +41,20 @@ const body = css`
 const fallback = css`
   flex: 1;
   border-radius: 0;
+`
+
+const breadcrumb = css`
+  min-height: 30px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  border-bottom: 1px solid ${mix("--border", 45)};
+  font-family: ${fontMono};
+  font-size: 10.5px;
+  color: var(--muted-foreground);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `
 
 export interface CodeEditorPaneProps {
@@ -129,6 +143,7 @@ export function CodeEditorPane({
 
   return (
     <div className={pane}>
+      {path !== "" && <div className={breadcrumb}>{path.split("/").join("  ›  ")}</div>}
       <div className={body}>{content}</div>
       <CodeStatusBar
         path={binary ? "" : path}

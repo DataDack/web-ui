@@ -15,7 +15,7 @@ import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
 import { ConfirmDialog, PageHeader } from "@/components/console"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsList, TabsTrigger } from "@datadack/common-ui"
 import { useQueryParamState } from "@/hooks/use-query-param-state"
 import { useScreen } from "@/services/api/screen"
 
@@ -202,7 +202,7 @@ export function ImagesPage() {
           setActiveFilter(value as ActiveFilter)
         }}
       >
-        <TabsList variant="line">
+        <TabsList>
           <TabsTrigger value="all">
             {t("superAdmin.images.filters.all")} ({counts.all})
           </TabsTrigger>

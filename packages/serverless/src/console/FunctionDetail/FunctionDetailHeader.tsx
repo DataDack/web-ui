@@ -1,24 +1,47 @@
 import type { ReactNode } from "react"
 
-import { Container, ExternalLink, Package } from "lucide-react"
+import { Container, Cpu, ExternalLink, HardDrive, MapPin, Package, Timer } from "lucide-react"
 
-import { Badge, StatusBadge, css, cx, fontMono, glass1 } from "@datadack/common-ui"
+import { Badge, CopyButton, StatusBadge, css, cx, fontMono, glass1, media, mix } from "@datadack/common-ui"
 
 import type { FunctionDetailLabels } from "./labels"
 import type { FunctionEntity, FunctionUrl } from "../../data/types"
 import { familyFromRuntime, RuntimeIcon } from "../RuntimeIcon"
 
 const root = css`
-  margin-bottom: 20px;
+  margin-bottom: 18px;
   display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
+  flex-direction: column;
+  gap: 18px;
+  border-bottom: 1px solid ${mix("--border", 55)};
+  padding-bottom: 20px;
 `
 
 const identity = css`
   min-width: 0;
+`
+
+const identityRow = css`
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+`
+
+const identityCopy = css`
+  min-width: 0;
+  flex: 1;
+`
+
+const mainRow = css`
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  ${media.md} {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
 `
 
 const titleRow = css`
@@ -35,13 +58,15 @@ const iconTile = css`
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  border-radius: 0.75rem;
+  border-radius: 0.625rem;
+  border: 1px solid ${mix("--brand-gold", 28)};
+  background: ${mix("--brand-gold", 7)};
 `
 
 const tileIcon = css`
   width: 18px;
   height: 18px;
-  color: var(--muted-foreground);
+  color: var(--brand-gold);
 `
 
 const heading = css`
@@ -50,7 +75,7 @@ const heading = css`
   text-overflow: ellipsis;
   white-space: nowrap;
   font-family: ${fontMono};
-  font-size: 20px;
+  font-size: clamp(22px, 3vw, 30px);
   font-weight: 700;
   letter-spacing: -0.025em;
 `
@@ -61,13 +86,28 @@ const runtimeBadge = css`
 `
 
 const arnLine = css`
-  margin: 6px 0 0;
+  margin: 0 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   font-family: ${fontMono};
   font-size: 11px;
   color: var(--muted-foreground);
+`
+
+const arnValue = css`
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`
+
+const description = css`
+  max-width: 54rem;
+  margin: 8px 0 0;
+  color: var(--muted-foreground);
+  font-size: 13px;
+  line-height: 1.55;
 `
 
 const urlLine = css`
@@ -109,6 +149,46 @@ const actionsSlot = css`
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
+`
+
+const facts = css`
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid ${mix("--border", 55)};
+  border-radius: 0.625rem;
+  background: ${mix("--border", 45)};
+
+  ${media.md} {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+`
+
+const fact = css`
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 12px;
+  background: ${mix("--background", 94)};
+`
+
+const factIcon = css`
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: var(--brand-gold);
+`
+
+const factValue = css`
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: ${fontMono};
+  font-size: 11px;
+  color: var(--foreground);
 `
 
 export interface FunctionDetailHeaderProps {
@@ -145,56 +225,73 @@ export function FunctionDetailHeader({
   // address that actually answers.
   const primaryUrl = urls?.find((u) => !u.disabled) ?? urls?.[0]
   const extraUrls = (urls?.length ?? 0) - (primaryUrl ? 1 : 0)
+  const factsList = [
+    { icon: Cpu, value: fn.runtime ?? fn.runtimeMode ?? fn.packageType },
+    { icon: MapPin, value: fn.region },
+    { icon: HardDrive, value: fn.memorySize != null ? `${String(fn.memorySize)} MB` : undefined },
+    { icon: Timer, value: fn.timeout != null ? `${String(fn.timeout)}s timeout` : undefined },
+  ]
 
   return (
     <div className={cx(root, className)}>
-      <div className={identity}>
-        <div className={titleRow}>
-          <div className={cx(glass1, iconTile)}>
-            <TileIcon className={tileIcon} />
+      <div className={mainRow}>
+        <div className={identity}>
+          {fn.functionArn && (
+            <div className={arnLine}>
+              <span className={arnValue}>{fn.functionArn}</span>
+              <CopyButton value={fn.functionArn} />
+            </div>
+          )}
+          <div className={identityRow}>
+            <div className={cx(glass1, iconTile)}>
+              <TileIcon className={tileIcon} />
+            </div>
+            <div className={identityCopy}>
+              <div className={titleRow}>
+                <h1 className={heading}>{fn.name}</h1>
+                <StatusBadge status={fn.state} pulse={fn.state.toLowerCase() === "active"} />
+                <Badge variant="outline" className={runtimeBadge}>
+                  {family && <RuntimeIcon family={family} />}
+                  {fn.packageType}
+                </Badge>
+              </div>
+              {fn.description && <p className={description}>{fn.description}</p>}
+              {primaryUrl && (
+                <div className={urlLine}>
+                  <ExternalLink className={urlIcon} aria-hidden />
+                  {primaryUrl.disabled ? (
+                    <span className={cx(urlAnchor, disabledUrl)}>{primaryUrl.domain}</span>
+                  ) : (
+                    <a
+                      className={urlAnchor}
+                      href={`https://${primaryUrl.domain}`}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                    >
+                      {primaryUrl.domain}
+                    </a>
+                  )}
+                  {primaryUrl.disabled && <Badge variant="outline">disabled</Badge>}
+                  {primaryUrl.qualifier && <Badge variant="outline">{primaryUrl.qualifier}</Badge>}
+                  {extraUrls > 0 && <Badge variant="outline">+{extraUrls}</Badge>}
+                </div>
+              )}
+            </div>
           </div>
-          <h1 className={heading}>{fn.name}</h1>
-          <StatusBadge status={fn.state} pulse={fn.state.toLowerCase() === "active"} />
-          <Badge variant="outline" className={runtimeBadge}>
-            {family && <RuntimeIcon family={family} />}
-            {fn.runtime ?? fn.packageType}
-          </Badge>
         </div>
-        {primaryUrl && (
-          <div className={urlLine}>
-            <ExternalLink className={urlIcon} aria-hidden />
-            {primaryUrl.disabled ? (
-              <span className={cx(urlAnchor, disabledUrl)}>{primaryUrl.domain}</span>
-            ) : (
-              <a
-                className={urlAnchor}
-                href={`https://${primaryUrl.domain}`}
-                target="_blank"
-                rel="noreferrer noopener"
-              >
-                {primaryUrl.domain}
-              </a>
-            )}
-            {primaryUrl.disabled && (
-              <Badge variant="outline" className={runtimeBadge}>
-                disabled
-              </Badge>
-            )}
-            {primaryUrl.qualifier && (
-              <Badge variant="outline" className={runtimeBadge}>
-                {primaryUrl.qualifier}
-              </Badge>
-            )}
-            {extraUrls > 0 && (
-              <Badge variant="outline" className={runtimeBadge}>
-                +{extraUrls}
-              </Badge>
-            )}
-          </div>
-        )}
-        {fn.functionArn && <p className={arnLine}>{fn.functionArn}</p>}
+        {actions && <div className={actionsSlot}>{actions}</div>}
       </div>
-      {actions && <div className={actionsSlot}>{actions}</div>}
+
+      <div className={facts}>
+        {factsList.map((item) =>
+          item.value ? (
+            <div className={fact} key={item.value}>
+              <item.icon className={factIcon} aria-hidden />
+              <span className={factValue}>{item.value}</span>
+            </div>
+          ) : null,
+        )}
+      </div>
     </div>
   )
 }

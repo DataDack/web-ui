@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
 
 import { PageHeader, Section } from "@/components/console"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@datadack/common-ui"
 import { useSSHKeys } from "@/modules/ssh-keys/ssh-keys.hooks"
 import { useScreen } from "@/services/api/screen"
 
@@ -86,7 +86,7 @@ export function VmConnectPage() {
       </Section>
 
       <Tabs defaultValue="instance-connect" className="gap-0">
-        <TabsList variant="line" className="mb-0">
+        <TabsList className="mb-0">
           <TabsTrigger value="instance-connect" className="gap-1.5">
             <TerminalIcon className="size-3.5" />
             {t("vms.connect.tabs.instanceConnect", "Instance Connect")}

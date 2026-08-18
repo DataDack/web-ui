@@ -7,9 +7,12 @@ import { baseName } from "./language"
 
 const strip = css`
   display: flex;
+  min-height: 38px;
   align-items: stretch;
   overflow-x: auto;
+  overflow-y: hidden;
   border-bottom: 1px solid ${mix("--border", 60)};
+  background: ${mix("--background", 88)};
 
   /* A tab strip that grows a scrollbar changes height; keep it off-canvas. */
   scrollbar-width: none;
@@ -26,7 +29,7 @@ const tab = css`
   border: none;
   border-right: 1px solid ${mix("--border", 50)};
   background: transparent;
-  padding: 7px 10px;
+  padding: 8px 12px;
   font-family: ${fontMono};
   font-size: 11.5px;
   color: var(--muted-foreground);
@@ -38,9 +41,9 @@ const tab = css`
 `
 
 const tabActive = css`
-  background: ${mix("--accent", 55)};
+  background: var(--card);
   color: var(--foreground);
-  box-shadow: inset 0 -2px 0 0 var(--brand-gold);
+  box-shadow: inset 0 2px 0 0 var(--brand-gold);
 `
 
 const tabIcon = css`

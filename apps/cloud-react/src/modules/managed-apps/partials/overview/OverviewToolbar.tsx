@@ -1,4 +1,3 @@
-import { useTranslation } from "react-i18next"
 import {
   Input,
   Select,
@@ -8,6 +7,7 @@ import {
   SelectValue,
 } from "@datadack/common-ui"
 import { LayoutGrid, List, Search } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
 import { SegmentedControl, type SegmentedOption } from "@/components/console"
 
@@ -78,7 +78,7 @@ export function OverviewToolbar({
 }: Readonly<OverviewToolbarProps>) {
   const { t } = useTranslation()
   return (
-    <div className="glass-1 mb-4 flex flex-wrap items-center gap-2 px-3 py-2.5">
+    <div className="mb-6 flex flex-wrap items-center gap-2 border-y border-border py-3">
       <div className="relative min-w-[200px] flex-1 sm:max-w-xs">
         <Search className="absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
         <Input

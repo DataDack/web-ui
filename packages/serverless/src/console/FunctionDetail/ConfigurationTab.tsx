@@ -1,6 +1,18 @@
 import { useState } from "react"
 
-import { Network, ShieldCheck } from "lucide-react"
+import {
+  Braces,
+  Gauge,
+  Layers3,
+  Link2,
+  Network,
+  Send,
+  Settings2,
+  ShieldCheck,
+  Tags,
+  Workflow,
+  type LucideIcon,
+} from "lucide-react"
 
 import { css, cx, fontMono, media, mix } from "@datadack/common-ui"
 
@@ -30,17 +42,21 @@ export type ConfigurationSectionValue =
   | "vpc"
 
 /** Nav order; the last three have no backend yet and carry a "Soon" chip. */
-const SECTION_ORDER: readonly { value: ConfigurationSectionValue; soon: boolean }[] = [
-  { value: "general", soon: false },
-  { value: "env", soon: false },
-  { value: "triggers", soon: false },
-  { value: "layers", soon: false },
-  { value: "tags", soon: false },
-  { value: "concurrency", soon: false },
-  { value: "async", soon: false },
-  { value: "functionUrl", soon: false },
-  { value: "permissions", soon: true },
-  { value: "vpc", soon: true },
+const SECTION_ORDER: readonly {
+  value: ConfigurationSectionValue
+  soon: boolean
+  icon: LucideIcon
+}[] = [
+  { value: "general", soon: false, icon: Settings2 },
+  { value: "env", soon: false, icon: Braces },
+  { value: "triggers", soon: false, icon: Workflow },
+  { value: "layers", soon: false, icon: Layers3 },
+  { value: "tags", soon: false, icon: Tags },
+  { value: "concurrency", soon: false, icon: Gauge },
+  { value: "async", soon: false, icon: Send },
+  { value: "functionUrl", soon: false, icon: Link2 },
+  { value: "permissions", soon: true, icon: ShieldCheck },
+  { value: "vpc", soon: true, icon: Network },
 ]
 
 const layout = css`
@@ -59,12 +75,21 @@ const layout = css`
 
 const nav = css`
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  min-width: 0;
+  gap: 4px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 4px;
+  border: 1px solid ${mix("--border", 55)};
+  border-radius: 0.625rem;
+  background: ${mix("--background", 92)};
 
   ${media.md} {
-    width: 220px;
+    width: 232px;
     flex-shrink: 0;
+    flex-direction: column;
+    overflow: visible;
+    padding: 6px;
   }
 `
 
@@ -73,8 +98,9 @@ const navItem = css`
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+  flex-shrink: 0;
   border-radius: 0.375rem;
-  padding: 6px 10px;
+  padding: 8px 10px;
   text-align: left;
   font-size: 13px;
   color: var(--muted-foreground);
@@ -86,12 +112,26 @@ const navItem = css`
 `
 
 const navItemActive = css`
-  background: ${mix("--accent", 70)};
+  background: ${mix("--brand-gold", 9)};
   color: var(--foreground);
+  box-shadow: inset 2px 0 0 var(--brand-gold);
 
   &:hover {
-    background: ${mix("--accent", 70)};
+    background: ${mix("--brand-gold", 9)};
   }
+`
+
+const navLabel = css`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+`
+
+const navIcon = css`
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
 `
 
 const soonChip = css`
@@ -161,7 +201,10 @@ export function ConfigurationTab({
               select(section.value)
             }}
           >
-            {config.nav[section.value]}
+            <span className={navLabel}>
+              <section.icon className={navIcon} aria-hidden />
+              {config.nav[section.value]}
+            </span>
             {section.soon && <span className={soonChip}>{config.soon}</span>}
           </button>
         ))}

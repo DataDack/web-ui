@@ -1,8 +1,8 @@
-import { useTranslation } from "react-i18next"
 import { type ReactNode, useMemo, useState } from "react"
 
 import { Button, EmptyState, Skeleton } from "@datadack/common-ui"
 import { AlertTriangle, Search } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
 import { staggerDelay } from "@/components/console"
 import { useQueryParamState } from "@/hooks/use-query-param-state"
@@ -238,16 +238,16 @@ function CardGrid({
 }: Readonly<CardGridProps>) {
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
         {SKELETON_KEYS.map((key) => (
-          <Skeleton key={key} className="h-[210px] rounded-xl" />
+          <Skeleton key={key} className="h-64 rounded-sm" />
         ))}
       </div>
     )
   }
 
   return (
-    <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+    <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
       {entries.map((entry, index) => (
         <li key={entry.project.id} className="animate-content-enter" style={staggerDelay(index)}>
           <ProjectCard

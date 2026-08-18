@@ -1,8 +1,5 @@
-import { cn } from "@datadack/common-ui"
+import { cn, Tabs, TabsList, TabsTrigger } from "@datadack/common-ui"
 import type { LucideIcon } from "lucide-react"
-import { motion } from "motion/react"
-
-import { EASE } from "./motion-config"
 
 export interface AnimatedTab {
   value: string
@@ -24,31 +21,18 @@ export function AnimatedTabs({
   tabs,
   value,
   onChange,
-  layoutId,
   className,
 }: Readonly<AnimatedTabsProps>) {
   return (
-    <div
-      role="tablist"
-      className={cn("flex items-center gap-1 border-b border-border overflow-x-auto", className)}
-    >
-      {tabs.map((tab) => {
-        const active = tab.value === value
-        const Icon = tab.icon
-        return (
-          <button
+    <Tabs value={value} onValueChange={onChange} className={cn("gap-0", className)}>
+      <TabsList>
+        {tabs.map((tab) => {
+          const Icon = tab.icon
+          return (
+          <TabsTrigger
             key={tab.value}
-            role="tab"
-            aria-selected={active}
-            onClick={() => {
-              onChange(tab.value)
-            }}
-            className={cn(
-              "relative flex items-center gap-1.5 px-3 py-2.5 text-sm whitespace-nowrap transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring/50 rounded-t-md",
-              active
-                ? "text-foreground font-medium"
-                : "text-muted-foreground hover:text-foreground",
-            )}
+            value={tab.value}
+            className="gap-1.5 px-3 py-2.5"
           >
             {Icon && <Icon className="size-3.5" />}
             {tab.label}
@@ -57,16 +41,10 @@ export function AnimatedTabs({
                 {tab.count}
               </span>
             )}
-            {active && (
-              <motion.div
-                layoutId={layoutId}
-                className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-gradient-brand"
-                transition={EASE.spring}
-              />
-            )}
-          </button>
-        )
-      })}
-    </div>
+          </TabsTrigger>
+          )
+        })}
+      </TabsList>
+    </Tabs>
   )
 }

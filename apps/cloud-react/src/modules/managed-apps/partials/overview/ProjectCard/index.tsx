@@ -55,7 +55,7 @@ export function ProjectCard({
         // A solid surface on a solid page: the translucent fill and the large
         // drop shadow this had made the card read as hovering over the
         // background rather than sitting on it. The border is the edge now.
-        "group relative flex h-full flex-col gap-3 rounded-xl border border-border/70 bg-card px-5 py-4 transition-colors hover:border-border hover:bg-muted/20",
+        "managed-project-card group relative flex h-full min-h-64 flex-col gap-4 border border-border/70 bg-card px-5 py-5 transition-colors",
         // Tone is carried in text by the chip; the border is the only second
         // encoding, and only for the state that has to be findable across a
         // grid of forty.
@@ -70,13 +70,13 @@ export function ProjectCard({
           seed={project.id}
           label={project.name}
           type={project.project_type}
-          className="size-9 rounded-lg"
+          className="size-10 rounded-sm"
         />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5">
             <Link
               to={MANAGED_APPS_ROUTES.project(project.id)}
-              className="truncate text-sm font-semibold text-foreground hover:underline"
+              className="truncate text-base font-semibold tracking-tight text-foreground hover:underline"
             >
               {project.name}
               {/* Stretched click target. Inside the anchor, so the

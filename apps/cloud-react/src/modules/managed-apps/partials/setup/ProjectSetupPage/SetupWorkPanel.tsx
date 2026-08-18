@@ -4,7 +4,7 @@ import { useState } from "react"
 import { ExternalLink, FileCode2, Loader2, ScrollText } from "lucide-react"
 
 import { Section } from "@/components/console"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@datadack/common-ui"
 
 import { WorkflowPreview } from "./WorkflowPreview"
 import { BuildStatusPill } from "../../../components"

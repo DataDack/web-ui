@@ -2,12 +2,11 @@ import { useState } from "react"
 
 import { Button, cn } from "@datadack/common-ui"
 import { useQueryClient } from "@tanstack/react-query"
-import { Globe, type LucideIcon, Plus, RefreshCw, Rocket } from "lucide-react"
+import { Plus, RefreshCw } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 import { useTranslation } from "react-i18next"
 import { useNavigate, useSearchParams } from "react-router-dom"
 
-import { PageHeader } from "@/components/console"
 import { DUR, EASE } from "@/components/console/motion/motion-config"
 import { HOSTING_ROUTES } from "@/modules/hosting/hosting.constants"
 import { HostingAccountsPanel } from "@/modules/hosting/partials/HostingAccountsPanel"
@@ -50,7 +49,6 @@ function parseTab(raw: string | null): ManagedAppsTab {
 }
 
 interface ViewMeta {
-  icon: LucideIcon
   title: string
   description: string
 }
@@ -90,19 +88,16 @@ export function ManagedAppsOverviewPage() {
   // navigation mistake.
   const VIEW: Record<ManagedAppsTab, ViewMeta> = {
     overview: {
-      icon: Rocket,
       title: t("managedApps.managedAppsOverviewPage.managedApps"),
       description:
         "Every site you run with DataDack — apps built from a GitHub branch, and cPanel hosting — in one place.",
     },
     apps: {
-      icon: Rocket,
       title: "Apps",
       description:
         "Build OpenNext and React apps straight from a GitHub branch — every push triggers a new deploy.",
     },
     hosting: {
-      icon: Globe,
       title: "cPanel Hosting",
       description: "Your cPanel hosting accounts, provisioned and managed from the console.",
     },
@@ -198,16 +193,22 @@ export function ManagedAppsOverviewPage() {
   }
 
   return (
-    <div>
-      <PageHeader
-        icon={VIEW[tab].icon}
-        title={VIEW[tab].title}
-        description={VIEW[tab].description}
-        // The tier caps projects, not hosting accounts, so the chip is shown
-        // where it is true rather than on every view.
-        meta={tab === "hosting" ? undefined : <PlanUsageChip />}
-        actions={actions}
-      />
+    <div className="managed-apps-console -m-4 min-h-[calc(100vh-60px)] bg-background px-4 py-8 md:-m-6 md:px-6 lg:-m-8 lg:px-10 lg:py-10">
+      <header className="mb-10 flex flex-col gap-6 border-b border-border pb-8 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <div className="mb-3 flex items-center gap-3">
+            <span className="managed-kicker font-mono text-[11px] uppercase text-primary">
+              Managed applications
+            </span>
+            {tab === "hosting" ? undefined : <PlanUsageChip />}
+          </div>
+          <h1 className="text-4xl font-bold tracking-[-0.045em] sm:text-5xl">{VIEW[tab].title}</h1>
+          <p className="mt-3 max-w-2xl font-mono text-[13px] text-muted-foreground">
+            {VIEW[tab].description}
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">{actions}</div>
+      </header>
 
       <AnimatePresence mode="wait" initial={false}>
         <motion.div

@@ -15,7 +15,7 @@ import { useTranslation } from "react-i18next"
 import { useNavigate, useSearchParams } from "react-router-dom"
 
 import { ConfirmDialog, PageHeader, StatGrid } from "@/components/console"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@datadack/common-ui"
 import { useScreen } from "@/services/api/screen"
 
 import { IAM_ROUTES } from "../iam.constants"

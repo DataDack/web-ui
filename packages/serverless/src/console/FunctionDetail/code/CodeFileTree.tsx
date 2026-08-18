@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react"
 
-import { ChevronDown, ChevronRight, FilePlus2, FolderPlus, Search } from "lucide-react"
+import { ChevronDown, ChevronRight, FilePlus2, FolderOpen, FolderPlus, Search } from "lucide-react"
 
 import {
   ContextMenu,
@@ -12,6 +12,7 @@ import {
   cx,
   fontMono,
   formatBytes,
+  media,
   mix,
 } from "@datadack/common-ui"
 
@@ -22,11 +23,20 @@ import { buildTree, filterEntries, visibleRows, type TreeNode } from "./tree"
 
 const sidebar = css`
   display: flex;
-  width: 232px;
+  width: 100%;
+  max-height: 184px;
   flex-shrink: 0;
   flex-direction: column;
   min-height: 0;
-  border-right: 1px solid ${mix("--border", 60)};
+  border-bottom: 1px solid ${mix("--border", 60)};
+  background: ${mix("--background", 84)};
+
+  ${media.md} {
+    width: 248px;
+    max-height: none;
+    border-right: 1px solid ${mix("--border", 60)};
+    border-bottom: 0;
+  }
 `
 
 const head = css`
@@ -94,6 +104,23 @@ const list = css`
   padding: 0 6px 10px;
 `
 
+const rootRow = css`
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 12px 5px;
+  font-family: ${fontMono};
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--foreground);
+`
+
+const rootIcon = css`
+  width: 13px;
+  height: 13px;
+  color: var(--brand-gold);
+`
+
 const row = css`
   display: flex;
   width: 100%;
@@ -158,6 +185,7 @@ const emptyNote = css`
 const INDENT_PX = 12
 
 export interface CodeFileTreeProps {
+  rootLabel: string
   entries: readonly FunctionCodeEntry[]
   activePath: string
   /** Paths whose buffer differs from the draft — shown with a gold name. */
@@ -180,6 +208,7 @@ export interface CodeFileTreeProps {
  * than a node id: the control plane only ever knows paths.
  */
 export function CodeFileTree({
+  rootLabel,
   entries,
   activePath,
   dirtyPaths,
@@ -258,6 +287,11 @@ export function CodeFileTree({
             setQuery(event.target.value)
           }}
         />
+      </div>
+
+      <div className={rootRow} title={rootLabel}>
+        <FolderOpen className={rootIcon} aria-hidden />
+        <span className={rowName}>{rootLabel}</span>
       </div>
 
       <div className={list}>

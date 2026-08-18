@@ -16,7 +16,7 @@ import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
 import { FadeIn, PageHeader, StatGrid } from "@/components/console"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@datadack/common-ui"
 import { useImageCatalog } from "@/modules/catalog/catalog.hooks"
 import type { ImageCatalogFamily } from "@/modules/catalog/catalog.types"
 import { OSIcon } from "@/modules/catalog/os-icons"
@@ -213,7 +213,7 @@ export function ImagesListPage() {
       />
 
       <Tabs defaultValue="system">
-        <TabsList variant="line">
+        <TabsList>
           <TabsTrigger value="system" className="gap-1.5">
             <Disc className="size-3.5" />
             {t("vms.images.tabs.system", "System images")}

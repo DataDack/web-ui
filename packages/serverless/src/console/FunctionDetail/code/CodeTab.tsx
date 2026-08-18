@@ -19,6 +19,7 @@ import {
   formatBytes,
   glass2,
   glass3,
+  media,
   mix,
 } from "@datadack/common-ui"
 
@@ -55,6 +56,8 @@ const shell = css`
   flex-direction: column;
   min-height: 0;
   overflow: hidden;
+  border-radius: 0.625rem;
+  background: var(--card);
   box-shadow: 0 0 0 1px ${mix("--border", 60)};
 `
 
@@ -78,7 +81,12 @@ const fullscreenShell = css`
 const workbench = css`
   display: flex;
   flex: 1;
+  flex-direction: column;
   min-height: 0;
+
+  ${media.md} {
+    flex-direction: row;
+  }
 `
 
 const editorColumn = css`
@@ -497,17 +505,9 @@ export function CodeTab({ fn, scope, labels, className }: Readonly<CodeTabProps>
         }}
       />
 
-      <CodeTabStrip
-        openPaths={openPaths}
-        activePath={activePath}
-        dirtyPaths={dirtyPaths}
-        onSelect={setActivePath}
-        onClose={closeFile}
-        closeLabel={copy.toolbar.close}
-      />
-
       <div className={workbench}>
         <CodeFileTree
+          rootLabel={fn.name}
           entries={entries}
           activePath={activePath}
           dirtyPaths={dirtyPaths}
@@ -527,6 +527,14 @@ export function CodeTab({ fn, scope, labels, className }: Readonly<CodeTabProps>
         />
 
         <div className={editorColumn}>
+          <CodeTabStrip
+            openPaths={openPaths}
+            activePath={activePath}
+            dirtyPaths={dirtyPaths}
+            onSelect={setActivePath}
+            onClose={closeFile}
+            closeLabel={copy.toolbar.close}
+          />
           <CodeEditorPane
             functionName={fn.name}
             scope={scope}

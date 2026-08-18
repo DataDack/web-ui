@@ -4,7 +4,7 @@ import { cn } from "@datadack/common-ui"
 import type { UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@datadack/common-ui"
 import type { VMPriceOption } from "@/modules/catalog/catalog.types"
 
 import { formatPrice } from "./wizard.format"

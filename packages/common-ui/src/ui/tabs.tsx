@@ -9,6 +9,11 @@ const root = css`
   display: flex;
   flex-direction: column;
   gap: 20px;
+  min-width: 0;
+
+  &[data-orientation="vertical"] {
+    flex-direction: row;
+  }
 `
 
 /* Underline tabs rather than a pill group: this is page-level navigation, and
@@ -18,8 +23,21 @@ const list = css`
   width: 100%;
   align-items: center;
   gap: 4px;
+  max-width: 100%;
   overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: thin;
   border-bottom: 1px solid ${mix("--border", 60)};
+
+  &[data-orientation="vertical"] {
+    width: fit-content;
+    flex-direction: column;
+    align-items: stretch;
+    overflow: visible;
+    border-right: 1px solid ${mix("--border", 60)};
+    border-bottom: 0;
+  }
 `
 
 const trigger = css`
@@ -62,6 +80,12 @@ const trigger = css`
     background: var(--brand-gold);
   }
 
+  [data-orientation="vertical"] > &::after {
+    inset: 8px -1px 8px auto;
+    width: 2px;
+    height: auto;
+  }
+
   & svg {
     width: 16px;
     height: 16px;
@@ -73,8 +97,19 @@ const content = css`
   outline: none;
 `
 
-function Tabs({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Root>) {
-  return <TabsPrimitive.Root data-slot="tabs" className={cx(root, className)} {...props} />
+function Tabs({
+  className,
+  orientation = "horizontal",
+  ...props
+}: React.ComponentProps<typeof TabsPrimitive.Root>) {
+  return (
+    <TabsPrimitive.Root
+      data-slot="tabs"
+      orientation={orientation}
+      className={cx(root, className)}
+      {...props}
+    />
+  )
 }
 
 function TabsList({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.List>) {

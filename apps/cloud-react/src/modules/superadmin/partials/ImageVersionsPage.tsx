@@ -42,7 +42,7 @@ import {
   StatusBadge,
   type WizardStep,
 } from "@/components/console"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsList, TabsTrigger } from "@datadack/common-ui"
 import { useQueryParamState } from "@/hooks/use-query-param-state"
 import { useScreen } from "@/services/api/screen"
 
@@ -339,7 +339,7 @@ export function ImageVersionsPage() {
                 setStatusFilter(value as StatusFilter)
               }}
             >
-              <TabsList variant="line">
+              <TabsList>
                 <TabsTrigger value="all">
                   {t("superAdmin.images.versions.filters.all")} ({statusCounts.all})
                 </TabsTrigger>

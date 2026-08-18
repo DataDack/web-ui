@@ -1,6 +1,6 @@
-import { Maximize2, Minimize2, Rocket, Save, Undo2 } from "lucide-react"
+import { Code2, Maximize2, Minimize2, Rocket, Save, Undo2 } from "lucide-react"
 
-import { Button, css, cx, fontMono, formatBytes, mix, timeAgo } from "@datadack/common-ui"
+import { Button, css, fontMono, formatBytes, mix, timeAgo } from "@datadack/common-ui"
 
 import type { FunctionCode } from "../../../data/types"
 import type { FunctionDetailLabels } from "../labels"
@@ -8,95 +8,53 @@ import type { FunctionDetailLabels } from "../labels"
 const bar = css`
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   flex-wrap: wrap;
   border-bottom: 1px solid ${mix("--border", 60)};
-  padding: 8px 12px;
+  padding: 10px 12px;
+  background: ${mix("--background", 88)};
 `
 
-/* macOS's literal traffic-light colours, not the theme's semantic tokens.
-   --destructive / --status-warning / --status-success render maroon, tan and
-   periwinkle here, which reads as three status dots rather than as window
-   chrome — and the whole point of this cluster is that it is instantly
-   recognisable. Same values in light and dark, exactly as macOS does it. */
-const MAC_RED = "#ff5f57"
-const MAC_YELLOW = "#febc2e"
-const MAC_GREEN = "#28c840"
-
-/** The rim macOS draws around each light so it holds an edge on a pale title bar. */
-const LIGHT_RIM = "inset 0 0 0 0.5px rgb(0 0 0 / 0.12)"
-
-/* 12px lights on an 8px rhythm — macOS's own metrics, which is what makes the
-   cluster read as window chrome. The extra 2px over a plain dot is also what
-   lets a glyph fit inside the zoom light. */
-const trafficLight = css`
-  width: 12px;
-  height: 12px;
-  border-radius: 9999px;
-  box-shadow: ${LIGHT_RIM};
-`
-
-const trafficLightRed = css`
-  background: ${MAC_RED};
-`
-
-const trafficLightYellow = css`
-  background: ${MAC_YELLOW};
-`
-
-/**
- * The zoom light — the real control, not decoration. Its siblings are painted
- * the same but stay inert, because close and minimise have no meaning for a
- * panel that is always open. Zoom does, and on a Mac it is the button people
- * already reach for.
- *
- * The glyph is transparent at rest: a traffic light that always shows its icon
- * looks like a busy toolbar, while one that reveals it on approach looks like a
- * window. Colour, not opacity, so the dot itself never fades with it.
- */
-const zoomLight = css`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  border: none;
-  cursor: pointer;
-  background: ${MAC_GREEN};
-  color: transparent;
-  outline: none;
-  transition:
-    background 150ms cubic-bezier(0.4, 0, 0.2, 1),
-    color 150ms cubic-bezier(0.4, 0, 0.2, 1);
-
-  &:focus-visible {
-    box-shadow:
-      ${LIGHT_RIM},
-      0 0 0 3px ${mix("--ring", 50)};
-  }
-
-  /* macOS darkens the light under the cursor rather than lightening it. */
-  &:active {
-    background: color-mix(in oklab, ${MAC_GREEN} 82%, black);
-  }
-`
-
-const trafficLights = css`
+const workspaceMark = css`
   display: flex;
   align-items: center;
   gap: 8px;
+  min-width: 0;
+`
+
+const workspaceIcon = css`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
   flex-shrink: 0;
+  border-radius: 0.375rem;
+  color: var(--brand-gold);
+  background: ${mix("--brand-gold", 9)};
+  box-shadow: inset 0 0 0 1px ${mix("--brand-gold", 25)};
+`
 
-  /* macOS reveals the glyphs when the cursor nears the cluster, not when it
-     lands on one light — so hovering any of the three arms zoom. Keyboard users
-     get the same reveal from focus, which is the only way they ever see it.
+const workspaceIconGlyph = css`
+  width: 14px;
+  height: 14px;
+`
 
-     Keyed on the data attribute rather than on the zoomLight class: cx() merges
-     emotion classes into a fresh hash, so the element never carries zoomLight's
-     own class name and a selector built from it would match nothing. */
-  &:hover [data-zoom],
-  & [data-zoom]:focus-visible {
-    color: rgb(0 0 0 / 0.55);
-  }
+const workspaceCopy = css`
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 1px;
+`
+
+const workspaceName = css`
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: ${fontMono};
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--foreground);
 `
 
 const meta = css`
@@ -133,6 +91,11 @@ const actions = css`
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
+`
+
+const fullscreenButton = css`
+  width: 30px;
+  height: 30px;
 `
 
 export interface CodeToolbarProps {
@@ -189,32 +152,15 @@ export function CodeToolbar({
 
   return (
     <div className={bar}>
-      {/* Not aria-hidden as a group any more: it holds a real button, and an
-          aria-hidden ancestor would hide a focusable child from assistive tech
-          while leaving it in the tab order. The two inert lights carry it. */}
-      <div className={trafficLights}>
-        <span className={cx(trafficLight, trafficLightRed)} aria-hidden />
-        <span className={cx(trafficLight, trafficLightYellow)} aria-hidden />
-        {/* Outside the canEdit gate: a package someone can only read is
-            exactly the one worth opening wide to read. */}
-        <button
-          type="button"
-          data-zoom
-          className={cx(trafficLight, zoomLight)}
-          onClick={onToggleFullscreen}
-          title={fullscreen ? copy.exitFullscreen : copy.fullscreen}
-          aria-label={fullscreen ? copy.exitFullscreen : copy.fullscreen}
-          aria-pressed={fullscreen}
-        >
-          {fullscreen ? (
-            <Minimize2 size={8} strokeWidth={3} />
-          ) : (
-            <Maximize2 size={8} strokeWidth={3} />
-          )}
-        </button>
+      <div className={workspaceMark}>
+        <span className={workspaceIcon} aria-hidden>
+          <Code2 className={workspaceIconGlyph} />
+        </span>
+        <span className={workspaceCopy}>
+          <span className={workspaceName}>{code.functionName}</span>
+          <span className={meta}>{metaLine}</span>
+        </span>
       </div>
-
-      <span className={meta}>{metaLine}</span>
 
       {hasDraft && (
         <span className={draftChip}>
@@ -261,6 +207,17 @@ export function CodeToolbar({
             </Button>
           </>
         )}
+        <Button
+          variant="ghost"
+          size="icon"
+          className={fullscreenButton}
+          onClick={onToggleFullscreen}
+          title={fullscreen ? copy.exitFullscreen : copy.fullscreen}
+          aria-label={fullscreen ? copy.exitFullscreen : copy.fullscreen}
+          aria-pressed={fullscreen}
+        >
+          {fullscreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
+        </Button>
       </div>
     </div>
   )
