@@ -86,17 +86,17 @@ export interface BurnSummary {
 
 /**
  * Estimate daily burn from usage cost over the trailing window and derive
- * runway from the current balance. Usage records are pre-tax ₹; we gross them
- * up by the GST rate so runway reflects what the wallet is actually charged.
+ * runway from the current balance. GST is paid when credits are purchased, so
+ * resource usage consumes only its recorded cost.
  */
 export function burnSummary(
   usage: UsageRecordApi[],
   balance: number,
-  gstRate = 18,
+  _gstRate = 18,
   days = 30,
 ): BurnSummary {
-  const grossed = usage.reduce((sum, r) => sum + r.cost, 0) * (1 + gstRate / 100)
-  const perDay = grossed / days
+  const total = usage.reduce((sum, r) => sum + r.cost, 0)
+  const perDay = total / days
   const runwayDays = perDay > 0 ? Math.floor(balance / perDay) : null
   return { perDay: Math.round(perDay * 100) / 100, runwayDays }
 }

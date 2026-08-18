@@ -2,7 +2,6 @@
 // charge gates (apps/billing/charge) so the console can pop a dialog instead of
 // letting the create request die on a raw 402.
 
-import { GST_RATE } from "./billing.constants"
 import type { CreditBalance, SubscriptionApi } from "./billing.types"
 
 /** Minimum funded runway (hours of usage the wallet must cover) required to
@@ -16,7 +15,6 @@ export const HOURLY_RUNWAY_HOURS = 24
 export const LOW_RUNWAY_WARN_HOURS = 3
 
 const round2 = (v: number) => Math.round(v * 100) / 100
-const withGst = (base: number) => round2(base + (base * GST_RATE) / 100)
 
 export type CreditGuardVerdict =
   | { kind: "overdue" }
@@ -38,8 +36,8 @@ export interface CreditGuardInput {
  * Pre-flight wallet check before creating a billable resource:
  *
  *  1. any overdue subscription → the account is overdue, block.
- *  2. monthly: balance < month upfront (incl. GST) → insufficient, block.
- *     hourly: balance < 24h runway (incl. GST) → insufficient, block.
+ *  2. monthly: balance < month upfront → insufficient, block.
+ *     hourly: balance < 24h runway → insufficient, block.
  *  3. account-wide hourly burn (existing + new) leaves < 3h of runway →
  *     warn that the account is about to go overdue (continue allowed).
  *
@@ -56,8 +54,8 @@ export function evaluateCreditGuard(input: CreditGuardInput): CreditGuardVerdict
 
   const required =
     cycle === "hourly"
-      ? withGst(round2(HOURLY_RUNWAY_HOURS * hourlyRate))
-      : withGst(round2(monthlyAmount))
+      ? round2(HOURLY_RUNWAY_HOURS * hourlyRate)
+      : round2(monthlyAmount)
   if (required > 0 && balance.balance < required) {
     return {
       kind: "insufficient",
@@ -72,7 +70,7 @@ export function evaluateCreditGuard(input: CreditGuardInput): CreditGuardVerdict
   const existingBurn = subscriptions
     .filter((s) => s.cycle === "hourly" && s.status === "active")
     .reduce((sum, s) => sum + s.hourly_rate, 0)
-  const burnPerHour = withGst(existingBurn + (cycle === "hourly" ? hourlyRate : 0))
+  const burnPerHour = round2(existingBurn + (cycle === "hourly" ? hourlyRate : 0))
   if (burnPerHour > 0) {
     const runwayHours = balance.balance / burnPerHour
     if (runwayHours < LOW_RUNWAY_WARN_HOURS) {

@@ -14,6 +14,7 @@ import {
 import { useTranslation } from "react-i18next"
 
 import { useBuyCredits } from "../billing.hooks"
+import { GST_RATE } from "../billing.constants"
 import { inr } from "../billing.utils"
 
 /** Preset top-up amounts (₹). One tap fills a common wallet load. */
@@ -27,9 +28,8 @@ interface TopupDialogProps {
 }
 
 /**
- * Buy-credits dialog. Wallet top-ups are TAX-FREE: paying ₹1000 grants ₹1000 of
- * credits with no GST (GST is charged later, when credits are spent). Mirrors the
- * server-side ComputeBreakdown (zero GST). On submit it hands off to the gateway's
+ * Buy-credits dialog. GST is added at checkout while the requested base amount is
+ * granted as credits. On submit it hands off to the gateway's
  * hosted checkout via useBuyCredits.
  */
 export function TopupDialog({
@@ -44,7 +44,8 @@ export function TopupDialog({
   const [creditsInput, setCreditsInput] = useState(initialCredits > 0 ? String(initialCredits) : "")
 
   const creditsNum = Math.max(0, Math.floor(Number(creditsInput) || 0))
-  const totalRupees = creditsNum // GST-free top-up
+  const gstRupees = Math.round(creditsNum * GST_RATE) / 100
+  const totalRupees = creditsNum + gstRupees
 
   const submitBuy = () => {
     if (creditsNum < 1) return
@@ -109,6 +110,10 @@ export function TopupDialog({
 
           <dl className="divide-y divide-border/60 rounded-md border border-border/60 text-sm">
             <div className="flex items-center justify-between px-3 py-2">
+              <dt className="text-muted-foreground">GST ({GST_RATE}%)</dt>
+              <dd className="font-mono">{inr(gstRupees)}</dd>
+            </div>
+            <div className="flex items-center justify-between px-3 py-2">
               <dt className="text-muted-foreground">{t("billing.buyDialog.credits")}</dt>
               <dd className="font-mono">{inr(creditsNum)}</dd>
             </div>
@@ -117,7 +122,6 @@ export function TopupDialog({
               <dd className="font-mono font-semibold">{inr(totalRupees)}</dd>
             </div>
           </dl>
-          <p className="text-[12px] text-muted-foreground">{t("billing.buyDialog.taxFreeNote")}</p>
         </div>
 
         <DialogFooter>
