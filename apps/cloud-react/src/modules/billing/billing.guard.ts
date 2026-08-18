@@ -8,7 +8,7 @@ import type { CreditBalance, SubscriptionApi } from "./billing.types"
  * launch an hourly resource. Mirrors hourlyRunwayHours in the backend charge
  * engine — the server enforces it with a 402; this client-side check just
  * surfaces it as a dialog before the request is made. */
-export const HOURLY_RUNWAY_HOURS = 24
+export const HOURLY_RUNWAY_HOURS = 1
 
 /** Below this many hours of remaining account-wide runway we warn the user
  * their account is about to go overdue (metering will start failing soon). */
@@ -37,7 +37,7 @@ export interface CreditGuardInput {
  *
  *  1. any overdue subscription → the account is overdue, block.
  *  2. monthly: balance < month upfront → insufficient, block.
- *     hourly: balance < 24h runway → insufficient, block.
+ *     hourly: balance < 1h runway → insufficient, block.
  *  3. account-wide hourly burn (existing + new) leaves < 3h of runway →
  *     warn that the account is about to go overdue (continue allowed).
  *

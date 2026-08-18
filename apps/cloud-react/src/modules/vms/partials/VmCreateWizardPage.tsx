@@ -222,7 +222,7 @@ export function VmCreateWizardPage() {
   const [confirmMonthly, setConfirmMonthly] = useState<FormValues | null>(null)
 
   // Wallet pre-flight: deploy first runs the credit guard (overdue account,
-  // balance below the hourly 24h runway / monthly upfront, or < 3h of
+  // balance below the hourly 1h runway / monthly upfront, or < 3h of
   // account-wide runway left) and pops a dialog instead of letting the
   // request die on a 402. Holds the verdict + the pending form values so the
   // low-runway warning's "Continue anyway" can resume the deploy.
