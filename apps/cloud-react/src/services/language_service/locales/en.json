@@ -4963,7 +4963,7 @@
           "resourceGroupId": "Resource group"
         },
         "envEmpty": "None set.",
-        "envHint": "Blank rows are ignored.",
+        "envHint": "Paste a .env straight into any KEY field to import it in bulk. Blank rows are ignored.",
         "envAdd": "Add variable",
         "envRemove": "Remove {{name}}",
         "envRemoveUnnamed": "Remove variable",
@@ -5048,7 +5048,12 @@
           "add": "Add a layer",
           "noneAvailable": "No compatible layers to add",
           "remove": "Remove {{name}}"
-        }
+        },
+        "envImported_one": "1 variable from your paste.",
+        "envImported_other": "{{count}} variables from your paste.",
+        "envSkipped_one": "1 line could not be read.",
+        "envSkipped_other": "{{count}} lines could not be read.",
+        "envUndo": "Undo"
       },
       "versions": {
         "columns": {

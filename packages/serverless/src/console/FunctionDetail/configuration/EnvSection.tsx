@@ -87,6 +87,9 @@ export function EnvSection({ fn, scope, labels, className }: Readonly<EnvSection
         addLabel={config.envAdd}
         hint={config.envHint}
         removeLabel={config.envRemove}
+        importedLabel={config.envImported}
+        skippedLabel={config.envSkipped}
+        undoLabel={config.envUndo}
       />
     )
   } else if (entries.length === 0) {

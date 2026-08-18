@@ -156,9 +156,7 @@ export function ConcurrencySection({
             {
               label: fields.reserved,
               value:
-                fn.reservedConcurrency != null
-                  ? String(fn.reservedConcurrency)
-                  : config.unreserved,
+                fn.reservedConcurrency != null ? String(fn.reservedConcurrency) : config.unreserved,
               mono: true,
             },
             {

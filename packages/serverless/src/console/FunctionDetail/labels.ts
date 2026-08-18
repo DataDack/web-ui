@@ -285,6 +285,11 @@ export interface FunctionDetailLabels {
     envHint: string
     envAdd: string
     envRemove: (key: string) => string
+    /** Reports what pasting a .env into a KEY field produced. */
+    envImported: (count: number) => string
+    /** Appended when pasted lines carried content but did not parse. */
+    envSkipped: (count: number) => string
+    envUndo: string
     tagsEmpty: string
     tagsHint: string
     layers: {
@@ -354,6 +359,31 @@ export interface FunctionDetailLabels {
       nextRunIn: (relative: string) => string
       /** The fire time has passed and the scheduler has not caught up yet. */
       nextRunDue: string
+      /** The event-flow canvas and the two panels under it. */
+      flow: {
+        sources: (count: number) => string
+        target: string
+        lastTriggered: string
+        nextRun: string
+        memory: string
+        timeout: string
+        payloadPreview: string
+        configuration: string
+        selectHint: string
+        copyPayload: string
+        fields: {
+          type: string
+          name: string
+          id: string
+          bucket: string
+          prefix: string
+          suffix: string
+          schedule: string
+          interval: string
+          qualifier: string
+          state: string
+        }
+      }
     }
     functionUrlEmpty: string
     functionUrlEmptyHint: string
@@ -522,7 +552,8 @@ export const DEFAULT_FUNCTION_DETAIL_LABELS: FunctionDetailLabels = {
       rename: { title: "Rename", label: "New path", confirm: "Rename" },
       deleteFile: {
         title: (path) => `Delete ${path}?`,
-        description: "The file is removed from the draft. Nothing changes for the deployed function until you deploy.",
+        description:
+          "The file is removed from the draft. Nothing changes for the deployed function until you deploy.",
         confirm: "Delete file",
       },
       discard: {
@@ -706,9 +737,15 @@ export const DEFAULT_FUNCTION_DETAIL_LABELS: FunctionDetailLabels = {
       retryAttempts: "Retry attempts",
     },
     envEmpty: "None set.",
-    envHint: "Blank rows are ignored.",
+    envHint:
+      "Paste a .env straight into any KEY field to import it in bulk. Blank rows are ignored.",
     envAdd: "Add variable",
     envRemove: (key) => (key ? `Remove ${key}` : "Remove variable"),
+    envImported: (count) =>
+      count === 1 ? "1 variable from your paste." : `${String(count)} variables from your paste.`,
+    envSkipped: (count) =>
+      count === 1 ? "1 line could not be read." : `${String(count)} lines could not be read.`,
+    envUndo: "Undo",
     tagsEmpty: "No tags.",
     tagsHint: "Tags are stored as the function’s labels.",
     layers: {
@@ -778,6 +815,30 @@ export const DEFAULT_FUNCTION_DETAIL_LABELS: FunctionDetailLabels = {
       deleted: (name) => `Trigger ${name} removed`,
       nextRunIn: (relative) => `next run in ${relative}`,
       nextRunDue: "next run due",
+      flow: {
+        sources: (count) => (count === 1 ? "1 source" : `${String(count)} sources`),
+        target: "Function",
+        lastTriggered: "Last triggered",
+        nextRun: "Next run",
+        memory: "Memory",
+        timeout: "Timeout",
+        payloadPreview: "Payload preview",
+        configuration: "Trigger configuration",
+        selectHint: "Select a source to see what it sends and how it is configured.",
+        copyPayload: "Copy",
+        fields: {
+          type: "Type",
+          name: "Name",
+          id: "Trigger id",
+          bucket: "Bucket",
+          prefix: "Prefix",
+          suffix: "Suffix",
+          schedule: "Schedule",
+          interval: "Interval",
+          qualifier: "Qualifier",
+          state: "State",
+        },
+      },
     },
     functionUrlEmpty: "No hostname is mapped to this function.",
     functionUrlEmptyHint:
@@ -787,8 +848,7 @@ export const DEFAULT_FUNCTION_DETAIL_LABELS: FunctionDetailLabels = {
     functionUrlDisabled: "disabled",
     functionUrlCreate: "Create function URL",
     functionUrlCreateSubmit: "Create",
-    functionUrlGeneratedHint:
-      "The hostname is generated from this function and your account ID.",
+    functionUrlGeneratedHint: "The hostname is generated from this function and your account ID.",
     functionUrlAuthType: "Auth type",
     functionUrlAuthNone: "NONE",
     functionUrlAuthNoneHint: "Public. Anyone with the URL can invoke the function.",
@@ -885,8 +945,7 @@ function mergeDeep<T extends Record<string, unknown>>(base: T, overrides: unknow
   for (const [key, value] of Object.entries(overrides)) {
     if (value === undefined) continue
     const current = merged[key]
-    merged[key] =
-      isPlainObject(current) && isPlainObject(value) ? mergeDeep(current, value) : value
+    merged[key] = isPlainObject(current) && isPlainObject(value) ? mergeDeep(current, value) : value
   }
   return merged as T
 }

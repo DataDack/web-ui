@@ -50,7 +50,10 @@ export function TagsSection({ fn, scope, labels, className }: Readonly<TagsSecti
   const tags = fn.labels ?? {}
 
   const startEdit = () => {
-    setRows([...Object.entries(tags).map(([key, value]) => ({ key, value })), { key: "", value: "" }])
+    setRows([
+      ...Object.entries(tags).map(([key, value]) => ({ key, value })),
+      { key: "", value: "" },
+    ])
     setEditing(true)
   }
 

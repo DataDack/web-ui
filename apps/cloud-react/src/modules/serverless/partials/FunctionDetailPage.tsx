@@ -408,6 +408,13 @@ export function ServerlessFunctionDetailPage() {
           key
             ? t("serverless.detail.configuration.envRemove", { name: key })
             : t("serverless.detail.configuration.envRemoveUnnamed"),
+        // i18next picks _one / _other from `count`, so the singular/plural
+        // split is the catalog's job rather than a ternary here.
+        envImported: (count: number) =>
+          t("serverless.detail.configuration.envImported", { count }),
+        envSkipped: (count: number) =>
+          t("serverless.detail.configuration.envSkipped", { count }),
+        envUndo: t("serverless.detail.configuration.envUndo"),
         layers: {
           empty: t("serverless.detail.configuration.layers.empty"),
           hint: t("serverless.detail.configuration.layers.hint"),
