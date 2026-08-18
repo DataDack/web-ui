@@ -1,4 +1,3 @@
-import { Button } from "@datadack/common-ui"
 import {
   Box,
   Clock3,
@@ -9,15 +8,11 @@ import {
   Timer,
 } from "lucide-react"
 
+import { Button } from "@datadack/common-ui"
+
 import { BuildStatusPill } from "../../../components"
 import type { Build, Project } from "../../../managed-apps.types"
-import {
-  formatDuration,
-  isTimeSet,
-  shortDateTime,
-  shortSha,
-  triggerLabel,
-} from "../build-format"
+import { formatDuration, isTimeSet, shortDateTime, shortSha, triggerLabel } from "../build-format"
 
 interface BuildWorkspaceSidebarProps {
   build: Build
@@ -85,7 +80,7 @@ export function BuildWorkspaceSidebar({
         <p className="mb-1 text-[11px] font-semibold text-foreground">Build details</p>
 
         <DetailRow icon={GitBranch} label="Branch">
-          <span className="block truncate font-mono">{project?.branch || "—"}</span>
+          <span className="block truncate font-mono">{project?.branch ?? "—"}</span>
         </DetailRow>
         <DetailRow icon={GitCommitHorizontal} label="Commit">
           <span className="block truncate font-mono" title={build.commit_message}>

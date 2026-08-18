@@ -1,13 +1,14 @@
-import { Button, EmptyState, Skeleton } from "@datadack/common-ui"
-import { ExternalLink, FileCode2, Package, PackageX, RotateCcw, ScrollText, X } from "lucide-react"
+import { ExternalLink, FileCode2, PackageX, RotateCcw, ScrollText, X } from "lucide-react"
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom"
 
-import { AnimatedTabs, ComingSoonPanel } from "@/components/console"
+import { AnimatedTabs } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
+import { Button, EmptyState, Skeleton } from "@datadack/common-ui"
 
 import { BuildLogPanel } from "./BuildLogPanel"
 import { BuildSourcePanel } from "./BuildSourcePanel"
+import { BuildWorkspaceSidebar } from "./BuildWorkspaceSidebar"
 import { BuildStatusPill } from "../../../components"
 import { formatArtifactBytes } from "../../../components/ActivityTimeline/activity-events"
 import { MANAGED_APPS_ROUTES } from "../../../managed-apps.constants"
@@ -19,25 +20,15 @@ import {
   useProjectBuilds,
 } from "../../../managed-apps.hooks"
 import { isBuildTransitional } from "../../../managed-apps.types"
-import {
-  commitURL,
-  formatDuration,
-  isTimeSet,
-  shortDateTime,
-  shortSha,
-  timeSince,
-  triggerLabel,
-} from "../build-format"
+import { formatDuration, shortSha, triggerLabel } from "../build-format"
 
 const BUILD_TABS = [
-  { value: "log", label: "Log", icon: ScrollText },
+  { value: "log", label: "Build logs", icon: ScrollText },
   { value: "source", label: "Source", icon: FileCode2 },
-  { value: "output", label: "Output", icon: Package },
 ]
 
 /**
- * One build as a page — its log, the source it was built from, and (soon) the
- * artifact it produced.
+ * One build as a page — its log and the source it was built from.
  *
  * This replaces two side sheets that used to hang off the Builds tab. A build
  * is the thing a reader debugs: it deserves a URL that survives a refresh and
@@ -90,7 +81,7 @@ export function BuildDetailPage() {
       <EmptyState
         icon={PackageX}
         title="Build not found"
-        description={`No build with id "${buildId}" exists on this project.`}
+        description={`No build with id “${buildId}” exists on this project.`}
         action={{
           label: "Back to builds",
           onClick: () => void navigate(backTo),
@@ -105,153 +96,137 @@ export function BuildDetailPage() {
     builds.find((candidate) => candidate.status === "ready")?.id === build.id
   const artifactSize = formatArtifactBytes(build.artifact_bytes)
 
+  const buildLabel = build.commit_sha !== "" ? shortSha(build.commit_sha) : shortSha(build.id)
+
   return (
-    <div className="animate-content-enter">
-      {/* Breadcrumb back out — the page is deep enough that a bare back arrow
-          would not say where it lands. */}
-      <nav className="mb-3 flex items-center gap-1.5 text-[13px] text-muted-foreground">
-        <Link to={MANAGED_APPS_ROUTES.root} className="hover:text-foreground hover:underline">
-          Managed Apps
-        </Link>
-        <span className="text-border">/</span>
-        <Link to={MANAGED_APPS_ROUTES.project(id)} className="hover:text-foreground hover:underline">
-          {project?.name ?? "Project"}
-        </Link>
-        <span className="text-border">/</span>
-        <Link to={backTo} className="hover:text-foreground hover:underline">
-          Builds
-        </Link>
-        <span className="text-border">/</span>
-        <span className="font-mono text-foreground">
-          {build.commit_sha !== "" ? shortSha(build.commit_sha) : shortSha(build.id)}
-        </span>
-      </nav>
-
-      <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-2.5">
-            <h1 className="font-mono text-xl font-bold tracking-tight text-foreground">Build</h1>
-            <BuildStatusPill status={build.status} />
-            {serving && (
-              <span className="font-mono text-[11px] text-status-success">● serving</span>
-            )}
-          </div>
-
-          <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1 text-[12px] text-muted-foreground">
-            {build.commit_sha !== "" && (
-              <span className="flex min-w-0 items-baseline gap-1.5">
-                <span className="font-mono text-[10px] uppercase tracking-wide">Commit</span>
-                <a
-                  href={commitURL(
-                    project?.repo_owner ?? "",
-                    project?.repo_name ?? "",
-                    build.commit_sha,
-                  )}
-                  target="_blank"
-                  rel="noreferrer"
-                  title={build.commit_sha}
-                  className="font-mono hover:text-foreground hover:underline"
-                >
-                  {shortSha(build.commit_sha)}
-                </a>
-                {build.commit_message && (
-                  <span className="min-w-0 truncate italic">“{build.commit_message}”</span>
-                )}
-              </span>
-            )}
-            <span className="flex items-baseline gap-1.5">
-              <span className="font-mono text-[10px] uppercase tracking-wide">Trigger</span>
-              {triggerLabel(build.triggered_by)}
-            </span>
-            {isTimeSet(build.started_at) && (
-              <span
-                className="flex items-baseline gap-1.5"
-                title={new Date(build.started_at).toLocaleString()}
+    <div className="managed-apps-console -m-4 flex min-h-[calc(100dvh-128px)] flex-col overflow-hidden bg-[var(--glass-3-bg)] md:h-[calc(100dvh-84px)] md:min-h-0">
+      <header className="shrink-0 border-b border-border/60 bg-muted/10 px-4 py-3 md:px-5">
+        <div className="flex min-w-0 flex-wrap items-center justify-between gap-3">
+          <div className="min-w-0">
+            <nav className="flex min-w-0 items-center gap-1.5 text-[11px] text-muted-foreground">
+              <Link to={MANAGED_APPS_ROUTES.root} className="hover:text-foreground">
+                Managed Apps
+              </Link>
+              <span aria-hidden>/</span>
+              <Link
+                to={MANAGED_APPS_ROUTES.project(id)}
+                className="max-w-40 truncate hover:text-foreground"
               >
-                <span className="font-mono text-[10px] uppercase tracking-wide">Started</span>
-                {shortDateTime(build.started_at)} · {timeSince(build.started_at)}
-              </span>
-            )}
-            <span className="flex items-baseline gap-1.5">
-              <span className="font-mono text-[10px] uppercase tracking-wide">Build time</span>
-              {active ? "in progress" : formatDuration(build.started_at, build.finished_at)}
-            </span>
-            {artifactSize !== "" && (
-              <span className="flex items-baseline gap-1.5">
-                <span className="font-mono text-[10px] uppercase tracking-wide">Artifact</span>
-                {artifactSize}
-              </span>
-            )}
-          </div>
-        </div>
+                {project?.name ?? "Project"}
+              </Link>
+              <span aria-hidden>/</span>
+              <Link to={backTo} className="hover:text-foreground">
+                Builds
+              </Link>
+            </nav>
 
-        <div className="flex shrink-0 items-center gap-2">
-          {build.gh_run_url !== "" && (
-            <Button asChild size="sm" variant="outline" className="gap-1.5">
-              <a href={build.gh_run_url} target="_blank" rel="noreferrer">
-                <ExternalLink className="size-3.5" />
-                Actions run
-              </a>
-            </Button>
-          )}
-          {build.status === "queued" ? (
-            <Button
-              size="sm"
-              variant="outline"
-              className="gap-1.5 text-destructive hover:text-destructive"
-              disabled={cancelBuild.isPending}
-              onClick={() => {
-                cancelBuild.mutate(build.id)
-              }}
-              loading={cancelBuild.isPending}
-            >
-              <X className="size-3.5" />
-              Cancel
-            </Button>
-          ) : (
-            build.commit_sha !== "" &&
-            !active && (
+            <div className="mt-1.5 flex min-w-0 items-center gap-2.5">
+              <h1 className="truncate text-balance font-mono text-[16px] font-semibold text-foreground">
+                Build {buildLabel}
+              </h1>
+              <BuildStatusPill status={build.status} />
+              {serving && (
+                <span className="hidden items-center gap-1.5 text-[11px] text-status-success sm:flex">
+                  <span className="size-1.5 rounded-full bg-status-success" aria-hidden />
+                  Serving
+                </span>
+              )}
+            </div>
+
+            <div className="mt-1 flex min-w-0 items-center gap-2 text-[11px] text-muted-foreground lg:hidden">
+              <span className="truncate">{project?.branch ?? "No branch"}</span>
+              <span aria-hidden>·</span>
+              <span className="truncate">
+                {build.commit_message || triggerLabel(build.triggered_by)}
+              </span>
+              <span aria-hidden>·</span>
+              <span className="shrink-0 font-mono tabular-nums">
+                {active ? "in progress" : formatDuration(build.started_at, build.finished_at)}
+              </span>
+            </div>
+          </div>
+
+          <div className="flex shrink-0 items-center gap-2">
+            {build.gh_run_url !== "" && (
+              <Button asChild size="sm" variant="outline" className="gap-1.5">
+                <a href={build.gh_run_url} target="_blank" rel="noreferrer">
+                  <ExternalLink className="size-3.5" />
+                  Actions run
+                </a>
+              </Button>
+            )}
+            {build.status === "queued" ? (
               <Button
                 size="sm"
                 variant="outline"
-                className="gap-1.5"
-                disabled={createBuild.isPending}
-                title={`Re-runs the build for ${shortSha(build.commit_sha)}.`}
+                className="gap-1.5 text-destructive hover:text-destructive"
+                disabled={cancelBuild.isPending}
                 onClick={() => {
-                  createBuild.mutate({ projectId: id, commitSha: build.commit_sha })
+                  cancelBuild.mutate(build.id)
                 }}
-                loading={createBuild.isPending}
+                loading={cancelBuild.isPending}
               >
-                <RotateCcw className="size-3.5" />
-                Rebuild this release
+                <X className="size-3.5" />
+                Cancel
               </Button>
-            )
-          )}
+            ) : (
+              build.commit_sha !== "" &&
+              !active && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="gap-1.5"
+                  disabled={createBuild.isPending}
+                  title={`Re-runs the build for ${shortSha(build.commit_sha)}.`}
+                  onClick={() => {
+                    createBuild.mutate({ projectId: id, commitSha: build.commit_sha })
+                  }}
+                  loading={createBuild.isPending}
+                >
+                  <RotateCcw className="size-3.5" />
+                  Rebuild this release
+                </Button>
+              )
+            )}
+          </div>
         </div>
+      </header>
+
+      <div className="flex min-h-0 flex-1 overflow-hidden border-b border-border/60">
+        {activeTab === "log" && (
+          <BuildWorkspaceSidebar
+            build={build}
+            project={project}
+            artifactSize={artifactSize}
+            serving={serving}
+          />
+        )}
+
+        <section
+          aria-label="Build workbench"
+          className="flex min-h-0 min-w-0 flex-1 flex-col bg-[var(--glass-3-bg)]"
+        >
+          <AnimatedTabs
+            tabs={BUILD_TABS}
+            value={activeTab}
+            onChange={setTab}
+            layoutId="build-detail-tabs"
+            className="shrink-0 bg-muted/10"
+          />
+
+          <div className="min-h-0 flex-1 overflow-hidden">
+            {activeTab === "log" && <BuildLogPanel build={build} />}
+            {activeTab === "source" && (
+              <BuildSourcePanel
+                projectId={id}
+                gitRef={build.commit_sha}
+                build={build}
+                project={project}
+              />
+            )}
+          </div>
+        </section>
       </div>
-
-      <AnimatedTabs
-        tabs={BUILD_TABS}
-        value={activeTab}
-        onChange={setTab}
-        layoutId="build-detail-tabs"
-        className="mb-5"
-      />
-
-      {activeTab === "log" && <BuildLogPanel build={build} />}
-      {activeTab === "source" && (
-        <BuildSourcePanel projectId={id} gitRef={build.commit_sha} />
-      )}
-      {activeTab === "output" && (
-        <ComingSoonPanel
-          icon={Package}
-          description={
-            artifactSize === ""
-              ? "Browsing what a build produced — the artifact's contents, file by file — is on the way."
-              : `Browsing what this build produced — its ${artifactSize} artifact, file by file — is on the way.`
-          }
-        />
-      )}
     </div>
   )
 }

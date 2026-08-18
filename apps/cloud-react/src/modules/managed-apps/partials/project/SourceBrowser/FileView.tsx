@@ -70,17 +70,19 @@ export function FileView({ projectId, gitRef, path, onClose }: Readonly<FileView
 
   if (path === "") {
     return (
-      <Notice
-        icon={FileWarning}
-        title="No file selected"
-        detail="Pick a file from the tree to read it at this commit."
-      />
+      <div className="h-full min-h-0 min-w-0 flex-1">
+        <Notice
+          icon={FileWarning}
+          title="No file selected"
+          detail="Pick a file from the tree to read it at this commit."
+        />
+      </div>
     )
   }
 
   if (isLoading) {
     return (
-      <div className="space-y-2 p-4">
+      <div className="h-full min-h-0 min-w-0 flex-1 space-y-2 p-4">
         <Skeleton className="h-4 w-1/3" />
         <Skeleton className="h-4 w-2/3" />
         <Skeleton className="h-4 w-1/2" />
@@ -91,13 +93,15 @@ export function FileView({ projectId, gitRef, path, onClose }: Readonly<FileView
 
   if (isError || !file) {
     return (
-      <Notice
-        icon={FileWarning}
-        title="Could not read this file"
-        // The server's reason verbatim — "no commit … in owner/repo" after a
-        // force-push is the whole explanation, and a generic message hides it.
-        detail={error instanceof Error ? error.message : "The file could not be loaded."}
-      />
+      <div className="h-full min-h-0 min-w-0 flex-1">
+        <Notice
+          icon={FileWarning}
+          title="Could not read this file"
+          // The server's reason verbatim — "no commit … in owner/repo" after a
+          // force-push is the whole explanation, and a generic message hides it.
+          detail={error instanceof Error ? error.message : "The file could not be loaded."}
+        />
+      </div>
     )
   }
 
@@ -201,7 +205,7 @@ export function FileView({ projectId, gitRef, path, onClose }: Readonly<FileView
   return (
     <div className="flex h-full min-h-0 min-w-0 flex-1 flex-col">
       <div className="flex h-10 shrink-0 items-stretch border-b border-border/60 bg-muted/10">
-        <div className="flex min-w-0 max-w-64 items-center gap-2 border-r border-border/60 border-t-2 border-t-primary bg-background px-3">
+        <div className="flex min-w-0 max-w-64 items-center gap-2 border-r border-border/60 border-t-2 border-t-primary bg-[var(--glass-3-bg)] px-3">
           <FileCode2 className="size-3.5 shrink-0 text-primary" aria-hidden />
           <span className="min-w-0 flex-1 truncate font-mono text-[12px] text-foreground">
             {path.slice(path.lastIndexOf("/") + 1)}

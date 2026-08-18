@@ -48,7 +48,7 @@ function FileRow({
         style={indent}
         className={`${ROW} ${
           isSelected
-            ? "border-primary bg-primary/8 font-medium text-foreground"
+            ? "border-primary bg-primary/10 font-medium text-foreground"
             : "border-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground"
         }`}
         onClick={() => {
@@ -166,7 +166,7 @@ export function FileTree({
               type="button"
               className={`${ROW} ${
                 entry.path === selected
-                  ? "border-primary bg-primary/8 font-medium text-foreground"
+                  ? "border-primary bg-primary/10 font-medium text-foreground"
                   : "border-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground"
               }`}
               onClick={() => {

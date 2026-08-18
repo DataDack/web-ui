@@ -1,6 +1,7 @@
-import { Button, Skeleton } from "@datadack/common-ui"
 import { ExternalLink, KeyRound, Settings2 } from "lucide-react"
 import { Link } from "react-router-dom"
+
+import { Button, Skeleton } from "@datadack/common-ui"
 
 import { BuildStatusPill, projectTypeLabel } from "../../../components"
 import { MANAGED_APPS_ROUTES } from "../../../managed-apps.constants"
@@ -13,10 +14,7 @@ interface SourceDeploymentPanelProps {
   project?: Project
 }
 
-function DeploymentFact({
-  label,
-  value,
-}: Readonly<{ label: string; value: React.ReactNode }>) {
+function DeploymentFact({ label, value }: Readonly<{ label: string; value: React.ReactNode }>) {
   return (
     <div className="flex items-baseline justify-between gap-4 py-1.5 text-[11px]">
       <span className="text-muted-foreground">{label}</span>
@@ -26,10 +24,7 @@ function DeploymentFact({
 }
 
 /** Read-only runtime context beside the immutable source snapshot. */
-export function SourceDeploymentPanel({
-  build,
-  project,
-}: Readonly<SourceDeploymentPanelProps>) {
+export function SourceDeploymentPanel({ build, project }: Readonly<SourceDeploymentPanelProps>) {
   const { data: envNames = [], isLoading } = useProjectEnv(project?.id ?? "")
 
   return (
@@ -39,7 +34,7 @@ export function SourceDeploymentPanel({
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto p-4">
-        <section className="border border-border/60 bg-background p-3">
+        <section className="border border-border/60 bg-[var(--glass-3-bg)] p-3">
           <div className="flex items-center justify-between gap-3 border-b border-border/50 pb-3">
             <div className="flex min-w-0 items-center gap-2">
               <span className="size-2 rounded-full bg-status-success" aria-hidden />
@@ -58,9 +53,7 @@ export function SourceDeploymentPanel({
           <div className="pt-2">
             <DeploymentFact
               label="Last deployed"
-              value={
-                isTimeSet(build.finished_at) ? timeSince(build.finished_at) : "In progress"
-              }
+              value={isTimeSet(build.finished_at) ? timeSince(build.finished_at) : "In progress"}
             />
             <DeploymentFact
               label="Runtime"
@@ -119,11 +112,17 @@ export function SourceDeploymentPanel({
           {!isLoading && envNames.length > 0 && (
             <div className="space-y-2">
               {envNames.map((name) => (
-                <div key={name} className="border border-border/60 bg-background px-3 py-2.5">
+                <div
+                  key={name}
+                  className="border border-border/60 bg-[var(--glass-3-bg)] px-3 py-2.5"
+                >
                   <p className="truncate font-mono text-[10px] text-muted-foreground" title={name}>
                     {name}
                   </p>
-                  <p className="mt-1 font-mono text-[11px] text-primary/80" aria-label="Value hidden">
+                  <p
+                    className="mt-1 font-mono text-[11px] text-primary/80"
+                    aria-label="Value hidden"
+                  >
                     ••••••••••••
                   </p>
                 </div>

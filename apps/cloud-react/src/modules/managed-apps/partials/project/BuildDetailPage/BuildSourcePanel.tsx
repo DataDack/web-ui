@@ -1,16 +1,16 @@
 import { useEffect, useMemo, useState } from "react"
 
-import { EmptyState, Skeleton } from "@datadack/common-ui"
 import { AlertTriangle, ExternalLink, FileWarning } from "lucide-react"
 
+import { EmptyState, Skeleton } from "@datadack/common-ui"
 
+import { BuildLogPanel } from "./BuildLogPanel"
+import { SourceDeploymentPanel } from "./SourceDeploymentPanel"
 import { useProjectSourceTree } from "../../../managed-apps.hooks"
 import type { Build, Project } from "../../../managed-apps.types"
 import { FileTree } from "../SourceBrowser/FileTree"
 import { FileView } from "../SourceBrowser/FileView"
 import { ancestors, initialFile } from "../SourceBrowser/source-tree"
-import { BuildLogPanel } from "./BuildLogPanel"
-import { SourceDeploymentPanel } from "./SourceDeploymentPanel"
 
 /**
  * The code a deployment was built from — the repository at that commit,
@@ -33,13 +33,7 @@ export function BuildSourcePanel({
   build: Build
   project?: Project
 }>) {
-  const {
-    data: tree,
-    isLoading,
-    isError,
-    error,
-    refetch,
-  } = useProjectSourceTree(projectId, gitRef)
+  const { data: tree, isLoading, isError, error, refetch } = useProjectSourceTree(projectId, gitRef)
   const [selected, setSelected] = useState("")
 
   // Seeded per commit: opening another build's code has to land on that
@@ -133,7 +127,7 @@ export function BuildSourcePanel({
         <SourceDeploymentPanel build={build} project={project} />
       </div>
 
-      <div className="shrink-0 border-t border-border/60 bg-background">
+      <div className="shrink-0 border-t border-border/60 bg-[var(--glass-3-bg)]">
         <div className="flex h-9 items-center border-b border-border/60 px-3">
           <span className="border-b-2 border-primary px-1 py-2 text-[11px] font-semibold text-foreground">
             Terminal

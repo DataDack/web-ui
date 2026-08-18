@@ -9,8 +9,13 @@ import type { Plan, PlanLimits } from "../../managed-apps.types"
  * would promise something nobody bought.
  */
 const UNLIMITED = -1
+type LimitValue = number | null | undefined
 
-export function isUnlimited(limit: number): boolean {
+function isKnownLimit(limit: LimitValue): limit is number {
+  return typeof limit === "number" && Number.isFinite(limit)
+}
+
+export function isUnlimited(limit: LimitValue): boolean {
   return limit === UNLIMITED
 }
 
@@ -18,7 +23,8 @@ export function isUnlimited(limit: number): boolean {
  * A quota as a human reads it. The three cases are genuinely distinct — no
  * ceiling, a real none, and a number — so each gets its own word.
  */
-export function formatLimit(limit: number): string {
+export function formatLimit(limit: LimitValue): string {
+  if (!isKnownLimit(limit)) return "—"
   if (isUnlimited(limit)) return "Unlimited"
   if (limit === 0) return "None"
   return limit.toLocaleString()
@@ -102,7 +108,9 @@ export const QUOTA_FIELDS: QuotaField[] = [
 ]
 
 function formatField(field: QuotaField, limits: PlanLimits): string {
-  return `${formatLimit(limits[field.key])}${field.suffix ?? ""}`
+  const limit = limits[field.key] as LimitValue
+  if (!isKnownLimit(limit)) return "—"
+  return `${formatLimit(limit)}${field.suffix ?? ""}`
 }
 
 /**

@@ -373,7 +373,9 @@
 }
 
 .managed-apps-console .managed-panel {
-  background: var(--managed-panel);
+  background: var(--glass-2-bg);
+  -webkit-backdrop-filter: blur(28px);
+  backdrop-filter: blur(28px);
   border: 1px solid var(--border);
   border-left: 4px solid var(--primary);
   border-radius: 0.625rem;

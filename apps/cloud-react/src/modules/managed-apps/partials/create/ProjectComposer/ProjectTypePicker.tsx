@@ -150,7 +150,7 @@ export function ProjectTypePicker({
                 onChange(option.value)
               }}
               className={cn(
-                "group relative flex h-full min-h-48 flex-col gap-3 overflow-hidden rounded-xl border bg-card p-5 text-left shadow-xs",
+                "glass-1 group relative flex h-full min-h-48 flex-col gap-3 overflow-hidden rounded-xl border p-5 text-left shadow-xs",
                 "motion-safe:transition-[transform,box-shadow,border-color,background-color] motion-safe:duration-150 motion-safe:ease-out",
                 "focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none",
                 selected
@@ -159,7 +159,7 @@ export function ProjectTypePicker({
                 !disabled &&
                   "hover:border-primary/35 hover:bg-card hover:shadow-sm motion-safe:hover:-translate-y-0.5 motion-safe:active:translate-y-0 motion-safe:active:scale-[0.96]",
                 disabled &&
-                  "cursor-not-allowed opacity-45 hover:border-border/60 hover:bg-card hover:shadow-xs",
+                  "cursor-not-allowed opacity-45 hover:border-border/60 hover:shadow-xs",
               )}
             >
               {/* Selection stays visible without tinting the entire surface. */}
