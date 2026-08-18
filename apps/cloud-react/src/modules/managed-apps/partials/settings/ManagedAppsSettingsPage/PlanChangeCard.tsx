@@ -17,6 +17,8 @@ interface PlanChangeCardProps {
   blockedReason?: string
   disabled?: boolean
   onChoose: (plan: Plan) => void
+  /** Pressed instead of onChoose for a tier that has no list price. */
+  onContact?: () => void
 }
 
 const DIRECTION_LABEL: Record<PlanDirection, string> = {
@@ -42,10 +44,27 @@ export function PlanChangeCard({
   blockedReason,
   disabled,
   onChoose,
+  onContact,
 }: Readonly<PlanChangeCardProps>) {
   const current = direction === "current"
-  const free = plan.price_minor === 0
+  // A tier with no list price is sold by a conversation. The server refuses to
+  // sell it (409), so the card must not offer a button that would earn one.
+  const custom = plan.is_custom_priced || !plan.is_purchasable
+  const free = !custom && plan.price_inr_monthly === 0
   const blocked = Boolean(blockedReason)
+
+  let subtitle: string
+  if (custom) {
+    subtitle = "Sized around what you actually run"
+  } else if (isDefault) {
+    subtitle = "Every account starts here"
+  } else {
+    subtitle = `Everything in ${buildsOn ?? "the plan below"}, plus:`
+  }
+
+  // A tier sold by conversation gets the outline treatment whichever direction
+  // it is from the current one: "Talk to us" is never the gold call to action.
+  const variant = !custom && direction === "upgrade" ? "gold" : "outline"
 
   return (
     <div
@@ -86,11 +105,7 @@ export function PlanChangeCard({
         </p>
         {/* Stated on the card the account starts on, so "why am I on this?" is
             answered where it is asked; otherwise, what this tier builds on. */}
-        <p className="truncate text-[11px] text-muted-foreground">
-          {isDefault
-            ? "Every account starts here"
-            : `Everything in ${buildsOn ?? "the plan below"}, plus:`}
-        </p>
+        <p className="truncate text-[11px] text-muted-foreground">{subtitle}</p>
       </div>
 
       <dl className="grid grid-cols-2 gap-x-3 gap-y-2 border-t border-border/50 pt-3">
@@ -107,17 +122,21 @@ export function PlanChangeCard({
       <div className="mt-auto space-y-1.5 pt-1">
         <Button
           type="button"
-          variant={direction === "upgrade" ? "gold" : "outline"}
+          variant={variant}
           size="sm"
           className="w-full gap-1.5"
-          disabled={current || blocked || disabled}
+          disabled={(!custom && (current || blocked)) || disabled}
           onClick={() => {
+            if (custom) {
+              onContact?.()
+              return
+            }
             onChoose(plan)
           }}
         >
-          {direction === "upgrade" && <ArrowUpRight className="size-3.5" />}
-          {direction === "downgrade" && <ArrowDownRight className="size-3.5" />}
-          {DIRECTION_LABEL[direction]}
+          {!custom && direction === "upgrade" && <ArrowUpRight className="size-3.5" />}
+          {!custom && direction === "downgrade" && <ArrowDownRight className="size-3.5" />}
+          {custom ? "Talk to us" : DIRECTION_LABEL[direction]}
         </Button>
         {blockedReason && <p className="text-[11px] text-status-warning">{blockedReason}</p>}
       </div>

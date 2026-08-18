@@ -27,8 +27,8 @@ interface PlanChangeSummaryProps {
  */
 export function PlanChangeSummary({ from, to, projectsInUse }: Readonly<PlanChangeSummaryProps>) {
   const deltas = planQuotaDeltas(from.limits, to.limits)
-  const paying = to.price_minor > 0
-  const wasPaying = from.price_minor > 0
+  const paying = to.price_inr_monthly > 0
+  const wasPaying = from.price_inr_monthly > 0
 
   // Only a paid move costs anything, so only a paid move is quoted.
   const { data: cost } = usePlanEstimate(to.code, paying)

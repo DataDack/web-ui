@@ -20,14 +20,21 @@ export type ProjectType = "opennext" | "react" | "n8n"
 // eslint-disable-next-line sonarjs/redundant-type-aliases -- documents intent; see above
 export type ProjectPlan = string
 
-/** One tier's quotas. -1 means unlimited, 0 means a genuine none. */
+/**
+ * One tier's quotas. -1 means unlimited, 0 means a genuine none.
+ *
+ * These are DERIVED server-side from the pricing sheet's slugs
+ * (max_projects is total_projects_limit, and so on). They exist because a dozen
+ * components are written against these names; everything else the sheet sells
+ * arrives in `Plan.values` instead.
+ */
 export interface PlanLimits {
   max_projects: number
   max_custom_domains: number
   bandwidth_gb: number
   build_minutes: number
-  max_deployment_mb: number
-  max_upload_mb: number
+  max_static_sites: number
+  max_edge_projects: number
   request_timeout_seconds: number
   edge_requests: number
 }
@@ -39,17 +46,67 @@ export interface PlanRuntimes {
 }
 
 /**
- * One catalogue tier. `price_minor` is in the currency's minor unit (paise for
- * INR), so it is divided by 100 exactly once, at display time.
+ * One catalogue tier.
+ *
+ * `price_inr_monthly` is in WHOLE RUPEES per month, exactly as the pricing sheet
+ * states it — there is no minor unit to divide by any more. A tier priced on
+ * enquiry carries -1 with `is_custom_priced` true, so anything that formats a
+ * price or offers a button must check that flag first.
  */
 export interface Plan {
   code: ProjectPlan
   name: string
   sort_order: number
-  price_minor: number
+  price_inr_monthly: number
+  price_usd_monthly: number
   currency: string
+  /** No list price — sold by a conversation, not by a button. */
+  is_custom_priced: boolean
+  /** Whether the self-serve flow may actually sell this tier. */
+  is_purchasable: boolean
   limits: PlanLimits
-  runtimes: PlanRuntimes
+  /**
+   * Every feature slug the pricing sheet defines for this tier, typed as the
+   * sheet types it. Paired with PlanFeature it is enough to render the whole
+   * comparison table without this client knowing a single slug by name.
+   */
+  values: Record<string, string | number | boolean | null | undefined>
+}
+
+/**
+ * One row of the comparison table, from the pricing sheet's feature dictionary.
+ *
+ * The table used to be a hand-written list of rows in this module, which meant a
+ * pricing change needed a frontend deploy and — worse — that the sheet and the
+ * page could disagree about what was being sold. The sheet is the only author
+ * now: rows are grouped by `category` (ordered by `category_sort`) and ordered
+ * within a group by `sort_order`.
+ */
+export interface PlanFeature {
+  slug: string
+  label: string
+  category: string
+  category_sort: number
+  sort_order: number
+  data_type: string
+  unit: string
+  description: string
+  /**
+   * The sheet's prose per plan code ("Mumbai Edge (<40ms)").
+   *
+   * Carried rather than derived because most cells are not numbers: rendering
+   * "mumbai_basic" or a bare 40 would lose what the row actually promises. A
+   * missing entry means falling back to formatting the raw value — which is
+   * why the value type admits undefined: a tier added to the catalogue before
+   * the dictionary catches up has no phrase for these rows yet.
+   */
+  display: Record<string, string | undefined>
+}
+
+/** GET /plans/catalog — the tiers and the rows to compare them on, together. */
+export interface PlanCatalog {
+  plans: Plan[]
+  features: PlanFeature[]
 }
 
 /**

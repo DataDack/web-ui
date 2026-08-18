@@ -1,12 +1,5 @@
 import { useState } from "react"
 
-import { MessageSquare } from "lucide-react"
-import { useTranslation } from "react-i18next"
-import { useNavigate } from "react-router-dom"
-
-import { SUPPORT_ROUTES } from "@/modules/support-tickets/support-tickets.constants"
-import { useCreateSupportTicket } from "@/modules/support-tickets/support-tickets.hooks"
-
 import {
   Button,
   Dialog,
@@ -19,6 +12,13 @@ import {
   Label,
   Textarea,
 } from "@datadack/common-ui"
+import { MessageSquare } from "lucide-react"
+import { useTranslation } from "react-i18next"
+import { useNavigate } from "react-router-dom"
+
+import { SUPPORT_ROUTES } from "@/modules/support-tickets/support-tickets.constants"
+import { useCreateSupportTicket } from "@/modules/support-tickets/support-tickets.hooks"
+
 
 const NEEDS_MAX = 4000
 

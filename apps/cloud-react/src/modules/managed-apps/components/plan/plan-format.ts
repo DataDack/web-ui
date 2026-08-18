@@ -31,34 +31,37 @@ export function formatLimit(limit: LimitValue): string {
 }
 
 /**
- * A monthly price. `price_minor` is in the currency's minor unit (paise), so
- * the division by 100 happens here and nowhere else — every other caller would
- * otherwise have to remember, and one of them would not.
+ * A monthly price.
+ *
+ * `price_inr_monthly` is in WHOLE RUPEES, as the pricing sheet states it —
+ * there is no minor unit to divide by. A tier with no list price (-1, Enterprise)
+ * says so in words: formatting it as a number would print "₹-1".
  *
  * Falls back to the ISO code for a currency the browser cannot format, which
  * beats throwing inside a render.
  */
-export function formatPrice(plan: Pick<Plan, "price_minor" | "currency">): string {
-  if (plan.price_minor === 0) return "Free"
-  const major = plan.price_minor / 100
+export function formatPrice(
+  plan: Pick<Plan, "price_inr_monthly" | "currency" | "is_custom_priced">,
+): string {
+  if (plan.is_custom_priced || plan.price_inr_monthly < 0) return "Custom"
+  if (plan.price_inr_monthly === 0) return "Free"
   try {
     return new Intl.NumberFormat(undefined, {
       style: "currency",
       currency: plan.currency,
-      maximumFractionDigits: major % 1 === 0 ? 0 : 2,
-    }).format(major)
+      maximumFractionDigits: 0,
+    }).format(plan.price_inr_monthly)
   } catch {
-    return `${plan.currency} ${major.toLocaleString()}`
+    return `${plan.currency} ${plan.price_inr_monthly.toLocaleString()}`
   }
 }
 
 /**
  * A money amount already in MAJOR units (rupees), for the cost breakdown.
  *
- * Separate from `formatPrice` because the two speak different units: catalogue
- * prices arrive as `price_minor` (paise) while a cost estimate arrives in
- * rupees. Routing both through one helper is how a figure ends up a hundred
- * times too large — so the unit is in the name.
+ * Separate from `formatPrice` because the two answer different questions: a
+ * catalogue price is a whole-rupee list figure, while an estimate is the exact
+ * amount the wallet is debited, fractions and all.
  *
  * Fractions are always shown here: a breakdown that renders ₹71.86 as ₹72 no
  * longer adds up to the total printed beneath it.
@@ -100,9 +103,9 @@ export const QUOTA_FIELDS: QuotaField[] = [
   { key: "max_projects", label: "Projects" },
   { key: "bandwidth_gb", label: "Bandwidth", suffix: " GB" },
   { key: "build_minutes", label: "Build minutes" },
-  { key: "max_deployment_mb", label: "Deployment", suffix: " MB" },
   { key: "max_custom_domains", label: "Custom domains" },
-  { key: "max_upload_mb", label: "Max upload body", suffix: " MB" },
+  { key: "max_static_sites", label: "Static sites" },
+  { key: "max_edge_projects", label: "Edge projects" },
   { key: "request_timeout_seconds", label: "Request timeout", suffix: "s" },
   { key: "edge_requests", label: "Edge requests" },
 ]

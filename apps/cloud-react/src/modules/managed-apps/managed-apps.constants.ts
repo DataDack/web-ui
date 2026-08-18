@@ -53,6 +53,9 @@ export const MANAGED_APPS_ROUTES = {
 export const MANAGED_APPS_QUERY_KEYS = {
   overview: ["managed-apps", "overview"] as const,
   plans: ["managed-apps", "plans"] as const,
+  /** Tiers + comparison rows together. Nested under `plans` so a plan change
+   *  invalidates it with the same prefix as everything else pricing-related. */
+  planCatalog: ["managed-apps", "plans", "catalog"] as const,
   /** The account's own tier + usage. Nested under `plans` so a plan change
    *  invalidates the catalogue view and this one with a single prefix. */
   accountPlan: ["managed-apps", "plans", "account"] as const,

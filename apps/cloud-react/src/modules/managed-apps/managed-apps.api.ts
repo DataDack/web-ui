@@ -14,6 +14,7 @@ import type {
   GitHubRepo,
   ManagedAppsOverview,
   Plan,
+  PlanCatalog,
   PlanCostBreakdown,
   Project,
   ProjectAnalytics,
@@ -52,6 +53,16 @@ export const managedAppsApi = {
    * session — not a projects permission.
    */
   plans: (): Promise<Plan[]> => apiGet<Plan[]>(`${BASE}/plans`),
+
+  /**
+   * The tiers AND the comparison rows, in one read.
+   *
+   * Fetched together rather than as two calls because they are useless apart —
+   * a feature list with no tier values renders an empty table — and because two
+   * reads of a catalogue somebody may be editing can disagree, leaving a table
+   * whose rows and columns came from different snapshots.
+   */
+  planCatalog: (): Promise<PlanCatalog> => apiGet<PlanCatalog>(`${BASE}/plans/catalog`),
 
   /** The tier the ACTIVE ACCOUNT is on, plus how much of it is in use. */
   accountPlan: (): Promise<AccountPlan> => apiGet<AccountPlan>(`${BASE}/plans/account`),

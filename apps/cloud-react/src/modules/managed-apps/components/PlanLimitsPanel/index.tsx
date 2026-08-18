@@ -65,7 +65,7 @@ export function PlanLimitsPanel({
     )
   }
 
-  const paid = plan.price_minor > 0
+  const paid = plan.price_inr_monthly > 0
   // The project count has its own meter above; the rest are stated as limits.
   const rows = planQuotaRows(plan.limits).filter((row) => row.label !== "Projects")
 

@@ -53,6 +53,21 @@ export function usePlans() {
 }
 
 /**
+ * The pricing page's whole payload: the tiers and the rows to compare them on.
+ *
+ * Separate from usePlans because most callers only need the tiers — the create
+ * flow and the usage chip have no table to draw — and the feature dictionary is
+ * comfortably the larger half of the response.
+ */
+export function usePlanCatalog() {
+  return useQuery({
+    queryKey: MANAGED_APPS_QUERY_KEYS.planCatalog,
+    queryFn: () => managedAppsApi.planCatalog(),
+    staleTime: 10 * 60 * 1000,
+  })
+}
+
+/**
  * The wallet shortfall a 402 reports, or null when the error is not a 402.
  *
  * The plan change checks the balance BEFORE it cancels anything, so its 402
@@ -139,7 +154,7 @@ export function useChangeAccountPlan() {
         // payment lands. Only the amount-less refusal is opened here:
         // when the 402 carried figures the api client already opened
         // that tab, and doing it again would open two.
-        if (shortfall === 0) openTopupTab(plan.price_minor / 100)
+        if (shortfall === 0) openTopupTab(plan.price_inr_monthly)
         toast.error(message, {
           description: "Billing is open in a new tab — top up, then try again.",
         })

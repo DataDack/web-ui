@@ -34,16 +34,9 @@ export {
   QUOTA_FIELDS,
 } from "./plan/plan-format"
 export type { PlanQuotaDelta, QuotaField } from "./plan/plan-format"
-// What a tier sells beyond its eight numbers. Frontend copy, not catalogue
-// data: nothing in the backend gates these by plan, so they are stated as
-// included everywhere rather than invented as tier differences.
-export {
-  customFeatureCell,
-  customHighlights,
-  featureCell,
-  FEATURE_GROUPS,
-} from "./plan/plan-features"
-export type { FeatureCell, FeatureGroup, FeatureRow } from "./plan/plan-features"
+// What a tier sells is CATALOGUE data now, not frontend copy: the comparison
+// table's rows come from system_data/managedapps/plan_features/ in S3, so this
+// module no longer keeps a hand-written list that could disagree with pricing.
 export { RuntimeSelect } from "./RuntimeSelect"
 
 // Environment variables

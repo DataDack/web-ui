@@ -1,8 +1,6 @@
-import { useTranslation } from "react-i18next"
 import { Button } from "@datadack/common-ui"
 import { MessagesSquare, Sparkles } from "lucide-react"
-
-import { customHighlights } from "../../../components"
+import { useTranslation } from "react-i18next"
 
 /**
  * The tier that is not in the catalogue.
@@ -12,10 +10,19 @@ import { customHighlights } from "../../../components"
  * clicked it. So it says what it is: a conversation, opened as a support ticket
  * so the answer arrives somewhere the customer can find it again.
  *
- * It is rendered by the page rather than served by the catalogue because there
- * is no such row in S3 and there should not be: a tier with no price and no
- * quotas would break every consumer that reads those fields as numbers.
+ * It is rendered ONLY when the catalogue cannot be read. In the ordinary case
+ * Enterprise is a catalogue row like any other (is_custom_priced, so its card
+ * offers a conversation instead of a button) and this card would be a second
+ * card for the same thing. Its three lines are therefore written here rather
+ * than read from the catalogue: the one moment it appears is the moment there
+ * is no catalogue to read them from.
  */
+const HIGHLIGHTS = [
+  { label: "Projects", value: "As many as you need" },
+  { label: "Bandwidth", value: "Negotiated" },
+  { label: "Build minutes", value: "Negotiated" },
+  { label: "Support", value: "Direct line" },
+]
 export function CustomPlanCard({
   disabled,
   onContact,
@@ -48,7 +55,7 @@ export function CustomPlanCard({
       </div>
 
       <dl className="grid grid-cols-2 gap-x-3 gap-y-2 border-t border-brand-gold/20 pt-3">
-        {customHighlights().map((row) => (
+        {HIGHLIGHTS.map((row) => (
           <div key={row.label} className="min-w-0">
             <dt className="truncate text-[10px] tracking-wide text-muted-foreground uppercase">
               {row.label}

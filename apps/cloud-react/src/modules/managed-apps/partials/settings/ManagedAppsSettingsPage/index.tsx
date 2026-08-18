@@ -1,8 +1,8 @@
-import { useTranslation } from "react-i18next"
 import { useState } from "react"
 
 import { Skeleton } from "@datadack/common-ui"
 import { AlertCircle, Settings2 } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 import { ConfirmDialog, PageHeader, Section } from "@/components/console"
@@ -16,7 +16,7 @@ import { PlanChangeSummary } from "./PlanChangeSummary"
 import { PlanComparisonTable } from "./PlanComparisonTable"
 import { isUnlimited, PlanLimitsPanel } from "../../../components"
 import { MANAGED_APPS_ROUTES } from "../../../managed-apps.constants"
-import { useAccountPlan, useChangeAccountPlan, usePlans } from "../../../managed-apps.hooks"
+import { useAccountPlan, useChangeAccountPlan, usePlanCatalog } from "../../../managed-apps.hooks"
 import type { Plan } from "../../../managed-apps.types"
 
 /**
@@ -33,7 +33,12 @@ export function ManagedAppsSettingsPage() {
   useScreen("managed-apps-settings")
 
   const { data: account, isLoading: accountLoading } = useAccountPlan()
-  const { data: plans, isLoading: plansLoading, isError } = usePlans()
+  // Tiers and comparison rows in one read: two reads of a catalogue somebody
+  // may be editing can disagree, and a table whose columns and rows came from
+  // different snapshots is worse than one that is briefly stale.
+  const { data: catalog, isLoading: plansLoading, isError } = usePlanCatalog()
+  const plans = catalog?.plans
+  const features = catalog?.features ?? []
   const change = useChangeAccountPlan()
 
   const [pending, setPending] = useState<Plan | null>(null)
@@ -83,24 +88,28 @@ export function ManagedAppsSettingsPage() {
    * the click rather than an error after it.
    */
   const blockedReasonOf = (plan: Plan): string | undefined => {
+    // A tier sold by conversation is never blocked by a quota — there is no
+    // self-serve move to block.
+    if (plan.is_custom_priced || !plan.is_purchasable) return undefined
     const limit = plan.limits.max_projects
     if (isUnlimited(limit) || used <= limit) return undefined
     const excess = used - limit
     return `Allows ${String(limit)} project${limit === 1 ? "" : "s"} — delete ${String(excess)} more first.`
   }
 
-  // Every tier on one line, Custom included — it is a way to buy Managed Apps
-  // like the others, and wrapping it onto a second row read as an afterthought.
-  // Matches hosting's pricing grid so the two surfaces agree.
-  const gridClass = "grid gap-3 sm:grid-cols-2 xl:grid-cols-4"
+  // Every tier on one line, Enterprise included — it is a way to buy Managed
+  // Apps like the others, and wrapping it onto a second row read as an
+  // afterthought. Five across only at xl; below that they wrap in pairs and
+  // threes rather than shrinking past legibility.
+  const gridClass = "grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
 
   const renderPlanGrid = () => {
     if (plansLoading || accountLoading) {
       return (
         <div className={gridClass}>
-          {/* Four, not three: a skeleton that does not stand in for the layout
-					    it replaces makes the page jump when the catalogue arrives. */}
-          {[0, 1, 2, 3].map((key) => (
+          {/* One per tier the catalogue sells: a skeleton that does not stand in
+					    for the layout it replaces makes the page jump when it arrives. */}
+          {[0, 1, 2, 3, 4].map((key) => (
             <Skeleton key={key} className="h-[290px] rounded-xl" />
           ))}
         </div>
@@ -144,16 +153,11 @@ export function ManagedAppsSettingsPage() {
             blockedReason={blockedReasonOf(plan)}
             disabled={change.isPending}
             onChoose={setPending}
+            onContact={() => {
+              setContactOpen(true)
+            }}
           />
         ))}
-        {/* Last, and deliberately shaped differently: it is the only card
-				    here that cannot be bought by pressing it. */}
-        <CustomPlanCard
-          disabled={change.isPending}
-          onContact={() => {
-            setContactOpen(true)
-          }}
-        />
       </div>
     )
   }
@@ -197,7 +201,7 @@ export function ManagedAppsSettingsPage() {
             title="Compare plans"
             description="Every quota and capability, side by side. Most of what Managed Apps does is on every plan — the numbers are where the tiers differ."
           >
-            <PlanComparisonTable plans={plans} currentCode={current?.code} />
+            <PlanComparisonTable plans={plans} features={features} currentCode={current?.code} />
           </Section>
         )}
       </div>
