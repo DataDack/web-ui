@@ -13,9 +13,11 @@ interface FileTreeProps {
   onSelect: (path: string) => void
   /** Directories open on first render — the built subtree and the opened file. */
   initialExpanded: string[]
+  repoName?: string
 }
 
-const ROW = "flex w-full items-center gap-1.5 rounded px-1.5 py-1 text-left text-[12px]"
+const ROW =
+  "flex w-full items-center gap-1.5 border-l-2 px-1.5 py-1 text-left text-[12px] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-ring"
 
 function FileRow({
   node,
@@ -46,8 +48,8 @@ function FileRow({
         style={indent}
         className={`${ROW} ${
           isSelected
-            ? "bg-muted font-medium text-foreground"
-            : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+            ? "border-primary bg-primary/8 font-medium text-foreground"
+            : "border-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground"
         }`}
         onClick={() => {
           if (node.type === "tree") onToggle(node.path)
@@ -113,6 +115,7 @@ export function FileTree({
   selected,
   onSelect,
   initialExpanded,
+  repoName,
 }: Readonly<FileTreeProps>) {
   const [query, setQuery] = useState("")
   const [expanded, setExpanded] = useState<ReadonlySet<string>>(() => new Set(initialExpanded))
@@ -163,8 +166,8 @@ export function FileTree({
               type="button"
               className={`${ROW} ${
                 entry.path === selected
-                  ? "bg-muted font-medium text-foreground"
-                  : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                  ? "border-primary bg-primary/8 font-medium text-foreground"
+                  : "border-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground"
               }`}
               onClick={() => {
                 onSelect(entry.path)
@@ -185,7 +188,18 @@ export function FileTree({
   }
 
   return (
-    <div className="flex h-full min-h-0 w-64 shrink-0 flex-col border-r border-border/60">
+    <div className="flex h-52 min-h-0 w-full shrink-0 flex-col border-b border-border/60 bg-muted/10 md:h-full md:w-64 md:border-r md:border-b-0">
+      <div className="flex min-h-11 items-center justify-between border-b border-border/60 px-3">
+        <div className="min-w-0">
+          <p className="text-[12px] font-semibold text-foreground">Explorer</p>
+          {repoName && (
+            <p className="truncate font-mono text-[10px] text-muted-foreground">{repoName}</p>
+          )}
+        </div>
+        <span className="font-mono text-[10px] text-muted-foreground tabular-nums">
+          {entries.length}
+        </span>
+      </div>
       <div className="relative border-b border-border/60 p-2">
         <Search className="absolute top-1/2 left-4 size-3.5 -translate-y-1/2 text-muted-foreground/60" />
         <Input

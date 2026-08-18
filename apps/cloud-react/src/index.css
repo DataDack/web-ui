@@ -331,7 +331,6 @@
    These are light-mode defaults; the graphite reference palette is applied by
    the scoped dark override below. */
 .managed-apps-console {
-  --background: #f5f6f1;
   --foreground: #171914;
   --card: #ffffff;
   --card-foreground: #171914;
@@ -374,8 +373,7 @@
 }
 
 .managed-apps-console .managed-panel {
-  background:
-    linear-gradient(105deg, var(--managed-lime-wash), transparent 34%), var(--managed-panel);
+  background: var(--managed-panel);
   border: 1px solid var(--border);
   border-left: 4px solid var(--primary);
   border-radius: 0.625rem;
@@ -489,7 +487,7 @@
   --card-foreground: #f5f5f2;
   --popover: #1b1c1a;
   --popover-foreground: #f5f5f2;
-  --primary: #a8ff00;
+  --primary: #8bd400;
   --primary-foreground: #0b0d08;
   --muted: #252620;
   --muted-foreground: #bfc5aa;
@@ -497,26 +495,26 @@
   --accent-foreground: #f5f5f2;
   --border: rgba(218, 229, 190, 0.14);
   --input: rgba(218, 229, 190, 0.1);
-  --ring: #a8ff00;
-  --brand-gold: #a8ff00;
-  --brand-gold-hover: #b7ff2d;
+  --ring: #8bd400;
+  --brand-gold: #8bd400;
+  --brand-gold-hover: #9be51c;
   --brand-gold-foreground: #0b0d08;
-  --brand-gold-soft: rgba(168, 255, 0, 0.09);
-  --brand-gold-glow: rgba(168, 255, 0, 0.2);
-  --brand-gold-ink: #a8ff00;
+  --brand-gold-soft: rgba(139, 212, 0, 0.08);
+  --brand-gold-glow: rgba(139, 212, 0, 0.16);
+  --brand-gold-ink: #9be51c;
   --glass-1-bg: rgba(255, 255, 255, 0.018);
   --glass-2-bg: rgba(255, 255, 255, 0.026);
   --glass-3-bg: rgba(20, 21, 19, 0.94);
   --border-glass: rgba(218, 229, 190, 0.12);
-  --status-success: #b7ff2d;
-  --status-success-bg: rgba(168, 255, 0, 0.09);
+  --status-success: #9be51c;
+  --status-success-bg: rgba(139, 212, 0, 0.08);
   --status-info: #c3a6ff;
   --status-info-bg: rgba(142, 79, 255, 0.12);
   --managed-panel: #151614;
   --managed-card: #111210;
   --managed-card-hover: #161812;
-  --managed-lime-wash: rgba(168, 255, 0, 0.025);
-  --managed-lime-border: rgba(168, 255, 0, 0.42);
+  --managed-lime-wash: rgba(139, 212, 0, 0.02);
+  --managed-lime-border: rgba(139, 212, 0, 0.36);
 }
 
 /* ─── Base ────────────────────────────────────────────────────────────── */

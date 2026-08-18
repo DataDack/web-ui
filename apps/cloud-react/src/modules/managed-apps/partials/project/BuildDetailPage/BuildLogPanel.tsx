@@ -1,3 +1,5 @@
+import { cn } from "@datadack/common-ui"
+
 import { BuildProgressBar } from "../../../components"
 import { useBuildLogs } from "../../../managed-apps.hooks"
 import { isBuildTransitional, type Build } from "../../../managed-apps.types"
@@ -11,7 +13,10 @@ import { useLogView } from "../BuildLogConsole/useLogView"
  * shown (useLogView keeps the behaviours identical); the height is the one
  * thing that differs — the page owns the viewport, so the log gets most of it.
  */
-export function BuildLogPanel({ build }: Readonly<{ build: Build }>) {
+export function BuildLogPanel({
+  build,
+  docked = false,
+}: Readonly<{ build: Build; docked?: boolean }>) {
   const active = isBuildTransitional(build.status)
   const { data: logs, isLoading } = useBuildLogs(build.id, active)
 
@@ -20,10 +25,14 @@ export function BuildLogPanel({ build }: Readonly<{ build: Build }>) {
   const lifecycle = useBuildLifecycle(build)
 
   return (
-    <div className="space-y-3">
-      {active && <BuildProgressBar build={build} />}
+    <div className={cn("flex min-h-0 flex-col", docked ? "h-52" : "h-full")}>
+      {active && !docked && (
+        <div className="border-b border-border/60 px-4 py-3">
+          <BuildProgressBar build={build} />
+        </div>
+      )}
 
-      <div className="flex h-[68vh] flex-col overflow-hidden rounded-xl border border-border/60">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
         <LogToolbar
           active={active}
           following={view.following}
@@ -46,7 +55,9 @@ export function BuildLogPanel({ build }: Readonly<{ build: Build }>) {
       </div>
 
       {build.build_error !== "" && (
-        <p className="font-mono text-[12px] text-destructive">{build.build_error}</p>
+        <p className="border-t border-destructive/20 bg-destructive/5 px-4 py-2 font-mono text-[12px] text-destructive">
+          {build.build_error}
+        </p>
       )}
     </div>
   )

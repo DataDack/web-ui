@@ -1,14 +1,16 @@
 import { useEffect, useMemo, useState } from "react"
 
-import { Button, EmptyState, Skeleton } from "@datadack/common-ui"
+import { EmptyState, Skeleton } from "@datadack/common-ui"
 import { AlertTriangle, ExternalLink, FileWarning } from "lucide-react"
 
 
 import { useProjectSourceTree } from "../../../managed-apps.hooks"
-import { shortSha } from "../build-format"
+import type { Build, Project } from "../../../managed-apps.types"
 import { FileTree } from "../SourceBrowser/FileTree"
 import { FileView } from "../SourceBrowser/FileView"
 import { ancestors, initialFile } from "../SourceBrowser/source-tree"
+import { BuildLogPanel } from "./BuildLogPanel"
+import { SourceDeploymentPanel } from "./SourceDeploymentPanel"
 
 /**
  * The code a deployment was built from — the repository at that commit,
@@ -23,7 +25,14 @@ import { ancestors, initialFile } from "../SourceBrowser/source-tree"
 export function BuildSourcePanel({
   projectId,
   gitRef,
-}: Readonly<{ projectId: string; gitRef: string }>) {
+  build,
+  project,
+}: Readonly<{
+  projectId: string
+  gitRef: string
+  build: Build
+  project?: Project
+}>) {
   const {
     data: tree,
     isLoading,
@@ -52,7 +61,7 @@ export function BuildSourcePanel({
 
   if (isLoading) {
     return (
-      <div className="flex h-[68vh] gap-4 rounded-xl border border-border/60 p-4">
+      <div className="flex h-full gap-4 p-4">
         <div className="w-64 shrink-0 space-y-2">
           {["a", "b", "c", "d", "e", "f"].map((key) => (
             <Skeleton key={key} className="h-5 w-full" />
@@ -89,28 +98,14 @@ export function BuildSourcePanel({
   }
 
   const repoURL = `https://github.com/${tree.repo_owner}/${tree.repo_name}`
+  const repoName = `${tree.repo_owner}/${tree.repo_name}`
 
   return (
-    <div className="space-y-0">
-      <div className="flex flex-wrap items-center gap-2 rounded-t-xl border border-b-0 border-border/60 px-4 py-2.5">
-        <span className="rounded bg-muted px-1.5 py-0.5 font-mono text-[12px] text-muted-foreground">
-          {shortSha(tree.ref)}
-        </span>
-        <span className="text-[12px] text-muted-foreground">
-          The repository as it was at this commit.
-        </span>
-        <Button asChild size="sm" variant="ghost" className="ml-auto h-6 gap-1 px-2 text-[11px]">
-          <a href={`${repoURL}/tree/${tree.ref}`} target="_blank" rel="noreferrer">
-            <ExternalLink className="size-3" />
-            {tree.repo_owner}/{tree.repo_name}
-          </a>
-        </Button>
-      </div>
-
+    <div className="flex h-full min-h-0 flex-col">
       {tree.truncated && (
         // GitHub caps very large tree listings. Saying so matters: a file
         // that exists but did not arrive would otherwise look deleted.
-        <div className="flex items-start gap-2 border border-b-0 border-border/60 bg-status-warning/10 px-4 py-2 text-[12px] text-muted-foreground">
+        <div className="flex items-start gap-2 border-b border-border/60 bg-status-warning/10 px-4 py-2 text-[12px] text-muted-foreground">
           <AlertTriangle className="mt-0.5 size-3.5 shrink-0 text-status-warning" />
           <span>
             This repository is too large for GitHub to list in full, so some files are missing from
@@ -119,14 +114,41 @@ export function BuildSourcePanel({
         </div>
       )}
 
-      <div className="flex h-[68vh] overflow-hidden rounded-b-xl border border-border/60">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden md:flex-row">
         <FileTree
           entries={tree.entries}
           selected={selected}
           onSelect={setSelected}
           initialExpanded={expanded}
+          repoName={tree.repo_name}
         />
-        <FileView projectId={projectId} gitRef={tree.ref} path={selected} />
+        <FileView
+          projectId={projectId}
+          gitRef={tree.ref}
+          path={selected}
+          onClose={() => {
+            setSelected("")
+          }}
+        />
+        <SourceDeploymentPanel build={build} project={project} />
+      </div>
+
+      <div className="shrink-0 border-t border-border/60 bg-background">
+        <div className="flex h-9 items-center border-b border-border/60 px-3">
+          <span className="border-b-2 border-primary px-1 py-2 text-[11px] font-semibold text-foreground">
+            Terminal
+          </span>
+          <a
+            href={`${repoURL}/tree/${tree.ref}`}
+            target="_blank"
+            rel="noreferrer"
+            className="ml-auto inline-flex min-w-0 items-center gap-1.5 truncate font-mono text-[10px] text-muted-foreground hover:text-foreground"
+          >
+            <span className="truncate">{repoName}</span>
+            <ExternalLink className="size-3 shrink-0" />
+          </a>
+        </div>
+        <BuildLogPanel build={build} docked />
       </div>
     </div>
   )

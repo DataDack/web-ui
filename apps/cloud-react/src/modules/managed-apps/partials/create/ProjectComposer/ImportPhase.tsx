@@ -1,8 +1,9 @@
-import { useTranslation } from "react-i18next"
-import { Button } from "@datadack/common-ui"
 import { ExternalLink, Loader2 } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
 import { FieldRow } from "@/components/console"
+
+import { Button } from "@datadack/common-ui"
 
 import { ProjectTypePicker, type RepoProjectType } from "./ProjectTypePicker"
 import { GitHubAccountSelect, RepoSelect } from "../../../components"
@@ -60,7 +61,7 @@ export function ImportPhase({
 
   if (isLoading) {
     return (
-      <div className="flex items-center gap-2 py-16 text-sm text-muted-foreground">
+      <div className="managed-panel flex items-center gap-2 px-6 py-16 text-sm text-muted-foreground sm:px-8">
         <Loader2 className="size-4 animate-spin" />
         {t("managedApps.importPhase.loadingYourGithubConnections")}
       </div>
@@ -71,7 +72,7 @@ export function ImportPhase({
   // to fix that, so it is the only thing on it.
   if (usable.length === 0) {
     return (
-      <div className="glass-1 mx-auto flex max-w-md flex-col items-center gap-3 rounded-xl border border-border/60 p-8 text-center">
+      <div className="managed-panel flex flex-col items-center gap-3 p-8 text-center">
         <ConnectRepoArt className="mb-1" />
         <div className="space-y-1">
           <h2 className="text-sm font-semibold">
@@ -97,48 +98,89 @@ export function ImportPhase({
   }
 
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-5">
-      <div className="space-y-1">
-        <h2 className="text-lg font-semibold tracking-tight">
-          {t("managedApps.importPhase.importAGitRepository")}
-        </h2>
-        <p className="text-[13px] text-muted-foreground">
-          {t("managedApps.importPhase.everyPushToTheBranchYouChooseWillBuildAndDep")}
+    <div className="space-y-6">
+      <section className="managed-panel space-y-5 p-6 sm:p-8">
+        <div className="space-y-1">
+          <p className="managed-kicker font-mono text-[11px] font-semibold uppercase text-primary">
+            Step 1
+          </p>
+          <h2 className="text-balance text-xl font-semibold">
+            {t("managedApps.importPhase.importAGitRepository")}
+          </h2>
+          <p className="max-w-2xl text-pretty text-[13px] text-muted-foreground">
+            {t("managedApps.importPhase.everyPushToTheBranchYouChooseWillBuildAndDep")}
+          </p>
+        </div>
+
+        {/* Account and repository read as one sentence — “this account’s
+            repository” — so they share a row on wider screens. */}
+        <div className="grid gap-4 sm:grid-cols-2">
+          <FieldRow
+            label={t("managedApps.importPhase.githubAccount")}
+            required
+            error={errors.installation}
+          >
+            <GitHubAccountSelect
+              value={installationId ?? undefined}
+              onChange={onAccountChange}
+              onConnect={onConnect}
+              invalid={Boolean(errors.installation)}
+            />
+          </FieldRow>
+
+          <FieldRow label="Repository" required error={errors.repo}>
+            <RepoSelect
+              installationId={installationId ?? undefined}
+              value={repo || undefined}
+              onChange={onRepoChange}
+              invalid={Boolean(errors.repo)}
+            />
+          </FieldRow>
+        </div>
+
+        <p className="flex items-center gap-1.5 text-pretty text-[11px] text-muted-foreground">
+          {t("managedApps.importPhase.repositoryMissing")}
+          <a
+            href={GITHUB_INSTALLATIONS_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1 text-status-info hover:underline"
+          >
+            {t("managedApps.importPhase.adjustWhichRepositoriesTheAppCanSee")}
+            <ExternalLink className="size-3" />
+          </a>
         </p>
-      </div>
+      </section>
 
-      {/* Account and repository read as one sentence — "this account's
-			    this repo" — so they sit on one line and the eye travels left to
-			    right instead of down a column of two lonely selects. */}
-      <div className="grid gap-4 sm:grid-cols-2">
-        <FieldRow
-          label={t("managedApps.importPhase.githubAccount")}
-          required
-          error={errors.installation}
-        >
-          <GitHubAccountSelect
-            value={installationId ?? undefined}
-            onChange={onAccountChange}
-            onConnect={onConnect}
-            invalid={Boolean(errors.installation)}
-          />
-        </FieldRow>
+      <section
+        className={
+          repo
+            ? "managed-panel space-y-5 p-6 sm:p-8"
+            : "glass-1 space-y-5 rounded-xl border border-border/60 p-6 opacity-60 sm:p-8"
+        }
+      >
+        <div className="space-y-1">
+          <p
+            className={
+              repo
+                ? "managed-kicker font-mono text-[11px] font-semibold uppercase text-primary"
+                : "managed-kicker font-mono text-[11px] font-semibold uppercase text-muted-foreground"
+            }
+          >
+            Step 2
+          </p>
+          <h2 className="text-balance text-xl font-semibold">Choose the framework</h2>
+          <p className="max-w-2xl text-pretty text-[13px] text-muted-foreground">
+            {repo
+              ? "We inspect the repository first, then keep only compatible deployment paths available."
+              : "Select a repository above to unlock framework detection."}
+          </p>
+        </div>
 
-        <FieldRow label="Repository" required error={errors.repo}>
-          <RepoSelect
-            installationId={installationId ?? undefined}
-            value={repo || undefined}
-            onChange={onRepoChange}
-            invalid={Boolean(errors.repo)}
-          />
-        </FieldRow>
-      </div>
-
-      {/* Only once there is a repository to be a type OF. Asking first
-			    would be asking the user to classify something they have not
-			    chosen yet, and detection would have nothing to check it against. */}
-      {repo && (
-        <FieldRow label={t("managedApps.importPhase.projectType")} required>
+        {/* A framework is only meaningful once there is a repository to
+            inspect. The inactive panel remains visible so the whole flow is
+            understandable before the first choice. */}
+        {repo && (
           <ProjectTypePicker
             value={projectType}
             onChange={onProjectTypeChange}
@@ -148,21 +190,8 @@ export function ImportPhase({
             rootDir={rootDir}
             onRootDirChange={onRootDirChange}
           />
-        </FieldRow>
-      )}
-
-      <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-        {t("managedApps.importPhase.repositoryMissing")}
-        <a
-          href={GITHUB_INSTALLATIONS_URL}
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex items-center gap-1 text-status-info hover:underline"
-        >
-          {t("managedApps.importPhase.adjustWhichRepositoriesTheAppCanSee")}
-          <ExternalLink className="size-3" />
-        </a>
-      </p>
+        )}
+      </section>
     </div>
   )
 }

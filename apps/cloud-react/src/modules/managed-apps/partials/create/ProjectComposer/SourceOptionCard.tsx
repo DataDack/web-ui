@@ -1,5 +1,7 @@
 import type { ReactNode } from "react"
 
+import { ArrowRight } from "lucide-react"
+
 import { cn } from "@datadack/common-ui"
 
 interface SourceOptionCardProps {
@@ -35,43 +37,54 @@ export function SourceOptionCard({
       type="button"
       onClick={onSelect}
       className={cn(
-        "glass-1 group relative flex flex-col gap-4 rounded-xl border border-border/60 p-6 text-left",
-        "transition-colors hover:border-status-info/50 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none",
+        "glass-1 group relative flex min-h-full flex-col gap-4 overflow-hidden rounded-2xl border border-border/60 p-6 text-left shadow-xs",
+        "motion-safe:transition-[transform,box-shadow,border-color,background-color] motion-safe:duration-150 motion-safe:ease-out",
+        "hover:border-primary/40 hover:bg-card hover:shadow-md motion-safe:hover:-translate-y-0.5 motion-safe:active:translate-y-0 motion-safe:active:scale-[0.96]",
+        "focus-visible:border-primary/50 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none",
       )}
     >
       <span
+        aria-hidden
+        className="absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-primary motion-safe:transition-transform motion-safe:duration-200 motion-safe:ease-out motion-safe:group-hover:scale-x-100 motion-safe:group-focus-visible:scale-x-100"
+      />
+
+      <span
         className={cn(
-          "absolute top-4 right-4 rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-wide uppercase",
+          "absolute top-4 right-4 rounded-full border px-2 py-0.5 text-[10px] font-semibold tracking-wide uppercase",
           availability.tone === "available"
-            ? "bg-status-success/10 text-status-success"
-            : "bg-status-warning/10 text-status-warning",
+            ? "border-status-success/15 bg-status-success/10 text-status-success"
+            : "border-status-warning/15 bg-status-warning/10 text-status-warning",
         )}
       >
         {availability.label}
       </span>
 
-      <span className="flex size-11 items-center justify-center rounded-lg border border-border/60 bg-muted/40 text-foreground">
+      <span className="flex size-11 items-center justify-center rounded-lg border border-border/60 bg-muted/40 text-muted-foreground motion-safe:transition-[border-color,background-color,color] motion-safe:duration-150 group-hover:border-primary/30 group-hover:bg-primary/10 group-hover:text-primary">
         {icon}
       </span>
 
       <span className="space-y-0.5">
-        <span className="block text-sm font-semibold">{title}</span>
+        <span className="block text-[15px] font-semibold">{title}</span>
         <span className="block text-[12px] text-muted-foreground">{subtitle}</span>
       </span>
 
       <ul className="space-y-1.5 text-[13px] text-muted-foreground">
         {bullets.map((bullet) => (
           <li key={bullet} className="flex gap-2">
-            <span aria-hidden className="text-status-info">
-              •
-            </span>
+            <span
+              aria-hidden
+              className="mt-[0.45rem] size-1 shrink-0 rounded-full bg-muted-foreground/40 motion-safe:transition-colors motion-safe:duration-150 group-hover:bg-primary/70"
+            />
             {bullet}
           </li>
         ))}
       </ul>
 
-      <span className="mt-auto pt-1 text-[13px] font-medium text-status-info group-hover:underline">
-        {cta} →
+      <span className="mt-auto flex items-center justify-between border-t border-border/50 pt-4 text-[13px] font-semibold text-brand-gold-ink">
+        {cta}
+        <span className="flex size-7 items-center justify-center rounded-full bg-brand-gold-soft text-brand-gold-ink motion-safe:transition-transform motion-safe:duration-150 motion-safe:ease-out motion-safe:group-hover:translate-x-0.5">
+          <ArrowRight className="size-3.5" />
+        </span>
       </span>
     </button>
   )

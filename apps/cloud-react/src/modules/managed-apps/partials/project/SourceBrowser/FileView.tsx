@@ -1,6 +1,15 @@
 import { useState } from "react"
 
-import { Binary, Copy, Download, ExternalLink, FileWarning, WrapText } from "lucide-react"
+import {
+  Binary,
+  Copy,
+  Download,
+  ExternalLink,
+  FileCode2,
+  FileWarning,
+  WrapText,
+  X,
+} from "lucide-react"
 import { toast } from "sonner"
 
 import { Button, cn, formatBytes, Skeleton } from "@datadack/common-ui"
@@ -12,6 +21,7 @@ interface FileViewProps {
   /** The commit being browsed — a build's sha, or the tracked branch. */
   gitRef: string
   path: string
+  onClose?: () => void
 }
 
 /**
@@ -54,7 +64,7 @@ function Notice({
  * toggle are what make code readable; the rest is decoration, and GitHub is one
  * click away for anyone who wants it.
  */
-export function FileView({ projectId, gitRef, path }: Readonly<FileViewProps>) {
+export function FileView({ projectId, gitRef, path, onClose }: Readonly<FileViewProps>) {
   const [wrap, setWrap] = useState(false)
   const { data: file, isLoading, isError, error } = useProjectSourceFile(projectId, gitRef, path)
 
@@ -190,8 +200,30 @@ export function FileView({ projectId, gitRef, path }: Readonly<FileViewProps>) {
 
   return (
     <div className="flex h-full min-h-0 min-w-0 flex-1 flex-col">
-      <div className="flex items-center gap-2 border-b border-border/60 px-3 py-1.5">
-        <span className="min-w-0 flex-1 truncate font-mono text-[12px]" title={path}>
+      <div className="flex h-10 shrink-0 items-stretch border-b border-border/60 bg-muted/10">
+        <div className="flex min-w-0 max-w-64 items-center gap-2 border-r border-border/60 border-t-2 border-t-primary bg-background px-3">
+          <FileCode2 className="size-3.5 shrink-0 text-primary" aria-hidden />
+          <span className="min-w-0 flex-1 truncate font-mono text-[12px] text-foreground">
+            {path.slice(path.lastIndexOf("/") + 1)}
+          </span>
+          {onClose && (
+            <Button
+              type="button"
+              size="icon"
+              variant="ghost"
+              className="size-6 shrink-0"
+              aria-label="Close file"
+              title="Close file"
+              onClick={onClose}
+            >
+              <X className="size-3" />
+            </Button>
+          )}
+        </div>
+      </div>
+
+      <div className="flex min-h-9 items-center gap-2 border-b border-border/60 px-3">
+        <span className="min-w-0 flex-1 truncate font-mono text-[11px]" title={path}>
           <span className="text-muted-foreground/60">
             {path.slice(0, path.lastIndexOf("/") + 1)}
           </span>
@@ -237,7 +269,13 @@ export function FileView({ projectId, gitRef, path }: Readonly<FileViewProps>) {
           <Download className="size-3.5" />
         </Button>
         <Button size="icon" variant="ghost" className="size-7" asChild>
-          <a href={file.html_url} target="_blank" rel="noreferrer" title="Open on GitHub">
+          <a
+            href={file.html_url}
+            target="_blank"
+            rel="noreferrer"
+            title="Open on GitHub"
+            aria-label="Open on GitHub"
+          >
             <ExternalLink className="size-3.5" />
           </a>
         </Button>

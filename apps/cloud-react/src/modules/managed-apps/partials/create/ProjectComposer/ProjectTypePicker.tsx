@@ -150,25 +150,27 @@ export function ProjectTypePicker({
                 onChange(option.value)
               }}
               className={cn(
-                "group relative flex h-full flex-col gap-3 overflow-hidden rounded-xl border bg-card p-5 text-left transition-colors",
+                "group relative flex h-full min-h-48 flex-col gap-3 overflow-hidden rounded-xl border bg-card p-5 text-left shadow-xs",
+                "motion-safe:transition-[transform,box-shadow,border-color,background-color] motion-safe:duration-150 motion-safe:ease-out",
                 "focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none",
-                // Selection is an edge, not a fill. Washing the whole card in
-                // 4% of the brand gold turned the surface a muddy olive and
-                // still read as weaker than a crisp border does.
                 selected
-                  ? "border-primary/70 ring-1 ring-primary/25"
-                  : "border-border/60 hover:border-border hover:bg-muted/20",
+                  ? "border-primary/70 shadow-sm ring-1 ring-primary/20"
+                  : "border-border/60",
+                !disabled &&
+                  "hover:border-primary/35 hover:bg-card hover:shadow-sm motion-safe:hover:-translate-y-0.5 motion-safe:active:translate-y-0 motion-safe:active:scale-[0.96]",
                 disabled &&
-                  "cursor-not-allowed opacity-45 hover:border-border/60 hover:bg-card",
+                  "cursor-not-allowed opacity-45 hover:border-border/60 hover:bg-card hover:shadow-xs",
               )}
             >
-              {/* The one piece of colour the fill used to carry, kept where it
-								  cannot dirty the card: a hairline along the top edge. */}
+              {/* Selection stays visible without tinting the entire surface. */}
               {selected && (
-                <span
-                  aria-hidden
-                  className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent"
-                />
+                <>
+                  <span aria-hidden className="absolute inset-x-0 top-0 h-0.5 bg-primary" />
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/4 -skew-x-12 bg-gradient-to-r from-transparent via-foreground/10 to-transparent opacity-0 motion-safe:transition-[transform,opacity] motion-safe:duration-200 motion-safe:ease-out motion-safe:group-hover:translate-x-[600%] motion-safe:group-hover:opacity-100 motion-safe:group-focus-visible:translate-x-[600%] motion-safe:group-focus-visible:opacity-100"
+                  />
+                </>
               )}
 
               <div className="flex items-start justify-between gap-2">
@@ -219,7 +221,7 @@ export function ProjectTypePicker({
                   {option.label}{" "}
                   <span className="font-normal text-muted-foreground">· {option.sub}</span>
                 </p>
-                <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">
+                <p className="mt-1 text-pretty text-[11px] leading-relaxed text-muted-foreground">
                   {option.body}
                 </p>
               </div>
