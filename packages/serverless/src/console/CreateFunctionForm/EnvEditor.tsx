@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-import { Plus, Undo2, X } from "lucide-react"
+import { Plus, Trash2, Undo2 } from "lucide-react"
 
 import { Button, Input, css, fontMono, mix } from "@datadack/common-ui"
 
@@ -197,7 +197,7 @@ export function EnvEditor({
               onChange(rows.filter((_, i) => i !== index))
             }}
           >
-            <X size={14} />
+            <Trash2 size={14} aria-hidden />
           </Button>
         </div>
       ))}

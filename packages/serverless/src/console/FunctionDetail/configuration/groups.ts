@@ -1,8 +1,8 @@
-import { Gauge, Network, Settings2, type LucideIcon } from "lucide-react"
+import { Braces, Gauge, Network, Settings2, type LucideIcon } from "lucide-react"
 
 import type { ConfigurationSectionValue } from "./sections"
 
-export type ConfigurationGroupValue = "general" | "networking" | "runtime"
+export type ConfigurationGroupValue = "general" | "environment" | "networking" | "runtime"
 
 export interface ConfigurationGroupMeta {
   value: ConfigurationGroupValue
@@ -16,7 +16,7 @@ export interface ConfigurationGroupMeta {
 }
 
 /**
- * The three Configuration screens.
+ * The Configuration screens.
  *
  * Ten sections meant ten near-empty pages — Asynchronous invocation was a whole
  * screen for two fields, Function URL a whole screen for one sentence. Grouping
@@ -25,14 +25,13 @@ export interface ConfigurationGroupMeta {
  * dense ones, and turns the rail's ten rows into one.
  */
 export const CONFIGURATION_GROUPS: readonly ConfigurationGroupMeta[] = [
-  { value: "general", icon: Settings2, sections: ["general", "env", "tags"] },
+  { value: "general", icon: Settings2, sections: ["general", "tags"] },
+  { value: "environment", icon: Braces, sections: ["env"] },
   { value: "networking", icon: Network, sections: ["functionUrl", "triggers", "vpc"] },
   { value: "runtime", icon: Gauge, sections: ["concurrency", "async", "layers", "permissions"] },
 ]
 
 /** Which screen a section lives on. Unknown sections fall back to General. */
 export function groupOfSection(section: ConfigurationSectionValue): ConfigurationGroupValue {
-  return (
-    CONFIGURATION_GROUPS.find((group) => group.sections.includes(section))?.value ?? "general"
-  )
+  return CONFIGURATION_GROUPS.find((group) => group.sections.includes(section))?.value ?? "general"
 }

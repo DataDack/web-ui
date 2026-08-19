@@ -30,7 +30,7 @@ export type { ConfigurationSectionValue }
    keeps three short sections from rendering as three lonely strips. */
 const SPAN: Record<ConfigurationSectionValue, number> = {
   general: 12,
-  env: 7,
+  env: 12,
   tags: 5,
   functionUrl: 12,
   triggers: 7,
@@ -183,10 +183,11 @@ export interface ConfigurationTabProps {
 }
 
 /**
- * Configuration: three screens, not ten.
+ * Configuration groups related settings without hiding high-use environment
+ * variables inside the General screen.
  *
- * General says what the function is, Networking says how requests reach it, and
- * Runtime says what it gets to run with; each stacks its sections on one
+ * General says what the function is, Environment owns runtime variables,
+ * Networking says how requests reach it, and Runtime covers execution; each uses a
  * twelve-column grid. Sections with no backend keep an honest coming-soon
  * panel in place rather than disappearing, and the triggers panel drops out
  * entirely when the transport cannot list them.
@@ -307,12 +308,7 @@ export function ConfigurationTab({
           <p className={blurb}>{config.groups[group.value].description}</p>
         </div>
 
-        <div
-          className={strip}
-          role="tablist"
-          aria-label={config.eyebrow}
-          onKeyDown={onKeyDown}
-        >
+        <div className={strip} role="tablist" aria-label={config.eyebrow} onKeyDown={onKeyDown}>
           {groups.map((candidate) => {
             const active = candidate.value === group.value
             return (

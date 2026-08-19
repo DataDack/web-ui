@@ -249,6 +249,7 @@ export interface FunctionDetailLabels {
     eyebrow: string
     groups: {
       general: { title: string; description: string }
+      environment: { title: string; description: string }
       networking: { title: string; description: string }
       runtime: { title: string; description: string }
     }
@@ -711,7 +712,11 @@ export const DEFAULT_FUNCTION_DETAIL_LABELS: FunctionDetailLabels = {
     groups: {
       general: {
         title: "General",
-        description: "Core settings, environment variables, and tags.",
+        description: "Core function settings and resource tags.",
+      },
+      environment: {
+        title: "Environment variables",
+        description: "Manage the key-value configuration exposed to the function at runtime.",
       },
       networking: {
         title: "Networking",

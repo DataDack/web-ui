@@ -1,9 +1,9 @@
 import { useState, type ReactNode } from "react"
 
-import { Braces } from "lucide-react"
+import { Braces, Plus } from "lucide-react"
 import { toast } from "sonner"
 
-import { KeyValueGrid, css } from "@datadack/common-ui"
+import { Button, KeyValueGrid, css } from "@datadack/common-ui"
 
 import { useUpdateFunctionConfig } from "../../../data/queries"
 import { useServerlessContext } from "../../../data/transport"
@@ -59,6 +59,14 @@ export function EnvSection({ fn, scope, labels, className }: Readonly<EnvSection
       { key: "", value: "" },
     ])
     setEditing(true)
+  }
+
+  const addVariable = () => {
+    if (editing) {
+      setRows((current) => [...current, { key: "", value: "" }])
+      return
+    }
+    startEdit()
   }
 
   const draft = rowsToMap(rows)
@@ -120,6 +128,14 @@ export function EnvSection({ fn, scope, labels, className }: Readonly<EnvSection
       editLabel={config.edit}
       saveLabel={config.save}
       cancelLabel={config.cancel}
+      actions={
+        capabilities.configEdit ? (
+          <Button type="button" variant="gold" size="sm" onClick={addVariable}>
+            <Plus size={14} aria-hidden />
+            {config.envAdd}
+          </Button>
+        ) : undefined
+      }
       className={className}
     >
       {body}
