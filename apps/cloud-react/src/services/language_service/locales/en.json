@@ -203,17 +203,6 @@
         "serviceTiles": "Service tiles"
       },
       "quickActions": {
-        "create": "Create a resource",
-        "compute": "Compute",
-        "serverless": "Serverless",
-        "storage": "Storage & Databases",
-        "networking": "Networking",
-        "identity": "Identity",
-        "governance": "Governance",
-        "resourceGroups": "Resource Groups",
-        "monitoring": "Monitoring",
-        "managedApps": "Managed Apps",
-        "support": "Support",
         "soon": "Soon"
       },
       "stats": {
@@ -3712,7 +3701,9 @@
       "ipAddressUnblocked": "Address returned to the pool",
       "ipAddressBlockFailed": "Couldn’t change the address",
       "staticIpReleased": "Static IP released",
-      "staticIpReleaseFailed": "Couldn’t release the static IP"
+      "staticIpReleaseFailed": "Couldn’t release the static IP",
+      "serviceOrderSaved": "Service order updated",
+      "serviceOrderFailed": "Could not save the new service order"
     },
     "shell": {
       "console": "Console",
@@ -3766,7 +3757,7 @@
       "add": "Add service",
       "createTitle": "Add service",
       "editTitle": "Edit service",
-      "formSubtitle": "Services shown in the tenant Sovereign Services grid.",
+      "formSubtitle": "Services shown on Console home and in the tenant Sovereign Services grid.",
       "empty": "No services yet",
       "emptySubtitle": "Add your first service to populate the catalog.",
       "deleteTitle": "Delete service",
@@ -3778,6 +3769,8 @@
         "key": "Key",
         "keyLocked": "Key can’t be changed after creation.",
         "name": "Name",
+        "shortName": "Short name",
+        "shortNameHint": "Label for the narrow Console home tile. Leave blank to use the full name.",
         "description": "Description",
         "icon": "Icon",
         "category": "Category",
@@ -3807,7 +3800,9 @@
         "enable": "Enable",
         "comingSoon": "Mark coming soon",
         "disable": "Disable"
-      }
+      },
+      "reorderRow": "Reorder service",
+      "reorderBlocked": "Clear the sort and search to reorder services."
     },
     "support": {
       "title": "Support Tickets",

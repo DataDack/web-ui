@@ -38,6 +38,7 @@ const schema = z.object({
     .max(40)
     .regex(/^[a-z0-9-]+$/, "Lowercase letters, numbers and dashes only"),
   name: z.string().min(2, "Min 2 characters").max(80),
+  short_name: z.string().max(24, "Max 24 characters").or(z.literal("")),
   description: z.string().max(300).or(z.literal("")),
   icon: z.string().min(1, "Pick an icon"),
   category: z.enum(CATEGORIES),
@@ -59,6 +60,7 @@ type FormValues = z.infer<typeof schema>
 const EMPTY: FormValues = {
   key: "",
   name: "",
+  short_name: "",
   description: "",
   icon: "Box",
   category: "management",
@@ -98,6 +100,7 @@ export function ServiceFormSheet({ open, onOpenChange, service }: Readonly<Props
           ? {
               key: service.key,
               name: service.name,
+              short_name: service.short_name,
               description: service.description,
               icon: service.icon,
               category: service.category as FormValues["category"],
@@ -115,6 +118,7 @@ export function ServiceFormSheet({ open, onOpenChange, service }: Readonly<Props
   const onSubmit = (values: FormValues) => {
     const common = {
       name: values.name,
+      short_name: values.short_name,
       description: values.description,
       icon: values.icon,
       category: values.category,
@@ -164,6 +168,14 @@ export function ServiceFormSheet({ open, onOpenChange, service }: Readonly<Props
 
       <Field label={t("superAdmin.services.fields.name")} required error={errors.name?.message}>
         <Input {...register("name")} placeholder={t("superAdmin.serviceFormSheet.computeEngine")} />
+      </Field>
+
+      <Field
+        label={t("superAdmin.services.fields.shortName")}
+        error={errors.short_name?.message}
+        hint={t("superAdmin.services.fields.shortNameHint")}
+      >
+        <Input {...register("short_name")} placeholder="Compute" />
       </Field>
 
       <Field

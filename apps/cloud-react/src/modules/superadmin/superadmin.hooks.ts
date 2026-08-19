@@ -9,6 +9,7 @@ import { apiGet, extractError } from "@/services/api/client"
 import { superAdminApi } from "./superadmin.api"
 import { SUPERADMIN_QUERY_KEYS } from "./superadmin.constants"
 import type {
+  CatalogServiceAdmin,
   KycStatusPatch,
   AddImageVersionRequest,
   AdjustBalanceRequest,
@@ -795,6 +796,46 @@ export function useUpdateServiceState() {
       toast.success(t("superAdmin.toasts.serviceUpdated"))
     },
     onError: (e) => toast.error(extractError(e, t("superAdmin.toasts.serviceFailed"))),
+  })
+}
+
+/**
+ * Persists the drag-and-drop order of the service catalog.
+ *
+ * Optimistic, because a drag that snaps back while the request is in flight
+ * reads as the drop having failed. The reordered list is written into the cache
+ * immediately and restored from the snapshot if the write is refused — which
+ * the server does when the list no longer matches the catalog, i.e. when
+ * someone else added or deleted a service since this table was loaded. The
+ * settle refetch is what then shows the admin what actually changed.
+ */
+export function useReorderServices() {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (vars: { ordered: CatalogServiceAdmin[] }) =>
+      superAdminApi.reorderServices({ ids: vars.ordered.map((s) => s.id) }),
+    onMutate: async (vars) => {
+      // Stop an in-flight list refetch from landing on top of the new order.
+      await queryClient.cancelQueries({ queryKey: SUPERADMIN_QUERY_KEYS.services })
+      const previous = queryClient.getQueryData<CatalogServiceAdmin[]>(
+        SUPERADMIN_QUERY_KEYS.services,
+      )
+      queryClient.setQueryData(SUPERADMIN_QUERY_KEYS.services, vars.ordered)
+      return { previous }
+    },
+    onError: (e, _vars, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(SUPERADMIN_QUERY_KEYS.services, context.previous)
+      }
+      toast.error(extractError(e, t("superAdmin.toasts.serviceOrderFailed")))
+    },
+    onSuccess: () => {
+      toast.success(t("superAdmin.toasts.serviceOrderSaved"))
+    },
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.services })
+    },
   })
 }
 

@@ -15,6 +15,12 @@ export interface CatalogService {
   id: number
   key: string
   name: string
+  /**
+   * Tile label for the narrow Console-home grid, where the full name does not
+   * fit. Already resolved server-side — it falls back to `name` when the admin
+   * left it blank, so there is nothing to default here.
+   */
+  short_name: string
   description: string
   icon: string
   category: string

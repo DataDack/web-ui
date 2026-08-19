@@ -26,6 +26,7 @@ import {
   ChevronRight,
   ChevronsUpDown,
   Columns3,
+  GripVertical,
   AlertTriangle,
   Inbox,
   Search,
@@ -472,6 +473,85 @@ function resolveClientPaging(
   return typeof pagination === "object" ? pagination : {}
 }
 
+/* ── Drag-to-reorder ──────────────────────────────────────────────────────── */
+
+/* The handle column: as narrow as the grip, and never the thing that grows when
+   the table is wider than its content. */
+const dragCell = css`
+  width: 1%;
+  padding-right: 0;
+  white-space: nowrap;
+`
+
+const dragHandle = css`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: var(--radius-sm, 0.25rem);
+  background: transparent;
+  color: var(--muted-foreground);
+  cursor: grab;
+  opacity: 0.55;
+  transition:
+    opacity 120ms ease,
+    color 120ms ease,
+    background 120ms ease;
+
+  &:hover,
+  &:focus-visible {
+    opacity: 1;
+    color: var(--foreground);
+    background: ${mix("--muted", 60)};
+  }
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  /* Sorted or filtered, the visible order is not the stored order, so a drag
+     would write something the admin did not mean. The handle stays in place —
+     the column must not appear and disappear as you type in the search box —
+     but says why it is inert on hover. */
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.25;
+  }
+
+  & > svg {
+    width: 15px;
+    height: 15px;
+  }
+`
+
+const draggingRow = css`
+  opacity: 0.4;
+`
+
+/* The insertion point, drawn on the edge the row would land on. A line rather
+   than a highlight on the hovered row: it says "between these two", which is
+   what a drop actually does. */
+const dropAbove = css`
+  box-shadow: inset 0 2px 0 0 var(--primary, var(--foreground));
+`
+
+const dropBelow = css`
+  box-shadow: inset 0 -2px 0 0 var(--primary, var(--foreground));
+`
+
+export interface DataTableReorder<T> {
+  /** The full list in its new order, after the move. */
+  onReorder: (rows: T[]) => void
+  /** Greys the grips out — while a save is in flight, typically. */
+  disabled?: boolean
+  /** Accessible name for the grip. Defaults to "Reorder row". */
+  label?: string
+  /** Tooltip explaining why the grip is inert under a sort or filter. */
+  blockedHint?: string
+}
+
 export interface DataTableProps<T> {
   data: readonly T[]
   columns: ColumnDef<T>[]
@@ -589,6 +669,21 @@ export interface DataTableProps<T> {
    */
   footerRow?: ReactNode
 
+  /**
+   * Lets the admin hand-order the list by dragging rows. Adds a grip column and
+   * reports the WHOLE list in its new order once, on drop — callers persist
+   * that rather than tracking which row moved where.
+   *
+   * Dragging is refused (the grip greys out) while the table is sorted or
+   * filtered, because then the visible order is not the stored order and a drop
+   * would write a position the admin never saw. Paging is fine: rows carry
+   * their index in the full data, so a drop on page two still lands correctly.
+   *
+   * The grip is a real button, so the order is also reachable from the keyboard
+   * — focus it and press ArrowUp/ArrowDown to move the row one place.
+   */
+  reorder?: DataTableReorder<T>
+
   onRowClick?: (row: T) => void
   /**
    * Extra classes for every body row, or per row when given a function. The way
@@ -649,6 +744,7 @@ export function DataTable<T>({
   rowCanExpand,
   renderRow,
   footerRow,
+  reorder,
   onRowClick,
   rowClassName,
   actions,
@@ -660,6 +756,10 @@ export function DataTable<T>({
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
   const [internalFilter, setInternalFilter] = useState("")
   const [expanded, setExpanded] = useState<Record<string, boolean>>({})
+  // Which row is being dragged, and which edge of which row it is hovering. Both
+  // are row ids, so they survive the list re-rendering underneath the drag.
+  const [dragRowId, setDragRowId] = useState<string | null>(null)
+  const [dropTarget, setDropTarget] = useState<{ id: string; below: boolean } | null>(null)
 
   const filterValue = globalFilter ?? internalFilter
 
@@ -703,8 +803,75 @@ export function DataTable<T>({
     return [selectColumn, ...columns]
   }, [columns, selectable])
 
+  // Sorted or filtered, what you see is not the order that would be written, so
+  // dragging is refused rather than silently writing the wrong thing.
+  const reorderBlocked = sorting.length > 0 || filterValue !== ""
+  const canDrag = reorder !== undefined && !reorder.disabled && !reorderBlocked
+
+  // Moves the row at `from` to index `to` within the FULL data (rows carry their
+  // index in it, so this is correct on any page) and reports the whole list.
+  // Shared by the keyboard handler and the drop.
+  const moveRow = (from: number, to: number) => {
+    if (!reorder || from === to || to < 0 || to >= data.length) return
+    const next = [...data]
+    const moved = next.splice(from, 1)
+    if (moved.length === 0) return
+    next.splice(to, 0, ...moved)
+    reorder.onReorder(next)
+  }
+
+  const orderableColumns = useMemo<ColumnDef<T>[]>(() => {
+    if (!reorder) return allColumns
+    const dragColumn: ColumnDef<T> = {
+      id: "__drag",
+      enableSorting: false,
+      enableHiding: false,
+      header: () => null,
+      meta: { interactive: true } satisfies DataTableColumnMeta,
+      cell: ({ row }) => (
+        <button
+          type="button"
+          className={dragHandle}
+          disabled={!canDrag}
+          aria-label={reorder.label ?? "Reorder row"}
+          title={reorderBlocked ? reorder.blockedHint : undefined}
+          draggable={canDrag}
+          onDragStart={(event) => {
+            setDragRowId(row.id)
+            event.dataTransfer.effectAllowed = "move"
+            // Firefox ignores a drag that carries no data at all.
+            event.dataTransfer.setData("text/plain", row.id)
+            // Drag the whole row, not the 24px grip that started it.
+            const tr = event.currentTarget.closest("tr")
+            if (tr) event.dataTransfer.setDragImage(tr, 24, tr.clientHeight / 2)
+          }}
+          onDragEnd={() => {
+            setDragRowId(null)
+            setDropTarget(null)
+          }}
+          // The grip lives inside a clickable row on most tables; a drag must
+          // not also count as opening the row.
+          onClick={(event) => {
+            event.stopPropagation()
+          }}
+          onKeyDown={(event) => {
+            if (event.key !== "ArrowUp" && event.key !== "ArrowDown") return
+            event.preventDefault()
+            event.stopPropagation()
+            moveRow(row.index, row.index + (event.key === "ArrowUp" ? -1 : 1))
+          }}
+        >
+          <GripVertical />
+        </button>
+      ),
+    }
+    return [dragColumn, ...allColumns]
+    // moveRow closes over `data` and `reorder`, both already in the list.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allColumns, reorder, canDrag, reorderBlocked, data])
+
   const finalColumns = useMemo<ColumnDef<T>[]>(() => {
-    if (!renderSubRow) return allColumns
+    if (!renderSubRow) return orderableColumns
     const expander: ColumnDef<T> = {
       id: "__expander",
       enableSorting: false,
@@ -729,8 +896,8 @@ export function DataTable<T>({
         )
       },
     }
-    return [expander, ...allColumns]
-  }, [allColumns, expanded, renderSubRow, rowCanExpand])
+    return [expander, ...orderableColumns]
+  }, [orderableColumns, expanded, renderSubRow, rowCanExpand])
 
   const table = useReactTable({
     data: data as T[],
@@ -948,11 +1115,52 @@ export function DataTable<T>({
                       animateRows && contentEnter,
                       row.getIsSelected() && selectedRow,
                       onRowClick && clickableRow,
+                      dragRowId === row.id && draggingRow,
+                      dropTarget?.id === row.id &&
+                        dragRowId !== row.id &&
+                        (dropTarget.below ? dropBelow : dropAbove),
                       typeof rowClassName === "function"
                         ? rowClassName(row.original)
                         : rowClassName,
                     )}
                     style={animateRows ? rowStagger(rowIndex) : undefined}
+                    onDragOver={
+                      canDrag && dragRowId !== null
+                        ? (event) => {
+                            event.preventDefault()
+                            event.dataTransfer.dropEffect = "move"
+                            // Which half of the row the pointer is over decides
+                            // whether the drop lands above or below it, so a
+                            // drop is always unambiguous — including at the very
+                            // top and bottom of the list.
+                            const box = event.currentTarget.getBoundingClientRect()
+                            const below = event.clientY > box.top + box.height / 2
+                            setDropTarget((prev) =>
+                              prev?.id === row.id && prev.below === below
+                                ? prev
+                                : { id: row.id, below },
+                            )
+                          }
+                        : undefined
+                    }
+                    onDrop={
+                      canDrag && dragRowId !== null
+                        ? (event) => {
+                            event.preventDefault()
+                            const from = rows.find((r) => r.id === dragRowId)?.index
+                            setDragRowId(null)
+                            setDropTarget(null)
+                            if (from === undefined || from === row.index) return
+                            // Landing below the target means one place further
+                            // down — but only when coming from above it, where
+                            // removing the row first shifts everything up by one.
+                            const below = dropTarget?.below ?? false
+                            let to = row.index + (below ? 1 : 0)
+                            if (from < to) to -= 1
+                            moveRow(from, to)
+                          }
+                        : undefined
+                    }
                     onClick={
                       onRowClick
                         ? () => {
@@ -970,6 +1178,7 @@ export function DataTable<T>({
                             density === "compact" && compactCell,
                             (cell.column.id === "__select" || cell.column.id === "__expander") &&
                               selectCell,
+                            cell.column.id === "__drag" && dragCell,
                             responsiveClass(meta),
                           )}
                           // A cell holding its own controls must not also fire the

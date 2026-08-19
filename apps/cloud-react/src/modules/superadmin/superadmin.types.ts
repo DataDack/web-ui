@@ -771,6 +771,12 @@ export interface CatalogServiceAdmin {
   id: string
   key: string
   name: string
+  /**
+   * Tile label for the narrow Console-home grid. RAW here, unlike the tenant
+   * view: the admin form has to show an unset short name as empty, or saving
+   * the form would freeze today's name into it.
+   */
+  short_name: string
   description: string
   icon: string
   category: string
@@ -784,6 +790,7 @@ export interface CatalogServiceAdmin {
 export interface CreateServiceRequest {
   key: string
   name: string
+  short_name?: string
   description?: string
   icon?: string
   category?: string
@@ -799,6 +806,16 @@ export type UpdateServiceRequest = Partial<Omit<CreateServiceRequest, "key">>
 export interface UpdateServiceStateRequest {
   state: ServiceState
   status?: ServiceHealthStatus
+}
+
+/**
+ * The whole catalog in its new order, most-important first — what drag-and-drop
+ * in the Services table sends. It is the full list rather than the moved pair
+ * because the server rejects anything that does not name every service exactly
+ * once, which is what stops a stale table from writing a scrambled order.
+ */
+export interface ReorderServicesRequest {
+  ids: string[]
 }
 
 /* ── IP pools (static IP inventory) ─────────────────────────────────────── */

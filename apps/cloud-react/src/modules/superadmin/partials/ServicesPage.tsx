@@ -17,7 +17,12 @@ import { useTranslation } from "react-i18next"
 import { ConfirmDialog, PageHeader } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
-import { useAdminServices, useDeleteService, useUpdateServiceState } from "../superadmin.hooks"
+import {
+  useAdminServices,
+  useDeleteService,
+  useReorderServices,
+  useUpdateServiceState,
+} from "../superadmin.hooks"
 import type { CatalogServiceAdmin, ServiceState } from "../superadmin.types"
 import { ServiceFormSheet } from "./ServiceFormSheet"
 
@@ -99,6 +104,7 @@ export function ServicesPage() {
   const { data: services = [], isLoading, isError, refetch, isFetching } = useAdminServices()
   const { mutate: setServiceState } = useUpdateServiceState()
   const { mutate: removeService, isPending: isDeleting } = useDeleteService()
+  const { mutate: reorderServices, isPending: isReordering } = useReorderServices()
 
   const [formOpen, setFormOpen] = useState(false)
   const [editing, setEditing] = useState<CatalogServiceAdmin | null>(null)
@@ -112,6 +118,20 @@ export function ServicesPage() {
     setEditing(svc)
     setFormOpen(true)
   }
+
+  // Memoised: DataTable rebuilds its columns when this changes, and an inline
+  // object would be a new one on every render.
+  const reorder = useMemo(
+    () => ({
+      onReorder: (ordered: CatalogServiceAdmin[]) => {
+        reorderServices({ ordered })
+      },
+      disabled: isReordering,
+      label: t("superAdmin.services.reorderRow"),
+      blockedHint: t("superAdmin.services.reorderBlocked"),
+    }),
+    [t, reorderServices, isReordering],
+  )
 
   const columns = useMemo<ColumnDef<CatalogServiceAdmin>[]>(() => {
     const helpers: ActionHelpers = {
@@ -148,6 +168,13 @@ export function ServicesPage() {
         enableSorting: false,
         cell: ({ row }) => <StateBadge state={row.original.state} />,
       },
+      textColumn<CatalogServiceAdmin>({
+        id: "order",
+        header: t("superAdmin.services.fields.sortOrder"),
+        accessor: (s) => String(s.sort_order),
+        muted: true,
+        responsive: "lg",
+      }),
       textColumn<CatalogServiceAdmin>({
         id: "metrics",
         header: t("superAdmin.services.fields.metrics"),
@@ -196,6 +223,12 @@ export function ServicesPage() {
         onRetry={() => void refetch()}
         retryLabel={t("console.table.retry")}
         getRowId={(s) => s.id}
+        // The catalog is a hand-ordered list of a dozen or so services, so it
+        // is shown whole: paging it would let a drag cross a page boundary it
+        // cannot see, and sorting it would mean the visible order is not the
+        // one a drop would write.
+        pagination={false}
+        reorder={reorder}
         onRowClick={openEdit}
         empty={
           <EmptyState

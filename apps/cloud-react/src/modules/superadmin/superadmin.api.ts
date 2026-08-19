@@ -76,6 +76,7 @@ import type {
   UpdateImageVersionRequest,
   UpdateIPPoolRequest,
   UpdatePVENodeRequest,
+  ReorderServicesRequest,
   UpdateServiceRequest,
   UpdateServiceStateRequest,
   UpdateStaticIPPriceRequest,
@@ -267,6 +268,8 @@ export const superAdminApi = {
     apiPut<CatalogServiceAdmin>(`${CATALOG_BASE}/services/${id}`, payload),
   updateServiceState: (id: string, payload: UpdateServiceStateRequest) =>
     apiPatch<CatalogServiceAdmin>(`${CATALOG_BASE}/services/${id}/state`, payload),
+  reorderServices: (payload: ReorderServicesRequest) =>
+    apiPatch<{ count: number }>(`${CATALOG_BASE}/services/reorder`, payload),
   deleteService: (id: string) => apiDelete(`${CATALOG_BASE}/services/${id}`),
 
   /* platform users — list everyone + grant/revoke the super-admin flag */

@@ -1,5 +1,5 @@
 import type { ColumnDef } from "@tanstack/react-table"
-import { cleanup, render, screen, within } from "@testing-library/react"
+import { act, cleanup, render, screen, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { afterEach, describe, expect, mock, test } from "bun:test"
 
@@ -1009,5 +1009,168 @@ describe("the three body states are distinguishable", () => {
     // An empty list is not a problem, so it must not look like one.
     expect(errorCss).toContain("--destructive")
     unmount()
+  })
+})
+
+describe("drag-to-reorder", () => {
+  /** Fires the drag sequence the grip + row handlers listen for. */
+  function dragOnto(from: HTMLElement, to: HTMLElement, edge: "top" | "bottom") {
+    const dataTransfer = {
+      effectAllowed: "",
+      dropEffect: "",
+      setData: () => undefined,
+      getData: () => "",
+      setDragImage: () => undefined,
+    }
+    const grip = within(from).getByRole("button", { name: "Reorder row" })
+    // Each step is flushed on its own: the row only grows its dragover/drop
+    // handlers once a drag is in flight, so dispatching them in one tick would
+    // hit a row that is not listening yet.
+    act(() => {
+      grip.dispatchEvent(
+        Object.assign(new Event("dragstart", { bubbles: true }), { dataTransfer }),
+      )
+    })
+    // jsdom gives every element a zero-height box, so "which half of the row"
+    // is decided purely by clientY's sign relative to it.
+    act(() => {
+      to.dispatchEvent(
+        Object.assign(new Event("dragover", { bubbles: true }), {
+          dataTransfer,
+          clientY: edge === "bottom" ? 1 : -1,
+        }),
+      )
+    })
+    act(() => {
+      to.dispatchEvent(Object.assign(new Event("drop", { bubbles: true }), { dataTransfer }))
+    })
+  }
+
+  test("no grip column unless reorder is asked for", () => {
+    render(<DataTable data={rows} columns={columns} />)
+    expect(screen.queryByRole("button", { name: "Reorder row" })).toBeNull()
+  })
+
+  test("dropping on the lower half of a row moves it below that row", () => {
+    const onReorder = mock((_next: Row[]) => undefined)
+    render(<DataTable data={rows} columns={columns} getRowId={(r) => r.id} reorder={{ onReorder }} />)
+
+    dragOnto(bodyRow(0), bodyRow(2), "bottom")
+
+    expect(onReorder).toHaveBeenCalledTimes(1)
+    expect(onReorder.mock.calls[0]?.[0].map((r) => r.id)).toEqual(["2", "3", "1"])
+  })
+
+  test("dropping on the upper half of a row moves it above that row", () => {
+    const onReorder = mock((_next: Row[]) => undefined)
+    render(<DataTable data={rows} columns={columns} getRowId={(r) => r.id} reorder={{ onReorder }} />)
+
+    dragOnto(bodyRow(2), bodyRow(0), "top")
+
+    expect(onReorder.mock.calls[0]?.[0].map((r) => r.id)).toEqual(["3", "1", "2"])
+  })
+
+  test("dropping a row back onto itself reports nothing", () => {
+    const onReorder = mock((_next: Row[]) => undefined)
+    render(<DataTable data={rows} columns={columns} getRowId={(r) => r.id} reorder={{ onReorder }} />)
+
+    dragOnto(bodyRow(1), bodyRow(1), "top")
+
+    expect(onReorder).not.toHaveBeenCalled()
+  })
+
+  test("the grip moves a row with the keyboard", async () => {
+    const user = userEvent.setup()
+    const onReorder = mock((_next: Row[]) => undefined)
+    render(<DataTable data={rows} columns={columns} getRowId={(r) => r.id} reorder={{ onReorder }} />)
+
+    const grip = within(bodyRow(2)).getByRole("button", { name: "Reorder row" })
+    grip.focus()
+    await user.keyboard("{ArrowUp}")
+
+    expect(onReorder.mock.calls[0]?.[0].map((r) => r.id)).toEqual(["1", "3", "2"])
+  })
+
+  test("the first row cannot be moved up off the list", async () => {
+    const user = userEvent.setup()
+    const onReorder = mock((_next: Row[]) => undefined)
+    render(<DataTable data={rows} columns={columns} getRowId={(r) => r.id} reorder={{ onReorder }} />)
+
+    const grip = within(bodyRow(0)).getByRole("button", { name: "Reorder row" })
+    grip.focus()
+    await user.keyboard("{ArrowUp}")
+
+    expect(onReorder).not.toHaveBeenCalled()
+  })
+
+  // Under a sort or a filter the visible order is not the stored order, so a
+  // drop would write a position the admin never saw.
+  test("sorting disables the grip", async () => {
+    const user = userEvent.setup()
+    render(
+      <DataTable data={rows} columns={columns} getRowId={(r) => r.id} reorder={{ onReorder: () => undefined }} />,
+    )
+    await user.click(screen.getByText("Name"))
+
+    const grip = within(bodyRow(0)).getByRole("button", { name: "Reorder row" })
+    expect(grip).toBeDisabled()
+  })
+
+  test("searching disables the grip", async () => {
+    const user = userEvent.setup()
+    render(
+      <DataTable
+        data={rows}
+        columns={columns}
+        getRowId={(r) => r.id}
+        searchable
+        reorder={{ onReorder: () => undefined }}
+      />,
+    )
+    await user.type(screen.getByRole("searchbox"), "a")
+
+    const grip = within(bodyRow(0)).getByRole("button", { name: "Reorder row" })
+    expect(grip).toBeDisabled()
+  })
+
+  test("disabled reorder greys the grip out", () => {
+    render(
+      <DataTable
+        data={rows}
+        columns={columns}
+        getRowId={(r) => r.id}
+        reorder={{ onReorder: () => undefined, disabled: true }}
+      />,
+    )
+    expect(within(bodyRow(0)).getByRole("button", { name: "Reorder row" })).toBeDisabled()
+  })
+
+  test("the grip carries the caller's label", () => {
+    render(
+      <DataTable
+        data={rows}
+        columns={columns}
+        getRowId={(r) => r.id}
+        reorder={{ onReorder: () => undefined, label: "Reorder service" }}
+      />,
+    )
+    expect(within(bodyRow(0)).getByRole("button", { name: "Reorder service" })).toBeInTheDocument()
+  })
+
+  test("clicking the grip does not fire the row's click handler", async () => {
+    const user = userEvent.setup()
+    const onRowClick = mock(() => {})
+    render(
+      <DataTable
+        data={rows}
+        columns={columns}
+        getRowId={(r) => r.id}
+        onRowClick={onRowClick}
+        reorder={{ onReorder: () => undefined }}
+      />,
+    )
+
+    await user.click(within(bodyRow(0)).getByRole("button", { name: "Reorder row" }))
+    expect(onRowClick).not.toHaveBeenCalled()
   })
 })

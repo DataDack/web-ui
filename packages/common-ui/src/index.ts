@@ -33,6 +33,7 @@ export {
   type DataTableColumnMeta,
   type DataTablePagination,
   type DataTableProps,
+  type DataTableReorder,
   type DataTableServerPagination,
 } from "./console/DataTable"
 export { EmptyState } from "./console/EmptyState"

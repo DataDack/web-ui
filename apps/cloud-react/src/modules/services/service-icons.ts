@@ -7,6 +7,7 @@ import {
   Cpu,
   CreditCard,
   Database,
+  FolderKanban,
   Gauge,
   GitBranch,
   Globe,
@@ -15,13 +16,16 @@ import {
   KeyRound,
   Layers,
   LayoutDashboard,
+  LifeBuoy,
   Lock,
   Network,
+  Rocket,
   Server,
   Shield,
   ShieldCheck,
   Wallet,
   Wifi,
+  Zap,
   type LucideIcon,
 } from "lucide-react"
 
@@ -29,9 +33,14 @@ import {
 // resolves it to a component; SERVICE_ICON_NAMES drives the admin form dropdown
 // so admins can only pick icons that actually render. Rendering lives in the
 // <ServiceIcon> component (ServiceIcon.tsx).
+// Every name a catalog row can carry. A service whose icon is missing here
+// silently renders the neutral Box — which is how Managed Apps (Rocket) and
+// Serverless (Zap) came to be seeded with icons this map did not hold.
 export const SERVICE_ICONS: Record<string, LucideIcon> = {
   Server,
   Cpu,
+  Zap,
+  Rocket,
   Network,
   GitBranch,
   Globe,
@@ -52,6 +61,8 @@ export const SERVICE_ICONS: Record<string, LucideIcon> = {
   Activity,
   Gauge,
   LayoutDashboard,
+  FolderKanban,
+  LifeBuoy,
   Box,
 }
 
