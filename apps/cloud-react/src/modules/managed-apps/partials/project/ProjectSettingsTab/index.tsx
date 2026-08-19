@@ -1,6 +1,5 @@
 import { BuildOutputSection } from "./BuildOutputSection"
 import { DangerZone } from "./DangerZone"
-import { EnvSection } from "./EnvSection"
 import { GeneralSection } from "./GeneralSection"
 import { GitSection } from "./GitSection"
 import { PlanSection } from "./PlanSection"
@@ -8,8 +7,8 @@ import type { Project } from "../../../managed-apps.types"
 
 /**
  * Settings — one section per concern, in the order a user reaches for them:
- * identity, then source, then how it builds, then what it builds with, then the
- * irreversible one, last and visually separated.
+ * identity, then source, then how it builds, then the irreversible one, last
+ * and visually separated. Environment variables have their own project tab.
  *
  * n8n instances have no repository and no build pipeline, so those sections are
  * absent rather than rendered empty.
@@ -23,7 +22,6 @@ export function ProjectSettingsTab({ project }: Readonly<{ project: Project }>) 
       <PlanSection />
       {!isN8n && <GitSection project={project} />}
       {!isN8n && <BuildOutputSection project={project} />}
-      <EnvSection project={project} />
       <DangerZone project={project} />
     </div>
   )

@@ -10,7 +10,7 @@ import {
 
 import { Button } from "@datadack/common-ui"
 
-import { BuildStatusPill } from "../../../components"
+import { BuildWaterfall } from "./BuildWaterfall"
 import type { Build, Project } from "../../../managed-apps.types"
 import { formatDuration, isTimeSet, shortDateTime, shortSha, triggerLabel } from "../build-format"
 
@@ -53,18 +53,14 @@ export function BuildWorkspaceSidebar({
   return (
     <aside className="hidden min-h-0 w-72 shrink-0 flex-col border-r border-border/60 glass-1-bg lg:flex">
       <div className="border-b border-border/60 px-5 py-5">
-        <div className="flex items-center justify-between gap-3">
-          <span className="truncate font-mono text-[15px] font-semibold text-foreground">
-            {shortSha(build.commit_sha) || shortSha(build.id)}
-          </span>
-          <BuildStatusPill status={build.status} />
-        </div>
         {serving && (
-          <div className="mt-2 flex items-center gap-2 text-[11px] text-status-success">
+          <div className="flex items-center gap-2 text-[11px] text-status-success">
             <span className="size-1.5 rounded-full bg-status-success" aria-hidden />
             Serving production traffic
           </div>
         )}
+
+        <BuildWaterfall build={build} className={serving ? "mt-3" : undefined} />
 
         {project?.url && (
           <Button asChild size="sm" variant="outline" className="mt-4 w-full gap-2 rounded-sm">

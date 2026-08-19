@@ -1,6 +1,6 @@
-import { Button, EmptyState, Skeleton } from "@datadack/common-ui"
 import {
   Activity,
+  Braces,
   ChartLine,
   GitPullRequest,
   Globe,
@@ -15,9 +15,11 @@ import { Link, useNavigate, useParams } from "react-router-dom"
 import { DetailPage } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
+import { Button, EmptyState, Skeleton } from "@datadack/common-ui"
 
 import { ProjectAnalyticsTab } from "./ProjectAnalyticsTab"
 import { ProjectBuildsTab } from "./ProjectBuildsTab"
+import { ProjectEnvironmentTab } from "./ProjectEnvironmentTab"
 import { ProjectObservabilityTab } from "./ProjectObservabilityTab"
 import { ProjectOverviewTab } from "./ProjectOverviewTab"
 import { ProjectSettingsTab } from "./ProjectSettingsTab"
@@ -30,7 +32,7 @@ import { isBuildTransitional } from "../../managed-apps.types"
 
 /**
  * Project detail — deployment status and public URL (Overview), deploy
- * history with live logs (Builds), and build/env/danger-zone config
+ * history with live logs (Builds), environment variables, and project config
  * (Settings). Tab state syncs to ?tab= via the shared DetailPage.
  */
 export function ProjectDetailPage() {
@@ -110,6 +112,12 @@ export function ProjectDetailPage() {
           label: "Builds",
           icon: Hammer,
           content: <ProjectBuildsTab project={project} />,
+        },
+        {
+          value: "environment",
+          label: "Environment",
+          icon: Braces,
+          content: <ProjectEnvironmentTab project={project} />,
         },
         {
           value: "observability",

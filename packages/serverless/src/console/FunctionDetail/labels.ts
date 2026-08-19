@@ -264,6 +264,7 @@ export interface FunctionDetailLabels {
       functionUrl: string
       permissions: string
       vpc: string
+      edge: string
     }
     soon: string
     edit: string
@@ -737,7 +738,8 @@ export const DEFAULT_FUNCTION_DETAIL_LABELS: FunctionDetailLabels = {
       async: "Asynchronous invocation",
       functionUrl: "Function URL",
       permissions: "Permissions",
-      vpc: "VPC",
+      vpc: "Networking / VPC",
+      edge: "Edge function",
     },
     soon: "Soon",
     edit: "Edit",

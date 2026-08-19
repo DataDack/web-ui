@@ -1,19 +1,9 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 import { Settings2 } from "lucide-react"
 import { toast } from "sonner"
 
-import {
-  Input,
-  KeyValueGrid,
-  Label,
-  css,
-  cx,
-  fontMono,
-  media,
-  timeAgo,
-  type KeyValueItem,
-} from "@datadack/common-ui"
+import { Input, Button, Label, css, cx, fontMono, media } from "@datadack/common-ui"
 
 import { useUpdateFunctionConfig } from "../../../data/queries"
 import { useServerlessContext } from "../../../data/transport"
@@ -77,22 +67,24 @@ export interface GeneralSectionProps {
 export function GeneralSection({ fn, scope, labels, className }: Readonly<GeneralSectionProps>) {
   const { capabilities } = useServerlessContext()
   const update = useUpdateFunctionConfig(fn.name, scope)
-  const [editing, setEditing] = useState(false)
-  const [description, setDescription] = useState("")
-  const [memory, setMemory] = useState("")
-  const [timeoutSecs, setTimeoutSecs] = useState("")
-  const [ephemeral, setEphemeral] = useState("")
+  const [description, setDescription] = useState(fn.description ?? "")
+  const [handler, setHandler] = useState(fn.handler ?? "")
+  const [memory, setMemory] = useState(fn.memorySize != null ? String(fn.memorySize) : "")
+  const [timeoutSecs, setTimeoutSecs] = useState(fn.timeout != null ? String(fn.timeout) : "")
+  const [ephemeral, setEphemeral] = useState(
+    fn.ephemeralStorageMb != null ? String(fn.ephemeralStorageMb) : "",
+  )
 
   const config = labels.configuration
   const fields = config.fields
 
-  const startEdit = () => {
+  useEffect(() => {
     setDescription(fn.description ?? "")
+    setHandler(fn.handler ?? "")
     setMemory(fn.memorySize != null ? String(fn.memorySize) : "")
     setTimeoutSecs(fn.timeout != null ? String(fn.timeout) : "")
     setEphemeral(fn.ephemeralStorageMb != null ? String(fn.ephemeralStorageMb) : "")
-    setEditing(true)
-  }
+  }, [fn.description, fn.ephemeralStorageMb, fn.handler, fn.memorySize, fn.timeout])
 
   const memoryValue = parseDraftNumber(memory)
   const timeoutValue = parseDraftNumber(timeoutSecs)
@@ -105,6 +97,7 @@ export function GeneralSection({ fn, scope, labels, className }: Readonly<Genera
 
   const patch: UpdateFunctionConfigInput = {}
   if (description.trim() !== (fn.description ?? "")) patch.description = description.trim()
+  if (handler.trim() !== (fn.handler ?? "")) patch.handler = handler.trim()
   if (memoryValue !== undefined && memoryValue !== fn.memorySize) patch.memorySize = memoryValue
   if (timeoutValue !== undefined && timeoutValue !== fn.timeout) patch.timeout = timeoutValue
   if (
@@ -122,7 +115,6 @@ export function GeneralSection({ fn, scope, labels, className }: Readonly<Genera
     update.mutate(patch, {
       onSuccess: () => {
         toast.success(config.saved)
-        setEditing(false)
       },
       onError: (error) => {
         toast.error(errorMessage(error, labels.errors.saveFailed))
@@ -130,122 +122,118 @@ export function GeneralSection({ fn, scope, labels, className }: Readonly<Genera
     })
   }
 
-  const items: KeyValueItem[] = [
-    { label: fields.runtime, value: fn.runtime ?? fn.runtimeMode, mono: true },
-    { label: fields.handler, value: fn.handler, mono: true },
-    { label: fields.architecture, value: fn.architecture, mono: true },
-    {
-      label: fields.memory,
-      value: fn.memorySize != null ? `${String(fn.memorySize)} MB` : undefined,
-      mono: true,
-    },
-    {
-      label: fields.timeout,
-      value: fn.timeout != null ? `${String(fn.timeout)}s` : undefined,
-      mono: true,
-    },
-    { label: fields.packageType, value: fn.packageType, mono: true },
-    { label: fields.resourceGroupId, value: fn.resourceGroupId, mono: true },
-    { label: fields.region, value: fn.region, mono: true },
-    {
-      label: fields.lastModified,
-      value: fn.updatedAt ? timeAgo(fn.updatedAt) : undefined,
-      mono: true,
-    },
-    { label: fields.description, value: fn.description === "" ? undefined : fn.description },
-  ]
-  if (fn.ephemeralStorageMb != null) {
-    items.push({
-      label: fields.ephemeral,
-      value: `${String(fn.ephemeralStorageMb)} MB`,
-      mono: true,
-    })
-  }
-  if (fn.imageUri) {
-    items.push({ label: fields.imageUri, value: fn.imageUri, mono: true, copyable: true })
-  }
-
   return (
     <SectionShell
       title={config.nav.general}
       icon={Settings2}
-      editable={capabilities.configEdit}
-      editing={editing}
-      onEdit={startEdit}
-      onCancel={() => {
-        setEditing(false)
-      }}
-      onSave={save}
-      saving={update.isPending}
-      saveDisabled={!dirty || !valid}
-      editLabel={config.edit}
-      saveLabel={config.save}
-      cancelLabel={config.cancel}
+      actions={
+        capabilities.configEdit ? (
+          <Button
+            variant="gold"
+            size="sm"
+            loading={update.isPending}
+            disabled={!dirty || !valid || update.isPending}
+            onClick={save}
+          >
+            {config.save}
+          </Button>
+        ) : undefined
+      }
       className={className}
     >
-      {editing ? (
-        <div className={formGrid}>
-          <div className={cx(field, fullWidth)}>
-            <Label htmlFor="fn-config-description">{fields.description}</Label>
-            <Input
-              id="fn-config-description"
-              value={description}
-              aria-invalid={!descriptionValid || undefined}
-              onChange={(event) => {
-                setDescription(event.target.value)
-              }}
-            />
-          </div>
-          <div className={field}>
-            <Label htmlFor="fn-config-memory">{fields.memory}</Label>
-            <Input
-              id="fn-config-memory"
-              type="number"
-              min={128}
-              max={10240}
-              step={64}
-              value={memory}
-              aria-invalid={!memoryValid || undefined}
-              className={monoInput}
-              onChange={(event) => {
-                setMemory(event.target.value)
-              }}
-            />
-          </div>
-          <div className={field}>
-            <Label htmlFor="fn-config-timeout">{fields.timeout}</Label>
-            <Input
-              id="fn-config-timeout"
-              type="number"
-              min={1}
-              max={900}
-              value={timeoutSecs}
-              aria-invalid={!timeoutValid || undefined}
-              className={monoInput}
-              onChange={(event) => {
-                setTimeoutSecs(event.target.value)
-              }}
-            />
-          </div>
-          <div className={field}>
-            <Label htmlFor="fn-config-ephemeral">{fields.ephemeral}</Label>
-            <Input
-              id="fn-config-ephemeral"
-              type="number"
-              min={512}
-              max={10240}
-              value={ephemeral}
-              aria-invalid={!ephemeralValid || undefined}
-              className={monoInput}
-              onChange={(event) => {
-                setEphemeral(event.target.value)
-              }}
-            />
-          </div>
+      <div className={formGrid}>
+        <div className={field}>
+          <Label htmlFor="fn-config-runtime">{fields.runtime}</Label>
+          <Input
+            id="fn-config-runtime"
+            value={fn.runtime ?? fn.runtimeMode ?? ""}
+            disabled
+            className={monoInput}
+          />
         </div>
-      ) : (
-        <KeyValueGrid columns={3} items={items} />
-      )}
+        <div className={field}>
+          <Label htmlFor="fn-config-architecture">{fields.architecture}</Label>
+          <Input
+            id="fn-config-architecture"
+            value={fn.architecture ?? ""}
+            disabled
+            className={monoInput}
+          />
+        </div>
+        <div className={cx(field, fullWidth)}>
+          <Label htmlFor="fn-config-handler">{fields.handler}</Label>
+          <Input
+            id="fn-config-handler"
+            value={handler}
+            disabled={!capabilities.configEdit}
+            className={monoInput}
+            onChange={(event) => {
+              setHandler(event.target.value)
+            }}
+          />
+        </div>
+        <div className={cx(field, fullWidth)}>
+          <Label htmlFor="fn-config-description">{fields.description}</Label>
+          <Input
+            id="fn-config-description"
+            value={description}
+            disabled={!capabilities.configEdit}
+            aria-invalid={!descriptionValid || undefined}
+            onChange={(event) => {
+              setDescription(event.target.value)
+            }}
+          />
+        </div>
+        <div className={field}>
+          <Label htmlFor="fn-config-memory">{fields.memory}</Label>
+          <Input
+            id="fn-config-memory"
+            type="number"
+            min={128}
+            max={10240}
+            step={64}
+            value={memory}
+            disabled={!capabilities.configEdit}
+            aria-invalid={!memoryValid || undefined}
+            className={monoInput}
+            onChange={(event) => {
+              setMemory(event.target.value)
+            }}
+          />
+        </div>
+        <div className={field}>
+          <Label htmlFor="fn-config-timeout">{fields.timeout}</Label>
+          <Input
+            id="fn-config-timeout"
+            type="number"
+            min={1}
+            max={900}
+            value={timeoutSecs}
+            disabled={!capabilities.configEdit}
+            aria-invalid={!timeoutValid || undefined}
+            className={monoInput}
+            onChange={(event) => {
+              setTimeoutSecs(event.target.value)
+            }}
+          />
+        </div>
+        <div className={field}>
+          <Label htmlFor="fn-config-ephemeral">{fields.ephemeral}</Label>
+          <Input
+            id="fn-config-ephemeral"
+            type="number"
+            min={512}
+            max={10240}
+            value={ephemeral}
+            disabled={!capabilities.configEdit}
+            aria-invalid={!ephemeralValid || undefined}
+            className={monoInput}
+            onChange={(event) => {
+              setEphemeral(event.target.value)
+            }}
+          />
+        </div>
+      </div>
     </SectionShell>
   )
 }

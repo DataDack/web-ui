@@ -1,9 +1,9 @@
-import { useState, type ReactNode } from "react"
+import { useEffect, useState } from "react"
 
-import { Braces, Plus } from "lucide-react"
+import { Braces } from "lucide-react"
 import { toast } from "sonner"
 
-import { Button, KeyValueGrid, css } from "@datadack/common-ui"
+import { Button, css } from "@datadack/common-ui"
 
 import { useUpdateFunctionConfig } from "../../../data/queries"
 import { useServerlessContext } from "../../../data/transport"
@@ -13,10 +13,8 @@ import { errorMessage } from "../errorMessage"
 import type { FunctionDetailLabels } from "../labels"
 import { SectionShell } from "./SectionShell"
 
-const emptyLine = css`
-  margin: 0;
-  font-size: 13px;
-  color: var(--muted-foreground);
+const editor = css`
+  min-height: 180px;
 `
 
 /** Rows → the env map, dropping blank keys (the create-form convention). */
@@ -46,28 +44,18 @@ export interface EnvSectionProps {
 export function EnvSection({ fn, scope, labels, className }: Readonly<EnvSectionProps>) {
   const { capabilities } = useServerlessContext()
   const update = useUpdateFunctionConfig(fn.name, scope)
-  const [editing, setEditing] = useState(false)
-  const [rows, setRows] = useState<EnvRow[]>([{ key: "", value: "" }])
+  const [rows, setRows] = useState<EnvRow[]>(() => [
+    ...Object.entries(fn.env ?? {}).map(([key, value]) => ({ key, value })),
+    { key: "", value: "" },
+  ])
 
   const config = labels.configuration
-  const entries = Object.entries(fn.env ?? {})
-
-  const startEdit = () => {
+  useEffect(() => {
     setRows([
-      ...entries.map(([key, value]) => ({ key, value })),
-      // The editor's contract: always one blank row at the end.
+      ...Object.entries(fn.env ?? {}).map(([key, value]) => ({ key, value })),
       { key: "", value: "" },
     ])
-    setEditing(true)
-  }
-
-  const addVariable = () => {
-    if (editing) {
-      setRows((current) => [...current, { key: "", value: "" }])
-      return
-    }
-    startEdit()
-  }
+  }, [fn.env])
 
   const draft = rowsToMap(rows)
   const dirty = canonical(draft) !== canonical(fn.env ?? {})
@@ -78,7 +66,6 @@ export function EnvSection({ fn, scope, labels, className }: Readonly<EnvSection
       {
         onSuccess: () => {
           toast.success(config.saved)
-          setEditing(false)
         },
         onError: (error) => {
           toast.error(errorMessage(error, labels.errors.saveFailed))
@@ -87,58 +74,38 @@ export function EnvSection({ fn, scope, labels, className }: Readonly<EnvSection
     )
   }
 
-  let body: ReactNode
-  if (editing) {
-    body = (
-      <EnvEditor
-        rows={rows}
-        onChange={setRows}
-        addLabel={config.envAdd}
-        hint={config.envHint}
-        removeLabel={config.envRemove}
-        importedLabel={config.envImported}
-        skippedLabel={config.envSkipped}
-        undoLabel={config.envUndo}
-      />
-    )
-  } else if (entries.length === 0) {
-    body = <p className={emptyLine}>{config.envEmpty}</p>
-  } else {
-    body = (
-      <KeyValueGrid
-        columns={3}
-        items={entries.map(([key, value]) => ({ label: key, value, mono: true }))}
-      />
-    )
-  }
-
   return (
     <SectionShell
       title={config.nav.env}
       icon={Braces}
-      editable={capabilities.configEdit}
-      editing={editing}
-      onEdit={startEdit}
-      onCancel={() => {
-        setEditing(false)
-      }}
-      onSave={save}
-      saving={update.isPending}
-      saveDisabled={!dirty}
-      editLabel={config.edit}
-      saveLabel={config.save}
-      cancelLabel={config.cancel}
       actions={
         capabilities.configEdit ? (
-          <Button type="button" variant="gold" size="sm" onClick={addVariable}>
-            <Plus size={14} aria-hidden />
-            {config.envAdd}
+          <Button
+            type="button"
+            variant="gold"
+            size="sm"
+            loading={update.isPending}
+            disabled={!dirty || update.isPending}
+            onClick={save}
+          >
+            {config.save}
           </Button>
         ) : undefined
       }
       className={className}
     >
-      {body}
+      <div className={editor}>
+        <EnvEditor
+          rows={rows}
+          onChange={setRows}
+          addLabel={config.envAdd}
+          hint={config.envHint}
+          removeLabel={config.envRemove}
+          importedLabel={config.envImported}
+          skippedLabel={config.envSkipped}
+          undoLabel={config.envUndo}
+        />
+      </div>
     </SectionShell>
   )
 }

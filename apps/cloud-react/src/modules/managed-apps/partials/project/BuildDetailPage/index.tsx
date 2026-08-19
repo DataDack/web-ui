@@ -20,7 +20,7 @@ import {
   useProjectBuilds,
 } from "../../../managed-apps.hooks"
 import { isBuildTransitional } from "../../../managed-apps.types"
-import { formatDuration, shortSha, triggerLabel } from "../build-format"
+import { commitURL, formatDuration, shortSha, triggerLabel } from "../build-format"
 
 const BUILD_TABS = [
   { value: "log", label: "Build logs", icon: ScrollText },
@@ -97,6 +97,11 @@ export function BuildDetailPage() {
   const artifactSize = formatArtifactBytes(build.artifact_bytes)
 
   const buildLabel = build.commit_sha !== "" ? shortSha(build.commit_sha) : shortSha(build.id)
+  const commitHref = commitURL(
+    project?.repo_owner ?? "",
+    project?.repo_name ?? "",
+    build.commit_sha,
+  )
 
   // This route opts into the shell's full-bleed mode, so the workbench can
   // fill the shell's remaining height directly without viewport calculations
@@ -125,7 +130,21 @@ export function BuildDetailPage() {
 
             <div className="mt-1.5 flex min-w-0 items-center gap-2.5">
               <h1 className="truncate text-balance font-mono text-[16px] font-semibold text-foreground">
-                Build {buildLabel}
+                Build{" "}
+                {commitHref ? (
+                  <a
+                    href={commitHref}
+                    target="_blank"
+                    rel="noreferrer"
+                    title={`Open commit ${build.commit_sha} on GitHub`}
+                    className="inline-flex items-center gap-1 hover:text-brand-gold hover:underline"
+                  >
+                    {buildLabel}
+                    <ExternalLink className="size-3" aria-hidden />
+                  </a>
+                ) : (
+                  buildLabel
+                )}
               </h1>
               <BuildStatusPill status={build.status} />
               {serving && (

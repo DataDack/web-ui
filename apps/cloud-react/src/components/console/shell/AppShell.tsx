@@ -78,6 +78,7 @@ export function AppShell() {
   useKeySequence(["g", "r"], () => void navigate("/resource-groups"))
 
   const isHome = location.pathname === "/"
+  const isManagedApps = location.pathname.startsWith("/managed-apps")
 
   // Routes can opt out of the service sidebar (e.g. full-bleed create
   // wizards) via `handle: { hideSidebar: true }`.
@@ -115,7 +116,13 @@ export function AppShell() {
             />
           )}
 
-          <main className={cn("min-w-0 flex-1", !showSidebar && "w-full")}>
+          <main
+            className={cn(
+              "min-w-0 flex-1",
+              !showSidebar && "w-full",
+              isManagedApps && "managed-apps-console",
+            )}
+          >
             {showSidebar ? (
               // Google-Cloud-style content panel: a white surface with a
               // rounded top-left corner that connects to the dividerless

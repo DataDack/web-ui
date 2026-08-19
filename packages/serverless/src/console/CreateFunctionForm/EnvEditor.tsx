@@ -128,7 +128,14 @@ export function EnvEditor({
   const [lastImport, setLastImport] = useState<LastImport>()
 
   const update = (index: number, patch: Partial<EnvRow>) => {
-    onChange(rows.map((row_, i) => (i === index ? { ...row_, ...patch } : row_)))
+    const next = rows.map((row_, i) => (i === index ? { ...row_, ...patch } : row_))
+    const last = next.at(-1)
+    // The final row is a standing invitation to add another variable. As soon
+    // as it receives content, append its replacement without moving focus.
+    if (index === next.length - 1 && (last?.key.trim() || last?.value)) {
+      next.push({ key: "", value: "" })
+    }
+    onChange(next)
   }
 
   /**
@@ -152,7 +159,10 @@ export function EnvEditor({
       count: parsed.entries.length,
       skipped: parsed.skipped.length,
     })
-    onChange(mergeEntries(base, parsed.entries))
+    const merged = mergeEntries(base, parsed.entries)
+    const last = merged.at(-1)
+    if (last?.key.trim() || last?.value) merged.push({ key: "", value: "" })
+    onChange(merged)
     return true
   }
 
