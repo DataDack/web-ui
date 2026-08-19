@@ -1115,8 +1115,23 @@ export interface AdminResourceInventory {
   total: number
   page: number
   limit: number
-  options: { types: string[]; services: string[]; statuses: string[]; regions: string[] }
+  options: {
+    types: string[]
+    services: string[]
+    statuses: string[]
+    regions: string[]
+    accounts: { value: string; label: string; detail?: string }[]
+    owners: { value: string; label: string; detail?: string }[]
+  }
   failures: { source: string; account_id: string; reason: string }[]
+  summary: {
+    total: number
+    failed: number
+    active: number
+    pending: number
+    by_type: Record<string, number>
+    by_status: Record<string, number>
+  }
 }
 
 export interface AdminResourceFilters {
@@ -1126,6 +1141,7 @@ export interface AdminResourceFilters {
   status?: string
   region?: string
   account_id?: string
+  owner_id?: string
   failure_only?: boolean
   page?: number
   limit?: number
