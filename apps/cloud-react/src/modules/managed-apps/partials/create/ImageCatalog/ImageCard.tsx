@@ -67,7 +67,7 @@ export function ImageCard({ image }: Readonly<ImageCardProps>) {
           {image.specs.map((spec) => (
             <span
               key={spec}
-              className="rounded-full border border-border/60 glass-2-bg px-2.5 py-0.5 text-[11px] text-muted-foreground"
+              className="rounded-full border border-border/60 glass-1-bg-raised px-2.5 py-0.5 text-[11px] text-muted-foreground"
             >
               {spec}
             </span>

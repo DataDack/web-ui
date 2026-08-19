@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-import { Check, ExternalLink, Trash2 } from "lucide-react"
+import { Check, ExternalLink, Link2, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 
 import { Badge, Button, Label, css, cx, fontMono } from "@datadack/common-ui"
@@ -276,6 +276,7 @@ export function FunctionUrlSection({
   return (
     <SectionShell
       title={config.nav.functionUrl}
+      icon={Link2}
       className={className}
       actions={
         writable &&

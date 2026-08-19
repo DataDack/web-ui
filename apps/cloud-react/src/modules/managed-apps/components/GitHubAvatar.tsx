@@ -28,7 +28,10 @@ export function GitHubAvatar({ src, className }: Readonly<GitHubAvatarProps>) {
   if (!src || failed) {
     return (
       <span
-        className={cn("grid size-5 shrink-0 place-items-center rounded-full bg-muted", className)}
+        className={cn(
+          "grid size-5 shrink-0 place-items-center rounded-full glass-1-bg-raised",
+          className,
+        )}
       >
         <GitHubMark className="size-3 text-muted-foreground" />
       </span>
@@ -40,7 +43,10 @@ export function GitHubAvatar({ src, className }: Readonly<GitHubAvatarProps>) {
       src={src}
       alt=""
       loading="lazy"
-      className={cn("size-5 shrink-0 rounded-full bg-muted ring-1 ring-border/50", className)}
+      className={cn(
+        "size-5 shrink-0 rounded-full glass-1-bg-raised ring-1 ring-border/50",
+        className,
+      )}
       onError={() => {
         setFailed(true)
       }}

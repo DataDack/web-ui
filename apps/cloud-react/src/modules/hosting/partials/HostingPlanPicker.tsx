@@ -106,7 +106,7 @@ export function HostingPlanPicker() {
       })}
 
       {sharedFeatures.length > 0 && (
-        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 rounded-lg border border-border bg-muted/30 px-4 py-3">
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 rounded-lg border border-border glass-1-bg px-4 py-3">
           <span className="text-[12px] font-medium">In every plan</span>
           {sharedFeatures.map((f) => (
             <span key={f} className="flex items-center gap-1.5 text-[12px] text-muted-foreground">
@@ -121,7 +121,7 @@ export function HostingPlanPicker() {
           four full-height cards is a step most people never scroll to — the bar
           keeps it in view from the moment a plan is picked. */}
       {selected && (
-        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border glass-3-bg">
           <div className="mx-auto flex max-w-6xl flex-col gap-3 p-4 lg:flex-row lg:items-end">
             <div className="min-w-0 lg:w-56">
               <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Your plan</p>
@@ -225,7 +225,9 @@ function DomainChoice({
         active ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"
       }`}
     >
-      <Icon className={`mt-0.5 size-4 shrink-0 ${active ? "text-primary" : "text-muted-foreground"}`} />
+      <Icon
+        className={`mt-0.5 size-4 shrink-0 ${active ? "text-primary" : "text-muted-foreground"}`}
+      />
       <span className="min-w-0">
         <span className="block text-[13px] font-medium leading-tight">{title}</span>
         <span className="block text-[11px] leading-tight text-muted-foreground">{hint}</span>

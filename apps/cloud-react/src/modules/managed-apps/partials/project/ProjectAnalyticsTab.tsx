@@ -54,7 +54,7 @@ export function ProjectAnalyticsTab({ project }: Readonly<{ project: Project }>)
               className={cn(
                 "rounded-md px-2.5 py-1 text-[11px] font-medium transition-colors",
                 range === r.value
-                  ? "bg-accent text-accent-foreground"
+                  ? "glass-1-bg-raised text-foreground"
                   : "text-muted-foreground hover:text-foreground",
               )}
             >

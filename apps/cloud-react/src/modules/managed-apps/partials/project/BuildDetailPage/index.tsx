@@ -98,8 +98,11 @@ export function BuildDetailPage() {
 
   const buildLabel = build.commit_sha !== "" ? shortSha(build.commit_sha) : shortSha(build.id)
 
+  // This route opts into the shell's full-bleed mode, so the workbench can
+  // fill the shell's remaining height directly without viewport calculations
+  // or negative margins that leave a strip of shell background at the bottom.
   return (
-    <div className="managed-apps-console -m-4 flex min-h-[calc(100dvh-128px)] flex-col overflow-hidden glass-3-bg md:h-[calc(100dvh-84px)] md:min-h-0">
+    <div className="managed-apps-console flex min-h-0 flex-1 flex-col overflow-hidden">
       <header className="shrink-0 border-b border-border/60 glass-1-bg px-4 py-3 md:px-5">
         <div className="flex min-w-0 flex-wrap items-center justify-between gap-3">
           <div className="min-w-0">
@@ -202,10 +205,7 @@ export function BuildDetailPage() {
           />
         )}
 
-        <section
-          aria-label="Build workbench"
-          className="flex min-h-0 min-w-0 flex-1 flex-col glass-3-bg"
-        >
+        <section aria-label="Build workbench" className="flex min-h-0 min-w-0 flex-1 flex-col">
           <AnimatedTabs
             tabs={BUILD_TABS}
             value={activeTab}

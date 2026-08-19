@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from "react"
 
+import { Braces } from "lucide-react"
 import { toast } from "sonner"
 
 import { KeyValueGrid, css } from "@datadack/common-ui"
@@ -106,6 +107,7 @@ export function EnvSection({ fn, scope, labels, className }: Readonly<EnvSection
   return (
     <SectionShell
       title={config.nav.env}
+      icon={Braces}
       editable={capabilities.configEdit}
       editing={editing}
       onEdit={startEdit}

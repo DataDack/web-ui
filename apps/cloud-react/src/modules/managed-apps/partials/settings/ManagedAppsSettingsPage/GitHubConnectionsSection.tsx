@@ -74,7 +74,7 @@ export function GitHubConnectionsSection() {
               src={`https://github.com/${connection.github_login}.png?size=64`}
               alt=""
               loading="lazy"
-              className="size-7 rounded-full glass-2-bg ring-1 ring-border/50"
+              className="size-7 rounded-full glass-1-bg-raised ring-1 ring-border/50"
               onError={(event) => {
                 event.currentTarget.style.visibility = "hidden"
               }}

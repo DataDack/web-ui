@@ -127,7 +127,7 @@ export function BuildSourcePanel({
         <SourceDeploymentPanel build={build} project={project} />
       </div>
 
-      <div className="shrink-0 border-t border-border/60 glass-3-bg">
+      <div className="shrink-0 border-t border-border/60 glass-1-bg">
         <div className="flex h-9 items-center border-b border-border/60 px-3">
           <span className="border-b-2 border-primary px-1 py-2 text-[11px] font-semibold text-foreground">
             Terminal

@@ -39,7 +39,7 @@ export function SourceOptionCard({
       className={cn(
         "group relative flex min-h-full flex-col gap-3 overflow-hidden rounded-xl border border-border/60 glass-1-bg p-4 text-left shadow-xs",
         "motion-safe:transition-[transform,box-shadow,border-color,background-color] motion-safe:duration-150 motion-safe:ease-out",
-        "hover:border-primary/40 hover:glass-2-bg hover:shadow-md motion-safe:hover:-translate-y-0.5 motion-safe:active:translate-y-0 motion-safe:active:scale-[0.96]",
+        "hover:border-primary/40 hover:glass-1-bg-raised hover:shadow-md motion-safe:hover:-translate-y-0.5 motion-safe:active:translate-y-0 motion-safe:active:scale-[0.96]",
         "focus-visible:border-primary/50 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none",
       )}
     >
@@ -59,7 +59,7 @@ export function SourceOptionCard({
         {availability.label}
       </span>
 
-      <span className="flex size-9 items-center justify-center rounded-lg border border-border/60 glass-2-bg text-muted-foreground motion-safe:transition-[border-color,background-color,color] motion-safe:duration-150 group-hover:border-primary/30 group-hover:bg-primary/10 group-hover:text-primary">
+      <span className="flex size-9 items-center justify-center rounded-lg border border-border/60 glass-1-bg-raised text-muted-foreground motion-safe:transition-[border-color,background-color,color] motion-safe:duration-150 group-hover:border-primary/30 group-hover:bg-primary/10 group-hover:text-primary">
         {icon}
       </span>
 

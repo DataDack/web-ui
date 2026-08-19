@@ -49,7 +49,7 @@ function FileRow({
         className={`${ROW} ${
           isSelected
             ? "border-primary bg-primary/10 font-medium text-foreground"
-            : "border-transparent text-muted-foreground hover:glass-2-bg hover:text-foreground"
+            : "border-transparent text-muted-foreground hover:glass-1-bg-raised hover:text-foreground"
         }`}
         onClick={() => {
           if (node.type === "tree") onToggle(node.path)
@@ -167,7 +167,7 @@ export function FileTree({
               className={`${ROW} ${
                 entry.path === selected
                   ? "border-primary bg-primary/10 font-medium text-foreground"
-                  : "border-transparent text-muted-foreground hover:glass-2-bg hover:text-foreground"
+                  : "border-transparent text-muted-foreground hover:glass-1-bg-raised hover:text-foreground"
               }`}
               onClick={() => {
                 onSelect(entry.path)

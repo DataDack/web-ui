@@ -103,7 +103,7 @@ export function HostingAccountDetailPage() {
             Shown once. Save it now — we do not keep a copy, and you would have to reset it.
           </p>
           <div className="mt-3 flex items-center gap-2">
-            <code className="rounded bg-muted px-3 py-1.5 font-mono text-[13px]">
+            <code className="rounded glass-1-bg-raised px-3 py-1.5 font-mono text-[13px]">
               {account.setup_password}
             </code>
             <CopyButton value={account.setup_password} />
@@ -286,7 +286,7 @@ function Bar({
         </span>
       </div>
       {pct !== null && (
-        <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+        <div className="h-2 w-full overflow-hidden rounded-full glass-1-bg-raised ring-1 ring-border/50 ring-inset">
           <div className={`h-full ${usageBarClass(pct)}`} style={{ width: `${pct}%` }} />
         </div>
       )}

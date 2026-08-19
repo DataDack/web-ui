@@ -1,5 +1,6 @@
 import { useState } from "react"
 
+import { Gauge } from "lucide-react"
 import { toast } from "sonner"
 
 import { Input, KeyValueGrid, Label, css, fontMono, media } from "@datadack/common-ui"
@@ -104,6 +105,7 @@ export function ConcurrencySection({
   return (
     <SectionShell
       title={config.nav.concurrency}
+      icon={Gauge}
       editable={capabilities.configEdit}
       editing={editing}
       onEdit={startEdit}

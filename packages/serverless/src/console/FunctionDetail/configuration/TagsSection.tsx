@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from "react"
 
+import { Tags } from "lucide-react"
 import { toast } from "sonner"
 
 import { TagList, css } from "@datadack/common-ui"
@@ -95,6 +96,7 @@ export function TagsSection({ fn, scope, labels, className }: Readonly<TagsSecti
   return (
     <SectionShell
       title={config.nav.tags}
+      icon={Tags}
       description={config.tagsHint}
       editable={capabilities.configEdit}
       editing={editing}

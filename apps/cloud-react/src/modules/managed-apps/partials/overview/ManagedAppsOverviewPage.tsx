@@ -191,7 +191,7 @@ export function ManagedAppsOverviewPage() {
   }
 
   return (
-    <div className="managed-apps-console -m-4 min-h-[calc(100vh-60px)] glass-3-bg px-4 py-5 md:-m-6 md:px-6 lg:-m-8 lg:px-8 lg:py-6">
+    <div className="managed-apps-console -mx-4 -my-6 min-h-[calc(100vh-96px-0.5rem)] px-4 py-5 md:-mx-6 md:min-h-[calc(100vh-52px-0.5rem)] md:px-6 lg:-mx-8 lg:px-8 lg:py-6">
       <header className="mb-5 flex flex-col gap-3 border-b border-border pb-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="min-w-0">
           <div className="mb-1.5 flex items-center gap-2.5">

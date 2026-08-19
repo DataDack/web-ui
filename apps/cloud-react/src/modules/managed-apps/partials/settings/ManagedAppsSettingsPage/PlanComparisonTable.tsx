@@ -88,7 +88,7 @@ export function PlanComparisonTable({
           Managed Apps features and quotas, compared across every plan
         </caption>
         <thead>
-          <tr className="border-b border-border/60 glass-2-bg">
+          <tr className="border-b border-border/60 glass-1-bg-raised">
             <th scope="col" className="w-[30%] px-4 py-3 text-[12px] font-medium">
               Feature
             </th>

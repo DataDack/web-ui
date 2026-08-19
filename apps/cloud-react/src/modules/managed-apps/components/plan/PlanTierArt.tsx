@@ -37,7 +37,7 @@ export function PlanTierArt({ code, active }: Readonly<PlanTierArtProps>) {
         "flex size-9 items-center justify-center rounded-lg border transition-colors",
         active
           ? "border-primary/40 bg-primary/10 text-primary"
-          : "border-border/60 glass-2-bg text-muted-foreground",
+          : "border-border/60 glass-1-bg-raised text-muted-foreground",
       )}
       aria-hidden
     >

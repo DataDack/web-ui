@@ -108,7 +108,7 @@ export function PlanLimitsPanel({
 			    it is the only one the platform actually enforces (the create
 			    endpoint answers 403 on it), so it is the only one that can be
 			    over-spent while you are reading this. */}
-      <div className="mt-3 rounded-lg border border-border/50 glass-2-bg px-3 py-2">
+      <div className="mt-3 rounded-lg border border-border/50 glass-1-bg-raised px-3 py-2">
         {usageKnown ? (
           <QuotaMeter
             label="Projects"
@@ -134,7 +134,7 @@ export function PlanLimitsPanel({
         {rows.map((row) => (
           <div
             key={row.label}
-            className="flex min-w-0 items-baseline gap-1.5 rounded-md border border-border/50 glass-2-bg px-2 py-1"
+            className="flex min-w-0 items-baseline gap-1.5 rounded-md border border-border/50 glass-1-bg-raised px-2 py-1"
           >
             <dt className="shrink-0 text-[10px] tracking-wide text-muted-foreground uppercase">
               {row.label}

@@ -157,7 +157,7 @@ export function ProjectTypePicker({
                   ? "border-primary/70 shadow-sm ring-1 ring-primary/20"
                   : "border-border/60",
                 !disabled &&
-                  "hover:border-primary/35 hover:glass-2-bg hover:shadow-sm motion-safe:hover:-translate-y-0.5 motion-safe:active:translate-y-0 motion-safe:active:scale-[0.96]",
+                  "hover:border-primary/35 hover:glass-1-bg-raised hover:shadow-sm motion-safe:hover:-translate-y-0.5 motion-safe:active:translate-y-0 motion-safe:active:scale-[0.96]",
                 disabled && "cursor-not-allowed opacity-45 hover:border-border/60 hover:shadow-xs",
               )}
             >

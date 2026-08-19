@@ -87,7 +87,7 @@ export function ImportSummaryAside({
           <p className="managed-kicker font-mono text-[10px] font-semibold uppercase text-muted-foreground">
             Repository
           </p>
-          <div className="flex min-h-11 items-center gap-2.5 rounded-lg border border-border/60 glass-2-bg px-3 py-2.5">
+          <div className="flex min-h-11 items-center gap-2.5 rounded-lg border border-border/60 glass-1-bg-raised px-3 py-2.5">
             <GitHubMark className="size-4 shrink-0" />
             <span className="min-w-0 truncate font-mono text-[12px] font-medium">
               {repository || "No repository selected"}
@@ -99,7 +99,7 @@ export function ImportSummaryAside({
           <p className="managed-kicker font-mono text-[10px] font-semibold uppercase text-muted-foreground">
             Configuration
           </p>
-          <div className="divide-y divide-border/60 overflow-hidden rounded-lg border border-border/60 glass-2-bg">
+          <div className="divide-y divide-border/60 overflow-hidden rounded-lg border border-border/60 glass-1-bg-raised">
             <SummaryRow
               icon={<Settings2 className="size-3.5 shrink-0" />}
               label="Framework"
@@ -115,7 +115,7 @@ export function ImportSummaryAside({
         </section>
       </div>
 
-      <div className="border-t border-border/60 glass-2-bg p-4">
+      <div className="border-t border-border/60 glass-1-bg-raised p-4">
         <Button type="button" className="w-full" disabled={!ready} onClick={onContinue}>
           Continue to configure
         </Button>

@@ -44,14 +44,14 @@ export function SurfaceCard({
       )}
     >
       <div className="flex items-start gap-3">
-        <span className="grid size-9 shrink-0 place-items-center rounded-xl glass-2-bg">
+        <span className="grid size-9 shrink-0 place-items-center rounded-xl glass-1-bg-raised">
           <Icon className="size-4 text-muted-foreground" />
         </span>
         <div className="min-w-0 flex-1">
           <h2 className="flex items-center gap-2 text-[14px] font-semibold">
             {title}
             {count !== undefined && (
-              <span className="rounded-full bg-muted px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground tabular-nums">
+              <span className="rounded-full glass-1-bg-raised px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground tabular-nums">
                 {String(count)}
               </span>
             )}

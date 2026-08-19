@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from "react"
 
-import { Webhook } from "lucide-react"
+import { Webhook, Workflow } from "lucide-react"
 import { toast } from "sonner"
 
 import { Button, EmptyState, Skeleton, css } from "@datadack/common-ui"
@@ -149,6 +149,7 @@ export function TriggersSection({ fn, scope, labels, className }: Readonly<Trigg
   return (
     <SectionShell
       title={config.nav.triggers}
+      icon={Workflow}
       className={className}
       actions={
         writable && (

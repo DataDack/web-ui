@@ -85,7 +85,7 @@ export function GetStartedHero({
                     "grid size-6 shrink-0 place-items-center rounded-full text-[11px] font-semibold ring-1",
                     step.done
                       ? "bg-status-success text-white ring-status-success/30"
-                      : "bg-muted text-muted-foreground ring-border",
+                      : "glass-1-bg-raised text-muted-foreground ring-border",
                   )}
                 >
                   {step.done ? <Check className="size-3.5" strokeWidth={3} /> : index + 1}

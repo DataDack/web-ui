@@ -45,7 +45,7 @@ export function QuotaMeter({ label, used, limit, unit }: Readonly<QuotaMeterProp
         </span>
       </div>
       {limitKnown && !unlimited && (
-        <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-muted">
+        <div className="mt-1.5 h-1.5 overflow-hidden rounded-full glass-1-bg-raised ring-1 ring-border/50 ring-inset">
           <div
             className={cn("h-full rounded-full transition-[width]", barColor)}
             style={{ width: `${String(Math.round(ratio * 100))}%` }}

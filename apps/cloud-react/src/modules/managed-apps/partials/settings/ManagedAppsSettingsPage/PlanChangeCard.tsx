@@ -74,7 +74,7 @@ export function PlanChangeCard({
         "relative flex min-w-0 flex-col gap-3 rounded-xl border p-3 transition-colors",
         current
           ? "border-primary bg-primary/[0.04] ring-1 ring-primary/30"
-          : "border-border/60 glass-1-bg hover:border-border hover:glass-2-bg",
+          : "border-border/60 glass-1-bg hover:border-border hover:glass-1-bg-raised",
       )}
     >
       <div className="flex items-start justify-between gap-2.5">

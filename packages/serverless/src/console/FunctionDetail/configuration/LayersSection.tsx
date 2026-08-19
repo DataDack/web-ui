@@ -1,6 +1,6 @@
 import { useMemo, useState, type ReactNode } from "react"
 
-import { Layers as LayersIcon, X } from "lucide-react"
+import { Layers as LayersIcon, Layers3, X } from "lucide-react"
 import { toast } from "sonner"
 
 import {
@@ -219,6 +219,7 @@ export function LayersSection({ fn, scope, labels, className }: Readonly<LayersS
   return (
     <SectionShell
       title={config.nav.layers}
+      icon={Layers3}
       description={config.layers.hint}
       editable={capabilities.layerAttach}
       editing={editing}

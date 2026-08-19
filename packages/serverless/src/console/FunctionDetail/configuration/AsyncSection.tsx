@@ -1,5 +1,6 @@
 import { useState } from "react"
 
+import { Send } from "lucide-react"
 import { toast } from "sonner"
 
 import { Input, KeyValueGrid, Label, css, fontMono, media } from "@datadack/common-ui"
@@ -100,6 +101,7 @@ export function AsyncSection({ fn, scope, labels, className }: Readonly<AsyncSec
   return (
     <SectionShell
       title={config.nav.async}
+      icon={Send}
       editable={capabilities.configEdit}
       editing={editing}
       onEdit={startEdit}

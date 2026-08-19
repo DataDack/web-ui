@@ -71,7 +71,7 @@ export function GeneralSection({ project }: Readonly<{ project: Project }>) {
             label="Runtime"
             description="Set when the project was created. It determines the build workflow in your repository, so it cannot be changed here — create a new project to build this repository a different way."
           >
-            <div className="flex h-9 items-center gap-2 rounded-md border border-dashed glass-2-bg px-3 sm:w-80">
+            <div className="flex h-9 items-center gap-2 rounded-md border border-dashed glass-1-bg-raised px-3 sm:w-80">
               <RuntimeIcon className="size-4 shrink-0 text-muted-foreground" />
               <span className="text-sm">{runtime.label}</span>
             </div>

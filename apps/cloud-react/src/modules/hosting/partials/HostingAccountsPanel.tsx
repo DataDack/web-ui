@@ -223,7 +223,7 @@ function Chip({ label, count, selected, onClick, toneClass, dotClass }: Readonly
       className={cn(
         "shrink-0 gap-1.5 border border-transparent text-[11px] font-medium",
         selected
-          ? (toneClass ?? "border-border bg-muted text-foreground")
+          ? (toneClass ?? "border-border glass-1-bg-raised text-foreground")
           : "text-muted-foreground",
       )}
     >
@@ -249,7 +249,7 @@ export function HostingAccountCard({
   const bandwidth = usagePct(account.bw_used_mb, account.bw_limit_mb)
 
   return (
-    <div className="flex h-full flex-col rounded-xl border border-border/60 glass-2-bg p-3.5 transition-colors hover:border-border">
+    <div className="flex h-full flex-col rounded-xl border border-border/60 glass-1-bg p-3.5 transition-colors hover:border-border">
       <div className="flex items-start justify-between gap-3">
         <button type="button" onClick={onOpen} className="flex min-w-0 flex-col text-left">
           <span className="flex items-center gap-2 truncate text-[14px] font-semibold hover:underline">
@@ -331,7 +331,7 @@ function UsageBar({ label, pct, used, limit }: Readonly<UsageBarProps>) {
           {formatLimitMB(used)} / {formatLimitMB(limit)}
         </span>
       </div>
-      <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+      <div className="h-1.5 w-full overflow-hidden rounded-full glass-1-bg-raised ring-1 ring-border/50 ring-inset">
         <div className={`h-full ${usageBarClass(pct)}`} style={{ width: `${String(pct)}%` }} />
       </div>
     </div>

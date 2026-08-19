@@ -59,7 +59,7 @@ export const managedAppsRoutes: RouteObject[] = [
     // sibling rather than a child route: the project page renders its own tab
     // chrome, and a build page nested inside it would inherit that shell.
     path: "managed-apps/projects/:id/builds/:buildId",
-    handle: { hideSidebar: true },
+    handle: { hideSidebar: true, fullBleed: true },
     lazy: async () => {
       const { BuildDetailPage } = await import("./partials/project/BuildDetailPage")
       return { Component: BuildDetailPage }

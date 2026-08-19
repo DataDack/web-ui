@@ -351,18 +351,28 @@
   --brand-gold-soft: rgba(101, 155, 0, 0.1);
   --brand-gold-glow: rgba(101, 155, 0, 0.18);
   --brand-gold-ink: #477300;
-  --glass-1-bg: rgba(255, 255, 255, 0.66);
+  /* One fill for the whole section — see the dark override for the reasoning.
+     Light needs its own paper: coats of white converge on white, so the section
+     lays down a grey of its own rather than borrowing the console's near-white
+     --background, and the first coat has something to lift off. */
+  --managed-paper: #e5e8ea;
+  --glass-1-bg: rgba(255, 255, 255, 0.55);
   --glass-2-bg: rgba(255, 255, 255, 0.78);
   --glass-3-bg: rgba(255, 255, 255, 0.94);
-  --border-glass: rgba(33, 43, 20, 0.12);
+  --border-glass: rgba(33, 43, 20, 0.13);
   --status-success: #477300;
   --status-success-bg: rgba(101, 155, 0, 0.1);
   --status-info: #6540a4;
   --status-info-bg: rgba(101, 64, 164, 0.1);
-  --managed-card-hover: rgba(255, 255, 255, 0.92);
   --managed-lime-wash: rgba(101, 155, 0, 0.045);
   --managed-lime-border: rgba(101, 155, 0, 0.5);
   color: var(--foreground);
+  /* The main area IS one coat of the section's single fill — laid down here
+     rather than as a utility on the page root, because the root has to know
+     what the coat sits on. The app shell outside paints the console's own
+     --background, which is near-white in light mode and would leave the first
+     coat with nothing to lift off. */
+  background: linear-gradient(var(--glass-1-bg), var(--glass-1-bg)), var(--managed-paper);
 }
 
 .managed-apps-console .managed-kicker,
@@ -371,9 +381,9 @@
 }
 
 .managed-apps-console .managed-panel {
-  background: var(--glass-2-bg);
-  -webkit-backdrop-filter: blur(28px);
-  backdrop-filter: blur(28px);
+  background: var(--glass-1-bg);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
   border: 1px solid var(--border);
   border-left: 4px solid var(--primary);
   border-radius: 0.625rem;
@@ -381,15 +391,19 @@
 
 .managed-apps-console .managed-project-card {
   border-radius: 0.25rem;
-  background: linear-gradient(135deg, var(--managed-lime-wash), transparent 45%), var(--glass-2-bg);
-  -webkit-backdrop-filter: blur(28px);
-  backdrop-filter: blur(28px);
+  background: linear-gradient(135deg, var(--managed-lime-wash), transparent 45%), var(--glass-1-bg);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
 }
 
+/* Hover is a second coat of the same fill, not a different colour — the
+   glass-1-bg-raised step, spelled out here because the lime wash has to stay
+   on top of it. */
 .managed-apps-console .managed-project-card:hover {
   border-color: var(--managed-lime-border);
   background:
-    linear-gradient(135deg, var(--managed-lime-wash), transparent 45%), var(--managed-card-hover);
+    linear-gradient(135deg, var(--managed-lime-wash), transparent 45%),
+    linear-gradient(var(--glass-1-bg), var(--glass-1-bg)), var(--glass-1-bg);
 }
 
 /* ─── Dark mode ───────────────────────────────────────────────────────── */
@@ -489,7 +503,6 @@
      surface like the build workbench, read as a warm orange wash rather than
      as brand. The accent belongs on the things that mean something — the
      primary, the status tones, the lime wash on a card — not on the paper. */
-  --background: #0f0f10;
   --foreground: #f4f4f3;
   --card: #141416;
   --card-foreground: #f4f4f3;
@@ -512,15 +525,19 @@
   --brand-gold-soft: rgba(139, 212, 0, 0.08);
   --brand-gold-glow: rgba(139, 212, 0, 0.16);
   --brand-gold-ink: #9be51c;
-  --glass-1-bg: rgba(255, 255, 255, 0.018);
+  /* One fill, and depth comes from how many coats are stacked under a thing.
+     Over the shell's #0a0a0d that ladders page ≈ #171719, a card on it ≈
+     #242426, something raised inside that ≈ #303032 — three steps you can
+     actually see. The old 0.018 collapsed all of them into one charcoal. */
+  --managed-paper: #0a0a0b;
+  --glass-1-bg: rgba(255, 255, 255, 0.055);
   --glass-2-bg: rgba(255, 255, 255, 0.026);
   --glass-3-bg: rgba(19, 19, 20, 0.94);
-  --border-glass: rgba(232, 234, 229, 0.1);
+  --border-glass: rgba(232, 234, 229, 0.11);
   --status-success: #9be51c;
   --status-success-bg: rgba(139, 212, 0, 0.08);
   --status-info: #c3a6ff;
   --status-info-bg: rgba(142, 79, 255, 0.12);
-  --managed-card-hover: rgba(255, 255, 255, 0.05);
   /* The one place a lime tint is deliberate: a card, not a page. */
   --managed-lime-wash: rgba(139, 212, 0, 0.02);
   --managed-lime-border: rgba(139, 212, 0, 0.36);
@@ -593,6 +610,16 @@
   background: var(--glass-3-bg);
   -webkit-backdrop-filter: blur(48px) saturate(1.4);
   backdrop-filter: blur(48px) saturate(1.4);
+}
+
+/* A second coat of the SAME fill. When one token paints every surface, this is
+   how something nested — an inset, a meter track, a tile, a hovered row —
+   steps forward without introducing a colour. Two layers of var(--glass-1-bg)
+   composite to a lighter surface; nothing else changes. */
+@utility glass-1-bg-raised {
+  background: linear-gradient(var(--glass-1-bg), var(--glass-1-bg)), var(--glass-1-bg);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
 }
 
 /* ─── Gradient utilities ──────────────────────────────────────────────── */

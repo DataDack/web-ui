@@ -92,7 +92,7 @@ function Chip({ label, count, selected, onClick, toneClass, dotClass }: Readonly
       className={cn(
         "shrink-0 gap-1.5 border border-transparent text-[11px] font-medium",
         selected
-          ? (toneClass ?? "border-border bg-muted text-foreground")
+          ? (toneClass ?? "border-border glass-1-bg-raised text-foreground")
           : "text-muted-foreground",
       )}
     >

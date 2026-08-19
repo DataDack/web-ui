@@ -205,7 +205,7 @@ export function FileView({ projectId, gitRef, path, onClose }: Readonly<FileView
   return (
     <div className="flex h-full min-h-0 min-w-0 flex-1 flex-col">
       <div className="flex h-10 shrink-0 items-stretch border-b border-border/60 glass-1-bg">
-        <div className="flex min-w-0 max-w-64 items-center gap-2 border-r border-border/60 border-t-2 border-t-primary glass-3-bg px-3">
+        <div className="flex min-w-0 max-w-64 items-center gap-2 border-r border-border/60 border-t-2 border-t-primary glass-1-bg px-3">
           <FileCode2 className="size-3.5 shrink-0 text-primary" aria-hidden />
           <span className="min-w-0 flex-1 truncate font-mono text-[12px] text-foreground">
             {path.slice(path.lastIndexOf("/") + 1)}

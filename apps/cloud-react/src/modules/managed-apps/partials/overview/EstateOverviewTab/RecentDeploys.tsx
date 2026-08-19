@@ -50,7 +50,7 @@ export function RecentDeploys({ builds, projects }: Readonly<RecentDeploysProps>
           <li key={build.id}>
             <Link
               to={MANAGED_APPS_ROUTES.project(build.project_id)}
-              className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2.5 outline-none transition-colors hover:glass-2-bg focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-inset"
+              className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2.5 outline-none transition-colors hover:glass-1-bg-raised focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-inset"
             >
               <BuildStatusPill status={build.status} />
               <span className="min-w-0 shrink-0 truncate text-[13px] font-medium">{name}</span>

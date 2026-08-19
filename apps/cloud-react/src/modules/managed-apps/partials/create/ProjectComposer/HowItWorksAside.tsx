@@ -62,7 +62,7 @@ export function HowItWorksAside({ className }: Readonly<HowItWorksAsideProps>) {
         {STEPS.map((step, index) => (
           <li key={step.key} className="flex gap-3">
             <div className="flex flex-col items-center">
-              <span className="grid size-8 shrink-0 place-items-center rounded-lg border border-border/60 glass-2-bg text-muted-foreground">
+              <span className="grid size-8 shrink-0 place-items-center rounded-lg border border-border/60 glass-1-bg-raised text-muted-foreground">
                 {step.icon}
               </span>
               {index < STEPS.length - 1 && (

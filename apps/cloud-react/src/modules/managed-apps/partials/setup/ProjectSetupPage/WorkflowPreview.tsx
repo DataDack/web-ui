@@ -111,7 +111,7 @@ export function WorkflowPreview({ yaml }: Readonly<WorkflowPreviewProps>) {
           variant="ghost"
           size="icon"
           aria-label={t("managedApps.workflowPreview.copyTheWorkflowFile")}
-          className="absolute top-2 right-2 z-10 size-7 glass-3-bg backdrop-blur"
+          className="absolute top-2 right-2 z-10 size-7 glass-1-bg backdrop-blur"
           onClick={() => void copy()}
         >
           {copied ? (
@@ -121,7 +121,7 @@ export function WorkflowPreview({ yaml }: Readonly<WorkflowPreviewProps>) {
           )}
         </Button>
 
-        <pre className="max-h-[32rem] w-full min-w-0 overflow-auto rounded-lg border border-border/60 glass-2-bg py-3 pr-12 pl-0 font-mono text-[11px] leading-[1.6]">
+        <pre className="max-h-[32rem] w-full min-w-0 overflow-auto rounded-lg border border-border/60 glass-1-bg-raised py-3 pr-12 pl-0 font-mono text-[11px] leading-[1.6]">
           <code className="block">
             {shown.map((line, index) => (
               // Log-style content: the index IS the line identity,

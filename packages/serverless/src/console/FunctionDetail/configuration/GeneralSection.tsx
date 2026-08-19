@@ -1,5 +1,6 @@
 import { useState } from "react"
 
+import { Settings2 } from "lucide-react"
 import { toast } from "sonner"
 
 import {
@@ -167,6 +168,7 @@ export function GeneralSection({ fn, scope, labels, className }: Readonly<Genera
   return (
     <SectionShell
       title={config.nav.general}
+      icon={Settings2}
       editable={capabilities.configEdit}
       editing={editing}
       onEdit={startEdit}

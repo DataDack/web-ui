@@ -48,7 +48,7 @@ export function LifecycleLines({
   return (
     <table
       className={cn(
-        "w-full border-collapse glass-2-bg font-mono text-[12px] leading-relaxed",
+        "w-full border-collapse glass-1-bg font-mono text-[12px] leading-relaxed",
         edge === "top" ? "border-b border-border/40" : "border-t border-border/40",
       )}
     >

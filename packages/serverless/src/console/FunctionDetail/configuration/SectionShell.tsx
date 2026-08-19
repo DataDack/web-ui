@@ -1,50 +1,93 @@
 import type { ReactNode } from "react"
 
-import { Button, css, cx, glass2 } from "@datadack/common-ui"
+import type { LucideIcon } from "lucide-react"
 
-/* Natural height, not `flex: 1`. The pane around it is as tall as the page,
-   and a section that stretches into it turns four fields into a metre of empty
-   glass. */
+import { Button, css, cx, fontMono, glass2, mix } from "@datadack/common-ui"
+
+/* Natural height, not `flex: 1`. Three of these share a screen now, and a
+   section that stretches turns four fields into a metre of empty glass.
+   Padding lives on the head/body/footer rather than the panel so the header's
+   hairline runs the full width of the card. */
 const panel = css`
   display: flex;
   flex-direction: column;
   border-radius: 0.75rem;
-  padding: 20px;
+  padding: 0;
 `
 
+/* The header is a band, not a line of text: a mono, letter-spaced title beside
+   its icon, hairline-separated from the body. It is what makes a column of
+   panels scan as instrument rows rather than as stacked cards. */
 const headRow = css`
   display: flex;
+  min-height: 42px;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  border-bottom: 1px solid ${mix("--border", 45)};
+  border-radius: 0.75rem 0.75rem 0 0;
+  background: ${mix("--foreground", 3)};
+  padding: 8px 16px;
+`
+
+const headTitle = css`
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+`
+
+const headIcon = css`
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: var(--brand-gold);
 `
 
 const heading = css`
   margin: 0;
-  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: ${fontMono};
+  font-size: 11px;
   font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--foreground);
+`
+
+const headActions = css`
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 8px;
 `
 
 const blurb = css`
-  margin: 6px 0 0;
-  font-size: 13px;
+  margin: 0 0 14px;
+  font-size: 12.5px;
+  line-height: 1.5;
   color: var(--muted-foreground);
 `
 
 const body = css`
-  margin-top: 16px;
+  padding: 16px;
 `
 
 const footer = css`
-  margin-top: auto;
-  padding-top: 16px;
   display: flex;
+  margin-top: auto;
   justify-content: flex-end;
   gap: 8px;
+  border-top: 1px solid ${mix("--border", 45)};
+  padding: 12px 16px;
 `
 
 export interface SectionShellProps {
   title: string
+  /** Rendered in the header band, in the brand accent. */
+  icon?: LucideIcon
   description?: string
   /** Whether this section supports editing at all (capabilities.configEdit). */
   editable?: boolean
@@ -70,12 +113,13 @@ export interface SectionShellProps {
 }
 
 /**
- * The chrome every Configuration section shares: a glass panel with a title,
- * an Edit button in view mode, and a Cancel/Save footer in edit mode. Sections
- * own their draft state; this only owns the frame.
+ * The chrome every Configuration section shares: a glass panel with a mono
+ * header band, an Edit button in view mode, and a Cancel/Save footer in edit
+ * mode. Sections own their draft state; this only owns the frame.
  */
 export function SectionShell({
   title,
+  icon: Icon,
   description,
   editable = false,
   editing = false,
@@ -94,17 +138,24 @@ export function SectionShell({
   return (
     <section className={cx(glass2, panel, className)}>
       <div className={headRow}>
-        <h3 className={heading}>{title}</h3>
-        {actions}
-        {editable && !editing && (
-          <Button variant="outline" size="sm" onClick={onEdit}>
-            {editLabel}
-          </Button>
-        )}
+        <span className={headTitle}>
+          {Icon && <Icon className={headIcon} aria-hidden />}
+          <h3 className={heading}>{title}</h3>
+        </span>
+        <span className={headActions}>
+          {actions}
+          {editable && !editing && (
+            <Button variant="outline" size="sm" onClick={onEdit}>
+              {editLabel}
+            </Button>
+          )}
+        </span>
       </div>
-      {description && <p className={blurb}>{description}</p>}
 
-      <div className={body}>{children}</div>
+      <div className={body}>
+        {description && <p className={blurb}>{description}</p>}
+        {children}
+      </div>
 
       {editing && (
         <div className={footer}>
