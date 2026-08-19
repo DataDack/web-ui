@@ -246,6 +246,12 @@ export interface FunctionDetailLabels {
     }
   }
   configuration: {
+    eyebrow: string
+    groups: {
+      general: { title: string; description: string }
+      networking: { title: string; description: string }
+      runtime: { title: string; description: string }
+    }
     nav: {
       general: string
       env: string
@@ -701,6 +707,21 @@ export const DEFAULT_FUNCTION_DETAIL_LABELS: FunctionDetailLabels = {
     },
   },
   configuration: {
+    eyebrow: "Configuration",
+    groups: {
+      general: {
+        title: "General",
+        description: "Core settings, environment variables, and tags.",
+      },
+      networking: {
+        title: "Networking",
+        description: "Function URLs, event triggers, and private network access.",
+      },
+      runtime: {
+        title: "Runtime",
+        description: "Concurrency, asynchronous invocation, layers, and permissions.",
+      },
+    },
     nav: {
       general: "General configuration",
       env: "Environment variables",

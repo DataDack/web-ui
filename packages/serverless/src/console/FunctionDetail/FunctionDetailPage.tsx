@@ -409,7 +409,6 @@ export function FunctionDetailPage({
               labels={merged}
               activeSection={resolvedSection}
               onSectionChange={selectSection}
-              hideNav
               className={fillPane}
             />
           )}
