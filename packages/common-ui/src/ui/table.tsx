@@ -6,11 +6,15 @@ import { fontMono, mix } from "../lib/styles"
 const container = css`
   position: relative;
   width: 100%;
+  min-width: 0;
   overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: thin;
 `
 
 const table = css`
   width: 100%;
+  min-width: max-content;
   caption-side: bottom;
   font-size: 14px;
   line-height: 20px;

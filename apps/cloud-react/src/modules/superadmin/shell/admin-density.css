@@ -1,0 +1,141 @@
+/* Dense operator mode. Scoped to the admin shell so tenant product surfaces
+   retain their roomier presentation. */
+[data-admin-shell] {
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+[data-admin-main] > div > :not(:last-child) {
+  margin-block-end: 0.75rem;
+}
+
+[data-admin-shell] [data-slot="page-header"] {
+  margin-bottom: 0.75rem;
+}
+
+[data-admin-shell] [data-slot="page-header-breadcrumbs"] {
+  margin-bottom: 0.2rem;
+  font-size: 10px;
+}
+
+[data-admin-shell] [data-slot="page-header-row"] {
+  gap: 8px;
+}
+
+[data-admin-shell] [data-slot="page-header-title"] {
+  font-size: 19px;
+  line-height: 24px;
+}
+
+[data-admin-shell] [data-slot="page-header-description"] {
+  margin-top: 1px;
+  font-size: 11px;
+  line-height: 16px;
+}
+
+[data-admin-shell] [data-slot="button"] {
+  min-height: 28px;
+  padding-inline: 9px;
+  gap: 5px;
+  font-size: 11px;
+}
+
+[data-admin-shell] [data-slot="input"],
+[data-admin-shell] [data-slot="select-trigger"] {
+  min-height: 30px;
+  height: 30px;
+  font-size: 11px;
+}
+
+[data-admin-shell] textarea {
+  min-height: 64px;
+  padding: 7px 9px;
+  font-size: 11px;
+}
+
+[data-admin-shell] label {
+  font-size: 10px;
+}
+
+[data-admin-shell] [data-slot="tabs"] {
+  gap: 8px;
+}
+
+[data-admin-shell] [data-slot="tabs-trigger"] {
+  padding: 4px 8px;
+  gap: 4px;
+  font-size: 11px;
+  line-height: 17px;
+}
+
+[data-admin-shell] [data-slot="table-head"] {
+  height: 28px;
+  padding-inline: 8px;
+  font-size: 8px;
+  letter-spacing: 0.12em;
+}
+
+[data-admin-shell] [data-slot="table-cell"] {
+  padding: 5px 8px;
+  font-size: 11px;
+  line-height: 16px;
+}
+
+[data-admin-shell] [data-slot="badge"] {
+  min-height: 18px;
+  padding: 0 5px;
+  gap: 3px;
+  font-size: 9px;
+}
+
+[data-admin-shell] [data-slot="card"] {
+  gap: 8px;
+  padding-block: 12px;
+}
+
+[data-admin-shell] [data-slot="card-header"],
+[data-admin-shell] [data-slot="card-content"],
+[data-admin-shell] [data-slot="card-footer"] {
+  padding-inline: 12px;
+}
+
+[data-admin-shell] [data-slot="card-title"] {
+  font-size: 13px;
+  line-height: 18px;
+}
+
+[data-admin-shell] [data-slot="card-description"] {
+  font-size: 10px;
+  line-height: 15px;
+}
+
+[data-admin-shell] [data-slot="dialog-title"],
+[data-admin-shell] [data-slot="sheet-title"] {
+  font-size: 15px;
+  line-height: 20px;
+}
+
+[data-admin-shell] [data-slot="dialog-description"],
+[data-admin-shell] [data-slot="sheet-description"] {
+  font-size: 11px;
+  line-height: 16px;
+}
+
+[data-admin-shell] [data-slot="dropdown-menu-item"],
+[data-admin-shell] [data-slot="select-item"] {
+  min-height: 28px;
+  padding-block: 4px;
+  font-size: 11px;
+}
+
+@media (max-width: 767px) {
+  [data-admin-shell] [data-slot="button"] {
+    min-height: 34px;
+  }
+
+  [data-admin-shell] [data-slot="input"],
+  [data-admin-shell] [data-slot="select-trigger"] {
+    min-height: 34px;
+    height: 34px;
+  }
+}

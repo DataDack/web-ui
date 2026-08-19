@@ -1,12 +1,14 @@
 import { Suspense, useState } from "react"
 
-import { Sheet, SheetContent, SheetTitle, Skeleton } from "@datadack/common-ui"
 import { useOutlet } from "react-router-dom"
 
 import { MotionProvider } from "@/components/console"
 
+import { Sheet, SheetContent, SheetTitle, Skeleton } from "@datadack/common-ui"
+
 import { AdminSidebar } from "./AdminSidebar"
 import { AdminTopbar } from "./AdminTopbar"
+import "./admin-density.css"
 
 function RouteSkeleton() {
   return (
@@ -28,7 +30,7 @@ export function AdminShell() {
 
   return (
     <MotionProvider>
-      <div className="flex min-h-screen flex-col bg-background text-foreground bg-gradient-surface">
+      <div data-admin-shell className="flex min-h-screen flex-col bg-background text-foreground bg-gradient-surface">
         <AdminTopbar
           onOpenMobileNav={() => {
             setMobileNavOpen(true)
@@ -37,18 +39,18 @@ export function AdminShell() {
 
         <div className="flex min-w-0 flex-1">
           {/* Desktop sidebar */}
-          <div className="sticky top-[52px] hidden h-[calc(100vh-52px)] w-60 lg:flex">
+          <div className="sticky top-12 hidden h-[calc(100vh-48px)] w-52 lg:flex xl:w-56">
             <AdminSidebar />
           </div>
 
-          <main className="mx-auto w-full max-w-[1400px] min-w-0 flex-1 px-4 py-6 md:px-6 lg:px-8">
+          <main data-admin-main className="mx-auto w-full max-w-[1600px] min-w-0 flex-1 px-3 py-3 md:px-4 md:py-4 lg:px-5">
             <Suspense fallback={<RouteSkeleton />}>{outlet}</Suspense>
           </main>
         </div>
 
         {/* Mobile sidebar drawer */}
         <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
-          <SheetContent side="left" className="w-72 p-0">
+          <SheetContent side="left" className="w-64 p-0">
             <SheetTitle className="sr-only">Navigation</SheetTitle>
             <AdminSidebar
               onNavigate={() => {

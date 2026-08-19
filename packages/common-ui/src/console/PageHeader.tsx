@@ -172,9 +172,9 @@ export function PageHeader({
   const hasCrumbs = breadcrumbs !== undefined && breadcrumbs.length > 0
 
   return (
-    <div className={cx(wrap, className)}>
+    <div data-slot="page-header" className={cx(wrap, className)}>
       {hasCrumbs && (
-        <nav aria-label="Breadcrumb" className={crumbNav}>
+        <nav data-slot="page-header-breadcrumbs" aria-label="Breadcrumb" className={crumbNav}>
           {Icon && iconPlacement === "crumb" && <Icon className={crumbIcon} />}
           {breadcrumbs.map((crumb, index) => (
             <span key={`${crumb.label}:${String(index)}`} className={crumbItem}>
@@ -184,7 +184,7 @@ export function PageHeader({
           ))}
         </nav>
       )}
-      <div className={rowTop}>
+      <div data-slot="page-header-row" className={rowTop}>
         <div className={identity}>
           {/* The flex row exists only to sit the tile next to the title. Without a
               tile it would still turn the h1 into a flex item, which sizes to its
@@ -195,12 +195,12 @@ export function PageHeader({
               <div className={cx(glass1, iconTile)}>
                 <Icon className={icon} />
               </div>
-              <h1 className={heading}>{title}</h1>
+              <h1 data-slot="page-header-title" className={heading}>{title}</h1>
             </div>
           ) : (
-            <h1 className={heading}>{title}</h1>
+            <h1 data-slot="page-header-title" className={heading}>{title}</h1>
           )}
-          {description && <p className={blurb}>{description}</p>}
+          {description && <p data-slot="page-header-description" className={blurb}>{description}</p>}
           {meta && <div className={metaRow}>{meta}</div>}
         </div>
         {actions && <div className={actionsRow}>{actions}</div>}

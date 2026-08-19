@@ -67,7 +67,12 @@ const wrap = css`
 const borderedFrame = css`
   border: 1px solid var(--border-glass, var(--border));
   border-radius: var(--radius-xl, 0.75rem);
-  overflow: hidden;
+  /* This class is applied to Table's scroll container. The previous hidden overflow
+     used to override the primitive's overflow-x:auto and made wide tables
+     impossible to pan. Keep the rounded frame vertically clipped while
+     preserving the container as the horizontal scroll boundary. */
+  overflow-x: auto;
+  overflow-y: hidden;
   background: ${mix("--card", 60)};
 `
 

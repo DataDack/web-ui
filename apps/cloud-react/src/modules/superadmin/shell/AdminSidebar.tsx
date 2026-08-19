@@ -1,7 +1,8 @@
-import { cn } from "@datadack/common-ui"
 import { ShieldCheck } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { NavLink } from "react-router-dom"
+
+import { cn } from "@datadack/common-ui"
 
 import { ADMIN_NAV } from "./admin-nav"
 
@@ -14,11 +15,11 @@ export function AdminSidebar({ onNavigate }: Readonly<{ onNavigate?: () => void 
 
   return (
     <aside className="flex h-full w-full shrink-0 flex-col border-r border-border-glass bg-[var(--glass-2-bg)] backdrop-blur-2xl">
-      <div className="flex h-14 shrink-0 items-center gap-2.5 border-b border-border-glass px-5">
-        <ShieldCheck className="size-5 text-brand-gold" />
+      <div className="flex h-11 shrink-0 items-center gap-2 border-b border-border-glass px-3.5">
+        <ShieldCheck className="size-4 text-brand-gold" />
         <div className="flex flex-col leading-tight">
-          <span className="text-sm font-bold tracking-tight">{t("superAdmin.title")}</span>
-          <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
+          <span className="text-xs font-bold tracking-tight">{t("superAdmin.title")}</span>
+          <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-muted-foreground">
             {t("superAdmin.shell.console")}
           </span>
         </div>
@@ -26,11 +27,11 @@ export function AdminSidebar({ onNavigate }: Readonly<{ onNavigate?: () => void 
 
       {/* Grouped by what the operator is trying to do. The first group carries no
           heading: Overview is the landing page, not a category. */}
-      <nav className="flex-1 space-y-4 overflow-y-auto px-3 py-3">
+      <nav className="flex-1 space-y-2.5 overflow-y-auto px-2 py-2">
         {ADMIN_NAV.map((group, groupIndex) => (
           <div key={group.labelKey ?? `group-${String(groupIndex)}`}>
             {group.labelKey && (
-              <div className="mb-1.5 px-2 font-mono text-[10px] font-medium uppercase tracking-[0.15em] text-muted-foreground/80">
+              <div className="mb-1 px-2 font-mono text-[9px] font-medium uppercase tracking-[0.12em] text-muted-foreground/80">
                 {t(group.labelKey)}
               </div>
             )}
@@ -44,14 +45,14 @@ export function AdminSidebar({ onNavigate }: Readonly<{ onNavigate?: () => void 
                       onClick={onNavigate}
                       className={({ isActive }) =>
                         cn(
-                          "flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
+                          "flex items-center gap-2 rounded-md px-2 py-1.5 text-[12px] leading-4 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
                           isActive
                             ? "bg-accent/70 font-medium text-foreground border border-border-glass"
                             : "text-muted-foreground hover:bg-accent/40 hover:text-foreground",
                         )
                       }
                     >
-                      <Icon className="size-4 shrink-0" />
+                      <Icon className="size-3.5 shrink-0" />
                       <span className="truncate">{t(item.labelKey)}</span>
                     </NavLink>
                   </li>
