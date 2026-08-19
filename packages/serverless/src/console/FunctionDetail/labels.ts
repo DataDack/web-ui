@@ -265,6 +265,7 @@ export interface FunctionDetailLabels {
       permissions: string
       vpc: string
       edge: string
+      network: string
     }
     soon: string
     edit: string
@@ -740,6 +741,7 @@ export const DEFAULT_FUNCTION_DETAIL_LABELS: FunctionDetailLabels = {
       permissions: "Permissions",
       vpc: "Networking / VPC",
       edge: "Edge function",
+      network: "Network",
     },
     soon: "Soon",
     edit: "Edit",

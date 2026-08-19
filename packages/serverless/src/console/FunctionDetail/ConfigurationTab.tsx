@@ -1,14 +1,17 @@
-import { Network, RadioTower } from "lucide-react"
+import { useState } from "react"
 
 import { css, cx, fontMono, media, mix } from "@datadack/common-ui"
 
 import { AsyncSection } from "./configuration/AsyncSection"
-import { ComingSoonSection } from "./configuration/ComingSoonSection"
 import { ConcurrencySection } from "./configuration/ConcurrencySection"
 import { EnvSection } from "./configuration/EnvSection"
-import { FunctionUrlSection } from "./configuration/FunctionUrlSection"
 import { GeneralSection } from "./configuration/GeneralSection"
 import { LayersSection } from "./configuration/LayersSection"
+import {
+  NetworkRoutingSection,
+  NetworkRoutingTabs,
+  type NetworkTab,
+} from "./configuration/NetworkRoutingSection"
 import { CONFIGURATION_SECTIONS, type ConfigurationSectionValue } from "./configuration/sections"
 import { TagsSection } from "./configuration/TagsSection"
 import type { FunctionDetailLabels } from "./labels"
@@ -123,6 +126,7 @@ export function ConfigurationTab({
   className,
 }: Readonly<ConfigurationTabProps>) {
   const config = labels.configuration
+  const [networkTab, setNetworkTab] = useState<NetworkTab>("url")
   const available = CONFIGURATION_SECTIONS.map((section) => section.value)
   const resolved = activeSection && available.includes(activeSection) ? activeSection : "general"
 
@@ -140,36 +144,16 @@ export function ConfigurationTab({
             <div className={cx(cell, halfCell)}>
               <AsyncSection fn={fn} scope={scope} labels={labels} />
             </div>
-            <div className={cx(cell, halfCell)}>
-              <LayersSection fn={fn} scope={scope} labels={labels} />
-            </div>
-            <div className={cx(cell, halfCell)}>
-              <TagsSection fn={fn} scope={scope} labels={labels} />
-            </div>
           </div>
         )
       case "env":
         return <EnvSection fn={fn} scope={scope} labels={labels} />
-      case "functionUrl":
-        return <FunctionUrlSection fn={fn} scope={scope} labels={labels} />
-      case "vpc":
-        return (
-          <ComingSoonSection
-            icon={Network}
-            title={config.comingSoon.vpc.title}
-            message={config.comingSoon.vpc.message}
-            soonLabel={config.soon}
-          />
-        )
-      case "edge":
-        return (
-          <ComingSoonSection
-            icon={RadioTower}
-            title={config.nav.edge}
-            message="Deploy request handlers closer to your users from this function."
-            soonLabel={config.soon}
-          />
-        )
+      case "layers":
+        return <LayersSection fn={fn} scope={scope} labels={labels} />
+      case "tags":
+        return <TagsSection fn={fn} scope={scope} labels={labels} />
+      case "network":
+        return <NetworkRoutingSection fn={fn} scope={scope} labels={labels} selected={networkTab} />
       default:
         return null
     }
@@ -187,13 +171,15 @@ export function ConfigurationTab({
             {resolved === "general" &&
               "Manage execution, resources, and runtime behavior for this function."}
             {resolved === "env" && config.groups.environment.description}
-            {resolved === "functionUrl" &&
-              "Create and manage the public endpoint for this function."}
-            {resolved === "vpc" &&
-              "Connect this function to private networks and controlled egress."}
-            {resolved === "edge" && "Run latency-sensitive function logic at the network edge."}
+            {resolved === "layers" && "Attach shared runtime dependencies in a defined order."}
+            {resolved === "tags" && "Organize and identify this function with resource tags."}
+            {resolved === "network" &&
+              "Manage URL routing, private connectivity, and edge distribution in one place."}
           </p>
         </div>
+        {resolved === "network" && (
+          <NetworkRoutingTabs selected={networkTab} onSelect={setNetworkTab} />
+        )}
       </header>
       <div>{renderSection(resolved)}</div>
     </div>

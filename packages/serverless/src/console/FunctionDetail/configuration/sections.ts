@@ -1,4 +1,4 @@
-import { Braces, Link2, Network, Settings2, Workflow, type LucideIcon } from "lucide-react"
+import { Braces, Layers3, Network, Settings2, Tags, type LucideIcon } from "lucide-react"
 
 export type ConfigurationSectionValue =
   | "general"
@@ -12,6 +12,7 @@ export type ConfigurationSectionValue =
   | "permissions"
   | "vpc"
   | "edge"
+  | "network"
 
 export interface ConfigurationSectionMeta {
   value: ConfigurationSectionValue
@@ -30,7 +31,7 @@ export interface ConfigurationSectionMeta {
 export const CONFIGURATION_SECTIONS: readonly ConfigurationSectionMeta[] = [
   { value: "general", soon: false, icon: Settings2 },
   { value: "env", soon: false, icon: Braces },
-  { value: "functionUrl", soon: false, icon: Link2 },
-  { value: "vpc", soon: true, icon: Network },
-  { value: "edge", soon: true, icon: Workflow },
+  { value: "layers", soon: false, icon: Layers3 },
+  { value: "tags", soon: false, icon: Tags },
+  { value: "network", soon: false, icon: Network },
 ]
