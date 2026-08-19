@@ -93,7 +93,10 @@ const fullscreenShell = css`
   z-index: 45;
   border-radius: 0;
   border: 0;
-  background: var(--glass-1-bg);
+  /* Fullscreen crosses over the app shell, whose header and route chrome use
+     their own stacking layers. The normal glass surface is translucent and
+     allowed that chrome to remain visibly superimposed on the editor. */
+  background: var(--background);
   box-shadow: none;
 `
 
