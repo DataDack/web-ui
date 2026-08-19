@@ -168,7 +168,7 @@ export function ProjectSetupPage() {
 			    asked to merge on the right. Stacked below lg. The right column is
 			    `min-w-0` so the YAML scrolls inside itself. */}
       <div className="grid min-w-0 gap-5 lg:grid-cols-[minmax(0,400px)_minmax(0,1fr)] lg:items-start">
-        <div className="glass-1 rounded-xl border border-border/60 px-5 py-6">
+        <div className="rounded-xl border border-border/60 glass-1-bg px-4 py-4">
           <SetupFlowGraphic stage={flowStage} className="mb-6" />
 
           <div className="flex items-start gap-3 border-t border-border/40 pt-5">

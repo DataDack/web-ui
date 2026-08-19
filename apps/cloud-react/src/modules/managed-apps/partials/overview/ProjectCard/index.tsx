@@ -52,10 +52,10 @@ export function ProjectCard({
   return (
     <article
       className={cn(
-        // A solid surface on a solid page: the translucent fill and the large
-        // drop shadow this had made the card read as hovering over the
-        // background rather than sitting on it. The border is the edge now.
-        "managed-project-card group relative flex h-full min-h-64 flex-col gap-4 border border-border/70 bg-card px-5 py-5 transition-colors",
+        // The fill comes from .managed-project-card, which reads glass-2 —
+        // the console's standard panel tier — so the card sits on the page
+        // rather than hovering over it. The border is the edge.
+        "managed-project-card group relative flex h-full flex-col gap-2.5 border border-border/70 px-3.5 py-3 transition-colors",
         // Tone is carried in text by the chip; the border is the only second
         // encoding, and only for the state that has to be findable across a
         // grid of forty.
@@ -63,20 +63,20 @@ export function ProjectCard({
       )}
     >
       {/* Identity — name, address, and the menu that never hides. */}
-      <div className="flex items-start gap-3">
+      <div className="flex items-start gap-2.5">
         {/* The framework's logo, which doubles as the type badge — a second
             generic glyph beside the name said the same thing twice. */}
         <ProjectAvatar
           seed={project.id}
           label={project.name}
           type={project.project_type}
-          className="size-10 rounded-sm"
+          className="size-8 rounded-sm"
         />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5">
             <Link
               to={MANAGED_APPS_ROUTES.project(project.id)}
-              className="truncate text-base font-semibold tracking-tight text-foreground hover:underline"
+              className="truncate text-[14px] font-semibold tracking-tight text-foreground hover:underline"
             >
               {project.name}
               {/* Stretched click target. Inside the anchor, so the
@@ -87,7 +87,7 @@ export function ProjectCard({
           </div>
 
           {project.url && (
-            <span className="relative z-10 mt-1 flex items-center gap-1.5">
+            <span className="relative z-10 mt-0.5 flex items-center gap-1.5">
               {state.urlReachable ? (
                 <a
                   href={project.url}
@@ -125,7 +125,7 @@ export function ProjectCard({
 			    and does not exist on touch at all. `failed` puts the build's raw
 			    error here, which is unbounded — the action routes to the log, which
 			    shows it in full. */}
-      <p className="line-clamp-2 text-[12px] leading-relaxed text-muted-foreground">
+      <p className="line-clamp-2 text-[11.5px] leading-snug text-muted-foreground">
         {state.detail}
       </p>
 
@@ -136,7 +136,7 @@ export function ProjectCard({
       {/* Provenance, on honest branches: the overview endpoint caps
 			    recent_builds at five account-wide, so most projects arrive with no
 			    build at all and must not imply one. */}
-      <div className="min-w-0 space-y-1 border-t border-border/50 pt-3 text-[11px] text-muted-foreground">
+      <div className="min-w-0 space-y-0.5 border-t border-border/50 pt-2 text-[11px] text-muted-foreground">
         {isN8n ? (
           <p>created {timeSince(project.created_at)}</p>
         ) : (
@@ -166,7 +166,7 @@ export function ProjectCard({
 			    height on the cards whose detail is short — grid items already
 			    stretch to the tallest in their row. */}
       {action && (
-        <div className="relative z-10 mt-auto pt-1.5">
+        <div className="relative z-10 mt-auto pt-1">
           <CardActionButton
             action={action}
             deploying={deploying}

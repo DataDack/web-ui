@@ -57,10 +57,10 @@ export function GitHubConnectionsSection() {
 			    across a full-width page the avatar and the remove button end up at
 			    opposite edges of the screen. */}
       <div className="max-w-2xl space-y-2">
-        {isLoading && <Skeleton className="h-16 rounded-lg" />}
+        {isLoading && <Skeleton className="h-14 rounded-lg" />}
 
         {!isLoading && connections.length === 0 && (
-          <p className="rounded-lg border border-dashed border-border/60 py-8 text-center text-[13px] text-muted-foreground">
+          <p className="rounded-lg border border-dashed border-border/60 py-6 text-center text-[12px] text-muted-foreground">
             {t("managedApps.gitHubConnectionsDialog.noGithubAccountIsConnectedYet")}
           </p>
         )}
@@ -68,13 +68,13 @@ export function GitHubConnectionsSection() {
         {connections.map((connection) => (
           <div
             key={connection.installation_id}
-            className="flex items-center gap-3 rounded-lg border border-border/60 p-3"
+            className="flex items-center gap-2.5 rounded-lg border border-border/60 glass-1-bg p-2.5"
           >
             <img
               src={`https://github.com/${connection.github_login}.png?size=64`}
               alt=""
               loading="lazy"
-              className="size-8 rounded-full bg-muted ring-1 ring-border/50"
+              className="size-7 rounded-full glass-2-bg ring-1 ring-border/50"
               onError={(event) => {
                 event.currentTarget.style.visibility = "hidden"
               }}
@@ -105,7 +105,7 @@ export function GitHubConnectionsSection() {
           </div>
         ))}
 
-        <div className="flex flex-wrap items-center gap-2 border-t border-border/60 pt-4">
+        <div className="flex flex-wrap items-center gap-2 border-t border-border/60 pt-3">
           <Button
             size="sm"
             className="gap-1.5"

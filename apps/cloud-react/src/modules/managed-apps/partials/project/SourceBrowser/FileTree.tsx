@@ -49,7 +49,7 @@ function FileRow({
         className={`${ROW} ${
           isSelected
             ? "border-primary bg-primary/10 font-medium text-foreground"
-            : "border-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+            : "border-transparent text-muted-foreground hover:glass-2-bg hover:text-foreground"
         }`}
         onClick={() => {
           if (node.type === "tree") onToggle(node.path)
@@ -167,7 +167,7 @@ export function FileTree({
               className={`${ROW} ${
                 entry.path === selected
                   ? "border-primary bg-primary/10 font-medium text-foreground"
-                  : "border-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                  : "border-transparent text-muted-foreground hover:glass-2-bg hover:text-foreground"
               }`}
               onClick={() => {
                 onSelect(entry.path)
@@ -188,7 +188,7 @@ export function FileTree({
   }
 
   return (
-    <div className="flex h-52 min-h-0 w-full shrink-0 flex-col border-b border-border/60 bg-muted/10 md:h-full md:w-64 md:border-r md:border-b-0">
+    <div className="flex h-52 min-h-0 w-full shrink-0 flex-col border-b border-border/60 glass-1-bg md:h-full md:w-64 md:border-r md:border-b-0">
       <div className="flex min-h-11 items-center justify-between border-b border-border/60 px-3">
         <div className="min-w-0">
           <p className="text-[12px] font-semibold text-foreground">Explorer</p>

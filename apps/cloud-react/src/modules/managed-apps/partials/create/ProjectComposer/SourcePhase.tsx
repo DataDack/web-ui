@@ -20,17 +20,17 @@ interface SourcePhaseProps {
 export function SourcePhase({ onPickGitHub, onPickImages }: Readonly<SourcePhaseProps>) {
   const { t } = useTranslation()
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-6">
+    <div className="mx-auto w-full max-w-3xl space-y-4">
       <div className="space-y-1 text-center">
-        <h2 className="text-lg font-semibold tracking-tight">
+        <h2 className="text-base font-semibold tracking-tight">
           {t("managedApps.sourcePhase.whereIsYourAppComingFrom")}
         </h2>
-        <p className="text-[13px] text-muted-foreground">
+        <p className="text-[12px] text-muted-foreground">
           {t("managedApps.sourcePhase.deployYourOwnCodeFromARepositoryOrLaunchARea")}
         </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-3 sm:grid-cols-2">
         <SourceOptionCard
           icon={<GitHubMark className="size-5" />}
           title={t("managedApps.sourcePhase.deployFromGithub")}

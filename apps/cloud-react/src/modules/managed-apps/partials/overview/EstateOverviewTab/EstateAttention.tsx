@@ -35,7 +35,7 @@ export function EstateAttention({ items }: Readonly<EstateAttentionProps>) {
   return (
     <section
       aria-label="Needs attention"
-      className="glass-1 mb-6 overflow-hidden rounded-xl border border-border/60"
+      className="mb-4 overflow-hidden rounded-xl border border-border/60 glass-1-bg"
     >
       <header className="flex items-center gap-2 border-b border-border/60 px-4 py-2.5">
         <span className="size-1.5 rounded-full bg-status-danger" />
@@ -51,7 +51,7 @@ export function EstateAttention({ items }: Readonly<EstateAttentionProps>) {
           return (
             <li
               key={item.id}
-              className="flex flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3 transition-colors hover:bg-accent/25"
+              className="flex flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3 transition-colors hover:glass-2-bg"
             >
               <span
                 className={cn(
@@ -96,7 +96,7 @@ export function EstateAttention({ items }: Readonly<EstateAttentionProps>) {
           onClick={() => {
             setExpanded(!expanded)
           }}
-          className="flex w-full items-center justify-center gap-1.5 border-t border-border/60 py-2 text-[12px] text-muted-foreground transition-colors hover:bg-accent/25 hover:text-foreground"
+          className="flex w-full items-center justify-center gap-1.5 border-t border-border/60 py-2 text-[12px] text-muted-foreground transition-colors hover:glass-2-bg hover:text-foreground"
         >
           {expanded ? "Show less" : `Show ${String(hidden)} more`}
           <ChevronDown className={cn("size-3.5 transition-transform", expanded && "rotate-180")} />

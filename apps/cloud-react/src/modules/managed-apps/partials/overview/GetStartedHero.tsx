@@ -58,7 +58,7 @@ export function GetStartedHero({
   ]
 
   return (
-    <div className="glass-1 relative overflow-hidden rounded-2xl border border-border/60">
+    <div className="relative overflow-hidden rounded-2xl border border-border/60 glass-1-bg">
       {/* A single soft wash so the panel reads as a surface rather than a
 			    large empty rectangle. */}
       <div

@@ -359,9 +359,7 @@
   --status-success-bg: rgba(101, 155, 0, 0.1);
   --status-info: #6540a4;
   --status-info-bg: rgba(101, 64, 164, 0.1);
-  --managed-panel: #ffffff;
-  --managed-card: #ffffff;
-  --managed-card-hover: #f8faf4;
+  --managed-card-hover: rgba(255, 255, 255, 0.92);
   --managed-lime-wash: rgba(101, 155, 0, 0.045);
   --managed-lime-border: rgba(101, 155, 0, 0.5);
   color: var(--foreground);
@@ -383,13 +381,15 @@
 
 .managed-apps-console .managed-project-card {
   border-radius: 0.25rem;
-  background:
-    linear-gradient(135deg, var(--managed-lime-wash), transparent 45%), var(--managed-card);
+  background: linear-gradient(135deg, var(--managed-lime-wash), transparent 45%), var(--glass-2-bg);
+  -webkit-backdrop-filter: blur(28px);
+  backdrop-filter: blur(28px);
 }
 
 .managed-apps-console .managed-project-card:hover {
   border-color: var(--managed-lime-border);
-  background-color: var(--managed-card-hover);
+  background:
+    linear-gradient(135deg, var(--managed-lime-wash), transparent 45%), var(--managed-card-hover);
 }
 
 /* ─── Dark mode ───────────────────────────────────────────────────────── */
@@ -520,9 +520,7 @@
   --status-success-bg: rgba(139, 212, 0, 0.08);
   --status-info: #c3a6ff;
   --status-info-bg: rgba(142, 79, 255, 0.12);
-  --managed-panel: #141416;
-  --managed-card: #101012;
-  --managed-card-hover: #151517;
+  --managed-card-hover: rgba(255, 255, 255, 0.05);
   /* The one place a lime tint is deliberate: a card, not a page. */
   --managed-lime-wash: rgba(139, 212, 0, 0.02);
   --managed-lime-border: rgba(139, 212, 0, 0.36);
@@ -568,6 +566,33 @@
   -webkit-backdrop-filter: blur(48px) saturate(1.4);
   backdrop-filter: blur(48px) saturate(1.4);
   border: 1px solid var(--border-glass);
+}
+
+/* Fill only — the same three tiers without the border and radius .glass-N also
+   impose. Most surfaces already draw their own edge and corner and only wanted
+   the paper, and .glass-2's one-sided border in particular fought every card
+   that had a full one. Use these anywhere a background is being chosen.
+
+   @utility rather than a plain class, for two reasons: variants (hover:glass-2-bg
+   is how a card lifts a tier on hover) and the cascade — an unlayered class
+   outranks every layered Tailwind utility, so a base fill would beat its own
+   hover state. */
+@utility glass-1-bg {
+  background: var(--glass-1-bg);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+
+@utility glass-2-bg {
+  background: var(--glass-2-bg);
+  -webkit-backdrop-filter: blur(28px);
+  backdrop-filter: blur(28px);
+}
+
+@utility glass-3-bg {
+  background: var(--glass-3-bg);
+  -webkit-backdrop-filter: blur(48px) saturate(1.4);
+  backdrop-filter: blur(48px) saturate(1.4);
 }
 
 /* ─── Gradient utilities ──────────────────────────────────────────────── */

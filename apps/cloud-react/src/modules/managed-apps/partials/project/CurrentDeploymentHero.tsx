@@ -18,7 +18,6 @@ import {
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
-
 import { commitURL, hostLabel, isTimeSet, shortDateTime, shortSha, timeSince } from "./build-format"
 import { BuildProgressBar, ProjectStateChip } from "../../components"
 import { MANAGED_APPS_ROUTES } from "../../managed-apps.constants"
@@ -67,7 +66,7 @@ export function CurrentDeploymentHero({
   const canRelease = state.kind === "built_pending_deploy"
 
   return (
-    <div className="glass-1 rounded-xl border border-border/60 p-5">
+    <div className="rounded-xl border border-border/60 glass-1-bg p-4">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0 flex-1 space-y-2">
           <ProjectStateChip state={state} />

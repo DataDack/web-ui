@@ -76,7 +76,7 @@ export function AppsSummaryCard({ entries, plan, isLoading }: Readonly<AppsSumma
             <li key={entry.project.id}>
               <Link
                 to={MANAGED_APPS_ROUTES.project(entry.project.id)}
-                className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 outline-none transition-colors hover:bg-accent/40 focus-visible:ring-2 focus-visible:ring-ring/50"
+                className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 outline-none transition-colors hover:glass-2-bg focus-visible:ring-2 focus-visible:ring-ring/50"
               >
                 <ProjectTypeIcon
                   type={entry.project.project_type}

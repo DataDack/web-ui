@@ -35,8 +35,8 @@ export function ProjectObservabilityTab({ project }: Readonly<{ project: Project
     // or the cluster could not be read just now. Both mean "no measurements",
     // and the platform never charts a fabricated series in their place.
     return (
-      <div className="glass-1 flex flex-col items-center justify-center rounded-xl border border-dashed border-border/60 px-6 py-20 text-center">
-        <div className="glass-2 mb-5 flex size-14 items-center justify-center rounded-2xl">
+      <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border/60 glass-1-bg px-6 py-14 text-center">
+        <div className="mb-4 flex size-12 items-center justify-center rounded-2xl glass-2-bg">
           <Activity className="size-6 text-muted-foreground" />
         </div>
         <h2 className="text-lg font-semibold text-foreground">No metrics yet</h2>

@@ -29,11 +29,11 @@ export function CustomPlanCard({
 }: Readonly<{ disabled?: boolean; onContact: () => void }>) {
   const { t } = useTranslation()
   return (
-    <div className="relative flex min-w-0 flex-col gap-4 rounded-xl border border-dashed border-brand-gold/40 bg-brand-gold-soft/40 p-4">
+    <div className="relative flex min-w-0 flex-col gap-3 rounded-xl border border-dashed border-brand-gold/40 bg-brand-gold-soft/40 p-3">
       {/* The priced cards put a pill opposite their glyph; there is no pill to
           put here, so the row is just the glyph — but it keeps the same height
           so all four cards share one horizontal rhythm across the line. */}
-      <div className="flex min-h-9 items-start gap-3">
+      <div className="flex min-h-9 items-start gap-2.5">
         <span
           className="flex size-9 items-center justify-center rounded-lg border border-brand-gold/40 bg-brand-gold/10 text-brand-gold"
           aria-hidden
@@ -45,7 +45,7 @@ export function CustomPlanCard({
       <div className="min-w-0 space-y-1">
         <p className="flex min-w-0 items-baseline justify-between gap-2">
           <span className="truncate text-sm font-semibold">Custom</span>
-          <span className="shrink-0 text-xl font-semibold tracking-tight">
+          <span className="shrink-0 text-lg font-semibold tracking-tight">
             {t("managedApps.customPlanCard.letAposSTalk")}
           </span>
         </p>
@@ -54,18 +54,18 @@ export function CustomPlanCard({
         </p>
       </div>
 
-      <dl className="grid grid-cols-2 gap-x-3 gap-y-2 border-t border-brand-gold/20 pt-3">
+      <dl className="grid grid-cols-2 gap-x-2.5 gap-y-1.5 border-t border-brand-gold/20 pt-2.5">
         {HIGHLIGHTS.map((row) => (
           <div key={row.label} className="min-w-0">
             <dt className="truncate text-[10px] tracking-wide text-muted-foreground uppercase">
               {row.label}
             </dt>
-            <dd className="truncate text-[13px] font-medium">{row.value}</dd>
+            <dd className="truncate text-[12px] font-medium">{row.value}</dd>
           </div>
         ))}
       </dl>
 
-      <div className="mt-auto space-y-1.5 pt-1">
+      <div className="mt-auto space-y-1 pt-0.5">
         <Button
           type="button"
           variant="gold"

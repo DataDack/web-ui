@@ -29,10 +29,10 @@ export function ComparePlansSection() {
       title="Compare plans"
       description="Every quota and capability, side by side. Most of what Managed Apps does is on every plan — the numbers are where the tiers differ."
     >
-      {isLoading && <Skeleton className="h-96 rounded-xl" />}
+      {isLoading && <Skeleton className="h-80 rounded-xl" />}
 
       {!isLoading && (isError || plans.length === 0 || features.length === 0) && (
-        <div className="flex items-start gap-2.5 rounded-lg border border-border/60 bg-muted/30 px-3.5 py-3">
+        <div className="flex items-start gap-2.5 rounded-lg border border-border/60 glass-1-bg px-3 py-2.5">
           <AlertCircle className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
           <p className="text-[12px] text-muted-foreground">
             The plan catalogue could not be loaded, so there is nothing to compare right now. Your

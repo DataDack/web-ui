@@ -51,7 +51,7 @@ export function ActivityTimeline({ builds, className }: Readonly<ActivityTimelin
     <Accordion
       type="multiple"
       defaultValue={sorted[0] ? [sorted[0].id] : []}
-      className={cn("glass-1 rounded-xl border border-border/60 px-4", className)}
+      className={cn("rounded-xl border border-border/60 glass-1-bg px-4", className)}
     >
       {sorted.map((build) => {
         const events = deriveBuildEvents(build)

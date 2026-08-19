@@ -150,16 +150,15 @@ export function ProjectTypePicker({
                 onChange(option.value)
               }}
               className={cn(
-                "glass-1 group relative flex h-full min-h-48 flex-col gap-3 overflow-hidden rounded-xl border p-5 text-left shadow-xs",
+                "group relative flex h-full flex-col gap-2.5 overflow-hidden rounded-xl border glass-1-bg p-3.5 text-left shadow-xs",
                 "motion-safe:transition-[transform,box-shadow,border-color,background-color] motion-safe:duration-150 motion-safe:ease-out",
                 "focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none",
                 selected
                   ? "border-primary/70 shadow-sm ring-1 ring-primary/20"
                   : "border-border/60",
                 !disabled &&
-                  "hover:border-primary/35 hover:bg-card hover:shadow-sm motion-safe:hover:-translate-y-0.5 motion-safe:active:translate-y-0 motion-safe:active:scale-[0.96]",
-                disabled &&
-                  "cursor-not-allowed opacity-45 hover:border-border/60 hover:shadow-xs",
+                  "hover:border-primary/35 hover:glass-2-bg hover:shadow-sm motion-safe:hover:-translate-y-0.5 motion-safe:active:translate-y-0 motion-safe:active:scale-[0.96]",
+                disabled && "cursor-not-allowed opacity-45 hover:border-border/60 hover:shadow-xs",
               )}
             >
               {/* Selection stays visible without tinting the entire surface. */}
@@ -251,7 +250,7 @@ export function ProjectTypePicker({
       )}
 
       {!detecting && !detected && (
-        <div className="space-y-2 rounded-lg border border-border/60 bg-muted/20 px-3 py-2.5">
+        <div className="space-y-2 rounded-lg border border-border/60 glass-1-bg px-3 py-2.5">
           <p className="flex items-start gap-1.5 text-[11px]">
             <TriangleAlert
               className={cn(

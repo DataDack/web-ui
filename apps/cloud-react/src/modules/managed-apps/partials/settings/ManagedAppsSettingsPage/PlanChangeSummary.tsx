@@ -81,7 +81,7 @@ export function PlanChangeSummary({ from, to, projectsInUse }: Readonly<PlanChan
       </p>
 
       {deltas.length > 0 && (
-        <ul className="space-y-1 rounded-lg border border-border/60 bg-muted/20 p-3">
+        <ul className="space-y-1 rounded-lg border border-border/60 glass-1-bg p-3">
           {deltas.map((delta) => (
             <li key={delta.label} className="flex items-baseline justify-between gap-3 text-[12px]">
               <span className="text-muted-foreground">{delta.label}</span>
@@ -107,7 +107,7 @@ export function PlanChangeSummary({ from, to, projectsInUse }: Readonly<PlanChan
       )}
 
       {cost && (
-        <div className="space-y-1.5 rounded-lg border border-border/60 bg-muted/20 p-3">
+        <div className="space-y-1.5 rounded-lg border border-border/60 glass-1-bg p-3">
           {discounted ? (
             <>
               {costRow(`${to.name} plan`, formatAmount(cost.list_price, cost.currency))}

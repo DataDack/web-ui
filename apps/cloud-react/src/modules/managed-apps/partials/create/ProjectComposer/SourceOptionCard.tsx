@@ -37,9 +37,9 @@ export function SourceOptionCard({
       type="button"
       onClick={onSelect}
       className={cn(
-        "glass-1 group relative flex min-h-full flex-col gap-4 overflow-hidden rounded-2xl border border-border/60 p-6 text-left shadow-xs",
+        "group relative flex min-h-full flex-col gap-3 overflow-hidden rounded-xl border border-border/60 glass-1-bg p-4 text-left shadow-xs",
         "motion-safe:transition-[transform,box-shadow,border-color,background-color] motion-safe:duration-150 motion-safe:ease-out",
-        "hover:border-primary/40 hover:bg-card hover:shadow-md motion-safe:hover:-translate-y-0.5 motion-safe:active:translate-y-0 motion-safe:active:scale-[0.96]",
+        "hover:border-primary/40 hover:glass-2-bg hover:shadow-md motion-safe:hover:-translate-y-0.5 motion-safe:active:translate-y-0 motion-safe:active:scale-[0.96]",
         "focus-visible:border-primary/50 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none",
       )}
     >
@@ -50,7 +50,7 @@ export function SourceOptionCard({
 
       <span
         className={cn(
-          "absolute top-4 right-4 rounded-full border px-2 py-0.5 text-[10px] font-semibold tracking-wide uppercase",
+          "absolute top-3 right-3 rounded-full border px-2 py-0.5 text-[10px] font-semibold tracking-wide uppercase",
           availability.tone === "available"
             ? "border-status-success/15 bg-status-success/10 text-status-success"
             : "border-status-warning/15 bg-status-warning/10 text-status-warning",
@@ -59,16 +59,16 @@ export function SourceOptionCard({
         {availability.label}
       </span>
 
-      <span className="flex size-11 items-center justify-center rounded-lg border border-border/60 bg-muted/40 text-muted-foreground motion-safe:transition-[border-color,background-color,color] motion-safe:duration-150 group-hover:border-primary/30 group-hover:bg-primary/10 group-hover:text-primary">
+      <span className="flex size-9 items-center justify-center rounded-lg border border-border/60 glass-2-bg text-muted-foreground motion-safe:transition-[border-color,background-color,color] motion-safe:duration-150 group-hover:border-primary/30 group-hover:bg-primary/10 group-hover:text-primary">
         {icon}
       </span>
 
       <span className="space-y-0.5">
-        <span className="block text-[15px] font-semibold">{title}</span>
+        <span className="block text-[14px] font-semibold">{title}</span>
         <span className="block text-[12px] text-muted-foreground">{subtitle}</span>
       </span>
 
-      <ul className="space-y-1.5 text-[13px] text-muted-foreground">
+      <ul className="space-y-1 text-[12px] text-muted-foreground">
         {bullets.map((bullet) => (
           <li key={bullet} className="flex gap-2">
             <span
@@ -80,9 +80,9 @@ export function SourceOptionCard({
         ))}
       </ul>
 
-      <span className="mt-auto flex items-center justify-between border-t border-border/50 pt-4 text-[13px] font-semibold text-brand-gold-ink">
+      <span className="mt-auto flex items-center justify-between border-t border-border/50 pt-3 text-[12px] font-semibold text-brand-gold-ink">
         {cta}
-        <span className="flex size-7 items-center justify-center rounded-full bg-brand-gold-soft text-brand-gold-ink motion-safe:transition-transform motion-safe:duration-150 motion-safe:ease-out motion-safe:group-hover:translate-x-0.5">
+        <span className="flex size-6 items-center justify-center rounded-full bg-brand-gold-soft text-brand-gold-ink motion-safe:transition-transform motion-safe:duration-150 motion-safe:ease-out motion-safe:group-hover:translate-x-0.5">
           <ArrowRight className="size-3.5" />
         </span>
       </span>

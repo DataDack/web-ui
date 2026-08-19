@@ -99,8 +99,8 @@ export function BuildDetailPage() {
   const buildLabel = build.commit_sha !== "" ? shortSha(build.commit_sha) : shortSha(build.id)
 
   return (
-    <div className="managed-apps-console -m-4 flex min-h-[calc(100dvh-128px)] flex-col overflow-hidden bg-[var(--glass-3-bg)] md:h-[calc(100dvh-84px)] md:min-h-0">
-      <header className="shrink-0 border-b border-border/60 bg-muted/10 px-4 py-3 md:px-5">
+    <div className="managed-apps-console -m-4 flex min-h-[calc(100dvh-128px)] flex-col overflow-hidden glass-3-bg md:h-[calc(100dvh-84px)] md:min-h-0">
+      <header className="shrink-0 border-b border-border/60 glass-1-bg px-4 py-3 md:px-5">
         <div className="flex min-w-0 flex-wrap items-center justify-between gap-3">
           <div className="min-w-0">
             <nav className="flex min-w-0 items-center gap-1.5 text-[11px] text-muted-foreground">
@@ -204,14 +204,14 @@ export function BuildDetailPage() {
 
         <section
           aria-label="Build workbench"
-          className="flex min-h-0 min-w-0 flex-1 flex-col bg-[var(--glass-3-bg)]"
+          className="flex min-h-0 min-w-0 flex-1 flex-col glass-3-bg"
         >
           <AnimatedTabs
             tabs={BUILD_TABS}
             value={activeTab}
             onChange={setTab}
             layoutId="build-detail-tabs"
-            className="shrink-0 bg-muted/10"
+            className="shrink-0 glass-1-bg"
           />
 
           <div className="min-h-0 flex-1 overflow-hidden">

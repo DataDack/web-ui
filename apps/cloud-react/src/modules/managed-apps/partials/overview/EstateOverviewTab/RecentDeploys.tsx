@@ -45,12 +45,12 @@ export function RecentDeploys({ builds, projects }: Readonly<RecentDeploysProps>
   return (
     <section aria-label="Recent deploys" className="mt-6">
       <h2 className="mb-3 text-[13px] font-semibold">Recent deploys</h2>
-      <ul className="glass-1 divide-y divide-border/50 overflow-hidden rounded-xl border border-border/60">
+      <ul className="divide-y divide-border/50 overflow-hidden rounded-xl border border-border/60 glass-1-bg">
         {rows.map(({ build, name }) => (
           <li key={build.id}>
             <Link
               to={MANAGED_APPS_ROUTES.project(build.project_id)}
-              className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2.5 outline-none transition-colors hover:bg-accent/25 focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-inset"
+              className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2.5 outline-none transition-colors hover:glass-2-bg focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-inset"
             >
               <BuildStatusPill status={build.status} />
               <span className="min-w-0 shrink-0 truncate text-[13px] font-medium">{name}</span>

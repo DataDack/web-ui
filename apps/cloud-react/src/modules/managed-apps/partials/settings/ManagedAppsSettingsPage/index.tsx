@@ -29,6 +29,10 @@ const DESCRIPTION: Record<SettingsSection, string> = {
  * GitHub connections share only the account they belong to, and stacked
  * together the table buried the two things people actually come here to change.
  *
+ * They are tabs across the top rather than a column down the left: three items
+ * fit on one line, and the 232px sidebar they used to sit in was width the
+ * five-column comparison table needed more.
+ *
  * Which one is showing lives in ?section=, so a section is a link — the overview
  * header's GitHub button points straight at the connections one, and back works
  * between sections the way it does between pages.
@@ -61,14 +65,12 @@ export function ManagedAppsSettingsPage() {
         description={DESCRIPTION[section]}
       />
 
-      <div className="flex flex-col gap-6 md:flex-row md:items-start">
-        <SettingsNav active={section} onSelect={select} />
+      <SettingsNav active={section} onSelect={select} className="mb-5" />
 
-        <div className="min-w-0 flex-1">
-          {section === "plan" && <PlanSection />}
-          {section === "compare" && <ComparePlansSection />}
-          {section === "github" && <GitHubConnectionsSection />}
-        </div>
+      <div className="min-w-0">
+        {section === "plan" && <PlanSection />}
+        {section === "compare" && <ComparePlansSection />}
+        {section === "github" && <GitHubConnectionsSection />}
       </div>
     </div>
   )

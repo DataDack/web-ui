@@ -28,7 +28,7 @@ function SummaryRow({
   accent?: boolean
 }>) {
   return (
-    <div className="flex min-h-14 items-center justify-between gap-4 px-4 py-3">
+    <div className="flex min-h-11 items-center justify-between gap-3 px-3 py-2.5">
       <span className="flex min-w-0 items-center gap-2 text-[12px] text-muted-foreground">
         {icon}
         {label}
@@ -74,20 +74,20 @@ export function ImportSummaryAside({
   else if (ready) guidance = "Repository and framework are ready."
 
   return (
-    <aside className="glass-1 flex h-fit min-h-[32rem] flex-col overflow-hidden rounded-xl border border-border/60 lg:sticky lg:top-6">
-      <div className="border-b border-border/60 px-5 py-5">
-        <h2 className="text-balance text-lg font-semibold">Deployment summary</h2>
-        <p className="mt-1 text-pretty text-[12px] text-muted-foreground">
+    <aside className="flex h-fit flex-col overflow-hidden rounded-xl border border-border/60 glass-1-bg lg:sticky lg:top-4">
+      <div className="border-b border-border/60 px-4 py-3.5">
+        <h2 className="text-balance text-[15px] font-semibold">Deployment summary</h2>
+        <p className="mt-0.5 text-pretty text-[11.5px] text-muted-foreground">
           Review what DataDack detected before configuring the build.
         </p>
       </div>
 
-      <div className="flex-1 space-y-6 px-5 py-6">
+      <div className="flex-1 space-y-4 px-4 py-4">
         <section className="space-y-2">
           <p className="managed-kicker font-mono text-[10px] font-semibold uppercase text-muted-foreground">
             Repository
           </p>
-          <div className="flex min-h-14 items-center gap-3 rounded-lg border border-border/60 bg-card px-4 py-3">
+          <div className="flex min-h-11 items-center gap-2.5 rounded-lg border border-border/60 glass-2-bg px-3 py-2.5">
             <GitHubMark className="size-4 shrink-0" />
             <span className="min-w-0 truncate font-mono text-[12px] font-medium">
               {repository || "No repository selected"}
@@ -99,7 +99,7 @@ export function ImportSummaryAside({
           <p className="managed-kicker font-mono text-[10px] font-semibold uppercase text-muted-foreground">
             Configuration
           </p>
-          <div className="divide-y divide-border/60 overflow-hidden rounded-lg border border-border/60 bg-card">
+          <div className="divide-y divide-border/60 overflow-hidden rounded-lg border border-border/60 glass-2-bg">
             <SummaryRow
               icon={<Settings2 className="size-3.5 shrink-0" />}
               label="Framework"
@@ -115,7 +115,7 @@ export function ImportSummaryAside({
         </section>
       </div>
 
-      <div className="border-t border-border/60 bg-card/40 p-5">
+      <div className="border-t border-border/60 glass-2-bg p-4">
         <Button type="button" className="w-full" disabled={!ready} onClick={onContinue}>
           Continue to configure
         </Button>

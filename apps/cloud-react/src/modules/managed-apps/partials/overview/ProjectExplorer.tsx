@@ -135,7 +135,7 @@ export function ProjectExplorer({
   let content: ReactNode
   if (isError && !isLoading) {
     content = (
-      <div className="glass-1 flex flex-col items-center gap-3 rounded-xl border border-status-danger/30 px-6 py-12 text-center">
+      <div className="flex flex-col items-center gap-2.5 rounded-xl border border-status-danger/30 glass-1-bg px-6 py-8 text-center">
         <AlertTriangle className="size-5 text-status-danger" />
         <p className="text-[13px] text-muted-foreground">
           {t("managedApps.projectExplorer.couldNotLoadYourProjects")}
@@ -238,16 +238,16 @@ function CardGrid({
 }: Readonly<CardGridProps>) {
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
         {SKELETON_KEYS.map((key) => (
-          <Skeleton key={key} className="h-64 rounded-sm" />
+          <Skeleton key={key} className="h-44 rounded-sm" />
         ))}
       </div>
     )
   }
 
   return (
-    <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+    <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
       {entries.map((entry, index) => (
         <li key={entry.project.id} className="animate-content-enter" style={staggerDelay(index)}>
           <ProjectCard

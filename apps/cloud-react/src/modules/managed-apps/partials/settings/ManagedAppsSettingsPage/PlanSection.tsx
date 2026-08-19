@@ -20,7 +20,7 @@ import type { Plan } from "../../../managed-apps.types"
 // Apps like the others, and wrapping it onto a second row read as an
 // afterthought. Five across only at xl; below that they wrap in pairs and
 // threes rather than shrinking past legibility.
-const gridClass = "grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
+const gridClass = "grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
 
 /**
  * The account's tier, and the only place it changes.
@@ -105,7 +105,7 @@ export function PlanSection() {
           {/* One per tier the catalogue sells: a skeleton that does not stand in
 					    for the layout it replaces makes the page jump when it arrives. */}
           {[0, 1, 2, 3, 4].map((key) => (
-            <Skeleton key={key} className="h-[290px] rounded-xl" />
+            <Skeleton key={key} className="h-[236px] rounded-xl" />
           ))}
         </div>
       )
@@ -114,7 +114,7 @@ export function PlanSection() {
     if (isError || !plans || plans.length === 0) {
       return (
         <div className="space-y-3">
-          <div className="flex items-start gap-2.5 rounded-lg border border-border/60 bg-muted/30 px-3.5 py-3">
+          <div className="flex items-start gap-2.5 rounded-lg border border-border/60 glass-1-bg px-3 py-2.5">
             <AlertCircle className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
             <p className="text-[12px] text-muted-foreground">
               The plan catalogue could not be loaded, so there is nothing to choose between right
@@ -159,7 +159,7 @@ export function PlanSection() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <Section
         title={t("managedApps.index.yourPlan")}
         description="Applies account-wide. Projects inherit these limits; they never carry a plan of their own."

@@ -61,7 +61,7 @@ export function ImportPhase({
 
   if (isLoading) {
     return (
-      <div className="managed-panel flex items-center gap-2 px-6 py-16 text-sm text-muted-foreground sm:px-8">
+      <div className="managed-panel flex items-center gap-2 px-4 py-10 text-[13px] text-muted-foreground sm:px-5">
         <Loader2 className="size-4 animate-spin" />
         {t("managedApps.importPhase.loadingYourGithubConnections")}
       </div>
@@ -72,7 +72,7 @@ export function ImportPhase({
   // to fix that, so it is the only thing on it.
   if (usable.length === 0) {
     return (
-      <div className="managed-panel flex flex-col items-center gap-3 p-8 text-center">
+      <div className="managed-panel flex flex-col items-center gap-2.5 p-5 text-center">
         <ConnectRepoArt className="mb-1" />
         <div className="space-y-1">
           <h2 className="text-sm font-semibold">
@@ -98,23 +98,23 @@ export function ImportPhase({
   }
 
   return (
-    <div className="space-y-6">
-      <section className="managed-panel space-y-5 p-6 sm:p-8">
+    <div className="space-y-4">
+      <section className="managed-panel space-y-4 p-4 sm:p-5">
         <div className="space-y-1">
-          <p className="managed-kicker font-mono text-[11px] font-semibold uppercase text-primary">
+          <p className="managed-kicker font-mono text-[10px] font-semibold uppercase text-primary">
             Step 1
           </p>
-          <h2 className="text-balance text-xl font-semibold">
+          <h2 className="text-balance text-base font-semibold">
             {t("managedApps.importPhase.importAGitRepository")}
           </h2>
-          <p className="max-w-2xl text-pretty text-[13px] text-muted-foreground">
+          <p className="max-w-2xl text-pretty text-[12px] text-muted-foreground">
             {t("managedApps.importPhase.everyPushToTheBranchYouChooseWillBuildAndDep")}
           </p>
         </div>
 
         {/* Account and repository read as one sentence — “this account’s
             repository” — so they share a row on wider screens. */}
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-2">
           <FieldRow
             label={t("managedApps.importPhase.githubAccount")}
             required
@@ -155,22 +155,22 @@ export function ImportPhase({
       <section
         className={
           repo
-            ? "managed-panel space-y-5 p-6 sm:p-8"
-            : "glass-1 space-y-5 rounded-xl border border-border/60 p-6 opacity-60 sm:p-8"
+            ? "managed-panel space-y-4 p-4 sm:p-5"
+            : "space-y-4 rounded-xl border border-border/60 glass-1-bg p-4 opacity-60 sm:p-5"
         }
       >
         <div className="space-y-1">
           <p
             className={
               repo
-                ? "managed-kicker font-mono text-[11px] font-semibold uppercase text-primary"
-                : "managed-kicker font-mono text-[11px] font-semibold uppercase text-muted-foreground"
+                ? "managed-kicker font-mono text-[10px] font-semibold uppercase text-primary"
+                : "managed-kicker font-mono text-[10px] font-semibold uppercase text-muted-foreground"
             }
           >
             Step 2
           </p>
-          <h2 className="text-balance text-xl font-semibold">Choose the framework</h2>
-          <p className="max-w-2xl text-pretty text-[13px] text-muted-foreground">
+          <h2 className="text-balance text-base font-semibold">Choose the framework</h2>
+          <p className="max-w-2xl text-pretty text-[12px] text-muted-foreground">
             {repo
               ? "We inspect the repository first, then keep only compatible deployment paths available."
               : "Select a repository above to unlock framework detection."}

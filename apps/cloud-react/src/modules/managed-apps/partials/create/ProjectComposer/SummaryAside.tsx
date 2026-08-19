@@ -54,8 +54,8 @@ export function SummaryAside({
     value === "" ? (fallback ?? "default") : value
 
   return (
-    <aside className="space-y-4 lg:sticky lg:top-6">
-      <div className="glass-1 space-y-3 rounded-xl border border-border/60 p-4">
+    <aside className="space-y-3 lg:sticky lg:top-4">
+      <div className="space-y-2.5 rounded-xl border border-border/60 glass-1-bg p-3.5">
         <h3 className="text-[13px] font-semibold">Summary</h3>
         <div className="space-y-1.5">
           <Row label="Repository" value={values.repo || "—"} />

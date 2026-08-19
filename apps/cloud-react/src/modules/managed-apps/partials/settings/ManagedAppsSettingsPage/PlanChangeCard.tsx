@@ -71,13 +71,13 @@ export function PlanChangeCard({
       className={cn(
         // min-w-0 so the quota labels below may truncate rather than force the
         // card wider than its share of a four-across row.
-        "relative flex min-w-0 flex-col gap-4 rounded-xl border p-4 transition-colors",
+        "relative flex min-w-0 flex-col gap-3 rounded-xl border p-3 transition-colors",
         current
           ? "border-primary bg-primary/[0.04] ring-1 ring-primary/30"
-          : "border-border/60 hover:border-border hover:bg-muted/20",
+          : "border-border/60 glass-1-bg hover:border-border hover:glass-2-bg",
       )}
     >
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex items-start justify-between gap-2.5">
         <PlanTierArt code={plan.code} active={current} />
         {current ? (
           <span className="flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium tracking-wide text-primary uppercase">
@@ -99,7 +99,7 @@ export function PlanChangeCard({
         <p className="flex min-w-0 items-baseline justify-between gap-2">
           <span className="truncate text-sm font-semibold">{plan.name}</span>
           <span className="flex shrink-0 items-baseline gap-1">
-            <span className="text-xl font-semibold tracking-tight">{formatPrice(plan)}</span>
+            <span className="text-lg font-semibold tracking-tight">{formatPrice(plan)}</span>
             {!free && <span className="text-[11px] text-muted-foreground">/mo</span>}
           </span>
         </p>
@@ -108,18 +108,18 @@ export function PlanChangeCard({
         <p className="truncate text-[11px] text-muted-foreground">{subtitle}</p>
       </div>
 
-      <dl className="grid grid-cols-2 gap-x-3 gap-y-2 border-t border-border/50 pt-3">
+      <dl className="grid grid-cols-2 gap-x-2.5 gap-y-1.5 border-t border-border/50 pt-2.5">
         {planHighlights(plan.limits).map((row) => (
           <div key={row.label} className="min-w-0">
             <dt className="truncate text-[10px] tracking-wide text-muted-foreground uppercase">
               {row.label}
             </dt>
-            <dd className="truncate text-[13px] font-medium">{row.value}</dd>
+            <dd className="truncate text-[12px] font-medium">{row.value}</dd>
           </div>
         ))}
       </dl>
 
-      <div className="mt-auto space-y-1.5 pt-1">
+      <div className="mt-auto space-y-1 pt-0.5">
         <Button
           type="button"
           variant={variant}

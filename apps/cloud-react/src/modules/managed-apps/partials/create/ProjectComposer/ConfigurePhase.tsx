@@ -58,7 +58,7 @@ export function ConfigurePhase({
     <div className="space-y-6">
       {/* The chosen source, with the way back to change it. Losing nothing
 			    when you do is what makes this safe to offer. */}
-      <div className="glass-1 flex flex-wrap items-center gap-3 rounded-lg border border-border/60 px-3.5 py-3">
+      <div className="flex flex-wrap items-center gap-2.5 rounded-lg border border-border/60 glass-1-bg px-3 py-2.5">
         <GitBranch className="size-4 shrink-0 text-muted-foreground" />
         <span className="min-w-0 flex-1">
           <span className="flex items-center gap-2">

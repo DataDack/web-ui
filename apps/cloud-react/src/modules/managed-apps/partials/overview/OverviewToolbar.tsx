@@ -59,7 +59,7 @@ interface OverviewToolbarProps {
 /**
  * One bar above both views: what to show, in what order, and in which shape.
  *
- * `glass-1` rather than a card surface, because this is chrome — it should not
+ * `glass-1-bg` rather than a card surface, because this is chrome — it should not
  * compete with the project data below it for the reading of "panel".
  */
 export function OverviewToolbar({
@@ -77,11 +77,12 @@ export function OverviewToolbar({
   onTypeFilterChange,
 }: Readonly<OverviewToolbarProps>) {
   const { t } = useTranslation()
-  // Bottom rule only. This used to be border-y, which drew a second line ~40px
-  // under the page header's own border and left an empty band between the two
-  // that read as a control strip with nothing in it.
+  // A glass-1-bg strip rather than a bare bottom rule: the page header already
+  // draws a border ~40px above, and a second line under a transparent row read
+  // as a control strip with nothing in it. Chrome, so glass-1-bg — it must not
+  // compete with the project cards below for the reading of "panel".
   return (
-    <div className="mb-6 flex flex-wrap items-center gap-2 border-b border-border pb-3">
+    <div className="mb-4 flex flex-wrap items-center gap-2 rounded-lg border border-border/60 glass-1-bg px-2.5 py-2">
       <div className="relative min-w-[200px] flex-1 sm:max-w-xs">
         <Search className="absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
         <Input
@@ -90,7 +91,7 @@ export function OverviewToolbar({
             onSearchChange(event.target.value)
           }}
           placeholder={t("managedApps.overviewToolbar.searchByNameRepoBranchOrState")}
-          className="h-8 pl-8 text-[13px]"
+          className="h-7 pl-8 text-[12px]"
           aria-label={t("managedApps.overviewToolbar.searchProjects")}
         />
       </div>
@@ -113,7 +114,7 @@ export function OverviewToolbar({
       >
         <SelectTrigger
           size="sm"
-          className="w-[150px] shrink-0 text-[12px]"
+          className="h-7 w-[132px] shrink-0 text-[12px]"
           aria-label={t("managedApps.overviewToolbar.filterByRuntime")}
         >
           <SelectValue />
@@ -144,7 +145,7 @@ export function OverviewToolbar({
         >
           <SelectTrigger
             size="sm"
-            className="w-[170px] shrink-0 text-[12px]"
+            className="h-7 w-[152px] shrink-0 text-[12px]"
             aria-label={t("managedApps.overviewToolbar.sortProjects")}
           >
             <SelectValue />

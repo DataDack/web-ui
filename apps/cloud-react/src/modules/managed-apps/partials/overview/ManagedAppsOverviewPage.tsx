@@ -117,11 +117,12 @@ export function ManagedAppsOverviewPage() {
     <Button
       variant="ghost"
       size="icon"
+      className="size-8"
       onClick={refresh}
       disabled={refreshing}
       aria-label="Refresh"
     >
-      <RefreshCw className={cn("size-4", refreshing && "animate-spin")} />
+      <RefreshCw className={cn("size-3.5", refreshing && "animate-spin")} />
     </Button>
   )
 
@@ -142,8 +143,8 @@ export function ManagedAppsOverviewPage() {
   )
 
   const newProject = (
-    <Button className="gap-2" onClick={() => void navigate(MANAGED_APPS_ROUTES.create)}>
-      <Plus className="size-4" />
+    <Button size="sm" className="gap-1.5" onClick={() => void navigate(MANAGED_APPS_ROUTES.create)}>
+      <Plus className="size-3.5" />
       {t("managedApps.managedAppsOverviewPage.createProject")}
     </Button>
   )
@@ -151,10 +152,11 @@ export function ManagedAppsOverviewPage() {
   const newHosting = (variant: "default" | "outline") => (
     <Button
       variant={variant}
-      className="gap-2"
+      size="sm"
+      className="gap-1.5"
       onClick={() => void navigate(HOSTING_ROUTES.pricing)}
     >
-      <Plus className="size-4" />
+      <Plus className="size-3.5" />
       New hosting
     </Button>
   )
@@ -189,17 +191,17 @@ export function ManagedAppsOverviewPage() {
   }
 
   return (
-    <div className="managed-apps-console -m-4 min-h-[calc(100vh-60px)] bg-background px-4 py-8 md:-m-6 md:px-6 lg:-m-8 lg:px-10 lg:py-10">
-      <header className="mb-10 flex flex-col gap-6 border-b border-border pb-8 lg:flex-row lg:items-end lg:justify-between">
-        <div>
-          <div className="mb-3 flex items-center gap-3">
-            <span className="managed-kicker font-mono text-[11px] uppercase text-primary">
+    <div className="managed-apps-console -m-4 min-h-[calc(100vh-60px)] glass-3-bg px-4 py-5 md:-m-6 md:px-6 lg:-m-8 lg:px-8 lg:py-6">
+      <header className="mb-5 flex flex-col gap-3 border-b border-border pb-4 lg:flex-row lg:items-end lg:justify-between">
+        <div className="min-w-0">
+          <div className="mb-1.5 flex items-center gap-2.5">
+            <span className="managed-kicker font-mono text-[10px] uppercase text-primary">
               Managed applications
             </span>
             {tab === "hosting" ? undefined : <PlanUsageChip />}
           </div>
-          <h1 className="text-4xl font-bold tracking-[-0.045em] sm:text-5xl">{VIEW[tab].title}</h1>
-          <p className="mt-3 max-w-2xl font-mono text-[13px] text-muted-foreground">
+          <h1 className="text-2xl font-bold tracking-[-0.03em] sm:text-3xl">{VIEW[tab].title}</h1>
+          <p className="mt-1.5 max-w-2xl font-mono text-[12px] leading-relaxed text-muted-foreground">
             {VIEW[tab].description}
           </p>
         </div>

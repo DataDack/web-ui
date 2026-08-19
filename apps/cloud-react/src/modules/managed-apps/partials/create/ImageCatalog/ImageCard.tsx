@@ -44,7 +44,7 @@ export function ImageCard({ image }: Readonly<ImageCardProps>) {
   }
 
   return (
-    <div className="glass-1 flex flex-col gap-4 rounded-xl border border-border/60 p-6">
+    <div className="flex flex-col gap-3 rounded-xl border border-border/60 glass-1-bg p-4">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
           <span className="flex size-11 items-center justify-center rounded-lg bg-status-warning/10 text-sm font-bold text-status-warning">
@@ -67,7 +67,7 @@ export function ImageCard({ image }: Readonly<ImageCardProps>) {
           {image.specs.map((spec) => (
             <span
               key={spec}
-              className="rounded-full border border-border/60 bg-muted/40 px-2.5 py-0.5 text-[11px] text-muted-foreground"
+              className="rounded-full border border-border/60 glass-2-bg px-2.5 py-0.5 text-[11px] text-muted-foreground"
             >
               {spec}
             </span>

@@ -51,7 +51,7 @@ export function BuildWorkspaceSidebar({
   const duration = formatDuration(build.started_at, build.finished_at)
 
   return (
-    <aside className="hidden min-h-0 w-72 shrink-0 flex-col border-r border-border/60 bg-muted/10 lg:flex">
+    <aside className="hidden min-h-0 w-72 shrink-0 flex-col border-r border-border/60 glass-1-bg lg:flex">
       <div className="border-b border-border/60 px-5 py-5">
         <div className="flex items-center justify-between gap-3">
           <span className="truncate font-mono text-[15px] font-semibold text-foreground">

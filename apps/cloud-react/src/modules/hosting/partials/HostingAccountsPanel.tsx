@@ -87,9 +87,9 @@ export function HostingAccountsPanel() {
 
   if (isLoading) {
     return (
-      <div className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
+      <div className="grid gap-3 md:grid-cols-2 2xl:grid-cols-3">
         {SKELETON_KEYS.map((key) => (
-          <Skeleton key={key} className="h-[210px] rounded-xl" />
+          <Skeleton key={key} className="h-[172px] rounded-xl" />
         ))}
       </div>
     )
@@ -102,9 +102,9 @@ export function HostingAccountsPanel() {
   if (accounts.length === 0) {
     return (
       <div>
-        <div className="glass-1 mb-6 rounded-xl border border-border/60 px-5 py-4">
-          <h2 className="text-[14px] font-semibold">Pick a plan to get started</h2>
-          <p className="mt-0.5 text-[12px] leading-relaxed text-muted-foreground">
+        <div className="mb-4 rounded-xl border border-border/60 glass-1-bg px-4 py-3">
+          <h2 className="text-[13px] font-semibold">Pick a plan to get started</h2>
+          <p className="mt-0.5 text-[11.5px] leading-relaxed text-muted-foreground">
             cPanel hosting with free SSL, daily backups and one-click installs. Your site can be
             live in about a minute.
           </p>
@@ -120,7 +120,7 @@ export function HostingAccountsPanel() {
     <div>
       {/* Chrome, not data — `glass-1` keeps it from reading as a card
 			    alongside the accounts below it. Matches the Apps tab's toolbar. */}
-      <div className="glass-1 mb-4 flex flex-wrap items-center gap-2 px-3 py-2.5">
+      <div className="mb-3 flex flex-wrap items-center gap-2 rounded-lg border border-border/60 glass-1-bg px-2.5 py-2">
         <div className="relative min-w-[200px] flex-1 sm:max-w-xs">
           <Search className="absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
           <Input
@@ -129,7 +129,7 @@ export function HostingAccountsPanel() {
               setSearch(event.target.value)
             }}
             placeholder="Search by domain, user or plan…"
-            className="h-8 pl-8 text-[13px]"
+            className="h-7 pl-8 text-[12px]"
             aria-label="Search hosting accounts"
           />
         </div>
@@ -185,7 +185,7 @@ export function HostingAccountsPanel() {
           }
         />
       ) : (
-        <ul className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
+        <ul className="grid gap-3 md:grid-cols-2 2xl:grid-cols-3">
           {visible.map((account, index) => (
             <li key={account.id} className="animate-content-enter" style={staggerDelay(index)}>
               <HostingAccountCard
@@ -249,10 +249,10 @@ export function HostingAccountCard({
   const bandwidth = usagePct(account.bw_used_mb, account.bw_limit_mb)
 
   return (
-    <div className="glass-1 flex h-full flex-col rounded-xl border border-border/60 p-5 transition-colors hover:border-border">
+    <div className="flex h-full flex-col rounded-xl border border-border/60 glass-2-bg p-3.5 transition-colors hover:border-border">
       <div className="flex items-start justify-between gap-3">
         <button type="button" onClick={onOpen} className="flex min-w-0 flex-col text-left">
-          <span className="flex items-center gap-2 truncate text-[15px] font-semibold hover:underline">
+          <span className="flex items-center gap-2 truncate text-[14px] font-semibold hover:underline">
             <Globe className="size-4 shrink-0 text-muted-foreground" />
             {account.domain}
           </span>
@@ -270,13 +270,15 @@ export function HostingAccountCard({
         </div>
       </div>
 
-      <p className="mt-3 text-[12px] text-muted-foreground">{accountSummary(account)}</p>
+      <p className="mt-2 text-[11.5px] leading-snug text-muted-foreground">
+        {accountSummary(account)}
+      </p>
 
       {/* Bandwidth as well as disk: the two ways a shared account runs out,
 			    and only showing one meant a site could go off for a reason the card
 			    never mentioned. Either bar is omitted when its plan has no ceiling —
 			    a full green bar for "unlimited" would be a lie. */}
-      <div className="mt-4 space-y-2.5">
+      <div className="mt-3 space-y-2">
         <UsageBar
           label="Disk"
           pct={disk}
@@ -291,7 +293,7 @@ export function HostingAccountCard({
         />
       </div>
 
-      <div className="mt-auto flex flex-wrap items-center gap-2 pt-5">
+      <div className="mt-auto flex flex-wrap items-center gap-2 pt-3.5">
         <Button size="sm" variant="outline" onClick={onOpen}>
           Manage
         </Button>
@@ -322,7 +324,7 @@ function UsageBar({ label, pct, used, limit }: Readonly<UsageBarProps>) {
   if (pct === null) return null
 
   return (
-    <div className="space-y-1.5">
+    <div className="space-y-1">
       <div className="flex justify-between text-[11px] text-muted-foreground">
         <span>{label}</span>
         <span className="font-mono tabular-nums">

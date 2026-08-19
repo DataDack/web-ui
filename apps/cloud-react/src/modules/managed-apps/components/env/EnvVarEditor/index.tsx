@@ -168,7 +168,7 @@ export function EnvVarEditor({
       )}
 
       {lastImport && (
-        <div className="flex flex-wrap items-center gap-2 rounded-md border border-border/60 bg-muted/30 px-2.5 py-1.5">
+        <div className="flex flex-wrap items-center gap-2 rounded-md border border-border/60 glass-1-bg px-2.5 py-1.5">
           <p className="text-[11px] text-muted-foreground">
             {lastImport.count === 1 ? "1 variable" : `${String(lastImport.count)} variables`}{" "}
             {lastImport.pasted ? "split from your paste" : "added from the .env"}. Remove them one

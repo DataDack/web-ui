@@ -95,7 +95,7 @@ export function LogBody({
   // printed anything yet, and a bare placeholder threw all of it away.
   if (lines.length === 0) {
     return (
-      <div ref={scrollRef} className="flex-1 overflow-auto bg-muted/20">
+      <div ref={scrollRef} className="flex-1 overflow-auto glass-1-bg">
         <LifecycleLines events={leading} originIso={originIso} startNumber={1} edge="top" />
         <div className="px-4 py-6 pl-16 font-mono text-[12px] text-muted-foreground">
           {placeholder}
@@ -111,7 +111,7 @@ export function LogBody({
   }
 
   return (
-    <div ref={scrollRef} className="flex-1 overflow-auto bg-muted/20">
+    <div ref={scrollRef} className="flex-1 overflow-auto glass-1-bg">
       <LifecycleLines events={leading} originIso={originIso} startNumber={1} edge="top" />
       <table className="w-full border-collapse font-mono text-[12px] leading-relaxed">
         <tbody>

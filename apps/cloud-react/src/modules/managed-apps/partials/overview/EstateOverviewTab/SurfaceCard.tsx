@@ -39,12 +39,12 @@ export function SurfaceCard({
     <section
       aria-label={title}
       className={cn(
-        "glass-1 flex h-full flex-col rounded-xl border border-border/60 p-5",
+        "flex h-full flex-col rounded-xl border border-border/60 glass-1-bg p-4",
         className,
       )}
     >
       <div className="flex items-start gap-3">
-        <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-muted/60">
+        <span className="grid size-9 shrink-0 place-items-center rounded-xl glass-2-bg">
           <Icon className="size-4 text-muted-foreground" />
         </span>
         <div className="min-w-0 flex-1">

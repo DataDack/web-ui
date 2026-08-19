@@ -122,7 +122,7 @@ export function HostingSummaryCard({ accounts, isLoading }: Readonly<HostingSumm
               <li key={account.id}>
                 <Link
                   to={HOSTING_ROUTES.account(account.id)}
-                  className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 outline-none transition-colors hover:bg-accent/40 focus-visible:ring-2 focus-visible:ring-ring/50"
+                  className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 outline-none transition-colors hover:glass-2-bg focus-visible:ring-2 focus-visible:ring-ring/50"
                 >
                   <Globe className="size-3.5 shrink-0 text-muted-foreground" />
                   <span className="min-w-0 flex-1 truncate text-[13px]">{account.domain}</span>

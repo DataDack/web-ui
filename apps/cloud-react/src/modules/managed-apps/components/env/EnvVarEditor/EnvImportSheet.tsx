@@ -73,7 +73,7 @@ export function EnvImportSheet({ open, onOpenChange, onImport }: Readonly<EnvImp
           />
 
           {text.trim() !== "" && (
-            <div className="glass-1 space-y-2 rounded-lg border border-border/60 p-3">
+            <div className="space-y-2 rounded-lg border border-border/60 glass-1-bg p-3">
               <p className="text-[13px] font-medium">
                 {parsed.entries.length === 1
                   ? "1 variable parsed"

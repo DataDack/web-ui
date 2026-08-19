@@ -88,7 +88,7 @@ export function PlanComparisonTable({
           Managed Apps features and quotas, compared across every plan
         </caption>
         <thead>
-          <tr className="border-b border-border/60 bg-muted/30">
+          <tr className="border-b border-border/60 glass-2-bg">
             <th scope="col" className="w-[30%] px-4 py-3 text-[12px] font-medium">
               Feature
             </th>
@@ -118,7 +118,7 @@ export function PlanComparisonTable({
 
         {groups.map((group) => (
           <tbody key={group.title}>
-            <tr className="border-b border-border/50 bg-muted/20">
+            <tr className="border-b border-border/50 glass-1-bg">
               <th
                 scope="colgroup"
                 colSpan={columns.length + 1}

@@ -38,7 +38,7 @@ export function PlanLimitsPanel({
   const { data: plans, isLoading: plansLoading } = usePlans()
 
   if (isLoading || plansLoading) {
-    return <Skeleton className={cn("h-44 rounded-xl", className)} />
+    return <Skeleton className={cn("h-36 rounded-xl", className)} />
   }
 
   // An unreadable account plan is not an unknown plan: every account is on the
@@ -52,7 +52,7 @@ export function PlanLimitsPanel({
     return (
       <div
         className={cn(
-          "flex items-start gap-2.5 rounded-xl border border-border/60 bg-muted/30 px-3.5 py-3",
+          "flex items-start gap-2.5 rounded-xl border border-border/60 glass-1-bg px-3 py-2.5",
           className,
         )}
       >
@@ -70,9 +70,9 @@ export function PlanLimitsPanel({
   const rows = planQuotaRows(plan.limits).filter((row) => row.label !== "Projects")
 
   return (
-    <div className={cn("glass-1 rounded-xl border border-border/60 p-4", className)}>
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="flex min-w-0 items-center gap-3">
+    <div className={cn("rounded-xl border border-border/60 glass-1-bg p-3.5", className)}>
+      <div className="flex flex-wrap items-start justify-between gap-2.5">
+        <div className="flex min-w-0 items-center gap-2.5">
           <PlanTierArt code={plan.code} active />
           <div className="min-w-0">
             <p className="flex items-baseline gap-2 text-sm font-semibold">
@@ -108,7 +108,7 @@ export function PlanLimitsPanel({
 			    it is the only one the platform actually enforces (the create
 			    endpoint answers 403 on it), so it is the only one that can be
 			    over-spent while you are reading this. */}
-      <div className="mt-4 rounded-lg border border-border/50 bg-muted/20 px-3 py-2.5">
+      <div className="mt-3 rounded-lg border border-border/50 glass-2-bg px-3 py-2">
         {usageKnown ? (
           <QuotaMeter
             label="Projects"
@@ -130,11 +130,11 @@ export function PlanLimitsPanel({
         )}
       </div>
 
-      <dl className="mt-3 flex flex-wrap gap-1.5">
+      <dl className="mt-2.5 flex flex-wrap gap-1.5">
         {rows.map((row) => (
           <div
             key={row.label}
-            className="flex min-w-0 items-baseline gap-1.5 rounded-md border border-border/50 bg-background/40 px-2 py-1"
+            className="flex min-w-0 items-baseline gap-1.5 rounded-md border border-border/50 glass-2-bg px-2 py-1"
           >
             <dt className="shrink-0 text-[10px] tracking-wide text-muted-foreground uppercase">
               {row.label}
@@ -146,7 +146,7 @@ export function PlanLimitsPanel({
       {/* Said plainly, because the chips above look like readings and are not.
 			    The component draws no bars for them for exactly this reason; the
 			    page should not leave the reason to be inferred from their absence. */}
-      <p className="mt-2 text-[11px] text-muted-foreground">
+      <p className="mt-1.5 text-[11px] text-muted-foreground">
         These are the plan&apos;s stated limits, not live usage — only the project count is metered
         today.
       </p>
