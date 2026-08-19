@@ -2611,6 +2611,7 @@
   "superAdmin": {
     "title": "Super Admin",
     "nav": {
+      "resources": "संसाधन",
       "entry": "Super Admin",
       "quotaRequests": "कोटा अनुरोध",
       "overview": "अवलोकन",

@@ -912,6 +912,17 @@ export function useAdminAccountResources(accountId: string | undefined) {
   })
 }
 
+export function useAdminResourceInventory(
+  filters: import("./superadmin.types").AdminResourceFilters,
+) {
+  return useQuery({
+    queryKey: [...SUPERADMIN_QUERY_KEYS.resourceInventory, filters] as const,
+    queryFn: () => superAdminApi.getResourceInventory(filters),
+    placeholderData: (previous) => previous,
+    staleTime: 30 * 1000,
+  })
+}
+
 // Active-spend summary (monthly run-rate, per-kind breakdown, wallet balance) for
 // one account. Super-admin only; disabled until an account id is present.
 export function useAdminAccountSpend(accountId: string | undefined) {

@@ -19,6 +19,7 @@ import {
   Server,
   ServerCog,
   SlidersHorizontal,
+  Boxes,
 } from "lucide-react"
 
 export interface AdminNavItem {
@@ -54,7 +55,10 @@ export const ADMIN_NAV: AdminNavGroup[] = [
     // the same tenancy graph, and splitting them across pages meant the same
     // user appeared twice, backed by two different endpoints.
     labelKey: "superAdmin.nav.groups.tenancy",
-    items: [{ labelKey: "superAdmin.nav.tenancy", icon: Building2, path: "/admin/tenancy" }],
+    items: [
+      { labelKey: "superAdmin.nav.tenancy", icon: Building2, path: "/admin/tenancy" },
+      { labelKey: "superAdmin.nav.resources", icon: Boxes, path: "/admin/resources" },
+    ],
   },
   {
     labelKey: "superAdmin.nav.groups.attention",

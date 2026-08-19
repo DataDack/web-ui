@@ -2785,6 +2785,7 @@
       "quotaRequests": "Quota requests",
       "overview": "Overview",
       "tenancy": "Tenancy",
+      "resources": "Resources",
       "groups": {
         "tenancy": "Tenancy",
         "attention": "Needs attention",

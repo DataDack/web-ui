@@ -1101,6 +1101,36 @@ export interface AccountResource {
   updated_at?: string
 }
 
+export interface AdminResource extends AccountResource {
+  account_id: string
+  account_name: string
+  account_number: string
+  organization_id?: string
+  failure_reason?: string
+  owners: { id: string; name: string; email: string }[]
+}
+
+export interface AdminResourceInventory {
+  items: AdminResource[]
+  total: number
+  page: number
+  limit: number
+  options: { types: string[]; services: string[]; statuses: string[]; regions: string[] }
+  failures: { source: string; account_id: string; reason: string }[]
+}
+
+export interface AdminResourceFilters {
+  q?: string
+  type?: string
+  service?: string
+  status?: string
+  region?: string
+  account_id?: string
+  failure_only?: boolean
+  page?: number
+  limit?: number
+}
+
 export interface DeleteAccountResponse {
   account_id: string
   status: string

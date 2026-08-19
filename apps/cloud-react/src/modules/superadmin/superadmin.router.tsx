@@ -47,6 +47,13 @@ export const superadminRoutes: RouteObject[] = [
       { path: "organizations", element: <Navigate to="/admin/tenancy" replace /> },
       { path: "users", element: <Navigate to="/admin/tenancy?tab=users" replace /> },
       {
+        path: "resources",
+        lazy: async () => {
+          const { AdminResourcesPage } = await import("./partials/AdminResourcesPage")
+          return { Component: AdminResourcesPage }
+        },
+      },
+      {
         path: "accounts/:accountId/resources",
         lazy: async () => {
           const { AccountResourcesPage } = await import("./partials/AccountResourcesPage")

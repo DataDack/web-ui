@@ -54,6 +54,8 @@ import type {
   UpdateLBSettings,
   UpdatePlatformSettings,
   AccountResource,
+  AdminResourceFilters,
+  AdminResourceInventory,
   AccountSpend,
   OverviewSection,
   PlatformOverview,
@@ -329,6 +331,13 @@ export const superAdminApi = {
   /* account inventory — every resource (VMs, disks, IPs, VPCs, …) an account owns */
   getAccountResources: (accountId: string) =>
     apiGet<AccountResource[]>(`/resources/search/accounts/${accountId}/resources`),
+  getResourceInventory: (filters: AdminResourceFilters) => {
+    const query = new URLSearchParams()
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== "") query.set(key, String(value))
+    })
+    return apiGet<AdminResourceInventory>(`/resources/search/admin/inventory?${query.toString()}`)
+  },
   deleteAccount: (accountId: string) =>
     apiDelete<DeleteAccountResponse>(`/org/accounts/${accountId}/super-admin-delete`),
 

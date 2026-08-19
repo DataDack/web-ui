@@ -31,6 +31,7 @@ export const SUPERADMIN_QUERY_KEYS = {
   optOutRequests: ["superadmin", "optout-requests"] as const,
   platformOverview: ["superadmin", "platform-overview"] as const,
   accountResources: ["superadmin", "account-resources"] as const,
+  resourceInventory: ["superadmin", "resource-inventory"] as const,
   accountSpend: ["superadmin", "account-spend"] as const,
   // Key counts go stale the moment anything writes to Redis, so this query is
   // never cached across a clear — it is refetched on every mutation.
