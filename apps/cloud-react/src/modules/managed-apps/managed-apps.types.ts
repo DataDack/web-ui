@@ -120,6 +120,8 @@ export interface PlanCatalog {
 export interface AccountPlan {
   plan: Plan
   projects_in_use: number
+  static_projects_in_use: number
+  edge_projects_in_use: number
 }
 
 /** PUT /plans/account — `code` is a catalogue tier code. */

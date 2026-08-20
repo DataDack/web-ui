@@ -24,11 +24,6 @@ interface FeatureGroup {
   rows: PlanFeature[]
 }
 
-/** Features that describe the retired namespace model never appear in pricing UI. */
-function isNamespaceFeature(feature: PlanFeature): boolean {
-  return /namespace/i.test(feature.slug)
-}
-
 export function PlanDetailsSheet({
   plan,
   features,
@@ -39,7 +34,7 @@ export function PlanDetailsSheet({
   const groups: FeatureGroup[] = []
   const grouped = new Map<string, FeatureGroup>()
 
-  for (const feature of features.filter((item) => !isNamespaceFeature(item))) {
+  for (const feature of features) {
     let group = grouped.get(feature.category)
     if (!group) {
       group = { title: feature.category, rows: [] }

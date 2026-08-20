@@ -396,6 +396,113 @@ function NodeManagers() {
   )
 }
 
+/* ── Release token ─────────────────────────────────────────────────────── */
+
+// The GitHub token nodes install their own releases with.
+//
+// It is write-only by design: the API stores it encrypted and reports only
+// whether one exists, so this form can never render the credential back. That is
+// also why there is no "current value" to diff against — saving always sends a
+// new token, and clearing sends an empty string.
+//
+// It lives centrally because the alternative is a copy in every cluster's
+// /etc/pve/datadack/proxmox-manager.conf, which pmxcfs replicates to every node
+// and forces to root:www-data 0640 — readable by pveproxy, and impossible to
+// rotate without editing each cluster by hand.
+function ReleaseToken({ settings }: Readonly<{ settings: LBSettings }>) {
+  const { t } = useTranslation()
+  const { mutate: save, isPending } = useUpdateLBSettings()
+  const [token, setToken] = useState("")
+
+  const configured = settings.manager_update_token_set
+
+  const onSave = () => {
+    const trimmed = token.trim()
+    if (!trimmed) return
+    save({ manager_update_token: trimmed }, { onSuccess: () => setToken("") })
+  }
+
+  const onClear = () => {
+    if (!globalThis.confirm(t("superAdmin.proxmoxManager.updateToken.clearConfirm"))) return
+    save({ manager_update_token: "" }, { onSuccess: () => setToken("") })
+  }
+
+  return (
+    <Section
+      variant="panel"
+      title={t("superAdmin.proxmoxManager.updateToken.title")}
+      description={t("superAdmin.proxmoxManager.updateToken.subtitle")}
+    >
+      <div className="space-y-5">
+        <div
+          className={cn(
+            "flex items-center gap-2 rounded-md border p-3 text-[12px]",
+            configured ? TONE_CLASSES.success : TONE_CLASSES.warning,
+          )}
+        >
+          {configured ? (
+            <ShieldCheck className="size-4 shrink-0" />
+          ) : (
+            <AlertTriangle className="size-4 shrink-0" />
+          )}
+          <span>
+            {configured
+              ? t("superAdmin.proxmoxManager.updateToken.configured")
+              : t("superAdmin.proxmoxManager.updateToken.notConfigured")}
+          </span>
+        </div>
+
+        <div className="grid gap-5 sm:grid-cols-2">
+          <Field
+            label={t("superAdmin.proxmoxManager.updateToken.label")}
+            hint={t("superAdmin.proxmoxManager.updateToken.hint")}
+          >
+            <Input
+              type="password"
+              autoComplete="off"
+              spellCheck={false}
+              placeholder={t("superAdmin.proxmoxManager.updateToken.placeholder")}
+              value={token}
+              onChange={(e) => setToken(e.target.value)}
+            />
+          </Field>
+        </div>
+
+        <div className="flex items-start gap-2.5 rounded-md border border-border/60 bg-muted/30 p-4">
+          <KeyRound className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+          <p className="text-[12px] leading-relaxed text-muted-foreground">
+            {t("superAdmin.proxmoxManager.updateToken.why")}
+          </p>
+        </div>
+
+        <div className="flex items-center justify-end gap-3 border-t border-border/60 pt-4">
+          {configured ? (
+            <Button
+              type="button"
+              variant="ghost"
+              className="mr-auto"
+              onClick={onClear}
+              disabled={isPending}
+            >
+              {t("superAdmin.proxmoxManager.updateToken.clear")}
+            </Button>
+          ) : null}
+          <Button
+            type="button"
+            variant="gold"
+            onClick={onSave}
+            disabled={!token.trim() || isPending}
+            loading={isPending}
+          >
+            <Save className="size-4" />
+            {t("superAdmin.proxmoxManager.updateToken.save")}
+          </Button>
+        </div>
+      </div>
+    </Section>
+  )
+}
+
 /* ── Page ──────────────────────────────────────────────────────────────── */
 
 // The management plane that runs ON each Proxmox node. It began as the load
@@ -442,7 +549,12 @@ export function ProxmoxManagerPage() {
             </Section>
           )
         }
-        return <ManagerConnection settings={settings} />
+        return (
+          <Fragment>
+            <ManagerConnection settings={settings} />
+            <ReleaseToken settings={settings} />
+          </Fragment>
+        )
       })()}
 
       <NodeManagers />

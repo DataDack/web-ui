@@ -23,10 +23,9 @@ interface PlanLimitsPanelProps {
  * instead — the limits the thing being created will run under, and where to go
  * if they are not the right ones.
  *
- * Only the project count carries a usage meter, because it is the only quota
- * the platform actually enforces today (the create endpoint answers 403 on it).
- * The rest are listed as the numbers they are rather than dressed up as gauges
- * measuring nothing.
+ * Total, static and edge project counts carry usage meters because all three
+ * are enforced by the create endpoint. The remaining advertised limits stay
+ * as plain values until their underlying usage is measurable.
  */
 export function PlanLimitsPanel({
   showChangeLink = true,
@@ -64,8 +63,8 @@ export function PlanLimitsPanel({
   }
 
   const paid = plan.price_inr_monthly > 0
-  // The project count has its own meter above; the rest are stated as limits.
-  const rows = planQuotaRows(plan.limits).filter((row) => row.label !== "Projects")
+  const meteredLabels = new Set(["Projects", "Static projects", "Edge projects"])
+  const rows = planQuotaRows(plan.limits).filter((row) => !meteredLabels.has(row.label))
 
   return (
     <div className={cn("rounded-xl border border-border/60 glass-1-bg p-3.5", className)}>
@@ -99,18 +98,28 @@ export function PlanLimitsPanel({
         )}
       </div>
 
-      {/* The projects meter, given the room the other seven quotas are not:
-			    it is the only one the platform actually enforces (the create
-			    endpoint answers 403 on it), so it is the only one that can be
-			    over-spent while you are reading this. */}
-      <div className="mt-3 rounded-lg border border-border/50 glass-1-bg-raised px-3 py-2">
+      <div className="mt-3 space-y-3 rounded-lg border border-border/50 glass-1-bg-raised px-3 py-2.5">
         {usageKnown ? (
-          <QuotaMeter
-            label="Projects"
-            used={account.projects_in_use}
-            limit={plan.limits.max_projects}
-            unit="projects"
-          />
+          <>
+            <QuotaMeter
+              label="All projects"
+              used={account.projects_in_use}
+              limit={plan.limits.max_projects}
+              unit="projects"
+            />
+            <QuotaMeter
+              label="Static projects"
+              used={account.static_projects_in_use}
+              limit={plan.limits.max_static_sites}
+              unit="projects"
+            />
+            <QuotaMeter
+              label="Edge projects"
+              used={account.edge_projects_in_use}
+              limit={plan.limits.max_edge_projects}
+              unit="projects"
+            />
+          </>
         ) : (
           // No usage figure means no meter: a bar drawn from a number we
           // do not have would be a measurement, not a placeholder.
@@ -138,12 +147,9 @@ export function PlanLimitsPanel({
           </div>
         ))}
       </dl>
-      {/* Said plainly, because the chips above look like readings and are not.
-			    The component draws no bars for them for exactly this reason; the
-			    page should not leave the reason to be inferred from their absence. */}
       <p className="mt-1.5 text-[11px] text-muted-foreground">
-        These are the plan&apos;s stated limits, not live usage — only the project count is metered
-        today.
+        Static projects are React or Angular-style builds served without SSR. Edge projects use a
+        server-side runtime, such as Next.js through OpenNext.
       </p>
     </div>
   )

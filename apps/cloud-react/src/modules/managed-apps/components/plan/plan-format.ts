@@ -104,7 +104,7 @@ export const QUOTA_FIELDS: QuotaField[] = [
   { key: "bandwidth_gb", label: "Bandwidth", suffix: " GB" },
   { key: "build_minutes", label: "Build minutes" },
   { key: "max_custom_domains", label: "Custom domains" },
-  { key: "max_static_sites", label: "Static sites" },
+  { key: "max_static_sites", label: "Static projects" },
   { key: "max_edge_projects", label: "Edge projects" },
   { key: "request_timeout_seconds", label: "Request timeout", suffix: "s" },
   { key: "edge_requests", label: "Edge requests" },

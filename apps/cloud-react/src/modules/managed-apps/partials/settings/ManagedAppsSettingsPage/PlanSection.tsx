@@ -94,10 +94,23 @@ export function PlanSection() {
     // A tier sold by conversation is never blocked by a quota — there is no
     // self-serve move to block.
     if (plan.is_custom_priced || !plan.is_purchasable) return undefined
-    const limit = plan.limits.max_projects
-    if (isUnlimited(limit) || used <= limit) return undefined
-    const excess = used - limit
-    return `Allows ${String(limit)} project${limit === 1 ? "" : "s"} — delete ${String(excess)} more first.`
+    const checks = [
+      { label: "project", used, limit: plan.limits.max_projects },
+      {
+        label: "static project",
+        used: account?.static_projects_in_use ?? 0,
+        limit: plan.limits.max_static_sites,
+      },
+      {
+        label: "edge project",
+        used: account?.edge_projects_in_use ?? 0,
+        limit: plan.limits.max_edge_projects,
+      },
+    ]
+    const blocked = checks.find((check) => !isUnlimited(check.limit) && check.used > check.limit)
+    if (!blocked) return undefined
+    const excess = blocked.used - blocked.limit
+    return `Allows ${String(blocked.limit)} ${blocked.label}${blocked.limit === 1 ? "" : "s"} — delete ${String(excess)} more first.`
   }
 
   const renderPlanGrid = () => {

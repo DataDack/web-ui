@@ -333,6 +333,10 @@ export interface LBSettings {
   template_ctid: number
   // CIDR of the private control-plane network the managers live on.
   control_plane_cidr: string
+  // Whether a GitHub token is stored for proxmox-manager self-update. The token
+  // itself is never returned — this is the only thing the API discloses about
+  // it, so the UI can say "configured" without ever holding the credential.
+  manager_update_token_set: boolean
 }
 
 // The PUT body is a PARTIAL of the settings shape: the backend reads every field
@@ -340,7 +344,12 @@ export interface LBSettings {
 // two pages own different halves of the same row — the load-balancer page saves
 // the proxy fields, the Proxmox Manager page saves manager_port — without either
 // one writing back a stale copy of the other's.
-export type UpdateLBSettings = Partial<LBSettings>
+export type UpdateLBSettings = Partial<LBSettings> & {
+  // Write-only: sets the GitHub token nodes fetch to install their releases.
+  // It is stored encrypted and never read back, which is why it is not part of
+  // LBSettings. Send "" to clear it and stop the fleet self-updating.
+  manager_update_token?: string
+}
 
 // Live reachability of a node's LB manager (cloud-be-go:
 // GET /platform/infra/pve-nodes/:id/manager-status). "no_manager" means the node

@@ -3115,6 +3115,22 @@
         "recheckAll": "Re-check all",
         "generate": "Generate creds",
         "regenerate": "Regenerate"
+      },
+      "updateToken": {
+        "title": "Release token",
+        "subtitle": "The GitHub token every node uses to download and install its own updates. Stored once here, encrypted — nodes fetch it with the credential they already have.",
+        "label": "GitHub token",
+        "hint": "Needs contents:read on the release repository. Stored encrypted and never shown again — replace it to rotate.",
+        "placeholder": "github_pat_…",
+        "configured": "A token is configured.",
+        "notConfigured": "No token set — nodes cannot install updates.",
+        "why": "Kept here rather than on each node: a node's copy lives in /etc/pve, which is replicated cluster-wide and readable by pveproxy, and rotating it means editing every cluster.",
+        "save": "Save token",
+        "clear": "Remove token",
+        "clearConfirm": "Remove the token? Nodes will stop being able to install updates until a new one is set.",
+        "saved": "Token saved.",
+        "cleared": "Token removed.",
+        "saveError": "Couldn't save the token."
       }
     },
     "images": {
