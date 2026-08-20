@@ -23,7 +23,7 @@ const screen = css`
   display: flex;
   min-width: 0;
   flex-direction: column;
-  gap: 18px;
+  gap: 14px;
 `
 
 const head = css`
@@ -31,9 +31,9 @@ const head = css`
   flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
+  gap: 12px;
   border-bottom: 1px solid ${mix("--border", 45)};
-  padding-bottom: 16px;
+  padding-bottom: 12px;
 `
 
 const headCopy = css`
@@ -71,7 +71,7 @@ const blurb = css`
 const grid = css`
   display: grid;
   align-items: start;
-  gap: 16px;
+  gap: 12px;
   grid-template-columns: minmax(0, 1fr);
 
   ${media.lg} {

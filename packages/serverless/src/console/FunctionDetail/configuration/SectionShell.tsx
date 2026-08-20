@@ -20,14 +20,14 @@ const panel = css`
    panels scan as instrument rows rather than as stacked cards. */
 const headRow = css`
   display: flex;
-  min-height: 42px;
+  min-height: 38px;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
   border-bottom: 1px solid ${mix("--border", 45)};
   border-radius: 0.75rem 0.75rem 0 0;
   background: ${mix("--foreground", 3)};
-  padding: 8px 16px;
+  padding: 6px 14px;
 `
 
 const headTitle = css`
@@ -72,7 +72,7 @@ const blurb = css`
 `
 
 const body = css`
-  padding: 16px;
+  padding: 14px;
 `
 
 const footer = css`
@@ -81,7 +81,7 @@ const footer = css`
   justify-content: flex-end;
   gap: 8px;
   border-top: 1px solid ${mix("--border", 45)};
-  padding: 12px 16px;
+  padding: 10px 14px;
 `
 
 export interface SectionShellProps {
