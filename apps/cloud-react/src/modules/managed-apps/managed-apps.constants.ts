@@ -37,13 +37,13 @@ export const MANAGED_APPS_ROUTES = {
   /** The cPanel accounts list — where /hosting used to land. */
   hosting: "/managed-apps?tab=hosting",
   create: "/managed-apps/create",
+  /** Dedicated account plan selection flow. */
+  upgrade: "/managed-apps/upgrade",
   /** Section settings — the one place the account's tier can be changed. */
   settings: "/managed-apps/settings",
-  /** Settings, opened on the plan comparison rather than the plan cards. */
-  comparePlans: "/managed-apps/settings?section=compare",
   /** Settings, opened on the GitHub accounts we can build from. Every
    *  "reconnect this repo" path ends here, so it is one constant. */
-  connections: "/managed-apps/settings?section=github",
+  connections: "/managed-apps/settings",
   project: (id: string) => `/managed-apps/projects/${id}`,
   /** One build as a page — log, source and output tabs live on it. */
   build: (projectId: string, buildId: string) =>

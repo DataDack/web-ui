@@ -12,6 +12,7 @@ import { CustomPlanCard } from "./CustomPlanCard"
 import { CustomPlanDialog } from "./CustomPlanDialog"
 import { PlanChangeCard, type PlanDirection } from "./PlanChangeCard"
 import { PlanChangeSummary } from "./PlanChangeSummary"
+import { PlanDetailsSheet } from "./PlanDetailsSheet"
 import { isUnlimited, PlanLimitsPanel } from "../../../components"
 import { useAccountPlan, useChangeAccountPlan, usePlanCatalog } from "../../../managed-apps.hooks"
 import type { Plan } from "../../../managed-apps.types"
@@ -43,6 +44,7 @@ export function PlanSection() {
   const change = useChangeAccountPlan()
 
   const [pending, setPending] = useState<Plan | null>(null)
+  const [details, setDetails] = useState<Plan | null>(null)
   const [contactOpen, setContactOpen] = useState(false)
 
   // The tier every account is on until it upgrades: the catalogue's first row,
@@ -149,6 +151,7 @@ export function PlanSection() {
             blockedReason={blockedReasonOf(plan)}
             disabled={change.isPending}
             onChoose={setPending}
+            onDetails={setDetails}
             onContact={() => {
               setContactOpen(true)
             }}
@@ -203,6 +206,16 @@ export function PlanSection() {
               setPending(null)
             },
           })
+        }}
+      />
+
+      <PlanDetailsSheet
+        plan={details}
+        features={catalog?.features ?? []}
+        current={details?.code === current?.code}
+        open={details !== null}
+        onOpenChange={(open) => {
+          if (!open) setDetails(null)
         }}
       />
 

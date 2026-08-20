@@ -1,5 +1,5 @@
 import { Button, cn } from "@datadack/common-ui"
-import { ArrowDownRight, ArrowUpRight, Check } from "lucide-react"
+import { ArrowDownRight, ArrowUpRight, Check, ListTree } from "lucide-react"
 
 import { formatPrice, planHighlights, PlanTierArt } from "../../../components"
 import type { Plan } from "../../../managed-apps.types"
@@ -17,6 +17,7 @@ interface PlanChangeCardProps {
   blockedReason?: string
   disabled?: boolean
   onChoose: (plan: Plan) => void
+  onDetails: (plan: Plan) => void
   /** Pressed instead of onChoose for a tier that has no list price. */
   onContact?: () => void
 }
@@ -44,6 +45,7 @@ export function PlanChangeCard({
   blockedReason,
   disabled,
   onChoose,
+  onDetails,
   onContact,
 }: Readonly<PlanChangeCardProps>) {
   const current = direction === "current"
@@ -120,6 +122,18 @@ export function PlanChangeCard({
       </dl>
 
       <div className="mt-auto space-y-1 pt-0.5">
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="w-full gap-1.5 text-muted-foreground"
+          onClick={() => {
+            onDetails(plan)
+          }}
+        >
+          <ListTree className="size-3.5" />
+          View details
+        </Button>
         <Button
           type="button"
           variant={variant}

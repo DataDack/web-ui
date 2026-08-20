@@ -1,6 +1,5 @@
 import { Button, cn, Skeleton } from "@datadack/common-ui"
-import { AlertCircle, ExternalLink, Sparkles } from "lucide-react"
-import { useTranslation } from "react-i18next"
+import { AlertCircle, ArrowUpRight, Sparkles } from "lucide-react"
 import { Link } from "react-router-dom"
 
 import { QuotaMeter } from "./QuotaMeter"
@@ -10,7 +9,7 @@ import { formatLimit, formatPrice, planQuotaRows } from "../plan/plan-format"
 import { PlanTierArt } from "../plan/PlanTierArt"
 
 interface PlanLimitsPanelProps {
-  /** Renders the way to Settings. Off on the settings page itself. */
+  /** Renders the way to the upgrade page. Off on the upgrade page itself. */
   showChangeLink?: boolean
   className?: string
 }
@@ -33,7 +32,6 @@ export function PlanLimitsPanel({
   showChangeLink = true,
   className,
 }: Readonly<PlanLimitsPanelProps>) {
-  const { t } = useTranslation()
   const { data: account, isLoading } = useAccountPlan()
   const { data: plans, isLoading: plansLoading } = usePlans()
 
@@ -91,14 +89,11 @@ export function PlanLimitsPanel({
         </div>
 
         {showChangeLink && (
-          // A new tab, deliberately. This panel sits inside the create flow and
-          // a project's settings — both hold unsaved form state that navigating
-          // away would discard, for a link that is only ever a detour.
           <Button asChild variant="ghost" size="sm" className="h-7 gap-1.5 text-[12px]">
-            <Link to={MANAGED_APPS_ROUTES.settings} target="_blank" rel="noreferrer">
+            <Link to={MANAGED_APPS_ROUTES.upgrade}>
               <Sparkles className="size-3.5" />
-              {t("managedApps.index.changePlan")}
-              <ExternalLink className="size-3" />
+              Upgrade
+              <ArrowUpRight className="size-3" />
             </Link>
           </Button>
         )}

@@ -24,7 +24,7 @@ export function PlanUsageChip() {
 
   return (
     <Link
-      to={MANAGED_APPS_ROUTES.settings}
+      to={MANAGED_APPS_ROUTES.upgrade}
       className={cn(
         "group inline-flex items-center gap-2 rounded-full border px-2.5 py-1 text-[12px] transition-colors",
         spent

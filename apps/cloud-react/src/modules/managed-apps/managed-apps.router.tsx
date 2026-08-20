@@ -13,14 +13,22 @@ export const managedAppsRoutes: RouteObject[] = [
     },
   },
   {
-    // Section settings. The account's tier lives here and nowhere else —
-    // it is account-scoped (the quotas it sells cap the whole account), so
-    // neither the create flow nor a project's own settings may change it.
+    // Connections and other account-scoped configuration. Plan selection is a
+    // focused flow on /upgrade, rather than another settings/sidebar section.
     path: "managed-apps/settings",
     lazy: async () => {
       const { ManagedAppsSettingsPage } =
         await import("./partials/settings/ManagedAppsSettingsPage")
       return { Component: ManagedAppsSettingsPage }
+    },
+  },
+  {
+    path: "managed-apps/upgrade",
+    handle: { hideSidebar: true },
+    lazy: async () => {
+      const { ManagedAppsUpgradePage } =
+        await import("./partials/settings/ManagedAppsUpgradePage")
+      return { Component: ManagedAppsUpgradePage }
     },
   },
   {
