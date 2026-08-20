@@ -208,7 +208,7 @@ export function PromoCodeDetailSheet({ code, onOpenChange, onEdit }: Readonly<Pr
                     <CopyButton
                       value={code.code}
                       label={code.code}
-                      copiedLabel={t("common.copied")}
+                      copiedLabel={t("console.copy.copied")}
                       className="text-sm font-semibold tracking-wider"
                     />
                     <span className="text-muted-foreground">·</span>
@@ -216,7 +216,7 @@ export function PromoCodeDetailSheet({ code, onOpenChange, onEdit }: Readonly<Pr
                       value={shareLink}
                       label={t("superAdmin.promoCodes.detail.copyLink")}
                       mono={false}
-                      copiedLabel={t("common.copied")}
+                      copiedLabel={t("superAdmin.promoCodes.toasts.linkCopied")}
                       className="text-sm"
                     />
                   </div>
