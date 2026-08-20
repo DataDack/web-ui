@@ -18,6 +18,7 @@ import {
   Scale,
   Server,
   ServerCog,
+  Ticket,
   SlidersHorizontal,
   Boxes,
 } from "lucide-react"
@@ -126,6 +127,13 @@ export const ADMIN_NAV: AdminNavGroup[] = [
         labelKey: "superAdmin.bandwidthPrices.title",
         icon: Gauge,
         path: "/admin/bandwidth-prices",
+      },
+      // Beside the price tables, not under platform settings: a promo code is a
+      // price decision — the same money these tables set, given away.
+      {
+        labelKey: "superAdmin.promoCodes.title",
+        icon: Ticket,
+        path: "/admin/promo-codes",
       },
     ],
   },

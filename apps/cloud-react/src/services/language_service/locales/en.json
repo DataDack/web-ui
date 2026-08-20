@@ -1217,7 +1217,8 @@
       "usage": "Usage",
       "ledger": "Transactions",
       "paymentMethods": "Payment methods",
-      "budgets": "Budgets"
+      "budgets": "Budgets",
+      "promotions": "Promotions"
     },
     "overview": {
       "subtitle": "Your wallet, spend trends and cost breakdown at a glance.",
@@ -1242,7 +1243,11 @@
       "runwayHealthy": "Healthy",
       "runwayLow": "Running low",
       "runwayEmpty": "No burn",
-      "toppedUp": "Total topped up"
+      "toppedUp": "Total topped up",
+      "split": {
+        "added": "Added by you",
+        "granted": "Granted"
+      }
     },
     "lowBalance": {
       "empty": "Your wallet is empty. Top up to keep your resources running.",
@@ -1363,6 +1368,75 @@
       "runwayLeft": "Runway left",
       "continueAnyway": "Continue anyway",
       "addCredits": "Add credits"
+    },
+    "promotions": {
+      "allServices": "all services",
+      "scopes": {
+        "compute": "Compute",
+        "storage": "Storage",
+        "network": "Networking",
+        "loadbalancer": "Load Balancers",
+        "hosting": "Shared Hosting",
+        "managedapps": "Managed Apps"
+      },
+      "redeem": {
+        "label": "Promo code",
+        "title": "Have a code?",
+        "subtitle": "Apply it to add credit to your wallet or to get a discount on what you launch.",
+        "placeholder": "Enter your code",
+        "check": "Check code",
+        "apply": "Apply"
+      },
+      "preview": {
+        "credit": "{{amount}} will be added to your balance",
+        "discount": "{{pct}}% off, applied to what you launch",
+        "covers": "Covers {{scope}}",
+        "until": "launch by {{date}}"
+      },
+      "wallet": {
+        "title": "Where your balance came from",
+        "subtitle": "One wallet, two ways money gets into it.",
+        "purchased": "Added by you",
+        "purchasedHint": "Credit you've bought, all time",
+        "granted": "Granted to you",
+        "grantedHint": "Promotional credit, all time",
+        "balance": "Available now",
+        "balanceHint": "What's left to spend",
+        "note": "Up to {{amount}} of your current balance is promotional. It spends exactly like credit you buy — on any service, with no expiry.",
+        "noneYet": "You haven't been granted any promotional credit yet. Anything you're given lands in this same wallet and spends the same way."
+      },
+      "active": {
+        "title": "Applied to your account",
+        "subtitle": "Promotions currently affecting what you pay.",
+        "empty": "Nothing applied right now",
+        "emptyHint": "Enter a code above to apply one."
+      },
+      "past": {
+        "title": "Previously applied",
+        "subtitle": "Promotions that have ended or been withdrawn."
+      },
+      "row": {
+        "credited": "credited to your wallet",
+        "covers": "covers {{scope}}",
+        "until": "Launch by {{date}}",
+        "noExpiry": "No end date",
+        "ended": "Ended",
+        "revoked": "Withdrawn"
+      },
+      "errors": {
+        "not_found": "That code isn't recognised. Check the spelling and try again.",
+        "paused": "This promotion isn't running at the moment.",
+        "not_started": "This promotion hasn't started yet.",
+        "expired": "This promotion has ended.",
+        "exhausted": "This promotion has been fully claimed.",
+        "already_redeemed": "You've already used this promotion.",
+        "new_accounts_only": "This promotion is only available to new accounts.",
+        "generic": "Couldn't apply that code. Try again in a moment."
+      },
+      "toasts": {
+        "creditApplied": "₹{{amount}} added to your balance",
+        "discountApplied": "{{pct}}% off is now active on your account"
+      }
     }
   },
   "vpc": {
@@ -4128,6 +4202,166 @@
         "delete_info": "Permanently remove your data from our systems"
       },
       "notSelected": "Not selected"
+    },
+    "promoCodes": {
+      "title": "Promo codes",
+      "subtitle": "Campaigns that grant wallet credit or discount what an account launches. Share a code or its link; the limits below decide how far it spreads.",
+      "add": "New code",
+      "empty": "No promo codes yet",
+      "emptySubtitle": "Create one to hand out wallet credit or a discount on the services you choose.",
+      "noResults": "No codes match this filter",
+      "noResultsSubtitle": "Try a different state, or clear the search.",
+      "searchPlaceholder": "Search by code or campaign name",
+      "filters": {
+        "all": "All states"
+      },
+      "states": {
+        "active": "Active",
+        "scheduled": "Scheduled",
+        "paused": "Paused",
+        "expired": "Ended",
+        "exhausted": "Fully claimed"
+      },
+      "redemptionStates": {
+        "active": "Active",
+        "expired": "Ended",
+        "revoked": "Revoked"
+      },
+      "kinds": {
+        "credit": "Wallet credit",
+        "creditBlurb": "A one-off amount added to the account's balance.",
+        "percent_off": "Percentage off",
+        "percentBlurb": "A discount on what the account launches while it runs."
+      },
+      "scopes": {
+        "compute": "Compute",
+        "storage": "Storage",
+        "network": "Networking",
+        "loadbalancer": "Load Balancers",
+        "hosting": "Shared Hosting",
+        "managedapps": "Managed Apps"
+      },
+      "reward": {
+        "credit": "{{amount}} credit",
+        "creditHint": "Added to the wallet once",
+        "percent": "{{pct}} off",
+        "allServices": "All services"
+      },
+      "usage": {
+        "unlimited": "Unlimited uses"
+      },
+      "stats": {
+        "activeCodes": "Campaigns running",
+        "redemptions": "Total redemptions",
+        "creditsGranted": "Credit granted",
+        "activeDiscounts": "Discounts in force"
+      },
+      "fields": {
+        "code": "Code",
+        "name": "Campaign name",
+        "description": "What the customer sees",
+        "kind": "Reward",
+        "reward": "Reward",
+        "creditAmount": "Credit granted",
+        "discountPct": "Discount",
+        "appliesTo": "Applies to",
+        "durationDays": "Discount lasts",
+        "maxRedemptions": "Total uses",
+        "perAccountLimit": "Uses per account",
+        "newAccountsOnly": "New accounts",
+        "newAccountMaxAge": "Account age limit (days)",
+        "startsAt": "Starts",
+        "endsAt": "Ends",
+        "state": "State",
+        "usage": "Redemptions",
+        "window": "Window",
+        "creditsGranted": "Credit granted so far"
+      },
+      "form": {
+        "createTitle": "New promo code",
+        "editTitle": "Edit promo code",
+        "subtitle": "What the code grants, and how far it is allowed to spread.",
+        "create": "Create code",
+        "save": "Save changes",
+        "generate": "Generate",
+        "codeHint": "What customers type. Case doesn't matter — it's matched upper-cased.",
+        "codeLocked": "The code can't be changed once it exists — customers already have it.",
+        "nameHint": "Internal label, shown only here.",
+        "namePlaceholder": "Launch week",
+        "descriptionHint": "Appears on the redemption receipt, the confirmation email and the ledger line.",
+        "descriptionPlaceholder": "₹500 launch credit for new accounts",
+        "kindLocked": "The reward type can't be changed after redemptions exist.",
+        "creditHint": "Added to the account's wallet the moment the code is applied.",
+        "discountHint": "Comes off the pre-tax price of each resource launched while the promotion runs.",
+        "appliesToHint": "Leave everything unchecked to cover every service, including ones added later.",
+        "durationHint": "Days the account can keep launching at this rate. 0 runs until the campaign ends. Anything already launched keeps its rate.",
+        "limitsSection": "Who can use it",
+        "unlimited": "Unlimited redemptions",
+        "unlimitedHint": "Anyone with the link or the code can claim it, with no ceiling.",
+        "maxRedemptionsHint": "How many accounts can claim it in total.",
+        "perAccountHint": "How many times one account may use it. Usually 1.",
+        "newOnly": "New accounts only",
+        "newOnlyHint": "Restrict it to accounts created recently.",
+        "startsAtHint": "Leave empty to start immediately.",
+        "startPaused": "Create paused",
+        "startPausedHint": "Set it up now, switch it on when the campaign launches.",
+        "exposureCapped": "At most {{amount}} if all {{count}} are claimed.",
+        "exposureUnlimited": "{{amount}} per redemption, with no cap on the total."
+      },
+      "actions": {
+        "copyLink": "Copy share link",
+        "viewRedemptions": "View redemptions",
+        "pause": "Pause",
+        "resume": "Resume",
+        "revoke": "Revoke"
+      },
+      "detail": {
+        "shareTitle": "Share this promotion",
+        "shareHint": "The link pre-fills the code on the customer's billing page. Signed-out visitors sign in first and land back on it.",
+        "copyLink": "Copy link",
+        "noDescription": "No customer-facing description set.",
+        "redemptions": "Redemptions",
+        "noRedemptions": "Nobody has used this code yet",
+        "noRedemptionsHint": "Share the code or its link to get started.",
+        "notApplicable": "—",
+        "immediately": "Immediately",
+        "noEnd": "No end date",
+        "untilCampaignEnds": "Until the campaign ends",
+        "days": "{{count}} day",
+        "days_other": "{{count}} days",
+        "newerThan": "Newer than {{count}} day",
+        "newerThan_other": "Newer than {{count}} days",
+        "anyAccount": "Any account"
+      },
+      "redemptionFields": {
+        "account": "Account",
+        "user": "Redeemed by",
+        "granted": "Granted",
+        "status": "Status",
+        "redeemedAt": "When"
+      },
+      "revoke": {
+        "title": "Revoke this redemption?",
+        "description": "{{account}} stops getting the discount on anything launched from now on. Resources already running keep the rate they were launched at, and any credit already granted is not taken back.",
+        "reasonLabel": "Reason",
+        "reasonPlaceholder": "Why is this being withdrawn?",
+        "note": "The reason is stored on the redemption so it can be explained later."
+      },
+      "delete": {
+        "title": "Delete this promo code?",
+        "description": "{{code}} has never been redeemed, so deleting it removes it completely. A code that has been used can only be paused."
+      },
+      "toasts": {
+        "created": "Promo code created",
+        "updated": "Promo code updated",
+        "deleted": "Promo code deleted",
+        "paused": "Promotion paused",
+        "resumed": "Promotion resumed",
+        "revoked": "Redemption revoked",
+        "failed": "Couldn't save the promo code",
+        "linkCopied": "Share link copied",
+        "linkCopyFailed": "Couldn't copy the link"
+      }
     }
   },
   "region": {

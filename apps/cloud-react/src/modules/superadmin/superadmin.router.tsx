@@ -188,6 +188,16 @@ export const superadminRoutes: RouteObject[] = [
         element: <Navigate to="/admin/static-ips" replace />,
       },
       {
+        // Campaigns: what a code grants, how far it may spread, and who used it.
+        // Under pricing rather than platform because a promo code is a price
+        // decision — it is the same money the price tables set, given away.
+        path: "promo-codes",
+        lazy: async () => {
+          const { PromoCodesPage } = await import("./partials/PromoCodesPage")
+          return { Component: PromoCodesPage }
+        },
+      },
+      {
         path: "bandwidth-prices",
         lazy: async () => {
           const { BandwidthPricesPage } = await import("./partials/BandwidthPricesPage")

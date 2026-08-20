@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
 import { MetricChart, Section } from "@/components/console"
+import { useWalletSplit } from "@/modules/promotions"
 
 import { BILLING_ROUTES, GST_RATE } from "../billing.constants"
 import { useBillingOutlet } from "../billing.context"
@@ -22,6 +23,9 @@ export function BillingOverviewPage() {
   const { data: ledger = [] } = useLedger(balance?.account_id)
   const { data: usage = [] } = useUsage()
   const { data: purchases = [] } = useCreditPurchases()
+  // Where the balance came from. Optional to the hero, which hides the split
+  // entirely on an account that has never been granted anything.
+  const { data: split } = useWalletSplit()
 
   const spend = useMemo(() => spendSeries(ledger), [ledger])
   const spendTotal = useMemo(() => spend.reduce((a, b) => a + b, 0), [spend])
@@ -85,6 +89,7 @@ export function BillingOverviewPage() {
         ledger={ledger}
         usage={usage}
         purchases={purchases}
+        split={split}
         loading={balanceLoading}
       />
 

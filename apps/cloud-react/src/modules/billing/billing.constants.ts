@@ -4,6 +4,7 @@ export const BILLING_ROUTES = {
   INVOICES: "/billing/invoices",
   USAGE: "/billing/usage",
   LEDGER: "/billing/ledger",
+  PROMOTIONS: "/billing/promotions",
   PAYMENT_METHODS: "/billing/payment-methods",
   BUDGETS: "/billing/budgets",
 } as const

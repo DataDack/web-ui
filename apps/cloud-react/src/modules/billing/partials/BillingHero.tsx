@@ -1,10 +1,12 @@
 import { useMemo } from "react"
 
 import { cn, Skeleton } from "@datadack/common-ui"
-import { Flame, TimerReset, Wallet } from "lucide-react"
+import { Flame, Gift, TimerReset, Wallet } from "lucide-react"
 import { useTranslation } from "react-i18next"
+import { Link } from "react-router-dom"
 
 import { AnimatedNumber, Sparkline } from "@/components/console"
+import type { WalletSplit } from "@/modules/promotions"
 
 import { GST_RATE } from "../billing.constants"
 import type { CreditBalance, CreditPurchase, LedgerEntry, UsageRecordApi } from "../billing.types"
@@ -15,6 +17,9 @@ interface BillingHeroProps {
   ledger: LedgerEntry[]
   usage: UsageRecordApi[]
   purchases: CreditPurchase[]
+  /** Where the balance came from. Absent while it loads, or on an account that
+   *  has never been granted anything — see WalletSplitLine. */
+  split?: WalletSplit
   loading: boolean
 }
 
@@ -30,6 +35,7 @@ export function BillingHero({
   ledger,
   usage,
   purchases,
+  split,
   loading,
 }: Readonly<BillingHeroProps>) {
   const { t } = useTranslation()
@@ -72,6 +78,8 @@ export function BillingHero({
             />
           )}
 
+          {!loading && <WalletSplitLine split={split} />}
+
           <div className="mt-4 h-10 w-full max-w-md text-brand-gold">
             <Sparkline
               data={series}
@@ -108,6 +116,43 @@ export function BillingHero({
           value={loading ? null : inr(totalPurchased)}
         />
       </div>
+    </div>
+  )
+}
+
+/**
+ * The light separation between what the customer paid for and what they were
+ * given.
+ *
+ * Rendered only when something HAS been granted. On the overwhelming majority of
+ * accounts nothing has, and a permanent "Granted ₹0" line would be a row of
+ * furniture explaining a distinction that does not apply to them.
+ *
+ * It sits under the balance rather than beside it, at label weight, because it
+ * annotates that number — it does not compete with it. There is one wallet and
+ * one spendable total; this only says where the money came in from.
+ */
+function WalletSplitLine({ split }: Readonly<{ split?: WalletSplit }>) {
+  const { t } = useTranslation()
+  if (!split || split.granted <= 0) return null
+
+  return (
+    <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px]">
+      <span className="text-muted-foreground">
+        {t("billing.hero.split.added")}{" "}
+        <span className="font-mono tabular-nums text-foreground">{inr(split.purchased)}</span>
+      </span>
+      <span className="text-border" aria-hidden>
+        |
+      </span>
+      <Link
+        to="/billing/promotions"
+        className="inline-flex items-center gap-1 rounded text-brand-gold transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-ring/50"
+      >
+        <Gift className="size-3.5" />
+        {t("billing.hero.split.granted")}{" "}
+        <span className="font-mono tabular-nums">{inr(split.granted)}</span>
+      </Link>
     </div>
   )
 }

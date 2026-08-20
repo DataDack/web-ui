@@ -27,6 +27,9 @@ const NAV_TABS: NavTab[] = [
   { to: BILLING_ROUTES.INVOICES, labelKey: "billing.nav.invoices" },
   { to: BILLING_ROUTES.USAGE, labelKey: "billing.nav.usage" },
   { to: BILLING_ROUTES.LEDGER, labelKey: "billing.nav.ledger" },
+  // Ahead of the two "coming soon" tabs: this one is live, and a working tab
+  // sitting behind two that are not reads as unfinished too.
+  { to: BILLING_ROUTES.PROMOTIONS, labelKey: "billing.nav.promotions" },
   { to: BILLING_ROUTES.PAYMENT_METHODS, labelKey: "billing.nav.paymentMethods", soon: true },
   { to: BILLING_ROUTES.BUDGETS, labelKey: "billing.nav.budgets", soon: true },
 ]

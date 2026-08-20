@@ -37,6 +37,15 @@ export const billingRoutes: RouteObject[] = [
         },
       },
       {
+        // Redeem a code, and see what redeeming one actually did — including the
+        // split between credit the customer bought and credit they were given.
+        path: "promotions",
+        lazy: async () => {
+          const { PromotionsPage } = await import("./partials/PromotionsPage")
+          return { Component: PromotionsPage }
+        },
+      },
+      {
         path: "payment-methods",
         lazy: async () => {
           const { PaymentMethodsPage } = await import("./partials/PaymentMethodsPage")
