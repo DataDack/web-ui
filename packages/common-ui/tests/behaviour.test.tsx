@@ -310,7 +310,7 @@ describe("Select", () => {
           <SelectValue placeholder="Pick one" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="ap-south-1">ap-south-1</SelectItem>
+          <SelectItem value="ap-south-3">ap-south-3</SelectItem>
           <SelectItem value="ap-south-3">ap-south-3</SelectItem>
         </SelectContent>
       </Select>,

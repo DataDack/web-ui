@@ -20,8 +20,8 @@ const queryClient = new QueryClient()
 const fn: FunctionEntity = {
   name: "test",
   resourceGroupId: "",
-  region: "ap-south-1",
-  functionArn: "arn:aws:lambda:ap-south-1:000000000001:function:test",
+  region: "ap-south-3",
+  functionArn: "arn:aws:lambda:ap-south-3:000000000001:function:test",
   packageType: "zip",
   runtime: "nodejs20.x",
   handler: "index.handler",
