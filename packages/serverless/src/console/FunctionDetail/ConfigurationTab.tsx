@@ -126,7 +126,7 @@ export function ConfigurationTab({
   className,
 }: Readonly<ConfigurationTabProps>) {
   const config = labels.configuration
-  const [networkTab, setNetworkTab] = useState<NetworkTab>("url")
+  const [networkTab, setNetworkTab] = useState<NetworkTab>("edge")
   const available = CONFIGURATION_SECTIONS.map((section) => section.value)
   const resolved = activeSection && available.includes(activeSection) ? activeSection : "general"
 

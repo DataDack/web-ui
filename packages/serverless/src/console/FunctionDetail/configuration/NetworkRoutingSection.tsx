@@ -13,9 +13,9 @@ import { NetworkSection } from "./NetworkSection"
 export type NetworkTab = "url" | "vpc" | "edge"
 
 const tabs = [
+  { value: "edge", label: "Edge function", detail: "Global", icon: Globe2 },
   { value: "url", label: "URL routing", detail: "Endpoint", icon: Link2 },
   { value: "vpc", label: "VPC connectivity", detail: "Private", icon: Network },
-  { value: "edge", label: "Edge distribution", detail: "Global", icon: Globe2 },
 ] as const
 
 const tabViewport = css`

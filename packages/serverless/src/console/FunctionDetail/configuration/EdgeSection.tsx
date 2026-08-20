@@ -1,4 +1,4 @@
-import { Activity, CircleDot, Globe2, Link2, RadioTower } from "lucide-react"
+import { Activity, Globe2, Link2 } from "lucide-react"
 
 import { css, cx, fontMono, glass2, media, mix } from "@datadack/common-ui"
 
@@ -21,7 +21,7 @@ const panel = css`
 `
 
 const topology = css`
-  min-height: 520px;
+  min-height: 480px;
 `
 
 const side = css`
@@ -76,91 +76,79 @@ const dot = css`
 
 const map = css`
   position: relative;
-  min-height: 440px;
+  min-height: 400px;
   overflow: hidden;
   border: 1px solid ${mix("--border", 65)};
   border-radius: 0.5rem;
   background:
-    radial-gradient(circle at 67% 53%, ${mix("--brand-gold", 16)} 0, transparent 18%),
-    radial-gradient(circle at 25% 45%, ${mix("--muted-foreground", 10)} 0, transparent 20%),
-    linear-gradient(${mix("--border", 24)} 1px, transparent 1px),
-    linear-gradient(90deg, ${mix("--border", 24)} 1px, transparent 1px), ${mix("--background", 75)};
-  background-size:
-    auto,
-    auto,
-    32px 32px,
-    32px 32px,
-    auto;
-`
+    radial-gradient(circle at 50% 46%, ${mix("--brand-gold", 9)}, transparent 48%),
+    linear-gradient(135deg, ${mix("--foreground", 3)}, transparent 45%), ${mix("--background", 78)};
 
-const orbit = css`
-  position: absolute;
-  inset: 15% 9%;
-  border: 1px solid ${mix("--brand-gold", 18)};
-  border-radius: 50%;
-  transform: rotate(-8deg);
-
-  &::after {
-    position: absolute;
-    inset: 18% -2%;
-    border: 1px solid ${mix("--brand-gold", 14)};
-    border-radius: 50%;
-    content: "";
-    transform: rotate(15deg);
+  @media (max-width: 520px) {
+    min-height: 350px;
   }
 `
 
-const mapCenter = css`
+const globe = css`
   position: absolute;
-  top: 50%;
-  left: 67%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  transform: translate(-50%, -50%);
+  inset: 10px 4px 38px;
+  width: calc(100% - 8px);
+  height: calc(100% - 48px);
 `
 
-const hub = css`
+const marker = css`
+  position: absolute;
+  z-index: 1;
   display: flex;
-  width: 58px;
-  height: 58px;
   align-items: center;
-  justify-content: center;
-  border: 1px solid ${mix("--brand-gold", 50)};
-  border-radius: 50%;
-  background: ${mix("--brand-gold", 12)};
-  box-shadow: 0 0 0 12px ${mix("--brand-gold", 5)};
-  color: var(--brand-gold);
+  gap: 6px;
+  transform: translate(-7px, -50%);
 `
 
 const hubLabel = css`
+  max-width: min(190px, 40vw);
   border-radius: 0.25rem;
-  background: var(--background);
-  padding: 3px 7px;
+  background: ${mix("--background", 94)};
+  padding: 4px 7px;
   font-family: ${fontMono};
   font-size: 10px;
+  line-height: 1.3;
   color: var(--foreground);
+  overflow-wrap: anywhere;
 `
 
-const planned = css`
-  position: absolute;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-family: ${fontMono};
-  font-size: 9px;
-  color: var(--muted-foreground);
+const markerDot = css`
+  width: 10px;
+  height: 10px;
+  flex: 0 0 auto;
+  border: 2px solid ${mix("--background", 90)};
+  border-radius: 50%;
+  background: var(--brand-gold);
+  box-shadow: 0 0 0 5px ${mix("--brand-gold", 18)};
 `
 
-const plannedOne = css`
-  top: 42%;
-  left: 21%;
+const originMarker = css`
+  top: 50%;
+  left: 58%;
 `
 
-const plannedTwo = css`
-  top: 30%;
-  left: 47%;
+const usMarker = css`
+  top: 39%;
+  left: 25%;
+`
+
+const euMarker = css`
+  top: 32%;
+  left: 50%;
+`
+
+const plannedDot = css`
+  width: 8px;
+  height: 8px;
+  flex: 0 0 auto;
+  border: 1px solid ${mix("--muted-foreground", 72)};
+  border-radius: 50%;
+  background: ${mix("--background", 92)};
 `
 
 const mapNote = css`
@@ -247,20 +235,100 @@ export function EdgeSection({ fn }: Readonly<{ fn: FunctionEntity }>) {
           </span>
         </header>
         <div className={map}>
-          <div className={orbit} aria-hidden />
-          <div className={mapCenter}>
-            <span className={hub}>
-              <RadioTower size={25} />
-            </span>
-            <span className={hubLabel}>{region}</span>
-          </div>
-          <span className={cx(planned, plannedOne)}>
-            <CircleDot size={10} />
-            US edge planned
+          <svg
+            className={globe}
+            viewBox="0 0 700 390"
+            preserveAspectRatio="xMidYMid meet"
+            aria-hidden
+          >
+            <defs>
+              <radialGradient id="edge-ocean" cx="34%" cy="28%" r="72%">
+                <stop offset="0" stopColor="var(--foreground)" stopOpacity="0.13" />
+                <stop offset="0.55" stopColor="var(--muted-foreground)" stopOpacity="0.07" />
+                <stop offset="1" stopColor="var(--background)" stopOpacity="0.96" />
+              </radialGradient>
+              <linearGradient id="edge-land" x1="0" y1="0" x2="1" y2="1">
+                <stop stopColor="var(--muted-foreground)" stopOpacity="0.38" />
+                <stop offset="1" stopColor="var(--muted-foreground)" stopOpacity="0.13" />
+              </linearGradient>
+              <clipPath id="edge-sphere">
+                <circle cx="350" cy="190" r="158" />
+              </clipPath>
+              <filter id="edge-depth" x="-30%" y="-30%" width="160%" height="160%">
+                <feDropShadow
+                  dx="0"
+                  dy="14"
+                  stdDeviation="15"
+                  floodColor="var(--foreground)"
+                  floodOpacity="0.13"
+                />
+              </filter>
+            </defs>
+            <circle
+              cx="350"
+              cy="190"
+              r="158"
+              fill="url(#edge-ocean)"
+              stroke="var(--border)"
+              strokeWidth="1.5"
+              filter="url(#edge-depth)"
+            />
+            <g
+              clipPath="url(#edge-sphere)"
+              fill="none"
+              stroke="var(--muted-foreground)"
+              strokeOpacity="0.2"
+              strokeWidth="1"
+            >
+              <ellipse cx="350" cy="190" rx="112" ry="158" />
+              <ellipse cx="350" cy="190" rx="55" ry="158" />
+              <path d="M192 190h316M205 130c82 30 208 30 290 0M205 250c82-30 208-30 290 0" />
+              <ellipse cx="350" cy="190" rx="158" ry="83" />
+            </g>
+            <g
+              clipPath="url(#edge-sphere)"
+              fill="url(#edge-land)"
+              stroke="var(--muted-foreground)"
+              strokeOpacity="0.25"
+              strokeWidth="0.8"
+            >
+              <path d="M205 111l18-20 35-11 36 7 17 20-16 12-9 22-20 8-5 27-22 4-13-20-18-10-13-23z" />
+              <path d="M271 181l24 7 12 22-8 32-17 39-15 12-8-35-18-30 8-31z" />
+              <path d="M336 96l22-17 46-4 29 15 39 8 25 23-12 16-36-4-18 15-25-8-19 13-19-11-31 6-17-17 8-18z" />
+              <path d="M373 156l34-7 34 17 14 29-10 35-28 39-22-7-7-35-20-26-9-27z" />
+              <path d="M468 239l30 4 18 23-18 19-34-8-9-20z" />
+              <path d="M330 292c49 12 91 12 132-2l-22 28-76 10z" />
+            </g>
+            <path
+              d="M224 262c62 70 205 91 288 14"
+              fill="none"
+              stroke="var(--brand-gold)"
+              strokeOpacity="0.22"
+              strokeWidth="1.5"
+              strokeDasharray="4 7"
+            />
+            <ellipse
+              cx="326"
+              cy="155"
+              rx="130"
+              ry="151"
+              fill="none"
+              stroke="var(--foreground)"
+              strokeOpacity="0.06"
+              strokeWidth="13"
+            />
+          </svg>
+          <span className={cx(marker, originMarker)}>
+            <span className={markerDot} />
+            <span className={hubLabel}>Origin · {region}</span>
           </span>
-          <span className={cx(planned, plannedTwo)}>
-            <CircleDot size={10} />
-            EU edge planned
+          <span className={cx(marker, usMarker)}>
+            <span className={plannedDot} />
+            <span className={hubLabel}>US edge · planned</span>
+          </span>
+          <span className={cx(marker, euMarker)}>
+            <span className={plannedDot} />
+            <span className={hubLabel}>EU edge · planned</span>
           </span>
           <p className={mapNote}>Edge distribution is not enabled for this function.</p>
         </div>
