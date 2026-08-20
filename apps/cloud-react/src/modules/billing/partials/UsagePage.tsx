@@ -1,9 +1,5 @@
 import { useMemo, useState } from "react"
 
-import type { ColumnDef } from "@tanstack/react-table"
-import { Activity, CreditCard, Layers } from "lucide-react"
-import { useTranslation } from "react-i18next"
-
 import {
   DataTable,
   dateColumn,
@@ -12,11 +8,72 @@ import {
   statusColumn,
   textColumn,
 } from "@datadack/common-ui"
+import type { ColumnDef } from "@tanstack/react-table"
+import { Activity, CreditCard, Layers } from "lucide-react"
+import { useTranslation } from "react-i18next"
+
 import { type AnimatedTab, AnimatedTabs, StatGrid } from "@/components/console"
 
 import { useSubscriptions, useUsage } from "../billing.hooks"
 import type { SubscriptionApi, UsageRecordApi } from "../billing.types"
 import { inr } from "../billing.utils"
+
+interface UsageRow {
+  id: string
+  resource_id: string | null
+  resource_urn: string
+  service: string
+  meters: Pick<UsageRecordApi, "quantity" | "unit" | "unit_price">[]
+  cost: number
+  period_end: string
+}
+
+function usageUnit(unit: string, quantity: number) {
+  if (unit === "invocation") return quantity === 1 ? "invocation" : "invocations"
+  if (unit === "gb_second") return quantity === 1 ? "GB-second" : "GB-seconds"
+  return unit
+}
+
+function resourceIdFromUrn(urn: string) {
+  const parts = urn.split(":").filter(Boolean)
+  return parts.at(-1) === "faas" ? (parts.at(-2) ?? urn) : (parts.at(-1) ?? urn)
+}
+
+/** Combine the component meters that make up one resource's charge for a period. */
+function combineUsageRecords(usage: UsageRecordApi[]): UsageRow[] {
+  const rows = new Map<string, UsageRow>()
+
+  for (const record of usage) {
+    const isServerlessMeter =
+      record.metric === "function_invocations" || record.metric === "function_gb_seconds"
+    const key = isServerlessMeter
+      ? [record.resource_urn, record.service, record.period_start, record.period_end].join("|")
+      : record.id
+    const existing = rows.get(key)
+    const meter = {
+      quantity: record.quantity,
+      unit: record.unit,
+      unit_price: record.unit_price,
+    }
+
+    if (existing) {
+      existing.meters.push(meter)
+      existing.cost += record.cost
+    } else {
+      rows.set(key, {
+        id: key,
+        resource_id: record.resource_id,
+        resource_urn: record.resource_urn,
+        service: record.service,
+        meters: [meter],
+        cost: record.cost,
+        period_end: record.period_end,
+      })
+    }
+  }
+
+  return [...rows.values()]
+}
 
 export function UsagePage() {
   const { t } = useTranslation()
@@ -32,6 +89,12 @@ export function UsagePage() {
     isError: subsError,
     refetch: refetchSubs,
   } = useSubscriptions()
+
+  const usageRows = useMemo(() => combineUsageRecords(usage), [usage])
+  const resourceNames = useMemo(
+    () => new Map(subscriptions.map((subscription) => [subscription.resource_id, subscription.description])),
+    [subscriptions],
+  )
 
   const usageStats = useMemo(() => {
     const totalUsed = usage.reduce((sum, r) => sum + r.cost, 0)
@@ -54,46 +117,56 @@ export function UsagePage() {
     ]
   }, [usage, t])
 
-  const usageColumns = useMemo<ColumnDef<UsageRecordApi>[]>(
+  const usageColumns = useMemo<ColumnDef<UsageRow>[]>(
     () => [
-      nameColumn<UsageRecordApi>({
+      nameColumn<UsageRow>({
         header: t("billing.columns.resource"),
-        accessor: (r) => r.resource_urn,
+        accessor: (r) => {
+          const resourceId = r.resource_id ?? resourceIdFromUrn(r.resource_urn)
+          const resourceName = r.resource_id ? resourceNames.get(r.resource_id) : undefined
+          return resourceName?.trim() ? resourceName : resourceId
+        },
       }),
-      textColumn<UsageRecordApi>({
+      textColumn<UsageRow>({
         id: "service",
         header: t("billing.columns.service"),
         accessor: (r) => r.service,
       }),
-      textColumn<UsageRecordApi>({
+      textColumn<UsageRow>({
         id: "quantity",
         header: t("billing.columns.quantity"),
-        accessor: (r) => `${String(r.quantity)} ${r.unit}`,
+        accessor: (r) =>
+          r.meters
+            .map((meter) => `${String(meter.quantity)} ${usageUnit(meter.unit, meter.quantity)}`)
+            .join(" + "),
         mono: true,
         responsive: "md",
       }),
-      textColumn<UsageRecordApi>({
+      textColumn<UsageRow>({
         id: "rate",
         header: t("billing.columns.rate"),
-        accessor: (r) => `${inr(r.unit_price)}/${r.unit}`,
+        accessor: (r) =>
+          r.meters
+            .map((meter) => `${inr(meter.unit_price)}/${usageUnit(meter.unit, 1)}`)
+            .join(" + "),
         mono: true,
         muted: true,
         responsive: "md",
       }),
-      textColumn<UsageRecordApi>({
+      textColumn<UsageRow>({
         id: "used",
         header: t("billing.columns.used"),
         accessor: (r) => inr(r.cost),
         mono: true,
       }),
-      dateColumn<UsageRecordApi>({
+      dateColumn<UsageRow>({
         id: "period",
         header: t("billing.columns.period"),
         accessor: (r) => r.period_end,
         responsive: "lg",
       }),
     ],
-    [t],
+    [resourceNames, t],
   )
 
   const subscriptionColumns = useMemo<ColumnDef<SubscriptionApi>[]>(
@@ -142,7 +215,7 @@ export function UsagePage() {
         value: "usage",
         label: t("billing.sections.usageTitle"),
         icon: Activity,
-        count: usage.length,
+        count: usageRows.length,
       },
       {
         value: "subscriptions",
@@ -151,7 +224,7 @@ export function UsagePage() {
         count: subscriptions.length,
       },
     ],
-    [t, usage.length, subscriptions.length],
+    [t, usageRows.length, subscriptions.length],
   )
 
   return (
@@ -168,8 +241,8 @@ export function UsagePage() {
       />
 
       {activeTab === "usage" ? (
-        <DataTable<UsageRecordApi>
-          data={usage}
+        <DataTable<UsageRow>
+          data={usageRows}
           columns={usageColumns}
           loading={usageLoading}
           error={usageError ? t("console.table.error") : undefined}

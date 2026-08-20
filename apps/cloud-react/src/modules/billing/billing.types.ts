@@ -148,6 +148,8 @@ export interface UsageRecordApi {
   id: string
   created_at: string
   account_id: string
+  /** Resource UUID when the meter belongs to a platform resource. */
+  resource_id: string | null
   resource_urn: string
   service: string
   metric: string
@@ -167,6 +169,7 @@ export interface SubscriptionApi {
   id: string
   created_at: string
   account_id: string
+  resource_id: string
   resource_urn: string
   resource_kind: string
   service: string
