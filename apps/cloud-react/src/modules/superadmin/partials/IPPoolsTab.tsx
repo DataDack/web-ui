@@ -448,13 +448,14 @@ function MetricCard({
 
 /** Name first, CIDR demoted to a subline, status as a pill beside the name. */
 function PoolCell({ pool }: Readonly<{ pool: IpPool }>) {
+  const source = `${String(pool.total_count)} mapped pairs`
   return (
     <div className="flex flex-col gap-1">
       <div className="flex items-center gap-2">
         <span className="font-mono text-[13px] font-medium text-foreground">{pool.name}</span>
         <ActiveBadge active={pool.is_active} />
       </div>
-      <span className="font-mono text-[11px] tabular-nums text-muted-foreground">{pool.cidr}</span>
+      <span className="font-mono text-[11px] tabular-nums text-muted-foreground">{source}</span>
     </div>
   )
 }

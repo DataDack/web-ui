@@ -145,6 +145,16 @@ export function PoolDetailPage() {
         ),
       },
       {
+        id: "associated_address",
+        accessorFn: (address) => address.associated_ip,
+        header: () => "Associated IP",
+        cell: ({ row }) => (
+          <span className="font-mono text-[13px] tabular-nums text-foreground">
+            {row.original.associated_ip}
+          </span>
+        ),
+      },
+      {
         id: "status",
         accessorFn: (a) => a.status,
         header: () => t("superAdmin.staticIps.addresses.columns.status"),
@@ -202,16 +212,13 @@ export function PoolDetailPage() {
           { label: pool?.name ?? t("superAdmin.staticIps.addresses.title") },
         ]}
         title={pool?.name ?? t("superAdmin.staticIps.addresses.title")}
-        description={t("superAdmin.staticIps.pools.addressesSubtitle", {
-          cidr: pool?.cidr ?? data?.cidr ?? "",
-        })}
+        description="Public addresses and their provider-associated internal addresses."
       />
 
-      <PoolFacts
-        cidr={pool?.cidr ?? data?.cidr ?? ""}
+      <InventoryFacts
+        count={addresses.length}
         region={pool?.region ?? ""}
         az={azCode}
-        gateway={pool?.gateway ?? data?.gateway ?? ""}
         loading={isLoading}
       />
 
@@ -433,14 +440,13 @@ function HolderCell({ address }: Readonly<{ address: PoolAddress }>) {
   return <span className="text-[12px] text-muted-foreground">—</span>
 }
 
-/** The block's fixed facts, on one line above the address table. */
-function PoolFacts({
-  cidr,
+/** The mapping batch's fixed facts, on one line above the address table. */
+function InventoryFacts({
+  count,
   region,
   az,
-  gateway,
   loading,
-}: Readonly<{ cidr: string; region: string; az: string; gateway: string; loading: boolean }>) {
+}: Readonly<{ count: number; region: string; az: string; loading: boolean }>) {
   const { t } = useTranslation()
 
   if (loading) {
@@ -455,10 +461,9 @@ function PoolFacts({
 
   return (
     <div className="glass-1 flex flex-wrap items-center gap-x-6 gap-y-3 px-4 py-3">
-      <Fact label={t("superAdmin.staticIps.dialog.cidr")} value={cidr} />
+      <Fact label="Mappings" value={String(count)} />
       <Fact label={t("superAdmin.staticIps.dialog.region")} value={region || "—"} />
       <Fact label={t("superAdmin.staticIps.dialog.az")} value={az || "—"} />
-      <Fact label={t("superAdmin.staticIps.dialog.gatewayLabel")} value={gateway || "—"} />
     </div>
   )
 }

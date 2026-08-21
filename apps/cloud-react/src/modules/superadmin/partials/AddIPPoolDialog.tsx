@@ -1,16 +1,7 @@
-import { useEffect, useMemo } from "react"
-
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Network } from "lucide-react"
-import { Controller, useForm, useWatch } from "react-hook-form"
-import { useTranslation } from "react-i18next"
-import { z } from "zod/v4"
-
-import { CidrInput } from "@/components/console"
+import { useEffect, useState } from "react"
 
 import {
   Button,
-  cn,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -24,32 +15,29 @@ import {
   SelectValue,
   Textarea,
 } from "@datadack/common-ui"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Network } from "lucide-react"
+import { Controller, useForm } from "react-hook-form"
+import { useTranslation } from "react-i18next"
+import { z } from "zod/v4"
 
 import { Field } from "../components/form-fields"
-import { describeCidr } from "../ip-utils"
 import { useAdminAvailabilityZones, useSaveIPPool } from "../superadmin.hooks"
 import type { CreateIPPoolRequest } from "../superadmin.types"
 
-// Pools are stock blocks, so the prefix selector favours small ranges.
-const POOL_PREFIXES = [22, 24, 25, 26, 27, 28, 29, 30, 31, 32]
-
 const schema = z.object({
-  cidr: z.string().refine((v) => !!describeCidr(v)?.info, "Enter a valid IPv4 CIDR block"),
   availability_zone_id: z.string().min(1, "Required"),
   name: z.string().max(100),
-  gateway: z.string(),
   description: z.string().max(255),
 })
 
 type FormValues = z.infer<typeof schema>
-
-const EMPTY: FormValues = {
-  cidr: "",
-  availability_zone_id: "",
-  name: "",
-  gateway: "",
-  description: "",
+interface AddressPair {
+  public_ip: string
+  associated_ip: string
 }
+
+const EMPTY: FormValues = { availability_zone_id: "", name: "", description: "" }
 
 function optional(value: string) {
   const trimmed = value.trim()
@@ -65,6 +53,9 @@ export function AddIPPoolDialog({ open, onOpenChange }: Readonly<Props>) {
   const { t } = useTranslation()
   const { mutate: save, isPending } = useSaveIPPool()
   const { data: azs = [] } = useAdminAvailabilityZones()
+  const [pairText, setPairText] = useState("")
+  const [pairError, setPairError] = useState("")
+  const pairs = parsePairs(pairText)
 
   const {
     register,
@@ -75,18 +66,22 @@ export function AddIPPoolDialog({ open, onOpenChange }: Readonly<Props>) {
   } = useForm<FormValues>({ resolver: zodResolver(schema), defaultValues: EMPTY })
 
   useEffect(() => {
-    if (open) reset(EMPTY)
+    if (open) {
+      reset(EMPTY)
+      setPairText("")
+      setPairError("")
+    }
   }, [open, reset])
 
-  const cidr = useWatch({ control, name: "cidr" })
-  const preview = useMemo(() => describeCidr(cidr), [cidr])
-
   const onSubmit = (values: FormValues) => {
+    if (pairs.length === 0) {
+      setPairError("Enter at least one valid public and associated IPv4 pair")
+      return
+    }
     const payload: CreateIPPoolRequest = {
-      cidr: values.cidr,
+      pairs,
       availability_zone_id: values.availability_zone_id,
       name: optional(values.name),
-      gateway: optional(values.gateway),
       description: optional(values.description),
     }
     save(
@@ -101,39 +96,38 @@ export function AddIPPoolDialog({ open, onOpenChange }: Readonly<Props>) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="glass-3 gap-0 p-0 overflow-hidden sm:max-w-5xl">
+      <DialogContent className="glass-3 gap-0 overflow-hidden p-0 sm:max-w-5xl">
         <DialogHeader className="px-6 py-5">
           <DialogTitle className="flex items-center gap-2">
             <Network className="size-4" />
-            {t("superAdmin.staticIps.dialog.title")}
+            Register static IP mappings
           </DialogTitle>
-          <DialogDescription>{t("superAdmin.staticIps.dialog.subtitle")}</DialogDescription>
+          <DialogDescription>
+            Enter each customer-facing public IP with the address associated by your provider.
+          </DialogDescription>
         </DialogHeader>
 
-        <div className="grid md:grid-cols-2 border-t border-border-glass">
-          {/* Left: the form */}
+        <div className="grid border-t border-border-glass md:grid-cols-2">
           <form
-            onSubmit={(e) => void handleSubmit(onSubmit)(e)}
-            className="flex flex-col gap-5 p-6 md:border-r border-border-glass"
+            onSubmit={(event) => void handleSubmit(onSubmit)(event)}
+            className="flex flex-col gap-5 border-border-glass p-6 md:border-r"
           >
-            <Field
-              label={t("superAdmin.staticIps.dialog.cidr")}
-              required
-              error={errors.cidr?.message}
-            >
-              <Controller
-                control={control}
-                name="cidr"
-                render={({ field }) => (
-                  <CidrInput
-                    value={field.value}
-                    onChange={field.onChange}
-                    prefixOptions={POOL_PREFIXES}
-                    aria-invalid={!!errors.cidr}
-                    aria-label={t("superAdmin.staticIps.dialog.cidr")}
-                  />
-                )}
+            <Field label="Public and associated IP pairs" required error={pairError || undefined}>
+              <Textarea
+                value={pairText}
+                onChange={(event) => {
+                  setPairText(event.target.value)
+                  setPairError("")
+                }}
+                rows={8}
+                className="font-mono"
+                placeholder={"103.228.151.132, 10.100.105.2\n103.228.151.134, 10.100.105.3"}
+                aria-describedby="mapped-pairs-help"
               />
+              <p id="mapped-pairs-help" className="text-xs text-muted-foreground">
+                One pair per line. The first address is shown to customers; the second is used
+                internally with Proxmox.
+              </p>
             </Field>
 
             <Field
@@ -153,9 +147,9 @@ export function AddIPPoolDialog({ open, onOpenChange }: Readonly<Props>) {
                       <SelectValue placeholder={t("superAdmin.staticIps.dialog.azPlaceholder")} />
                     </SelectTrigger>
                     <SelectContent>
-                      {azs.map((a) => (
-                        <SelectItem key={a.id} value={a.id}>
-                          {a.code}
+                      {azs.map((zone) => (
+                        <SelectItem key={zone.id} value={zone.id}>
+                          {zone.code}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -164,19 +158,8 @@ export function AddIPPoolDialog({ open, onOpenChange }: Readonly<Props>) {
               />
             </Field>
 
-            <Field label={t("superAdmin.staticIps.dialog.name")} error={errors.name?.message}>
-              <Input
-                {...register("name")}
-                placeholder={t("superAdmin.staticIps.dialog.namePlaceholder")}
-              />
-            </Field>
-
-            <Field label={t("superAdmin.staticIps.dialog.gateway")} error={errors.gateway?.message}>
-              <Input
-                {...register("gateway")}
-                className="font-mono"
-                placeholder={t("superAdmin.staticIps.dialog.gatewayPlaceholder")}
-              />
+            <Field label="Group name" error={errors.name?.message}>
+              <Input {...register("name")} placeholder="Noida provider mappings" />
             </Field>
 
             <Field
@@ -187,64 +170,21 @@ export function AddIPPoolDialog({ open, onOpenChange }: Readonly<Props>) {
             </Field>
 
             <Button type="submit" disabled={isPending} className="mt-1 gap-2" loading={isPending}>
-              {t("superAdmin.staticIps.pools.add")}
+              Register mappings
             </Button>
           </form>
 
-          {/* Right: live address preview */}
           <div className="flex flex-col bg-muted/30">
-            <div className="px-6 py-4 border-b border-border-glass">
-              <p className="text-xs font-semibold tracking-wide uppercase text-muted-foreground">
-                {t("superAdmin.staticIps.dialog.preview")}
+            <div className="border-b border-border-glass px-6 py-4">
+              <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+                Mapping preview
               </p>
-              {preview?.info ? (
-                <p className="mt-1 text-sm font-medium text-foreground">
-                  {t("superAdmin.staticIps.dialog.usableSummary", {
-                    usable: preview.info.usableCount,
-                    total: preview.info.totalCount,
-                  })}
-                </p>
-              ) : (
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {preview?.error ?? t("superAdmin.staticIps.dialog.previewEmpty")}
-                </p>
-              )}
+              <p className="mt-1 text-sm font-medium text-foreground">
+                {pairs.length} valid mappings
+              </p>
             </div>
-
-            {preview?.info && (
-              <div className="grid grid-cols-3 gap-2 px-6 py-3 text-[11px] border-b border-border-glass">
-                <PreviewMeta
-                  label={t("superAdmin.staticIps.dialog.network")}
-                  value={preview.info.network}
-                />
-                <PreviewMeta
-                  label={t("superAdmin.staticIps.dialog.gatewayLabel")}
-                  value={preview.info.gateway}
-                />
-                <PreviewMeta
-                  label={t("superAdmin.staticIps.dialog.broadcast")}
-                  value={preview.info.broadcast}
-                />
-              </div>
-            )}
-
-            <div className="max-h-70 flex-1 overflow-y-auto px-6 py-3">
-              {preview?.info ? (
-                <ul className="grid grid-cols-2 gap-1.5 lg:grid-cols-3">
-                  {preview.info.hosts.map((host) => (
-                    <li
-                      key={host}
-                      className="rounded-md border border-border-glass bg-background/60 px-2 py-1 font-mono text-[12px] tabular-nums text-foreground"
-                    >
-                      {host}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <div className="flex h-full min-h-35 items-center justify-center text-center text-xs text-muted-foreground">
-                  {t("superAdmin.staticIps.dialog.previewEmpty")}
-                </div>
-              )}
+            <div className="max-h-96 flex-1 overflow-y-auto px-6 py-3">
+              <MappingPreview pairs={pairs} />
             </div>
           </div>
         </div>
@@ -253,11 +193,39 @@ export function AddIPPoolDialog({ open, onOpenChange }: Readonly<Props>) {
   )
 }
 
-function PreviewMeta({ label, value }: Readonly<{ label: string; value: string }>) {
+function parsePairs(value: string): AddressPair[] {
+  const ipv4 = /^(?:\d{1,3}\.){3}\d{1,3}$/
+  return value
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const [publicIP = "", associatedIP = ""] = line.split(/\s*(?:,|↔|--|\s+)\s*/)
+      return { public_ip: publicIP, associated_ip: associatedIP }
+    })
+    .filter((pair) => ipv4.test(pair.public_ip) && ipv4.test(pair.associated_ip))
+}
+
+function MappingPreview({ pairs }: Readonly<{ pairs: AddressPair[] }>) {
+  if (pairs.length === 0) {
+    return (
+      <div className="flex min-h-40 items-center justify-center text-center text-xs text-muted-foreground">
+        Enter mappings to preview the inventory rows.
+      </div>
+    )
+  }
   return (
-    <div className={cn("flex flex-col gap-0.5")}>
-      <span className="text-muted-foreground">{label}</span>
-      <span className="font-mono tabular-nums text-foreground">{value}</span>
-    </div>
+    <ul className="space-y-1.5">
+      {pairs.map((pair) => (
+        <li
+          key={pair.public_ip}
+          className="rounded-md border border-border-glass bg-background/60 px-3 py-2 font-mono text-xs"
+        >
+          <span>{pair.public_ip}</span>
+          <span className="mx-2 text-muted-foreground">↔</span>
+          <span>{pair.associated_ip}</span>
+        </li>
+      ))}
+    </ul>
   )
 }

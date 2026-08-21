@@ -862,11 +862,7 @@ export interface ReorderServicesRequest {
   ids: string[]
 }
 
-/* ── IP pools (static IP inventory) ─────────────────────────────────────── */
-// System-level blocks of public IPv4 addresses the platform owns. Tenant static
-// IPs are allocated from these pools; `used`/`available` are computed server-side
-// by diffing the block against the static IPs already allocated from it.
-// (cloud-be-go: /vpc/ippools/*, super-admin only.)
+/* ── Static IP mapping inventory ────────────────────────────────────────── */
 
 export type IpPoolStatus = "active" | "disabled" | "depleted"
 
@@ -892,21 +888,20 @@ export interface IpPool {
   // never reports withheld stock as customer stock.
   blocked: number
   available: number
+  entry_method: "mapped"
 }
 
 // A pool is tied to an availability zone; the backend derives its region from
 // the AZ's zone.
 export interface CreateIPPoolRequest {
   name?: string
-  cidr: string
   availability_zone_id: string
-  gateway?: string
   description?: string
+  pairs: { public_ip: string; associated_ip: string }[]
 }
 
 export interface UpdateIPPoolRequest {
   name?: string
-  gateway?: string
   description?: string
   status?: IpPoolStatus
   is_active?: boolean
@@ -919,6 +914,7 @@ export type PoolAddressStatus = "free" | "available" | "associated" | "blocked"
 
 export interface PoolAddress {
   ip_address: string
+  associated_ip: string
   status: PoolAddressStatus
   static_ip_id?: string
   name?: string
@@ -928,16 +924,7 @@ export interface PoolAddress {
 }
 
 export interface PoolExpansion {
-  cidr: string
-  network: string
-  broadcast: string
-  gateway: string
-  prefix: number
-  total_count: number
-  usable_count: number
   addresses: PoolAddress[]
-  // Present when expanding an EXISTING pool (the drill-in), absent for the
-  // Add-pool dialog's preview of a block that has no pool yet.
   pool?: IpPool
 }
 
