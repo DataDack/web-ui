@@ -1,7 +1,15 @@
 import { useMemo, useState } from "react"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { AlertTriangle, KeyRound, Loader2, Server, ShieldCheck, Webhook } from "lucide-react"
+import {
+  AlertTriangle,
+  Database,
+  KeyRound,
+  Loader2,
+  Server,
+  ShieldCheck,
+  Webhook,
+} from "lucide-react"
 import { Controller, useForm, type UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
@@ -36,6 +44,7 @@ import type {
   PVENode,
   UpdatePVENodeRequest,
 } from "../superadmin.types"
+import { TemplateSyncDialog } from "./ProxmoxManagerPage"
 
 const LIST_PATH = "/admin/pve-nodes"
 const STATUSES = ["online", "offline", "maintenance"] as const
@@ -154,6 +163,7 @@ function PVENodeForm({
   const navigate = useNavigate()
   const isEdit = !!node
   const id = node?.id
+  const [syncOpen, setSyncOpen] = useState(false)
 
   const { mutate: save, isPending } = useSavePVENode()
 
@@ -340,6 +350,30 @@ function PVENodeForm({
 
       {node && (
         <div className="mx-auto mt-6 max-w-2xl space-y-6">
+          <Section
+            variant="panel"
+            title="OS template synchronization"
+            description="Compare this node with every active OS version in the central catalog, preview changes, sync, or roll back the last sync."
+            actions={
+              <Button
+                type="button"
+                variant="gold"
+                size="sm"
+                onClick={() => {
+                  setSyncOpen(true)
+                }}
+              >
+                <Database className="size-4" />
+                Check &amp; sync
+              </Button>
+            }
+          >
+            <p className="text-[12px] text-muted-foreground">
+              The preview is read-only. Templates are created only after confirmation, and existing
+              VMIDs are never replaced.
+            </p>
+          </Section>
+          <TemplateSyncDialog node={node} open={syncOpen} onOpenChange={setSyncOpen} />
           <AgentCredentialsSection node={node} />
           <NodeWebhookSection node={node} />
         </div>
@@ -814,7 +848,7 @@ function GatewayStep({ form }: Readonly<{ form: UseFormReturn<FormValues> }>) {
         <FieldError message={form.formState.errors.vyos_template_vmid?.message} />
       </div>
 
-      {Number(vmid) === 0 && (
+      {vmid === 0 && (
         <div className="flex items-start gap-2 rounded-md border border-status-warning/40 bg-status-warning/10 p-3">
           <AlertTriangle className="mt-0.5 size-4 shrink-0 text-status-warning" />
           <p className="text-[12px] text-muted-foreground">

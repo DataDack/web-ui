@@ -362,6 +362,41 @@ export interface ManagerStatus {
   latency_ms: number
 }
 
+export interface TemplateSyncDesired {
+  id: string
+  family: string
+  name: string
+  os_version: string
+  architecture: string
+  source_url: string
+  vmid: number
+  min_disk_gb: number
+}
+export interface TemplateSyncAction {
+  desired: TemplateSyncDesired
+  state: "present" | "create" | "blocked"
+  reason?: string
+}
+export interface TemplateRollbackItem {
+  vmid: number
+  name: string
+  possible: boolean
+  reason?: string
+}
+export interface TemplateRollbackPlan {
+  available: boolean
+  applied_at?: string
+  items: TemplateRollbackItem[]
+}
+export interface TemplateSyncPlan {
+  in_sync: boolean
+  available: boolean
+  message?: string
+  desired_count: number
+  actions: TemplateSyncAction[]
+  rollback?: TemplateRollbackPlan
+}
+
 /* ── Image (OS family with embedded versions) ──────────────────────────── */
 // The backend merged the former `image_families` and `amis` tables into a
 // single `images` resource: the top-level row is the OS-family grouping that

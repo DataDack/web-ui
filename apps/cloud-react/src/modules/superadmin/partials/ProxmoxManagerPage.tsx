@@ -15,6 +15,7 @@ import {
   ServerCog,
   ShieldCheck,
   ShieldQuestion,
+  Database,
 } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
@@ -30,12 +31,19 @@ import {
   cn,
   CopyButton,
   DataTable,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
   Input,
   TableCell,
   TableRow,
 } from "@datadack/common-ui"
 
 import { Field } from "../components/form-fields"
+import { superAdminApi } from "../superadmin.api"
 import { SUPERADMIN_QUERY_KEYS } from "../superadmin.constants"
 import {
   useAdminPVENodes,
@@ -44,7 +52,167 @@ import {
   useManagerStatus,
   useUpdateLBSettings,
 } from "../superadmin.hooks"
-import type { AgentCredentials, LBSettings, ManagerStatusState, PVENode } from "../superadmin.types"
+import type {
+  AgentCredentials,
+  LBSettings,
+  ManagerStatusState,
+  PVENode,
+  TemplateSyncPlan,
+} from "../superadmin.types"
+
+export function TemplateSyncDialog({
+  node,
+  open,
+  onOpenChange,
+}: Readonly<{ node: PVENode; open: boolean; onOpenChange: (v: boolean) => void }>) {
+  const [plan, setPlan] = useState<TemplateSyncPlan | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
+  const [confirmRollback, setConfirmRollback] = useState(false)
+  const load = async () => {
+    setLoading(true)
+    setError("")
+    try {
+      setPlan(await superAdminApi.previewTemplateSync(node.id))
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not check template state")
+    } finally {
+      setLoading(false)
+    }
+  }
+  const apply = async () => {
+    setLoading(true)
+    setError("")
+    try {
+      setPlan(await superAdminApi.applyTemplateSync(node.id))
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Template sync failed")
+    } finally {
+      setLoading(false)
+    }
+  }
+  const rollback = async () => {
+    setLoading(true)
+    setError("")
+    try {
+      await superAdminApi.rollbackTemplateSync(node.id)
+      await load()
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Rollback failed")
+      setLoading(false)
+    }
+  }
+  const creates = plan?.actions.filter((a) => a.state === "create") ?? []
+  const blocked = plan?.actions.filter((a) => a.state === "blocked") ?? []
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        onOpenChange(v)
+        if (v && !plan) void load()
+      }}
+    >
+      <DialogContent className="sm:max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>OS template sync · {node.name}</DialogTitle>
+          <DialogDescription>
+            Preview the active central OS catalog against this node. No changes happen until you
+            confirm.
+          </DialogDescription>
+        </DialogHeader>
+        {loading && !plan ? (
+          <div className="flex items-center gap-2 py-8 text-sm text-muted-foreground">
+            <Loader2 className="size-4 animate-spin" />
+            Checking node and central catalog…
+          </div>
+        ) : null}
+        {error ? (
+          <div
+            role="alert"
+            className="rounded-md border border-status-danger/30 bg-status-danger-bg/30 p-3 text-sm text-status-danger"
+          >
+            {error}
+          </div>
+        ) : null}
+        {plan ? (
+          <div className="max-h-[55vh] space-y-4 overflow-y-auto pr-1">
+            <div className="flex flex-wrap gap-2">
+              <Badge variant="outline">{plan.desired_count} active versions</Badge>
+              <Badge variant="outline">{creates.length} to create</Badge>
+              <Badge variant="outline">{blocked.length} blocked</Badge>
+              <Badge variant="outline">{plan.in_sync ? "In sync" : "Out of sync"}</Badge>
+            </div>
+            {plan.message ? <p className="text-sm text-status-warning">{plan.message}</p> : null}
+            <div className="divide-y divide-border rounded-md border border-border">
+              {plan.actions.map((a) => (
+                <div key={a.desired.id} className="flex items-start justify-between gap-4 p-3">
+                  <div>
+                    <p className="text-sm font-medium">{a.desired.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {a.desired.family} {a.desired.os_version} · {a.desired.architecture} · VMID{" "}
+                      {a.desired.vmid}
+                    </p>
+                    {a.reason ? (
+                      <p className="mt-1 text-xs text-muted-foreground">{a.reason}</p>
+                    ) : null}
+                  </div>
+                  <Badge variant="outline">{a.state}</Badge>
+                </div>
+              ))}
+            </div>
+            {plan.rollback?.available ? (
+              <div className="rounded-md border border-status-warning/30 p-3">
+                <p className="text-sm font-semibold">Rollback available</p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Only templates created by the last successful sync can be removed:{" "}
+                  {plan.rollback.items
+                    .filter((i) => i.possible)
+                    .map((i) => `${i.name} (VMID ${i.vmid})`)
+                    .join(", ")}
+                </p>
+              </div>
+            ) : null}
+          </div>
+        ) : null}
+        <DialogFooter>
+          <Button
+            variant="ghost"
+            onClick={() => {
+              onOpenChange(false)
+            }}
+          >
+            Close
+          </Button>
+          {plan?.rollback?.available ? (
+            <Button
+              variant="outline"
+              disabled={loading}
+              onClick={() => {
+                if (confirmRollback) void rollback()
+                else setConfirmRollback(true)
+              }}
+            >
+              <RotateCcw className="size-4" />
+              {confirmRollback ? "Confirm rollback" : "Rollback last sync"}
+            </Button>
+          ) : null}
+          <Button
+            variant="gold"
+            disabled={loading || !plan?.available || creates.length === 0 || blocked.length > 0}
+            onClick={() => void apply()}
+          >
+            {loading ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <Database className="size-4" />
+            )}
+            Create {creates.length || ""} template{creates.length === 1 ? "" : "s"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
 
 /* ── Manager connection ────────────────────────────────────────────────── */
 
@@ -192,6 +360,7 @@ function NodeManagerRow({ node }: Readonly<{ node: PVENode }>) {
   const status = useManagerStatus(node.id, true)
   const { mutate: generate, isPending: generating } = useGenerateAgentCredentials()
   const [issued, setIssued] = useState<AgentCredentials | null>(null)
+  const [syncOpen, setSyncOpen] = useState(false)
 
   const hasSecret = !!node.has_agent_secret
   const clientId = issued?.client_id ?? node.agent_client_id
@@ -275,6 +444,17 @@ function NodeManagerRow({ node }: Readonly<{ node: PVENode }>) {
           <div className="flex items-center justify-end gap-2">
             <Button
               type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setSyncOpen(true)
+              }}
+            >
+              <Database className="size-4" />
+              Sync templates
+            </Button>
+            <Button
+              type="button"
               variant="ghost"
               size="sm"
               onClick={() => void status.refetch()}
@@ -336,6 +516,7 @@ function NodeManagerRow({ node }: Readonly<{ node: PVENode }>) {
           </TableCell>
         </TableRow>
       )}
+      <TemplateSyncDialog node={node} open={syncOpen} onOpenChange={setSyncOpen} />
     </Fragment>
   )
 }
@@ -413,18 +594,36 @@ function ReleaseToken({ settings }: Readonly<{ settings: LBSettings }>) {
   const { t } = useTranslation()
   const { mutate: save, isPending } = useUpdateLBSettings()
   const [token, setToken] = useState("")
+  const [confirmClear, setConfirmClear] = useState(false)
 
   const configured = settings.manager_update_token_set
 
   const onSave = () => {
     const trimmed = token.trim()
     if (!trimmed) return
-    save({ manager_update_token: trimmed }, { onSuccess: () => setToken("") })
+    save(
+      { manager_update_token: trimmed },
+      {
+        onSuccess: () => {
+          setToken("")
+        },
+      },
+    )
   }
 
   const onClear = () => {
-    if (!globalThis.confirm(t("superAdmin.proxmoxManager.updateToken.clearConfirm"))) return
-    save({ manager_update_token: "" }, { onSuccess: () => setToken("") })
+    if (!confirmClear) {
+      setConfirmClear(true)
+      return
+    }
+    save(
+      { manager_update_token: "" },
+      {
+        onSuccess: () => {
+          setToken("")
+        },
+      },
+    )
   }
 
   return (
@@ -463,7 +662,9 @@ function ReleaseToken({ settings }: Readonly<{ settings: LBSettings }>) {
               spellCheck={false}
               placeholder={t("superAdmin.proxmoxManager.updateToken.placeholder")}
               value={token}
-              onChange={(e) => setToken(e.target.value)}
+              onChange={(e) => {
+                setToken(e.target.value)
+              }}
             />
           </Field>
         </div>
@@ -484,7 +685,9 @@ function ReleaseToken({ settings }: Readonly<{ settings: LBSettings }>) {
               onClick={onClear}
               disabled={isPending}
             >
-              {t("superAdmin.proxmoxManager.updateToken.clear")}
+              {confirmClear
+                ? t("superAdmin.proxmoxManager.updateToken.clearConfirm")
+                : t("superAdmin.proxmoxManager.updateToken.clear")}
             </Button>
           ) : null}
           <Button

@@ -44,6 +44,9 @@ import type {
   IpPool,
   LBSettings,
   ManagerStatus,
+  TemplateSyncPlan,
+  TemplateRollbackPlan,
+  TemplateRollbackItem,
   PlatformSettings,
   AddBlockedDomainsRequest,
   AddBlockedDomainsResponse,
@@ -171,6 +174,17 @@ export const superAdminApi = {
     apiPost<NodeWebhookRegistration>(`${BASE}/pve-nodes/${id}/webhook`, payload),
   // Live reachability of a node's LB manager (healthy / unreachable / no_manager).
   getManagerStatus: (id: string) => apiGet<ManagerStatus>(`${BASE}/pve-nodes/${id}/manager-status`),
+  previewTemplateSync: (id: string) =>
+    apiGet<TemplateSyncPlan>(`${BASE}/pve-nodes/${id}/template-sync/preview`),
+  applyTemplateSync: (id: string) =>
+    apiPost<TemplateSyncPlan>(`${BASE}/pve-nodes/${id}/template-sync/apply`, {}),
+  previewTemplateRollback: (id: string) =>
+    apiGet<TemplateRollbackPlan>(`${BASE}/pve-nodes/${id}/template-sync/rollback`),
+  rollbackTemplateSync: (id: string) =>
+    apiPost<{ rolled_back: boolean; items: TemplateRollbackItem[] }>(
+      `${BASE}/pve-nodes/${id}/template-sync/rollback`,
+      {},
+    ),
   // The node's own Proxmox rrd series for one window. Errors (rather than
   // synthesizing) when the cluster is unreachable or the node has no API token.
   getPVENodeMetrics: (id: string, range: PVENodeMetricRange, cf: PVENodeMetricCF) =>
