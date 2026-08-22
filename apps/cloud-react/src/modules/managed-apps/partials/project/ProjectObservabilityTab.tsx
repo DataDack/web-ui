@@ -27,8 +27,28 @@ export function ProjectObservabilityTab({ project }: Readonly<{ project: Project
 
   const points = data?.points ?? []
   const ready = !isLoading && points.length >= 2
-  const unavailable = !isLoading && data?.source !== "proxmox"
+  // Two different absences, told apart on purpose. A serverless project has no
+  // container to measure, which is a fact about its runtime; anything else is
+  // "there should be data here and there is not".
+  const serverless = !isLoading && data?.source === "serverless"
+  const unavailable = !isLoading && !serverless && data?.source !== "proxmox"
   const agoLabel = METRIC_RANGES.find((r) => r.value === range)?.ago ?? "24h ago"
+
+  if (serverless) {
+    return (
+      <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border/60 glass-1-bg px-6 py-14 text-center">
+        <div className="mb-4 flex size-12 items-center justify-center rounded-2xl glass-1-bg-raised">
+          <Activity className="size-6 text-muted-foreground" />
+        </div>
+        <h2 className="text-lg font-semibold text-foreground">No container to measure</h2>
+        <p className="mt-1.5 max-w-md text-[13px] text-muted-foreground">
+          This app runs on the serverless fleet rather than in a container of its own, so there is
+          no per-container CPU, memory or disk series to chart. Nothing is wrong — see the Analytics
+          tab for the traffic it is serving.
+        </p>
+      </div>
+    )
+  }
 
   if (unavailable) {
     // Honest, not "coming soon": either the container is not provisioned yet,

@@ -284,7 +284,17 @@ export interface Project {
   subnet_id: string | null
   /** Serialized as null while no build has ever deployed. */
   active_build_id: string | null
-  /** Proxmox container id — 0 until the provisioner lands. */
+  /**
+   * Where the app runs. "container" is an LXC guest of its own; "serverless" is
+   * a workload on the shared fleet, which has no container id, no node and no
+   * address — the fields below stay zero for one, and reading them as "not
+   * deployed yet" is the mistake this field exists to prevent.
+   *
+   * Absent on responses from a backend that predates the field, which means
+   * container.
+   */
+  runtime_target?: "container" | "serverless"
+  /** Proxmox container id — 0 until the provisioner lands, always 0 when serverless. */
   proxmox_ct_id: number
   /** Placement node — null until the provisioner lands. */
   pve_node_id: string | null
@@ -660,9 +670,15 @@ export interface ProjectMetricPoint {
  * GET /projects/:id/metrics. "unavailable" means the container is not
  * provisioned (or the cluster could not be read) and `points` is empty — the
  * platform never fabricates a series, so the tab says so instead of charting.
+ *
+ * "serverless" is a different absence and must not be shown as the same one:
+ * this series is container shaped (CPU, memory, disk, I/O, network of one
+ * guest) and a workload has none of those to report. Nothing is broken, and
+ * telling someone the cluster could not be read would send them looking for a
+ * fault that does not exist.
  */
 export interface ProjectMetrics {
-  source: "proxmox" | "unavailable"
+  source: "proxmox" | "unavailable" | "serverless"
   node?: string
   points: ProjectMetricPoint[]
 }

@@ -4,16 +4,45 @@ import { KeyValueGrid, Section } from "@/components/console"
 import type { Project } from "../../managed-apps.types"
 
 /**
- * The runtime container a project is served from.
+ * Where a project is served from.
  *
- * Every field here is written by the container provisioner, which does not
- * exist yet — so the panel says "waiting for the runtime fleet" rather than
- * rendering three em-dashes and letting the user wonder whether something
- * broke. An honest absence beats an ambiguous one.
+ * Two runtimes, and the panel must not describe one in the other's terms. A
+ * container project has a guest with an id and a node; a serverless one has
+ * neither, and rendering its zeroed container fields as "waiting for the
+ * runtime fleet" would tell a live app's owner that nothing is running it.
+ *
+ * For a container that genuinely has not been provisioned the panel still says
+ * so plainly, rather than rendering three em-dashes and letting the user wonder
+ * whether something broke. An honest absence beats an ambiguous one.
  */
 export function RuntimePanel({ project }: Readonly<{ project: Project }>) {
   const { t } = useTranslation()
+  const serverless = project.runtime_target === "serverless"
   const provisioned = project.served || project.proxmox_ct_id !== 0
+
+  if (serverless) {
+    return (
+      <Section
+        variant="panel"
+        title="Runtime"
+        description="This app runs on the shared serverless fleet."
+      >
+        <KeyValueGrid
+          columns={2}
+          items={[
+            { label: "Runtime", value: "Serverless" },
+            {
+              // Same as the container case, and for the same reason: a workload
+              // is reached through the edge by hostname and has no address a
+              // customer could connect to.
+              label: "Networking",
+              value: "Private, behind the edge",
+            },
+          ]}
+        />
+      </Section>
+    )
+  }
 
   return (
     <Section
