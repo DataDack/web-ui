@@ -2679,12 +2679,14 @@
       "quotaRequests": "कोटा अनुरोध",
       "overview": "अवलोकन",
       "tenancy": "टेनेंसी",
+      "ledger": "लेजर",
       "groups": {
         "tenancy": "टेनेंसी",
         "attention": "ध्यान चाहिए",
         "catalog": "कैटलॉग",
         "infrastructure": "इंफ्रास्ट्रक्चर",
         "pricing": "मूल्य निर्धारण",
+        "billing": "बिलिंग",
         "platform": "प्लेटफ़ॉर्म"
       }
     },

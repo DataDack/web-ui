@@ -2849,12 +2849,14 @@
       "overview": "Overview",
       "tenancy": "Tenancy",
       "resources": "Resources",
+      "ledger": "Ledger",
       "groups": {
         "tenancy": "Tenancy",
         "attention": "Needs attention",
         "catalog": "Catalog",
         "infrastructure": "Infrastructure",
         "pricing": "Pricing",
+        "billing": "Billing",
         "platform": "Platform"
       }
     },

@@ -15,6 +15,7 @@ import {
   Package,
   MapPin,
   Network,
+  ReceiptText,
   Scale,
   Server,
   ServerCog,
@@ -27,6 +28,7 @@ export interface AdminNavItem {
   labelKey: string
   icon: LucideIcon
   path: string
+  comingSoon?: boolean
 }
 
 export interface AdminNavGroup {
@@ -128,12 +130,21 @@ export const ADMIN_NAV: AdminNavGroup[] = [
         icon: Gauge,
         path: "/admin/bandwidth-prices",
       },
-      // Beside the price tables, not under platform settings: a promo code is a
-      // price decision — the same money these tables set, given away.
+    ],
+  },
+  {
+    labelKey: "superAdmin.nav.groups.billing",
+    items: [
       {
         labelKey: "superAdmin.promoCodes.title",
         icon: Ticket,
         path: "/admin/promo-codes",
+      },
+      {
+        labelKey: "superAdmin.nav.ledger",
+        icon: ReceiptText,
+        path: "/admin/ledger",
+        comingSoon: true,
       },
     ],
   },
@@ -152,4 +163,6 @@ export const ADMIN_NAV: AdminNavGroup[] = [
 ]
 
 /** Every navigable admin path, flattened — for tests and breadcrumbs. */
-export const ADMIN_NAV_ITEMS: AdminNavItem[] = ADMIN_NAV.flatMap((group) => group.items)
+export const ADMIN_NAV_ITEMS: AdminNavItem[] = ADMIN_NAV.flatMap((group) => group.items).filter(
+  (item) => !item.comingSoon,
+)

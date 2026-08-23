@@ -38,6 +38,22 @@ export function AdminSidebar({ onNavigate }: Readonly<{ onNavigate?: () => void 
             <ul className="flex flex-col gap-0.5">
               {group.items.map((item) => {
                 const Icon = item.icon
+                if (item.comingSoon) {
+                  return (
+                    <li key={item.path}>
+                      <div
+                        aria-disabled="true"
+                        className="flex cursor-not-allowed items-center gap-2 rounded-md px-2 py-1.5 text-[12px] leading-4 text-muted-foreground/60"
+                      >
+                        <Icon className="size-3.5 shrink-0" />
+                        <span className="min-w-0 flex-1 truncate">{t(item.labelKey)}</span>
+                        <span className="shrink-0 font-mono text-[8px] uppercase tracking-wide">
+                          {t("comingSoon.badge")}
+                        </span>
+                      </div>
+                    </li>
+                  )
+                }
                 return (
                   <li key={item.path}>
                     <NavLink
