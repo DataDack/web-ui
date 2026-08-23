@@ -4,7 +4,6 @@ import type { ColumnDef } from "@tanstack/react-table"
 import { AlertTriangle, Boxes, Download, Search, SlidersHorizontal } from "lucide-react"
 import { Link, useSearchParams } from "react-router-dom"
 
-
 import { PageHeader } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
@@ -61,7 +60,9 @@ function FilterSelect({
       {label}
       <select
         value={value}
-        onChange={(event) => { onChange(event.target.value); }}
+        onChange={(event) => {
+          onChange(event.target.value)
+        }}
         className="h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
       >
         <option value="">All {label.toLowerCase()}</option>
@@ -148,6 +149,7 @@ export function AdminResourcesPage() {
     account_id: param(search, "account"),
     owner_id: param(search, "owner"),
     failure_only: param(search, "failed") === "true" || undefined,
+    include_deleted: param(search, "deleted") === "true" || undefined,
     page,
     limit: 50,
   }
@@ -155,7 +157,9 @@ export function AdminResourcesPage() {
     useAdminResourceInventory(filters)
   const selected =
     data?.items.find((row) => `${row.account_id}:${row.type}:${row.id}` === selectedKey) ?? null
-  const closeDetail = () => { set("resource", "", false); }
+  const closeDetail = () => {
+    set("resource", "", false)
+  }
   const types = [
     ...coreTypes,
     ...(data?.options.types ?? []).filter((item) => !coreTypes.includes(item)),
@@ -186,7 +190,9 @@ export function AdminResourcesPage() {
         cell: ({ row }) => (
           <div>
             <Link
-              onClick={(event) => { event.stopPropagation(); }}
+              onClick={(event) => {
+                event.stopPropagation()
+              }}
               className="font-medium text-link hover:underline"
               to={`/admin/accounts/${row.original.account_id}/resources`}
             >
@@ -211,11 +217,14 @@ export function AdminResourcesPage() {
       textColumn<AdminResource>({
         id: "region",
         header: "Region",
-        accessor: (row) => row.region?.trim() ? row.region : "—",
+        accessor: (row) => (row.region?.trim() ? row.region : "—"),
         mono: true,
         responsive: "lg",
       }),
-      statusColumn<AdminResource>({ header: "Status", accessor: (row) => row.status?.trim() ? row.status : "unknown" }),
+      statusColumn<AdminResource>({
+        header: "Status",
+        accessor: (row) => (row.status?.trim() ? row.status : "unknown"),
+      }),
       {
         id: "failure",
         header: "Failure",
@@ -250,7 +259,9 @@ export function AdminResourcesPage() {
     by_type: {},
     by_status: {},
   }
-  const clear = () => { setSearch(new URLSearchParams(), { replace: true }); }
+  const clear = () => {
+    setSearch(new URLSearchParams(), { replace: true })
+  }
   return (
     <div className="space-y-5">
       <PageHeader
@@ -263,7 +274,9 @@ export function AdminResourcesPage() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => { downloadCsv(data?.items ?? []); }}
+              onClick={() => {
+                downloadCsv(data?.items ?? [])
+              }}
               disabled={!data?.items.length}
             >
               <Download className="size-4" />
@@ -289,7 +302,12 @@ export function AdminResourcesPage() {
         <Summary label="In progress" value={summary.pending} tone="text-status-warning" />
         <Summary label="Failed" value={summary.failed} tone="text-status-danger" />
       </section>
-      <Tabs value={type} onValueChange={(value) => { set("type", value === "all" ? "" : value); }}>
+      <Tabs
+        value={type}
+        onValueChange={(value) => {
+          set("type", value === "all" ? "" : value)
+        }}
+      >
         <TabsList aria-label="Resource type">
           {types.map((value) => (
             <TabsTrigger key={value} value={value}>
@@ -305,7 +323,10 @@ export function AdminResourcesPage() {
         aria-label="Resource filters"
         className="flex flex-wrap items-end gap-3 rounded-lg border border-border bg-muted/20 p-3"
       >
-        <label htmlFor="resource-search" className="flex min-w-64 flex-1 flex-col gap-1 text-xs font-medium text-muted-foreground">
+        <label
+          htmlFor="resource-search"
+          className="flex min-w-64 flex-1 flex-col gap-1 text-xs font-medium text-muted-foreground"
+        >
           Search resources or accounts
           <div className="relative">
             <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2" />
@@ -313,7 +334,9 @@ export function AdminResourcesPage() {
               id="resource-search"
               type="search"
               value={query}
-              onChange={(event) => { set("q", event.target.value); }}
+              onChange={(event) => {
+                set("q", event.target.value)
+              }}
               placeholder="Name, ID, account, or account number"
               className="pl-9"
             />
@@ -323,39 +346,61 @@ export function AdminResourcesPage() {
           label="Status"
           value={param(search, "status")}
           options={(options?.statuses ?? []).map((value) => ({ value, label: value }))}
-          onChange={(value) => { set("status", value); }}
+          onChange={(value) => {
+            set("status", value)
+          }}
         />
         <FilterSelect
           label="Region"
           value={param(search, "region")}
           options={(options?.regions ?? []).map((value) => ({ value, label: value }))}
-          onChange={(value) => { set("region", value); }}
+          onChange={(value) => {
+            set("region", value)
+          }}
         />
         <FilterSelect
           label="Service"
           value={param(search, "service")}
           options={(options?.services ?? []).map((value) => ({ value, label: value }))}
-          onChange={(value) => { set("service", value); }}
+          onChange={(value) => {
+            set("service", value)
+          }}
         />
         <FilterSelect
           label="Account"
           value={param(search, "account")}
           options={options?.accounts ?? []}
-          onChange={(value) => { set("account", value); }}
+          onChange={(value) => {
+            set("account", value)
+          }}
         />
         <FilterSelect
           label="Owner"
           value={param(search, "owner")}
           options={options?.owners ?? []}
-          onChange={(value) => { set("owner", value); }}
+          onChange={(value) => {
+            set("owner", value)
+          }}
         />
         <label className="flex h-9 items-center gap-2 rounded-md border border-input px-3 text-sm">
           <input
             type="checkbox"
             checked={param(search, "failed") === "true"}
-            onChange={(event) => { set("failed", event.target.checked ? "true" : ""); }}
+            onChange={(event) => {
+              set("failed", event.target.checked ? "true" : "")
+            }}
           />
           Failures only
+        </label>
+        <label className="flex h-9 items-center gap-2 rounded-md border border-input px-3 text-sm">
+          <input
+            type="checkbox"
+            checked={param(search, "deleted") === "true"}
+            onChange={(event) => {
+              set("deleted", event.target.checked ? "true" : "")
+            }}
+          />
+          Include deleted VMs
         </label>
         <Button variant="ghost" size="sm" onClick={clear}>
           <SlidersHorizontal className="size-4" />
@@ -390,13 +435,17 @@ export function AdminResourcesPage() {
         error={isError ? "Resource inventory could not be loaded." : undefined}
         onRetry={() => void refetch()}
         getRowId={(row) => `${row.account_id}:${row.type}:${row.id}`}
-        onRowClick={(row) => { set("resource", `${row.account_id}:${row.type}:${row.id}`, false); }}
+        onRowClick={(row) => {
+          set("resource", `${row.account_id}:${row.type}:${row.id}`, false)
+        }}
         columnToolbar
         pagination={{
           page,
           pageSize: data?.limit ?? 50,
           total: data?.total ?? 0,
-          onPageChange: (next) => { set("page", String(next), false); },
+          onPageChange: (next) => {
+            set("page", String(next), false)
+          },
         }}
         empty={
           <EmptyState

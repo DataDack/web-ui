@@ -1147,6 +1147,7 @@ export interface AccountResource {
   tags?: Record<string, string>
   meta?: string[]
   updated_at?: string
+  deleted_at?: string
 }
 
 export interface AdminResource extends AccountResource {
@@ -1191,6 +1192,7 @@ export interface AdminResourceFilters {
   account_id?: string
   owner_id?: string
   failure_only?: boolean
+  include_deleted?: boolean
   page?: number
   limit?: number
 }
