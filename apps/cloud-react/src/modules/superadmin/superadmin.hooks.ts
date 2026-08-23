@@ -30,6 +30,7 @@ import type {
   CreateVMPriceRequest,
   OverviewSection,
   PaymentLedgerFilters,
+  CreatePaymentRefundRequest,
   PVENodeMetricCF,
   PVENodeMetricRange,
   QuotaTicketReview,
@@ -944,6 +945,26 @@ export function useAdminPaymentLedger(filters: PaymentLedgerFilters = {}) {
     queryKey: [...SUPERADMIN_QUERY_KEYS.paymentLedger, filters] as const,
     queryFn: () => superAdminApi.listPaymentLedger(filters),
     staleTime: 30 * 1000,
+  })
+}
+
+export function useRefundPayment() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({
+      paymentId,
+      payload,
+    }: {
+      paymentId: string
+      payload: CreatePaymentRefundRequest
+    }) => superAdminApi.refundPayment(paymentId, payload),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.paymentLedger })
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.accountSpend })
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.platformOverview })
+      toast.success("Refund initiated")
+    },
+    onError: (error) => toast.error(extractError(error, "Refund could not be initiated")),
   })
 }
 

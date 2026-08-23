@@ -65,7 +65,7 @@ export function HostingServersPage() {
       {
         id: "name",
         header: () => (
-          <span className="text-xs font-semibold uppercase tracking-wider">Server</span>
+          <span className="text-xs font-semibold uppercase tracking-wider">Provider</span>
         ),
         accessorFn: (s) => `${s.name} ${s.hostname}`,
         cell: ({ row }) => (
@@ -144,7 +144,7 @@ export function HostingServersPage() {
         ),
       },
       actionsColumn<HostingServer>({
-        ariaLabel: "Server actions",
+        ariaLabel: "Provider actions",
         actions: (server) => [
           { label: "Test connection", icon: PlugZap, onAction: runTest },
           {
@@ -169,8 +169,8 @@ export function HostingServersPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Hosting servers"
-        description="The WHM/cPanel boxes accounts are provisioned onto."
+        title="Hosting providers"
+        description="The WHM/cPanel providers accounts are provisioned onto."
         icon={Server}
         actions={
           <div className="flex gap-2">
@@ -181,10 +181,10 @@ export function HostingServersPage() {
               onClick={() => void navigate(HOSTING_ADMIN_ROUTES.serverGroups)}
               variant="outline"
             >
-              Server groups
+              Provider groups
             </Button>
             <Button onClick={() => void navigate(HOSTING_ADMIN_ROUTES.serverNew)}>
-              <Plus className="size-4" /> Add server
+              <Plus className="size-4" /> Add provider
             </Button>
           </div>
         }
@@ -194,17 +194,17 @@ export function HostingServersPage() {
         data={servers}
         columns={columns}
         loading={isLoading}
-        error={isError ? "The server fleet could not be loaded." : undefined}
+        error={isError ? "The provider fleet could not be loaded." : undefined}
         onRetry={() => void refetch()}
         searchable
         searchPlaceholder="Search by name, hostname or IP"
         empty={
           <EmptyState
             icon={Server}
-            title="No hosting servers yet"
-            description="Add your WHM server to start provisioning cPanel accounts from this panel."
+            title="No hosting providers yet"
+            description="Add your WHM provider to start provisioning cPanel accounts from this panel."
             action={{
-              label: "Add server",
+              label: "Add provider",
               onClick: () => void navigate(HOSTING_ADMIN_ROUTES.serverNew),
             }}
           />
@@ -216,7 +216,7 @@ export function HostingServersPage() {
         onOpenChange={(open) => {
           if (!open) setDeleting(null)
         }}
-        title="Remove this server?"
+        title="Remove this provider?"
         description={
           <>
             <p>
@@ -229,7 +229,7 @@ export function HostingServersPage() {
           </>
         }
         confirmText={deleting?.hostname}
-        confirmLabel="Remove server"
+        confirmLabel="Remove provider"
         loading={remove.isPending}
         onConfirm={() => {
           if (!deleting) return

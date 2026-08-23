@@ -66,6 +66,7 @@ const schema = z.object({
   os_version: z.string().max(64),
   architecture: z.enum(ARCHITECTURES),
   ami_file: z.string().max(512),
+  image_url: z.union([z.literal(""), z.url("Enter a valid URL").max(2048)]),
   vmid: z.coerce
     .number()
     .int()
@@ -91,6 +92,7 @@ const EMPTY: FormValues = {
   os_version: "",
   architecture: "x86_64",
   ami_file: "",
+  image_url: "",
   vmid: 0,
   min_disk_gb: 0,
   visibility: "private",
@@ -108,6 +110,7 @@ function valuesFromVersion(version: ImageVersion): FormValues {
       ? (version.architecture as (typeof ARCHITECTURES)[number])
       : "x86_64",
     ami_file: version.ami_file ?? "",
+    image_url: version.image_url ?? "",
     vmid: version.vmid ?? 0,
     min_disk_gb: version.min_disk_gb,
     visibility: version.visibility,
@@ -634,13 +637,18 @@ function VersionWizard({
         id: "source",
         title: t("superAdmin.images.versions.wizard.source"),
         description: t("superAdmin.images.versions.wizard.sourceDesc"),
-        fields: ["ami_file", "vmid", "min_disk_gb"],
+        fields: ["ami_file", "image_url", "vmid", "min_disk_gb"],
         render: (f) => <SourceStep form={f} />,
         reviewItems: (values) => [
           {
             label: t("superAdmin.images.versions.fields.amiFile"),
             value:
               values.ami_file.length > 0 ? values.ami_file : t("superAdmin.images.versions.noFile"),
+            mono: true,
+          },
+          {
+            label: t("superAdmin.images.versions.fields.imageUrl"),
+            value: textOrDash(values.image_url),
             mono: true,
           },
           {
@@ -702,6 +710,7 @@ function VersionWizard({
       os_version: optional(values.os_version),
       architecture: values.architecture,
       ami_file: optional(values.ami_file),
+      image_url: optional(values.image_url),
       vmid: values.vmid > 0 ? values.vmid : undefined,
       min_disk_gb: values.min_disk_gb,
       visibility: values.visibility,
@@ -853,6 +862,21 @@ function SourceStep({ form }: Readonly<{ form: UseFormReturn<FormValues> }>) {
           placeholder={t("superAdmin.imageVersionsPage.ubuntu2404Cloudinit")}
         />
         <FieldError message={form.formState.errors.ami_file?.message} />
+      </div>
+
+      <div className="space-y-1.5">
+        <FieldLabel>{t("superAdmin.images.versions.fields.imageUrl")}</FieldLabel>
+        <Input
+          {...form.register("image_url")}
+          type="url"
+          inputMode="url"
+          className="font-mono"
+          placeholder="https://images.example.com/ubuntu-24.04.qcow2"
+        />
+        <p className="text-[11px] text-muted-foreground">
+          {t("superAdmin.images.versions.fields.imageUrlHint")}
+        </p>
+        <FieldError message={form.formState.errors.image_url?.message} />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">

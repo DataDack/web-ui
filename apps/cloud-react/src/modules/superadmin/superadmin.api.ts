@@ -64,6 +64,8 @@ import type {
   PlatformOverview,
   PaymentLedgerEntry,
   PaymentLedgerFilters,
+  CreatePaymentRefundRequest,
+  PaymentRefund,
   PoolAddress,
   PoolExpansion,
   PVENode,
@@ -356,6 +358,8 @@ export const superAdminApi = {
     const search = params.size ? `?${params.toString()}` : ""
     return apiGet<PaymentLedgerEntry[]>(`/billing/ledger/payments${search}`)
   },
+  refundPayment: (paymentId: string, payload: CreatePaymentRefundRequest) =>
+    apiPost<PaymentRefund>(`/billing/ledger/payments/${paymentId}/refunds`, payload),
 
   /* account inventory — every resource (VMs, disks, IPs, VPCs, …) an account owns */
   getAccountResources: (accountId: string) =>

@@ -40,74 +40,83 @@ export const hostingRoutes: RouteObject[] = [
  */
 export const hostingAdminRoutes: RouteObject[] = [
   {
-    path: "hosting/servers",
+    path: "hosting",
     lazy: async () => {
-      const { HostingServersPage } = await import("./admin/HostingServersPage")
-      return { Component: HostingServersPage }
+      const { HostingAdminLayout } = await import("./admin/HostingAdminLayout")
+      return { Component: HostingAdminLayout }
     },
-  },
-  {
-    // Before "/:id/edit" for the same literal-segment reason as above.
-    path: "hosting/servers/new",
-    lazy: async () => {
-      const { HostingServerFormPage } = await import("./admin/HostingServerFormPage")
-      return { Component: HostingServerFormPage }
-    },
-  },
-  {
-    path: "hosting/servers/:id/edit",
-    lazy: async () => {
-      const { HostingServerFormPage } = await import("./admin/HostingServerFormPage")
-      return { Component: HostingServerFormPage }
-    },
-  },
-  {
-    path: "hosting/server-groups",
-    lazy: async () => {
-      const { HostingServerGroupsPage } = await import("./admin/HostingServerGroupsPage")
-      return { Component: HostingServerGroupsPage }
-    },
-  },
-  {
-    path: "hosting/plans",
-    lazy: async () => {
-      const { HostingPlansPage } = await import("./admin/HostingPlansPage")
-      return { Component: HostingPlansPage }
-    },
-  },
-  {
-    path: "hosting/plans/new",
-    lazy: async () => {
-      const { HostingPlanFormPage } = await import("./admin/HostingPlanFormPage")
-      return { Component: HostingPlanFormPage }
-    },
-  },
-  {
-    path: "hosting/plans/:sku/edit",
-    lazy: async () => {
-      const { HostingPlanFormPage } = await import("./admin/HostingPlanFormPage")
-      return { Component: HostingPlanFormPage }
-    },
-  },
-  {
-    path: "hosting/accounts",
-    lazy: async () => {
-      const { HostingAccountsPage } = await import("./admin/HostingAccountsPage")
-      return { Component: HostingAccountsPage }
-    },
-  },
-  {
-    path: "hosting/accounts/:id",
-    lazy: async () => {
-      const { HostingAccountDetailPage } = await import("./admin/HostingAccountDetailPage")
-      return { Component: HostingAccountDetailPage }
-    },
-  },
-  {
-    path: "hosting/queue",
-    lazy: async () => {
-      const { HostingQueuePage } = await import("./admin/HostingQueuePage")
-      return { Component: HostingQueuePage }
-    },
+    children: [
+      { index: true, element: <Navigate to="servers" replace /> },
+      {
+        path: "servers",
+        lazy: async () => {
+          const { HostingServersPage } = await import("./admin/HostingServersPage")
+          return { Component: HostingServersPage }
+        },
+      },
+      {
+        path: "servers/new",
+        lazy: async () => {
+          const { HostingServerFormPage } = await import("./admin/HostingServerFormPage")
+          return { Component: HostingServerFormPage }
+        },
+      },
+      {
+        path: "servers/:id/edit",
+        lazy: async () => {
+          const { HostingServerFormPage } = await import("./admin/HostingServerFormPage")
+          return { Component: HostingServerFormPage }
+        },
+      },
+      {
+        path: "server-groups",
+        lazy: async () => {
+          const { HostingServerGroupsPage } = await import("./admin/HostingServerGroupsPage")
+          return { Component: HostingServerGroupsPage }
+        },
+      },
+      {
+        path: "plans",
+        lazy: async () => {
+          const { HostingPlansPage } = await import("./admin/HostingPlansPage")
+          return { Component: HostingPlansPage }
+        },
+      },
+      {
+        path: "plans/new",
+        lazy: async () => {
+          const { HostingPlanFormPage } = await import("./admin/HostingPlanFormPage")
+          return { Component: HostingPlanFormPage }
+        },
+      },
+      {
+        path: "plans/:sku/edit",
+        lazy: async () => {
+          const { HostingPlanFormPage } = await import("./admin/HostingPlanFormPage")
+          return { Component: HostingPlanFormPage }
+        },
+      },
+      {
+        path: "accounts",
+        lazy: async () => {
+          const { HostingAccountsPage } = await import("./admin/HostingAccountsPage")
+          return { Component: HostingAccountsPage }
+        },
+      },
+      {
+        path: "accounts/:id",
+        lazy: async () => {
+          const { HostingAccountDetailPage } = await import("./admin/HostingAccountDetailPage")
+          return { Component: HostingAccountDetailPage }
+        },
+      },
+      {
+        path: "queue",
+        lazy: async () => {
+          const { HostingQueuePage } = await import("./admin/HostingQueuePage")
+          return { Component: HostingQueuePage }
+        },
+      },
+    ],
   },
 ]

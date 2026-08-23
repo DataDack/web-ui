@@ -240,7 +240,7 @@ export function HostingPlanFormPage() {
       >
         <div className="grid gap-4 md:grid-cols-2">
           <Field
-            label="Server group"
+            label="Provider group"
             hint="Plans allocate from a group so capacity can be added freely."
           >
             <Select
@@ -250,10 +250,10 @@ export function HostingPlanFormPage() {
               }}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Any allocatable server" />
+                <SelectValue placeholder="Any allocatable provider" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="any">Any allocatable server</SelectItem>
+                <SelectItem value="any">Any allocatable provider</SelectItem>
                 {groups.map((g) => (
                   <SelectItem key={g.id} value={g.name}>
                     {g.name}

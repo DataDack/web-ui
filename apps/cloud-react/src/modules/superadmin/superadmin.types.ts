@@ -413,6 +413,7 @@ export interface ImageVersion {
   os_version?: string
   architecture: string
   ami_file?: string
+  image_url?: string
   vmid?: number
   min_disk_gb: number
   is_default: boolean
@@ -454,6 +455,7 @@ export interface AddImageVersionRequest {
   os_version?: string
   architecture?: string
   ami_file?: string
+  image_url?: string
   vmid?: number
   is_default?: boolean
   is_marketplace?: boolean
@@ -1131,6 +1133,29 @@ export interface PaymentLedgerEntry {
   created_at: string
   updated_at: string
   paid_at?: string | null
+  refunds?: PaymentRefund[]
+}
+
+export interface PaymentRefund {
+  id: string
+  idempotency_key: string
+  amount: number
+  currency: string
+  status: string
+  reason: string
+  operator_id: string
+  receipt: string
+  speed_requested: string
+  speed_processed?: string
+  created_at: string
+  updated_at: string
+}
+
+export interface CreatePaymentRefundRequest {
+  amount: number
+  reason: string
+  speed: "normal" | "optimum"
+  ref_id: string
 }
 
 export interface PaymentLedgerFilters {

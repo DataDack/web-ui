@@ -114,7 +114,7 @@ export function HostingPlansPage() {
           <div className="flex flex-col text-[13px]">
             <span className="font-mono text-[11px]">{row.original.plan.whm_package || "—"}</span>
             <span className="text-[11px] text-muted-foreground">
-              {row.original.plan.server_group || "any server"}
+              {row.original.plan.server_group || "any provider"}
             </span>
           </div>
         ),

@@ -174,7 +174,7 @@ export function HostingAccountDetailPage() {
             items={[
               { label: "Domain", value: account.domain },
               { label: "Username", value: account.username },
-              { label: "Server", value: account.server_hostname || "—" },
+              { label: "Provider", value: account.server_hostname || "—" },
               { label: "Plan", value: account.plan?.name ?? account.plan_sku },
               { label: "Panel package", value: account.package_name || "—" },
               { label: "Dedicated IP", value: account.dedicated_ip || "shared" },
@@ -254,7 +254,7 @@ export function HostingAccountDetailPage() {
               </div>
             )}
             <div className="space-y-1.5">
-              <p className="text-[13px] font-medium">Move to another server</p>
+              <p className="text-[13px] font-medium">Move to another provider</p>
               <Select
                 value=""
                 onValueChange={(serverId) => {
@@ -262,7 +262,7 @@ export function HostingAccountDetailPage() {
                 }}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Pick a destination server" />
+                  <SelectValue placeholder="Pick a destination provider" />
                 </SelectTrigger>
                 <SelectContent>
                   {servers

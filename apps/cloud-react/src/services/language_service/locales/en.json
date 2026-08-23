@@ -3282,6 +3282,8 @@
           "osVersion": "OS version",
           "architecture": "Architecture",
           "amiFile": "Template name",
+          "imageUrl": "Image URL",
+          "imageUrlHint": "Optional URL where the VM image can be downloaded.",
           "vmid": "Template VMID",
           "vmidHint": "Proxmox template this version clones from (e.g. 9000). 0 leaves it unset.",
           "minDisk": "Min disk (GB)",
@@ -5748,7 +5750,7 @@
     "admin": {
       "nav": {
         "group": "Shared hosting",
-        "servers": "Servers",
+        "providers": "Providers",
         "plans": "Plans",
         "accounts": "Accounts",
         "queue": "Provisioning queue"

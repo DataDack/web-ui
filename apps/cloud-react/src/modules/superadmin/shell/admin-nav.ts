@@ -4,12 +4,9 @@ import {
   Disc3,
   Flame,
   LayoutDashboard,
-  Globe,
   LayoutGrid,
   Inbox,
-  ListChecks,
   MailX,
-  Package,
   BadgeIndianRupee,
   MapPin,
   Network,
@@ -102,10 +99,7 @@ export const ADMIN_NAV: AdminNavGroup[] = [
     // find.
     labelKey: "hosting.admin.nav.group",
     items: [
-      { labelKey: "hosting.admin.nav.servers", icon: Server, path: "/admin/hosting/servers" },
-      { labelKey: "hosting.admin.nav.plans", icon: Package, path: "/admin/hosting/plans" },
-      { labelKey: "hosting.admin.nav.accounts", icon: Globe, path: "/admin/hosting/accounts" },
-      { labelKey: "hosting.admin.nav.queue", icon: ListChecks, path: "/admin/hosting/queue" },
+      { labelKey: "hosting.admin.nav.providers", icon: Server, path: "/admin/hosting/servers" },
     ],
   },
   {

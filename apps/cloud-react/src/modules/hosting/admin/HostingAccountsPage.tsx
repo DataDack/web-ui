@@ -230,10 +230,10 @@ export function HostingAccountsPage() {
           }}
         >
           <SelectTrigger className="w-56">
-            <SelectValue placeholder="Any server" />
+            <SelectValue placeholder="Any provider" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Any server</SelectItem>
+            <SelectItem value="all">Any provider</SelectItem>
             {servers.map((s) => (
               <SelectItem key={s.id} value={s.id}>
                 {s.hostname}

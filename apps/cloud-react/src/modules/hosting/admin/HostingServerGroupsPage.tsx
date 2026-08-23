@@ -110,10 +110,10 @@ export function HostingServerGroupsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Server groups"
-        description="Pools of interchangeable servers. Plans target a group, so capacity can be added without touching the catalogue."
+        title="Provider groups"
+        description="Pools of interchangeable providers. Plans target a group, so capacity can be added without touching the catalogue."
         icon={Layers}
-        breadcrumbs={[{ label: "Hosting servers", to: HOSTING_ADMIN_ROUTES.servers }]}
+        breadcrumbs={[{ label: "Hosting providers", to: HOSTING_ADMIN_ROUTES.servers }]}
         renderLink={(crumb, children) => (
           <button type="button" onClick={() => void navigate(crumb.to ?? "")}>
             {children}
@@ -134,14 +134,14 @@ export function HostingServerGroupsPage() {
         data={groups}
         columns={columns}
         loading={isLoading}
-        error={isError ? "Server groups could not be loaded." : undefined}
+        error={isError ? "Provider groups could not be loaded." : undefined}
         onRetry={() => void refetch()}
         pagination={false}
         empty={
           <EmptyState
             icon={Layers}
-            title="No server groups"
-            description="Group your servers so plans can allocate across them."
+            title="No provider groups"
+            description="Group your providers so plans can allocate across them."
             action={{
               label: "Add group",
               onClick: () => {
@@ -232,7 +232,7 @@ function GroupDialog({
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{group ? "Edit server group" : "Add server group"}</DialogTitle>
+          <DialogTitle>{group ? "Edit provider group" : "Add provider group"}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <div className="space-y-1.5">

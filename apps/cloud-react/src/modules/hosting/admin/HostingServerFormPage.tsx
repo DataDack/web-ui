@@ -150,13 +150,13 @@ export function HostingServerFormPage() {
   }
 
   if (isEdit && isLoading) {
-    return <p className="p-6 text-sm text-muted-foreground">Loading server…</p>
+    return <p className="p-6 text-sm text-muted-foreground">Loading provider…</p>
   }
 
   return (
     <div className="space-y-6 pb-16">
       <PageHeader
-        title={isEdit ? `Edit ${existing?.name ?? "server"}` : "Add server"}
+        title={isEdit ? `Edit ${existing?.name ?? "provider"}` : "Add provider"}
         description="Connection details for a WHM/cPanel machine."
         icon={Server}
         actions={
@@ -179,7 +179,7 @@ export function HostingServerFormPage() {
 
       {probe && <ProbeBanner probe={probe} />}
 
-      <Section title="Server" variant="panel">
+      <Section title="Provider" variant="panel">
         <div className="grid gap-4 md:grid-cols-2">
           <Field label="Name" hint="How this box is labelled in the console.">
             <Input
@@ -293,7 +293,7 @@ export function HostingServerFormPage() {
             onChange={(v) => {
               set("disabled", v)
             }}
-            label="Disable this server"
+            label="Disable this provider"
             hint="Existing accounts keep working; no new accounts are placed here."
           />
           <CheckboxRow
@@ -338,7 +338,7 @@ export function HostingServerFormPage() {
       </Section>
 
       <Section
-        title="Server details"
+        title="Provider details"
         description="The credentials this panel uses to provision accounts."
         variant="panel"
       >
@@ -480,7 +480,7 @@ export function HostingServerFormPage() {
 /** The primary button's label across its three states. */
 function saveLabel(saving: boolean, isEdit: boolean): string {
   if (saving) return "Saving…"
-  return isEdit ? "Save changes" : "Add server"
+  return isEdit ? "Save changes" : "Add provider"
 }
 
 /**
