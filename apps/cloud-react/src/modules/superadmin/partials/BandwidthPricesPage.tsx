@@ -117,6 +117,8 @@ export function BandwidthPricesPage() {
       <DataTable<BandwidthPrice>
         data={prices}
         columns={columns}
+        searchable
+        searchPlaceholder="Filter bandwidth prices…"
         loading={isLoading}
         error={isError ? t("console.table.error") : undefined}
         onRetry={() => void refetch()}

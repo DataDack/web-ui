@@ -220,6 +220,8 @@ export function VMPricesPage() {
       <DataTable<VMPrice>
         data={prices}
         columns={columns}
+        searchable
+        searchPlaceholder="Filter compute prices…"
         loading={isLoading}
         error={isError ? t("console.table.error") : undefined}
         onRetry={() => void refetch()}

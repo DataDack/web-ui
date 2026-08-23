@@ -71,7 +71,7 @@ function ServiceTile({ service }: Readonly<{ service: CatalogService }>) {
     return (
       <div
         aria-disabled
-        title={comingSoon ? t("comingSoon.title") : undefined}
+        title={comingSoon ? t("console.comingSoon.title") : undefined}
         className="group flex w-[88px] cursor-not-allowed flex-col items-center gap-2 outline-none"
       >
         {tile}

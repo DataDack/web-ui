@@ -48,7 +48,7 @@ export function AdminSidebar({ onNavigate }: Readonly<{ onNavigate?: () => void 
                         <Icon className="size-3.5 shrink-0" />
                         <span className="min-w-0 flex-1 truncate">{t(item.labelKey)}</span>
                         <span className="shrink-0 font-mono text-[8px] uppercase tracking-wide">
-                          {t("comingSoon.badge")}
+                          {t("console.comingSoon.badge")}
                         </span>
                       </div>
                     </li>

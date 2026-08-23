@@ -246,6 +246,8 @@ export function StoragePricesPage() {
       <DataTable<StoragePrice>
         data={visiblePrices}
         columns={columns}
+        searchable
+        searchPlaceholder="Filter storage prices…"
         loading={isLoading}
         error={isError ? t("console.table.error") : undefined}
         onRetry={() => void refetch()}

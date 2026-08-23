@@ -10,9 +10,15 @@ import { ServiceIcon } from "@/modules/services/ServiceIcon"
 
 // Health-dot colour per operational status.
 const STATUS_DOT: Record<CatalogStatus, string> = {
-  operational: "bg-[var(--success-pulse)]",
+  operational: "bg-[#5bd08a] shadow-[0_0_8px_#5bd08a]",
   degraded: "bg-amber-500",
   maintenance: "bg-sky-500",
+}
+
+const STATUS_TEXT: Record<CatalogStatus, string> = {
+  operational: "text-[#38b86f]",
+  degraded: "text-amber-600",
+  maintenance: "text-sky-600",
 }
 
 const STATUS_LABEL: Record<CatalogStatus, string> = {
@@ -58,7 +64,10 @@ function ServiceCard({ service }: Readonly<{ service: CatalogService }>) {
           </span>
         ) : (
           <span
-            className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wide text-muted-foreground"
+            className={cn(
+              "flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wide",
+              STATUS_TEXT[service.status],
+            )}
             title={STATUS_LABEL[service.status]}
           >
             <span className={cn("h-1.5 w-1.5 rounded-full", STATUS_DOT[service.status])} />

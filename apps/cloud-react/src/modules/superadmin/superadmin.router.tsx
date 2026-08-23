@@ -139,11 +139,15 @@ export const superadminRoutes: RouteObject[] = [
         },
       },
       {
-        path: "vm-prices",
+        path: "pricing",
         lazy: async () => {
-          const { VMPricesPage } = await import("./partials/VMPricesPage")
-          return { Component: VMPricesPage }
+          const { PricingPage } = await import("./partials/PricingPage")
+          return { Component: PricingPage }
         },
+      },
+      {
+        path: "vm-prices",
+        element: <Navigate to="/admin/pricing?tab=compute" replace />,
       },
       {
         path: "vm-prices/new",
@@ -161,10 +165,7 @@ export const superadminRoutes: RouteObject[] = [
       },
       {
         path: "storage-prices",
-        lazy: async () => {
-          const { StoragePricesPage } = await import("./partials/StoragePricesPage")
-          return { Component: StoragePricesPage }
-        },
+        element: <Navigate to="/admin/pricing?tab=storage" replace />,
       },
       {
         path: "static-ips",
@@ -186,10 +187,14 @@ export const superadminRoutes: RouteObject[] = [
         // Pricing, not inventory: the rate an allocation is billed at sits with
         // the other price tables rather than on the Static IPs hub.
         path: "static-ip-prices",
+<<<<<<< Updated upstream
         lazy: async () => {
           const { StaticIPPricesPage } = await import("./partials/StaticIPPricesPage")
           return { Component: StaticIPPricesPage }
         },
+=======
+        element: <Navigate to="/admin/pricing?tab=static-ips" replace />,
+>>>>>>> Stashed changes
       },
       {
         // Campaigns: what a code grants, how far it may spread, and who used it.
@@ -203,10 +208,7 @@ export const superadminRoutes: RouteObject[] = [
       },
       {
         path: "bandwidth-prices",
-        lazy: async () => {
-          const { BandwidthPricesPage } = await import("./partials/BandwidthPricesPage")
-          return { Component: BandwidthPricesPage }
-        },
+        element: <Navigate to="/admin/pricing?tab=bandwidth" replace />,
       },
       {
         path: "cache",

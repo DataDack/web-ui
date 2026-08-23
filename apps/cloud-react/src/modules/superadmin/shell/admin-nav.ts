@@ -1,11 +1,8 @@
 import {
   type LucideIcon,
   Building2,
-  Cpu,
   Disc3,
   Flame,
-  Gauge,
-  HardDrive,
   LayoutDashboard,
   Globe,
   LayoutGrid,
@@ -13,6 +10,7 @@ import {
   ListChecks,
   MailX,
   Package,
+  BadgeIndianRupee,
   MapPin,
   Network,
   ReceiptText,
@@ -113,22 +111,10 @@ export const ADMIN_NAV: AdminNavGroup[] = [
   {
     labelKey: "superAdmin.nav.groups.pricing",
     items: [
-      { labelKey: "superAdmin.vmPrices.title", icon: Cpu, path: "/admin/vm-prices" },
       {
-        labelKey: "superAdmin.storagePrices.title",
-        icon: HardDrive,
-        path: "/admin/storage-prices",
-      },
-      // Was reachable by URL only: the page existed with nothing linking to it.
-      {
-        labelKey: "superAdmin.staticIpPrices.title",
-        icon: Network,
-        path: "/admin/static-ip-prices",
-      },
-      {
-        labelKey: "superAdmin.bandwidthPrices.title",
-        icon: Gauge,
-        path: "/admin/bandwidth-prices",
+        labelKey: "superAdmin.nav.groups.pricing",
+        icon: BadgeIndianRupee,
+        path: "/admin/pricing",
       },
     ],
   },
