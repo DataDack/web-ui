@@ -1,4 +1,4 @@
-import { Fragment, useMemo, useState } from "react"
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react"
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQueryClient } from "@tanstack/react-query"
@@ -69,7 +69,7 @@ export function TemplateSyncDialog({
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const [confirmRollback, setConfirmRollback] = useState(false)
-  const load = async () => {
+  const load = useCallback(async () => {
     setLoading(true)
     setError("")
     try {
@@ -79,7 +79,17 @@ export function TemplateSyncDialog({
     } finally {
       setLoading(false)
     }
-  }
+  }, [node.id])
+
+  // The preview has to be driven by `open`, not by onOpenChange: Radix calls
+  // onOpenChange only for changes it makes itself (overlay click, Escape, a
+  // trigger), never when the parent flips the prop — and this dialog is opened
+  // by the row's "Sync templates" button doing exactly that. Loading from there
+  // left the dialog with no plan, no spinner and no error, which reads as a
+  // broken screen with a permanently disabled Create button.
+  useEffect(() => {
+    if (open && !plan && !loading && !error) void load()
+  }, [open, plan, loading, error, load])
   const apply = async () => {
     setLoading(true)
     setError("")
@@ -109,7 +119,13 @@ export function TemplateSyncDialog({
       open={open}
       onOpenChange={(v) => {
         onOpenChange(v)
-        if (v && !plan) void load()
+        if (!v) {
+          // Drop the finished plan on close so reopening re-previews instead of
+          // showing a result from before the operator changed anything.
+          setPlan(null)
+          setError("")
+          setConfirmRollback(false)
+        }
       }}
     >
       <DialogContent className="sm:max-w-2xl">
