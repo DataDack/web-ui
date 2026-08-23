@@ -18,6 +18,7 @@ import {
   textColumn,
   type DataTableColumnMeta,
 } from "@datadack/common-ui"
+
 import { AccessChips } from "./AccessChips"
 import type { TabProps, UserRow } from "./types"
 import { ActiveBadge } from "../../components/ActiveBadge"
