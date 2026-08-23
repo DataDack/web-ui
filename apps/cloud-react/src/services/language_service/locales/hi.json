@@ -3002,18 +3002,18 @@
       }
     },
     "staticIpPrices": {
-      "title": "Static IP prices",
-      "add": "Add static IP price",
-      "createTitle": "Add static IP price",
-      "formSubtitle": "Static IP pricing per availability zone (create-only).",
-      "empty": "No static IP prices yet",
-      "emptySubtitle": "Add a static IP price for an availability zone.",
+      "title": "स्टेटिक IP मूल्य",
+      "add": "स्टेटिक IP मूल्य जोड़ें",
+      "createTitle": "स्टेटिक IP मूल्य सेट करें",
+      "formSubtitle": "प्लेटफ़ॉर्म-व्यापी स्टेटिक IP मूल्य निर्धारण — आवंटन बिलिंग के लिए एकमात्र स्रोत।",
+      "empty": "अभी कोई स्टेटिक IP मूल्य नहीं",
+      "emptySubtitle": "स्टेटिक IP आवंटन बिलिंग को नियंत्रित करने वाला एकल प्लेटफ़ॉर्म-व्यापी मूल्य सेट करें।",
       "fields": {
-        "availabilityZone": "Availability zone",
-        "availabilityZonePlaceholder": "Select an availability zone",
-        "priceHourly": "Hourly",
-        "priceMonthly": "Monthly",
-        "currency": "Currency"
+        "availabilityZone": "उपलब्धता क्षेत्र",
+        "availabilityZonePlaceholder": "उपलब्धता क्षेत्र चुनें",
+        "priceHourly": "प्रति घंटा",
+        "priceMonthly": "मासिक",
+        "currency": "मुद्रा"
       },
       "editTitle": "स्टेटिक IP मूल्य संपादित करें"
     },
@@ -3641,21 +3641,10 @@
     },
     "staticIps": {
       "title": "स्टेटिक IP",
-      "subtitle": "प्लेटफ़ॉर्म की स्टेटिक IP सूची, मूल्य निर्धारण और सक्रिय आवंटन प्रबंधित करें।",
+      "subtitle": "प्लेटफ़ॉर्म की स्टेटिक IP सूची और सक्रिय आवंटन प्रबंधित करें।",
       "tabs": {
         "pools": "IP पूल",
         "inUse": "उपयोग में IP"
-      },
-      "pricing": {
-        "label": "स्टेटिक IP मूल्य",
-        "notSet": "कोई मूल्य कॉन्फ़िगर नहीं",
-        "notSetHint": "वह एक मूल्य निर्धारित करें जो स्टेटिक IP आवंटन बिलिंग तय करता है।",
-        "set": "मूल्य निर्धारित करें",
-        "edit": "मूल्य संपादित करें",
-        "sourceOfTruth": "IP आवंटन बिलिंग के लिए प्रामाणिक स्रोत",
-        "hourly": "प्रति घंटा",
-        "idleHourly": "निष्क्रिय प्रति घंटा",
-        "monthly": "मासिक"
       },
       "stats": {
         "total": "कुल IP",

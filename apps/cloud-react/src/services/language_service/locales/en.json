@@ -3373,7 +3373,7 @@
       "editTitle": "Edit static IP price",
       "formSubtitle": "Platform-wide static IP pricing — the single source of truth for allocation billing.",
       "empty": "No static IP prices yet",
-      "emptySubtitle": "Add a static IP price for an availability zone.",
+      "emptySubtitle": "Set the single platform-wide price that governs static IP allocation billing.",
       "fields": {
         "availabilityZone": "Availability zone",
         "availabilityZonePlaceholder": "Select an availability zone",
@@ -3384,21 +3384,10 @@
     },
     "staticIps": {
       "title": "Static IPs",
-      "subtitle": "Manage the platform's static IP inventory, pricing and live allocations.",
+      "subtitle": "Manage the platform's static IP inventory and live allocations.",
       "tabs": {
         "pools": "IP Pools",
         "inUse": "IPs in use"
-      },
-      "pricing": {
-        "label": "Static IP price",
-        "notSet": "No price configured",
-        "notSetHint": "Set the single price that governs static IP allocation billing.",
-        "set": "Set pricing",
-        "edit": "Edit pricing",
-        "sourceOfTruth": "Source of truth for IP allocation billing",
-        "hourly": "Hourly",
-        "idleHourly": "Idle hourly",
-        "monthly": "Monthly"
       },
       "stats": {
         "total": "Total IPs",

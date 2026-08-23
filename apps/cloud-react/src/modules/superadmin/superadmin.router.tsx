@@ -182,10 +182,14 @@ export const superadminRoutes: RouteObject[] = [
           return { Component: PoolDetailPage }
         },
       },
-      // Legacy path → the redesigned Static IPs hub (pools + usage + pricing).
       {
+        // Pricing, not inventory: the rate an allocation is billed at sits with
+        // the other price tables rather than on the Static IPs hub.
         path: "static-ip-prices",
-        element: <Navigate to="/admin/static-ips" replace />,
+        lazy: async () => {
+          const { StaticIPPricesPage } = await import("./partials/StaticIPPricesPage")
+          return { Component: StaticIPPricesPage }
+        },
       },
       {
         // Campaigns: what a code grants, how far it may spread, and who used it.
