@@ -33,6 +33,7 @@ export const SUPERADMIN_QUERY_KEYS = {
   accountResources: ["superadmin", "account-resources"] as const,
   resourceInventory: ["superadmin", "resource-inventory"] as const,
   accountSpend: ["superadmin", "account-spend"] as const,
+  paymentLedger: ["superadmin", "payment-ledger"] as const,
   // Key counts go stale the moment anything writes to Redis, so this query is
   // never cached across a clear — it is refetched on every mutation.
   cacheNamespaces: ["superadmin", "cache-namespaces"] as const,

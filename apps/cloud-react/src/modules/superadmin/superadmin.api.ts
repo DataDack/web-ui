@@ -62,6 +62,8 @@ import type {
   AccountSpend,
   OverviewSection,
   PlatformOverview,
+  PaymentLedgerEntry,
+  PaymentLedgerFilters,
   PoolAddress,
   PoolExpansion,
   PVENode,
@@ -344,6 +346,16 @@ export const superAdminApi = {
        accounts.balance and appends the matching ledger entry in one transaction. */
   adjustAccountBalance: (payload: AdjustBalanceRequest) =>
     apiPost<AdminLedgerEntry>("/billing/ledger", payload),
+
+  /* Canonical payments are owned by datadack-payments. cloud-be-go proxies this
+     super-admin read so browser clients never receive service credentials. */
+  listPaymentLedger: (filters: PaymentLedgerFilters = {}) => {
+    const params = new URLSearchParams()
+    if (filters.accountId) params.set("account_id", filters.accountId)
+    if (filters.userId) params.set("user_id", filters.userId)
+    const search = params.size ? `?${params.toString()}` : ""
+    return apiGet<PaymentLedgerEntry[]>(`/billing/ledger/payments${search}`)
+  },
 
   /* account inventory — every resource (VMs, disks, IPs, VPCs, …) an account owns */
   getAccountResources: (accountId: string) =>

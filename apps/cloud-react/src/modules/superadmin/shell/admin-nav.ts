@@ -130,7 +130,6 @@ export const ADMIN_NAV: AdminNavGroup[] = [
         labelKey: "superAdmin.nav.ledger",
         icon: ReceiptText,
         path: "/admin/ledger",
-        comingSoon: true,
       },
     ],
   },

@@ -1105,6 +1105,39 @@ export interface AdminLedgerEntry {
   description: string
 }
 
+/** Canonical checkout/payment record owned by datadack-payments. Amount is in
+ * the currency's smallest unit (paise for INR); tenant mappings are immutable
+ * checkout notes supplied by cloud-be-go. */
+export interface PaymentLedgerEntry {
+  id: string
+  amount: number
+  currency: string
+  description: string
+  status: "created" | "paid" | "failed" | "expired" | "cancelled" | string
+  customer_name?: string
+  customer_email?: string
+  customer_contact?: string
+  razorpay_payment_id?: string
+  method?: {
+    type: string
+    description?: string
+    card_last4?: string
+    card_network?: string
+    vpa?: string
+    wallet?: string
+    bank?: string
+  }
+  notes?: Record<string, string>
+  created_at: string
+  updated_at: string
+  paid_at?: string | null
+}
+
+export interface PaymentLedgerFilters {
+  accountId?: string
+  userId?: string
+}
+
 export interface OverviewMember {
   user_id: string
   name: string

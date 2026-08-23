@@ -29,6 +29,7 @@ import type {
   CreateStoragePriceRequest,
   CreateVMPriceRequest,
   OverviewSection,
+  PaymentLedgerFilters,
   PVENodeMetricCF,
   PVENodeMetricRange,
   QuotaTicketReview,
@@ -935,6 +936,14 @@ export function useAdjustAccountBalance() {
       toast.success(t("superAdmin.organizations.balance.saved"))
     },
     onError: (e) => toast.error(extractError(e, t("superAdmin.organizations.balance.failed"))),
+  })
+}
+
+export function useAdminPaymentLedger(filters: PaymentLedgerFilters = {}) {
+  return useQuery({
+    queryKey: [...SUPERADMIN_QUERY_KEYS.paymentLedger, filters] as const,
+    queryFn: () => superAdminApi.listPaymentLedger(filters),
+    staleTime: 30 * 1000,
   })
 }
 

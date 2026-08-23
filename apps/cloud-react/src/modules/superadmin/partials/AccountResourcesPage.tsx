@@ -15,15 +15,23 @@ import type { ColumnDef } from "@tanstack/react-table"
 import { ArrowLeft, Boxes, CalendarClock, Clock, RefreshCw, Trash2, Wallet } from "lucide-react"
 import { useNavigate, useParams } from "react-router-dom"
 
-import { ConfirmDialog, PageHeader, StatGrid, type StatCardProps } from "@/components/console"
+import {
+  ConfirmDialog,
+  PageHeader,
+  Section,
+  StatGrid,
+  type StatCardProps,
+} from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
 import {
   useAdminAccountResources,
   useAdminAccountSpend,
+  useAdminPaymentLedger,
   useAdminPlatformOverview,
   useDeleteAccount,
 } from "../superadmin.hooks"
+import { PaymentLedgerTable } from "../components/PaymentLedgerTable"
 import type { AccountResource, OverviewAccount } from "../superadmin.types"
 
 const ORGS_PATH = "/admin/organizations"
@@ -85,6 +93,7 @@ export function AccountResourcesPage() {
   } = useAdminAccountResources(accountId)
 
   const { data: spend, isLoading: spendLoading } = useAdminAccountSpend(accountId)
+  const paymentLedger = useAdminPaymentLedger({ accountId })
 
   // The account's display metadata (name, number, org) lives in the cached
   // platform-overview graph — reuse it rather than adding another endpoint.
@@ -290,6 +299,20 @@ export function AccountResourcesPage() {
           ))}
         </div>
       )}
+
+      <Section
+        variant="panel"
+        title="Payments"
+        description="Checkout and settlement records mapped to this account by datadack-payments."
+      >
+        <PaymentLedgerTable
+          payments={paymentLedger.data ?? []}
+          loading={paymentLedger.isLoading}
+          error={paymentLedger.isError ? "Failed to load payments" : undefined}
+          refreshing={paymentLedger.isFetching}
+          onRefresh={() => void paymentLedger.refetch()}
+        />
+      </Section>
 
       <DataTable<AccountResource>
         data={resources}

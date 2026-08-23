@@ -24,8 +24,13 @@ import {
 
 import { ActiveBadge } from "../components/ActiveBadge"
 import { KycActions, KycBadge } from "../components/KycCell"
-import { useAdminPlatformOverview, useSetSuperAdmin } from "../superadmin.hooks"
+import {
+  useAdminPaymentLedger,
+  useAdminPlatformOverview,
+  useSetSuperAdmin,
+} from "../superadmin.hooks"
 import type { OverviewAccount, OverviewUser } from "../superadmin.types"
+import { PaymentLedgerTable } from "../components/PaymentLedgerTable"
 
 // The old /admin/organizations now redirects here.
 const TENANCY_PATH = "/admin/tenancy"
@@ -83,6 +88,7 @@ export function AdminUserProfilePage() {
 
   const { data: overview, isLoading } = useAdminPlatformOverview()
   const { mutate: setSuperAdmin, isPending: isTogglingSuperAdmin } = useSetSuperAdmin()
+  const paymentLedger = useAdminPaymentLedger({ userId })
 
   // What this person has already asked for. The endpoint is platform-wide and
   // does not filter by user, so it is narrowed here — the operator wants the
@@ -362,6 +368,20 @@ export function AdminUserProfilePage() {
           }
           onRefresh={() => void tickets.refetch()}
           refreshing={tickets.isFetching}
+        />
+      </Section>
+
+      <Section
+        variant="panel"
+        title="Payments"
+        description="Checkout and settlement records initiated by this user."
+      >
+        <PaymentLedgerTable
+          payments={paymentLedger.data ?? []}
+          loading={paymentLedger.isLoading}
+          error={paymentLedger.isError ? "Failed to load payments" : undefined}
+          refreshing={paymentLedger.isFetching}
+          onRefresh={() => void paymentLedger.refetch()}
         />
       </Section>
     </div>
