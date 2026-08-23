@@ -226,7 +226,7 @@ export function AdminOverviewPage() {
             label={t("superAdmin.overview.attention.orphanUsers")}
             count={data?.stats.orphan_users ?? 0}
             loading={isLoading}
-            href="/admin/tenancy?tab=orphan_users"
+            href="/admin/tenancy?tab=users&organization=none"
             cta={t("superAdmin.overview.attention.manage")}
           />
         </div>

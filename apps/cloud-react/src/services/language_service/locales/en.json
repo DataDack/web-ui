@@ -2884,6 +2884,10 @@
         "users": "Users",
         "orphan_users": "Without an organization"
       },
+      "filters": {
+        "organization": "Filter users by organization",
+        "allUsers": "All users"
+      },
       "fields": {
         "name": "Name",
         "slug": "Slug",

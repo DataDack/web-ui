@@ -13,18 +13,18 @@ import { useAdminPlatformOverview } from "../../superadmin.hooks"
 import { AccountBalanceDialog } from "../AccountBalanceDialog"
 import { AccountsTab } from "./AccountsTab"
 import { OrganizationsTab } from "./OrganizationsTab"
-import { OrphanUsersTab } from "./OrphanUsersTab"
 import type { AccountRow } from "./types"
 import { UsersTab } from "./UsersTab"
 
-// The tabs are also the API's sections: the active tab IS the slice fetched.
-// orphan_users has always been one of them; nothing surfaced it until now.
-const TABS = ["organizations", "accounts", "users", "orphan_users"] as const
+const TABS = ["accounts", "organizations", "users"] as const
 type TabValue = (typeof TABS)[number]
-const DEFAULT_TAB: TabValue = "organizations"
+const DEFAULT_TAB: TabValue = "accounts"
 const PAGE_SIZE = 25
 
 function parseTab(value: string | null): TabValue {
+  // Preserve old links to the removed orphan-users tab by opening the Users
+  // tab with its equivalent filter selected.
+  if (value === "orphan_users") return "users"
   return TABS.includes(value as TabValue) ? (value as TabValue) : DEFAULT_TAB
 }
 
@@ -55,6 +55,8 @@ export function TenancyPage() {
   const { t } = useTranslation()
   const [searchParams, setSearchParams] = useSearchParams()
   const tab = parseTab(searchParams.get("tab"))
+  const usersWithoutOrganization =
+    searchParams.get("organization") === "none" || searchParams.get("tab") === "orphan_users"
   const page = parsePage(searchParams.get("page"))
 
   // The URL is the record of what's being searched; the request is debounced off
@@ -65,7 +67,8 @@ export function TenancyPage() {
   const q = useDebounce(search.trim(), 300)
   // Same key as the active tab's own query, so this is the SAME request, not a
   // second one — it's read here only for the counts on the tab labels.
-  const { data, isFetching } = useAdminPlatformOverview(tab, q, page, PAGE_SIZE)
+  const section = usersWithoutOrganization && tab === "users" ? "orphan_users" : tab
+  const { data, isFetching } = useAdminPlatformOverview(section, q, page, PAGE_SIZE)
   const matched = data?.matched
 
   // The account whose wallet is being adjusted; null closes the dialog. The
@@ -106,6 +109,16 @@ export function TenancyPage() {
   const changeTab = (value: TabValue) => {
     updateParams((params) => {
       setParam(params, "tab", value, DEFAULT_TAB)
+      if (value !== "users") params.delete("organization")
+      params.delete("page")
+    })
+  }
+
+  const changeUserOrganizationFilter = (withoutOrganization: boolean) => {
+    updateParams((params) => {
+      // This also normalizes links that still use ?tab=orphan_users.
+      params.set("tab", "users")
+      setParam(params, "organization", withoutOrganization ? "none" : "", "")
       params.delete("page")
     })
   }
@@ -178,20 +191,20 @@ export function TenancyPage() {
         </TabsList>
 
         {/* Only the active tab is mounted, so only its section+page is fetched. */}
-        <TabsContent value="organizations">
-          <OrganizationsTab {...tabProps} />
-        </TabsContent>
-
         <TabsContent value="accounts">
           <AccountsTab {...tabProps} onAdjustBalance={openBalanceDialog} />
         </TabsContent>
 
-        <TabsContent value="users">
-          <UsersTab {...tabProps} />
+        <TabsContent value="organizations">
+          <OrganizationsTab {...tabProps} />
         </TabsContent>
 
-        <TabsContent value="orphan_users">
-          <OrphanUsersTab {...tabProps} />
+        <TabsContent value="users">
+          <UsersTab
+            {...tabProps}
+            withoutOrganization={usersWithoutOrganization}
+            onWithoutOrganizationChange={changeUserOrganizationFilter}
+          />
         </TabsContent>
       </Tabs>
 

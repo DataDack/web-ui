@@ -1,7 +1,7 @@
 import { useMemo } from "react"
 
 import type { ColumnDef } from "@tanstack/react-table"
-import { Building2 } from "lucide-react"
+import { Building2, UserRoundX } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
@@ -10,6 +10,11 @@ import {
   dateColumn,
   EmptyState,
   nameColumn,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
   textColumn,
   type DataTableColumnMeta,
 } from "@datadack/common-ui"
@@ -24,15 +29,28 @@ import { useAdminPlatformOverview } from "../../superadmin.hooks"
  * organizations[].users + orphan_users: under a search the organizations list is
  * narrowed, which would drop matching users whose org didn't match.
  */
-export function UsersTab({ q, page, pageSize, onPageChange }: Readonly<TabProps>) {
+type UsersTabProps = TabProps & {
+  withoutOrganization: boolean
+  onWithoutOrganizationChange: (withoutOrganization: boolean) => void
+}
+
+export function UsersTab({
+  q,
+  page,
+  pageSize,
+  onPageChange,
+  withoutOrganization,
+  onWithoutOrganizationChange,
+}: Readonly<UsersTabProps>) {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const { data, isLoading, isError, refetch } = useAdminPlatformOverview("users", q, page, pageSize)
+  const section = withoutOrganization ? "orphan_users" : "users"
+  const { data, isLoading, isError, refetch } = useAdminPlatformOverview(section, q, page, pageSize)
 
-  const users = useMemo<UserRow[]>(
-    () => (data?.users ?? []).map((u) => ({ ...u, orgName: u.org_name || null })),
-    [data],
-  )
+  const users = useMemo<UserRow[]>(() => {
+    const rows = withoutOrganization ? (data?.orphan_users ?? []) : (data?.users ?? [])
+    return rows.map((u) => ({ ...u, orgName: u.org_name || null }))
+  }, [data, withoutOrganization])
 
   const columns = useMemo<ColumnDef<UserRow>[]>(
     () => [
@@ -52,17 +70,28 @@ export function UsersTab({ q, page, pageSize, onPageChange }: Readonly<TabProps>
         accessor: (u) => u.phone || "—",
         muted: true,
       }),
-      textColumn<UserRow>({
-        id: "org",
-        header: t("superAdmin.organizations.fields.organization"),
-        accessor: (u) => u.orgName ?? "—",
-        muted: true,
-      }),
-      textColumn<UserRow>({
-        id: "role",
-        header: t("superAdmin.organizations.fields.role"),
-        accessor: (u) => u.role,
-      }),
+      ...(withoutOrganization
+        ? [
+            textColumn<UserRow>({
+              id: "onboarding",
+              header: t("superAdmin.kyc.onboardingStatus"),
+              accessor: (u) => u.onboarding_status,
+              mono: true,
+            }),
+          ]
+        : [
+            textColumn<UserRow>({
+              id: "org",
+              header: t("superAdmin.organizations.fields.organization"),
+              accessor: (u) => u.orgName ?? "—",
+              muted: true,
+            }),
+            textColumn<UserRow>({
+              id: "role",
+              header: t("superAdmin.organizations.fields.role"),
+              accessor: (u) => u.role,
+            }),
+          ]),
       {
         id: "access",
         header: () => t("superAdmin.organizations.fields.access"),
@@ -102,30 +131,65 @@ export function UsersTab({ q, page, pageSize, onPageChange }: Readonly<TabProps>
         responsive: "lg",
       }),
     ],
-    [t],
+    [t, withoutOrganization],
   )
 
   return (
-    <DataTable<UserRow>
-      data={users}
-      columns={columns}
-      pagination={{
-        page,
-        pageSize: data?.pagination?.limit ?? pageSize,
-        total: data?.pagination?.total ?? users.length,
-        onPageChange,
-      }}
-      loading={isLoading}
-      error={isError ? t("console.table.error") : undefined}
-      onRetry={() => void refetch()}
-      retryLabel={t("console.table.retry")}
-      getRowId={(u) => u.id}
-      // Every user row opens that user's admin profile — the same page the
-      // Accounts tab's owner link goes to.
-      onRowClick={(u) => void navigate(`/admin/users/${u.id}`)}
-      empty={<EmptyState icon={Building2} title={t("superAdmin.organizations.empty.users")} />}
-      onRefresh={() => void refetch()}
-      refreshLabel={t("console.table.refresh")}
-    />
+    <div className="space-y-3">
+      <div className="flex justify-end">
+        <Select
+          value={withoutOrganization ? "without" : "all"}
+          onValueChange={(value) => {
+            onWithoutOrganizationChange(value === "without")
+          }}
+        >
+          <SelectTrigger
+            size="sm"
+            className="w-56"
+            aria-label={t("superAdmin.organizations.filters.organization")}
+          >
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{t("superAdmin.organizations.filters.allUsers")}</SelectItem>
+            <SelectItem value="without">
+              {t("superAdmin.organizations.tabs.orphan_users")}
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <DataTable<UserRow>
+        data={users}
+        columns={columns}
+        pagination={{
+          page,
+          pageSize: data?.pagination?.limit ?? pageSize,
+          total: data?.pagination?.total ?? users.length,
+          onPageChange,
+        }}
+        loading={isLoading}
+        error={isError ? t("console.table.error") : undefined}
+        onRetry={() => void refetch()}
+        retryLabel={t("console.table.retry")}
+        getRowId={(u) => u.id}
+        // Every user row opens that user's admin profile — the same page the
+        // Accounts tab's owner link goes to.
+        onRowClick={(u) => void navigate(`/admin/users/${u.id}`)}
+        empty={
+          withoutOrganization ? (
+            <EmptyState
+              icon={UserRoundX}
+              title={t("superAdmin.organizations.empty.orphanUsers")}
+              description={t("superAdmin.organizations.empty.orphanUsersHint")}
+            />
+          ) : (
+            <EmptyState icon={Building2} title={t("superAdmin.organizations.empty.users")} />
+          )
+        }
+        onRefresh={() => void refetch()}
+        refreshLabel={t("console.table.refresh")}
+      />
+    </div>
   )
 }
