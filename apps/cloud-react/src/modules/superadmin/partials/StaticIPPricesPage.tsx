@@ -142,11 +142,8 @@ export function StaticIPPricesPage() {
       <DataTable<StaticIPPrice>
         data={prices}
         columns={columns}
-<<<<<<< Updated upstream
-=======
         searchable
         searchPlaceholder="Filter static IP prices…"
->>>>>>> Stashed changes
         loading={isLoading}
         error={isError ? t("console.table.error") : undefined}
         onRetry={() => void refetch()}

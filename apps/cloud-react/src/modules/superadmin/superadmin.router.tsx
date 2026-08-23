@@ -187,14 +187,7 @@ export const superadminRoutes: RouteObject[] = [
         // Pricing, not inventory: the rate an allocation is billed at sits with
         // the other price tables rather than on the Static IPs hub.
         path: "static-ip-prices",
-<<<<<<< Updated upstream
-        lazy: async () => {
-          const { StaticIPPricesPage } = await import("./partials/StaticIPPricesPage")
-          return { Component: StaticIPPricesPage }
-        },
-=======
         element: <Navigate to="/admin/pricing?tab=static-ips" replace />,
->>>>>>> Stashed changes
       },
       {
         // Campaigns: what a code grants, how far it may spread, and who used it.
