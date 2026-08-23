@@ -45,6 +45,7 @@ import type {
   LBSettings,
   ManagerStatus,
   TemplateSyncPlan,
+  TemplateSyncRun,
   TemplateRollbackPlan,
   TemplateRollbackItem,
   PlatformSettings,
@@ -180,8 +181,12 @@ export const superAdminApi = {
   getManagerStatus: (id: string) => apiGet<ManagerStatus>(`${BASE}/pve-nodes/${id}/manager-status`),
   previewTemplateSync: (id: string) =>
     apiGet<TemplateSyncPlan>(`${BASE}/pve-nodes/${id}/template-sync/preview`),
+  // Returns as soon as the node has STARTED the run; poll templateSyncStatus for
+  // progress. A 409 body is the run already in flight, not a failure.
   applyTemplateSync: (id: string) =>
-    apiPost<TemplateSyncPlan>(`${BASE}/pve-nodes/${id}/template-sync/apply`, {}),
+    apiPost<TemplateSyncRun>(`${BASE}/pve-nodes/${id}/template-sync/apply`, {}),
+  templateSyncStatus: (id: string) =>
+    apiGet<TemplateSyncRun>(`${BASE}/pve-nodes/${id}/template-sync/status`),
   previewTemplateRollback: (id: string) =>
     apiGet<TemplateRollbackPlan>(`${BASE}/pve-nodes/${id}/template-sync/rollback`),
   rollbackTemplateSync: (id: string) =>

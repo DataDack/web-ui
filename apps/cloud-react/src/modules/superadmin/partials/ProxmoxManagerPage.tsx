@@ -58,6 +58,7 @@ import type {
   ManagerStatusState,
   PVENode,
   TemplateSyncPlan,
+  TemplateSyncRun,
 } from "../superadmin.types"
 
 export function TemplateSyncDialog({
@@ -66,6 +67,7 @@ export function TemplateSyncDialog({
   onOpenChange,
 }: Readonly<{ node: PVENode; open: boolean; onOpenChange: (v: boolean) => void }>) {
   const [plan, setPlan] = useState<TemplateSyncPlan | null>(null)
+  const [run, setRun] = useState<TemplateSyncRun | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const [confirmRollback, setConfirmRollback] = useState(false)
@@ -88,13 +90,55 @@ export function TemplateSyncDialog({
   // left the dialog with no plan, no spinner and no error, which reads as a
   // broken screen with a permanently disabled Create button.
   useEffect(() => {
-    if (open && !plan && !loading && !error) void load()
-  }, [open, plan, loading, error, load])
+    if (open && !plan && !loading && !error && !run?.running) void load()
+  }, [open, plan, loading, error, run?.running, load])
+
+  // While a run is in flight, poll its progress. When it ends, re-preview so the
+  // list reflects what now exists on the node.
+  useEffect(() => {
+    if (!open || !run?.running) return
+    let cancelled = false
+    const timer = setInterval(async () => {
+      try {
+        const next = await superAdminApi.templateSyncStatus(node.id)
+        if (cancelled) return
+        setRun(next)
+        if (!next.running) {
+          setPlan(null) // triggers the preview effect above
+          if (next.error) setError(next.error)
+        }
+      } catch {
+        // A failed poll is not a failed run; keep polling rather than reporting
+        // a build as broken because one request lost the race with a restart.
+      }
+    }, 3000)
+    return () => {
+      cancelled = true
+      clearInterval(timer)
+    }
+  }, [open, run?.running, node.id])
+
+  // On open, adopt a run that is already in progress — started from another tab,
+  // or before a page reload.
+  useEffect(() => {
+    if (!open || run) return
+    void (async () => {
+      try {
+        const st = await superAdminApi.templateSyncStatus(node.id)
+        if (st.running) setRun(st)
+      } catch {
+        /* no run to adopt */
+      }
+    })()
+  }, [open, run, node.id])
   const apply = async () => {
     setLoading(true)
     setError("")
     try {
-      setPlan(await superAdminApi.applyTemplateSync(node.id))
+      // Returns once the node has STARTED building. Waiting for the build to
+      // finish is what produced a 503 from the edge while the node was working
+      // perfectly well, so from here on progress comes from polling.
+      setRun(await superAdminApi.applyTemplateSync(node.id))
     } catch (e) {
       setError(e instanceof Error ? e.message : "Template sync failed")
     } finally {
@@ -121,10 +165,13 @@ export function TemplateSyncDialog({
         onOpenChange(v)
         if (!v) {
           // Drop the finished plan on close so reopening re-previews instead of
-          // showing a result from before the operator changed anything.
+          // showing a result from before the operator changed anything. A run that
+          // is still going is kept, so reopening shows its progress rather than
+          // looking like nothing is happening.
           setPlan(null)
           setError("")
           setConfirmRollback(false)
+          if (!run?.running) setRun(null)
         }
       }}
     >
@@ -148,6 +195,48 @@ export function TemplateSyncDialog({
             className="rounded-md border border-status-danger/30 bg-status-danger-bg/30 p-3 text-sm text-status-danger"
           >
             {error}
+          </div>
+        ) : null}
+        {run ? (
+          <div
+            className="rounded-md border border-border p-3"
+            role="status"
+            aria-live="polite"
+          >
+            <div className="flex items-center gap-2">
+              {run.running ? <Loader2 className="size-4 animate-spin" /> : null}
+              <p className="text-sm font-semibold">
+                {run.running
+                  ? run.phase === "planning"
+                    ? "Checking the catalog against this node…"
+                    : `Building ${run.built + 1} of ${run.total}`
+                  : run.error
+                    ? "Run failed"
+                    : "Run finished"}
+              </p>
+            </div>
+            {run.running && run.phase === "building" ? (
+              <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                <div
+                  className="h-full bg-status-success transition-[width] duration-500"
+                  style={{
+                    width: `${run.total > 0 ? Math.round((run.built / run.total) * 100) : 0}%`,
+                  }}
+                />
+              </div>
+            ) : null}
+            {run.current ? (
+              <p className="mt-2 text-xs text-muted-foreground">
+                Now building <span className="font-medium">{run.current}</span> — a
+                multi-GB disk import, so this takes a few minutes per template.
+              </p>
+            ) : null}
+            {run.done?.length ? (
+              <p className="mt-1 text-xs text-muted-foreground">
+                Built: {run.done.join(", ")}
+              </p>
+            ) : null}
+            {run.message ? <p className="mt-1 text-xs text-muted-foreground">{run.message}</p> : null}
           </div>
         ) : null}
         {plan ? (
@@ -214,15 +303,23 @@ export function TemplateSyncDialog({
           ) : null}
           <Button
             variant="gold"
-            disabled={loading || !plan?.available || creates.length === 0 || blocked.length > 0}
+            disabled={
+              loading ||
+              run?.running ||
+              !plan?.available ||
+              creates.length === 0 ||
+              blocked.length > 0
+            }
             onClick={() => void apply()}
           >
-            {loading ? (
+            {loading || run?.running ? (
               <Loader2 className="size-4 animate-spin" />
             ) : (
               <Database className="size-4" />
             )}
-            Create {creates.length || ""} template{creates.length === 1 ? "" : "s"}
+            {run?.running
+              ? "Building…"
+              : `Create ${creates.length || ""} template${creates.length === 1 ? "" : "s"}`}
           </Button>
         </DialogFooter>
       </DialogContent>

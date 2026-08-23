@@ -359,9 +359,31 @@ export interface TemplateSyncDesired {
   name: string
   os_version: string
   architecture: string
-  source_url: string
+  /** Where the node downloads the image from, when it has to build the template. */
+  image_url: string
+  /** Guest name the template must carry, e.g. "ubuntu-2404-server-amd64-gp3". */
+  template_name?: string
   vmid: number
   min_disk_gb: number
+}
+
+/**
+ * Live progress of a template-sync run. Applying returns as soon as the node has
+ * started, because a build takes minutes and no proxy in front of the API will
+ * hold a request that long — so progress is polled rather than awaited.
+ */
+export interface TemplateSyncRun {
+  running: boolean
+  phase?: "planning" | "building" | "done"
+  started_at?: string
+  finished_at?: string
+  total: number
+  built: number
+  current?: string
+  done?: string[]
+  deferred: number
+  error?: string
+  message?: string
 }
 export interface TemplateSyncAction {
   desired: TemplateSyncDesired
