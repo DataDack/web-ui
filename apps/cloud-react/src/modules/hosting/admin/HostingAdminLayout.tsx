@@ -1,5 +1,6 @@
-import { Tabs, TabsList, TabsTrigger } from "@datadack/common-ui"
 import { Outlet, useLocation, useNavigate } from "react-router-dom"
+
+import { Tabs, TabsList, TabsTrigger } from "@datadack/common-ui"
 
 import { HOSTING_ADMIN_ROUTES } from "../hosting.constants"
 
