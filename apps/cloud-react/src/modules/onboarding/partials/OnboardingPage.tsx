@@ -123,11 +123,6 @@ export function OnboardingPage() {
     await provision(choice, orgName)
   }
 
-  // Skip: the rest of onboarding is optional — one click provisions a default
-  // individual account; every detail (type, org, verification) can be filled
-  // in later. Only reachable after the (required) basic-details step.
-  const onSkip = () => void provision("individual")
-
   const renderStep = () => {
     if (isLoading || !status) return <OnboardingStepSkeleton />
     switch (STEP_META[step].id) {
@@ -145,7 +140,6 @@ export function OnboardingPage() {
             current={choice || status.user_type}
             orgName={orgName}
             askOrgName
-            onSkip={complete.isPending ? undefined : onSkip}
             onNext={(c, name) => {
               setChoice(c)
               setOrgName(name)

@@ -32,7 +32,6 @@ export function AccountTypeStep({
   current,
   orgName: initialOrgName = "",
   askOrgName = false,
-  onSkip,
   onNext,
 }: Readonly<{
   current: Choice | ""
@@ -40,9 +39,6 @@ export function AccountTypeStep({
   /** Signup flow: collect the organization name inline when "business" is
    *  picked. The new-org wizard collects the name in its own step instead. */
   askOrgName?: boolean
-  /** Signup flow: onboarding is optional — when provided, a "Skip for now"
-   *  action provisions a default individual account immediately. */
-  onSkip?: () => void
   onNext: (choice: Choice, orgName: string) => void
 }>) {
   const { t } = useTranslation()
@@ -122,21 +118,14 @@ export function AccountTypeStep({
         </div>
       )}
 
-      <div className="flex items-center gap-3">
-        <Button
-          onClick={() => void onContinue()}
-          disabled={!choice || orgNameMissing || setType.isPending}
-          className="btn-gold rounded-full font-bold"
-          loading={setType.isPending}
-        >
-          {t("onboarding.continue")}
-        </Button>
-        {onSkip && (
-          <Button variant="ghost" onClick={onSkip} disabled={setType.isPending}>
-            {t("onboarding.type.skip")}
-          </Button>
-        )}
-      </div>
+      <Button
+        onClick={() => void onContinue()}
+        disabled={!choice || orgNameMissing || setType.isPending}
+        className="btn-gold rounded-full font-bold"
+        loading={setType.isPending}
+      >
+        {t("onboarding.continue")}
+      </Button>
     </div>
   )
 }
