@@ -23,6 +23,20 @@ import {
 
 const SIDEBAR_STORAGE_KEY = "console-sidebar-collapsed"
 
+const ACTIVE_SERVICE_PATHS = [
+  "/hosting",
+  "/billing",
+  "/domains",
+  "/resource-groups",
+  "/support",
+] as const
+
+function isActiveServicePath(pathname: string) {
+  return ACTIVE_SERVICE_PATHS.some(
+    (path) => pathname === path || pathname.startsWith(`${path}/`),
+  )
+}
+
 function RouteSkeleton() {
   return (
     <div className="space-y-6">
@@ -79,7 +93,8 @@ export function AppShell() {
 
   const isHome = location.pathname === "/"
   const isManagedApps = location.pathname.startsWith("/managed-apps")
-  const routeContent = isHome ? outlet : <ServiceMaintenancePage />
+  const routeContent =
+    isHome || isActiveServicePath(location.pathname) ? outlet : <ServiceMaintenancePage />
 
   // Routes can opt out of the service sidebar (e.g. full-bleed create
   // wizards) via `handle: { hideSidebar: true }`.
