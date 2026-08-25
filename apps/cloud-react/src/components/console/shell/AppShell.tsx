@@ -1,14 +1,14 @@
 import { Suspense, useCallback, useEffect, useState } from "react"
 
+import { cn, Skeleton } from "@datadack/common-ui"
 import { useLocation, useMatches, useNavigate, useOutlet } from "react-router-dom"
 
 import { useKeySequence } from "@/hooks/use-key-sequence"
 import { useKeyboardShortcut } from "@/hooks/use-keyboard-shortcut"
 import { MobileNumberPrompt } from "@/modules/auth/components/MobileNumberPrompt"
 import { GlobalSearch } from "@/modules/search/partials/GlobalSearch"
+import { ServiceMaintenancePage } from "@/modules/services/partials/ServiceMaintenancePage"
 import { useConsoleBroadcastSync } from "@/services/broadcast"
-
-import { cn, Skeleton } from "@datadack/common-ui"
 
 import { Sidebar } from "./Sidebar"
 import { Topbar } from "./Topbar"
@@ -79,6 +79,7 @@ export function AppShell() {
 
   const isHome = location.pathname === "/"
   const isManagedApps = location.pathname.startsWith("/managed-apps")
+  const routeContent = isHome ? outlet : <ServiceMaintenancePage />
 
   // Routes can opt out of the service sidebar (e.g. full-bleed create
   // wizards) via `handle: { hideSidebar: true }`.
@@ -129,7 +130,9 @@ export function AppShell() {
               // topbar + sidebar sitting on the shared tinted background.
               <div className="mt-2 min-h-[calc(100vh-96px-0.5rem)] rounded-tl-2xl border-t border-l border-border/50 bg-card shadow-sm md:min-h-[calc(100vh-52px-0.5rem)]">
                 <div className="w-full px-4 py-6 md:px-6 lg:px-8">
-                  <Suspense fallback={<RouteSkeleton />}>{outlet}</Suspense>
+                  <Suspense fallback={<RouteSkeleton />}>
+                    {routeContent}
+                  </Suspense>
                 </div>
               </div>
             ) : (
@@ -148,7 +151,9 @@ export function AppShell() {
                     : "mx-auto w-full max-w-400 px-4 py-6 md:px-6 lg:px-8"
                 }
               >
-                <Suspense fallback={<RouteSkeleton />}>{outlet}</Suspense>
+                <Suspense fallback={<RouteSkeleton />}>
+                  {routeContent}
+                </Suspense>
               </div>
             )}
           </main>
