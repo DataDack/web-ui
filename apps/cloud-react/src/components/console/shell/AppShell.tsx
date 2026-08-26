@@ -7,6 +7,7 @@ import { useKeySequence } from "@/hooks/use-key-sequence"
 import { useKeyboardShortcut } from "@/hooks/use-keyboard-shortcut"
 import { MobileNumberPrompt } from "@/modules/auth/components/MobileNumberPrompt"
 import { GlobalSearch } from "@/modules/search/partials/GlobalSearch"
+import { useServiceGate } from "@/modules/services/catalog.hooks"
 import { ServiceMaintenancePage } from "@/modules/services/partials/ServiceMaintenancePage"
 import { useConsoleBroadcastSync } from "@/services/broadcast"
 
@@ -22,22 +23,6 @@ import {
 } from "../seasonal"
 
 const SIDEBAR_STORAGE_KEY = "console-sidebar-collapsed"
-
-const ACTIVE_SERVICE_PATHS = [
-  "/hosting",
-  "/billing",
-  "/domains",
-  "/managed-apps",
-  "/resource-groups",
-  "/serverless",
-  "/support",
-] as const
-
-function isActiveServicePath(pathname: string) {
-  return ACTIVE_SERVICE_PATHS.some(
-    (path) => pathname === path || pathname.startsWith(`${path}/`),
-  )
-}
 
 function RouteSkeleton() {
   return (
@@ -95,8 +80,17 @@ export function AppShell() {
 
   const isHome = location.pathname === "/"
   const isManagedApps = location.pathname.startsWith("/managed-apps")
-  const routeContent =
-    isHome || isActiveServicePath(location.pathname) ? outlet : <ServiceMaintenancePage />
+
+  // Which services are open is an operator decision, not a frontend constant:
+  // the gate reads the admin-managed service catalog (super admin → Services),
+  // so closing Compute for maintenance is a state change there, not a build.
+  // The home page is never gated — it is where the catalog itself is reported.
+  const gate = useServiceGate(location.pathname)
+  let routeContent = outlet
+  if (!isHome) {
+    if (gate.pending) routeContent = <RouteSkeleton />
+    else if (gate.blocked) routeContent = <ServiceMaintenancePage />
+  }
 
   // Routes can opt out of the service sidebar (e.g. full-bleed create
   // wizards) via `handle: { hideSidebar: true }`.

@@ -11,7 +11,18 @@ import {
   textColumn,
 } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
-import { Ban, CheckCircle2, Clock, LayoutGrid, Pencil, Plus, RefreshCw, Trash2 } from "lucide-react"
+import {
+  Ban,
+  CheckCircle2,
+  Clock,
+  LayoutGrid,
+  Pencil,
+  Play,
+  Plus,
+  RefreshCw,
+  Trash2,
+  Wrench,
+} from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { ConfirmDialog, PageHeader } from "@/components/console"
@@ -23,7 +34,7 @@ import {
   useReorderServices,
   useUpdateServiceState,
 } from "../superadmin.hooks"
-import type { CatalogServiceAdmin, ServiceState } from "../superadmin.types"
+import type { CatalogServiceAdmin, ServiceHealthStatus, ServiceState } from "../superadmin.types"
 import { ServiceFormSheet } from "./ServiceFormSheet"
 
 const STATE_STYLES: Record<ServiceState, string> = {
@@ -46,10 +57,31 @@ function StateBadge({ state }: Readonly<{ state: ServiceState }>) {
   )
 }
 
+const STATUS_STYLES: Record<ServiceHealthStatus, string> = {
+  operational: "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+  degraded: "border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400",
+  maintenance: "border-sky-500/30 bg-sky-500/10 text-sky-600 dark:text-sky-400",
+}
+
+function StatusBadge({ status }: Readonly<{ status: ServiceHealthStatus }>) {
+  const { t } = useTranslation()
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-medium",
+        STATUS_STYLES[status],
+      )}
+    >
+      {t(`superAdmin.services.statuses.${status}`)}
+    </span>
+  )
+}
+
 interface ActionHelpers {
   t: (key: string) => string
   onEdit: (svc: CatalogServiceAdmin) => void
   onSetState: (id: string, state: ServiceState) => void
+  onSetStatus: (svc: CatalogServiceAdmin, status: ServiceHealthStatus) => void
   onDelete: (svc: CatalogServiceAdmin) => void
 }
 
@@ -62,6 +94,25 @@ function buildServiceActions(
   const actions: RowAction<CatalogServiceAdmin>[] = [
     { label: h.t("superAdmin.actions.edit"), icon: Pencil, onAction: h.onEdit },
   ]
+  // The maintenance toggle sits directly under Edit: it is the one field that
+  // opens or closes this service's pages for every tenant.
+  if (svc.status === "maintenance") {
+    actions.push({
+      label: h.t("superAdmin.services.actions.bringOnline"),
+      icon: Play,
+      onAction: (s) => {
+        h.onSetStatus(s, "operational")
+      },
+    })
+  } else {
+    actions.push({
+      label: h.t("superAdmin.services.actions.maintenance"),
+      icon: Wrench,
+      onAction: (s) => {
+        h.onSetStatus(s, "maintenance")
+      },
+    })
+  }
   if (svc.state !== "enabled") {
     actions.push({
       label: h.t("superAdmin.services.actions.enable"),
@@ -140,6 +191,11 @@ export function ServicesPage() {
       onSetState: (id, state) => {
         setServiceState({ id, payload: { state } })
       },
+      // The quick PATCH takes state as required, so a status-only change sends
+      // the row's current state back unchanged.
+      onSetStatus: (svc, status) => {
+        setServiceState({ id: svc.id, payload: { state: svc.state, status } })
+      },
       onDelete: (svc) => {
         setDeleting(svc)
       },
@@ -167,6 +223,12 @@ export function ServicesPage() {
         header: () => t("superAdmin.services.fields.state"),
         enableSorting: false,
         cell: ({ row }) => <StateBadge state={row.original.state} />,
+      },
+      {
+        id: "status",
+        header: () => t("superAdmin.services.fields.status"),
+        enableSorting: false,
+        cell: ({ row }) => <StatusBadge status={row.original.status} />,
       },
       textColumn<CatalogServiceAdmin>({
         id: "order",

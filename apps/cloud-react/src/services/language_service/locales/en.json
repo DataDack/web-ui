@@ -3862,9 +3862,10 @@
         "icon": "Icon",
         "category": "Category",
         "path": "Path",
-        "pathHint": "Frontend route this card links to.",
+        "pathHint": "Frontend route this card links to. Its first segment is also what the maintenance gate opens or closes.",
         "state": "State",
         "status": "Status",
+        "statusHint": "Maintenance closes every console page under this service for all tenants.",
         "sortOrder": "Sort order",
         "sortOrderHint": "Lower numbers appear first.",
         "metrics": "Live metrics",
@@ -3886,7 +3887,9 @@
       "actions": {
         "enable": "Enable",
         "comingSoon": "Mark coming soon",
-        "disable": "Disable"
+        "disable": "Disable",
+        "maintenance": "Put in maintenance",
+        "bringOnline": "Bring online"
       },
       "reorderRow": "Reorder service",
       "reorderBlocked": "Clear the sort and search to reorder services."

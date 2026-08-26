@@ -265,7 +265,10 @@ export function ServiceFormSheet({ open, onOpenChange, service }: Readonly<Props
           />
         </Field>
 
-        <Field label={t("superAdmin.services.fields.status")}>
+        <Field
+          label={t("superAdmin.services.fields.status")}
+          hint={t("superAdmin.services.fields.statusHint")}
+        >
           <Controller
             control={control}
             name="status"

@@ -3381,9 +3381,10 @@
         "icon": "Icon",
         "category": "Category",
         "path": "Path",
-        "pathHint": "Frontend route this card links to.",
+        "pathHint": "Frontend route this card links to. Its first segment is also what the maintenance gate opens or closes.",
         "state": "State",
         "status": "Status",
+        "statusHint": "रखरखाव इस सेवा के अंतर्गत आने वाले हर कंसोल पेज को सभी टेनेंट के लिए बंद कर देता है।",
         "sortOrder": "Sort order",
         "sortOrderHint": "Lower numbers appear first.",
         "metrics": "Live metrics",
@@ -3405,7 +3406,9 @@
       "actions": {
         "enable": "सक्रिय करें",
         "comingSoon": "जल्द आ रहा है चिह्नित करें",
-        "disable": "निष्क्रिय करें"
+        "disable": "निष्क्रिय करें",
+        "maintenance": "रखरखाव में डालें",
+        "bringOnline": "फिर से चालू करें"
       },
       "reorderRow": "सेवा का क्रम बदलें",
       "reorderBlocked": "क्रम बदलने के लिए सॉर्ट और खोज हटाएँ।"

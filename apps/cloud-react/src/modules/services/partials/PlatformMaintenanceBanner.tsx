@@ -1,6 +1,20 @@
 import { AlertTriangle } from "lucide-react"
 
+import { hasClosedService } from "../catalog.gate"
+import { useCatalogServices } from "../catalog.hooks"
+
+/**
+ * Console-home notice that some service pages are shut. Self-gating: it reads
+ * the same admin-managed catalog the route gate does, so it appears exactly
+ * when at least one service is `coming_soon` or in `maintenance` and goes away
+ * on its own once an operator opens the last one — no build, and no banner
+ * claiming maintenance over a fully open platform.
+ */
 export function PlatformMaintenanceBanner() {
+  const { data: services = [] } = useCatalogServices()
+
+  if (!hasClosedService(services)) return null
+
   return (
     <aside
       aria-labelledby="platform-maintenance-banner-title"
