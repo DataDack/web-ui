@@ -78,7 +78,8 @@
         "targetGroups": "टारगेट ग्रुप",
         "apps": "ऐप्स",
         "cpanelHosting": "cPanel होस्टिंग",
-        "domains": "डोमेन"
+        "domains": "डोमेन",
+        "ssoApps": "SSO एप्लीकेशन"
       },
       "soon": "जल्द आ रहा है",
       "collapse": "संकुचित करें",
