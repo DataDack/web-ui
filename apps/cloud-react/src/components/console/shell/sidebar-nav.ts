@@ -212,6 +212,11 @@ export const CONSOLE_SERVICES: ConsoleService[] = [
         path: "/managed-apps?tab=apps",
       },
       {
+        labelKey: "console.nav.items.ssoApps",
+        icon: ShieldCheck,
+        path: "/managed-apps/sso",
+      },
+      {
         labelKey: "console.nav.items.cpanelHosting",
         icon: Globe,
         path: "/managed-apps?tab=hosting",

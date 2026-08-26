@@ -76,7 +76,8 @@
         "n8nAgents": "n8n Agents",
         "apps": "Apps",
         "cpanelHosting": "cPanel Hosting",
-        "domains": "Domains"
+        "domains": "Domains",
+        "ssoApps": "SSO Applications"
       },
       "soon": "Soon",
       "collapse": "Collapse",

@@ -84,4 +84,19 @@ export const managedAppsRoutes: RouteObject[] = [
       return { Component: GitHubCallbackPage }
     },
   },
+  {
+    path: "managed-apps/sso",
+    lazy: async () => {
+      const { ApplicationsListPage } = await import("./sso/partials/ApplicationsListPage")
+      return { Component: ApplicationsListPage }
+    },
+  },
+  {
+    path: "managed-apps/sso/:id",
+    handle: { hideSidebar: true },
+    lazy: async () => {
+      const { ApplicationDetailPage } = await import("./sso/partials/ApplicationDetailPage")
+      return { Component: ApplicationDetailPage }
+    },
+  },
 ]
