@@ -231,6 +231,7 @@
         "degraded": "Degraded",
         "outage": "Outage",
         "inactive": "Inactive",
+        "maintenance": "Maintenance",
         "comingSoon": "Coming soon"
       },
       "cost": {

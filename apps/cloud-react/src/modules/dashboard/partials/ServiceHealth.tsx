@@ -11,6 +11,7 @@ const STATUS_META: Record<HealthStatus, { color: string; labelKey: string }> = {
   degraded: { color: "#e9b94f", labelKey: "dashboard.home.serviceHealth.degraded" },
   outage: { color: "#f07a66", labelKey: "dashboard.home.serviceHealth.outage" },
   inactive: { color: "#8a8f98", labelKey: "dashboard.home.serviceHealth.inactive" },
+  maintenance: { color: "#5aa9e6", labelKey: "dashboard.home.serviceHealth.maintenance" },
   coming_soon: { color: "#8a8f98", labelKey: "dashboard.home.serviceHealth.comingSoon" },
 }
 

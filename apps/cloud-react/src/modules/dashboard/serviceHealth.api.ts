@@ -11,7 +11,9 @@ import type { HealthStatus, ServiceHealthItem } from "./dashboard.types"
 interface BackendServiceRow {
   id: string
   name: string
-  status: string // "operational" | "degraded" | "coming_soon"
+  // "operational" | "degraded" from the live app probe, or "maintenance" /
+  // "coming_soon" when an operator has declared it in super admin → Services.
+  status: string
 }
 
 interface ServicesEnvelope {
@@ -32,6 +34,8 @@ const HEALTH_STATUSES: readonly HealthStatus[] = [
   "degraded",
   "outage",
   "inactive",
+  "maintenance",
+  "coming_soon",
 ]
 
 // Normalize at the boundary instead of casting: a status this build does not
