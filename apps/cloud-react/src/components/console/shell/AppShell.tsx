@@ -27,7 +27,9 @@ const ACTIVE_SERVICE_PATHS = [
   "/hosting",
   "/billing",
   "/domains",
+  "/managed-apps",
   "/resource-groups",
+  "/serverless",
   "/support",
 ] as const
 
