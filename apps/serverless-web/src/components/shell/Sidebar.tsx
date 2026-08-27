@@ -1,10 +1,14 @@
 import {
   Activity,
+  Bot,
   Globe,
+  KeyRound,
+  LayoutTemplate,
   Layers,
   ScrollText,
   Server,
   ShieldCheck,
+  Workflow,
   Zap,
   type LucideIcon,
 } from "lucide-react"
@@ -23,6 +27,23 @@ const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
     items: [
       { to: "/functions", label: "Functions", icon: Zap },
       { to: "/workers", label: "Workers", icon: Server },
+    ],
+  },
+  {
+    label: "AI & Workflows",
+    items: [
+      { to: "/automations/agents", label: "AI Agents", icon: Bot },
+      { to: "/automations/workflows", label: "Workflows", icon: Workflow },
+      {
+        to: "/automations/templates",
+        label: "Workflow Templates",
+        icon: LayoutTemplate,
+      },
+      {
+        to: "/automations/credentials",
+        label: "Credentials",
+        icon: KeyRound,
+      },
     ],
   },
   {

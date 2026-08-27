@@ -55,16 +55,15 @@ import {
   // AI
   SiAnthropic, SiPerplexity, SiHuggingface, SiDeepl,
   // Integrations
-  SiSlack, SiGooglesheets, SiGmail,
+  SiGooglesheets, SiGmail,
   // CRM
-  SiSalesforce, SiHubspot, SiZoho,
-  SiAffinity,
+  SiHubspot, SiZoho,
   // Communication
-  SiDiscord, SiTelegram, SiWhatsapp, SiTwilio, SiMattermost, SiLine,
+  SiDiscord, SiTelegram, SiWhatsapp, SiMattermost, SiLine,
   // Social
   SiInstagram, SiThreads,
   // Marketing
-  SiMailchimp, SiBrevo, SiSendgrid, SiMailgun, SiFacebook,
+  SiMailchimp, SiBrevo, SiMailgun, SiFacebook,
   // Developer Tools
   SiGithub, SiGitlab, SiJira, SiLinear, SiJenkins, SiCircleci,
   SiBitbucket, SiSentry, SiGrafana, SiNpm, SiDocker,
@@ -81,6 +80,7 @@ import {
   SiPostgresql, SiMysql, SiMongodb, SiRedis, SiSnowflake,
   SiElasticsearch, SiTimescale, SiCratedb, SiBaserow,
 } from 'react-icons/si';
+import { FaSlack } from 'react-icons/fa';
 
 // ── Microsoft brand icons (Phosphor Icons) ─────────────────────────────────
 import {
@@ -123,24 +123,24 @@ const BRAND_ICONS = {
   lmChatAnthropic: SiAnthropic,
   lmChatDeepSeek: LobeDeepSeek.Color,
   // Integrations
-  slack: SiSlack,
+  slack: FaSlack,
   googleSheets: SiGooglesheets,
   // CRM
-  salesforce: SiSalesforce,
+  salesforce: Cloud,
   hubspot: SiHubspot,
   zohoCrm: SiZoho,
-  affinity: SiAffinity,
+  affinity: Users,
   // Communication
   discord: SiDiscord,
   telegram: SiTelegram,
   whatsApp: SiWhatsapp,
-  twilio: SiTwilio,
+  twilio: Phone,
   mattermost: SiMattermost,
   line: SiLine,
   // Marketing
   mailchimp: SiMailchimp,
   brevo: SiBrevo,
-  sendGrid: SiSendgrid,
+  sendGrid: Send,
   mailgun: SiMailgun,
   facebookLeadAds: SiFacebook,
   // Developer Tools
@@ -194,7 +194,7 @@ const BRAND_ICONS = {
   mcpTrigger: McpIcon,
   // App Triggers — existing
   githubTrigger: SiGithub,
-  slackTrigger: SiSlack,
+  slackTrigger: FaSlack,
   telegramTrigger: SiTelegram,
   discordTrigger: SiDiscord,
   whatsappTrigger: SiWhatsapp,

@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import WorkflowCanvas from '../../components/workflows/WorkflowCanvas';
 import { templatesApi } from '../../api/workflows';
+import { automationPath } from '../../../runtime';
 
 export default function TemplatePreview() {
   const { slug } = useParams();
@@ -37,7 +38,7 @@ export default function TemplatePreview() {
       const newId = result?.workflow_id;
       if (!newId) throw new Error('Template returned no workflow id');
       toast.success(`Workflow created from "${template.name}"`);
-      navigate(`/workflows/${newId}`);
+      navigate(automationPath(`workflows/${newId}`));
     } catch (err) {
       toast.error(`Failed to use template: ${err.message}`);
       setBusy(false);

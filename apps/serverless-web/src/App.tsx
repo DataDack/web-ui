@@ -1,5 +1,9 @@
 import { Navigate, Route, Routes } from "react-router-dom"
-import { AIAutomationsRoutes } from "@datadack/ai-and-automations"
+import {
+  AIAgentStudio,
+  AIAutomationsRoutes,
+  AIWorkflowStudio,
+} from "@datadack/ai-and-automations"
 
 import { AppShell } from "@/components/shell/AppShell"
 import { AuditPage } from "@/features/audit/AuditPage"
@@ -16,6 +20,10 @@ import { WorkersPage } from "@/features/workers/WorkersPage"
 export function App() {
   return (
     <Routes>
+      {/* Editors own the entire viewport. Their studio canvases already include
+          their own toolbar/navigation and must not be constrained by AppShell. */}
+      <Route path="/automations/agents/:id" element={<AIAgentStudio />} />
+      <Route path="/automations/workflows/:id" element={<AIWorkflowStudio />} />
       <Route element={<AppShell />}>
         <Route index element={<Navigate to="/functions" replace />} />
         <Route path="/functions" element={<FunctionsPage />} />

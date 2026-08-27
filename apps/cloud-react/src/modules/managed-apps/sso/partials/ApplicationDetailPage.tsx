@@ -9,6 +9,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
+  CopyButton,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -30,10 +31,12 @@ import {
   Textarea,
   css,
 } from "@datadack/common-ui"
-import { ArrowLeft, KeyRound, Palette, Plus, Settings, ShieldCheck, Tag, Trash2 } from "lucide-react"
+import { KeyRound, Palette, Plug, Plus, Settings, ShieldCheck, Tag, Trash2 } from "lucide-react"
+
+import { PageHeader } from "@/components/console"
 
 import { ssoApi } from "../sso.api"
-import type { Configuration, UpdateApplicationRequest } from "../sso.types"
+import type { Application, Configuration, UpdateApplicationRequest } from "../sso.types"
 
 // Emotion styles
 const containerClass = css`
@@ -42,26 +45,12 @@ const containerClass = css`
   padding: 24px;
 `
 
-const headerRowClass = css`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 24px;
-  gap: 16px;
-`
-
-const flexItemsClass = css`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-`
-
 export function ApplicationDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
 
-  const [activeTab, setActiveTab] = useState("env")
+  const [activeTab, setActiveTab] = useState("credentials")
   const [selectedConfigId, setSelectedConfigId] = useState<string>("")
   const [newEnvOpen, setNewEnvOpen] = useState(false)
   const [newEnvName, setNewEnvName] = useState("")
@@ -139,42 +128,44 @@ export function ApplicationDetailPage() {
 
   return (
     <div className={containerClass}>
-      <div className={headerRowClass}>
-        <div className={flexItemsClass}>
-          <Button variant="ghost" size="icon" onClick={() => navigate("/managed-apps/sso")}>
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">{app.name}</h1>
-            <p className="text-xs text-muted-foreground font-mono">slug: {app.slug}</p>
+      <PageHeader
+        icon={ShieldCheck}
+        breadcrumbs={[
+          { label: "Managed applications", to: "/managed-apps" },
+          { label: "SSO Applications", to: "/managed-apps/sso" },
+        ]}
+        title={app.name}
+        description={`Application slug: ${app.slug}`}
+        actions={
+          <div className="flex flex-wrap items-center gap-2">
+            {configs.length > 0 && (
+              <Select value={selectedConfigId} onValueChange={setSelectedConfigId}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select Environment" />
+                </SelectTrigger>
+                <SelectContent>
+                  {configs.map((c) => (
+                    <SelectItem key={c.id} value={c.id}>
+                      {c.env.toUpperCase()}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+
+            <Button variant="outline" size="sm" onClick={() => setNewEnvOpen(true)}>
+              <Plus className="mr-1 h-4 w-4" /> Add Env
+            </Button>
           </div>
-        </div>
-
-        <div className={flexItemsClass}>
-          {configs.length > 0 && (
-            <Select value={selectedConfigId} onValueChange={setSelectedConfigId}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Select Environment" />
-              </SelectTrigger>
-              <SelectContent>
-                {configs.map((c) => (
-                  <SelectItem key={c.id} value={c.id}>
-                    {c.env.toUpperCase()}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
-
-          <Button variant="outline" size="sm" onClick={() => setNewEnvOpen(true)}>
-            <Plus className="mr-1 h-4 w-4" /> Add Env
-          </Button>
-        </div>
-      </div>
+        }
+      />
 
       {activeConfig ? (
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
+            <TabsTrigger value="credentials" className="gap-2">
+              <Plug className="h-4 w-4" /> Integration
+            </TabsTrigger>
             <TabsTrigger value="env" className="gap-2">
               <KeyRound className="h-4 w-4" /> Env Vars
             </TabsTrigger>
@@ -191,6 +182,10 @@ export function ApplicationDetailPage() {
               <Settings className="h-4 w-4" /> Settings
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="credentials">
+            <IntegrationTab app={app} activeConfig={activeConfig} />
+          </TabsContent>
 
           <TabsContent value="env">
             <EnvVarsTab activeConfig={activeConfig} />
@@ -230,7 +225,8 @@ export function ApplicationDetailPage() {
             <DialogHeader>
               <DialogTitle>Add Environment Configuration</DialogTitle>
               <DialogDescription>
-                Create a configuration profile for a custom deployment environment (e.g. production, staging).
+                Create a configuration profile for a custom deployment environment (e.g. production,
+                staging).
               </DialogDescription>
             </DialogHeader>
 
@@ -258,6 +254,115 @@ export function ApplicationDetailPage() {
           </form>
         </DialogContent>
       </Dialog>
+    </div>
+  )
+}
+
+// ── 0. Integration Tab ────────────────────────────────────────────────────
+// Where an application owner learns how to actually call the config endpoint.
+// Without this the credentials are undiscoverable: the console reveals an IAM
+// key once, and nothing anywhere says that the key prefix is the client id or
+// that this endpoint exists.
+function IntegrationTab({
+  app,
+  activeConfig,
+}: Readonly<{ app: Application; activeConfig: Configuration }>) {
+  const endpoint = `${window.location.origin}/api/v1/managedapps/sso/config`
+  const curl = [
+    `curl "${endpoint}" \\`,
+    `  -H "X-Client-Id: $DATADACK_CLIENT_ID" \\`,
+    `  -H "X-Client-Secret: $DATADACK_CLIENT_SECRET" \\`,
+    `  -H "X-App-Slug: ${app.slug}" \\`,
+    `  -H "X-Env: ${activeConfig.env}"`,
+  ].join("\n")
+
+  return (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Client credentials</CardTitle>
+          <CardDescription>
+            This endpoint authenticates with an IAM access key, not a console session. Create a key
+            under IAM &rarr; API keys: the <strong>client ID</strong> is the key prefix shown in that
+            list, and the <strong>client secret</strong> is the full key revealed once at creation.
+            Any active key in this account can read this application&apos;s configuration, so treat
+            it as a server-side secret and never ship it in a browser bundle.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <IntegrationField label="Endpoint" value={endpoint} />
+          <IntegrationField label="Application ID" value={app.id} />
+          <IntegrationField label="Application slug" value={app.slug} />
+          <IntegrationField label="Environment" value={activeConfig.env} />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Request headers</CardTitle>
+          <CardDescription>
+            The secret is read from the header only — it is deliberately not accepted as a query
+            parameter, which would leak it into access logs. Identify the application by either
+            X-App-Slug or X-App-Id; X-Env defaults to production when omitted.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <HeaderRow name="X-Client-Id" note="IAM key prefix (or the credential UUID)" required />
+          <HeaderRow name="X-Client-Secret" note="the raw sk_ key" required />
+          <HeaderRow name="X-App-Slug" note={`this application: ${app.slug}`} />
+          <HeaderRow name="X-App-Id" note="alternative to X-App-Slug" />
+          <HeaderRow name="X-Env" note="defaults to production" />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Example</CardTitle>
+          <CardDescription>
+            Returns this environment&apos;s env variables plus the web theme, metadata and policy
+            blocks.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <pre className="glass-1 overflow-x-auto rounded-lg p-4 font-mono text-xs leading-relaxed">
+            {curl}
+          </pre>
+        </CardContent>
+        <CardFooter className="justify-end border-t border-border pt-4">
+          <CopyButton value={curl} label="Copy command" copiedLabel="Command copied" />
+        </CardFooter>
+      </Card>
+    </div>
+  )
+}
+
+function IntegrationField({ label, value }: Readonly<{ label: string; value: string }>) {
+  return (
+    <div className="flex items-center justify-between gap-4 border-b border-border pb-3 last:border-0 last:pb-0">
+      <Label className="text-muted-foreground text-xs">{label}</Label>
+      <CopyButton value={value} copiedLabel="Copied" className="text-foreground text-[13px]" />
+    </div>
+  )
+}
+
+function HeaderRow({
+  name,
+  note,
+  required = false,
+}: Readonly<{
+  name: string
+  note: string
+  required?: boolean
+}>) {
+  return (
+    <div className="flex items-center gap-3">
+      <code className="font-mono text-primary text-xs font-semibold">{name}</code>
+      {required && (
+        <span className="text-status-warning border-status-warning/40 rounded border px-1.5 py-0.5 text-[10px] uppercase">
+          required
+        </span>
+      )}
+      <span className="text-muted-foreground text-xs">{note}</span>
     </div>
   )
 }
@@ -324,14 +429,17 @@ function EnvVarsTab({ activeConfig }: { activeConfig: Configuration }) {
       <CardHeader>
         <CardTitle>Environment variables</CardTitle>
         <CardDescription>
-          Customize custom parameters exposed to your application at runtime. Variables defined here will be returned under the configuration's root block.
+          Customize custom parameters exposed to your application at runtime. Variables defined here
+          will be returned under the configuration's root block.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Read-only system key */}
         <div className="flex items-center gap-4 border border-dashed rounded-lg p-3 bg-muted/20">
           <div className="flex-1">
-            <span className="font-mono text-xs font-semibold text-primary">EDUCATIONAL_PLATFORM</span>
+            <span className="font-mono text-xs font-semibold text-primary">
+              EDUCATIONAL_PLATFORM
+            </span>
           </div>
           <div className="w-[180px]">
             <Select value={educationalPlatform} onValueChange={setEducationalPlatform}>
@@ -365,7 +473,12 @@ function EnvVarsTab({ activeConfig }: { activeConfig: Configuration }) {
                 className="font-mono text-xs"
               />
             </div>
-            <Button variant="ghost" size="icon" onClick={() => handleRemoveRow(i)} className="text-red-500 hover:text-red-700">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => handleRemoveRow(i)}
+              className="text-red-500 hover:text-red-700"
+            >
               <Trash2 className="h-4 w-4" />
             </Button>
           </div>
@@ -525,7 +638,8 @@ function MetadataTab({ activeConfig }: { activeConfig: Configuration }) {
       <CardHeader>
         <CardTitle>Metadata settings</CardTitle>
         <CardDescription>
-          Custom key/value JSON configurations returned to your SSO clients to control feature flags, tags, and app options.
+          Custom key/value JSON configurations returned to your SSO clients to control feature
+          flags, tags, and app options.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -655,7 +769,11 @@ function SettingsTab({ app, configs }: { app: any; configs: Configuration[] }) {
   }
 
   const handleDelete = () => {
-    if (confirm("Are you absolutely sure you want to delete this SSO Application? This action is permanent and will delete all environment configurations.")) {
+    if (
+      confirm(
+        "Are you absolutely sure you want to delete this SSO Application? This action is permanent and will delete all environment configurations.",
+      )
+    ) {
       deleteMutation.mutate()
     }
   }
@@ -673,12 +791,7 @@ function SettingsTab({ app, configs }: { app: any; configs: Configuration[] }) {
           <CardContent className="space-y-4">
             <div className="space-y-1">
               <Label htmlFor="appName">Application Name *</Label>
-              <Input
-                id="appName"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
+              <Input id="appName" value={name} onChange={(e) => setName(e.target.value)} required />
             </div>
 
             <div className="space-y-1">
@@ -757,12 +870,14 @@ function SettingsTab({ app, configs }: { app: any; configs: Configuration[] }) {
         <CardHeader>
           <CardTitle className="text-red-600 dark:text-red-400">Danger Zone</CardTitle>
           <CardDescription>
-            Deleting this application will invalidate all existing SSO client credentials and revoke access to environment variables.
+            Deleting this application will invalidate all existing SSO client credentials and revoke
+            access to environment variables.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground mb-4">
-            This action cannot be undone. Please make sure you have backed up any necessary configurations.
+            This action cannot be undone. Please make sure you have backed up any necessary
+            configurations.
           </p>
           <Button variant="destructive" onClick={handleDelete} disabled={deleteMutation.isPending}>
             {deleteMutation.isPending ? "Deleting..." : "Delete Application"}

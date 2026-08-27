@@ -26,8 +26,7 @@ export const managedAppsRoutes: RouteObject[] = [
     path: "managed-apps/upgrade",
     handle: { hideSidebar: true },
     lazy: async () => {
-      const { ManagedAppsUpgradePage } =
-        await import("./partials/settings/ManagedAppsUpgradePage")
+      const { ManagedAppsUpgradePage } = await import("./partials/settings/ManagedAppsUpgradePage")
       return { Component: ManagedAppsUpgradePage }
     },
   },
@@ -89,6 +88,14 @@ export const managedAppsRoutes: RouteObject[] = [
     lazy: async () => {
       const { ApplicationsListPage } = await import("./sso/partials/ApplicationsListPage")
       return { Component: ApplicationsListPage }
+    },
+  },
+  {
+    path: "managed-apps/sso/create",
+    handle: { hideSidebar: true },
+    lazy: async () => {
+      const { CreateApplicationPage } = await import("./sso/partials/CreateApplicationPage")
+      return { Component: CreateApplicationPage }
     },
   },
   {

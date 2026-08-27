@@ -10,6 +10,7 @@ export const API = {
 }
 
 function remap(url) {
-  return url.replace(/^\/api\/agent/, '/agents').replace(/^\/api\/workflow-template/, '/workflow-templates').replace(/^\/api\/workflow-credential/, '/workflow-credentials').replace(/^\/api\/workflow/, '/workflows').replace(/^\/api/, '')
+  const mapped = url.replace(/^\/api\/agent/, '/agents').replace(/^\/api\/workflow-template/, '/workflow-templates').replace(/^\/api\/workflow-credential/, '/workflow-credentials').replace(/^\/api\/workflow/, '/workflows').replace(/^\/api/, '')
+  return mapped.length > 1 ? mapped.replace(/\/$/, '') : mapped
 }
 function wrap(data) { return { data: { success: true, data } } }

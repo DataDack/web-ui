@@ -1001,7 +1001,7 @@
       "emptySubtitle": "Create a key to call the platform API programmatically.",
       "never": "Never",
       "columns": {
-        "prefix": "Key",
+        "prefix": "Client ID",
         "expires": "Expires"
       },
       "expiry": {
@@ -1017,6 +1017,9 @@
       "secretDialog": {
         "title": "Copy your API key",
         "description": "This is the only time the full key is visible. Store it somewhere safe.",
+        "clientIdLabel": "Client ID",
+        "secretLabel": "Client secret",
+        "pairHint": "APIs that take client credentials — such as the SSO app config endpoint — expect this pair as client_id and client_secret.",
         "done": "I've stored it"
       },
       "deleteConfirm": {

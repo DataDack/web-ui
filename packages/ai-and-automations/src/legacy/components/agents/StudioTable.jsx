@@ -34,6 +34,7 @@ import { Input } from '@/components/ui/input';
 import StudioFormModal from './StudioFormModal';
 import DeploymentPanel from '../../pages/Workflows/partials/DeploymentPanel';
 import { workflowsApi } from '../../api/workflows';
+import { automationPath } from '../../../runtime';
 import {
   Dialog,
   DialogContent,
@@ -515,8 +516,8 @@ export default function StudioTable({
                   <tr
                     key={row.id}
                     onClick={() => {
-                      if (queryKey === 'agents') navigate(`/ai-agents/${row.original.id}`);
-                      else if (queryKey === 'workflows') navigate(`/workflows/${row.original.id}`);
+                      if (queryKey === 'agents') navigate(automationPath(`agents/${row.original.id}`));
+                      else if (queryKey === 'workflows') navigate(automationPath(`workflows/${row.original.id}`));
                     }}
                     className='hover:bg-[#D4AF37]/[0.04] transition-colors cursor-pointer'
                   >

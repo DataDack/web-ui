@@ -22,6 +22,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { Loader2, Pencil, Globe, Lock, GitBranch, Bot, Thermometer, Hash, SlidersHorizontal } from 'lucide-react';
 import { toast } from 'react-toastify';
+import { automationPath } from '../../../runtime';
 import {
   Dialog,
   DialogContent,
@@ -264,7 +265,7 @@ export default function StudioFormModal({
       if (!isEdit || isNewVersion) {
         const newId = data?.id;
         if (newId) {
-          navigate(entityLabel === 'Workflow' ? `/workflows/${newId}` : `/ai-agents/${newId}`);
+          navigate(automationPath(entityLabel === 'Workflow' ? `workflows/${newId}` : `agents/${newId}`));
         }
       }
     },

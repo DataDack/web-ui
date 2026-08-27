@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { templatesApi } from '../../api/workflows';
+import { automationPath } from '../../../runtime';
 
 const PAGE_SIZE = 24;
 
@@ -106,7 +107,7 @@ export default function TemplateLibrary() {
       const newId = result?.workflow_id;
       if (!newId) throw new Error('Template returned no workflow id');
       toast.success(`Workflow created from "${template.name}"`);
-      navigate(`/workflows/${newId}`);
+      navigate(automationPath(`workflows/${newId}`));
     } catch (err) {
       toast.error(`Failed to use template: ${err.message}`);
     } finally {
@@ -115,7 +116,7 @@ export default function TemplateLibrary() {
   }, [navigate]);
 
   const handlePreview = useCallback((template) => {
-    window.open(`/workflows/templates/${template.slug}/preview`, '_blank', 'noopener');
+    window.open(automationPath(`templates/${template.slug}`), '_blank', 'noopener');
   }, []);
 
   const handleDownload = useCallback(async (template) => {
@@ -141,7 +142,7 @@ export default function TemplateLibrary() {
   return (
     <div className='flex flex-col gap-6'>
       <div className='flex items-center gap-3'>
-        <Button variant='ghost' size='icon' onClick={() => navigate('/workflows')}>
+        <Button variant='ghost' size='icon' onClick={() => navigate(automationPath('workflows'))}>
           <ArrowLeft size={16} />
         </Button>
         <div className='flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 border border-primary/20'>

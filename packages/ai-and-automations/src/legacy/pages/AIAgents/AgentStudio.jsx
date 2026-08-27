@@ -66,6 +66,7 @@ import {
 } from '@/components/ui/resizable';
 
 import { agentsApi } from '../../api/agents';
+import { automationPath } from '../../../runtime';
 import { API } from '../../helpers/api';
 import MultiAgentCanvas from '../../components/agents/MultiAgentCanvas';
 import GenerateCodeDialog from '../../components/agents/GenerateCodeDialog';
@@ -442,7 +443,7 @@ export default function AgentStudio() {
       qc.invalidateQueries({ queryKey: ['agent', id] });
       qc.invalidateQueries({ queryKey: ['agent-versions', id] });
       qc.invalidateQueries({ queryKey: ['agent-versions', agent?.parent_id || id] });
-      navigate(`/ai-agents/${newAgent.id}`);
+      navigate(automationPath(`agents/${newAgent.id}`));
     },
     onError: (e) => toast.error(e.message),
   });
@@ -465,7 +466,7 @@ export default function AgentStudio() {
         <div className='flex items-center gap-2 min-w-0'>
           <button
             className='flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors'
-            onClick={() => navigate('/ai-agents')}
+            onClick={() => navigate(automationPath('agents'))}
           >
             <Bot size={16} className='text-violet-500 shrink-0' />
             <span className='font-medium'>Agents</span>
@@ -834,7 +835,7 @@ export default function AgentStudio() {
         currentId={id}
         open={versionsOpen}
         onClose={() => setVersionsOpen(false)}
-        onSwitch={(newId) => navigate(`/ai-agents/${newId}`)}
+        onSwitch={(newId) => navigate(automationPath(`agents/${newId}`))}
       />
       <AddToolSheet
         open={addToolOpen}

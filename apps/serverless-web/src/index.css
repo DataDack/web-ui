@@ -18,6 +18,11 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* The AI & Automations UI is a workspace package outside this app directory.
+   Tailwind v4 does not discover all of those JSX sources automatically, so
+   include them explicitly or package-only utilities are absent at runtime. */
+@source "../../../packages/ai-and-automations/src";
+
 @import "@fontsource-variable/geist";
 @import "@fontsource/jetbrains-mono";
 

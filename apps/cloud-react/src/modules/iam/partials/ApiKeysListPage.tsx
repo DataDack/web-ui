@@ -60,14 +60,20 @@ export function ApiKeysListPage() {
         pulse: (k) => k.is_active,
       }),
       {
+        // The prefix is the key's public half — the client id a
+        // credential-authenticated API (SSO app config) expects. Copyable, and
+        // shown whole: truncating it with an ellipsis made it read as a partial
+        // value nobody could use.
         id: "prefix",
         header: () => t("iam.apiKeys.columns.prefix"),
         enableSorting: false,
         meta: { responsive: "md" },
         cell: ({ row }) => (
-          <span className="font-mono text-[13px] text-muted-foreground">
-            {row.original.key_prefix}…
-          </span>
+          <CopyButton
+            value={row.original.key_prefix}
+            copiedLabel={t("console.copy.copied")}
+            className="text-[13px]"
+          />
         ),
       },
       {
@@ -183,11 +189,37 @@ export function ApiKeysListPage() {
               {t("iam.apiKeys.secretDialog.description")}
             </DialogDescription>
           </DialogHeader>
-          <div className="glass-1 px-3.5 py-3">
-            <CopyButton
-              value={createdKey?.secret ?? ""}
-              className="text-foreground text-[13px] w-full"
-            />
+          <div className="space-y-3">
+            {/* Both halves of the credential. The secret alone is unusable
+                against APIs that want a client_id/client_secret pair, and the
+                id is not recoverable from the secret once this closes. */}
+            <div className="space-y-1.5">
+              <Label className="text-xs text-muted-foreground">
+                {t("iam.apiKeys.secretDialog.clientIdLabel")}
+              </Label>
+              <div className="glass-1 px-3.5 py-3">
+                <CopyButton
+                  value={createdKey?.key_prefix ?? ""}
+                  copiedLabel={t("console.copy.copied")}
+                  className="text-foreground text-[13px] w-full"
+                />
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs text-muted-foreground">
+                {t("iam.apiKeys.secretDialog.secretLabel")}
+              </Label>
+              <div className="glass-1 px-3.5 py-3">
+                <CopyButton
+                  value={createdKey?.secret ?? ""}
+                  copiedLabel={t("console.copy.copied")}
+                  className="text-foreground text-[13px] w-full"
+                />
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {t("iam.apiKeys.secretDialog.pairHint")}
+            </p>
           </div>
           <DialogFooter>
             <Button

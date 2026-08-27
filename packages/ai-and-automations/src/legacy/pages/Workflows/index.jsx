@@ -23,6 +23,7 @@ import { useNavigate } from 'react-router-dom';
 import { Workflow } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { workflowsApi } from '../../api/workflows';
+import { automationPath } from '../../../runtime';
 import { n8nJsonToCanvasData, collectWorkflowDependencies } from '../../helpers/generateWorkflowN8n';
 import StudioTable from '../../components/agents/StudioTable';
 import { StatusContext } from '../../context/Status';
@@ -94,7 +95,7 @@ export default function Workflows() {
       queryClient.invalidateQueries({ queryKey: ['workflows'] });
 
       if (created?.id) {
-        navigate(`/workflows/${created.id}`);
+        navigate(automationPath(`workflows/${created.id}`));
       }
     } catch (err) {
       toast.error(`Import failed: ${err.message}`);

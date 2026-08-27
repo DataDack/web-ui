@@ -10,6 +10,7 @@ import { toast } from 'react-toastify';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { workflowsApi } from '../../api/workflows';
+import { automationPath } from '../../../runtime';
 import { useWebSocket } from '../../hooks/useWebSocket';
 import WorkflowCanvas from '../../components/workflows/WorkflowCanvas';
 import StudioToolbar from './partials/StudioToolbar';
@@ -319,7 +320,7 @@ export default function WorkflowStudio() {
     return (
       <div className='h-screen flex flex-col items-center justify-center gap-3 text-muted-foreground'>
         <p>Failed to load workflow</p>
-        <Button variant='outline' size='sm' onClick={() => navigate('/workflows')}>
+        <Button variant='outline' size='sm' onClick={() => navigate(automationPath('workflows'))}>
           Back to Workflows
         </Button>
       </div>
@@ -342,7 +343,7 @@ export default function WorkflowStudio() {
         saving={saveMutation.isPending}
         onSave={handleSave}
         onExport={handleExport}
-        onBack={() => navigate('/workflows')}
+        onBack={() => navigate(automationPath('workflows'))}
         deployStatus={currentDeployStatus}
         deploying={isDeploying}
         deployInfo={deployInfo}

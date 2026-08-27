@@ -1003,7 +1003,7 @@
       "emptySubtitle": "API को प्रोग्रामेटिक रूप से कॉल करने के लिए कुंजी बनाएं।",
       "never": "कभी नहीं",
       "columns": {
-        "prefix": "कुंजी",
+        "prefix": "क्लाइंट ID",
         "expires": "समाप्ति"
       },
       "expiry": {
@@ -1019,6 +1019,9 @@
       "secretDialog": {
         "title": "अपनी API कुंजी कॉपी करें",
         "description": "पूरी कुंजी केवल इसी समय दिखती है। इसे सुरक्षित जगह रखें।",
+        "clientIdLabel": "क्लाइंट ID",
+        "secretLabel": "क्लाइंट सीक्रेट",
+        "pairHint": "जो API क्लाइंट क्रेडेंशियल लेते हैं — जैसे SSO ऐप कॉन्फ़िग एंडपॉइंट — वे इस जोड़ी को client_id और client_secret के रूप में लेते हैं।",
         "done": "मैंने सहेज लिया"
       },
       "deleteConfirm": {

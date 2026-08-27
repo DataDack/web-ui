@@ -11,6 +11,11 @@ import { defineConfig } from "vite"
  * /2015-03-31 surface both land there.
  */
 const CONTROL_PLANE = process.env.CONTROL_PLANE_URL ?? "http://127.0.0.1:8085"
+// Optional local-only credential injection. This lets a developer run the
+// authenticated control plane without putting a production token in browser
+// storage. Vite keeps the value server-side and adds it only to proxied API
+// requests; production builds never use this dev-server option.
+const CONTROL_PLANE_AUTHORIZATION = process.env.CONTROL_PLANE_AUTHORIZATION
 
 // /2015-03-31 is where the Test tab's invoke goes. The old /function and
 // /async-function shorthands are gone — no route serves them upstream any more,
@@ -52,7 +57,13 @@ export default defineConfig({
     // silently moves is worse than one that refuses to start.
     strictPort: true,
     proxy: Object.fromEntries(
-      proxied.map((path) => [path, { target: CONTROL_PLANE, changeOrigin: true }]),
+      proxied.map((path) => [path, {
+        target: CONTROL_PLANE,
+        changeOrigin: true,
+        headers: CONTROL_PLANE_AUTHORIZATION
+          ? { Authorization: CONTROL_PLANE_AUTHORIZATION }
+          : undefined,
+      }]),
     ),
   },
   build: {
