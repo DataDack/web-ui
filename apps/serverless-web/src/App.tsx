@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from "react-router-dom"
+import { AIAutomationsRoutes } from "@datadack/ai-and-automations"
 
 import { AppShell } from "@/components/shell/AppShell"
 import { AuditPage } from "@/features/audit/AuditPage"
@@ -29,6 +30,7 @@ export function App() {
             control plane, so the operator view of it lives here too. */}
         <Route path="/domains" element={<DomainsPage />} />
         <Route path="/debug-preview" element={<DebugPreviewPage />} />
+        <Route path="/automations/*" element={<AIAutomationsRoutes />} />
         {/* The studio moved into the function detail page's Code tab. */}
         <Route path="/studio" element={<Navigate to="/functions" replace />} />
         {/* Unknown paths fall back rather than rendering an empty shell. */}

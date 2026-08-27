@@ -14,9 +14,11 @@ import { Toaster } from "sonner"
 
 import { App } from "@/App"
 import { faasTransport } from "@/lib/faas-transport"
+import { aiAutomationsTransport } from "@/lib/ai-automations-transport"
 
 import { ThemeProvider } from "@datadack/common-ui"
 import { ServerlessProvider } from "@datadack/serverless"
+import { AIAutomationsProvider } from "@datadack/ai-and-automations"
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -45,12 +47,14 @@ ReactDOM.createRoot(rootElement).render(
             a wholesale invalidateQueries() on account/resource-group switch, so the
             cache never serves one tenant's data to another. */}
         <ServerlessProvider transport={faasTransport}>
+          <AIAutomationsProvider transport={aiAutomationsTransport}>
           {/* The control plane serves this SPA from /admin, so the router shares
               that basename and every route resolves under it. */}
           <BrowserRouter basename="/admin">
             <App />
             <Toaster position="bottom-right" closeButton richColors />
           </BrowserRouter>
+          </AIAutomationsProvider>
         </ServerlessProvider>
       </QueryClientProvider>
     </ThemeProvider>
