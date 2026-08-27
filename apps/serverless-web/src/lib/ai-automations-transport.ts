@@ -2,6 +2,7 @@ import type { AIAutomationsTransport } from "@datadack/ai-and-automations"
 import { http } from "./api"
 export const aiAutomationsTransport: AIAutomationsTransport = {
   capabilities: { connectedAccounts: false, integrations: false, realtimeEvents: false },
+  brandIconUrl: "/admin/datadack-icon.png",
   publicUrl(path) {
     return `/v1/ai-and-automations${path}`
   },

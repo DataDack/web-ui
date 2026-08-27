@@ -47,6 +47,7 @@ export interface ExecutionEvent {
 }
 export interface AIAutomationsTransport {
   capabilities?: { connectedAccounts?: boolean; integrations?: boolean; realtimeEvents?: boolean }
+  brandIconUrl?: string
   publicUrl?(path: string): string
   request<T = unknown>(
     method: "GET" | "POST" | "PUT" | "DELETE",
