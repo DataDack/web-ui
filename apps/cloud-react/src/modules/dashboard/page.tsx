@@ -1,7 +1,6 @@
 import { useTranslation } from "react-i18next"
 
 import { PageHeader } from "@/components/console"
-import { PlatformMaintenanceBanner } from "@/modules/services/partials/PlatformMaintenanceBanner"
 import { useScreen } from "@/services/api/screen"
 
 import { QuickActions } from "./partials/QuickActions"
@@ -15,7 +14,6 @@ export function DashboardPage() {
   return (
     <div className="mx-auto flex max-w-[1440px] flex-col gap-6">
       <PageHeader title={t("dashboard.home.title")} className="mb-0" />
-      <PlatformMaintenanceBanner />
 
       <div className="flex flex-col gap-6">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-start">
