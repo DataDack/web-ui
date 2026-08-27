@@ -132,10 +132,10 @@ export function DomainsPage() {
         header: "Hostname",
         cell: ({ row }) => (
           <div className="flex min-w-0 items-center gap-1.5">
-            <span className="truncate font-mono text-[12px] font-medium">
-              {row.original.hostname}
-            </span>
-            <CopyButton value={row.original.hostname} />
+            <CopyButton
+              value={row.original.hostname}
+              className="min-w-0 text-foreground font-medium"
+            />
             {!row.original.managed && (
               <Badge variant="outline" className="shrink-0 font-mono text-[10px]">
                 custom
@@ -192,10 +192,14 @@ export function DomainsPage() {
               {row.original.resource_type || "—"}
             </span>
             <div className="flex min-w-0 items-center gap-1">
-              <span className="truncate font-mono text-[11px]">
-                {row.original.resource_id || "—"}
-              </span>
-              {row.original.resource_id && <CopyButton value={row.original.resource_id} />}
+              {row.original.resource_id ? (
+                <CopyButton
+                  value={row.original.resource_id}
+                  className="min-w-0 text-foreground text-[11px]"
+                />
+              ) : (
+                <span className="font-mono text-[11px]">—</span>
+              )}
             </div>
           </div>
         ),
@@ -212,8 +216,10 @@ export function DomainsPage() {
           }
           return (
             <div className="flex min-w-0 items-center gap-1">
-              <span className="truncate font-mono text-[11px]">{row.original.account_id}</span>
-              <CopyButton value={row.original.account_id} />
+              <CopyButton
+                value={row.original.account_id}
+                className="min-w-0 text-foreground text-[11px]"
+              />
             </div>
           )
         },
