@@ -17,20 +17,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 
-import React from 'react';
-import { reducer, initialState } from './reducer';
+import React from "react"
+import { reducer, initialState } from "./reducer"
 
-export const UserContext = React.createContext({
-  state: initialState,
-  dispatch: () => null,
-});
+export const UserContext = React.createContext([initialState, () => null])
 
 export const UserProvider = ({ children }) => {
-  const [state, dispatch] = React.useReducer(reducer, initialState);
+  const [state, dispatch] = React.useReducer(reducer, initialState)
 
-  return (
-    <UserContext.Provider value={[state, dispatch]}>
-      {children}
-    </UserContext.Provider>
-  );
-};
+  return <UserContext.Provider value={[state, dispatch]}>{children}</UserContext.Provider>
+}

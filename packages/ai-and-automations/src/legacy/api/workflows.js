@@ -1,22 +1,23 @@
-import { API } from '../helpers';
+import { API } from "../helpers"
 
 const unwrap = (res) => {
-  if (!res.data.success) throw new Error(res.data.message || 'Request failed');
-  return res.data.data;
-};
+  if (!res.data.success) throw new Error(res.data.message || "Request failed")
+  return res.data.data
+}
 
 export const workflowsApi = {
-  list: ({ page = 1, pageSize = 20, keyword = '' } = {}) =>
-    API.get('/api/workflow/', { params: { p: page, page_size: pageSize, keyword } }).then(unwrap),
+  list: ({ page = 1, pageSize = 20, keyword = "" } = {}) =>
+    API.get("/api/workflow/", { params: { p: page, page_size: pageSize, keyword } }).then(unwrap),
 
   get: (id) => API.get(`/api/workflow/${id}`).then(unwrap),
 
-  create: (data) => API.post('/api/workflow/', data).then(unwrap),
+  create: (data) => API.post("/api/workflow/", data).then(unwrap),
 
-  update: (id, data) => API.put(`/api/workflow/${id}`, data).then((res) => {
-    if (!res.data.success) throw new Error(res.data.message || 'Request failed');
-    return { ...res.data.data, lambda_updating: res.data.lambda_updating };
-  }),
+  update: (id, data) =>
+    API.put(`/api/workflow/${id}`, data).then((res) => {
+      if (!res.data.success) throw new Error(res.data.message || "Request failed")
+      return { ...res.data.data, lambda_updating: res.data.lambda_updating }
+    }),
 
   delete: (id) => API.delete(`/api/workflow/${id}`).then(unwrap),
 
@@ -28,34 +29,36 @@ export const workflowsApi = {
 
   deployStatus: (id) => API.get(`/api/workflow/${id}/deploy-status`).then(unwrap),
 
-  invoke: (id, payload = {}, { useLatest = false } = {}) => API.post(`/api/workflow/${id}/invoke`, { payload, use_latest: useLatest }).then(unwrap),
+  invoke: (id, payload = {}, { useLatest = false } = {}) =>
+    API.post(`/api/workflow/${id}/invoke`, { payload, use_latest: useLatest }).then(unwrap),
 
   redeploy: (id) => API.post(`/api/workflow/${id}/redeploy`).then(unwrap),
 
   listAllExecutions: ({ startDate, endDate, startAfter } = {}) =>
-    API.get('/api/workflow/executions', {
+    API.get("/api/workflow/executions", {
       params: { start_date: startDate, end_date: endDate, start_after: startAfter },
     }).then((res) => {
-      if (!res.data.success) throw new Error(res.data.message || 'Request failed');
-      return { items: res.data.data || [], next_cursor: res.data.next_cursor || '' };
+      if (!res.data.success) throw new Error(res.data.message || "Request failed")
+      return { items: res.data.data || [], next_cursor: res.data.next_cursor || "" }
     }),
 
   listExecutions: (id, { date, startAfter } = {}) =>
-    API.get(`/api/workflow/${id}/executions`, { params: { date, start_after: startAfter } }).then(unwrap),
+    API.get(`/api/workflow/${id}/executions`, { params: { date, start_after: startAfter } }).then(
+      unwrap,
+    ),
 
   getExecution: (id, execId, { date } = {}) =>
     API.get(`/api/workflow/${id}/executions/${execId}`, { params: { date } }).then(unwrap),
 
-  listVersions: (id) =>
-    API.get(`/api/workflow/${id}/versions`).then(unwrap),
+  listVersions: (id) => API.get(`/api/workflow/${id}/versions`).then(unwrap),
 
   setDefaultVersion: (id, version) =>
     API.post(`/api/workflow/${id}/set-default-version`, { version }).then(unwrap),
-};
+}
 
 export const templatesApi = {
-  list: ({ page = 1, pageSize = 24, keyword = '', category = '' } = {}) =>
-    API.get('/api/workflow-template/', {
+  list: ({ page = 1, pageSize = 24, keyword = "", category = "" } = {}) =>
+    API.get("/api/workflow-template/", {
       params: { p: page, page_size: pageSize, keyword, category },
     }).then(unwrap),
 
@@ -63,6 +66,13 @@ export const templatesApi = {
 
   use: (slug) => API.post(`/api/workflow-template/${slug}/use`).then(unwrap),
 
+  delete: (slug) => API.delete(`/api/workflow-template/${slug}`).then(unwrap),
+
+  promote: (workflowId, data) =>
+    API.post(`/api/workflow-template/from-workflow/${workflowId}`, data).then(unwrap),
+
   download: (slug) =>
-    API.get(`/api/workflow-template/${slug}/download`, { responseType: 'blob' }).then((res) => res.data),
-};
+    API.get(`/api/workflow-template/${slug}/download`, { responseType: "blob" }).then(
+      (res) => res.data,
+    ),
+}
