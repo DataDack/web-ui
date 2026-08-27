@@ -40,8 +40,7 @@ import type { Application, Configuration, UpdateApplicationRequest } from "../ss
 
 // Emotion styles
 const containerClass = css`
-  max-width: 1000px;
-  margin: 0 auto;
+  width: 100%;
   padding: 24px;
 `
 
@@ -133,6 +132,7 @@ export function ApplicationDetailPage() {
         breadcrumbs={[
           { label: "Managed applications", to: "/managed-apps" },
           { label: "SSO Applications", to: "/managed-apps/sso" },
+          { label: app.name },
         ]}
         title={app.name}
         description={`Application slug: ${app.slug}`}

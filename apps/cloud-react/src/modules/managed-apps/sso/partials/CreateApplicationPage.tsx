@@ -47,12 +47,13 @@ export function CreateApplicationPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-5xl space-y-6">
+    <div className="w-full space-y-6">
       <PageHeader
         icon={ShieldCheck}
         breadcrumbs={[
           { label: "Managed applications", to: "/managed-apps" },
           { label: "SSO Applications", to: SSO_ROOT },
+          { label: "Create application" },
         ]}
         title="Create SSO application"
         description="Register an application now. You can configure environments, themes, metadata, and policies after it is created."
