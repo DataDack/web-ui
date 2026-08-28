@@ -271,10 +271,13 @@ export default function AppTriggerSetup({ workflowId, nodeData }) {
       const hasAllFields = (platformMeta.configFields || []).every((f) => snap.configValues[f.key]);
       if (!hasAllFields) return;
       try {
+        // config is sent as an object, not a JSON string. The control plane
+        // stores it as jsonb and merges partial updates into it; a string would
+        // be stored as a JSON string and every later merge would refuse it.
         const data = await integrationsApi.create({
           workflow_id: workflowId,
           integration_name: platform,
-          config: JSON.stringify(snap.configValues),
+          config: snap.configValues,
         });
         const newId = data?.integration?.id || data?.id;
         await integrationsApi.activate(newId, true);
@@ -294,7 +297,7 @@ export default function AppTriggerSetup({ workflowId, nodeData }) {
       if (snap.integrationId) {
         await integrationsApi.update(snap.integrationId, {
           account_id: snap.selectedAccountId,
-          config: JSON.stringify(config),
+          config,
         });
         newId = snap.integrationId;
       } else {
@@ -302,26 +305,18 @@ export default function AppTriggerSetup({ workflowId, nodeData }) {
           workflow_id: workflowId,
           integration_name: platform,
           account_id: snap.selectedAccountId || undefined,
-          config: JSON.stringify(config),
+          config,
         });
         newId = data?.integration?.id || data?.id;
       }
 
-      // Platform-specific webhook registration / activation
-      if (platform === 'github') {
-        await integrationsApi.githubSetup({
-          integration_id: newId,
-          repo_owner: snap.resourceValues.owner,
-          repo_name: snap.resourceValues.repo,
-          events: snap.resourceValues.events || [],
-        });
-      } else if (platform === 'jira') {
-        await integrationsApi.jiraSetup({
-          integration_id: newId,
-          events: snap.resourceValues.events || [],
-          project_key: snap.resourceValues.project_key,
-        });
-      } else if (snap.selectedAccountId) {
+      // Activation is what registers the webhook or opens the push channel, for
+      // every platform that has one. There is no longer a per-platform setup
+      // call: GitHub's hook and Jira's dynamic webhook are created from the
+      // config saved above, by the same activate that turns the row on. The
+      // control plane refuses to mark a row active if that registration fails,
+      // so an integration cannot report as working while receiving nothing.
+      if (snap.selectedAccountId) {
         await integrationsApi.activate(newId, true);
       }
 

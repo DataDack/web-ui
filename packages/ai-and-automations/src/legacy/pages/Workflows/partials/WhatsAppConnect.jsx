@@ -206,7 +206,10 @@ export default function WhatsAppConnect({ integrationId, integration, workflowId
 
   // Derive a lightweight connected state from the integration config.
   const cfg = integration?.config || {};
-  const isConnected = !!(cfg.waba_id && cfg.phone_number_id && cfg.access_token);
+  // The access token is never in config — token_secret names the encrypted row
+  // holding it — so a stored credential is what "connected" reads, not the
+  // token itself.
+  const isConnected = !!(cfg.waba_id && cfg.phone_number_id && cfg.token_secret);
 
   if (isConnected) {
     return (

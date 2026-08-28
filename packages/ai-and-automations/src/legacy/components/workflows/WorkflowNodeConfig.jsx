@@ -6,6 +6,7 @@
 
 import React, { useState, useCallback, useMemo, useRef, useEffect, useContext } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { getTransport } from '../../../runtime';
 import { Settings2, Key, Plus, Trash2, X, HelpCircle, Braces, Type, Database, ChevronRight, Copy, Check, Link2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -228,10 +229,17 @@ function DynamicSelectField({ param, value, onChange, credentialId, allParameter
   }, [accountProvider, queryClient]);
 
   const handleReconnect = useCallback(() => {
-    if (!userId || !accountProvider) return;
+    if (!accountProvider) return;
     setConnecting(true);
-    window.open(accountsApi.connectUrl(accountProvider, userId), '_blank', 'width=600,height=700');
-  }, [userId, accountProvider]);
+    // The consent URL is fetched, not assembled: it is built server-side from
+    // this session's own credential. A failure here is the platform having no
+    // application for the provider, which the tenant cannot fix, so it is
+    // surfaced rather than left as a popup that silently never loads.
+    accountsApi.connect(accountProvider).catch((error) => {
+      setConnecting(false);
+      toast.error(`Could not start the ${accountProvider} connection: ${error.message}`);
+    });
+  }, [accountProvider]);
 
   let placeholder = 'Select...';
   if (!credentialId) placeholder = 'Select credential first...';
@@ -965,6 +973,7 @@ function ParameterField({ param, value, onChange, onExpressionFocus, credentials
 
 export default function WorkflowNodeConfig({ selectedNode, onUpdate, allNodes, edges, lastExecutionData, deployInfo }) {
   const data = selectedNode?.data;
+  const appTriggersAvailable = getTransport().capabilities?.integrations === true;
   const registryKey = data?.registryKey;
   const def = registryKey ? N8N_NODE_REGISTRY[registryKey] : null;
 
@@ -1287,8 +1296,11 @@ export default function WorkflowNodeConfig({ selectedNode, onUpdate, allNodes, e
                     </div>
                   );
                 })()}
-                {/* App Triggers — platform-specific OAuth + webhook setup */}
-                {['githubTrigger', 'slackTrigger', 'telegramTrigger', 'discordTrigger', 'whatsappTrigger', 'instagramTrigger', 'threadsTrigger', 'googleDriveTrigger', 'googleSheetsTrigger', 'googleGmailTrigger', 'googleCalendarTrigger', 'microsoftOutlookTrigger', 'microsoftOneDriveTrigger', 'microsoftCalendarTrigger', 'microsoftExcelTrigger', 'jiraTrigger'].includes(data.registryKey) && deployInfo?.workflow_id && (
+                {/* App Triggers — platform-specific OAuth + webhook setup.
+                    Gated on the host serving an integration backend: without
+                    one the panel's calls 404 while the node still saves, which
+                    produces a trigger that looks configured and never fires. */}
+                {appTriggersAvailable && ['githubTrigger', 'slackTrigger', 'telegramTrigger', 'discordTrigger', 'whatsappTrigger', 'instagramTrigger', 'threadsTrigger', 'googleDriveTrigger', 'googleSheetsTrigger', 'googleGmailTrigger', 'googleCalendarTrigger', 'microsoftOutlookTrigger', 'microsoftOneDriveTrigger', 'microsoftCalendarTrigger', 'microsoftExcelTrigger', 'jiraTrigger'].includes(data.registryKey) && deployInfo?.workflow_id && (
                   <div className='mb-3'>
                     <AppTriggerSetup
                       workflowId={deployInfo.workflow_id}

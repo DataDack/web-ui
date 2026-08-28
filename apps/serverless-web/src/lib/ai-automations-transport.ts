@@ -1,7 +1,11 @@
 import type { AIAutomationsTransport } from "@datadack/ai-and-automations"
 import { http } from "./api"
 export const aiAutomationsTransport: AIAutomationsTransport = {
-  capabilities: { connectedAccounts: false, integrations: false, realtimeEvents: false },
+  // App integrations are served by this control plane now: the tenant routes
+  // under /v1/ai-and-automations/{integrations,connected-accounts} and the
+  // public provider callbacks under /v1/integrations. Realtime execution events
+  // still have no socket here, so that one stays off.
+  capabilities: { connectedAccounts: true, integrations: true, realtimeEvents: false },
   brandIconUrl: "/admin/datadack-icon.png",
   publicUrl(path) {
     return `/v1/ai-and-automations${path}`

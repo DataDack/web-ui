@@ -128,14 +128,12 @@ export default function AccountSelector({ provider, userId, value, onChange, lab
   }, [provider, queryClient, onChange, meta.label]);
 
   const handleConnect = useCallback(() => {
-    if (!userId) {
-      toast.error('Please log in first');
-      return;
-    }
     setConnecting(true);
-    const url = accountsApi.connectUrl(provider, userId);
-    window.open(url, '_blank', 'width=600,height=700');
-  }, [provider, userId]);
+    accountsApi.connect(provider).catch((error) => {
+      setConnecting(false);
+      toast.error(`Could not start the ${provider} connection: ${error.message}`);
+    });
+  }, [provider]);
 
   const configureUrl = getProviderConfigureUrl(provider);
 

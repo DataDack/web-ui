@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/tooltip';
 import { CATEGORY_ICONS } from './workflowIconMap';
 import { getNodePalette } from '../../helpers/n8nNodeRegistry';
+import { getTransport } from '../../../runtime';
 import PaletteNodeItem from '../../pages/Workflows/partials/PaletteNodeItem';
 
 // ── Category descriptions ───────────────────────────────────────────────────
@@ -89,7 +90,17 @@ export default function WorkflowNodePalette({ onCollapse, pinned, onTogglePin })
     return () => window.removeEventListener('keydown', handler);
   }, [onCollapse]);
 
-  const palette = useMemo(() => getNodePalette(), []);
+  // App triggers are hidden when the host cannot serve them.
+  //
+  // Not cosmetic: every one of these nodes has a Connect panel behind it, and on
+  // a host with no integration backend the panel's calls 404 while the node
+  // still saves and deploys — producing a workflow that looks wired to Slack and
+  // is not. Better to not offer it.
+  const appTriggersAvailable = getTransport().capabilities?.integrations === true;
+  const palette = useMemo(
+    () => (appTriggersAvailable ? getNodePalette() : withoutAppTriggers(getNodePalette())),
+    [appTriggersAvailable]
+  );
 
   // Reset to category view when search begins
   useEffect(() => {
@@ -280,4 +291,15 @@ export default function WorkflowNodePalette({ onCollapse, pinned, onTogglePin })
       </div>
     </TooltipProvider>
   );
+}
+
+// withoutAppTriggers drops the "App Trigger" subcategory from a palette, and any
+// category left empty by the removal.
+function withoutAppTriggers(palette) {
+  return palette
+    .map((group) => ({
+      ...group,
+      items: (group.items || []).filter((item) => item.label !== 'App Trigger' && item.subcategory !== 'App Trigger'),
+    }))
+    .filter((group) => (group.items || []).length > 0);
 }

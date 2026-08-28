@@ -1,31 +1,41 @@
-import { API } from '../helpers/api';
+import { API, openProviderPopup } from '../helpers/api';
 
-// The backend returns errors as HTTP 200 with { success: false, message: ... }.
-// Throw so React Query flips to the error state and the real message surfaces
-// in the UI (rather than silently returning the error payload as if it were
-// data, which caused dropdowns to render "No items found" for real failures).
-const unwrap = (res) => {
-  const body = res?.data;
-  if (body && body.success === false) {
-    throw new Error(body.message || 'Request failed');
-  }
-  return body?.data ?? body;
-};
+// The control plane answers `{ data: ... }` and the transport unwraps it, so a
+// successful response arrives here already unwrapped. Failures arrive as thrown
+// errors from the transport rather than as a `success: false` body, which is why
+// this no longer inspects one — the old backend reported errors as HTTP 200 with
+// a flag, and a caller that only checked the flag rendered "No items found" for
+// real failures.
+const unwrap = (res) => res?.data?.data ?? res?.data ?? res;
 
 export const accountsApi = {
-  // List all connected accounts for the authenticated user
+  // List the third-party accounts this tenant has connected.
   list: (provider) => {
     const params = provider ? { provider } : {};
     return API.get('/api/accounts/', { params }).then(unwrap);
   },
 
-  // Get OAuth connect URL for a provider (opens in popup)
-  connectUrl: (provider, userId) => {
-    const base = API.defaults.baseURL || '';
-    return `${base}/api/accounts/oauth/${provider}/connect?user_id=${userId}`;
+  // Open the provider's consent screen.
+  //
+  // Two steps rather than one, because the URL is now built server-side from the
+  // caller's own credential. The popup is opened FIRST, synchronously, and
+  // pointed at the URL once it arrives: a window.open that happens after an
+  // await is a popup blocked by every browser.
+  connect: async (provider) => {
+    const popup = openProviderPopup();
+    try {
+      const { url } = await API.get(`/api/accounts/authorize/${provider}`).then(unwrap);
+      if (!url) throw new Error('the platform returned no consent URL');
+      if (popup) popup.location = url;
+      else globalThis.open(url, '_blank', 'width=600,height=700');
+      return url;
+    } catch (error) {
+      if (popup) popup.close();
+      throw error;
+    }
   },
 
-  // Disconnect an account
+  // Disconnect an account.
   disconnect: (id) => API.delete(`/api/accounts/${id}`).then(unwrap),
 
   // ── GitHub resources ──

@@ -131,9 +131,11 @@ function InlineReconnectButton({ platform, className }) {
       className={`h-7 text-[11px] gap-1.5 border-destructive/40 ${className || ''}`}
       disabled={connecting || !userId}
       onClick={() => {
-        if (!userId) { toast.error('Please log in first'); return; }
         setConnecting(true);
-        window.open(accountsApi.connectUrl(provider, userId), '_blank', 'width=600,height=700');
+        accountsApi.connect(provider).catch((error) => {
+          setConnecting(false);
+          toast.error(`Could not start the ${provider} connection: ${error.message}`);
+        });
       }}
     >
       {connecting ? <Loader2 size={11} className='animate-spin' /> : <ExternalLink size={11} />}
@@ -681,13 +683,11 @@ function ScopeGate({ platform, accountId, children }) {
   if (missing.length === 0) return children;
 
   const handleGrant = () => {
-    if (!userId) {
-      toast.error('Please log in first');
-      return;
-    }
     setConnecting(true);
-    const url = accountsApi.connectUrl(provider, userId);
-    window.open(url, '_blank', 'width=600,height=700');
+    accountsApi.connect(provider).catch((error) => {
+      setConnecting(false);
+      toast.error(`Could not start the ${provider} connection: ${error.message}`);
+    });
   };
 
   const accountName = account.account_label || account.account_email || account.account_id;

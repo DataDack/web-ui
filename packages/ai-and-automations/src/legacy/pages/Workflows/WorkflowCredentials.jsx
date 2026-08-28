@@ -283,17 +283,11 @@ export default function WorkflowCredentials() {
     return () => window.removeEventListener("message", handler)
   }, [queryClient])
 
-  const handleConnectProvider = useCallback(
-    (provider) => {
-      if (!userId) {
-        toast.error("Please log in first")
-        return
-      }
-      const url = accountsApi.connectUrl(provider, userId)
-      window.open(url, "_blank", "width=600,height=700")
-    },
-    [userId],
-  )
+  const handleConnectProvider = useCallback((provider) => {
+    accountsApi.connect(provider).catch((error) => {
+      toast.error(`Could not start the ${provider} connection: ${error.message}`)
+    })
+  }, [])
 
   const openCreateSheet = useCallback(() => {
     setSheetCredType(null)

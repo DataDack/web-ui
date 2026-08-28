@@ -46,6 +46,17 @@ export interface ExecutionEvent {
   [key: string]: unknown
 }
 export interface AIAutomationsTransport {
+  /**
+   * What the host's backend can actually serve.
+   *
+   * `integrations` gates the app-trigger surface: the trigger palette's app
+   * nodes, the per-node connect panels and the connected-accounts picker. It
+   * defaults to OFF, because a host that does not serve those routes renders a
+   * palette full of triggers that configure cleanly and never fire.
+   *
+   * `connectedAccounts` gates the account picker on the credentials page, and
+   * `realtimeEvents` the execution-log socket.
+   */
   capabilities?: { connectedAccounts?: boolean; integrations?: boolean; realtimeEvents?: boolean }
   brandIconUrl?: string
   publicUrl?(path: string): string

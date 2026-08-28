@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Loader2, Check, AlertCircle, KeyRound } from 'lucide-react';
 import { SiInstagram } from 'react-icons/si';
@@ -48,7 +48,6 @@ export default function InstagramConnect({ integrationId, integration, workflowI
   const [connecting, setConnecting] = useState(false);
   const [resolvedId, setResolvedId] = useState(integrationId || null);
   const [accounts, setAccounts] = useState([]);
-  const userTokenRef = useRef(null);
 
   const [manual, setManual] = useState({
     ig_user_id: '',
@@ -104,12 +103,14 @@ export default function InstagramConnect({ integrationId, integration, workflowI
           (async () => {
             try {
               if (response?.authResponse?.code) {
-                const { user_access_token, accounts: list } =
-                  await integrationsApi.instagramListAccounts({
-                    code: response.authResponse.code,
-                    redirect_uri: bootstrap.redirect_uri,
-                  });
-                userTokenRef.current = user_access_token;
+                // The code is spent server-side and the resulting token is
+                // stored under this integration, so only the list comes back.
+                // The token deliberately does not: it is a long-lived Meta
+                // credential and has no business in browser state.
+                const { accounts: list } = await integrationsApi.instagramListAccounts(
+                  integrationId,
+                  { code: response.authResponse.code },
+                );
                 if (!list || list.length === 0) {
                   throw new Error(
                     'No Instagram Business accounts found for this Facebook user. Connect a Facebook Page with an Instagram Business/Creator account, then try again.'
@@ -142,21 +143,16 @@ export default function InstagramConnect({ integrationId, integration, workflowI
   };
 
   const pickAccount = async (account) => {
-    if (!userTokenRef.current) {
-      toast.error('Session expired — please retry connection');
-      setMode('oauth');
-      return;
-    }
     setConnecting(true);
     try {
       const id = await ensureIntegration();
+      // No token is sent. The code was already spent during the account listing
+      // and the resulting credential stored under this integration, so setup
+      // only has to say which business account to bind.
       await integrationsApi.instagramOAuthFinish(id, {
-        user_access_token: userTokenRef.current,
-        ig_user_id: account.id,
-        page_id: account.page_id,
-        username: account.username,
+        instagram_account_id: account.id,
       });
-      toast.success(`Instagram connected as @${account.username}`);
+      toast.success(`Instagram connected as ${account.name || account.id}`);
       queryClient.invalidateQueries({ queryKey: ['integration-by-workflow'] });
       onConnected?.();
     } catch (err) {
@@ -174,7 +170,13 @@ export default function InstagramConnect({ integrationId, integration, workflowI
     setConnecting(true);
     try {
       const id = await ensureIntegration();
-      await integrationsApi.instagramManualSetup(id, manual);
+      // The manual path pastes a Page access token. It is sent as
+      // access_token and stored server-side under the integration, never kept
+      // in config where every read of the integration would return it.
+      await integrationsApi.instagramManualSetup(id, {
+        access_token: manual.page_access_token,
+        instagram_account_id: manual.ig_user_id,
+      });
       toast.success('Instagram connected');
       queryClient.invalidateQueries({ queryKey: ['integration-by-workflow'] });
       onConnected?.();
@@ -186,7 +188,10 @@ export default function InstagramConnect({ integrationId, integration, workflowI
   };
 
   const cfg = integration?.config || {};
-  const isConnected = !!(cfg.ig_user_id && cfg.page_access_token);
+  // Connected means the routing identifier is claimed and a credential is
+  // stored. The token itself is never in config — token_secret names the
+  // encrypted row holding it — so its presence here is what "connected" reads.
+  const isConnected = !!(cfg.instagram_account_id && cfg.token_secret);
 
   if (isConnected) {
     return (
@@ -198,7 +203,7 @@ export default function InstagramConnect({ integrationId, integration, workflowI
           </div>
           <div className='mt-2 space-y-0.5 text-[10px] font-mono text-muted-foreground'>
             {cfg.username && <div>@{cfg.username}</div>}
-            <div>IG ID: {cfg.ig_user_id}</div>
+            <div>IG ID: {cfg.instagram_account_id}</div>
             {cfg.page_id && <div>Page: {cfg.page_id}</div>}
           </div>
         </div>
