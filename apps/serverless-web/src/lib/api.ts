@@ -2,21 +2,28 @@ import axios, { type AxiosInstance } from "axios"
 
 import {
   auditListSchema,
+  clusterViewSchema,
   dashboardSchema,
   domainListSchema,
   logSnapshotSchema,
   logLineSchema,
   metricSeriesSchema,
+  nodeDetailSchema,
   sessionSchema,
   tenantListSchema,
+  workloadListSchema,
   type AuditEvent,
+  type ClusterView,
   type Dashboard,
   type DomainList,
   type LogLine,
   type LogSnapshot,
   type MetricSeries,
+  type NodeDetail,
   type Session,
   type TenantList,
+  type WorkloadKind,
+  type WorkloadList,
 } from "./schemas"
 
 const BASE_KEY = "faas.admin.apiBase"
@@ -531,3 +538,51 @@ export async function fetchSession(): Promise<Session> {
   }
 }
 
+/**
+ * The live cluster view: every node the fleet runs on, workers and gateways
+ * alike, with what each last reported about the machine underneath it.
+ *
+ * This is the control plane's IN-MEMORY window, not a time-series store. The
+ * payload says so in `persisted`, and the console shows that rather than hiding
+ * it — numbers that disappear on a restart must not be read as a record.
+ */
+export async function fetchFleetMetrics(): Promise<ClusterView> {
+  const { data } = await http.get<unknown>("/v1/admin/fleet/metrics")
+  return clusterViewSchema.parse(data)
+}
+
+/**
+ * One node, with the history behind its current numbers.
+ *
+ * A 404 here means the node has not reported inside the window, which is NOT
+ * the same as it not existing — a node that stopped syncing keeps its
+ * registration and loses its series. It is returned as null so the page can say
+ * which of the two happened instead of showing an error for a node the operator
+ * can still see in the list.
+ */
+export async function fetchNodeMetrics(nodeId: string): Promise<NodeDetail | null> {
+  try {
+    const { data } = await http.get<unknown>(
+      `/v1/admin/fleet/metrics/${encodeURIComponent(nodeId)}`,
+    )
+    return nodeDetailSchema.parse(data)
+  } catch (err) {
+    if (axios.isAxiosError(err) && err.response?.status === 404) return null
+    throw err
+  }
+}
+
+/**
+ * Every workload the fleet runs, labelled by kind.
+ *
+ * Deliberately not the function listing: that surface hides managed apps and
+ * must keep hiding them, because it can delete what it lists and deleting an app
+ * takes a customer's site down. This one shows all three kinds and manages none,
+ * which is why it is an operator view and has no equivalent on the tenant side.
+ */
+export async function fetchWorkloads(kind?: WorkloadKind): Promise<WorkloadList> {
+  const { data } = await http.get<unknown>("/v1/admin/workloads", {
+    params: kind ? { kind } : undefined,
+  })
+  return workloadListSchema.parse(data)
+}

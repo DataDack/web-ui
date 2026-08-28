@@ -53,6 +53,116 @@ export const functionSchema = z.object({
   createdAt: z.string(),
   updatedAt: z.string(),
   version: functionVersionSchema.optional(),
+  // "function", "workflow" or "app". Absent on rows written before the column
+  // existed, which are functions — the same default the control plane applies.
+  kind: z.string().default("function"),
+})
+
+// ── Fleet telemetry ──────────────────────────────────────────────────────────
+// The cluster view the control plane keeps IN MEMORY over a rolling window. It
+// says so itself in `persisted`, and the console renders that rather than hiding
+// it: a number that vanishes on restart must not be mistaken for a record.
+
+export const hostStatsSchema = z.object({
+  cpuPercent: z.number().optional(),
+  loadAverage1: z.number().optional(),
+  netRxBytes: z.number().optional(),
+  netTxBytes: z.number().optional(),
+  netRxBytesPerSec: z.number().optional(),
+  netTxBytesPerSec: z.number().optional(),
+  diskTotalMb: z.number().optional(),
+  diskFreeMb: z.number().optional(),
+})
+
+export const nodeViewSchema = z.object({
+  nodeId: z.string(),
+  hostname: z.string(),
+  // "worker" or "gateway" — both report into one view, because an operator
+  // asking whether the cluster is healthy means the whole cluster.
+  role: z.string().default("worker"),
+  state: z.string().default(""),
+  lastSeen: z.string().optional(),
+  secondsSinceSeen: z.number().optional(),
+  totalMemoryMb: z.number().optional(),
+  freeMemoryMb: z.number().optional(),
+  allocMemoryMb: z.number().optional(),
+  sandboxCount: z.number().optional(),
+  cpuCount: z.number().optional(),
+  host: hostStatsSchema.optional(),
+  samples: z.number().optional(),
+})
+
+export const clusterViewSchema = z.object({
+  at: z.string(),
+  window: z.string(),
+  reportingNodes: z.number().default(0),
+  reportingWorkers: z.number().default(0),
+  reportingGateways: z.number().default(0),
+  totalMemoryMb: z.number().default(0),
+  freeMemoryMb: z.number().default(0),
+  allocMemoryMb: z.number().default(0),
+  sandboxCount: z.number().default(0),
+  cpuCount: z.number().default(0),
+  cpuPercent: z.number().default(0),
+  loadAverage1: z.number().default(0),
+  netRxBytesPerSec: z.number().default(0),
+  netTxBytesPerSec: z.number().default(0),
+  diskTotalMb: z.number().default(0),
+  diskFreeMb: z.number().default(0),
+  nodes: z.array(nodeViewSchema).default([]),
+  persisted: z.boolean().default(false),
+})
+
+export const seriesPointSchema = z.object({
+  at: z.string(),
+  cpuPercent: z.number().default(0),
+  loadAverage1: z.number().default(0),
+  freeMemoryMb: z.number().default(0),
+  allocMemoryMb: z.number().default(0),
+  sandboxCount: z.number().default(0),
+  netRxBytesPerSec: z.number().default(0),
+  netTxBytesPerSec: z.number().default(0),
+  diskFreeMb: z.number().default(0),
+  state: z.string().default(""),
+})
+
+export const nodeDetailSchema = nodeViewSchema.extend({
+  at: z.string(),
+  window: z.string(),
+  // Oldest first, so a chart plots it without reversing.
+  series: z.array(seriesPointSchema).default([]),
+  persisted: z.boolean().default(false),
+})
+
+// ── Workloads ────────────────────────────────────────────────────────────────
+// The operator listing, which shows all three kinds. Separate from the function
+// surface, which hides managed apps and must keep hiding them.
+
+export const workloadKinds = ["function", "workflow", "app"] as const
+export type WorkloadKind = (typeof workloadKinds)[number]
+
+export const workloadSchema = z.object({
+  kind: z.string(),
+  name: z.string(),
+  accountId: z.string().optional(),
+  resourceGroupId: z.string().optional(),
+  packageType: z.string().optional(),
+  runtime: z.string().optional(),
+  runtimeMode: z.string().optional(),
+  handler: z.string().optional(),
+  state: z.string().optional(),
+  memorySizeMb: z.number().optional(),
+  timeoutSec: z.number().optional(),
+  version: z.string().optional(),
+  updatedAt: z.string().optional(),
+})
+
+export const workloadListSchema = z.object({
+  workloads: z.array(workloadSchema).default([]),
+  // Counted BEFORE the filter, so the tab badges describe the fleet rather than
+  // the current view.
+  counts: z.record(z.string(), z.number()).default({}),
+  total: z.number().default(0),
 })
 
 export const workerSchema = z.object({
@@ -338,6 +448,13 @@ export type FunctionEntity = z.infer<typeof functionSchema>
 export type Worker = z.infer<typeof workerSchema>
 export type LayerVersion = z.infer<typeof layerVersionSchema>
 export type Dashboard = z.infer<typeof dashboardSchema>
+export type HostStats = z.infer<typeof hostStatsSchema>
+export type NodeView = z.infer<typeof nodeViewSchema>
+export type ClusterView = z.infer<typeof clusterViewSchema>
+export type NodeDetail = z.infer<typeof nodeDetailSchema>
+export type SeriesPoint = z.infer<typeof seriesPointSchema>
+export type Workload = z.infer<typeof workloadSchema>
+export type WorkloadList = z.infer<typeof workloadListSchema>
 export type LogLine = z.infer<typeof logLineSchema>
 export type LogSnapshot = z.infer<typeof logSnapshotSchema>
 export type MetricBucket = z.infer<typeof metricBucketSchema>

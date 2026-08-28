@@ -15,6 +15,7 @@ import { FunctionsPage } from "@/features/functions/FunctionsPage"
 import { LayersPage } from "@/features/layers/LayersPage"
 import { LogsPage } from "@/features/logs/LogsPage"
 import { MetricsPage } from "@/features/metrics/MetricsPage"
+import { NodeDetailPage } from "@/features/workers/NodeDetailPage"
 import { WorkersPage } from "@/features/workers/WorkersPage"
 
 export function App() {
@@ -30,6 +31,7 @@ export function App() {
         <Route path="/functions/new" element={<CreateFunctionPage />} />
         <Route path="/functions/:name" element={<FunctionDetailPage />} />
         <Route path="/workers" element={<WorkersPage />} />
+        <Route path="/workers/:id" element={<NodeDetailPage />} />
         <Route path="/layers" element={<LayersPage />} />
         <Route path="/metrics" element={<MetricsPage />} />
         <Route path="/logs" element={<LogsPage />} />

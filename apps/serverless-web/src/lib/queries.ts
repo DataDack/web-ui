@@ -5,14 +5,18 @@ import {
   fetchAuditEvents,
   fetchDashboard,
   fetchDomains,
+  fetchFleetMetrics,
   fetchLogs,
   fetchMetricSeries,
+  fetchNodeMetrics,
   fetchTenants,
+  fetchWorkloads,
   type AuditQuery,
   type DomainQuery,
   type LogQuery,
   type MetricQuery,
 } from "./api"
+import type { WorkloadKind } from "./schemas"
 
 export const queryKeys = {
   dashboard: ["dashboard"] as const,
@@ -24,6 +28,12 @@ export const queryKeys = {
   // purpose, so folding the switcher's account into the key would evict a page of
   // platform-wide rows every time an operator switched tenant for another panel.
   domains: (query: DomainQuery) => ["domains", query] as const,
+  // Fleet telemetry is platform-wide, never per-tenant: a node serves every
+  // account, so keying it by the switcher's account would evict the whole view
+  // on a switch and show nothing new.
+  fleet: ["fleet-metrics"] as const,
+  fleetNode: (nodeId: string) => ["fleet-metrics", nodeId] as const,
+  workloads: (kind: string) => ["workloads", kind] as const,
 }
 
 /**
@@ -116,5 +126,52 @@ export function useDomains(query: DomainQuery, autoRefresh = true) {
           result.state.data?.domains.some((domain) => domain.status === "pending") ? 5000 : 30_000
       : false,
     staleTime: 2000,
+  })
+}
+
+/**
+ * The cluster view, polled at the cadence the nodes report on.
+ *
+ * Workers sync every few seconds, so a slower poll would show an operator
+ * numbers older than the ones the control plane already has. `keepPreviousData`
+ * stops the table blanking between polls, which on a page whose whole purpose is
+ * "is anything wrong" reads as everything having gone away.
+ */
+export function useFleetMetrics(autoRefresh = true) {
+  return useQuery({
+    queryKey: queryKeys.fleet,
+    queryFn: fetchFleetMetrics,
+    placeholderData: keepPreviousData,
+    refetchInterval: autoRefresh ? 5000 : false,
+    staleTime: 2000,
+  })
+}
+
+/** One node's detail and its series. Same cadence as the list it is opened from. */
+export function useNodeMetrics(nodeId: string | undefined, autoRefresh = true) {
+  return useQuery({
+    queryKey: queryKeys.fleetNode(nodeId ?? ""),
+    queryFn: () => fetchNodeMetrics(nodeId ?? ""),
+    enabled: Boolean(nodeId),
+    placeholderData: keepPreviousData,
+    refetchInterval: autoRefresh ? 5000 : false,
+    staleTime: 2000,
+  })
+}
+
+/**
+ * The operator's workload listing, filtered by kind.
+ *
+ * Polled slowly: a workload appears when someone deploys, which is not something
+ * an operator is watching for second by second, and the dashboard already
+ * refreshes faster for the things that do move on their own.
+ */
+export function useWorkloads(kind: WorkloadKind | "all", autoRefresh = true) {
+  return useQuery({
+    queryKey: queryKeys.workloads(kind),
+    queryFn: () => fetchWorkloads(kind === "all" ? undefined : kind),
+    placeholderData: keepPreviousData,
+    refetchInterval: autoRefresh ? 15_000 : false,
+    staleTime: 5000,
   })
 }

@@ -1,12 +1,12 @@
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 
 import type { ColumnDef } from "@tanstack/react-table"
-import { Boxes, Container, Cpu, Package, Plus, Zap } from "lucide-react"
+import { Boxes, Container, Cpu, Package, Plus, Workflow, Zap } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
 
 import { apiErrorMessage } from "@/lib/api"
-import { useDashboard } from "@/lib/queries"
-import type { FunctionEntity } from "@/lib/schemas"
+import { useWorkloads } from "@/lib/queries"
+import { workloadKinds, type Workload, type WorkloadKind } from "@/lib/schemas"
 
 import {
   Badge,
@@ -17,27 +17,93 @@ import {
   StatCard,
   StatGrid,
   StatusBadge,
+  Tabs,
+  TabsList,
+  TabsTrigger,
   cellMono,
   cellText,
 } from "@datadack/common-ui"
+
+/**
+ * This page reads the OPERATOR listing, not the tenant function surface.
+ *
+ * The two differ in one important way: the function surface hides managed apps
+ * and must keep hiding them, because it can delete what it lists and deleting an
+ * app takes a customer's site down. An operator needs to SEE all three kinds
+ * without those verbs being pointed at them, which is why there are two
+ * endpoints rather than one with a query parameter.
+ *
+ * The kind filter exists only here for the same reason. A tenant has functions
+ * and workflows and no concept of a managed app, so on the cloud console there
+ * is nothing to filter between — and a control offering one meaningful choice
+ * teaches someone the platform has something they cannot see.
+ */
+const KIND_LABELS: Record<WorkloadKind, string> = {
+  function: "Functions",
+  workflow: "Workflows",
+  app: "Apps",
+}
+
+const KIND_TABS: { value: WorkloadKind | "all"; label: string }[] = [
+  { value: "all", label: "All" },
+  ...workloadKinds.map((kind) => ({ value: kind, label: KIND_LABELS[kind] })),
+]
+
+/** A workflow's handler is generated from its graph; editing it is a change the
+ *  next deploy discards. That is worth marking, and only for the rows it is true
+ *  of — a badge on every row would be noise. */
+function KindBadge({ kind }: Readonly<{ kind: string }>) {
+  if (kind === "workflow") {
+    return (
+      <Badge variant="outline" className="gap-1 text-[10px]">
+        <Workflow className="size-3" /> workflow
+      </Badge>
+    )
+  }
+  if (kind === "app") {
+    return (
+      <Badge variant="outline" className="gap-1 text-[10px]">
+        <Boxes className="size-3" /> app
+      </Badge>
+    )
+  }
+  return null
+}
+
 export function FunctionsPage() {
-  const { data, error, isFetching, isLoading, refetch } = useDashboard()
-  const functions = data?.detail.functions ?? []
-
   const navigate = useNavigate()
+  const [kind, setKind] = useState<WorkloadKind | "all">("all")
+  const { data, error, isFetching, isLoading, refetch } = useWorkloads(kind)
 
-  const columns = useMemo<ColumnDef<FunctionEntity>[]>(
+  const rows = data?.workloads ?? []
+  // Counted BEFORE the filter by the control plane, so a tab's badge keeps
+  // describing the fleet once that tab is selected rather than collapsing to
+  // the number of rows on screen.
+  const counts = data?.counts ?? {}
+  const total = data?.total ?? 0
+
+  const columns = useMemo<ColumnDef<Workload>[]>(
     () => [
       {
         accessorKey: "name",
         header: "Name",
         cell: ({ row }) => (
-          <Link
-            to={`/functions/${encodeURIComponent(row.original.name)}`}
-            className="text-foreground hover:text-brand-gold font-mono text-[13px] font-medium underline-offset-4 hover:underline"
-          >
-            {row.original.name}
-          </Link>
+          <div className="flex items-center gap-2">
+            {/* Managed apps are not addressable on the function detail page —
+                it is the tenant surface, and an app is not on it. Linking there
+                would 404 on a row the operator can plainly see. */}
+            {row.original.kind === "app" ? (
+              <span className="font-mono text-[13px] font-medium">{row.original.name}</span>
+            ) : (
+              <Link
+                to={`/functions/${encodeURIComponent(row.original.name)}`}
+                className="text-foreground hover:text-brand-gold font-mono text-[13px] font-medium underline-offset-4 hover:underline"
+              >
+                {row.original.name}
+              </Link>
+            )}
+            <KindBadge kind={row.original.kind} />
+          </div>
         ),
       },
       {
@@ -45,8 +111,8 @@ export function FunctionsPage() {
         header: "State",
         cell: ({ row }) => (
           <StatusBadge
-            status={row.original.state}
-            pulse={row.original.state.toLowerCase() === "active"}
+            status={row.original.state ?? "unknown"}
+            pulse={(row.original.state ?? "").toLowerCase() === "active"}
           />
         ),
       },
@@ -54,11 +120,13 @@ export function FunctionsPage() {
         accessorKey: "packageType",
         header: "Package",
         cell: ({ row }) => {
-          const isImage = row.original.packageType === "image"
+          const type = row.original.packageType
+          if (!type) return cellText()
+          const isImage = type === "image"
           return (
             <Badge variant="outline" className="gap-1 font-mono text-[11px]">
               {isImage ? <Container className="size-3" /> : <Package className="size-3" />}
-              {row.original.packageType}
+              {type}
             </Badge>
           )
         },
@@ -69,22 +137,31 @@ export function FunctionsPage() {
         cell: ({ row }) => cellText(row.original.runtime ?? row.original.runtimeMode),
       },
       {
-        accessorKey: "version.version",
-        id: "version",
+        accessorKey: "version",
         header: "Version",
-        cell: ({ row }) => cellMono(row.original.version?.version),
+        // $LATEST is the working copy every unreleased workload sits on. It is
+        // shown as it comes back rather than blanked, because "no version yet"
+        // and "released v3" are different states an operator acts on.
+        cell: ({ row }) => cellMono(row.original.version),
       },
       {
-        accessorKey: "memorySize",
+        accessorKey: "memorySizeMb",
         header: "Memory",
         cell: ({ row }) =>
-          cellMono(row.original.memorySize ? `${String(row.original.memorySize)} MB` : undefined),
+          cellMono(
+            row.original.memorySizeMb ? `${String(row.original.memorySizeMb)} MB` : undefined,
+          ),
       },
       {
-        accessorKey: "timeout",
+        accessorKey: "timeoutSec",
         header: "Timeout",
         cell: ({ row }) =>
-          cellMono(row.original.timeout ? `${String(row.original.timeout)}s` : undefined),
+          cellMono(row.original.timeoutSec ? `${String(row.original.timeoutSec)}s` : undefined),
+      },
+      {
+        accessorKey: "accountId",
+        header: "Account",
+        cell: ({ row }) => cellMono(row.original.accountId),
       },
       {
         accessorKey: "resourceGroupId",
@@ -95,14 +172,12 @@ export function FunctionsPage() {
     [],
   )
 
-  const zipCount = functions.filter((fn) => fn.packageType === "zip").length
-
   return (
     <>
       <PageHeader
-        title="Functions"
+        title="Workloads"
         icon={Zap}
-        description="Every function deployed to this control plane, across all resource groups."
+        description="Every workload this control plane runs — functions, workflows and managed apps — across all resource groups."
         actions={
           <Button
             variant="gold"
@@ -116,33 +191,51 @@ export function FunctionsPage() {
       />
 
       <StatGrid className="mb-6">
-        <StatCard label="Functions" value={functions.length} icon={Zap} loading={isLoading} />
+        <StatCard label="Workloads" value={total} icon={Zap} loading={isLoading} />
         <StatCard
-          label="Active"
-          value={functions.filter((fn) => fn.state.toLowerCase() === "active").length}
+          label="Functions"
+          value={counts.function ?? 0}
           icon={Cpu}
-          color="success"
           loading={isLoading}
         />
-        <StatCard label="Zip packages" value={zipCount} icon={Package} loading={isLoading} />
         <StatCard
-          label="Container images"
-          value={functions.length - zipCount}
-          icon={Container}
+          label="Workflows"
+          value={counts.workflow ?? 0}
+          icon={Workflow}
           loading={isLoading}
         />
+        <StatCard label="Managed apps" value={counts.app ?? 0} icon={Boxes} loading={isLoading} />
       </StatGrid>
 
+      <Tabs
+        value={kind}
+        onValueChange={(next) => {
+          setKind(next as WorkloadKind | "all")
+        }}
+        className="mb-4"
+      >
+        <TabsList>
+          {KIND_TABS.map((tab) => (
+            <TabsTrigger key={tab.value} value={tab.value}>
+              {tab.label}
+              <Badge variant="secondary" className="ml-2 text-[10px] tabular-nums">
+                {tab.value === "all" ? total : (counts[tab.value] ?? 0)}
+              </Badge>
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
+
       <DataTable
-        data={functions}
+        data={rows}
         columns={columns}
         loading={isLoading}
         searchable
-        searchPlaceholder="Filter functions…"
+        searchPlaceholder="Filter workloads…"
         empty={
           <EmptyState
             icon={Boxes}
-            title="No functions deployed"
+            title={kind === "all" ? "No workloads deployed" : `No ${kind}s deployed`}
             description="Deploy one with POST /v1/functions and it will appear here."
           />
         }
