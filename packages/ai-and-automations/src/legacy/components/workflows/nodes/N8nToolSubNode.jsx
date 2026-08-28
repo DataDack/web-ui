@@ -35,7 +35,7 @@ export default function N8nToolSubNode({ data, selected }) {
           width: 10,
           height: 10,
           background: data.color || '#6366f1',
-          border: '2px solid hsl(var(--border))',
+          border: '2px solid var(--border)',
         }}
       />
 

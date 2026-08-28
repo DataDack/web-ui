@@ -103,7 +103,7 @@ export default function N8nTriggerNode({ data, selected, id }) {
             width: 10,
             height: 10,
             background: data.color || '#6366f1',
-            border: '2px solid hsl(var(--border))',
+            border: '2px solid var(--border)',
           }}
         />
       )}
@@ -120,7 +120,7 @@ export default function N8nTriggerNode({ data, selected, id }) {
             width: 10,
             height: 10,
             background: data.color || '#909399',
-            border: '2px solid hsl(var(--border))',
+            border: '2px solid var(--border)',
           }}
         />
       ))}

@@ -110,8 +110,8 @@ const handleStyle = {
   width: 10,
   height: 10,
   borderRadius: '50%',
-  border: '2px solid hsl(var(--border))',
-  background: 'hsl(var(--background))',
+  border: '2px solid var(--border)',
+  background: 'var(--background)',
 };
 
 // ── Inline select for nodes (prevents drag) ──────────────────────────────────
@@ -1446,14 +1446,14 @@ function MultiAgentCanvasInner({ initialNodes, initialEdges, onChange, onDeleteA
           className='bg-background'
           proOptions={{ hideAttribution: true }}
         >
-          <Background variant='dots' gap={20} size={1} color='hsl(var(--muted-foreground) / 0.15)' />
+          <Background variant='dots' gap={20} size={1} color='color-mix(in oklab, var(--muted-foreground) 15%, transparent)' />
           <Controls
             showInteractive={false}
             className='!bg-card !border-border !shadow-lg [&>button]:!bg-card [&>button]:!border-border [&>button]:!text-foreground [&>button:hover]:!bg-muted'
           />
           <MiniMap
             nodeColor={nodeColor}
-            maskColor='hsl(var(--background) / 0.85)'
+            maskColor='color-mix(in oklab, var(--background) 85%, transparent)'
             className='!bg-card !border-border !shadow-lg'
             pannable
             zoomable

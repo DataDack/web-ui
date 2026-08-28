@@ -135,8 +135,8 @@ export default function N8nBaseNode({ data, selected, id }) {
             top: inputs.length === 1 ? '50%' : `${((i + 1) / (inputs.length + 1)) * 100}%`,
             width: 10,
             height: 10,
-            background: 'hsl(var(--muted-foreground))',
-            border: '2px solid hsl(var(--border))',
+            background: 'var(--muted-foreground)',
+            border: '2px solid var(--border)',
           }}
         />
       ))}
@@ -153,7 +153,7 @@ export default function N8nBaseNode({ data, selected, id }) {
             width: 10,
             height: 10,
             background: data.color || '#666',
-            border: '2px solid hsl(var(--border))',
+            border: '2px solid var(--border)',
           }}
         />
       ))}
@@ -185,7 +185,7 @@ export default function N8nBaseNode({ data, selected, id }) {
               width: 10,
               height: 10,
               background: TYPED_PORT_META[port].color,
-              border: '2px solid hsl(var(--border))',
+              border: '2px solid var(--border)',
             }}
           />
         );

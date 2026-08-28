@@ -80,7 +80,9 @@ export default function NodeConfigCredentials({ credentialTypes, credentials, on
     setLoading(true);
     try {
       const all = await credentialsApi.list();
-      setSavedCreds(all || []);
+      // Guard the shape, not just the null: a non-array here reaches the
+      // render as savedCreds.filter and takes the whole studio down.
+      setSavedCreds(Array.isArray(all) ? all : []);
     } catch (e) {
       console.error('Failed to load credentials:', e);
     }

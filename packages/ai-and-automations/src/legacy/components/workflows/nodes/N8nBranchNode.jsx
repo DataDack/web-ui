@@ -83,8 +83,8 @@ export default function N8nBranchNode({ data, selected, id }) {
             top: '50%',
             width: 10,
             height: 10,
-            background: 'hsl(var(--muted-foreground))',
-            border: '2px solid hsl(var(--border))',
+            background: 'var(--muted-foreground)',
+            border: '2px solid var(--border)',
           }}
         />
       ))}
@@ -101,7 +101,7 @@ export default function N8nBranchNode({ data, selected, id }) {
             width: 10,
             height: 10,
             background: OUTPUT_COLORS[i % OUTPUT_COLORS.length],
-            border: '2px solid hsl(var(--border))',
+            border: '2px solid var(--border)',
           }}
         />
       ))}

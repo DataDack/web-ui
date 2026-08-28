@@ -49,7 +49,7 @@ export default function N8nLmSubNode({ data, selected }) {
           width: 10,
           height: 10,
           background: accent,
-          border: '2px solid hsl(var(--border))',
+          border: '2px solid var(--border)',
         }}
       />
 

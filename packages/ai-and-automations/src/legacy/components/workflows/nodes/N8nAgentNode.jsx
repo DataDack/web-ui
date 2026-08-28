@@ -42,8 +42,8 @@ export default function N8nAgentNode({ data, selected }) {
           top: '50%',
           width: 10,
           height: 10,
-          background: 'hsl(var(--muted-foreground))',
-          border: '2px solid hsl(var(--border))',
+          background: 'var(--muted-foreground)',
+          border: '2px solid var(--border)',
         }}
       />
 
@@ -57,7 +57,7 @@ export default function N8nAgentNode({ data, selected }) {
           width: 10,
           height: 10,
           background: accent,
-          border: '2px solid hsl(var(--border))',
+          border: '2px solid var(--border)',
         }}
       />
 
@@ -102,7 +102,7 @@ export default function N8nAgentNode({ data, selected }) {
           width: 10,
           height: 10,
           background: '#10b981',
-          border: '2px solid hsl(var(--border))',
+          border: '2px solid var(--border)',
         }}
       />
       <Handle
@@ -114,7 +114,7 @@ export default function N8nAgentNode({ data, selected }) {
           width: 10,
           height: 10,
           background: '#6366f1',
-          border: '2px solid hsl(var(--border))',
+          border: '2px solid var(--border)',
         }}
       />
     </div>

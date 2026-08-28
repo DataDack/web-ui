@@ -59,8 +59,8 @@ const nodeTypes = {
 const defaultEdgeOptions = {
   type: 'smoothstep',
   animated: true,
-  style: { strokeWidth: 2, stroke: 'hsl(var(--muted-foreground))' },
-  markerEnd: { type: MarkerType.ArrowClosed, width: 16, height: 16, color: 'hsl(var(--muted-foreground))' },
+  style: { strokeWidth: 2, stroke: 'var(--muted-foreground)' },
+  markerEnd: { type: MarkerType.ArrowClosed, width: 16, height: 16, color: 'var(--muted-foreground)' },
 };
 
 // ── Helper: generate unique ID ───────────────────────────────────────────────
@@ -416,8 +416,8 @@ function CanvasInner({ initialNodes, initialEdges, onChange, onSelectionChange, 
       target: '__add_node__',
       type: 'smoothstep',
       animated: true,
-      style: { strokeWidth: 2, stroke: 'hsl(var(--muted-foreground))' },
-      markerEnd: { type: MarkerType.ArrowClosed, width: 16, height: 16, color: 'hsl(var(--muted-foreground))' },
+      style: { strokeWidth: 2, stroke: 'var(--muted-foreground)' },
+      markerEnd: { type: MarkerType.ArrowClosed, width: 16, height: 16, color: 'var(--muted-foreground)' },
     };
     return {
       displayNodes: [...nodes, addNode],
@@ -478,8 +478,8 @@ function CanvasInner({ initialNodes, initialEdges, onChange, onSelectionChange, 
           />
           <MiniMap
             position='bottom-right'
-            nodeColor={(node) => node.data?.color || 'hsl(var(--muted-foreground))'}
-            maskColor='hsl(var(--muted) / 0.6)'
+            nodeColor={(node) => node.data?.color || 'var(--muted-foreground)'}
+            maskColor='color-mix(in oklab, var(--muted) 60%, transparent)'
           />
           {!readOnly && (
             <Panel position='top-left'>

@@ -14,6 +14,14 @@ export const aiAutomationsTransport: AIAutomationsTransport = {
       params: options?.params,
       responseType: options?.responseType as "json" | "blob" | undefined,
     })
-    return response.data?.data ?? response.data
+    // The control plane answers `{ "data": ... }`. Unwrap by key, not by
+    // nullishness: `?? response.data` hands the whole envelope back whenever
+    // `data` is legitimately null, and callers that expect a list then get an
+    // object and crash on `.filter`/`.map`.
+    const body = response.data
+    if (body && typeof body === "object" && !Array.isArray(body) && "data" in body) {
+      return (body as { data: unknown }).data
+    }
+    return body
   },
 }

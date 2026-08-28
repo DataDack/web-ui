@@ -29,8 +29,8 @@ export default function AddNodeButton({ data }) {
                 top: '50%',
                 width: 10,
                 height: 10,
-                background: 'hsl(var(--muted-foreground))',
-                border: '2px solid hsl(var(--border))',
+                background: 'var(--muted-foreground)',
+                border: '2px solid var(--border)',
               }}
             />
           </div>

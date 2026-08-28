@@ -133,6 +133,14 @@
   --sidebar-accent: #e5e5e7;
   --sidebar-border: rgb(0 0 0 / 0.08);
 
+  /* Workflow studio (AI & Automations canvas). React Flow paints its own
+     chrome in white unless these are set, which is why the minimap and the
+     zoom controls came across from application-be as bright rectangles. */
+  --workflow-canvas-bg: #ffffff;
+  --workflow-panel-bg: #f5f5f6;
+  --workflow-sidebar-bg: #fafafa;
+  --workflow-grid: #d6d3d1;
+
   --surface-glass: rgb(255 255 255 / 0.65);
   --border-glass: rgb(0 0 0 / 0.08);
   --surface-variant: #e4e4e6;
@@ -205,6 +213,12 @@
   --sidebar-foreground: #e5e2e3;
   --sidebar-accent: #353436;
   --sidebar-border: rgb(255 255 255 / 0.1);
+
+  /* Workflow studio (dark) */
+  --workflow-canvas-bg: #0a0a0d;
+  --workflow-panel-bg: #201f20;
+  --workflow-sidebar-bg: #131316;
+  --workflow-grid: #2b2b2f;
 
   --surface-glass: rgb(255 255 255 / 0.03);
   --border-glass: rgb(255 255 255 / 0.1);
@@ -319,4 +333,41 @@
 ::-webkit-scrollbar-thumb {
   background: var(--surface-variant);
   border-radius: 3px;
+}
+
+/* ─── React Flow chrome (AI & Automations workflow studio) ───────────────
+   @xyflow/react ships light-only defaults for the minimap and the zoom
+   controls. Without these the studio renders a white block over a dark
+   canvas. Colours come from the console's own tokens, so both themes and
+   any future retheme follow automatically. */
+.react-flow__controls {
+  background: var(--workflow-panel-bg) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.08) !important;
+  overflow: hidden;
+}
+.react-flow__controls button {
+  background: var(--workflow-panel-bg) !important;
+  border-bottom: 1px solid var(--border) !important;
+  fill: var(--foreground) !important;
+}
+.react-flow__controls button:hover {
+  background: var(--muted) !important;
+}
+.react-flow__controls button:last-child {
+  border-bottom: none !important;
+}
+.react-flow__controls svg {
+  fill: var(--foreground) !important;
+}
+
+.react-flow__minimap {
+  background: var(--workflow-canvas-bg) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 8px !important;
+}
+.react-flow__minimap-mask {
+  fill: var(--muted) !important;
+  opacity: 0.6 !important;
 }
