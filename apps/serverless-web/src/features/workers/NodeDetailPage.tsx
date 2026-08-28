@@ -4,7 +4,7 @@ import { Activity, Gauge, HardDrive, Network, RefreshCw, Server, ServerOff } fro
 import { Link, useParams } from "react-router-dom"
 
 import { apiErrorMessage } from "@/lib/api"
-import { formatMb, formatRate } from "@/lib/format"
+import { formatMb, formatRate, orDash } from "@/lib/format"
 import { useDashboard, useNodeMetrics } from "@/lib/queries"
 
 import {
@@ -25,11 +25,6 @@ import {
 function regionOf(worker?: { region?: string; zone?: string }): string {
   if (!worker?.region) return "—"
   return worker.zone ? `${worker.region} / ${worker.zone}` : worker.region
-}
-
-/** A measure that was never reported reads as "—", never as a confident zero. */
-function orDash(value: string | undefined): string {
-  return value ?? "—"
 }
 
 function percentOf(value?: number): string {

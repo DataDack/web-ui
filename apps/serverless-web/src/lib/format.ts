@@ -31,3 +31,8 @@ export function usageTone(percent: number): string {
   if (percent >= 70) return "bg-warning"
   return "bg-primary"
 }
+
+/** A measure that was never reported reads as "—", never as a confident zero. */
+export function orDash(value: string | undefined): string {
+  return value ?? "—"
+}

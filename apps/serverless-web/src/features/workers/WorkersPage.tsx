@@ -5,7 +5,7 @@ import { Activity, Cpu, Gauge, HardDrive, Network, Server, ServerOff } from "luc
 import { useNavigate } from "react-router-dom"
 
 import { apiErrorMessage } from "@/lib/api"
-import { formatMb, formatRate, usageTone } from "@/lib/format"
+import { formatMb, formatRate, orDash, usageTone } from "@/lib/format"
 import { useDashboard, useFleetMetrics } from "@/lib/queries"
 import type { NodeView, Worker } from "@/lib/schemas"
 
@@ -139,6 +139,11 @@ function mergeRows(workers: Worker[], nodes: NodeView[]): FleetRow[] {
   return rows
 }
 
+/** "3 nodes on 1 host" — the gap between the two is the thing worth reading. */
+function nodesOnHosts(nodes: number, hosts: number): string {
+  return `${String(nodes)} on ${String(hosts)} ${hosts === 1 ? "host" : "hosts"}`
+}
+
 /** A percentage cell that reads as a bar, so a full node is visible at a glance. */
 function UsageCell({ percent }: Readonly<{ percent?: number }>) {
   if (percent === undefined) return cellText()
@@ -161,6 +166,9 @@ export function WorkersPage() {
 
   const cluster = fleet.data
   const workers = dashboard.data?.detail.workers
+  // What the fleet says it can hold, which each worker derives from its own
+  // container limits rather than from the machine it happens to sit on.
+  const capacity = (workers ?? []).reduce((sum, w) => sum + (w.capacityMaxSandboxes ?? 0), 0)
   const rows = useMemo(() => mergeRows(workers ?? [], cluster?.nodes ?? []), [workers, cluster])
 
   const columns = useMemo<ColumnDef<FleetRow>[]>(
@@ -210,6 +218,9 @@ export function WorkersPage() {
         accessorKey: "freeMemoryMb",
         header: "Memory",
         cell: ({ row }) => {
+          // capacityMemoryMb is what this WORKER may use — its container's
+          // cgroup limit — not what the machine underneath it has. Two workers
+          // on one node each show their own share rather than the node's total.
           const { freeMemoryMb, capacityMemoryMb } = row.original
           if (freeMemoryMb === undefined) return cellMono(formatMb(capacityMemoryMb))
           const used =
@@ -301,11 +312,10 @@ export function WorkersPage() {
       <StatGrid className="mb-6">
         <StatCard
           label="Nodes reporting"
-          value={
-            cluster
-              ? `${String(cluster.reportingNodes)} (${String(cluster.reportingWorkers)}w / ${String(cluster.reportingGateways)}g)`
-              : rows.length
-          }
+          // Nodes and machines are different numbers when workers share
+          // hardware, and the gap is worth seeing: three nodes on one box have
+          // one box's resources between them.
+          value={cluster ? nodesOnHosts(cluster.reportingNodes, cluster.hosts) : rows.length}
           icon={Server}
           loading={loading}
         />
@@ -319,8 +329,16 @@ export function WorkersPage() {
           loading={loading}
         />
         <StatCard
-          label="Memory free"
-          value={formatMb(cluster?.freeMemoryMb) ?? "—"}
+          label="Memory available"
+          // AVAILABLE, not total: it is what a new execution environment could
+          // actually use, and it counts reclaimable page cache that free memory
+          // alone does not. Totals here are per MACHINE — workers sharing a node
+          // used to have their host's memory counted once each.
+          value={
+            cluster
+              ? `${orDash(formatMb(cluster.freeMemoryMb))} of ${orDash(formatMb(cluster.totalMemoryMb))}`
+              : "—"
+          }
           icon={HardDrive}
           loading={loading}
         />
@@ -334,7 +352,16 @@ export function WorkersPage() {
           icon={Network}
           loading={loading}
         />
-        <StatCard label="Sandboxes" value={cluster?.sandboxCount ?? 0} icon={Cpu} loading={loading} />
+        <StatCard
+          label="Sandboxes"
+          value={
+            cluster && capacity > 0
+              ? `${String(cluster.sandboxCount)} of ${String(capacity)}`
+              : (cluster?.sandboxCount ?? 0)
+          }
+          icon={Cpu}
+          loading={loading}
+        />
         <StatCard
           label="Load average"
           value={cluster ? cluster.loadAverage1.toFixed(2) : "—"}

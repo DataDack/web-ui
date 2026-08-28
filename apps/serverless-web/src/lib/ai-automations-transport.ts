@@ -1,4 +1,5 @@
 import type { AIAutomationsTransport } from "@datadack/ai-and-automations"
+
 import { http } from "./api"
 export const aiAutomationsTransport: AIAutomationsTransport = {
   // App integrations are served by this control plane now: the tenant routes

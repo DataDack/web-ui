@@ -64,6 +64,13 @@ export const functionSchema = z.object({
 // it: a number that vanishes on restart must not be mistaken for a record.
 
 export const hostStatsSchema = z.object({
+  // Identifies the MACHINE. Several workers commonly share one, and each reads
+  // the host's /proc — so without this the cluster view counted one box's cores
+  // and memory once per container running on it.
+  hostId: z.string().optional(),
+  cpuCores: z.number().optional(),
+  totalMemoryMb: z.number().optional(),
+  availableMemoryMb: z.number().optional(),
   cpuPercent: z.number().optional(),
   loadAverage1: z.number().optional(),
   netRxBytes: z.number().optional(),
@@ -98,6 +105,9 @@ export const clusterViewSchema = z.object({
   reportingNodes: z.number().default(0),
   reportingWorkers: z.number().default(0),
   reportingGateways: z.number().default(0),
+  // Distinct machines behind those nodes. The gap between this and
+  // reportingNodes is how many workers are sharing hardware.
+  hosts: z.number().default(0),
   totalMemoryMb: z.number().default(0),
   freeMemoryMb: z.number().default(0),
   allocMemoryMb: z.number().default(0),
