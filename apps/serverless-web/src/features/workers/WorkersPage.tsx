@@ -5,7 +5,7 @@ import { Activity, Cpu, Gauge, HardDrive, Network, Server, ServerOff } from "luc
 import { useNavigate } from "react-router-dom"
 
 import { apiErrorMessage } from "@/lib/api"
-import { formatMb, formatRate, orDash, usageTone } from "@/lib/format"
+import { formatMb, formatRate, nodesOnHosts, orDash, usageTone } from "@/lib/format"
 import { useDashboard, useFleetMetrics } from "@/lib/queries"
 import type { NodeView, Worker } from "@/lib/schemas"
 
@@ -137,11 +137,6 @@ function mergeRows(workers: Worker[], nodes: NodeView[]): FleetRow[] {
   for (const node of byId.values()) rows.push(rowFromNode(node))
 
   return rows
-}
-
-/** "3 nodes on 1 host" — the gap between the two is the thing worth reading. */
-function nodesOnHosts(nodes: number, hosts: number): string {
-  return `${String(nodes)} on ${String(hosts)} ${hosts === 1 ? "host" : "hosts"}`
 }
 
 /** A percentage cell that reads as a bar, so a full node is visible at a glance. */

@@ -26,7 +26,7 @@ const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
     label: "Compute",
     items: [
       { to: "/functions", label: "Functions", icon: Zap },
-      { to: "/workers", label: "Workers", icon: Server },
+      { to: "/workers", label: "Fleet", icon: Server },
     ],
   },
   {
@@ -61,7 +61,7 @@ const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
   {
     label: "Observability",
     items: [
-      { to: "/metrics", label: "Metrics", icon: Activity },
+      { to: "/metrics", label: "Observability", icon: Activity },
       { to: "/logs", label: "Logs", icon: ScrollText },
       { to: "/audit", label: "Audit", icon: ShieldCheck },
     ],

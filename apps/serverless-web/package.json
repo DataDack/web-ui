@@ -12,7 +12,8 @@
     "format": "prettier --write .",
     "preview": "vite preview",
     "typecheck": "tsc -b --force",
-    "clean": "rm -rf dist node_modules/.vite node_modules/.tmp"
+    "clean": "rm -rf dist node_modules/.vite node_modules/.tmp",
+    "test": "bun test"
   },
   "nx": {
     "tags": [

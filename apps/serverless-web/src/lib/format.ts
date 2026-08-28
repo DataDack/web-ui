@@ -36,3 +36,9 @@ export function usageTone(percent: number): string {
 export function orDash(value: string | undefined): string {
   return value ?? "—"
 }
+
+/** "3 nodes on 1 host" — the gap between the two is the thing worth reading, so
+ *  both numbers are always shown even when they are equal. */
+export function nodesOnHosts(nodes: number, hosts: number): string {
+  return `${String(nodes)} on ${String(hosts)} ${hosts === 1 ? "host" : "hosts"}`
+}

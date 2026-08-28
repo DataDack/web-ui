@@ -81,6 +81,24 @@ export const hostStatsSchema = z.object({
   diskFreeMb: z.number().optional(),
 })
 
+export const serveStatsSchema = z.object({
+  served: z.number().optional(),
+  failed: z.number().optional(),
+  coldStarts: z.number().optional(),
+  // Split by reason rather than summed: a credential rejection is a routing
+  // fault, a capacity rejection is a scaling decision, and a draining rejection
+  // is normal. One "rejected" total hides which, and they need opposite actions.
+  rejectedUnauthorized: z.number().optional(),
+  rejectedMisdirected: z.number().optional(),
+  rejectedDraining: z.number().optional(),
+  rejectedNoCapacity: z.number().optional(),
+  rejectedNotAssigned: z.number().optional(),
+  inflightNow: z.number().optional(),
+  inflightPeak: z.number().optional(),
+  waitTotalMs: z.number().optional(),
+  waitMaxMs: z.number().optional(),
+})
+
 export const nodeViewSchema = z.object({
   nodeId: z.string(),
   hostname: z.string(),
@@ -96,6 +114,12 @@ export const nodeViewSchema = z.object({
   sandboxCount: z.number().optional(),
   cpuCount: z.number().optional(),
   host: hostStatsSchema.optional(),
+  serve: serveStatsSchema.optional(),
+  // Differenced from the cumulative counters by the control plane, so every
+  // reader gets the same answer rather than each computing its own.
+  servedPerSec: z.number().default(0),
+  rejectedPerSec: z.number().default(0),
+  meanWaitMs: z.number().default(0),
   samples: z.number().optional(),
 })
 
@@ -460,6 +484,7 @@ export type LayerVersion = z.infer<typeof layerVersionSchema>
 export type Dashboard = z.infer<typeof dashboardSchema>
 export type HostStats = z.infer<typeof hostStatsSchema>
 export type NodeView = z.infer<typeof nodeViewSchema>
+export type ServeStats = z.infer<typeof serveStatsSchema>
 export type ClusterView = z.infer<typeof clusterViewSchema>
 export type NodeDetail = z.infer<typeof nodeDetailSchema>
 export type SeriesPoint = z.infer<typeof seriesPointSchema>

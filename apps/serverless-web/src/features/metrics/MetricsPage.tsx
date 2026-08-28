@@ -1,10 +1,23 @@
 import { useMemo, useState } from "react"
 
 import type { ColumnDef } from "@tanstack/react-table"
-import { Activity, AlertTriangle, Gauge, Snowflake, Timer } from "lucide-react"
+import {
+  Activity,
+  AlertTriangle,
+  Gauge,
+  HardDrive,
+  Network,
+  Server,
+  Snowflake,
+  Timer,
+} from "lucide-react"
 
+import { InfrastructurePanel } from "@/features/observability/InfrastructurePanel"
+import { deriveInsights } from "@/features/observability/insights"
+import { InsightsPanel } from "@/features/observability/InsightsPanel"
 import { apiErrorMessage } from "@/lib/api"
-import { useDashboard, useMetricSeries } from "@/lib/queries"
+import { formatMb, formatRate, nodesOnHosts, orDash } from "@/lib/format"
+import { useDashboard, useFleetMetrics, useMetricSeries } from "@/lib/queries"
 import type { MetricSeries } from "@/lib/schemas"
 
 import {
@@ -32,6 +45,13 @@ const RANGES = [
 
 type FunctionTotal = MetricSeries["topFunctions"][number]
 
+
+// No per-row sparkline here, deliberately. The control plane buckets per
+// function only when one is SELECTED, so an unfiltered table has the fleet-wide
+// series and nothing per row — a chart drawn from it would be identical on every
+// row while implying each row's own shape. Click a function to filter; the
+// charts above then are that function's, measured rather than inferred.
+
 export function MetricsPage() {
   const [rangeIndex, setRangeIndex] = useState(1)
   const [functionName, setFunctionName] = useState("")
@@ -39,6 +59,11 @@ export function MetricsPage() {
 
   const { data: dashboard } = useDashboard()
   const functions = dashboard?.detail.functions ?? []
+  // The machines, alongside the workload they run. Kept on the same screen
+  // deliberately: latency doubling and the node it runs on sitting at 95% CPU
+  // are the same incident, and separating them is how it takes an hour.
+  const fleet = useFleetMetrics()
+  const cluster = fleet.data
 
   const { data, isFetching, isLoading, refetch, error } = useMetricSeries({
     since: range.since,
@@ -47,6 +72,18 @@ export function MetricsPage() {
   })
 
   const buckets = useMemo(() => data?.buckets ?? [], [data])
+
+  // What the numbers add up to, in words. Derived from exactly what is on
+  // screen, so a finding can always be checked against the chart above it.
+  const insights = useMemo(
+    () =>
+      deriveInsights({
+        series: data,
+        cluster,
+        workers: dashboard?.detail.workers,
+      }),
+    [data, cluster, dashboard],
+  )
 
   // Two charts rather than one with two y-scales: counts and milliseconds do
   // not share a scale, and forcing them onto one axis makes both unreadable.
@@ -71,6 +108,25 @@ export function MetricsPage() {
       buckets.map((bucket) => ({
         timestamp: bucket.timestamp,
         values: [bucket.avgMemoryMb, bucket.peakMemoryMb],
+      })),
+    [buckets],
+  )
+  // Cold starts and throttles are the two that explain a latency chart. A p95
+  // that doubled because the fleet was cold and one that doubled because the
+  // tenant hit a ceiling look identical until these are next to it.
+  const saturationPoints = useMemo<ChartPoint[]>(
+    () =>
+      buckets.map((bucket) => ({
+        timestamp: bucket.timestamp,
+        values: [bucket.coldStarts, bucket.throttles],
+      })),
+    [buckets],
+  )
+  const concurrencyPoints = useMemo<ChartPoint[]>(
+    () =>
+      buckets.map((bucket) => ({
+        timestamp: bucket.timestamp,
+        values: [bucket.avgInflight],
       })),
     [buckets],
   )
@@ -131,9 +187,9 @@ export function MetricsPage() {
   return (
     <>
       <PageHeader
-        title="Metrics"
+        title="Observability"
         icon={Activity}
-        description="Invocation rate, latency and resource use over time, bucketed by the control plane."
+        description="The workload and the machines under it, on one screen — invocations, latency, saturation and the fleet serving them."
       />
 
       <div className="mb-4 flex flex-wrap items-center gap-2">
@@ -180,6 +236,47 @@ export function MetricsPage() {
           </span>
         )}
       </div>
+
+      <InsightsPanel insights={insights} loading={isLoading || fleet.isLoading} />
+
+      {/* The fleet first, then the workload on it. In that order because when
+          both are wrong the fleet is usually why, and a reader who sees the
+          workload first spends the first minute in the wrong place. */}
+      <StatGrid className="mb-4">
+        <StatCard
+          label="Fleet"
+          value={cluster ? nodesOnHosts(cluster.reportingNodes, cluster.hosts) : "—"}
+          icon={Server}
+          loading={fleet.isLoading}
+        />
+        <StatCard
+          label="Cluster CPU"
+          value={cluster ? `${cluster.cpuPercent.toFixed(0)}%` : "—"}
+          icon={Gauge}
+          color={cluster && cluster.cpuPercent >= 85 ? "danger" : "default"}
+          loading={fleet.isLoading}
+        />
+        <StatCard
+          label="Memory available"
+          value={
+            cluster
+              ? `${orDash(formatMb(cluster.freeMemoryMb))} of ${orDash(formatMb(cluster.totalMemoryMb))}`
+              : "—"
+          }
+          icon={HardDrive}
+          loading={fleet.isLoading}
+        />
+        <StatCard
+          label="Network"
+          value={
+            cluster
+              ? `↓${orDash(formatRate(cluster.netRxBytesPerSec))} ↑${orDash(formatRate(cluster.netTxBytesPerSec))}`
+              : "—"
+          }
+          icon={Network}
+          loading={fleet.isLoading}
+        />
+      </StatGrid>
 
       <StatGrid className="mb-4">
         <StatCard
@@ -243,6 +340,37 @@ export function MetricsPage() {
         </div>
       </div>
 
+      <div className="mb-4 grid gap-3 lg:grid-cols-2">
+        <div>
+          <BarTimeChart
+            title="Cold starts and throttles"
+            points={saturationPoints}
+            series={[
+              { label: "Cold starts", color: "var(--chart-3)" },
+              { label: "Throttled", color: "var(--chart-error)" },
+            ]}
+          />
+          <ChartNote>
+            The two that explain a latency chart. A p95 that doubled because the fleet was cold and
+            one that doubled because a tenant hit a ceiling look identical until these sit beside
+            it.
+          </ChartNote>
+        </div>
+
+        <div>
+          <LineTimeChart
+            title="Concurrent executions"
+            points={concurrencyPoints}
+            series={[{ label: "Mean in flight", color: "var(--chart-2)" }]}
+          />
+          <ChartNote>
+            Mean concurrency per bucket. Read against the sandbox counts on the fleet below:
+            concurrency flat against a ceiling while requests queue is a capacity problem, not a
+            slow function.
+          </ChartNote>
+        </div>
+      </div>
+
       <div className="mb-6">
         <LineTimeChart
           title="Memory used"
@@ -262,6 +390,11 @@ export function MetricsPage() {
 
       {/* The table is also the accessible view of the charts above: every value
           plotted is readable here without relying on colour. */}
+      <section className="mb-6">
+        <h2 className="mb-3 text-[13px] font-medium">Fleet</h2>
+        <InfrastructurePanel cluster={cluster} loading={fleet.isLoading} />
+      </section>
+
       <DataTable
         data={data?.topFunctions ?? []}
         columns={columns}
