@@ -82,6 +82,7 @@
       "name": "cloud-react",
       "version": "0.0.0",
       "dependencies": {
+        "@datadack/ai-and-automations": "workspace:*",
         "@datadack/common-ui": "workspace:*",
         "@datadack/serverless": "workspace:*",
         "@hookform/resolvers": "^5.4.0",

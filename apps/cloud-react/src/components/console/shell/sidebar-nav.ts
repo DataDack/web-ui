@@ -30,6 +30,7 @@ import {
   Settings2,
   ShieldCheck,
   Ship,
+  Sparkles,
   UserCog,
   Users,
   Waypoints,
@@ -244,6 +245,36 @@ export const CONSOLE_SERVICES: ConsoleService[] = [
         labelKey: "console.nav.items.layers",
         icon: Layers,
         path: "/serverless/layers",
+      },
+    ],
+  },
+  {
+    key: "automations",
+    labelKey: "console.nav.groups.automations",
+    icon: Sparkles,
+    // Overview keeps "/automations" bare on purpose: isItemActiveAmong already
+    // gives the LONGER matching sibling the active state, so Workflows and
+    // Integrations outrank it on their own paths without a match override.
+    //
+    // The workflow studio at /automations/workflows/:id needs no item of its
+    // own — it hides the sidebar — but its prefix still resolves to this
+    // service through the Workflows item, so leaving the studio lands back
+    // here rather than on whichever sidebar matched last.
+    items: [
+      {
+        labelKey: "console.nav.items.automationsOverview",
+        icon: LayoutDashboard,
+        path: "/automations",
+      },
+      {
+        labelKey: "console.nav.items.automationsWorkflows",
+        icon: GitBranch,
+        path: "/automations/workflows",
+      },
+      {
+        labelKey: "console.nav.items.automationsIntegrations",
+        icon: Cable,
+        path: "/automations/integrations",
       },
     ],
   },

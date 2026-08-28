@@ -23,7 +23,8 @@
         "monitoring": "Monitoring",
         "managedApps": "Managed Apps",
         "serverless": "Serverless",
-        "support": "सहायता"
+        "support": "सहायता",
+        "automations": "एआई और वर्कफ़्लो"
       },
       "items": {
         "dashboard": "डैशबोर्ड",
@@ -79,7 +80,10 @@
         "apps": "ऐप्स",
         "cpanelHosting": "cPanel होस्टिंग",
         "domains": "डोमेन",
-        "ssoApps": "SSO एप्लीकेशन"
+        "ssoApps": "SSO एप्लीकेशन",
+        "automationsOverview": "अवलोकन",
+        "automationsWorkflows": "वर्कफ़्लो",
+        "automationsIntegrations": "इंटीग्रेशन"
       },
       "soon": "जल्द आ रहा है",
       "collapse": "संकुचित करें",

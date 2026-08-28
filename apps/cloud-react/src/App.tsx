@@ -4,6 +4,7 @@ import { AppShell } from "@/components/console"
 import { accountsRoutes } from "@/modules/accounts/accounts.router"
 import { authRoutes } from "@/modules/auth/auth.router"
 import { RequireAuth } from "@/modules/auth/components/RequireAuth"
+import { automationsRoutes } from "@/modules/automations/automations.router"
 import { autoscalingRoutes } from "@/modules/autoscaling/autoscaling.router"
 import { billingRoutes } from "@/modules/billing/billing.router"
 import { dashboardRoutes } from "@/modules/dashboard/dashboard.router"
@@ -106,6 +107,7 @@ const router = createBrowserRouter([
           ...hostingRoutes,
           ...managedAppsRoutes,
           ...serverlessRoutes,
+          ...automationsRoutes,
           ...resourceGroupsRoutes,
           ...supportTicketsRoutes,
           ...accountsRoutes,

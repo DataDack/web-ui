@@ -22,7 +22,8 @@
         "support": "Support",
         "monitoring": "Monitoring",
         "managedApps": "Managed Apps",
-        "serverless": "Serverless"
+        "serverless": "Serverless",
+        "automations": "AI & Workflows"
       },
       "items": {
         "dashboard": "Dashboard",
@@ -77,7 +78,10 @@
         "apps": "Apps",
         "cpanelHosting": "cPanel Hosting",
         "domains": "Domains",
-        "ssoApps": "SSO Applications"
+        "ssoApps": "SSO Applications",
+        "automationsOverview": "Overview",
+        "automationsWorkflows": "Workflows",
+        "automationsIntegrations": "Integrations"
       },
       "soon": "Soon",
       "collapse": "Collapse",
