@@ -43,7 +43,7 @@ export function openProviderPopup() {
 // It is a translation layer, not a shim to delete later: the legacy pages are a
 // large body of working UI, and rewriting every call site would be a far bigger
 // change than mapping the handful of prefixes they use. The transport supplies
-// the `/v1/ai-and-automations` prefix, so everything here is relative to that.
+// the `/v1/workflows` prefix, so everything here is relative to that.
 function remap(url) {
   if (url.replace(/\/$/, "") === "/api/workflow/executions") return "/executions"
   const mapped = url
@@ -52,7 +52,7 @@ function remap(url) {
     .replace(/^\/api\/workflow-credential/, "/workflow-credentials")
     .replace(/^\/api\/workflow/, "/workflows")
     // App integrations. Without these two the calls fell through to the bare
-    // /api strip below and reached /v1/ai-and-automations/integration/..., which
+    // /api strip below and reached /v1/workflows/integration/..., which
     // is not a route — so every trigger panel 404'd while looking configured.
     //
     // Anchored on a following slash or end of string. A bare prefix match would

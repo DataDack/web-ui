@@ -14,7 +14,7 @@ import { createAutomationsTransport } from "./automations.client"
 //
 // The section is served entirely by the regional FaaS control plane — agents,
 // workflows, credentials, templates, executions and app integrations are all
-// routes under /v1/ai-and-automations there — so unlike the serverless section
+// routes under /v1/workflows there — so unlike the serverless section
 // there is no gateway half. This provider only has to find that origin.
 //
 // It is found exactly the way ServerlessDataProvider finds it, and deliberately

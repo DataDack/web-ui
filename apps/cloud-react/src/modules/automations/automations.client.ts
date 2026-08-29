@@ -64,7 +64,7 @@ export interface AutomationsTransportOptions {
 }
 
 /** The prefix every route in this section sits under on the control plane. */
-const API_PREFIX = "/v1/ai-and-automations"
+const API_PREFIX = "/v1/workflows"
 
 export function createAutomationsTransport(
   opts: AutomationsTransportOptions,

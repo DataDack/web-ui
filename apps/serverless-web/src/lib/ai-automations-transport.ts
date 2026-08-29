@@ -3,18 +3,18 @@ import type { AIAutomationsTransport } from "@datadack/ai-and-automations"
 import { http } from "./api"
 export const aiAutomationsTransport: AIAutomationsTransport = {
   // App integrations are served by this control plane now: the tenant routes
-  // under /v1/ai-and-automations/{integrations,connected-accounts} and the
+  // under /v1/workflows/{integrations,connected-accounts} and the
   // public provider callbacks under /v1/integrations. Realtime execution events
   // still have no socket here, so that one stays off.
   capabilities: { connectedAccounts: true, integrations: true, realtimeEvents: false },
   brandIconUrl: "/admin/datadack-icon.png",
   publicUrl(path) {
-    return `/v1/ai-and-automations${path}`
+    return `/v1/workflows${path}`
   },
   async request(method, path, options) {
     const response = await http.request({
       method,
-      url: `/v1/ai-and-automations${path}`,
+      url: `/v1/workflows${path}`,
       data: options?.body,
       params: options?.params,
       responseType: options?.responseType as "json" | "blob" | undefined,
