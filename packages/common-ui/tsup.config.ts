@@ -31,6 +31,15 @@ const options: Options = {
     "cmdk",
     "react-day-picker",
     "react-hook-form",
+    // CJS-only, with no "module" or "exports" entry. Bundling it inlines its
+    // `require("react")` into an ESM output, and because react is external here
+    // esbuild cannot resolve that statically — it emits a dynamic-require shim
+    // that throws "Dynamic require of \"react\" is not supported" the moment the
+    // chunk is evaluated in the browser.
+    //
+    // External instead, so the consuming app's bundler resolves it. Vite handles
+    // the CJS→ESM interop properly; tsup, inlining into ESM, cannot.
+    "react-simple-code-editor",
     "tailwind-merge",
   ],
 }
