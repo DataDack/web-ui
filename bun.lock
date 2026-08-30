@@ -160,6 +160,7 @@
       "name": "@datadack/integration",
       "version": "0.1.0",
       "dependencies": {
+        "@emotion/react": "^11.14.0",
         "clsx": "^2.1.1",
         "tailwind-merge": "^3.6.0",
       },
@@ -211,6 +212,7 @@
         "@dnd-kit/sortable": "^10.0.0",
         "@dnd-kit/utilities": "^3.2.2",
         "@emotion/css": "^11.13.5",
+        "@emotion/react": "^11.14.0",
         "@lobehub/icons": "^2.0.0",
         "@microlink/react-json-view": "^1.31.18",
         "@xyflow/react": "^12.10.1",

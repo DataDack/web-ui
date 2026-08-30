@@ -72,6 +72,20 @@ function DateRangePicker({
   const to = value?.to ? new Date(value.to) : undefined
   const selected = from ? { from, to: to ?? from } : undefined
 
+  let label = <span>{placeholder}</span>
+  if (from) {
+    label =
+      to && to.getTime() !== from.getTime() ? (
+        <span>
+          {format(from, "MMM dd")} - {format(to, "MMM dd")}
+        </span>
+      ) : (
+        // A range whose ends are the same day reads as one date, not as
+        // "Jan 05 - Jan 05".
+        <span>{format(from, "PPP")}</span>
+      )
+  }
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -83,19 +97,7 @@ function DateRangePicker({
           {...props}
         >
           <CalendarIcon className={icon} />
-          {from ? (
-            // A range whose ends are the same day reads as one date, not as
-            // "Jan 05 - Jan 05".
-            to && to.getTime() !== from.getTime() ? (
-              <span>
-                {format(from, "MMM dd")} - {format(to, "MMM dd")}
-              </span>
-            ) : (
-              <span>{format(from, "PPP")}</span>
-            )
-          ) : (
-            <span>{placeholder}</span>
-          )}
+          {label}
         </Button>
       </PopoverTrigger>
       <PopoverContent className={popover} align="start">
@@ -116,6 +118,7 @@ function DateRangePicker({
             }
           }}
           numberOfMonths={2}
+          /* eslint-disable-next-line jsx-a11y/no-autofocus -- the calendar is inside a popover the user just opened; focusing it is what makes the control keyboard-operable, not an unsolicited focus steal. */
           autoFocus
         />
       </PopoverContent>

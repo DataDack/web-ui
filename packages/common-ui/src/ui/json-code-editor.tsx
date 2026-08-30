@@ -33,11 +33,15 @@ function highlightJson(code: string) {
       // Strings first — a quoted body may contain digits or the word `null`,
       // and matching those before the quotes would colour them separately.
       .replace(
-        /"(?:\\.|[^"\\])*"/g,
+        /"[^"\\]*(?:\\.[^"\\]*)*"/g,
         (match) => `<span style="color:var(--json-string,#6ee7b7)">${match}</span>`,
       )
+      // The fractional part requires its dot. Written as `\d+\.?\d*` the two
+      // digit runs are ambiguous, and a long unmatched run of digits makes the
+      // engine retry every split of it — quadratic work inside the keystroke
+      // path, on text the user controls.
       .replace(
-        /\b(-?\d+\.?\d*(?:e[+-]?\d+)?)\b/g,
+        /\b(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)\b/g,
         '<span style="color:var(--json-number,#60a5fa)">$1</span>',
       )
       .replace(/\b(true|false|null)\b/g, '<span style="color:var(--json-bool,#fbbf24)">$1</span>')
@@ -70,7 +74,7 @@ function JsonCodeEditor({
   maxHeight = "400px",
   placeholder = "{ }",
   readOnly = false,
-}: JsonCodeEditorProps) {
+}: Readonly<JsonCodeEditorProps>) {
   const handleChange = useCallback(
     (code: string) => {
       // react-simple-code-editor has no readOnly of its own that blocks edits,

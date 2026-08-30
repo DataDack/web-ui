@@ -1,38 +1,51 @@
-import type * as React from "react"
-
 import { GripVerticalIcon } from "lucide-react"
 import * as ResizablePrimitive from "react-resizable-panels"
 
 import { css, cx } from "../lib/emotion"
 
-const group = css`
-  display: flex;
-  height: 100%;
-  width: 100%;
+// The group needs no rules of its own: react-resizable-panels writes the flex
+// container INLINE (display, flex-direction, size, overflow, touch-action) from
+// its `orientation` prop, and an inline style beats any class this package
+// could add. Only the separator is left to style.
 
-  &[data-panel-group-direction="vertical"] {
-    flex-direction: column;
-  }
-`
-
-// The separator is a 1px line, which is far too small a hit target. `::after`
-// widens the grab area to 4px, centred on the line, without widening the line
-// itself or shifting the panels either side of it.
+// The separator's aria-orientation is the axis of the LINE, so it is the
+// opposite of the group's: a horizontal group is divided by a vertical rule.
+// That attribute is the only orientation signal in the DOM — v4 dropped the
+// data-panel-group-direction attribute the Tailwind version keyed on.
 const handle = css`
   position: relative;
   display: flex;
-  width: 1px;
   align-items: center;
   justify-content: center;
   background: var(--border);
 
+  &[aria-orientation="vertical"] {
+    width: 1px;
+  }
+
+  &[aria-orientation="horizontal"] {
+    height: 1px;
+  }
+
+  /* A 1px line is far too small a hit target, so ::after widens the grab area
+     to 4px centred on it — without widening the line or moving the panels. */
   &::after {
     content: "";
     position: absolute;
+  }
+
+  &[aria-orientation="vertical"]::after {
     inset-block: 0;
     left: 50%;
     width: 4px;
     transform: translateX(-50%);
+  }
+
+  &[aria-orientation="horizontal"]::after {
+    inset-inline: 0;
+    top: 50%;
+    height: 4px;
+    transform: translateY(-50%);
   }
 
   &:focus-visible {
@@ -42,21 +55,9 @@ const handle = css`
       0 0 0 2px var(--ring);
   }
 
-  &[data-panel-group-direction="vertical"] {
-    height: 1px;
-    width: 100%;
-  }
-
-  &[data-panel-group-direction="vertical"]::after {
-    left: 0;
-    height: 4px;
-    width: 100%;
-    transform: translateY(-50%);
-  }
-
-  /* The grip glyph is drawn for a vertical divider, so a horizontal one turns
-     it a quarter turn rather than swapping in a second icon. */
-  &[data-panel-group-direction="vertical"] > div {
+  /* The grip glyph is drawn for a vertical rule, so a horizontal one turns it a
+     quarter turn rather than shipping a second icon. */
+  &[aria-orientation="horizontal"] > div {
     transform: rotate(90deg);
   }
 `
@@ -78,20 +79,11 @@ const grip = css`
   }
 `
 
-function ResizablePanelGroup({
-  className,
-  ...props
-}: React.ComponentProps<typeof ResizablePrimitive.Group>) {
-  return (
-    <ResizablePrimitive.Group
-      data-slot="resizable-panel-group"
-      className={cx(group, className)}
-      {...props}
-    />
-  )
+function ResizablePanelGroup({ ...props }: ResizablePrimitive.GroupProps) {
+  return <ResizablePrimitive.Group data-slot="resizable-panel-group" {...props} />
 }
 
-function ResizablePanel({ ...props }: React.ComponentProps<typeof ResizablePrimitive.Panel>) {
+function ResizablePanel({ ...props }: ResizablePrimitive.PanelProps) {
   return <ResizablePrimitive.Panel data-slot="resizable-panel" {...props} />
 }
 
@@ -99,9 +91,7 @@ function ResizableHandle({
   withHandle,
   className,
   ...props
-}: React.ComponentProps<typeof ResizablePrimitive.Separator> & {
-  withHandle?: boolean
-}) {
+}: ResizablePrimitive.SeparatorProps & { withHandle?: boolean }) {
   return (
     <ResizablePrimitive.Separator
       data-slot="resizable-handle"

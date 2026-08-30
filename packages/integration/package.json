@@ -8,11 +8,26 @@
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
-    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js", "require": "./dist/index.cjs" }
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
   },
-  "files": ["dist"],
-  "scripts": { "build": "tsup", "typecheck": "tsc --noEmit", "lint": "eslint .", "clean": "rm -rf dist node_modules/.cache" },
-  "dependencies": { "clsx": "^2.1.1", "tailwind-merge": "^3.6.0" },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "clean": "rm -rf dist node_modules/.cache"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.6.0"
+  },
   "peerDependencies": {
     "@datadack/workflows": "workspace:*",
     "@tanstack/react-query": "^5.0.0",
@@ -23,6 +38,18 @@
     "react-router-dom": ">=7.0.0",
     "react-toastify": "^11.0.5"
   },
-  "devDependencies": { "@datadack/workflows": "workspace:*", "tsup": "^8.5.0" },
-  "nx": { "tags": ["scope:package", "publishable"], "implicitDependencies": ["@serverless-ui/eslint-config", "@serverless-ui/typescript-config"] }
+  "devDependencies": {
+    "@datadack/workflows": "workspace:*",
+    "tsup": "^8.5.0"
+  },
+  "nx": {
+    "tags": [
+      "scope:package",
+      "publishable"
+    ],
+    "implicitDependencies": [
+      "@serverless-ui/eslint-config",
+      "@serverless-ui/typescript-config"
+    ]
+  }
 }

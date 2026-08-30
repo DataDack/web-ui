@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react"
 
-import { CheckIcon, CopyIcon } from "lucide-react"
 import ReactJson from "@microlink/react-json-view"
+import { CheckIcon, CopyIcon } from "lucide-react"
 
 import { Button } from "./button"
 import { css, cx } from "../lib/emotion"
@@ -82,7 +82,7 @@ function JsonViewer({
   onChange,
   className,
   maxHeight,
-}: JsonViewerProps) {
+}: Readonly<JsonViewerProps>) {
   const [hasCopied, setHasCopied] = useState(false)
 
   const handleCopy = useCallback(() => {
@@ -90,7 +90,7 @@ function JsonViewer({
       .writeText(JSON.stringify(data, null, 2))
       .then(() => {
         setHasCopied(true)
-        setTimeout(() => {
+        return setTimeout(() => {
           setHasCopied(false)
         }, 1500)
       })
@@ -128,7 +128,7 @@ function JsonViewer({
           <ReactJson
             // The viewer renders objects only, so a bare scalar is wrapped
             // rather than dropped.
-            src={(typeof data === "object" ? data : { value: data }) as object}
+            src={(typeof data === "object" ? data : { value: data })}
             theme="ocean"
             collapsed={defaultExpanded === false ? true : defaultExpanded}
             collapseStringsAfterLength={120}

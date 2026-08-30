@@ -4,11 +4,23 @@ import { afterEach, describe, expect, mock, test } from "bun:test"
 
 import {
   Accordion,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
   Button,
   Checkbox,
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+  DateRangePicker,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -21,10 +33,17 @@ import {
   DropdownMenuTrigger,
   EmptyState,
   Input,
+  JsonCodeEditor,
+  JsonViewer,
+  Kbd,
+  KbdGroup,
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
   Label,
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
   Select,
   SelectContent,
   SelectItem,
@@ -442,5 +461,140 @@ describe("Button loading state", () => {
     // A link cannot be disabled, and injecting a spinner into an arbitrary child
     // would break whatever it renders.
     expect(screen.getByRole("link", { name: "Go" })).toBeInTheDocument()
+  })
+})
+
+describe("AlertDialog", () => {
+  test("an open dialog exposes the alertdialog role with its title and body", () => {
+    render(
+      <AlertDialog open>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete workflow?</AlertDialogTitle>
+            <AlertDialogDescription>This cannot be undone.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction>Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>,
+    )
+    expect(screen.getByRole("alertdialog")).toBeInTheDocument()
+    expect(screen.getByText("Delete workflow?")).toBeInTheDocument()
+    expect(screen.getByText("This cannot be undone.")).toBeInTheDocument()
+  })
+
+  test("the actions are styled as buttons", () => {
+    render(
+      <AlertDialog open>
+        <AlertDialogContent>
+          <AlertDialogTitle>Title</AlertDialogTitle>
+          <AlertDialogDescription>Body</AlertDialogDescription>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction>Delete</AlertDialogAction>
+        </AlertDialogContent>
+      </AlertDialog>,
+    )
+    // Radix owns these elements' click handling, so they take the Button class
+    // rather than the component. An empty className means that wiring is gone
+    // and both actions render as unstyled browser buttons.
+    expect(screen.getByText("Cancel").className).not.toBe("")
+    expect(screen.getByText("Delete").className).not.toBe("")
+  })
+})
+
+describe("Collapsible", () => {
+  test("content is mounted only while open", () => {
+    const { rerender } = render(
+      <Collapsible open={false}>
+        <CollapsibleTrigger>Toggle</CollapsibleTrigger>
+        <CollapsibleContent>Hidden body</CollapsibleContent>
+      </Collapsible>,
+    )
+    expect(screen.queryByText("Hidden body")).not.toBeInTheDocument()
+
+    rerender(
+      <Collapsible open>
+        <CollapsibleTrigger>Toggle</CollapsibleTrigger>
+        <CollapsibleContent>Hidden body</CollapsibleContent>
+      </Collapsible>,
+    )
+    expect(screen.getByText("Hidden body")).toBeInTheDocument()
+  })
+})
+
+describe("DateRangePicker", () => {
+  test("shows the placeholder until a range is set", () => {
+    render(<DateRangePicker onChange={() => undefined} placeholder="Pick dates" />)
+    expect(screen.getByText("Pick dates")).toBeInTheDocument()
+  })
+
+  test("renders a two-ended range compactly", () => {
+    render(
+      <DateRangePicker value={{ from: "2026-01-05", to: "2026-01-09" }} onChange={() => undefined} />,
+    )
+    expect(screen.getByText("Jan 05 - Jan 09")).toBeInTheDocument()
+  })
+
+  test("a range whose ends are the same day reads as one date", () => {
+    render(
+      <DateRangePicker value={{ from: "2026-03-02", to: "2026-03-02" }} onChange={() => undefined} />,
+    )
+    expect(screen.getByText("March 2nd, 2026")).toBeInTheDocument()
+  })
+})
+
+describe("JsonCodeEditor", () => {
+  test("the value is editable text", () => {
+    render(<JsonCodeEditor value={'{"a":1}'} onChange={() => undefined} />)
+    expect(screen.getByRole("textbox")).toHaveValue('{"a":1}')
+  })
+
+  test("markup in the value is escaped, not rendered", () => {
+    // The highlighter returns an HTML string that the editor injects, so the
+    // escape pass is a security boundary rather than a cosmetic one.
+    const { container } = render(<JsonCodeEditor value={'{"x":"<img src=x onerror=alert(1)>"}'} />)
+    expect(container.querySelector("img")).toBeNull()
+  })
+})
+
+describe("JsonViewer", () => {
+  test("renders the object's keys", () => {
+    const { container } = render(<JsonViewer data={{ status: "ok" }} />)
+    expect(container.textContent).toContain("status")
+  })
+
+  test("empty data renders as null rather than an empty panel", () => {
+    render(<JsonViewer data={null} />)
+    expect(screen.getByText("null")).toBeInTheDocument()
+  })
+})
+
+describe("Kbd", () => {
+  test("a group renders each key", () => {
+    render(
+      <KbdGroup>
+        <Kbd>Ctrl</Kbd>
+        <Kbd>K</Kbd>
+      </KbdGroup>,
+    )
+    expect(screen.getByText("Ctrl")).toBeInTheDocument()
+    expect(screen.getByText("K")).toBeInTheDocument()
+  })
+})
+
+describe("Resizable", () => {
+  test("renders both panels with a separator between them", () => {
+    render(
+      <ResizablePanelGroup orientation="horizontal">
+        <ResizablePanel>Left</ResizablePanel>
+        <ResizableHandle withHandle />
+        <ResizablePanel>Right</ResizablePanel>
+      </ResizablePanelGroup>,
+    )
+    expect(screen.getByText("Left")).toBeInTheDocument()
+    expect(screen.getByText("Right")).toBeInTheDocument()
+    expect(screen.getByRole("separator")).toBeInTheDocument()
   })
 })

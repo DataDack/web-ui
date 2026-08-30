@@ -2,6 +2,14 @@ import type { ReactElement } from "react"
 
 import {
   Accordion,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
@@ -17,6 +25,10 @@ import {
   CardHeader,
   CardTitle,
   Checkbox,
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+  DateRangePicker,
   Command,
   CommandItem,
   CommandList,
@@ -33,10 +45,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
   Input,
+  JsonCodeEditor,
+  JsonViewer,
+  Kbd,
+  KbdGroup,
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
   Label,
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
   Logo,
   PageHeader,
   Popover,
@@ -459,6 +478,112 @@ export const specimens: Specimen[] = [
           <CommandItem {...cls}>item</CommandItem>
         </CommandList>
       </Command>
+    ),
+  },
+
+  // --- ported from @datadack/workflows ---------------------------------------
+  {
+    name: "AlertDialogContent",
+    node: (
+      <AlertDialog open>
+        <AlertDialogContent {...cls}>
+          <AlertDialogHeader>
+            <AlertDialogTitle>t</AlertDialogTitle>
+            <AlertDialogDescription>d</AlertDialogDescription>
+          </AlertDialogHeader>
+        </AlertDialogContent>
+      </AlertDialog>
+    ),
+  },
+  {
+    name: "AlertDialogHeader",
+    node: (
+      <AlertDialog open>
+        <AlertDialogContent>
+          <AlertDialogHeader {...cls}>
+            <AlertDialogTitle>t</AlertDialogTitle>
+            <AlertDialogDescription>d</AlertDialogDescription>
+          </AlertDialogHeader>
+        </AlertDialogContent>
+      </AlertDialog>
+    ),
+  },
+  {
+    name: "AlertDialogFooter",
+    node: (
+      <AlertDialog open>
+        <AlertDialogContent>
+          <AlertDialogTitle>t</AlertDialogTitle>
+          <AlertDialogDescription>d</AlertDialogDescription>
+          <AlertDialogFooter {...cls}>
+            <AlertDialogCancel>c</AlertDialogCancel>
+            <AlertDialogAction>a</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    ),
+  },
+  {
+    name: "AlertDialogTitle",
+    node: (
+      <AlertDialog open>
+        <AlertDialogContent>
+          <AlertDialogTitle {...cls}>t</AlertDialogTitle>
+          <AlertDialogDescription>d</AlertDialogDescription>
+        </AlertDialogContent>
+      </AlertDialog>
+    ),
+  },
+  {
+    name: "AlertDialogDescription",
+    node: (
+      <AlertDialog open>
+        <AlertDialogContent>
+          <AlertDialogTitle>t</AlertDialogTitle>
+          <AlertDialogDescription {...cls}>d</AlertDialogDescription>
+        </AlertDialogContent>
+      </AlertDialog>
+    ),
+  },
+  {
+    // Radix's Collapsible primitives are re-exported untouched, so there is no
+    // generated class for the caller's to sit beside.
+    name: "CollapsibleContent",
+    unstyled: true,
+    node: (
+      <Collapsible open>
+        <CollapsibleTrigger>t</CollapsibleTrigger>
+        <CollapsibleContent {...cls}>body</CollapsibleContent>
+      </Collapsible>
+    ),
+  },
+  {
+    name: "DateRangePicker",
+    node: <DateRangePicker onChange={() => undefined} {...cls} />,
+  },
+  { name: "JsonCodeEditor", node: <JsonCodeEditor value="{}" {...cls} /> },
+  { name: "JsonViewer", node: <JsonViewer data={{ a: 1 }} {...cls} /> },
+  { name: "Kbd", node: <Kbd {...cls}>K</Kbd> },
+  { name: "KbdGroup", node: <KbdGroup {...cls}><Kbd>K</Kbd></KbdGroup> },
+  {
+    // Unstyled on purpose: react-resizable-panels writes the group's layout
+    // inline from `orientation`, so there is no class of ours to keep.
+    name: "ResizablePanelGroup",
+    unstyled: true,
+    node: (
+      <ResizablePanelGroup orientation="horizontal" {...cls}>
+        <ResizablePanel>l</ResizablePanel>
+      </ResizablePanelGroup>
+    ),
+  },
+  {
+    name: "ResizableHandle",
+    node: (
+      <ResizablePanelGroup orientation="horizontal">
+        <ResizablePanel>l</ResizablePanel>
+        <ResizableHandle {...cls} />
+        <ResizablePanel>r</ResizablePanel>
+      </ResizablePanelGroup>
     ),
   },
 

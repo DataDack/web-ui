@@ -534,7 +534,7 @@ export default function AgentStudio() {
       </div>
 
       {/* ── Body ──────────────────────────────────────────────────────────────── */}
-      <ResizablePanelGroup direction='horizontal' className='flex-1 overflow-hidden'>
+      <ResizablePanelGroup orientation='horizontal' className='flex-1 overflow-hidden'>
 
         {/* ══ LEFT — Agent config ════════════════════════════════════════════════ */}
         <ResizablePanel defaultSize='30%' minSize='30%' maxSize='75%'>
