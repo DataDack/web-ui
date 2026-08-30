@@ -68,8 +68,12 @@ export const templatesApi = {
 
   delete: (slug) => API.delete(`/api/workflow-template/${slug}`).then(unwrap),
 
+  // Addressed as an action ON the workflow, not as a template collection route:
+  // the control plane serves POST /workflows/{id}/promote-to-template. This is
+  // the one call in this file whose legacy path had no equivalent left, so it is
+  // written against the workflow prefix rather than the template one.
   promote: (workflowId, data) =>
-    API.post(`/api/workflow-template/from-workflow/${workflowId}`, data).then(unwrap),
+    API.post(`/api/workflow/${workflowId}/promote-to-template`, data).then(unwrap),
 
   download: (slug) =>
     API.get(`/api/workflow-template/${slug}/download`, { responseType: "blob" }).then(
