@@ -7,8 +7,7 @@
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { ChevronRight, Search, ArrowLeft, X, PanelLeftClose, Pin, PinOff } from 'lucide-react';
-import { Badge, Button, Input, ScrollArea, TooltipProvider } from "@datadack/common-ui"
-import { Kbd } from "@/components/ui/kbd"
+import { Badge, Button, Input, Kbd, ScrollArea, TooltipProvider } from "@datadack/common-ui"
 import { CATEGORY_ICONS } from './workflowIconMap';
 import { getNodePalette } from '../../helpers/n8nNodeRegistry';
 import { getTransport } from '../../../runtime';

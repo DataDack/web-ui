@@ -13,6 +13,11 @@ import {
 import {
   Badge,
   Button,
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+  DateRangePicker,
+  JsonViewer,
   ScrollArea,
   Sheet,
   SheetContent,
@@ -20,9 +25,6 @@ import {
   SheetTitle,
   Skeleton,
 } from "@datadack/common-ui"
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
-import { DateRangePicker } from "@/components/ui/date-range-picker"
-import { JsonViewer } from "@/components/ui/json-viewer"
 import { workflowsApi } from '../../../api/workflows';
 import LambdaLogViewer from './LambdaLogViewer';
 import { toast } from 'react-toastify';

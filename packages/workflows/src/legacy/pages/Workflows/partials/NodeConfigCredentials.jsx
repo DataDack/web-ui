@@ -7,6 +7,15 @@
 import React, { useState, useCallback, useEffect, useContext } from 'react';
 import { Plus, Pencil, Trash2, Key, Loader2 } from 'lucide-react';
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
   Button,
   Label,
   Select,
@@ -19,17 +28,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@datadack/common-ui"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
 import { credentialsApi } from '../../../api/workflowCredentials';
 import { getCredentialSchema } from './credentialSchemas';
 import CredentialSheet from './CredentialSheet';

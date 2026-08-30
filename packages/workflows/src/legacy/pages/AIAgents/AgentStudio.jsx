@@ -45,6 +45,9 @@ import {
 import {
   Badge,
   Button,
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
   ScrollArea,
   Select,
   SelectContent,
@@ -57,7 +60,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@datadack/common-ui"
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable"
 
 import { agentsApi } from '../../api/agents';
 import { automationPath } from '../../../runtime';

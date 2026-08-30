@@ -8,6 +8,8 @@ import { Play, Loader2, CheckCircle2, XCircle, Clock } from 'lucide-react';
 import {
   Badge,
   Button,
+  JsonCodeEditor,
+  JsonViewer,
   Label,
   ScrollArea,
   Sheet,
@@ -16,8 +18,6 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@datadack/common-ui"
-import { JsonCodeEditor } from "@/components/ui/json-code-editor"
-import { JsonViewer } from "@/components/ui/json-viewer"
 import { toast } from 'react-toastify';
 import LambdaLogViewer from './LambdaLogViewer';
 

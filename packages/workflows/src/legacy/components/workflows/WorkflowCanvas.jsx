@@ -31,7 +31,6 @@ import WorkflowNodeConfig from './WorkflowNodeConfig';
 import { N8N_NODE_REGISTRY, getNodeDefaults, getNodeDefinition } from '../../helpers/n8nNodeRegistry';
 import { Trash2, Undo2, Redo2, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { toast } from 'react-toastify';
-import { Button } from "@datadack/common-ui"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -42,7 +41,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
+  Button,
+} from "@datadack/common-ui"
 
 // ── Node type map for React Flow ─────────────────────────────────────────────
 

@@ -25,6 +25,14 @@ import { UserContext } from "../../context/User"
 import FeatureGate from "../../components/FeatureGate"
 import { getTransport } from "../../../runtime"
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
   Badge,
   Button,
   Card,
@@ -37,16 +45,6 @@ import {
   DropdownMenuTrigger,
   Input,
 } from "@datadack/common-ui"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
 
 // OAuth providers available via Connected Accounts
 const OAUTH_PROVIDERS = {
