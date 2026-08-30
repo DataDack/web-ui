@@ -73,6 +73,7 @@ function remapIntegrations(url) {
   const events = trimmed.match(/^\/api\/integration-providers\/([^/]+)\/events$/)
   if (events) return `/catalog/providers/${events[1]}/events`
   if (trimmed === "/api/integration-providers") return "/catalog/providers"
+  if (trimmed === "/api/integration-catalog") return "/catalog"
 
   // Meta acts on one integration, under its own module rather than under the
   // trigger's — the flow is a Meta dialog, not a trigger edit.

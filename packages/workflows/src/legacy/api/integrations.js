@@ -47,7 +47,25 @@ export const integrationsApi = {
   // Which providers this deployment can actually complete a connection for. The
   // console disables what it cannot honour rather than opening a popup that
   // dead-ends on a provider's error page.
+  //
+  // Answers `{ oauth, meta, platforms }`: oauth keyed by provider, meta keyed by
+  // PRODUCT (Threads can be its own Meta app and be available when WhatsApp is
+  // not), platforms the trigger sources this build can wire.
   providers: () => API.get('/api/integration-providers').then(unwrap),
+
+  // The whole third-party surface in one answer: every platform this build
+  // knows, with how it connects and whether this deployment can.
+  //
+  // Distinct from providers() above, which is four booleans for the connect
+  // dialog. This is what the Integrations page renders — it is the only call
+  // that knows Slack and Telegram exist at all, because neither has a
+  // platform-level application and so neither appears in the oauth map.
+  //
+  // Each item: { key, label, category, mechanism, provider, trigger, available,
+  // reason, events }. `mechanism` is what the UI switches on — oauth,
+  // meta, self_service, bot_token, github_app — so a new platform of an
+  // existing kind needs no change here.
+  catalog: () => API.get('/api/integration-catalog').then(unwrap),
 
   // ── OAuth ────────────────────────────────────────────────────────────────
   //

@@ -1,7 +1,16 @@
 import React, { useCallback, useMemo, useState } from "react"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { Link } from "react-router-dom"
-import { AlertCircle, Cable, Loader2, Plug, Trash2, Unplug } from "lucide-react"
+import {
+  AlertCircle,
+  Cable,
+  CheckCircle2,
+  ClipboardCopy,
+  Loader2,
+  Plug,
+  Trash2,
+  Unplug,
+} from "lucide-react"
 import { toast } from "react-toastify"
 
 // Primitives, control-plane clients, transport and link builder all come from
@@ -80,6 +89,16 @@ function IntegrationsSurface() {
     retry: false,
   })
 
+  // The full platform catalog. Cached longer than the tenant's own rows because
+  // it is deployment configuration, not tenant data: it changes when an
+  // operator registers an application, not when someone clicks something.
+  const catalog = useQuery({
+    queryKey: ["integration-catalog"],
+    queryFn: () => integrationsApi.catalog(),
+    staleTime: 10 * 60 * 1000,
+    retry: false,
+  })
+
   const integrations = useQuery({
     queryKey: ["integrations", "list"],
     queryFn: () => integrationsApi.list({ page: 1, pageSize: 100 }),
@@ -101,6 +120,14 @@ function IntegrationsSurface() {
     return map
   }, [accountRows])
 
+  // Which providers this tenant already holds an account for, so the catalog
+  // can say "connected" rather than offering a button that opens a consent
+  // screen for a grant they already gave.
+  const connectedProviders = useMemo(
+    () => new Set(accountRows.map((row) => row.provider)),
+    [accountRows],
+  )
+
   const invalidate = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: ["integrations"] })
     queryClient.invalidateQueries({ queryKey: ["connected-accounts"] })
@@ -120,6 +147,7 @@ function IntegrationsSurface() {
             Connections
             <CountBadge value={accountRows.length} />
           </TabsTrigger>
+          <TabsTrigger value="available">Available apps</TabsTrigger>
         </TabsList>
 
         <TabsContent value="triggers" className="mt-4">
@@ -138,6 +166,16 @@ function IntegrationsSurface() {
             providers={providers.data}
             isLoading={accounts.isLoading}
             error={accounts.error}
+            onChanged={invalidate}
+          />
+        </TabsContent>
+
+        <TabsContent value="available" className="mt-4">
+          <CatalogPanel
+            data={catalog.data}
+            isLoading={catalog.isLoading}
+            error={catalog.error}
+            connectedProviders={connectedProviders}
             onChanged={invalidate}
           />
         </TabsContent>
@@ -495,6 +533,190 @@ function ConnectionRow({ row, onChanged }) {
         </Button>
       </td>
     </tr>
+  )
+}
+
+
+// ---------------------------------------------------------------------------
+// Catalog
+// ---------------------------------------------------------------------------
+
+// Human labels for a platform's mechanism — how a tenant connects it, and
+// therefore what this panel can offer for it.
+//
+// Only `oauth` gets a button here. The rest are configured against ONE trigger
+// (a Meta dialog spends a code against a specific integration; Slack and
+// Discord want a URL pasted that only exists once a trigger does; Telegram
+// wants a bot token on the trigger's config), so offering a button on this page
+// would start a flow with nothing to finish it against. They say where to go
+// instead.
+const MECHANISM = {
+  oauth: { label: "Connect an account", hint: "One connection serves every trigger this provider backs." },
+  meta: { label: "Set up on a trigger", hint: "Add the trigger to a workflow, then finish the Meta connection there." },
+  self_service: { label: "Paste a URL", hint: "Add the trigger to a workflow — it shows the URL and secret to paste." },
+  bot_token: { label: "Paste a token", hint: "Add the trigger to a workflow and give it your bot token." },
+  github_app: { label: "Install the app", hint: "Installed from Managed Apps; it deploys from a repository rather than driving workflows." },
+}
+
+const CATEGORY_LABEL = {
+  source: "Source control",
+  messaging: "Messaging",
+  email: "Email",
+  calendar: "Calendar",
+  storage: "Storage",
+  productivity: "Documents",
+  project_tracking: "Project tracking",
+}
+
+function CatalogPanel({ data, isLoading, error, connectedProviders, onChanged }) {
+  const items = data?.items ?? []
+
+  // Grouped by category so the list reads as a shelf rather than an
+  // alphabetical dump of twenty names. Insertion order follows CATEGORY_LABEL,
+  // with anything unrecognised appended rather than dropped — a newer backend
+  // may know a category this build does not.
+  const groups = useMemo(() => {
+    const byCategory = new Map()
+    for (const key of Object.keys(CATEGORY_LABEL)) byCategory.set(key, [])
+    for (const item of items) {
+      if (!byCategory.has(item.category)) byCategory.set(item.category, [])
+      byCategory.get(item.category).push(item)
+    }
+    return [...byCategory.entries()].filter(([, rows]) => rows.length > 0)
+  }, [items])
+
+  if (isLoading) return <TableSkeleton />
+  if (error) return <LoadError message={error.message} />
+  if (items.length === 0) {
+    return (
+      <EmptyState
+        icon={Plug}
+        title="No apps in the catalog"
+        body="This platform reports no connectable apps at all, which usually means the integrations service is not running."
+      />
+    )
+  }
+
+  const unavailable = items.filter((item) => !item.available).length
+
+  return (
+    <div className="flex flex-col gap-5">
+      <p className="text-xs text-muted-foreground">
+        Everything this platform can connect. {items.length - unavailable} of {items.length}{" "}
+        available here
+        {unavailable > 0 && " — the rest need an operator to register an application"}.
+      </p>
+
+      {groups.map(([category, rows]) => (
+        <div key={category} className="space-y-2">
+          <h2 className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+            {CATEGORY_LABEL[category] ?? category}
+          </h2>
+          <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+            {rows.map((item) => (
+              <CatalogCard
+                key={item.key}
+                item={item}
+                connected={Boolean(item.provider) && connectedProviders.has(item.provider)}
+                onChanged={onChanged}
+              />
+            ))}
+          </div>
+        </div>
+      ))}
+
+      {data?.public_base_url && <CallbackHint baseUrl={data.public_base_url} />}
+    </div>
+  )
+}
+
+function CatalogCard({ item, connected, onChanged }) {
+  const meta = getPlatformMeta(item.key)
+  const mechanism = MECHANISM[item.mechanism] ?? { label: item.mechanism, hint: "" }
+
+  return (
+    <div className="flex flex-col gap-2 rounded-lg border p-3">
+      <div className="flex items-start gap-2">
+        <span
+          className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded"
+          style={{ background: `${meta.color}1a`, color: meta.color }}
+        >
+          <meta.icon size={13} />
+        </span>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-1.5">
+            <span className="truncate text-xs font-medium">{item.label}</span>
+            {connected && (
+              <CheckCircle2 size={12} className="shrink-0 text-emerald-500" aria-label="Connected" />
+            )}
+          </div>
+          <p className="text-[10px] text-muted-foreground">
+            {item.trigger ? mechanism.label : "Deployments"}
+          </p>
+        </div>
+        {!item.available && (
+          <Badge variant="outline" className="shrink-0 text-[9px]">
+            Off
+          </Badge>
+        )}
+      </div>
+
+      <p className="text-[10px] leading-relaxed text-muted-foreground">
+        {item.available ? mechanism.hint : item.reason}
+      </p>
+
+      {/* Only OAuth gets an action. See MECHANISM above: every other kind is
+          configured against one specific trigger, and a button here would open
+          a flow with nothing to complete it against. */}
+      {item.available && item.mechanism === "oauth" && !connected && (
+        <ConnectButton provider={item.provider} onChanged={onChanged} />
+      )}
+    </div>
+  )
+}
+
+// CallbackHint shows the addresses an operator has to register with a provider.
+//
+// It is on this page because this is where someone stands when a provider is
+// reported off: the fix is registering an application, and doing that needs
+// these two URLs, which are derived from a setting rather than written down
+// anywhere a person can reach.
+function CallbackHint({ baseUrl }) {
+  const urls = [
+    { label: "OAuth redirect URI", value: `${baseUrl}/v1/integrations/oauth/<provider>/callback` },
+    { label: "Meta webhook", value: `${baseUrl}/v1/integrations/webhooks/meta/<product>` },
+  ]
+  return (
+    <div className="rounded-lg border border-dashed p-3">
+      <p className="mb-2 text-[11px] font-medium">Addresses to register with a provider</p>
+      <div className="space-y-1.5">
+        {urls.map((url) => (
+          <div key={url.label} className="flex items-center gap-2">
+            <span className="w-32 shrink-0 text-[10px] text-muted-foreground">{url.label}</span>
+            <code className="min-w-0 flex-1 truncate rounded bg-muted px-1.5 py-0.5 font-mono text-[10px]">
+              {url.value}
+            </code>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-6 w-6 shrink-0 p-0"
+              aria-label={`Copy the ${url.label}`}
+              onClick={() => {
+                // Best effort: clipboard access is refused outside a secure
+                // context, and a toast saying so beats a button that looks
+                // broken.
+                globalThis.navigator?.clipboard
+                  ?.writeText(url.value)
+                  .then(() => toast.success("Copied"))
+                  .catch(() => toast.error("Could not copy — select the text instead"))
+              }}
+            >
+              <ClipboardCopy size={11} />
+            </Button>
+          </div>
+        ))}
+      </div>
+    </div>
   )
 }
 
