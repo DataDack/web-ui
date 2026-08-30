@@ -35,7 +35,7 @@ export function App() {
 
 The host supplies only an `AIAutomationsTransport`; authentication, API origin,
 and HTTP-client choice therefore stay with the host application. The bundled
-serverless host adapter targets `/v1/ai-and-automations`.
+serverless host adapter targets `/v1/workflows`.
 
 Backend metadata is account-scoped in the FaaS Postgres database. Credential
 values use the existing encrypted `faas_secrets` store. Templates, execution
