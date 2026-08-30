@@ -22,6 +22,12 @@ const options: Options = {
   dts: true,
   sourcemap: true,
   clean: true,
+  // Required, not cosmetic: this package force-bundles @datadack/common-ui via
+  // noExternal above, so without this flag it re-inlines common-ui's OWN
+  // CommonJS dependencies even when common-ui itself correctly externalises
+  // them — react-simple-code-editor and @microlink/react-json-view among them.
+  // That is how /admin stayed broken after common-ui alone was fixed.
+  skipNodeModulesBundle: true,
   external: [
     "react",
     "react-dom",
