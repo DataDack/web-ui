@@ -145,11 +145,7 @@ export {
   ContextMenuTrigger,
 } from "./ui/context-menu"
 export { DatePicker } from "./ui/date-picker"
-export {
-  DateRangePicker,
-  type DateRange,
-  type DateRangePickerProps,
-} from "./ui/date-range-picker"
+export { DateRangePicker, type DateRange, type DateRangePickerProps } from "./ui/date-range-picker"
 export { DayGridPicker } from "./ui/day-grid-picker"
 export {
   Dialog,
@@ -198,11 +194,7 @@ export { Kbd, KbdGroup } from "./ui/kbd"
 export { Label } from "./ui/label"
 export { MONTHS, MonthYearPicker } from "./ui/month-year-picker"
 export { Popover, PopoverAnchor, PopoverContent, PopoverTrigger } from "./ui/popover"
-export {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "./ui/resizable"
+export { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "./ui/resizable"
 export { ScrollArea, ScrollBar } from "./ui/scroll-area"
 export {
   Select,

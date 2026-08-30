@@ -85,7 +85,11 @@ function JsonCodeEditor({
   )
 
   return (
-    <div data-slot="json-code-editor" className={cx(wrapper, className)} style={{ minHeight, maxHeight }}>
+    <div
+      data-slot="json-code-editor"
+      className={cx(wrapper, className)}
+      style={{ minHeight, maxHeight }}
+    >
       <Editor
         value={value ?? ""}
         onValueChange={handleChange}

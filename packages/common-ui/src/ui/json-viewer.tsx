@@ -128,7 +128,7 @@ function JsonViewer({
           <ReactJson
             // The viewer renders objects only, so a bare scalar is wrapped
             // rather than dropped.
-            src={(typeof data === "object" ? data : { value: data })}
+            src={typeof data === "object" ? data : { value: data }}
             theme="ocean"
             collapsed={defaultExpanded === false ? true : defaultExpanded}
             collapseStringsAfterLength={120}

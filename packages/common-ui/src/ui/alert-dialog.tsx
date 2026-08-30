@@ -94,7 +94,9 @@ const description = css`
   color: var(--muted-foreground);
 `
 
-function AlertDialog({ ...props }: Readonly<React.ComponentProps<typeof AlertDialogPrimitive.Root>>) {
+function AlertDialog({
+  ...props
+}: Readonly<React.ComponentProps<typeof AlertDialogPrimitive.Root>>) {
   return <AlertDialogPrimitive.Root data-slot="alert-dialog" {...props} />
 }
 
@@ -180,9 +182,7 @@ function AlertDialogAction({
   className,
   ...props
 }: React.ComponentProps<typeof AlertDialogPrimitive.Action>) {
-  return (
-    <AlertDialogPrimitive.Action className={buttonVariants({ className })} {...props} />
-  )
+  return <AlertDialogPrimitive.Action className={buttonVariants({ className })} {...props} />
 }
 
 function AlertDialogCancel({
