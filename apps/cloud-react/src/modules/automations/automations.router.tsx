@@ -2,9 +2,9 @@ import type { RouteObject } from "react-router-dom"
 
 // The AI & Workflows section.
 //
-// Its pages come from @datadack/ai-and-automations — the same package the
-// serverless admin console mounts — so the studio, the tables and the trigger
-// panels are one implementation rather than two.
+// Its pages come from @datadack/workflows and @datadack/integration — the same
+// packages the serverless admin console mounts — so the studio, the tables and
+// the trigger panels are one implementation rather than two.
 //
 // They are mounted as INDIVIDUAL routes rather than through the package's own
 // nested <Routes>, because this console's shell is driven by per-route `handle`
@@ -21,9 +21,21 @@ const BASE_PATH = "/automations"
  * gets a correct base path without depending on some earlier page having run.
  */
 async function loadPackage() {
-  const pkg = await import("@datadack/ai-and-automations")
+  const pkg = await import("@datadack/workflows")
   pkg.setAutomationBasePath(BASE_PATH)
   return pkg
+}
+
+/**
+ * Load the integrations page with the section's mount point already declared.
+ *
+ * The base path is a singleton owned by @datadack/workflows, and
+ * @datadack/integration reads it from there — so it is set through loadPackage
+ * here too, rather than assumed to have been set by whichever page ran first.
+ */
+async function loadIntegrations() {
+  const [{ IntegrationsPage }] = await Promise.all([import("@datadack/integration"), loadPackage()])
+  return IntegrationsPage
 }
 
 export const automationsRoutes: RouteObject[] = [
@@ -68,10 +80,7 @@ export const automationsRoutes: RouteObject[] = [
       },
       {
         path: "integrations",
-        lazy: async () => {
-          const { AIAutomationsIntegrations } = await loadPackage()
-          return { Component: AIAutomationsIntegrations }
-        },
+        lazy: async () => ({ Component: await loadIntegrations() }),
       },
     ],
   },

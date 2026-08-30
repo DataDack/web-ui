@@ -1,0 +1,70 @@
+{
+  "name": "@datadack/workflows",
+  "version": "0.1.0",
+  "description": "Embeddable AI agents, workflows, templates, and credentials UI.",
+  "license": "UNLICENSED",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./internal": {
+      "types": "./dist/internal.d.ts",
+      "import": "./dist/internal.js",
+      "require": "./dist/internal.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "clean": "rm -rf dist node_modules/.cache"
+  },
+  "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
+    "@emotion/css": "^11.13.5",
+    "@lobehub/icons": "^2.0.0",
+    "@microlink/react-json-view": "^1.31.18",
+    "@xyflow/react": "^12.10.1",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "radix-ui": "^1.6.7",
+    "react-resizable-panels": "^4.6.4",
+    "react-simple-code-editor": "^0.14.1",
+    "react-toastify": "^11.0.5",
+    "sugar-high": "^0.9.5",
+    "tailwind-merge": "^3.6.0"
+  },
+  "peerDependencies": {
+    "@tanstack/react-query": "^5.0.0",
+    "lucide-react": ">=1.0.0",
+    "react": ">=19.0.0",
+    "react-dom": ">=19.0.0",
+    "react-icons": "^5.5.0",
+    "react-router-dom": ">=7.0.0"
+  },
+  "devDependencies": {
+    "@datadack/common-ui": "workspace:*",
+    "tsup": "^8.5.0"
+  },
+  "nx": {
+    "tags": [
+      "scope:package",
+      "publishable"
+    ],
+    "implicitDependencies": [
+      "@serverless-ui/eslint-config",
+      "@serverless-ui/typescript-config"
+    ]
+  }
+}

@@ -1,4 +1,4 @@
-import type { AIAutomationsTransport } from "@datadack/ai-and-automations"
+import type { AIAutomationsTransport } from "@datadack/workflows"
 
 import { http } from "./api"
 export const aiAutomationsTransport: AIAutomationsTransport = {

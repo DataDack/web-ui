@@ -16,9 +16,10 @@
     "clean": "rm -rf dist node_modules/.vite node_modules/.tmp"
   },
   "dependencies": {
-    "@datadack/ai-and-automations": "workspace:*",
     "@datadack/common-ui": "workspace:*",
+    "@datadack/integration": "workspace:*",
     "@datadack/serverless": "workspace:*",
+    "@datadack/workflows": "workspace:*",
     "@hookform/resolvers": "^5.4.0",
     "react-hook-form": "^7.79.0",
     "zod": "^4.4.3"

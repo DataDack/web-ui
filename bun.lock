@@ -82,9 +82,10 @@
       "name": "cloud-react",
       "version": "0.0.0",
       "dependencies": {
-        "@datadack/ai-and-automations": "workspace:*",
         "@datadack/common-ui": "workspace:*",
+        "@datadack/integration": "workspace:*",
         "@datadack/serverless": "workspace:*",
+        "@datadack/workflows": "workspace:*",
         "@hookform/resolvers": "^5.4.0",
         "react-hook-form": "^7.79.0",
         "zod": "^4.4.3",
@@ -94,9 +95,10 @@
       "name": "serverless-web",
       "version": "0.0.0",
       "dependencies": {
-        "@datadack/ai-and-automations": "workspace:*",
         "@datadack/common-ui": "workspace:*",
+        "@datadack/integration": "workspace:*",
         "@datadack/serverless": "workspace:*",
+        "@datadack/workflows": "workspace:*",
       },
     },
     "config/eslint-config": {
@@ -125,38 +127,6 @@
       "name": "@serverless-ui/typescript-config",
       "version": "0.0.0",
     },
-    "packages/ai-and-automations": {
-      "name": "@datadack/ai-and-automations",
-      "version": "0.1.0",
-      "dependencies": {
-        "@dnd-kit/core": "^6.3.1",
-        "@dnd-kit/sortable": "^10.0.0",
-        "@dnd-kit/utilities": "^3.2.2",
-        "@emotion/css": "^11.13.5",
-        "@lobehub/icons": "^2.0.0",
-        "@microlink/react-json-view": "^1.31.18",
-        "@xyflow/react": "^12.10.1",
-        "class-variance-authority": "^0.7.1",
-        "clsx": "^2.1.1",
-        "radix-ui": "^1.6.7",
-        "react-resizable-panels": "^4.6.4",
-        "react-simple-code-editor": "^0.14.1",
-        "react-toastify": "^11.0.5",
-        "sugar-high": "^0.9.5",
-        "tailwind-merge": "^3.6.0",
-      },
-      "devDependencies": {
-        "tsup": "^8.5.0",
-      },
-      "peerDependencies": {
-        "@tanstack/react-query": "^5.0.0",
-        "lucide-react": ">=1.0.0",
-        "react": ">=19.0.0",
-        "react-dom": ">=19.0.0",
-        "react-icons": "^5.5.0",
-        "react-router-dom": ">=7.0.0",
-      },
-    },
     "packages/common-ui": {
       "name": "@datadack/common-ui",
       "version": "0.0.0",
@@ -182,6 +152,28 @@
         "sonner": ">=2.0.0",
       },
     },
+    "packages/integration": {
+      "name": "@datadack/integration",
+      "version": "0.1.0",
+      "dependencies": {
+        "clsx": "^2.1.1",
+        "tailwind-merge": "^3.6.0",
+      },
+      "devDependencies": {
+        "@datadack/workflows": "workspace:*",
+        "tsup": "^8.5.0",
+      },
+      "peerDependencies": {
+        "@datadack/workflows": "workspace:*",
+        "@tanstack/react-query": "^5.0.0",
+        "lucide-react": ">=1.0.0",
+        "react": ">=19.0.0",
+        "react-dom": ">=19.0.0",
+        "react-icons": "^5.5.0",
+        "react-router-dom": ">=7.0.0",
+        "react-toastify": "^11.0.5",
+      },
+    },
     "packages/serverless": {
       "name": "@datadack/serverless",
       "version": "1.0.0",
@@ -205,6 +197,39 @@
         "react-dom": ">=19.0.0",
         "react-icons": ">=5.0.0",
         "sonner": ">=2.0.0",
+      },
+    },
+    "packages/workflows": {
+      "name": "@datadack/workflows",
+      "version": "0.1.0",
+      "dependencies": {
+        "@dnd-kit/core": "^6.3.1",
+        "@dnd-kit/sortable": "^10.0.0",
+        "@dnd-kit/utilities": "^3.2.2",
+        "@emotion/css": "^11.13.5",
+        "@lobehub/icons": "^2.0.0",
+        "@microlink/react-json-view": "^1.31.18",
+        "@xyflow/react": "^12.10.1",
+        "class-variance-authority": "^0.7.1",
+        "clsx": "^2.1.1",
+        "radix-ui": "^1.6.7",
+        "react-resizable-panels": "^4.6.4",
+        "react-simple-code-editor": "^0.14.1",
+        "react-toastify": "^11.0.5",
+        "sugar-high": "^0.9.5",
+        "tailwind-merge": "^3.6.0",
+      },
+      "devDependencies": {
+        "@datadack/common-ui": "workspace:*",
+        "tsup": "^8.5.0",
+      },
+      "peerDependencies": {
+        "@tanstack/react-query": "^5.0.0",
+        "lucide-react": ">=1.0.0",
+        "react": ">=19.0.0",
+        "react-dom": ">=19.0.0",
+        "react-icons": "^5.5.0",
+        "react-router-dom": ">=7.0.0",
       },
     },
   },
@@ -333,11 +358,13 @@
 
     "@chevrotain/types": ["@chevrotain/types@11.1.2", "", {}, "sha512-U+HFai5+zmJCkK86QsaJtoITlboZHBqrVketcO2ROv865xfCMSFpELQoz1GkX5GzME8pTa+3kbKrZHQtI0gdbw=="],
 
-    "@datadack/ai-and-automations": ["@datadack/ai-and-automations@workspace:packages/ai-and-automations"],
-
     "@datadack/common-ui": ["@datadack/common-ui@workspace:packages/common-ui"],
 
+    "@datadack/integration": ["@datadack/integration@workspace:packages/integration"],
+
     "@datadack/serverless": ["@datadack/serverless@workspace:packages/serverless"],
+
+    "@datadack/workflows": ["@datadack/workflows@workspace:packages/workflows"],
 
     "@date-fns/tz": ["@date-fns/tz@1.5.0", "", {}, "sha512-lwYN/vDPeNRULcepoE/LO2Pgx+7/RV+S9ARfbc9lr2DtGkOD7pAiruHvbR1RX3Qyf6ja47EWJDMsNK5vK08DJg=="],
 

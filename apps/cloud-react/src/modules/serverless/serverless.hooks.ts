@@ -83,6 +83,30 @@ export function useServerlessLayers() {
   })
 }
 
+/**
+ * Deletes one published layer version.
+ *
+ * Already-deployed functions keep running: a function captured the layer's
+ * content when it was published, so this breaks the next deploy that names this
+ * version rather than anything currently serving. That is Lambda's behaviour and
+ * the control plane deliberately does not check for referencing functions.
+ */
+export function useDeleteLayerVersion() {
+  const queryClient = useQueryClient()
+  const { activeRegionCode } = useActiveRegion()
+  return useMutation({
+    mutationFn: ({ name, version }: { name: string; version: number }) =>
+      serverlessApi.deleteLayerVersion(activeRegionCode, name, version),
+    onSuccess: async (_data, { name, version }) => {
+      toast.success(`Layer ${name} v${String(version)} deleted`)
+      await queryClient.invalidateQueries({
+        queryKey: SERVERLESS_QUERY_KEYS.layers(activeRegionCode),
+      })
+    },
+    onError: (error) => toast.error(extractError(error, "Could not delete the layer version")),
+  })
+}
+
 export function useServerlessActivity() {
   return useQuery({
     queryKey: SERVERLESS_QUERY_KEYS.activity,

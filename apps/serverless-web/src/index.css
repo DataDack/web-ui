@@ -18,10 +18,14 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-/* The AI & Automations UI is a workspace package outside this app directory.
+/* The AI & Automations UI is two workspace packages outside this app directory.
    Tailwind v4 does not discover all of those JSX sources automatically, so
-   include them explicitly or package-only utilities are absent at runtime. */
-@source "../../../packages/ai-and-automations/src";
+   include them explicitly or package-only utilities are absent at runtime.
+   Both are listed: @datadack/integration renders the same Tailwind-class
+   primitives as @datadack/workflows, and a scan of only one leaves the other
+   surface unstyled. */
+@source "../../../packages/workflows/src";
+@source "../../../packages/integration/src";
 
 @import "@fontsource-variable/geist";
 @import "@fontsource/jetbrains-mono";

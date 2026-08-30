@@ -1,4 +1,3 @@
-import type { AIAutomationsTransport } from "@datadack/ai-and-automations"
 import axios, {
   type AxiosError,
   type AxiosResponse,
@@ -7,6 +6,8 @@ import axios, {
 
 import { activeScope } from "@/services/api/active-scope"
 import { authToken, refreshAccessToken } from "@/services/api/auth-token"
+
+import type { AIAutomationsTransport } from "@datadack/workflows"
 
 // Direct browser → FaaS control-plane client for the AI & Workflows section.
 //

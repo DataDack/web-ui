@@ -4899,7 +4899,10 @@
       "publishSubtitle": "A versioned archive shared across functions.",
       "searchPlaceholder": "Search layers…",
       "empty": "No layers yet",
-      "emptyHint": "Publish a layer to share dependencies across functions."
+      "emptyHint": "Publish a layer to share dependencies across functions.",
+      "deleteConfirmTitle": "Delete {{name}} v{{version}}?",
+      "deleteConfirmBody": "This version is removed. Functions already deployed with it keep running — they captured its contents when they were published. The next deploy that names this version will fail.",
+      "deleteConfirmLabel": "Delete version"
     },
     "stats": {
       "total": "Functions",

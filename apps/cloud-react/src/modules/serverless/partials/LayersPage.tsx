@@ -1,17 +1,25 @@
 import { useMemo, useState } from "react"
 
-import { Badge, Button, DataTable, dateColumn, Input, textColumn } from "@datadack/common-ui"
+import {
+  actionsColumn,
+  Badge,
+  Button,
+  DataTable,
+  dateColumn,
+  Input,
+  textColumn,
+} from "@datadack/common-ui"
 import { formatBytes } from "@datadack/serverless"
 import type { ColumnDef } from "@tanstack/react-table"
-import { Layers, Plus, RefreshCw, Search } from "lucide-react"
+import { Layers, Plus, RefreshCw, Search, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
-import { PageHeader } from "@/components/console"
+import { ConfirmDialog, PageHeader } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
 import { SERVERLESS_ROUTES } from "../serverless.constants"
-import { useServerlessLayers } from "../serverless.hooks"
+import { useDeleteLayerVersion, useServerlessLayers } from "../serverless.hooks"
 import type { LayerVersion } from "../serverless.types"
 
 export function ServerlessLayersPage() {
@@ -22,6 +30,8 @@ export function ServerlessLayersPage() {
 
   const layers = useMemo(() => data ?? [], [data])
   const [query, setQuery] = useState("")
+  const [toDelete, setToDelete] = useState<LayerVersion | null>(null)
+  const { mutate: deleteLayerVersion, isPending: isDeleting } = useDeleteLayerVersion()
 
   const filtered = useMemo(() => {
     if (!query.trim()) return layers
@@ -114,6 +124,22 @@ export function ServerlessLayersPage() {
         accessor: (layer) => layer.createdAt ?? "",
         responsive: "xl",
       }),
+      actionsColumn<LayerVersion>({
+        ariaLabel: t("console.table.actions"),
+        // Delete only. A published layer version is immutable by design, so
+        // there is nothing to edit — which is why this menu has one entry rather
+        // than the edit/delete pair the other tables carry.
+        actions: () => [
+          {
+            label: t("serverless.actions.delete"),
+            icon: Trash2,
+            destructive: true,
+            onAction: (target: LayerVersion) => {
+              setToDelete(target)
+            },
+          },
+        ],
+      }),
     ],
     [t],
   )
@@ -173,6 +199,36 @@ export function ServerlessLayersPage() {
             />
           </div>
         }
+      />
+
+      <ConfirmDialog
+        open={toDelete !== null}
+        onOpenChange={(open) => {
+          if (!open) setToDelete(null)
+        }}
+        title={t("serverless.layers.deleteConfirmTitle", {
+          name: toDelete?.name ?? "",
+          version: toDelete?.version ?? "",
+        })}
+        description={t("serverless.layers.deleteConfirmBody")}
+        confirmLabel={t("serverless.layers.deleteConfirmLabel")}
+        // Type-to-confirm on the NAME, matching the functions table. The version
+        // number alone would be a one-character confirmation on a destructive,
+        // irreversible action.
+        confirmText={toDelete?.name}
+        destructive
+        loading={isDeleting}
+        onConfirm={() => {
+          if (!toDelete) return
+          deleteLayerVersion(
+            { name: toDelete.name, version: toDelete.version },
+            {
+              onSuccess: () => {
+                setToDelete(null)
+              },
+            },
+          )
+        }}
       />
     </div>
   )

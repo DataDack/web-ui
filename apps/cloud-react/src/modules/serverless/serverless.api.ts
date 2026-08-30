@@ -81,6 +81,17 @@ export const serverlessApi = {
   listLayers: async (region: string | null): Promise<LayerVersion[]> =>
     pickList(await apiGet<unknown>(withRegion("/serverless/layers", region)), "layers"),
 
+  // Version-scoped: there is no "delete the layer". Removing every version of a
+  // layer that deployed functions reference would be one click, and the caller
+  // would not see which functions it had just broken.
+  deleteLayerVersion: (region: string | null, name: string, version: number) =>
+    apiDelete<unknown>(
+      withRegion(
+        `/serverless/layers/${encodeURIComponent(name)}/versions/${String(version)}`,
+        region,
+      ),
+    ),
+
   activity: async (): Promise<ActivityEvent[]> => {
     // Account-scoped feed, aggregated across regions — no selector.
     const data = await apiGet<unknown>("/serverless/functions/activity")

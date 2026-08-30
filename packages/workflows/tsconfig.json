@@ -1,0 +1,1 @@
+{ "extends": "../../config/typescript-config/react-library.json", "compilerOptions": { "noEmit": true, "allowJs": true, "checkJs": false, "paths": { "@/*": ["./src/*"] } }, "include": ["src", "tsup.config.ts"] }

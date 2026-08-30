@@ -18,7 +18,7 @@ import { aiAutomationsTransport } from "@/lib/ai-automations-transport"
 
 import { ThemeProvider } from "@datadack/common-ui"
 import { ServerlessProvider } from "@datadack/serverless"
-import { AIAutomationsProvider } from "@datadack/ai-and-automations"
+import { AIAutomationsProvider } from "@datadack/workflows"
 
 const queryClient = new QueryClient({
   defaultOptions: {

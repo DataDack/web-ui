@@ -1,6 +1,5 @@
 import { useMemo, type ReactNode } from "react"
 
-import { AIAutomationsProvider, type AIAutomationsTransport } from "@datadack/ai-and-automations"
 import { useQuery } from "@tanstack/react-query"
 
 import { env } from "@/env"
@@ -8,9 +7,11 @@ import { useAuth } from "@/modules/auth/auth.context"
 import { useActiveRegion } from "@/modules/region/region.context"
 import { apiGet } from "@/services/api/client"
 
+import { AIAutomationsProvider, type AIAutomationsTransport } from "@datadack/workflows"
+
 import { createAutomationsTransport } from "./automations.client"
 
-// Wires the shared @datadack/ai-and-automations components to their data source.
+// Wires the shared @datadack/workflows components to their data source.
 //
 // The section is served entirely by the regional FaaS control plane — agents,
 // workflows, credentials, templates, executions and app integrations are all

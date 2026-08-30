@@ -1,15 +1,10 @@
 import { Navigate, Route, Routes } from "react-router-dom"
-import {
-  AIAgentStudio,
-  AIAutomationsRoutes,
-  AIWorkflowStudio,
-} from "@datadack/ai-and-automations"
 
 import { AppShell } from "@/components/shell/AppShell"
 import { AuditPage } from "@/features/audit/AuditPage"
 import { DomainsPage } from "@/features/domains/DomainsPage"
-import { DebugPreviewPage } from "@/features/functions/DebugPreviewPage"
 import { CreateFunctionPage } from "@/features/functions/CreateFunctionPage"
+import { DebugPreviewPage } from "@/features/functions/DebugPreviewPage"
 import { FunctionDetailPage } from "@/features/functions/FunctionDetailPage"
 import { FunctionsPage } from "@/features/functions/FunctionsPage"
 import { LayersPage } from "@/features/layers/LayersPage"
@@ -17,6 +12,9 @@ import { LogsPage } from "@/features/logs/LogsPage"
 import { MetricsPage } from "@/features/metrics/MetricsPage"
 import { NodeDetailPage } from "@/features/workers/NodeDetailPage"
 import { WorkersPage } from "@/features/workers/WorkersPage"
+
+import { IntegrationsPage } from "@datadack/integration"
+import { AIAgentStudio, AIAutomationsRoutes, AIWorkflowStudio } from "@datadack/workflows"
 
 export function App() {
   return (
@@ -40,7 +38,10 @@ export function App() {
             control plane, so the operator view of it lives here too. */}
         <Route path="/domains" element={<DomainsPage />} />
         <Route path="/debug-preview" element={<DebugPreviewPage />} />
-        <Route path="/automations/*" element={<AIAutomationsRoutes />} />
+        <Route
+          path="/automations/*"
+          element={<AIAutomationsRoutes integrations={<IntegrationsPage />} />}
+        />
         {/* The studio moved into the function detail page's Code tab. */}
         <Route path="/studio" element={<Navigate to="/functions" replace />} />
         {/* Unknown paths fall back rather than rendering an empty shell. */}
