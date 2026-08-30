@@ -17,9 +17,19 @@
 
 @import "tailwindcss";
 
-/* The shared @datadack/serverless kit ships class names in compiled JS —
-   point Tailwind's scanner at it so those utilities are generated here. */
+/* The shared kits ship class names in compiled JS — point Tailwind's scanner at
+   them so those utilities are generated here. @datadack/workflows and
+   @datadack/integration are listed for the same reason: their PAGES still style
+   with Tailwind utilities (their primitives come from @datadack/common-ui,
+   which styles itself with emotion and needs no scan). Without these two the
+   automations section renders with its layout utilities missing. */
 @source "../node_modules/@datadack/serverless/dist";
+/* Scanned from SOURCE, not from dist. Tailwind's extractor pulls candidates out
+   of minified bundles only patchily — pointing it at these packages' dist finds
+   `transition-[width]` but misses `min-h-[14px]` and `hover:bg-destructive/90`
+   sitting beside it. The workspace has the real JSX, so scan that. */
+@source "../../../packages/workflows/src";
+@source "../../../packages/integration/src";
 @import "tw-animate-css";
 @plugin "@tailwindcss/typography";
 
