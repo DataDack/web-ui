@@ -1,5 +1,6 @@
-import { cn } from "@datadack/common-ui"
 import { Cpu, HardDrive, Info, Timer } from "lucide-react"
+
+import { cn } from "@datadack/common-ui"
 
 import type { RuntimeInfo } from "../../serverless.types"
 

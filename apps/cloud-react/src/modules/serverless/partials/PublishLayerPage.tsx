@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react"
 
-import { Badge, cn, Input, Label } from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Layers, UploadCloud } from "lucide-react"
 import { useForm, type UseFormReturn } from "react-hook-form"
@@ -15,8 +14,10 @@ import type { NamingRule } from "@/modules/governance/governance.types"
 import { namingNameSchema } from "@/modules/governance/governance.validation"
 import { useScreen } from "@/services/api/screen"
 
+import { Badge, cn, Input, Label } from "@datadack/common-ui"
+import { usePublishLayer, useRuntimes, useUploadArtifact } from "@datadack/serverless"
+
 import { SERVERLESS_ROUTES } from "../serverless.constants"
-import { usePublishLayer, useServerlessRuntimes, useUploadArtifact } from "../serverless.hooks"
 
 const makeSchema = (rule: NamingRule, artifactRequired: string) =>
   z
@@ -46,7 +47,7 @@ export function PublishLayerPage() {
   const navigate = useNavigate()
   const { mutate: publish, isPending } = usePublishLayer()
   const upload = useUploadArtifact()
-  const { data: runtimes } = useServerlessRuntimes()
+  const { data: runtimes } = useRuntimes()
   const { rule } = useNamingRule("layer")
   const artifactRequired = t("serverless.form.artifactRequired")
   const schema = useMemo(() => makeSchema(rule, artifactRequired), [rule, artifactRequired])
@@ -66,7 +67,7 @@ export function PublishLayerPage() {
     if (!file) return
     setArtifactName(file.name)
     upload.mutate(
-      { kind: "layers", file },
+      { file, kind: "layers" },
       {
         onSuccess: (ref) => {
           form.setValue("codeArtifact", ref, { shouldValidate: true })

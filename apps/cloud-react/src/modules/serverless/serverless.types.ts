@@ -51,17 +51,6 @@ export interface FunctionAlias {
   description?: string
 }
 
-export interface LayerVersion {
-  id: string
-  name: string
-  version: number
-  description?: string
-  codeArtifact?: CodeArtifact | null
-  compatibleRuntimes?: string[]
-  compatibleArchitectures?: string[]
-  createdAt?: string
-}
-
 /** Lifecycle event from the FaaS events webhook, stored per-account. */
 export interface ActivityEvent {
   type: string

@@ -114,9 +114,13 @@ export interface LayerRef {
 
 /** One publishable layer version, as the layers list returns it. */
 export interface LayerVersionSummary {
+  /** Present on the native listing; absent when a caller only had {name, version}. */
+  id?: string
   name: string
   version: number
   description?: string
+  /** Carries sizeBytes, which is the only size a layer listing can show. */
+  codeArtifact?: CodeArtifact | null
   compatibleRuntimes?: string[]
   compatibleArchitectures?: string[]
   createdAt?: string
@@ -180,6 +184,24 @@ export interface FunctionEntity {
   version?: FunctionVersion
   createdAt?: string
   updatedAt?: string
+}
+
+/** Lifecycle event from the FaaS events webhook, stored per-account. */
+export interface ActivityEvent {
+  type: string
+  function?: string
+  region?: string
+  at?: string
+}
+
+/** A new layer version. The archive is uploaded first; this references it. */
+export interface PublishLayerInput {
+  name: string
+  description?: string
+  codeArtifact: { bucket: string; key: string }
+  compatibleRuntimes?: string[]
+  compatibleArchitectures?: string[]
+  region?: string
 }
 
 export interface FunctionAlias {

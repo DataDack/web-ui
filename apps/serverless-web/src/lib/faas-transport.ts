@@ -96,9 +96,7 @@ export const faasTransport: ServerlessTransport = {
   },
 
   async listFunctionUrls(name: string): Promise<FunctionUrl[]> {
-    const { data } = await http.get<{ functionUrls?: FunctionUrl[] }>(
-      `${fnPath(name)}/urls`,
-    )
+    const { data } = await http.get<{ functionUrls?: FunctionUrl[] }>(`${fnPath(name)}/urls`)
     return data.functionUrls ?? []
   },
 
@@ -138,6 +136,29 @@ export const faasTransport: ServerlessTransport = {
       input?.description ? { description: input.description } : undefined,
     )
     return data
+  },
+
+  // Tags live in their own store. NOT the function's `labels`, which are the
+  // OpenFaaS surface — the two are different APIs over the same shape, and the
+  // console used to edit labels while calling them tags.
+  async listTags(name: string): Promise<Record<string, string>> {
+    const { data } = await http.get<{ tags?: Record<string, string> }>(`${fnPath(name)}/tags`)
+    return data.tags ?? {}
+  },
+
+  // Merges. Two tools tagging one function must not delete each other's keys.
+  async putTags(name: string, tags: Record<string, string>): Promise<void> {
+    await http.put(`${fnPath(name)}/tags`, { tags })
+  },
+
+  // Keys in the query string: a DELETE body is not reliably carried by every
+  // proxy between here and the control plane.
+  async deleteTags(name: string, keys: string[]): Promise<void> {
+    await http.delete(`${fnPath(name)}/tags`, { params: { keys: keys.join(",") } })
+  },
+
+  async deleteLayerVersion(name: string, version: number): Promise<void> {
+    await http.delete(`/v1/layers/${encodeURIComponent(name)}/versions/${String(version)}`)
   },
 
   async listLayers(): Promise<LayerVersionSummary[]> {

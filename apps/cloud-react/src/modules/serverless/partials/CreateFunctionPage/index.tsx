@@ -13,16 +13,14 @@ import { useResourceGroup } from "@/modules/resource-groups/resource-group.conte
 import { useResourceGroups } from "@/modules/resource-groups/resource-groups.hooks"
 import { useScreen } from "@/services/api/screen"
 
+import { useRuntimes } from "@datadack/serverless"
+
 import { BasicsStep } from "./BasicsStep"
 import { PackageStep } from "./PackageStep"
 import { makeSchema, type FormValues } from "./schema"
 import { SummaryAside } from "./SummaryAside"
 import { SERVERLESS_ROUTES } from "../../serverless.constants"
-import {
-  useCreateFunction,
-  useCreateFunctionFromSource,
-  useServerlessRuntimes,
-} from "../../serverless.hooks"
+import { useCreateFunction, useCreateFunctionFromSource } from "../../serverless.hooks"
 import { templateForFamily } from "../../serverless.templates"
 import type { CreateFunctionRequest } from "../../serverless.types"
 
@@ -59,7 +57,9 @@ function tagRecord(rows: readonly { key: string; value: string }[]): Record<stri
 }
 
 /** The labels field, omitted entirely when there are no tags. */
-function labelsFor(rows: readonly { key: string; value: string }[]): { labels?: Record<string, string> } {
+function labelsFor(rows: readonly { key: string; value: string }[]): {
+  labels?: Record<string, string>
+} {
   const labels = tagRecord(rows)
   return Object.keys(labels).length > 0 ? { labels } : {}
 }
@@ -70,7 +70,7 @@ export function CreateFunctionPage() {
   const navigate = useNavigate()
   const { mutate: create, isPending } = useCreateFunction()
   const { mutate: createFromSource, isPending: isSourcePending } = useCreateFunctionFromSource()
-  const { data: allRuntimes } = useServerlessRuntimes()
+  const { data: allRuntimes } = useRuntimes()
   const { rule } = useNamingRule("function")
   const { activeRG } = useResourceGroup()
   const { data: groups } = useResourceGroups()
@@ -219,7 +219,9 @@ export function CreateFunctionPage() {
             // this is unreachable — but deploying a placeholder that fails at
             // every invoke is worse than not deploying, so it stays a guard.
             if (!template) {
-              toast.error(`${values.runtime} needs a compiled artifact — use a container image instead.`)
+              toast.error(
+                `${values.runtime} needs a compiled artifact — use a container image instead.`,
+              )
               return
             }
             createFromSource(

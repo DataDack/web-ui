@@ -1,5 +1,13 @@
 import { useMemo, useState } from "react"
 
+import type { ColumnDef } from "@tanstack/react-table"
+import { Layers, Plus, RefreshCw, Search, Trash2 } from "lucide-react"
+import { useTranslation } from "react-i18next"
+import { useNavigate } from "react-router-dom"
+
+import { ConfirmDialog, PageHeader } from "@/components/console"
+import { useScreen } from "@/services/api/screen"
+
 import {
   actionsColumn,
   Badge,
@@ -9,28 +17,24 @@ import {
   Input,
   textColumn,
 } from "@datadack/common-ui"
-import { formatBytes } from "@datadack/serverless"
-import type { ColumnDef } from "@tanstack/react-table"
-import { Layers, Plus, RefreshCw, Search, Trash2 } from "lucide-react"
-import { useTranslation } from "react-i18next"
-import { useNavigate } from "react-router-dom"
-
-import { ConfirmDialog, PageHeader } from "@/components/console"
-import { useScreen } from "@/services/api/screen"
+import {
+  formatBytes,
+  useDeleteLayerVersion,
+  useLayers,
+  type LayerVersionSummary,
+} from "@datadack/serverless"
 
 import { SERVERLESS_ROUTES } from "../serverless.constants"
-import { useDeleteLayerVersion, useServerlessLayers } from "../serverless.hooks"
-import type { LayerVersion } from "../serverless.types"
 
 export function ServerlessLayersPage() {
   useScreen("serverless.layers-list")
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const { data, isLoading, isError, refetch, isFetching } = useServerlessLayers()
+  const { data, isLoading, isError, refetch, isFetching } = useLayers()
 
   const layers = useMemo(() => data ?? [], [data])
   const [query, setQuery] = useState("")
-  const [toDelete, setToDelete] = useState<LayerVersion | null>(null)
+  const [toDelete, setToDelete] = useState<LayerVersionSummary | null>(null)
   const { mutate: deleteLayerVersion, isPending: isDeleting } = useDeleteLayerVersion()
 
   const filtered = useMemo(() => {
@@ -44,7 +48,7 @@ export function ServerlessLayersPage() {
     )
   }, [layers, query])
 
-  const columns = useMemo<ColumnDef<LayerVersion>[]>(
+  const columns = useMemo<ColumnDef<LayerVersionSummary>[]>(
     () => [
       {
         id: "name",
@@ -110,7 +114,7 @@ export function ServerlessLayersPage() {
         },
         meta: { responsive: "md" },
       },
-      textColumn<LayerVersion>({
+      textColumn<LayerVersionSummary>({
         id: "size",
         header: t("serverless.columns.size"),
         accessor: (layer) => formatBytes(layer.codeArtifact?.sizeBytes ?? 0),
@@ -118,13 +122,13 @@ export function ServerlessLayersPage() {
         muted: true,
         responsive: "lg",
       }),
-      dateColumn<LayerVersion>({
+      dateColumn<LayerVersionSummary>({
         id: "published",
         header: t("serverless.columns.published"),
         accessor: (layer) => layer.createdAt ?? "",
         responsive: "xl",
       }),
-      actionsColumn<LayerVersion>({
+      actionsColumn<LayerVersionSummary>({
         ariaLabel: t("console.table.actions"),
         // Delete only. A published layer version is immutable by design, so
         // there is nothing to edit — which is why this menu has one entry rather
@@ -134,7 +138,7 @@ export function ServerlessLayersPage() {
             label: t("serverless.actions.delete"),
             icon: Trash2,
             destructive: true,
-            onAction: (target: LayerVersion) => {
+            onAction: (target: LayerVersionSummary) => {
               setToDelete(target)
             },
           },
@@ -176,7 +180,7 @@ export function ServerlessLayersPage() {
         }
       />
 
-      <DataTable<LayerVersion>
+      <DataTable<LayerVersionSummary>
         data={filtered}
         columns={columns}
         loading={isLoading}

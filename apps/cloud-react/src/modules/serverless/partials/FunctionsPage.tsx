@@ -1,5 +1,13 @@
 import { useMemo, useState } from "react"
 
+import type { ColumnDef } from "@tanstack/react-table"
+import { Container, Package, Play, Plus, RefreshCw, Search, Trash2, Zap } from "lucide-react"
+import { useTranslation } from "react-i18next"
+import { useNavigate } from "react-router-dom"
+
+import { ConfirmDialog, PageHeader, StatGrid } from "@/components/console"
+import { useScreen } from "@/services/api/screen"
+
 import {
   actionsColumn,
   Button,
@@ -9,23 +17,15 @@ import {
   statusColumn,
   textColumn,
 } from "@datadack/common-ui"
-import type { ColumnDef } from "@tanstack/react-table"
-import { Container, Package, Play, Plus, RefreshCw, Search, Trash2, Zap } from "lucide-react"
-import { useTranslation } from "react-i18next"
-import { useNavigate } from "react-router-dom"
-
-import { ConfirmDialog, PageHeader, StatGrid } from "@/components/console"
-import { useScreen } from "@/services/api/screen"
+import { useDeleteFunction, useFunctions, type FunctionEntity } from "@datadack/serverless"
 
 import { SERVERLESS_ROUTES } from "../serverless.constants"
-import { useDeleteFunction, useServerlessFunctions } from "../serverless.hooks"
-import type { FunctionEntity } from "../serverless.types"
 
 export function ServerlessFunctionsPage() {
   useScreen("serverless.functions-list")
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const { data, isLoading, isError, refetch, isFetching } = useServerlessFunctions()
+  const { data, isLoading, isError, refetch, isFetching } = useFunctions()
   const { mutate: deleteFunction, isPending: isDeleting } = useDeleteFunction()
 
   const functions = useMemo(() => data ?? [], [data])

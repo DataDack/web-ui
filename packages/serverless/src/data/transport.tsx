@@ -14,7 +14,9 @@ import type {
   FunctionUrl,
   FunctionVersion,
   InvokeResult,
+  ActivityEvent,
   LayerVersionSummary,
+  PublishLayerInput,
   MetricSeries,
   MetricSeriesQuery,
   PutAliasInput,
@@ -56,7 +58,15 @@ export interface ServerlessTransport {
    */
   createFromPackage?: (input: CreateFromPackageInput) => Promise<CreatedFunction>
   /** Upload a .zip and return its artifact-store reference. */
-  uploadArtifact?: (file: File) => Promise<ArtifactRef>
+  /**
+   * Uploads an archive and returns the reference a create or publish then names.
+   *
+   * `kind` picks the presign path: a function package and a layer archive land
+   * under different prefixes, and the account-scoped prefix is what the control
+   * plane checks a deploy against. Defaults to "functions" so existing callers
+   * are unaffected.
+   */
+  uploadArtifact?: (file: File, kind?: "functions" | "layers") => Promise<ArtifactRef>
   /**
    * One function, by name. Omit when the console has no detail surface —
    * `capabilities.functionRead` is what hides the page, and calling an absent
@@ -95,7 +105,44 @@ export interface ServerlessTransport {
    * {name, version} refs, so without the catalogue the console can only show
    * what is already attached and never add to it.
    */
+  /**
+   * A function's tags.
+   *
+   * Optional, like everything below: a host that has not wired these gets a
+   * Tags section that says so rather than one that silently edits the wrong
+   * field — which is what it did before these existed, writing to `labels`.
+   *
+   * Tags and labels are NOT the same thing. Labels are the OpenFaaS surface;
+   * tags are Lambda's, they live in their own store, and Terraform reads them on
+   * every plan. Merging them would make an OpenFaaS label appear as a billing
+   * tag and vice versa.
+   */
+  listTags?: (name: string) => Promise<Record<string, string>>
+  /** Adds or updates tags. MERGES — it does not replace the set. */
+  putTags?: (name: string, tags: Record<string, string>) => Promise<void>
+  /** Removes the named keys. */
+  deleteTags?: (name: string, keys: string[]) => Promise<void>
+  /**
+   * The account's functions.
+   *
+   * Returns the TENANT-VISIBLE workloads only — managed apps are deliberately
+   * hidden, because they belong to the console rather than to the tenant. The
+   * control plane makes that split; nothing here re-filters.
+   */
+  listFunctions?: () => Promise<FunctionEntity[]>
+  /** Publishes a new layer version from an already-uploaded archive. */
+  publishLayer?: (input: PublishLayerInput) => Promise<void>
+  /** Account-scoped lifecycle feed, aggregated across regions. */
+  activity?: () => Promise<ActivityEvent[]>
   listLayers?: () => Promise<LayerVersionSummary[]>
+  /**
+   * Removes one published layer version.
+   *
+   * Version-scoped, never name-scoped: there is no "delete the layer". Removing
+   * every version of one a deployed function references would be a single
+   * request, and the caller would not see which functions it had just broken.
+   */
+  deleteLayerVersion?: (name: string, version: number) => Promise<void>
   /** Aliases of a function, unwrapped from the native keyed list. */
   listAliases?: (name: string) => Promise<FunctionAlias[]>
   /** Create or update an alias — the control plane upserts by name. */

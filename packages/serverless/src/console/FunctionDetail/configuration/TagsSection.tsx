@@ -5,13 +5,13 @@ import { toast } from "sonner"
 
 import { TagList, css } from "@datadack/common-ui"
 
-import { useUpdateFunctionConfig } from "../../../data/queries"
+import { SectionShell } from "./SectionShell"
+import { useDeleteFunctionTags, useFunctionTags, usePutFunctionTags } from "../../../data/queries"
 import { useServerlessContext } from "../../../data/transport"
 import type { FunctionEntity } from "../../../data/types"
 import { EnvEditor, type EnvRow } from "../../CreateFunctionForm/EnvEditor"
 import { errorMessage } from "../errorMessage"
 import type { FunctionDetailLabels } from "../labels"
-import { SectionShell } from "./SectionShell"
 
 const emptyLine = css`
   margin: 0;
@@ -37,18 +37,36 @@ export interface TagsSectionProps {
 }
 
 /**
- * Tags are the function's labels (there is no separate tag store): chips in
- * view mode, key/value rows in edit mode, and the PATCH's `labels` is a
- * wholesale replacement.
+ * A function's tags: chips in view mode, key/value rows in edit mode.
+ *
+ * These are the LAMBDA tags, in their own store. This section used to write to
+ * the function's `labels` on the reasoning that "there is no separate tag
+ * store" — true when it was written, and false since the tag API landed. The
+ * result was a console editing a different field from the one Terraform and the
+ * AWS SDKs read, under the same name.
+ *
+ * Labels are the OpenFaaS surface and stay where they are. Nothing here touches
+ * them.
+ *
+ * Saving is a MERGE plus explicit deletes rather than a wholesale replace,
+ * because the underlying API merges: a removed row has to be deleted by key or
+ * it survives the save. That is also why the two calls are ordered — delete
+ * first, then put, so a rename (drop `a`, add `b`) cannot delete what it just
+ * wrote.
  */
 export function TagsSection({ fn, scope, labels, className }: Readonly<TagsSectionProps>) {
-  const { capabilities } = useServerlessContext()
-  const update = useUpdateFunctionConfig(fn.name, scope)
+  const { capabilities, transport } = useServerlessContext()
+  const stored = useFunctionTags(fn.name, scope)
+  const put = usePutFunctionTags(fn.name, scope)
+  const remove = useDeleteFunctionTags(fn.name, scope)
   const [editing, setEditing] = useState(false)
   const [rows, setRows] = useState<EnvRow[]>([{ key: "", value: "" }])
 
   const config = labels.configuration
-  const tags = fn.labels ?? {}
+  const tags = stored.data ?? {}
+  // A host that has not wired the tag transport gets a read-only section rather
+  // than one that appears to save and does not.
+  const canEdit = capabilities.configEdit && Boolean(transport.putTags)
 
   const startEdit = () => {
     setRows([
@@ -62,18 +80,24 @@ export function TagsSection({ fn, scope, labels, className }: Readonly<TagsSecti
   const dirty = canonical(draft) !== canonical(tags)
 
   const save = () => {
-    update.mutate(
-      { labels: draft },
-      {
-        onSuccess: () => {
-          toast.success(config.saved)
-          setEditing(false)
-        },
-        onError: (error) => {
-          toast.error(errorMessage(error, labels.errors.saveFailed))
-        },
-      },
-    )
+    const removed = Object.keys(tags).filter((key) => !(key in draft))
+
+    void (async () => {
+      try {
+        // Deletes first: a rename drops one key and adds another, and putting
+        // before deleting would remove the key that was just written.
+        if (removed.length > 0) {
+          await remove.mutateAsync(removed)
+        }
+        if (Object.keys(draft).length > 0) {
+          await put.mutateAsync(draft)
+        }
+        toast.success(config.saved)
+        setEditing(false)
+      } catch (error: unknown) {
+        toast.error(errorMessage(error, labels.errors.saveFailed))
+      }
+    })()
   }
 
   let body: ReactNode
@@ -98,14 +122,14 @@ export function TagsSection({ fn, scope, labels, className }: Readonly<TagsSecti
       title={config.nav.tags}
       icon={Tags}
       description={config.tagsHint}
-      editable={capabilities.configEdit}
+      editable={canEdit}
       editing={editing}
       onEdit={startEdit}
       onCancel={() => {
         setEditing(false)
       }}
       onSave={save}
-      saving={update.isPending}
+      saving={put.isPending || remove.isPending}
       saveDisabled={!dirty}
       editLabel={config.edit}
       saveLabel={config.save}

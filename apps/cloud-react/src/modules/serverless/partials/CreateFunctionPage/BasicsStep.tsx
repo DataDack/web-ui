@@ -1,3 +1,10 @@
+import { Terminal } from "lucide-react"
+import type { UseFormReturn } from "react-hook-form"
+import { useTranslation } from "react-i18next"
+
+import { TagEditor } from "@/components/console"
+import { useResourceGroups } from "@/modules/resource-groups/resource-groups.hooks"
+
 import {
   Input,
   Label,
@@ -7,12 +14,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@datadack/common-ui"
-import { Terminal } from "lucide-react"
-import type { UseFormReturn } from "react-hook-form"
-import { useTranslation } from "react-i18next"
-
-import { TagEditor } from "@/components/console"
-import { useResourceGroups } from "@/modules/resource-groups/resource-groups.hooks"
 
 import { FieldError } from "./FieldError"
 import type { FormValues } from "./schema"

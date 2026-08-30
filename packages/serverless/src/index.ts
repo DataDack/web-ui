@@ -92,7 +92,14 @@ export {
   useFunctionUrls,
   useCreateVersion,
   useFunctionVersions,
+  useActivity,
+  useDeleteFunctionTags,
+  useDeleteLayerVersion,
+  useFunctions,
+  useFunctionTags,
   useLayers,
+  usePublishLayer,
+  usePutFunctionTags,
   useInvokeFunction,
   usePutAlias,
   usePutFunctionCodeFile,
@@ -135,5 +142,5 @@ export type {
   TemplateFile,
   Trigger,
   UpdateFunctionConfigInput,
-} from "./data/types";
+} from "./data/types"
 export * from "@datadack/common-ui"

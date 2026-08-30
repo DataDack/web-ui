@@ -1,17 +1,17 @@
 import { useMemo } from "react"
 
-import { Input, Label } from "@datadack/common-ui"
-import { familyLabel, RuntimeIcon, type RuntimeInfo } from "@datadack/serverless"
 import { Container, Sparkles } from "lucide-react"
 import type { UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 
 import { SegmentedControl, SmartSelect, type SmartSelectOption } from "@/components/console"
 
+import { Input, Label } from "@datadack/common-ui"
+import { familyLabel, RuntimeIcon, useRuntimes, type RuntimeInfo } from "@datadack/serverless"
+
 import { FieldError } from "./FieldError"
 import { PackageOptionCard } from "./PackageOptionCard"
 import type { FormValues } from "./schema"
-import { useServerlessRuntimes } from "../../serverless.hooks"
 import { templateForFamily } from "../../serverless.templates"
 
 /** Same grouping order as the runtime catalog grid this dropdown replaces. */
@@ -26,7 +26,7 @@ export function PackageStep({ form }: Readonly<PackageStepProps>) {
   const packageType = form.watch("packageType")
   const runtime = form.watch("runtime")
   const architecture = form.watch("architecture")
-  const { data: runtimes, isLoading, isError } = useServerlessRuntimes()
+  const { data: runtimes, isLoading, isError } = useRuntimes()
 
   const selected = (runtimes ?? []).find((info) => info.name === runtime)
   const architectures = selected?.architectures ?? ["x86_64", "arm64"]
@@ -169,7 +169,9 @@ export function PackageStep({ form }: Readonly<PackageStepProps>) {
           {/* The handler input itself is hidden — handlerRequired still drives
               validation (schema.ts), just off a value this step sets for the
               runtime rather than one the user types. */}
-          <FieldError message={handlerRequired ? form.formState.errors.handler?.message : undefined} />
+          <FieldError
+            message={handlerRequired ? form.formState.errors.handler?.message : undefined}
+          />
 
           {/* Blank is the only package left once image is ruled out. No editor
               preview here — the function's own Code tab is a real editor now,

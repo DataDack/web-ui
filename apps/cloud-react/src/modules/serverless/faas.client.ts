@@ -1,3 +1,8 @@
+import axios, { type AxiosError, type AxiosResponse, type InternalAxiosRequestConfig } from "axios"
+
+import { activeScope } from "@/services/api/active-scope"
+import { authToken, refreshAccessToken } from "@/services/api/auth-token"
+
 import type {
   FunctionAlias,
   FunctionCode,
@@ -14,16 +19,6 @@ import type {
   Trigger,
   UpdateFunctionConfigInput,
 } from "@datadack/serverless"
-import axios, {
-  type AxiosError,
-  type AxiosResponse,
-  type InternalAxiosRequestConfig,
-} from "axios"
-
-
-import { activeScope } from "@/services/api/active-scope"
-import { authToken, refreshAccessToken } from "@/services/api/auth-token"
-
 
 // Direct browser → FaaS control-plane client. This is NOT the gateway client
 // (services/api/client.ts): that one is pinned to /api/v1, cookie-oriented,
@@ -126,7 +121,12 @@ export type FaasDirectTransport = Required<
     | "deleteFunctionUrl"
     | "listVersions"
     | "createVersion"
+    | "listFunctions"
     | "listLayers"
+    | "deleteLayerVersion"
+    | "listTags"
+    | "putTags"
+    | "deleteTags"
     | "listAliases"
     | "putAlias"
     | "deleteAlias"
@@ -222,9 +222,7 @@ export function createFaasTransport(opts: FaasTransportOptions): FaasDirectTrans
     listFunctionUrls: (name) =>
       run(
         faas
-          .get<{ functionUrls?: FunctionUrl[] }>(
-            `/v1/functions/${encodeURIComponent(name)}/urls`,
-          )
+          .get<{ functionUrls?: FunctionUrl[] }>(`/v1/functions/${encodeURIComponent(name)}/urls`)
           .then((res) => res.data.functionUrls ?? []),
         "Could not load the function URLs",
       ),
@@ -277,6 +275,59 @@ export function createFaasTransport(opts: FaasTransportOptions): FaasDirectTrans
         "Could not create the version",
       ),
 
+    // Tags, in their own store — NOT the function's labels, which are the
+    // OpenFaaS surface and stay separate. Terraform reads these on every plan.
+    listTags: (name) =>
+      run(
+        faas
+          .get<{ tags?: Record<string, string> }>(`/v1/functions/${encodeURIComponent(name)}/tags`)
+          .then((res) => res.data.tags ?? {}),
+        "Could not load the tags",
+      ),
+
+    // Merges rather than replacing: two tools tagging one function must not
+    // silently delete each other's keys.
+    putTags: (name, tags) =>
+      run(
+        faas
+          .put<unknown>(`/v1/functions/${encodeURIComponent(name)}/tags`, { tags })
+          .then(() => undefined),
+        "Could not update the tags",
+      ),
+
+    // Keys in the query string, not a body: a DELETE body is not reliably
+    // carried by every proxy, and there is one between here and the platform.
+    deleteTags: (name, keys) =>
+      run(
+        faas
+          .delete<unknown>(
+            `/v1/functions/${encodeURIComponent(name)}/tags?keys=${encodeURIComponent(keys.join(","))}`,
+          )
+          .then(() => undefined),
+        "Could not remove the tags",
+      ),
+
+    // The tenant-visible workloads. Managed apps are hidden by the control
+    // plane's own listing, not re-filtered here.
+    listFunctions: () =>
+      run(
+        faas
+          .get<{ functions?: FunctionEntity[] }>("/v1/functions")
+          .then((res) => res.data.functions ?? []),
+        "Could not load the functions",
+      ),
+
+    // Version-scoped: there is no "delete the layer". Removing every version of
+    // one a deployed function references would be a single request, and the
+    // caller would not see which functions it had just broken.
+    deleteLayerVersion: (name, version) =>
+      run(
+        faas
+          .delete<unknown>(`/v1/layers/${encodeURIComponent(name)}/versions/${String(version)}`)
+          .then(() => undefined),
+        "Could not delete the layer version",
+      ),
+
     // The catalogue the layers picker offers. Keyed list, same shape as the
     // versions route.
     listLayers: () =>
@@ -290,9 +341,7 @@ export function createFaasTransport(opts: FaasTransportOptions): FaasDirectTrans
     listAliases: (name) =>
       run(
         faas
-          .get<{ aliases?: FunctionAlias[] }>(
-            `/v1/functions/${encodeURIComponent(name)}/aliases`,
-          )
+          .get<{ aliases?: FunctionAlias[] }>(`/v1/functions/${encodeURIComponent(name)}/aliases`)
           .then((res) => res.data.aliases ?? []),
         "Could not load the aliases",
       ),
@@ -317,9 +366,7 @@ export function createFaasTransport(opts: FaasTransportOptions): FaasDirectTrans
     deleteAlias: (name, alias) =>
       run(
         faas
-          .delete(
-            `/v1/functions/${encodeURIComponent(name)}/aliases/${encodeURIComponent(alias)}`,
-          )
+          .delete(`/v1/functions/${encodeURIComponent(name)}/aliases/${encodeURIComponent(alias)}`)
           .then(() => undefined),
         "Could not delete the alias",
       ),

@@ -4,6 +4,7 @@ import { getStatusConfig } from "@datadack/common-ui"
 
 import { useServerlessContext } from "./transport"
 import type {
+  ActivityEvent,
   ArtifactRef,
   CreateFromPackageInput,
   CreateFromSourceInput,
@@ -18,6 +19,7 @@ import type {
   FunctionVersion,
   InvokeResult,
   LayerVersionSummary,
+  PublishLayerInput,
   MetricSeries,
   MetricSeriesQuery,
   PutAliasInput,
@@ -60,6 +62,9 @@ export const serverlessKeys = {
   // Account-wide rather than per-function: the same catalogue is offered on
   // every function's picker, so one cache entry serves them all.
   layers: (scope = "default") => ["datadack-serverless", "layers", scope] as const,
+  activity: () => ["datadack-serverless", "activity"] as const,
+  tags: (name: string, scope = "default") =>
+    ["datadack-serverless", "function", scope, name, "tags"] as const,
 }
 
 /**
@@ -114,14 +119,25 @@ export function useCreateFromPackage(scope?: string) {
 }
 
 /** Upload a .zip to the artifact store and return its reference. */
+export interface UploadArtifactInput {
+  file: File
+  /** Which prefix to presign under. Defaults to "functions". */
+  kind?: "functions" | "layers"
+}
+
 export function useUploadArtifact() {
   const { transport } = useServerlessContext()
-  return useMutation<ArtifactRef, unknown, File>({
-    mutationFn: (file) => {
+  return useMutation<ArtifactRef, unknown, File | UploadArtifactInput>({
+    mutationFn: (input) => {
       if (!transport.uploadArtifact) {
         throw new Error("This console's serverless transport has no uploadArtifact")
       }
-      return transport.uploadArtifact(file)
+      // A bare File keeps every existing caller working; the object form is for
+      // callers that need to say which prefix.
+      if (input instanceof File) {
+        return transport.uploadArtifact(input)
+      }
+      return transport.uploadArtifact(input.file, input.kind)
     },
   })
 }
@@ -265,6 +281,131 @@ export function useLayers(scope?: string) {
     },
     enabled: !!transport.listLayers,
     staleTime: 60 * 1000,
+  })
+}
+
+/**
+ * A function's tags.
+ *
+ * Its own store, not the function's `labels`. The section that renders these
+ * used to write to labels, on a comment asserting "there is no separate tag
+ * store" — true when it was written and false since the tag API landed, which
+ * meant the console edited a different field from the one Terraform and the AWS
+ * SDKs read.
+ */
+export function useFunctionTags(name: string, scope?: string) {
+  const { transport } = useServerlessContext()
+  return useQuery<Record<string, string>>({
+    queryKey: serverlessKeys.tags(name, scope),
+    queryFn: () => {
+      if (!transport.listTags) {
+        throw new Error("This console's serverless transport has no listTags")
+      }
+      return transport.listTags(name)
+    },
+    enabled: Boolean(name) && !!transport.listTags,
+  })
+}
+
+/** Adds or updates tags. Merges rather than replacing the set. */
+export function usePutFunctionTags(name: string, scope?: string) {
+  const client = useQueryClient()
+  const { transport } = useServerlessContext()
+  return useMutation({
+    mutationFn: (tags: Record<string, string>) => {
+      if (!transport.putTags) {
+        throw new Error("This console's serverless transport has no putTags")
+      }
+      return transport.putTags(name, tags)
+    },
+    onSuccess: () => client.invalidateQueries({ queryKey: serverlessKeys.tags(name, scope) }),
+  })
+}
+
+/** Removes the named keys. */
+export function useDeleteFunctionTags(name: string, scope?: string) {
+  const client = useQueryClient()
+  const { transport } = useServerlessContext()
+  return useMutation({
+    mutationFn: (keys: string[]) => {
+      if (!transport.deleteTags) {
+        throw new Error("This console's serverless transport has no deleteTags")
+      }
+      return transport.deleteTags(name, keys)
+    },
+    onSuccess: () => client.invalidateQueries({ queryKey: serverlessKeys.tags(name, scope) }),
+  })
+}
+
+/**
+ * Deletes one layer version.
+ *
+ * A function already deployed with it keeps running — it captured the layer's
+ * contents when it was published. What breaks is the next deploy naming this
+ * version, which is Lambda's behaviour and why the platform does not check for
+ * referencing functions first.
+ */
+export function useDeleteLayerVersion(scope?: string) {
+  const client = useQueryClient()
+  const { transport } = useServerlessContext()
+  return useMutation({
+    mutationFn: ({ name, version }: { name: string; version: number }) => {
+      if (!transport.deleteLayerVersion) {
+        throw new Error("This console's serverless transport has no deleteLayerVersion")
+      }
+      return transport.deleteLayerVersion(name, version)
+    },
+    onSuccess: () => client.invalidateQueries({ queryKey: serverlessKeys.layers(scope) }),
+  })
+}
+
+/** The account's functions. Managed apps are hidden by the control plane. */
+export function useFunctions(scope?: string) {
+  const { transport } = useServerlessContext()
+  return useQuery<FunctionEntity[]>({
+    queryKey: serverlessKeys.functions(scope),
+    queryFn: () => {
+      if (!transport.listFunctions) {
+        throw new Error("This console's serverless transport has no listFunctions")
+      }
+      return transport.listFunctions()
+    },
+    enabled: !!transport.listFunctions,
+  })
+}
+
+/**
+ * Publishes a layer version.
+ *
+ * The archive is uploaded first — see useUploadArtifact — and this references
+ * it. Splitting the two is what keeps the bytes off this request.
+ */
+export function usePublishLayer(scope?: string) {
+  const client = useQueryClient()
+  const { transport } = useServerlessContext()
+  return useMutation({
+    mutationFn: (input: PublishLayerInput) => {
+      if (!transport.publishLayer) {
+        throw new Error("This console's serverless transport has no publishLayer")
+      }
+      return transport.publishLayer(input)
+    },
+    onSuccess: () => client.invalidateQueries({ queryKey: serverlessKeys.layers(scope) }),
+  })
+}
+
+/** The account's lifecycle feed. Aggregated across regions, so unscoped. */
+export function useActivity() {
+  const { transport } = useServerlessContext()
+  return useQuery<ActivityEvent[]>({
+    queryKey: serverlessKeys.activity(),
+    queryFn: () => {
+      if (!transport.activity) {
+        throw new Error("This console's serverless transport has no activity")
+      }
+      return transport.activity()
+    },
+    enabled: !!transport.activity,
   })
 }
 

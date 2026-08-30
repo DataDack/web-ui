@@ -1,11 +1,5 @@
 import { useMemo, type ReactNode } from "react"
 
-import {
-  ServerlessProvider,
-  type CreatedFunction,
-  type CreateFromSourceInput,
-  type ServerlessTransport,
-} from "@datadack/serverless"
 import { useQuery } from "@tanstack/react-query"
 
 import { env } from "@/env"
@@ -13,6 +7,13 @@ import { useAuth } from "@/modules/auth/auth.context"
 import { useActiveRegion } from "@/modules/region/region.context"
 import { useResourceGroup } from "@/modules/resource-groups/resource-group.context"
 import { apiGet } from "@/services/api/client"
+
+import {
+  ServerlessProvider,
+  type CreatedFunction,
+  type CreateFromSourceInput,
+  type ServerlessTransport,
+} from "@datadack/serverless"
 
 import { createFaasTransport } from "./faas.client"
 import { serverlessApi } from "./serverless.api"
@@ -107,6 +108,23 @@ export function ServerlessDataProvider({ children }: Readonly<{ children: ReactN
     return {
       ...createFaasTransport({ getBaseUrl: () => baseUrl }),
       createFromSource,
+      // Gateway-backed, like createFromSource: publishing a layer and the
+      // activity feed both go through cloud-be-go, and uploads need its presign.
+      // These sit here rather than in faas.client.ts because that file talks to
+      // the regional control plane and these do not.
+      publishLayer: async (input) => {
+        await serverlessApi.publishLayer(activeRegionCode, input)
+      },
+      activity: () => serverlessApi.activity(),
+      uploadArtifact: async (file, kind) => {
+        const slot = await serverlessApi.presignUpload(activeRegionCode, {
+          kind: kind ?? "functions",
+          filename: file.name,
+          contentType: file.type || "application/zip",
+        })
+        await serverlessApi.uploadArtifact(slot, file)
+        return { bucket: slot.bucket, key: slot.key }
+      },
     }
   }, [baseUrl, activeRegionCode, activeRG?.id])
 
