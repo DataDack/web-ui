@@ -33,10 +33,14 @@
   },
   "dependencies": {
     "@emotion/css": "^11.13.5",
+    "@microlink/react-json-view": "^1.31.18",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
+    "date-fns": "^4.1.0",
     "radix-ui": "^1.6.7",
     "react-day-picker": "^10.0.1",
+    "react-resizable-panels": "^4.6.4",
+    "react-simple-code-editor": "^0.14.1",
     "tailwind-merge": "^3.6.0"
   },
   "peerDependencies": {

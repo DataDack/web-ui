@@ -79,6 +79,19 @@ export {
 // Primitives (shadcn-style)
 export { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion"
 export {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
+  AlertDialogPortal,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "./ui/alert-dialog"
+export {
   Avatar,
   AvatarBadge,
   AvatarFallback,
@@ -100,6 +113,7 @@ export {
   CardTitle,
 } from "./ui/card"
 export { Checkbox } from "./ui/checkbox"
+export { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible"
 export { Combobox, type ComboboxOption } from "./ui/combobox"
 export { ComboboxInput, type ComboboxInputOption } from "./ui/combobox-input"
 export {
@@ -131,6 +145,11 @@ export {
   ContextMenuTrigger,
 } from "./ui/context-menu"
 export { DatePicker } from "./ui/date-picker"
+export {
+  DateRangePicker,
+  type DateRange,
+  type DateRangePickerProps,
+} from "./ui/date-range-picker"
 export { DayGridPicker } from "./ui/day-grid-picker"
 export {
   Dialog,
@@ -173,9 +192,17 @@ export {
 } from "./ui/form"
 export { Input } from "./ui/input"
 export { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "./ui/input-otp"
+export { JsonCodeEditor, type JsonCodeEditorProps } from "./ui/json-code-editor"
+export { JsonViewer, type JsonViewerProps } from "./ui/json-viewer"
+export { Kbd, KbdGroup } from "./ui/kbd"
 export { Label } from "./ui/label"
 export { MONTHS, MonthYearPicker } from "./ui/month-year-picker"
 export { Popover, PopoverAnchor, PopoverContent, PopoverTrigger } from "./ui/popover"
+export {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "./ui/resizable"
 export { ScrollArea, ScrollBar } from "./ui/scroll-area"
 export {
   Select,
