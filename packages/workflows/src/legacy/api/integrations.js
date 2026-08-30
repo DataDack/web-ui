@@ -1,4 +1,4 @@
-import { API, openProviderPopup } from '../helpers/api';
+import { INTEGRATIONS_API as API, openProviderPopup } from '../helpers/api';
 import { accountsApi } from './accounts';
 
 // The control plane answers `{ data: ... }` and the transport unwraps it before

@@ -1,4 +1,4 @@
-import { API, openProviderPopup } from '../helpers/api';
+import { INTEGRATIONS_API as API, openProviderPopup } from '../helpers/api';
 
 // The control plane answers `{ data: ... }` and the transport unwraps it, so a
 // successful response arrives here already unwrapped. Failures arrive as thrown

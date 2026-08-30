@@ -2,11 +2,18 @@ import type { AIAutomationsTransport } from "@datadack/workflows"
 
 import { http } from "./api"
 export const aiAutomationsTransport: AIAutomationsTransport = {
-  // App integrations are served by this control plane now: the tenant routes
-  // under /v1/workflows/{integrations,connected-accounts} and the
-  // public provider callbacks under /v1/integrations. Realtime execution events
-  // still have no socket here, so that one stays off.
-  capabilities: { connectedAccounts: true, integrations: true, realtimeEvents: false },
+  // App integrations are NOT served here.
+  //
+  // They moved to the platform backend (cloud-be-go's apps/integrations) with
+  // the accounts, the credential store and the public provider callbacks, and
+  // this control plane no longer has the routes. Turning the capability off is
+  // the whole point of it existing: left on, the trigger palette renders app
+  // nodes that configure cleanly, save, and never fire — which is far worse
+  // than not offering them. The cloud console keeps them, through its own
+  // integrationsRequest transport.
+  //
+  // Realtime execution events still have no socket here either.
+  capabilities: { connectedAccounts: false, integrations: false, realtimeEvents: false },
   brandIconUrl: "/admin/datadack-icon.png",
   publicUrl(path) {
     return `/v1/workflows${path}`

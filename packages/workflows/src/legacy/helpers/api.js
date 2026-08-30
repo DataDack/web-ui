@@ -20,6 +20,70 @@ export function publicApiUrl(path) {
   return transport.publicUrl ? transport.publicUrl(remap(path)) : remap(path)
 }
 
+// INTEGRATIONS_API is the same helper pointed at the app-integration service.
+//
+// It exists because the two halves of this product are no longer one backend.
+// Workflow documents and their executions are served by the control plane
+// `request` reaches; the third-party connections — accounts, trigger bindings,
+// the Meta products — moved to the platform API, which is a different origin
+// with a different credential. Sending an integrations call down `request`
+// reaches a control plane that no longer serves those routes, and every trigger
+// panel 404s while looking configured.
+//
+// It falls back to `request` when the host implements no separate transport, so
+// a deployment that serves both from one place needs to change nothing.
+export const INTEGRATIONS_API = {
+  get: async (url, config) =>
+    wrap(
+      await integrationsCall("GET", remapIntegrations(url), {
+        params: config?.params,
+        responseType: config?.responseType,
+      }),
+    ),
+  post: async (url, body) => wrap(await integrationsCall("POST", remapIntegrations(url), { body })),
+  put: async (url, body) => wrap(await integrationsCall("PUT", remapIntegrations(url), { body })),
+  delete: async (url) => wrap(await integrationsCall("DELETE", remapIntegrations(url))),
+}
+
+function integrationsCall(method, path, options) {
+  const transport = getTransport()
+  return transport.integrationsRequest
+    ? transport.integrationsRequest(method, path, options)
+    : transport.request(method, path, options)
+}
+
+// remapIntegrations rewrites the paths the ported UI was written against onto
+// the routes the integrations service serves, relative to its own root.
+//
+// The same translation-layer argument as remap() below: these panels are a
+// large body of working UI, and mapping a handful of prefixes here is a far
+// smaller change than rewriting every call site — twice, since the paths moved
+// again when the module did.
+//
+// The order matters. `/api/integration-providers` must be matched BEFORE the
+// bare `/api/integration` rule, or it is rewritten into a route that does not
+// exist; and the Meta rules must precede the generic trigger rule, because they
+// pull a segment out of the middle of the path rather than off the front.
+function remapIntegrations(url) {
+  const trimmed = url.replace(/\/$/, "") || url
+
+  // Provider catalogue.
+  const meta = trimmed.match(/^\/api\/integration-providers\/([^/]+)\/bootstrap$/)
+  if (meta) return `/meta/products/${meta[1]}/bootstrap`
+  const events = trimmed.match(/^\/api\/integration-providers\/([^/]+)\/events$/)
+  if (events) return `/catalog/providers/${events[1]}/events`
+  if (trimmed === "/api/integration-providers") return "/catalog/providers"
+
+  // Meta acts on one integration, under its own module rather than under the
+  // trigger's — the flow is a Meta dialog, not a trigger edit.
+  const product = trimmed.match(/^\/api\/integration\/([^/]+)\/meta\/(.+)$/)
+  if (product) return `/meta/${product[1]}/${product[2]}`
+
+  return trimmed
+    .replace(/^\/api\/integration(?=\/|$)/, "/triggers")
+    .replace(/^\/api\/accounts(?=\/|$)/, "/accounts")
+}
+
 // openProviderPopup opens the window an OAuth consent screen will load into.
 //
 // It exists so callers can open the popup SYNCHRONOUSLY, inside the click
@@ -51,15 +115,11 @@ function remap(url) {
     .replace(/^\/api\/workflow-template/, "/workflow-templates")
     .replace(/^\/api\/workflow-credential/, "/workflow-credentials")
     .replace(/^\/api\/workflow/, "/workflows")
-    // App integrations. Without these two the calls fell through to the bare
-    // /api strip below and reached /v1/workflows/integration/..., which
-    // is not a route — so every trigger panel 404'd while looking configured.
-    //
-    // Anchored on a following slash or end of string. A bare prefix match would
-    // also rewrite /api/integration-providers, turning it into the nonexistent
-    // /integrations-providers.
-    .replace(/^\/api\/integration(?=\/|$)/, "/integrations")
-    .replace(/^\/api\/accounts(?=\/|$)/, "/connected-accounts")
+    // No app-integration rules here any more: that surface is a different
+    // service now and is mapped by remapIntegrations above. A rule left behind
+    // would silently send an integrations call to the workflow control plane,
+    // which answers 404 for it — and a 404 on a trigger panel reads as a broken
+    // integration rather than as a misrouted request.
     .replace(/^\/api/, "")
   return mapped.length > 1 ? mapped.replace(/\/$/, "") : mapped
 }

@@ -6,6 +6,7 @@ import axios, {
 
 import { activeScope } from "@/services/api/active-scope"
 import { authToken, refreshAccessToken } from "@/services/api/auth-token"
+import { api, extractError } from "@/services/api/client"
 
 import type { AIAutomationsTransport } from "@datadack/workflows"
 
@@ -67,6 +68,19 @@ export interface AutomationsTransportOptions {
 /** The prefix every route in this section sits under on the control plane. */
 const API_PREFIX = "/v1/workflows"
 
+/**
+ * Where the app-integration surface lives — on THIS platform's own API, not on
+ * the FaaS control plane.
+ *
+ * The two halves of AI & Automations are two services. Workflow documents and
+ * their executions are FaaS's; every third-party connection — the OAuth
+ * accounts, the trigger bindings, the Meta products, the GitHub App — belongs
+ * to the platform backend, which owns the tenant, the credential store and the
+ * public callback addresses providers were registered against. Relative to
+ * `/api/v1`, which the gateway client already carries.
+ */
+const INTEGRATIONS_PREFIX = "/integrations"
+
 export function createAutomationsTransport(
   opts: AutomationsTransportOptions,
 ): AIAutomationsTransport {
@@ -105,9 +119,10 @@ export function createAutomationsTransport(
   })
 
   return {
-    // App integrations are served by this control plane. Realtime execution
-    // events are not — there is no socket on this surface — so that stays off
-    // and the package's log panel falls back to polling.
+    // App integrations are served, but by the platform API rather than by this
+    // control plane — see integrationsRequest below. Realtime execution events
+    // are served by neither (there is no socket on this surface), so that stays
+    // off and the package's log panel falls back to polling.
     capabilities: { connectedAccounts: true, integrations: true, realtimeEvents: false },
 
     // Absolute URLs the package hands to the BROWSER rather than to axios: the
@@ -149,6 +164,49 @@ export function createAutomationsTransport(
         return body as T
       } catch (e) {
         throw new Error(automationsErrorMessage(e, `Could not ${method} ${path}`))
+      }
+    },
+
+    /**
+     * The app-integration surface, on the platform API.
+     *
+     * A separate method rather than a prefix inside `request` because it is a
+     * different client, not a different path: this one is the console's own
+     * gateway client — cookie-capable, carrying the SPA header the platform API
+     * requires and the account scope it reads — while `request` above is a pure
+     * bearer client pinned to a FaaS origin. Sending an integrations call down
+     * that one reaches a control plane that no longer serves these routes.
+     */
+    async integrationsRequest<T = unknown>(
+      method: "GET" | "POST" | "PUT" | "DELETE",
+      path: string,
+      options?: { body?: unknown; params?: Record<string, unknown>; responseType?: string },
+    ): Promise<T> {
+      try {
+        const response: AxiosResponse<unknown> = await api.request({
+          method,
+          url: `${INTEGRATIONS_PREFIX}${path}`,
+          data: options?.body,
+          params: options?.params,
+          responseType: options?.responseType as "json" | "blob" | undefined,
+        })
+        // The platform envelope is `{ data, meta }`. Unwrapped by KEY for the
+        // same reason as above: `?? response.data` hands the whole envelope
+        // back whenever `data` is legitimately null, and a caller expecting a
+        // list then gets an object and crashes on `.filter`.
+        //
+        // A 204 (disconnect, delete) has no body at all, which is why the
+        // absent-key case returns the raw body rather than throwing.
+        const body: unknown = response.data
+        if (body && typeof body === "object" && !Array.isArray(body) && "data" in body) {
+          return body.data as T
+        }
+        return body as T
+      } catch (e) {
+        // extractError, not automationsErrorMessage: this response carries the
+        // platform's `{meta:{message}}` shape, and the FaaS reader would fall
+        // through to axios's own "Request failed with status code 400".
+        throw new Error(extractError(e, `Could not ${method} ${path}`))
       }
     },
   }

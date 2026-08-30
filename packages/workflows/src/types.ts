@@ -65,6 +65,29 @@ export interface AIAutomationsTransport {
     path: string,
     options?: { body?: unknown; params?: Record<string, unknown>; responseType?: string },
   ): Promise<T>
+  /**
+   * The app-integration surface, when the host serves it somewhere other than
+   * `request`.
+   *
+   * The two halves of AI & Automations live in different services now: the
+   * workflow documents and their executions are on one control plane, and every
+   * third-party connection — the OAuth accounts, the trigger bindings, the Meta
+   * products — is on another. `request` reaches the first; this reaches the
+   * second, with whatever credential and origin that one needs.
+   *
+   * `path` is relative to the integrations root, e.g. `/triggers/{id}/setup`.
+   *
+   * OPTIONAL, and falling back to `request` is deliberate: a host that serves
+   * both from one place needs to implement nothing. Set `capabilities
+   * .integrations` to false instead of leaving this unset if the host serves
+   * the surface nowhere — otherwise the palette renders app triggers that
+   * configure cleanly and never fire.
+   */
+  integrationsRequest?<T = unknown>(
+    method: "GET" | "POST" | "PUT" | "DELETE",
+    path: string,
+    options?: { body?: unknown; params?: Record<string, unknown>; responseType?: string },
+  ): Promise<T>
   list?(
     kind: AutomationKind,
     query?: { page?: number; limit?: number; keyword?: string },
