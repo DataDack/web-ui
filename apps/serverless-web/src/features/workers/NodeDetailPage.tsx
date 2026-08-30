@@ -6,6 +6,7 @@ import { Link, useParams } from "react-router-dom"
 import { apiErrorMessage } from "@/lib/api"
 import { formatMb, formatRate, orDash } from "@/lib/format"
 import { useDashboard, useNodeMetrics } from "@/lib/queries"
+import type { NodeDetail } from "@/lib/schemas"
 
 import {
   Badge,
@@ -49,6 +50,112 @@ function diskOf(freeMb?: number, totalMb?: number): string {
  * difference between them decides whether anyone needs to act — so the series is
  * the point of this page, not decoration on it.
  */
+/** Percent, from a ratio the control plane already derived over the window. */
+function ratioPercent(ratio?: number): string {
+  if (ratio === undefined || ratio <= 0) return "0%"
+  return `${(ratio * 100).toFixed(ratio < 0.1 ? 1 : 0)}%`
+}
+
+function countOf(value?: number): string {
+  return value === undefined ? "—" : value.toLocaleString()
+}
+
+function msOf(value?: number): string {
+  if (value === undefined || value === 0) return "—"
+  return `${value < 10 ? value.toFixed(1) : value.toFixed(0)} ms`
+}
+
+/**
+ * The worker's execution-environment pool.
+ *
+ * Every number here was computed by the worker and served only on its own
+ * /v1/worker/status — reachable by curling one container's ephemeral host port
+ * and nowhere else. It now rides the sync, so this is the first place an
+ * operator can see it without getting onto the box.
+ */
+function poolFacts(node?: NodeDetail): KeyValueItem[] {
+  const pool = node?.pool
+  if (!pool) return []
+  return [
+    { label: "Environments", value: countOf(pool.environments) },
+    { label: "Idle", value: countOf(pool.idle) },
+    { label: "Busy", value: countOf(pool.busy) },
+    { label: "Creating", value: countOf(pool.creating) },
+    // Warmth that was paid for, as opposed to warmth that happened.
+    { label: "Provisioned", value: countOf(pool.provisioned) },
+    { label: "Invocations", value: countOf(pool.invocations) },
+    // The ratio behind p99, over the window rather than the process lifetime.
+    { label: "Cold starts", value: countOf(pool.coldStarts) },
+    { label: "Warm starts", value: countOf(pool.warmStarts) },
+    { label: "Cold start rate", value: ratioPercent(node.coldStartRatio) },
+    // Refused because the pool was at its ceiling — not the same as a capacity
+    // rejection, which never reached the pool.
+    { label: "Throttles", value: countOf(pool.throttles) },
+    // Against cold starts, this says whether the idle timeout is tuned or is
+    // manufacturing its own cold starts.
+    { label: "Reaped", value: countOf(pool.reaped) },
+    // A platform fault: a broken package or a missing runtime.
+    { label: "Init failures", value: countOf(pool.initFailures) },
+    // NOT a platform fault. Separate so nobody is paged for customer code.
+    { label: "Function errors", value: countOf(pool.functionErrors) },
+  ]
+}
+
+/** The gateway's edge counters, previously only on its own admin listener. */
+function edgeFacts(node?: NodeDetail): KeyValueItem[] {
+  const edge = node?.edge
+  if (!edge) return []
+  return [
+    { label: "Known hosts", value: countOf(edge.knownHosts) },
+    { label: "Cache entries", value: countOf(edge.cacheEntries) },
+    { label: "Resolutions", value: countOf(edge.resolutions) },
+    // The cutover's instrument: the per-product lookup cannot be retired until
+    // this is flat at zero.
+    { label: "Registry fallbacks", value: countOf(edge.fallbacks) },
+    { label: "Fallback rate", value: ratioPercent(node.fallbackRatio) },
+    { label: "Shed", value: countOf(edge.shed) },
+    { label: "Certificates served", value: countOf(edge.certificatesServed) },
+    // The number with no other home: a refused handshake never becomes a
+    // request, so it is absent from every other figure on this page.
+    { label: "Certificates refused", value: countOf(edge.certificatesRefused) },
+    // Any non-zero value is a defect.
+    { label: "Panics", value: countOf(edge.panics) },
+    // Upstream, not end-to-end: this is the split that says whether the edge is
+    // slow or the thing behind it is.
+    { label: "Upstream p50", value: msOf(edge.upstreamP50Ms) },
+    { label: "Upstream p95", value: msOf(edge.upstreamP95Ms) },
+    { label: "Upstream p99", value: msOf(edge.upstreamP99Ms) },
+  ]
+}
+
+/**
+ * Cumulative serve counters.
+ *
+ * The card shows rates, which answer "what is happening now". These are the
+ * totals behind them, plus the two the card has no room for: the in-flight PEAK,
+ * which is the number that says whether a ceiling was ever actually reached, and
+ * the WORST single queue wait, because a mean hides the tail callers notice.
+ */
+function serveFacts(node?: NodeDetail): KeyValueItem[] {
+  const serve = node?.serve
+  if (!serve) return []
+  return [
+    { label: "Served", value: countOf(serve.served) },
+    { label: "Failed", value: countOf(serve.failed) },
+    { label: "In flight", value: countOf(serve.inflightNow) },
+    { label: "In-flight peak", value: countOf(serve.inflightPeak) },
+    { label: "Queue mean", value: msOf(node.meanWaitMs) },
+    { label: "Queue worst", value: msOf(serve.waitMaxMs) },
+    { label: "Refused: unauthorized", value: countOf(serve.rejectedUnauthorized) },
+    // The one that named the misrouting outage in a single glance.
+    { label: "Refused: misdirected", value: countOf(serve.rejectedMisdirected) },
+    { label: "Refused: no capacity", value: countOf(serve.rejectedNoCapacity) },
+    { label: "Refused: not assigned", value: countOf(serve.rejectedNotAssigned) },
+    // Expected during a rollout, so it is reported and not styled as a fault.
+    { label: "Refused: draining", value: countOf(serve.rejectedDraining) },
+  ]
+}
+
 export function NodeDetailPage() {
   const { id } = useParams<{ id: string }>()
   const { data, error, isFetching, isLoading, refetch } = useNodeMetrics(id)
@@ -102,6 +209,19 @@ export function NodeDetailPage() {
     return items
   }, [data, id, worker])
 
+  // Role-specific, and empty for the other role — which is why a section with no
+  // items is dropped rather than showing a gateway a block of zeroed pool
+  // counters. Built as one list so the component stays a renderer.
+  const detailSections = useMemo(
+    () =>
+      [
+        { title: "Requests", items: serveFacts(data ?? undefined) },
+        { title: "Execution environments", items: poolFacts(data ?? undefined) },
+        { title: "Edge", items: edgeFacts(data ?? undefined) },
+      ].filter((section) => section.items.length > 0),
+    [data],
+  )
+
   // A 404 is not an error here. The node may exist and simply have stopped
   // reporting, which is a different thing to say than "request failed" — and it
   // is the thing an operator most needs to be told.
@@ -110,7 +230,7 @@ export function NodeDetailPage() {
   return (
     <>
       <PageHeader
-        title={data?.hostname ?? worker?.hostname ?? (id ?? "Node")}
+        title={data?.hostname ?? worker?.hostname ?? id ?? "Node"}
         icon={Server}
         description="What this node has been doing, over the control plane's rolling in-memory window."
         breadcrumbs={[
@@ -128,7 +248,12 @@ export function NodeDetailPage() {
                 <StatusBadge status={data.state || "unknown"} />
               </>
             ) : null}
-            <Button variant="outline" size="sm" disabled={isFetching} onClick={() => void refetch()}>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={isFetching}
+              onClick={() => void refetch()}
+            >
               <RefreshCw className={isFetching ? "animate-spin" : undefined} />
               Refresh
             </Button>
@@ -174,7 +299,12 @@ export function NodeDetailPage() {
               icon={Network}
               loading={isLoading}
             />
-            <StatCard label="Sandboxes" value={data?.sandboxCount ?? 0} icon={Server} loading={isLoading} />
+            <StatCard
+              label="Sandboxes"
+              value={data?.sandboxCount ?? 0}
+              icon={Server}
+              loading={isLoading}
+            />
           </StatGrid>
 
           <div className="mb-6 grid gap-4 lg:grid-cols-2">
@@ -218,6 +348,19 @@ export function NodeDetailPage() {
 
           <KeyValueGrid items={facts} />
 
+          {/* Everything the node reports that the summary card has no room for.
+              These were being collected and dropped: the pool numbers reached
+              the control plane and stopped there, and the gateway's counters
+              were readable only on its own admin listener. */}
+          {detailSections.map((section) => (
+            <section key={section.title} className="mt-6">
+              <h3 className="text-muted-foreground mb-2 text-[12px] font-medium uppercase tracking-wide">
+                {section.title}
+              </h3>
+              <KeyValueGrid items={section.items} />
+            </section>
+          ))}
+
           {data ? (
             <p className="text-muted-foreground mt-4 text-[12px]">
               {data.samples} readings over a rolling {data.window} window, held in memory only —
@@ -227,9 +370,7 @@ export function NodeDetailPage() {
         </>
       )}
 
-      {error ? (
-        <p className="text-destructive mt-4 text-[13px]">{apiErrorMessage(error)}</p>
-      ) : null}
+      {error ? <p className="text-destructive mt-4 text-[13px]">{apiErrorMessage(error)}</p> : null}
     </>
   )
 }

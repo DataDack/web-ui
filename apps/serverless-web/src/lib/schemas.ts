@@ -99,6 +99,64 @@ export const serveStatsSchema = z.object({
   waitMaxMs: z.number().optional(),
 })
 
+/**
+ * What only a WORKER has: the execution-environment pool.
+ *
+ * Kept apart from serveStats because a gateway has no pool at all, and a shared
+ * struct would mean rendering "0 cold starts" on a gateway card — a number that
+ * reads as healthy and is actually meaningless.
+ */
+export const poolStatsSchema = z.object({
+  environments: z.number().optional(),
+  idle: z.number().optional(),
+  busy: z.number().optional(),
+  creating: z.number().optional(),
+  // Held warm deliberately rather than because it was recently used, which is
+  // what separates paid-for warmth from luck.
+  provisioned: z.number().optional(),
+  // The ratio behind p99: cold starts rising against flat traffic means
+  // environments are being reaped faster than they are reused.
+  coldStarts: z.number().optional(),
+  warmStarts: z.number().optional(),
+  throttles: z.number().optional(),
+  reaped: z.number().optional(),
+  // A platform fault: an environment that never became ready.
+  initFailures: z.number().optional(),
+  // NOT a platform fault: customer code raising. Kept apart so nobody is paged.
+  functionErrors: z.number().optional(),
+  invocations: z.number().optional(),
+})
+
+/**
+ * What only a GATEWAY has: hostname resolution, the response cache, upstream
+ * latency. Every field is backed by a metric that is actually incremented —
+ * certificate counters and TLS failures were left out because the gateway does
+ * not currently produce them, and a permanently-zero field cannot be told apart
+ * from a real zero.
+ */
+export const edgeStatsSchema = z.object({
+  knownHosts: z.number().optional(),
+  cacheEntries: z.number().optional(),
+  // Fallbacks over resolutions is the cutover's instrument: the per-product
+  // lookup cannot be retired until it is flat at zero.
+  resolutions: z.number().optional(),
+  fallbacks: z.number().optional(),
+  shed: z.number().optional(),
+  // Any non-zero value here is a defect.
+  panics: z.number().optional(),
+  // A refused handshake produces NO REQUEST, so it appears in none of the
+  // request numbers above — and it is what a customer experiences as "the site
+  // is down" with nothing in the access log to explain it. Handshakes with no
+  // server name are in neither: those are scanners on the wildcard CNAME.
+  certificatesServed: z.number().optional(),
+  certificatesRefused: z.number().optional(),
+  // Time spent waiting on the thing behind the edge, which is the split that
+  // answers "is the edge slow, or is the upstream slow".
+  upstreamP50Ms: z.number().optional(),
+  upstreamP95Ms: z.number().optional(),
+  upstreamP99Ms: z.number().optional(),
+})
+
 export const nodeViewSchema = z.object({
   nodeId: z.string(),
   hostname: z.string(),
@@ -120,6 +178,15 @@ export const nodeViewSchema = z.object({
   servedPerSec: z.number().default(0),
   rejectedPerSec: z.number().default(0),
   meanWaitMs: z.number().default(0),
+  // Role-specific halves. Each role fills its own and leaves the other absent,
+  // so a card can render both and let the empty one stay empty.
+  pool: poolStatsSchema.optional(),
+  edge: edgeStatsSchema.optional(),
+  // Derived by the control plane over the WINDOW, not over process lifetime: a
+  // node up for a week whose cold starts all happened on the first morning has
+  // a healthy lifetime ratio while it cold-starts every request right now.
+  coldStartRatio: z.number().default(0),
+  fallbackRatio: z.number().default(0),
   samples: z.number().optional(),
 })
 
@@ -484,6 +551,8 @@ export type LayerVersion = z.infer<typeof layerVersionSchema>
 export type Dashboard = z.infer<typeof dashboardSchema>
 export type HostStats = z.infer<typeof hostStatsSchema>
 export type NodeView = z.infer<typeof nodeViewSchema>
+export type PoolStats = z.infer<typeof poolStatsSchema>
+export type EdgeStats = z.infer<typeof edgeStatsSchema>
 export type ServeStats = z.infer<typeof serveStatsSchema>
 export type ClusterView = z.infer<typeof clusterViewSchema>
 export type NodeDetail = z.infer<typeof nodeDetailSchema>
