@@ -17,6 +17,13 @@ const options: Options = {
   dts: true,
   sourcemap: true,
   clean: true,
+  // Every node_modules import stays external, the same way @datadack/workflows
+  // and @datadack/integration do it. The list below still records WHY specific
+  // packages must not be bundled, but it must not be the only thing standing
+  // between a new dependency and a broken app: a CommonJS dependency that nobody
+  // remembers to add lands in the ESM output with esbuild's `__require` shim and
+  // takes the app down on load, with nothing failing at build time.
+  skipNodeModulesBundle: true,
   external: [
     "react",
     "react-dom",
