@@ -74,7 +74,7 @@ export function DomainsListPage() {
       <PageHeader
         icon={Globe}
         breadcrumbs={[
-          { label: t("console.nav.groups.networking") },
+          { label: t("console.nav.groups.domains") },
           { label: t("domains.title") },
         ]}
         title={t("domains.title")}

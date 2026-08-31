@@ -23,7 +23,8 @@
         "monitoring": "Monitoring",
         "managedApps": "Managed Apps",
         "serverless": "Serverless",
-        "automations": "AI & Workflows"
+        "automations": "AI & Workflows",
+        "domains": "Domains"
       },
       "items": {
         "dashboard": "Dashboard",
@@ -77,11 +78,12 @@
         "n8nAgents": "n8n Agents",
         "apps": "Apps",
         "cpanelHosting": "cPanel Hosting",
-        "domains": "Domains",
         "ssoApps": "SSO Applications",
         "automationsOverview": "Overview",
         "automationsWorkflows": "Workflows",
-        "automationsIntegrations": "Integrations"
+        "automationsIntegrations": "Integrations",
+        "registeredDomains": "Registered domains",
+        "hostnames": "Hostnames"
       },
       "soon": "Soon",
       "collapse": "Collapse",
@@ -1947,6 +1949,55 @@
       "terminal": {
         "suspended": "This domain is suspended — its app is gone or was disabled. It will not verify until the app is back.",
         "released": "This domain was removed. Close this dialog, or add the domain again to restart verification."
+      },
+      "ownershipProven": "Ownership is already proven — you registered this domain, so only the routing record above is needed."
+    },
+    "registrar": {
+      "title": "Domains",
+      "subtitle": "Domains you own and have proven. Verify one and you can use it — and any subdomain of it — on your apps and functions.",
+      "add": "Register domain",
+      "empty": "No domains registered",
+      "emptySubtitle": "Register a domain you own to use it on your apps and functions. Proving it once covers every subdomain.",
+      "hostnameCount": "{{count}} in use",
+      "verified": "{{domain}} is verified",
+      "notYetVerified": "Not verified yet — the TXT record was not found",
+      "verifyFailed": "The verification check could not run",
+      "registerFailed": "Could not register the domain",
+      "removed": "{{domain}} removed",
+      "removeFailed": "Could not remove the domain",
+      "columns": {
+        "domain": "Domain",
+        "status": "Status",
+        "inUse": "In use",
+        "verifiedAt": "Verified"
+      },
+      "actions": {
+        "menu": "Domain actions",
+        "viewRecord": "View record",
+        "checkNow": "Check now",
+        "remove": "Remove"
+      },
+      "dialog": {
+        "title": "Register a domain",
+        "field": "Domain",
+        "fieldHint": "The domain you own, e.g. example.com. Registering it covers every subdomain, so you only prove ownership once.",
+        "inputHelp": "Prove you own a domain so you can use it on your apps and functions.",
+        "submit": "Continue",
+        "recordHelp": "Add this record at your DNS provider to prove you own the domain.",
+        "publish": "Create this DNS record",
+        "recordType": "Type",
+        "recordName": "Name",
+        "recordValue": "Value",
+        "waiting": "Waiting for the record to appear — this usually takes a few minutes.",
+        "checkNow": "Check now",
+        "close": "Close",
+        "done": "Done",
+        "doneTitle": "Domain verified",
+        "doneHelp": "{{domain}} is yours to use.",
+        "proven": "You own {{domain}} — you can now use it, and any subdomain, on your apps and functions.",
+        "nextStep": "To point a name at us, add one of these",
+        "cname": "CNAME",
+        "apex": "A"
       }
     }
   },

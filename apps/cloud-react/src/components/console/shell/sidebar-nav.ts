@@ -146,13 +146,32 @@ export const CONSOLE_SERVICES: ConsoleService[] = [
         icon: EthernetPort,
         path: "/networking/network-interfaces",
       },
-      // The domain registry: every hostname on the account, System or Custom.
-      // Lives at /domains but belongs with networking — this item is also what
-      // scopes that route to this service's sidebar (findServiceByPath).
+    ],
+  },
+  {
+    key: "domains",
+    labelKey: "console.nav.groups.domains",
+    icon: Globe,
+    // Domain management is its own service, not a page inside Networking.
+    //
+    // It was an item there because the registry was one table of hostnames the
+    // platform minted for other products — a networking detail. It is a product
+    // now: an account registers a domain it owns, proves it, and attaches it to
+    // apps and functions. Nothing about that belongs to VPC, and burying the
+    // entry point under Networking is why somebody looking for "use my own
+    // domain" would never find it.
+    items: [
       {
-        labelKey: "console.nav.items.domains",
+        labelKey: "console.nav.items.registeredDomains",
         icon: Globe,
         path: "/domains",
+      },
+      {
+        labelKey: "console.nav.items.hostnames",
+        icon: Waypoints,
+        // Every name the platform answers for, most of them minted
+        // automatically. The deeper, operational half of the same service.
+        path: "/domains/hostnames",
       },
     ],
   },

@@ -31,6 +31,13 @@ export interface DomainDnsInstructions {
   a_name: string
   a_value: string
   is_apex: boolean
+  /**
+   * The account already proved this hostname's parent domain in the registrar,
+   * so only the routing record is required — the server checks routing alone for
+   * this hostname. The TXT fields are still sent (publishing it anyway is not
+   * wrong), but the UI must not present it as a required step.
+   */
+  ownership_proven: boolean
 }
 
 export interface Domain {

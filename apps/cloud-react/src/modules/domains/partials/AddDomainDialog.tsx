@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react"
 
-import { Check, CheckCircle2, Copy, Globe, Loader2 } from "lucide-react"
+import { CheckCircle2, Globe, Loader2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import { toast } from "sonner"
 
 import { TONE_CLASSES } from "@/components/console/status-config"
 import { quotaGatePayload } from "@/modules/governance/quota-gate"
@@ -23,6 +22,7 @@ import {
 
 import { useAddDomain, useDomain, useVerifyDomain } from "../domains.hooks"
 import type { Domain } from "../domains.types"
+import { RecordLine } from "./RecordLine"
 
 // Client-side sanity check only — the server owns real validation (platform
 // zones, ownership, quota). Lowercase labels of letters/digits/hyphens, at
@@ -150,6 +150,12 @@ export function AddDomainDialog({
   }
 
   const instructions = row?.dns_instructions
+  // The account already proved this domain in the registrar, so the server
+  // checks routing ONLY for this hostname (see the backend's verify()). Showing
+  // the TXT record anyway would advertise a step nothing looks for — the tenant
+  // would publish it, watch the check pass without it, and learn to distrust the
+  // instructions.
+  const ownershipProven = instructions?.ownership_proven ?? false
   // Both routing records always render: is_apex is an approximation (label
   // count), and an apex like example.co.uk would otherwise be shown ONLY the
   // CNAME most registrars refuse at an apex. The likely record leads; the
@@ -157,7 +163,9 @@ export function AddDomainDialog({
   const records: DnsRecordRow[] = instructions
     ? (
         [
-          { type: "TXT", name: instructions.txt_name, value: instructions.txt_value },
+          ...(ownershipProven
+            ? []
+            : [{ type: "TXT" as const, name: instructions.txt_name, value: instructions.txt_value }]),
           { type: "A", name: instructions.a_name, value: instructions.a_value, alternative: !instructions.is_apex },
           { type: "CNAME", name: instructions.cname_name, value: instructions.cname_target, alternative: instructions.is_apex },
         ] satisfies DnsRecordRow[]
@@ -279,6 +287,16 @@ export function AddDomainDialog({
               </div>
             )}
 
+            {ownershipProven && (
+              // Not a footnote: without it the tenant sees one record where the
+              // docs and every previous domain showed two, and the natural
+              // reading is that something failed to load.
+              <p className="flex items-start gap-2 text-[13px] text-muted-foreground">
+                <CheckCircle2 className="mt-0.5 size-3.5 shrink-0 text-status-success" />
+                {t("domains.add.ownershipProven")}
+              </p>
+            )}
+
             {isTerminal ? (
               // A row that left pending without becoming active — released
               // from another tab, or suspended by the platform. The polling
@@ -363,44 +381,5 @@ export function AddDomainDialog({
         )}
       </DialogContent>
     </Dialog>
-  )
-}
-
-/**
- * One record field on one line: fixed label, the value in its own mono well
- * (single line, horizontal scroll rather than wrap — DNS values are pasted,
- * not read), and a dedicated copy button that grabs the VALUE alone.
- */
-function RecordLine({
-  label,
-  value,
-  copied,
-}: Readonly<{ label: string; value: string; copied: string }>) {
-  const [done, setDone] = useState(false)
-  const copy = async () => {
-    await navigator.clipboard.writeText(value)
-    toast.success(copied)
-    setDone(true)
-    setTimeout(() => {
-      setDone(false)
-    }, 1500)
-  }
-  return (
-    <div className="flex items-center gap-2">
-      <span className="w-14 shrink-0 text-[10px] uppercase tracking-wide text-muted-foreground">
-        {label}
-      </span>
-      <code className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap rounded-md border border-border/60 bg-muted/30 px-2.5 py-1.5 font-mono text-[12px] text-foreground [scrollbar-width:none]">
-        {value}
-      </code>
-      <button
-        type="button"
-        onClick={() => void copy()}
-        aria-label={`${label}: copy`}
-        className="grid size-7 shrink-0 place-items-center rounded-md border border-border/60 text-muted-foreground transition-colors hover:bg-muted/40 hover:text-foreground"
-      >
-        {done ? <Check className="size-3.5 text-status-success" /> : <Copy className="size-3.5" />}
-      </button>
-    </div>
   )
 }
