@@ -23,7 +23,7 @@ const rail = css`
   display: flex;
   width: 100%;
   max-height: 260px;
-  flex-shrink: 0;
+  flex-shrink: 0; 
   flex-direction: column;
   min-height: 0;
   overflow: hidden auto;
