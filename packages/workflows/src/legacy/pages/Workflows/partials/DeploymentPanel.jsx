@@ -4,7 +4,7 @@
 */
 
 import React, { useState, useEffect } from 'react';
-import { Play, Loader2, CheckCircle2, XCircle, Clock } from 'lucide-react';
+import { Play, Loader2, CheckCircle2, XCircle, Clock, AlertTriangle } from 'lucide-react';
 import {
   Badge,
   Button,
@@ -122,6 +122,30 @@ export default function DeploymentPanel({ deployInfo, onInvoke, invoking, onClos
             {deployInfo?.lambda_name && (
               <div className='text-[10px] text-muted-foreground/50 font-mono truncate'>
                 {deployInfo.lambda_name}
+              </div>
+            )}
+
+            {/*
+              Compile warnings. Each one names something this workflow will do
+              wrong at runtime — a node with no renderer, a value nothing
+              supplies, a package the platform has no copy of. Without them the
+              first sign is a provider's 401 or a MODULE_NOT_FOUND, neither of
+              which points back at the node that caused it.
+            */}
+            {deployInfo?.warnings?.length > 0 && (
+              <div className='rounded-md border border-amber-500/30 bg-amber-500/5 p-3 space-y-1.5'>
+                <div className='flex items-center gap-1.5 text-xs font-medium text-amber-600 dark:text-amber-500'>
+                  <AlertTriangle className='w-3.5 h-3.5 shrink-0' aria-hidden='true' />
+                  Deployed with {deployInfo.warnings.length}{' '}
+                  {deployInfo.warnings.length === 1 ? 'warning' : 'warnings'}
+                </div>
+                <ul className='space-y-1 text-xs text-muted-foreground'>
+                  {deployInfo.warnings.map((warning) => (
+                    <li key={warning} className='leading-relaxed'>
+                      {warning}
+                    </li>
+                  ))}
+                </ul>
               </div>
             )}
 

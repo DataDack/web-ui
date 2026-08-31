@@ -103,8 +103,20 @@ export default function WorkflowStudio() {
   // Deploy mutation
   const deployMutation = useMutation({
     mutationFn: (data) => workflowsApi.deploy(id, data),
-    onSuccess: () => {
-      toast.success('Workflow deployed successfully');
+    onSuccess: (result) => {
+      // A deploy can succeed and still be worth reading about: a node with no
+      // renderer, a credential value nothing supplies, a package the platform
+      // has no copy of. Saying only "deployed" sends the author away confident
+      // in a workflow whose first run will fail. The detail is in the
+      // deployment panel; this points at it.
+      const warnings = result?.warnings?.length ?? 0;
+      if (warnings > 0) {
+        toast.warn(
+          `Deployed with ${warnings} ${warnings === 1 ? 'warning' : 'warnings'} — open Test Workflow for details`,
+        );
+      } else {
+        toast.success('Workflow deployed successfully');
+      }
       refetchDeploy();
     },
     onError: (err) => {
