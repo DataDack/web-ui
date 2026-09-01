@@ -1,73 +1,54 @@
 import { useState } from "react"
 
-import { cn } from "@datadack/common-ui"
-import { Activity, Globe, ScrollText } from "lucide-react"
-
 import { LogsSection } from "./LogsSection"
+import { PendingSection } from "./PendingSection"
 import { PlanUsagePanel } from "./PlanUsagePanel"
+import { SectionNav } from "./SectionNav"
+import { sectionByKey } from "./sections"
 import type { Project } from "../managed-apps.types"
 import { ProjectAnalyticsTab } from "../partials/project/ProjectAnalyticsTab"
 import { ProjectResourcesSection } from "../partials/project/ProjectObservabilityTab"
 
-const VIEWS = [
-  { value: "traffic", label: "Traffic", icon: Globe },
-  { value: "resources", label: "Resources", icon: Activity },
-  { value: "logs", label: "Logs", icon: ScrollText },
-] as const
-
 /**
- * Observability — one page for everything measured about a running app.
+ * Observability — one section for everything measured about a running app.
  *
  * Analytics and Observability used to be two tabs, and the split did not
- * survive contact with the question people actually arrive with. "Analytics"
- * charted requests, bytes and status classes recorded by the gateway while
- * serving; "Observability" charted the container's CPU and memory. Both are
- * measurements of the same app taken at different layers — nobody investigating
- * a slow deploy thinks of one as marketing data and the other as engineering
+ * survive contact with the question people arrive with. "Analytics" charted
+ * requests, bytes and status classes recorded by the gateway while serving;
+ * "Observability" charted the container's CPU and memory. Both are
+ * measurements of the same app at different layers — nobody investigating a
+ * slow deploy thinks of one as marketing data and the other as engineering
  * data, and the tab strip made them look like different subjects.
  *
- * So: one page, three layers, in the order a problem is usually chased through
- * them — what the edge served, what the container spent doing it, and the
- * individual requests underneath both. The plan-usage tiles sit above all
- * three because they are the frame the rest is read inside.
+ * What replaced it is a rail of seventeen sections in five groups, because the
+ * platform sells about that many measurable things and they do fall into
+ * groups. Nine have live meters today; the rest are listed and say they are
+ * still being calculated. Listing them is deliberate — see PendingSection.
  */
 export function ProjectObservabilityPage({ project }: Readonly<{ project: Project }>) {
-  const [view, setView] = useState<string>("traffic")
+  const [active, setActive] = useState("overview")
   const isN8n = project.project_type === "n8n"
+  const section = sectionByKey(active)
 
   return (
     <div className="space-y-5">
       {!isN8n && <PlanUsagePanel project={project} />}
 
-      <div className="flex items-center gap-0.5 rounded-lg border border-border-glass p-0.5 w-fit">
-        {VIEWS.map((item) => {
-          const Icon = item.icon
-          const active = view === item.value
-          return (
-            <button
-              key={item.value}
-              type="button"
-              aria-pressed={active}
-              onClick={() => {
-                setView(item.value)
-              }}
-              className={cn(
-                "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-[12px] font-medium transition-colors",
-                active
-                  ? "glass-1-bg-raised text-foreground"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              <Icon className="size-3.5" />
-              {item.label}
-            </button>
-          )
-        })}
-      </div>
+      <div className="flex flex-col gap-5 lg:flex-row">
+        <SectionNav active={active} onSelect={setActive} />
 
-      {view === "traffic" && <ProjectAnalyticsTab project={project} />}
-      {view === "resources" && <ProjectResourcesSection project={project} />}
-      {view === "logs" && <LogsSection project={project} />}
+        <div className="min-w-0 flex-1">
+          {/* The four sections with their own implementations. Everything else
+              is described by the section map and rendered by PendingSection,
+              so adding a real one is a component plus a line in sections.ts. */}
+          {active === "overview" && <ProjectAnalyticsTab project={project} />}
+          {active === "resources" && <ProjectResourcesSection project={project} />}
+          {active === "logs" && <LogsSection project={project} />}
+          {active !== "overview" && active !== "resources" && active !== "logs" && section && (
+            <PendingSection section={section} />
+          )}
+        </div>
+      </div>
     </div>
   )
 }
