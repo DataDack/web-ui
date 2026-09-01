@@ -1,6 +1,6 @@
-import type { CSSProperties } from "react"
+import { useState, type CSSProperties } from "react"
 
-import { Check, FolderTree, Loader2, TriangleAlert } from "lucide-react"
+import { Check, FolderTree, Loader2, Search, TriangleAlert } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import type { IconType } from "react-icons"
 
@@ -88,6 +88,16 @@ function optionsFrom(
 /** How many monorepo candidates are worth offering before it is a file browser. */
 const MAX_CANDIDATES = 6
 
+/** Make punctuation and accents irrelevant while matching catalogue terms. */
+function searchTerms(value: string): string[] {
+  return value
+    .normalize("NFKD")
+    .replaceAll(/[\u0300-\u036f]/g, "")
+    .toLocaleLowerCase()
+    .split(/[^a-z0-9+#.]+/)
+    .filter(Boolean)
+}
+
 interface ProjectTypePickerProps {
   value: RepoProjectType | undefined
   /** The catalogue id currently chosen, when one is. */
@@ -132,6 +142,7 @@ export function ProjectTypePicker({
   onRootDirChange,
 }: Readonly<ProjectTypePickerProps>) {
   const { t } = useTranslation()
+  const [search, setSearch] = useState("")
   // Only a positive detection gates anything. `n8n` can never be detected from
   // a repository, so it is not a case to handle here.
   const detected =
@@ -139,6 +150,13 @@ export function ProjectTypePicker({
   const detectedFramework = detection?.detected ? detection.framework : undefined
 
   const options = optionsFrom(frameworks, detectedFramework)
+  const queryTerms = searchTerms(search)
+  const filteredOptions = options.filter((option) => {
+    const haystack = searchTerms(
+      `${option.label} ${option.sub} ${option.framework} ${option.body} ${option.comingSoon ? "coming soon unavailable" : "available"}`,
+    )
+    return queryTerms.every((term) => haystack.some((candidate) => candidate.includes(term)))
+  })
 
   const familyForDetected = frameworks?.find((row) =>
     row.profiles.some((profile) => profile.id === detectedFramework),
@@ -177,8 +195,30 @@ export function ProjectTypePicker({
         {t("managedApps.projectTypePicker.weReadTheRepositoryToWorkThisOutPickOneIfWeC")}
       </p>
 
-      <div className="grid items-stretch gap-3 sm:grid-cols-2 xl:grid-cols-3">
-        {options.map((option) => {
+      <div className="relative">
+        <Search
+          aria-hidden
+          className="pointer-events-none absolute top-1/2 left-3 size-3.5 -translate-y-1/2 text-muted-foreground"
+        />
+        <input
+          type="search"
+          value={search}
+          disabled={frameworksLoading}
+          onChange={(event) => {
+            setSearch(event.target.value)
+          }}
+          placeholder="Search frameworks…"
+          aria-label="Search frameworks"
+          aria-controls="framework-card-grid"
+          className="h-9 w-full rounded-lg border border-border-glass bg-transparent pr-3 pl-9 text-[12px] outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring/50 disabled:opacity-50"
+        />
+      </div>
+
+      <div
+        id="framework-card-grid"
+        className="grid items-stretch gap-3 sm:grid-cols-2 xl:grid-cols-3"
+      >
+        {filteredOptions.map((option) => {
           const disabled = Boolean(option.comingSoon) || frameworksLoading || detecting
           // Select per framework rather than per project type: many catalogue
           // entries share the same underlying build profile type.
@@ -272,6 +312,15 @@ export function ProjectTypePicker({
       {!frameworksLoading && options.length === 0 && (
         <p role="status" className="text-[12px] text-muted-foreground">
           No framework presets are available.
+        </p>
+      )}
+
+      {!frameworksLoading && options.length > 0 && filteredOptions.length === 0 && (
+        <p
+          role="status"
+          className="rounded-lg border border-border/60 px-3 py-6 text-center text-[12px] text-muted-foreground"
+        >
+          No frameworks match “{search.trim()}”. Try a framework name, toolchain, or preset ID.
         </p>
       )}
 
