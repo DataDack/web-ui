@@ -5,7 +5,7 @@ export const GOVERNANCE_QUERY_KEYS = {
 }
 
 export const TAX_SETTINGS_ROUTES = {
-  ROOT: "/governance/tax-settings",
-  CREATE: "/governance/tax-settings/new",
-  edit: (id: number | string) => `/governance/tax-settings/${String(id)}/edit`,
+  ROOT: "/manage-account/tax-settings",
+  CREATE: "/manage-account/tax-settings/new",
+  edit: (id: number | string) => `/manage-account/tax-settings/${String(id)}/edit`,
 } as const

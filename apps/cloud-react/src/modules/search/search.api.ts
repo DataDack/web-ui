@@ -175,7 +175,7 @@ const MODULES: SearchResult[] = [
     type: "module",
     label: "cPanel Hosting",
     description: "Shared cPanel hosting accounts",
-    path: "/managed-apps?tab=hosting",
+    path: "/domains/hosting",
     status: "active",
   },
   {

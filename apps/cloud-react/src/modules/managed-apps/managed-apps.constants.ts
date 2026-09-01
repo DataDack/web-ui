@@ -26,16 +26,16 @@ export const CREATE_DRAFT_KEY = "managed-apps:create:draft"
  * every link into a view below sets the WHOLE query string. That is what keeps
  * one view's filters from surviving into another.
  */
-export const MANAGED_APPS_TABS = ["overview", "apps", "hosting"] as const
+export const MANAGED_APPS_TABS = ["apps", "hosting"] as const
 export type ManagedAppsTab = (typeof MANAGED_APPS_TABS)[number]
-export const DEFAULT_MANAGED_APPS_TAB: ManagedAppsTab = "overview"
+export const DEFAULT_MANAGED_APPS_TAB: ManagedAppsTab = "apps"
 
 export const MANAGED_APPS_ROUTES = {
   root: "/managed-apps",
   /** The repo-built projects list. */
-  apps: "/managed-apps?tab=apps",
-  /** The cPanel accounts list — where /hosting used to land. */
-  hosting: "/managed-apps?tab=hosting",
+  apps: "/managed-apps",
+  /** The cPanel accounts list, grouped with Domains in the console. */
+  hosting: "/domains/hosting",
   create: "/managed-apps/create",
   /** Dedicated account plan selection flow. */
   upgrade: "/managed-apps/upgrade",
@@ -45,6 +45,7 @@ export const MANAGED_APPS_ROUTES = {
    *  "reconnect this repo" path ends here, so it is one constant. */
   connections: "/managed-apps/settings",
   project: (id: string) => `/managed-apps/projects/${id}`,
+  projectDomains: (id: string) => `/managed-apps/projects/${id}?tab=domains`,
   /** One build as a page — log, source and output tabs live on it. */
   build: (projectId: string, buildId: string) =>
     `/managed-apps/projects/${projectId}/builds/${buildId}`,

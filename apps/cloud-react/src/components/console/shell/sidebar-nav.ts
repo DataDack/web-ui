@@ -152,6 +152,9 @@ export const CONSOLE_SERVICES: ConsoleService[] = [
     key: "domains",
     labelKey: "console.nav.groups.domains",
     icon: Globe,
+    // cPanel plans and account detail pages use the older /hosting route
+    // family, but they belong to this service's sidebar.
+    extraMatch: ["/hosting"],
     // Domain management is its own service, not a page inside Networking.
     //
     // It was an item there because the registry was one table of hostnames the
@@ -172,6 +175,11 @@ export const CONSOLE_SERVICES: ConsoleService[] = [
         // Every name the platform answers for, most of them minted
         // automatically. The deeper, operational half of the same service.
         path: "/domains/hostnames",
+      },
+      {
+        labelKey: "console.nav.items.cpanelHosting",
+        icon: Globe,
+        path: "/domains/hosting",
       },
     ],
   },
@@ -201,45 +209,18 @@ export const CONSOLE_SERVICES: ConsoleService[] = [
     key: "managed-apps",
     labelKey: "console.nav.groups.managedApps",
     icon: Rocket,
-    // One service, two ways of running a site: repo-built apps and cPanel
-    // hosting. They used to be two sidebar groups that shared nothing but the
-    // customer, so a person with one of each had to hold two mental models of
-    // "my websites". They are now tabs on one page, and these items address
-    // those tabs by their ?tab= value.
-    //
-    // Overview's "/managed-apps" prefix covers /projects/:id, /create and
-    // /github/callback; the tab items are longer and more specific, so
-    // isItemActiveAmong hands each of them the active state on its own tab.
-    //
-    // Plans & pricing is NOT an item: buying hosting is what the cPanel Hosting
-    // view shows an account that has none, so a fourth item selling the same
-    // thing was a second door into one room — and a permanent one, still in the
-    // sidebar long after every plan on it had been bought.
-    //
-    // extraMatch keeps the hosting routes that are NOT tabs — the buy flow at
-    // /hosting/plans and an account's detail page at /hosting/:id — inside
-    // this service's sidebar rather than dropping the user into no service.
-    extraMatch: ["/hosting"],
+    // Apps' "/managed-apps" prefix covers /projects/:id, /create and
+    // /github/callback. Settings and SSO are more specific sibling routes.
     items: [
-      {
-        labelKey: "console.nav.items.overview",
-        icon: LayoutDashboard,
-        path: "/managed-apps",
-      },
       {
         labelKey: "console.nav.items.apps",
         icon: Rocket,
-        path: "/managed-apps?tab=apps",
+        path: "/managed-apps",
       },
       {
         labelKey: "console.nav.items.ssoApps",
         icon: ShieldCheck,
         path: "/managed-apps/sso",
-      },
-      {
-        labelKey: "console.nav.items.cpanelHosting",
-        icon: Globe,
-        path: "/managed-apps?tab=hosting",
       },
       {
         labelKey: "console.nav.items.settings",
@@ -329,28 +310,28 @@ export const CONSOLE_SERVICES: ConsoleService[] = [
       {
         labelKey: "console.nav.items.account",
         icon: Building2,
-        path: "/governance/account",
+        path: "/manage-account/account",
       },
       {
         labelKey: "console.nav.items.profile",
         icon: UserCog,
-        path: "/governance/profile",
+        path: "/manage-account/profile",
       },
       {
         labelKey: "console.nav.items.namingConventions",
         icon: ScrollText,
-        path: "/governance/naming-conventions",
+        path: "/manage-account/naming-conventions",
       },
       {
         labelKey: "console.nav.items.quotas",
         icon: Gauge,
-        path: "/governance/quotas",
+        path: "/manage-account/quotas",
       },
       { labelKey: "console.nav.items.billing", icon: CreditCard, path: "/billing" },
       {
         labelKey: "console.nav.items.taxSettings",
         icon: Receipt,
-        path: "/governance/tax-settings",
+        path: "/manage-account/tax-settings",
       },
     ],
   },

@@ -7,11 +7,11 @@ export const ORG_QUERY_KEYS = {
 
 export const ORG_ROUTES = {
   /** Account settings (the active account + its optional business profile). */
-  SETTINGS: "/governance/account",
+  SETTINGS: "/manage-account/account",
   /** Full-screen onboarding to create a brand-new organization the caller owns. */
   CREATE: "/organization/new",
   /** Update the signed-in user's own profile. */
-  PROFILE: "/governance/profile",
+  PROFILE: "/manage-account/profile",
 } as const
 
 /**

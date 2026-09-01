@@ -88,16 +88,16 @@ export function ProjectCard({
           </div>
 
           {project.url && (
-            <span className="relative z-10 mt-0.5 flex items-center gap-1.5">
+            <span className="relative z-10 mt-0.5 flex min-w-0 items-center gap-1.5">
               {state.urlReachable ? (
                 <a
                   href={project.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex items-center gap-1 font-mono text-[11px] text-status-info hover:underline"
+                  className="flex min-w-0 max-w-full items-center gap-1 font-mono text-[11px] text-status-info hover:underline"
                 >
-                  {hostLabel(project.url)}
-                  <ExternalLink className="size-2.5" />
+                  <span className="truncate">{hostLabel(project.url)}</span>
+                  <ExternalLink className="size-2.5 shrink-0" />
                 </a>
               ) : (
                 <CopyButton

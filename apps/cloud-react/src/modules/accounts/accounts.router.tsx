@@ -7,7 +7,7 @@ import { Navigate, type RouteObject } from "react-router-dom"
 export const accountsRoutes: RouteObject[] = [
   {
     path: "accounts",
-    element: <Navigate to="/governance/account" replace />,
+    element: <Navigate to="/manage-account/account" replace />,
   },
   {
     path: "accounts/:id",

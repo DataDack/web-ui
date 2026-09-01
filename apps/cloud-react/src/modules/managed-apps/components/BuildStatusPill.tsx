@@ -41,20 +41,35 @@ const STATUS_LOOKUP = new Map<string, { tone: StatusTone; label: string }>(
 
 interface BuildStatusPillProps {
   status: BuildStatus
+  /** This is the exact build currently answering requests for the public URL. */
+  serving?: boolean
   className?: string
 }
 
 /** Status pill for builds — in-flight statuses spin until the build settles. */
-export function BuildStatusPill({ status, className }: Readonly<BuildStatusPillProps>) {
+export function BuildStatusPill({
+  status,
+  serving = false,
+  className,
+}: Readonly<BuildStatusPillProps>) {
   const meta = STATUS_LOOKUP.get(status) ?? { tone: "neutral" as StatusTone, label: status }
+  const tone = serving ? "success" : meta.tone
 
   return (
     <Badge
       variant="outline"
-      className={cn("gap-1.5 font-mono text-[11px]", TONE_CLASSES[meta.tone], className)}
+      className={cn(
+        "gap-1.5 px-2 py-1 font-mono text-[11px]",
+        TONE_CLASSES[tone],
+        className,
+      )}
     >
-      {isBuildTransitional(status) && <Loader2 className="size-3 animate-spin" />}
-      {meta.label}
+      {serving ? (
+        <span className="size-1.5 rounded-full bg-current" aria-hidden />
+      ) : (
+        isBuildTransitional(status) && <Loader2 className="size-3 animate-spin" />
+      )}
+      {serving ? "Live deployment" : meta.label}
     </Badge>
   )
 }

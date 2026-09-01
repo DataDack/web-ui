@@ -59,7 +59,7 @@ export function QuotaNotice({ code, count = 1 }: Readonly<QuotaNoticeProps>) {
         </span>
       </div>
       <Link
-        to={`/governance/quotas?request=${encodeURIComponent(code)}`}
+        to={`/manage-account/quotas?request=${encodeURIComponent(code)}`}
         className="text-[13px] font-medium text-status-warning underline-offset-4 hover:underline"
       >
         {t("quotaGate.action")}

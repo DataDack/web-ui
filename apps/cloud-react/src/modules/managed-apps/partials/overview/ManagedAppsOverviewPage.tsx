@@ -12,10 +12,8 @@ import { HOSTING_ROUTES } from "@/modules/hosting/hosting.constants"
 import { HostingAccountsPanel } from "@/modules/hosting/partials/HostingAccountsPanel"
 import { useScreen } from "@/services/api/screen"
 
-import { EstateOverviewTab } from "./EstateOverviewTab"
 import { PlanUsageChip } from "./PlanUsageChip"
 import { ProjectsTab } from "./ProjectsTab"
-import { GitHubMark } from "../../components/GitHubMark"
 import {
   DEFAULT_MANAGED_APPS_TAB,
   MANAGED_APPS_ROUTES,
@@ -25,7 +23,6 @@ import {
 
 /** X-Screen value per view, so backend traffic is attributed to what is on screen. */
 const SCREEN: Record<ManagedAppsTab, string> = {
-  overview: "managed-apps-overview",
   apps: "managed-apps-projects",
   hosting: "managed-apps-hosting",
 }
@@ -33,12 +30,9 @@ const SCREEN: Record<ManagedAppsTab, string> = {
 /**
  * Which query caches a view's Refresh button invalidates.
  *
- * The overview reads both, so it refreshes both — a refresh that only reloaded
- * half of what is on screen would leave the tiles disagreeing with the cards
- * beside them.
+ * Each view refreshes only the data it renders.
  */
 const REFRESH_KEYS: Record<ManagedAppsTab, readonly (readonly string[])[]> = {
-  overview: [["managed-apps"], ["hosting"]],
   apps: [["managed-apps"]],
   hosting: [["hosting"]],
 }
@@ -53,32 +47,20 @@ interface ViewMeta {
 }
 
 /**
- * Managed Apps — the account's whole website estate.
- *
- * Three views over two runtimes: a summary of both, the repo-built projects,
- * and the cPanel accounts that used to live under their own "Web hosting"
- * sidebar group. Merging them is the point — a customer running a Next.js app
- * and a WordPress site was previously asked to hold two mental models of "my
- * websites", and to check two pages to find out whether either was down.
- *
- * The sidebar IS the switch. There is no on-page tab bar: the service sidebar
- * already lists these three as items, and a second row of the same three
- * choices directly below it made the page look like it had six destinations.
- * The header names the view instead, so what is selected on the left is stated
- * on the right.
- *
- * Which view is showing lives in ?tab=, so a view is a link. Every route into
- * one (the sidebar items, the overview's cards, MANAGED_APPS_ROUTES.byType)
- * sets the whole query string, so one view's filters can never survive into
- * another and hide rows for a reason the page no longer shows a control for.
+ * The Managed Apps route renders the project listing directly. The optional
+ * fixed hosting view is reused by the Domains service's cPanel page.
  */
-export function ManagedAppsOverviewPage() {
+interface ManagedAppsOverviewPageProps {
+  fixedTab?: ManagedAppsTab
+}
+
+export function ManagedAppsOverviewPage({ fixedTab }: Readonly<ManagedAppsOverviewPageProps> = {}) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const [searchParams] = useSearchParams()
 
-  const tab = parseTab(searchParams.get("tab"))
+  const tab = fixedTab ?? parseTab(searchParams.get("tab"))
   useScreen(SCREEN[tab])
 
   // Built here rather than at module scope so the section title stays
@@ -86,11 +68,6 @@ export function ManagedAppsOverviewPage() {
   // page whose title disagrees with the nav item that reached it reads as a
   // navigation mistake.
   const VIEW: Record<ManagedAppsTab, ViewMeta> = {
-    overview: {
-      title: t("managedApps.managedAppsOverviewPage.managedApps"),
-      description:
-        "Every site you run with DataDack — apps built from a GitHub branch, and cPanel hosting — in one place.",
-    },
     apps: {
       title: "Apps",
       description:
@@ -126,22 +103,6 @@ export function ManagedAppsOverviewPage() {
     </Button>
   )
 
-  // Reachable from the overview and the Apps view, because a revoked
-  // installation is discovered on either. It is a link into settings rather
-  // than a dialog: connecting an account leaves the SPA for GitHub's install
-  // flow, so a modal opened here is gone by the time the browser comes back.
-  const githubButton = (
-    <Button
-      variant="ghost"
-      size="sm"
-      className="gap-1.5"
-      onClick={() => void navigate(MANAGED_APPS_ROUTES.connections)}
-    >
-      <GitHubMark className="size-3.5" />
-      GitHub
-    </Button>
-  )
-
   const newProject = (
     <Button size="sm" className="gap-1.5" onClick={() => void navigate(MANAGED_APPS_ROUTES.create)}>
       <Plus className="size-3.5" />
@@ -149,9 +110,8 @@ export function ManagedAppsOverviewPage() {
     </Button>
   )
 
-  const newHosting = (variant: "default" | "outline") => (
+  const newHosting = (
     <Button
-      variant={variant}
       size="sm"
       className="gap-1.5"
       onClick={() => void navigate(HOSTING_ROUTES.pricing)}
@@ -161,34 +121,12 @@ export function ManagedAppsOverviewPage() {
     </Button>
   )
 
-  // The primary action is whatever the visible view creates. On the overview
-  // both are offered, because the overview is not about either one.
-  let actions
-  if (tab === "hosting") {
-    actions = (
-      <>
-        {refreshButton}
-        {newHosting("default")}
-      </>
-    )
-  } else if (tab === "apps") {
-    actions = (
-      <>
-        {githubButton}
-        {refreshButton}
-        {newProject}
-      </>
-    )
-  } else {
-    actions = (
-      <>
-        {githubButton}
-        {refreshButton}
-        {newHosting("outline")}
-        {newProject}
-      </>
-    )
-  }
+  const actions = (
+    <>
+      {refreshButton}
+      {tab === "hosting" ? newHosting : newProject}
+    </>
+  )
 
   return (
     <div className="managed-apps-console -mx-4 -my-6 min-h-[calc(100vh-96px-0.5rem)] px-4 py-5 md:-mx-6 md:min-h-[calc(100vh-52px-0.5rem)] md:px-6 lg:-mx-8 lg:px-8 lg:py-6">
@@ -216,11 +154,15 @@ export function ManagedAppsOverviewPage() {
           exit={{ opacity: 0, y: -4 }}
           transition={{ duration: DUR.fast, ease: EASE.out }}
         >
-          {tab === "overview" && <EstateOverviewTab />}
           {tab === "apps" && <ProjectsTab />}
           {tab === "hosting" && <HostingAccountsPanel />}
         </motion.div>
       </AnimatePresence>
     </div>
   )
+}
+
+/** cPanel hosting lives in the Domains service while sharing this established panel. */
+export function CPanelHostingPage() {
+  return <ManagedAppsOverviewPage fixedTab="hosting" />
 }

@@ -43,7 +43,7 @@ export function handleQuotaGateError(e: unknown): boolean {
     action: {
       label: i18n.t("quotaGate.action"),
       onClick: () => {
-        window.location.assign(`/governance/quotas?request=${encodeURIComponent(gate.quotaCode)}`)
+        window.location.assign(`/manage-account/quotas?request=${encodeURIComponent(gate.quotaCode)}`)
       },
     },
   })

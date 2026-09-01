@@ -10,8 +10,7 @@ import { MANAGED_APPS_ROUTES } from "@/modules/managed-apps/managed-apps.constan
  */
 export const hostingRoutes: RouteObject[] = [
   {
-    // The account list moved into the Managed Apps section as its cPanel
-    // Hosting tab. This stays as a redirect rather than being deleted:
+    // The account list lives in the Domains service. This stays as a redirect:
     // "/hosting" is in customers' bookmarks and in every email we have sent
     // about a provisioned account.
     path: "hosting",

@@ -1,3 +1,4 @@
+import { Badge, CopyButton, dateColumn, textColumn } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import type { TFunction } from "i18next"
 import { useTranslation } from "react-i18next"
@@ -9,8 +10,6 @@ import { LB_ROUTES } from "@/modules/load-balancers/load-balancers.constants"
 import { MANAGED_APPS_ROUTES } from "@/modules/managed-apps/managed-apps.constants"
 import { SERVERLESS_ROUTES } from "@/modules/serverless/serverless.constants"
 import { VMS_ROUTES } from "@/modules/vms/vms.constants"
-
-import { Badge, CopyButton, dateColumn, textColumn } from "@datadack/common-ui"
 
 import type { Domain } from "../domains.types"
 
@@ -27,7 +26,7 @@ function resourceRoute(domain: Domain): string | null {
     case "lb":
       return domain.resource_id ? LB_ROUTES.detail(domain.resource_id) : null
     case "app":
-      return domain.resource_id ? MANAGED_APPS_ROUTES.project(domain.resource_id) : null
+      return domain.resource_id ? MANAGED_APPS_ROUTES.projectDomains(domain.resource_id) : null
     case "func":
       return domain.function_name ? SERVERLESS_ROUTES.detail(domain.function_name) : null
     default:
@@ -35,8 +34,11 @@ function resourceRoute(domain: Domain): string | null {
   }
 }
 
-/** What the attachment reads as: functions by name, everything else by id. */
-function resourceLabel(domain: Domain): string {
+/** What the attachment reads as: named resources where known, otherwise the id. */
+function resourceLabel(domain: Domain, resourceNames?: ReadonlyMap<string, string>): string {
+  if (domain.type === "app") {
+    return resourceNames?.get(domain.resource_id) ?? domain.resource_id
+  }
   return domain.type === "func" && domain.function_name
     ? domain.function_name
     : domain.resource_id
@@ -45,11 +47,16 @@ function resourceLabel(domain: Domain): string {
 function AttachedToCell({
   domain,
   link,
-}: Readonly<{ domain: Domain; link: boolean }>) {
+  resourceNames,
+}: Readonly<{
+  domain: Domain
+  link: boolean
+  resourceNames?: ReadonlyMap<string, string>
+}>) {
   // Hooks first, before any conditional return.
   const { t } = useTranslation()
   const route = link ? resourceRoute(domain) : null
-  const label = resourceLabel(domain)
+  const label = resourceLabel(domain, resourceNames)
   if (route) {
     return (
       <Link
@@ -77,7 +84,11 @@ function AttachedToCell({
  */
 export function buildDomainColumns(
   t: TFunction,
-  options: { linkResources?: boolean; forResource?: boolean } = {},
+  options: {
+    linkResources?: boolean
+    forResource?: boolean
+    resourceNames?: ReadonlyMap<string, string>
+  } = {},
 ): ColumnDef<Domain>[] {
   // The tenant table links each attachment to its detail page. The superadmin
   // table must NOT: those routes fetch under the operator's own X-Account-Id,
@@ -127,11 +138,17 @@ export function buildDomainColumns(
     }),
     {
       id: "attachedTo",
-      accessorFn: (d) => resourceLabel(d),
+      accessorFn: (d) => resourceLabel(d, options.resourceNames),
       header: () => t("domains.columns.attachedTo"),
       enableSorting: false,
       meta: { interactive: true } satisfies ColumnMeta,
-      cell: ({ row }) => <AttachedToCell domain={row.original} link={linkResources} />,
+      cell: ({ row }) => (
+        <AttachedToCell
+          domain={row.original}
+          link={linkResources}
+          resourceNames={options.resourceNames}
+        />
+      ),
     },
     textColumn<Domain>({
       id: "region",

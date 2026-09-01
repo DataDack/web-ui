@@ -18,7 +18,7 @@
         "networking": "Networking",
         "storage": "Storage",
         "iam": "IAM",
-        "governance": "Governance",
+        "governance": "Manage Account",
         "support": "Support",
         "monitoring": "Monitoring",
         "managedApps": "Managed Apps",
@@ -83,7 +83,7 @@
         "automationsWorkflows": "Workflows",
         "automationsIntegrations": "Integrations",
         "registeredDomains": "Registered domains",
-        "hostnames": "Hostnames"
+        "hostnames": "Domain Connections"
       },
       "soon": "Soon",
       "collapse": "Collapse",
@@ -1859,7 +1859,7 @@
     }
   },
   "domains": {
-    "title": "Domains",
+    "title": "Domain Connections",
     "subtitle": "Every hostname on your account — what it points at and where it came from.",
     "adminSubtitle": "Every hostname the platform answers for, across all accounts.",
     "searchPlaceholder": "Search hostnames…",

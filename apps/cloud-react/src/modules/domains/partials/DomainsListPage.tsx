@@ -1,13 +1,13 @@
 import { useMemo, useState } from "react"
 
+import { Button, DataTable, EmptyState, Tabs, TabsList, TabsTrigger } from "@datadack/common-ui"
 import { Globe, RefreshCw } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { PageHeader } from "@/components/console"
 import { useDebounce } from "@/hooks/use-debounce"
+import { useProjects } from "@/modules/managed-apps/managed-apps.hooks"
 import { useScreen } from "@/services/api/screen"
-
-import { Button, DataTable, EmptyState, Tabs, TabsList, TabsTrigger } from "@datadack/common-ui"
 
 import { DOMAINS_PAGE_SIZE } from "../domains.constants"
 import { useDomains } from "../domains.hooks"
@@ -46,9 +46,17 @@ export function DomainsListPage() {
   )
 
   const { data, isLoading, isError, refetch, isFetching } = useDomains(params)
+  const { data: projects = [] } = useProjects()
   const rows = data?.rows ?? []
 
-  const columns = useMemo(() => buildDomainColumns(t), [t])
+  const projectNames = useMemo(
+    () => new Map(projects.map((project) => [project.id, project.name])),
+    [projects],
+  )
+  const columns = useMemo(
+    () => buildDomainColumns(t, { resourceNames: projectNames }),
+    [projectNames, t],
+  )
 
   // Changing any filter invalidates the page number — page 4 of one filter
   // combination means nothing under another — so every change resets it.

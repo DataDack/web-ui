@@ -19,6 +19,14 @@ export const domainsRoutes: RouteObject[] = [
       return { Component: DomainsListPage }
     },
   },
+  {
+    path: "domains/hosting",
+    lazy: async () => {
+      const { CPanelHostingPage } =
+        await import("../managed-apps/partials/overview/ManagedAppsOverviewPage")
+      return { Component: CPanelHostingPage }
+    },
+  },
 ]
 
 // There is no admin route here. Both pages are tenant-scoped: every row on them

@@ -112,12 +112,10 @@ export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
         id: "status",
         header: "Status",
         cell: ({ row }) => (
-          <span className="flex flex-col items-start gap-1">
-            <BuildStatusPill status={row.original.status} />
-            {row.original.id === servingId && (
-              <span className="font-mono text-[10px] text-status-success">● serving</span>
-            )}
-          </span>
+          <BuildStatusPill
+            status={row.original.status}
+            serving={row.original.id === servingId}
+          />
         ),
       },
       {
