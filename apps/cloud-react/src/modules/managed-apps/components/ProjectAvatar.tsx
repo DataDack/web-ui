@@ -54,7 +54,11 @@ export function ProjectAvatar({
   // The framework first, the legacy type only when it is absent. Partial on
   // purpose: an id with no logo falls through to the coloured initial below,
   // which still tells two projects apart — a shared neutral glyph would not.
-  const id = framework?.trim() || type
+  // An EMPTY framework must fall through to the type, not just an absent one —
+  // a project stored before the catalogue existed carries "", not undefined,
+  // which is why this is not a `??`.
+  const named = framework?.trim() ?? ""
+  const id = named === "" ? type : named
   const mark = id ? lookupMark(id) : undefined
 
   if (mark) {

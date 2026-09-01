@@ -52,7 +52,8 @@ export function GeneralSection({ project }: Readonly<{ project: Project }>) {
   // Keyed on the catalogue framework, falling back to the legacy type. Reading
   // project_type alone only ever answered OpenNext or React, so this row showed
   // the React atom next to "Astro", "Hugo" and every other framework.
-  const mark = markFor(project.framework?.trim() || project.project_type)
+  const namedFramework = project.framework?.trim() ?? ""
+  const mark = markFor(namedFramework === "" ? project.project_type : namedFramework)
   const MarkIcon = mark.icon
 
   return (
