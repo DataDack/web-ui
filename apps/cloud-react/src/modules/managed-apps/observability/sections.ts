@@ -55,6 +55,58 @@ export const SECTION_GROUP_LABELS: Record<SectionGroup, string> = {
   deploys: "Deploys",
 }
 
+/**
+ * The project's top-level tabs, and which section groups each one owns.
+ *
+ * Three tabs rather than one, because "Observability", "Firewall" and "CDN" are
+ * how the questions actually arrive — is it up, is something attacking it, is
+ * it being served fast — and a single tab hiding seventeen sections behind a
+ * rail buried two of those three. It is also the split every comparable console
+ * uses, which is worth something on its own: a reader arriving from one of them
+ * should not have to learn a new map.
+ *
+ * The section map stays the single source. A tab is a filter over it, so adding
+ * a section is still one entry in OBSERVABILITY_SECTIONS and nothing else.
+ */
+export const SECTION_TABS = [
+  { value: "observability", label: "Observability", groups: ["traffic", "compute", "deploys"] },
+  { value: "firewall", label: "Firewall", groups: ["security"] },
+  { value: "cdn", label: "CDN", groups: ["delivery"] },
+] as const satisfies readonly {
+  value: string
+  label: string
+  groups: readonly SectionGroup[]
+}[]
+
+export type SectionTab = (typeof SECTION_TABS)[number]["value"]
+
+/** The groups one tab shows, in rail order. */
+export function groupsForTab(tab: SectionTab): readonly SectionGroup[] {
+  return SECTION_TABS.find((entry) => entry.value === tab)?.groups ?? []
+}
+
+/** The section a tab opens on: its first, preferring one with a live meter. */
+export function defaultSectionFor(tab: SectionTab): string {
+  const groups = groupsForTab(tab)
+  const inTab = OBSERVABILITY_SECTIONS.filter((section) => groups.includes(section.group))
+  // A tab whose groups are all empty cannot happen with the map as written, but
+  // it is one deleted section away from happening — and the failure would be a
+  // rail with nothing selected rather than an error anyone would notice.
+  if (inTab.length === 0) return "overview"
+  const live = inTab.find((section) => section.source === "measured")
+  return live ? live.key : inTab[0].key
+}
+
+/** Which tab owns a section — for restoring a `?section=` deep link. */
+export function tabForSection(key: string): SectionTab {
+  const section = OBSERVABILITY_SECTIONS.find((entry) => entry.key === key)
+  if (!section) return "observability"
+  return (
+    SECTION_TABS.find((tab) => (tab.groups as readonly SectionGroup[]).includes(section.group))
+      ?.value ?? "observability"
+  )
+}
+
 export const OBSERVABILITY_SECTIONS: ObservabilitySection[] = [
   // ── Traffic ───────────────────────────────────────────────────────────────
   {
@@ -142,10 +194,10 @@ export const OBSERVABILITY_SECTIONS: ObservabilitySection[] = [
     label: "CDN caching",
     group: "delivery",
     icon: Database,
-    summary: "Hit rate, misses and what the edge answered without the app.",
+    summary: "What the edge answered without waking the app.",
     source: "measured",
     origin:
-      "httpcache.Stats() plus X-Cache and the per-request cache field; static share is already in analytics totals.",
+      "PARTIAL, verified. static_requests / static_bytes_out / static_share ARE per-project in the traffic accumulator and drive this today. The asset cache's own hit rate (httpcache.Stats()) is process-wide and must NOT be presented as this project's hit rate.",
   },
   {
     key: "isr",
@@ -184,9 +236,9 @@ export const OBSERVABILITY_SECTIONS: ObservabilitySection[] = [
     group: "security",
     icon: ShieldCheck,
     summary: "Requests allowed, logged and blocked at the edge.",
-    source: "measured",
+    source: "pending",
     origin:
-      "gateway metrics FilterDecisions and FilterWouldBlock; per-request verdicts are in the request log's filter fields.",
+      "CORRECTED BY AUDIT (was 'measured'). FilterDecisions/FilterWouldBlock are Prometheus counters with NO project or hostname label — deliberately, because unbounded label cardinality takes the metrics backend down (see the traffic package doc). They are fleet-wide and cannot answer 'what happened to MY app'. Per-project firewall data needs the ClickHouse request log, which does carry project_id alongside the filter fields.",
   },
   {
     key: "rate-limits",
@@ -194,9 +246,9 @@ export const OBSERVABILITY_SECTIONS: ObservabilitySection[] = [
     group: "security",
     icon: Timer,
     summary: "Requests throttled against this app's configured ceiling.",
-    source: "measured",
+    source: "pending",
     origin:
-      "edgelimit.Stats() — allowed, refused, evicted. Now fleet-wide when GATEWAY_REDIS_URL is set.",
+      "CORRECTED BY AUDIT (was 'measured'). edgelimit.Stats() is process-wide — allowed/refused/evicted across every hostname — and is served on the gateway's PRIVATE admin listener, which the console cannot reach. Per-project throttle counts need the request log or a new per-project counter.",
   },
   {
     key: "rules",

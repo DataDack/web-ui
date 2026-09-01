@@ -15,7 +15,6 @@ import { Link, useNavigate, useParams } from "react-router-dom"
 import { DetailPage } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
-
 import { ProjectBuildsTab } from "./ProjectBuildsTab"
 import { ProjectEnvironmentTab } from "./ProjectEnvironmentTab"
 import { ProjectOverviewTab } from "./ProjectOverviewTab"
@@ -68,8 +67,8 @@ export function ProjectDetailPage() {
         title={t("managedApps.projectDetailPage.projectNotFound")}
         description={`No project with id "${id}" exists in this account.`}
         action={{
-          label: "Back to Managed Apps",
-          onClick: () => void navigate(MANAGED_APPS_ROUTES.root),
+          label: "Back to apps",
+          onClick: () => void navigate(MANAGED_APPS_ROUTES.apps),
         }}
       />
     )
@@ -79,8 +78,14 @@ export function ProjectDetailPage() {
 
   return (
     <DetailPage
-      backTo={MANAGED_APPS_ROUTES.root}
-      backLabel="Managed Apps"
+      // `.apps`, not `.root`. Root resolves to the section's DEFAULT tab, which
+      // is Overview — so Back from a project landed on a summary page rather
+      // than on the list the reader had just clicked out of, and their filter
+      // and scroll position went with it. A back affordance that does not
+      // return you where you came from is worse than none: it silently costs a
+      // second navigation every time.
+      backTo={MANAGED_APPS_ROUTES.apps}
+      backLabel="Apps"
       icon={PROJECT_TYPE_META[project.project_type].icon}
       title={project.name}
       statusNode={<ProjectStateChip state={state} />}

@@ -1,8 +1,6 @@
 import { cn } from "@datadack/common-ui"
 
-import { SECTION_GROUP_LABELS, sectionsIn, type SectionGroup } from "./sections"
-
-const GROUP_ORDER: SectionGroup[] = ["traffic", "compute", "delivery", "security", "deploys"]
+import { groupsForTab, SECTION_GROUP_LABELS, sectionsIn, type SectionTab } from "./sections"
 
 /**
  * The section rail.
@@ -18,13 +16,15 @@ const GROUP_ORDER: SectionGroup[] = ["traffic", "compute", "delivery", "security
  * it will show" is worth more than the same page silently absent.
  */
 export function SectionNav({
+  tab,
   active,
   onSelect,
-}: Readonly<{ active: string; onSelect: (key: string) => void }>) {
+}: Readonly<{ tab: SectionTab; active: string; onSelect: (key: string) => void }>) {
+  const groups = groupsForTab(tab)
   return (
     <nav aria-label="Observability sections" className="w-full shrink-0 lg:w-52">
       <ul className="space-y-4">
-        {GROUP_ORDER.map((group) => (
+        {groups.map((group) => (
           <li key={group}>
             <p className="px-2 pb-1 text-[10px] font-medium tracking-wide text-muted-foreground/70 uppercase">
               {SECTION_GROUP_LABELS[group]}

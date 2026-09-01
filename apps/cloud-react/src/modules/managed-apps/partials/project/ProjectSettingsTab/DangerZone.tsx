@@ -56,7 +56,10 @@ export function DangerZone({ project }: Readonly<{ project: Project }>) {
         loading={deleteProject.isPending}
         onConfirm={() => {
           deleteProject.mutate(project.id, {
-            onSuccess: () => void navigate(MANAGED_APPS_ROUTES.root),
+            // The list the project was in, not the section default. After a
+            // delete the reader wants to see that it is gone; Overview does not
+            // show them that.
+            onSuccess: () => void navigate(MANAGED_APPS_ROUTES.apps),
           })
         }}
       />

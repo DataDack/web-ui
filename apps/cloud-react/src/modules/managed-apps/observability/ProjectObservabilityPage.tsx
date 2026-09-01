@@ -1,10 +1,12 @@
 import { useState } from "react"
 
+import { cn } from "@datadack/common-ui"
+
 import { LogsSection } from "./LogsSection"
 import { PendingSection } from "./PendingSection"
 import { PlanUsagePanel } from "./PlanUsagePanel"
 import { SectionNav } from "./SectionNav"
-import { sectionByKey } from "./sections"
+import { defaultSectionFor, sectionByKey, SECTION_TABS, type SectionTab } from "./sections"
 import type { Project } from "../managed-apps.types"
 import { ProjectAnalyticsTab } from "../partials/project/ProjectAnalyticsTab"
 import { ProjectResourcesSection } from "../partials/project/ProjectObservabilityTab"
@@ -26,16 +28,52 @@ import { ProjectResourcesSection } from "../partials/project/ProjectObservabilit
  * still being calculated. Listing them is deliberate — see PendingSection.
  */
 export function ProjectObservabilityPage({ project }: Readonly<{ project: Project }>) {
+  const [tab, setTab] = useState<SectionTab>("observability")
   const [active, setActive] = useState("overview")
   const isN8n = project.project_type === "n8n"
   const section = sectionByKey(active)
+
+  // Changing tab moves the rail's selection with it, to that tab's first live
+  // section. Leaving the old key selected would show a Firewall page under the
+  // CDN tab — the rail and the content have to agree, and the tab is the one
+  // the reader just acted on.
+  const selectTab = (next: SectionTab) => {
+    setTab(next)
+    setActive(defaultSectionFor(next))
+  }
 
   return (
     <div className="space-y-5">
       {!isN8n && <PlanUsagePanel project={project} />}
 
+      <div
+        role="tablist"
+        aria-label="Observability areas"
+        className="flex w-fit items-center gap-0.5 rounded-lg border border-border-glass p-0.5"
+      >
+        {SECTION_TABS.map((entry) => (
+          <button
+            key={entry.value}
+            type="button"
+            role="tab"
+            aria-selected={tab === entry.value}
+            onClick={() => {
+              selectTab(entry.value)
+            }}
+            className={cn(
+              "rounded-md px-3 py-1.5 text-[12px] font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
+              tab === entry.value
+                ? "glass-1-bg-raised text-foreground"
+                : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            {entry.label}
+          </button>
+        ))}
+      </div>
+
       <div className="flex flex-col gap-5 lg:flex-row">
-        <SectionNav active={active} onSelect={setActive} />
+        <SectionNav tab={tab} active={active} onSelect={setActive} />
 
         <div className="min-w-0 flex-1">
           {/* The four sections with their own implementations. Everything else

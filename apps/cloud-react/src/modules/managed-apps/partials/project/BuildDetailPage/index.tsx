@@ -5,7 +5,6 @@ import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom"
 import { AnimatedTabs } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
-
 import { BuildLogPanel } from "./BuildLogPanel"
 import { BuildSourcePanel } from "./BuildSourcePanel"
 import { BuildWorkspaceSidebar } from "./BuildWorkspaceSidebar"
@@ -112,8 +111,8 @@ export function BuildDetailPage() {
         <div className="flex min-w-0 flex-wrap items-center justify-between gap-3">
           <div className="min-w-0">
             <nav className="flex min-w-0 items-center gap-1.5 text-[11px] text-muted-foreground">
-              <Link to={MANAGED_APPS_ROUTES.root} className="hover:text-foreground">
-                Managed Apps
+              <Link to={MANAGED_APPS_ROUTES.apps} className="hover:text-foreground">
+                Apps
               </Link>
               <span aria-hidden>/</span>
               <Link
