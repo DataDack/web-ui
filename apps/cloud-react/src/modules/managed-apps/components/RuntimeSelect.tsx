@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next"
+
 import { SmartSelect, type SmartSelectOption } from "@/components/console"
 
 import { PROJECT_TYPE_META } from "./project-type"

@@ -1,5 +1,6 @@
 import { useState } from "react"
 
+import { Button, cn, formatBytes, Skeleton } from "@datadack/common-ui"
 import {
   Binary,
   Copy,
@@ -12,7 +13,6 @@ import {
 } from "lucide-react"
 import { toast } from "sonner"
 
-import { Button, cn, formatBytes, Skeleton } from "@datadack/common-ui"
 
 import { useProjectSourceFile } from "../../../managed-apps.hooks"
 

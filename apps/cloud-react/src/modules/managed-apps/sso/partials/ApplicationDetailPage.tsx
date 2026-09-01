@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react"
-import { useNavigate, useParams } from "react-router-dom"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import type React from "react";
+import { useEffect, useState } from "react"
+
 import {
   Button,
   Card,
@@ -31,7 +31,9 @@ import {
   Textarea,
   css,
 } from "@datadack/common-ui"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { KeyRound, Palette, Plug, Plus, Settings, ShieldCheck, Tag, Trash2 } from "lucide-react"
+import { useNavigate, useParams } from "react-router-dom"
 
 import { PageHeader } from "@/components/console"
 
@@ -109,7 +111,7 @@ export function ApplicationDetailPage() {
   if (isAppLoading || isConfigsLoading) {
     return (
       <div className="flex items-center justify-center p-12 h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
       </div>
     )
   }
@@ -153,7 +155,7 @@ export function ApplicationDetailPage() {
               </Select>
             )}
 
-            <Button variant="outline" size="sm" onClick={() => setNewEnvOpen(true)}>
+            <Button variant="outline" size="sm" onClick={() => { setNewEnvOpen(true); }}>
               <Plus className="mr-1 h-4 w-4" /> Add Env
             </Button>
           </div>
@@ -213,7 +215,7 @@ export function ApplicationDetailPage() {
           <p className="text-muted-foreground text-sm mb-4">
             This application doesn't have any environments configured.
           </p>
-          <Button onClick={() => setNewEnvOpen(true)}>
+          <Button onClick={() => { setNewEnvOpen(true); }}>
             <Plus className="mr-2 h-4 w-4" /> Add Environment
           </Button>
         </div>
@@ -237,14 +239,14 @@ export function ApplicationDetailPage() {
                   id="envName"
                   placeholder="e.g. staging"
                   value={newEnvName}
-                  onChange={(e) => setNewEnvName(e.target.value)}
+                  onChange={(e) => { setNewEnvName(e.target.value); }}
                   required
                 />
               </div>
             </div>
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setNewEnvOpen(false)}>
+              <Button type="button" variant="outline" onClick={() => { setNewEnvOpen(false); }}>
                 Cancel
               </Button>
               <Button type="submit" disabled={createConfigMutation.isPending || !newEnvName.trim()}>
@@ -374,7 +376,7 @@ function EnvVarsTab({ activeConfig }: { activeConfig: Configuration }) {
   const [educationalPlatform, setEducationalPlatform] = useState("false")
 
   useEffect(() => {
-    if (activeConfig && activeConfig.config) {
+    if (activeConfig?.config) {
       const list: { key: string; value: string }[] = []
       let ed = "false"
       Object.entries(activeConfig.config).forEach(([k, v]) => {
@@ -420,7 +422,7 @@ function EnvVarsTab({ activeConfig }: { activeConfig: Configuration }) {
         payload[v.key.trim().toUpperCase()] = v.value
       }
     })
-    payload["EDUCATIONAL_PLATFORM"] = educationalPlatform
+    payload.EDUCATIONAL_PLATFORM = educationalPlatform
     updateMutation.mutate(payload)
   }
 
@@ -452,7 +454,7 @@ function EnvVarsTab({ activeConfig }: { activeConfig: Configuration }) {
               </SelectContent>
             </Select>
           </div>
-          <div className="w-10"></div>
+          <div className="w-10" />
         </div>
 
         {vars.map((v, i) => (
@@ -461,7 +463,7 @@ function EnvVarsTab({ activeConfig }: { activeConfig: Configuration }) {
               <Input
                 placeholder="VARIABLE_NAME"
                 value={v.key}
-                onChange={(e) => handleChangeRow(i, "key", e.target.value)}
+                onChange={(e) => { handleChangeRow(i, "key", e.target.value); }}
                 className="font-mono text-xs"
               />
             </div>
@@ -469,14 +471,14 @@ function EnvVarsTab({ activeConfig }: { activeConfig: Configuration }) {
               <Input
                 placeholder="value"
                 value={v.value}
-                onChange={(e) => handleChangeRow(i, "value", e.target.value)}
+                onChange={(e) => { handleChangeRow(i, "value", e.target.value); }}
                 className="font-mono text-xs"
               />
             </div>
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => handleRemoveRow(i)}
+              onClick={() => { handleRemoveRow(i); }}
               className="text-red-500 hover:text-red-700"
             >
               <Trash2 className="h-4 w-4" />
@@ -506,7 +508,7 @@ function ThemeTab({ activeConfig }: { activeConfig: Configuration }) {
   const [darkMode, setDarkMode] = useState(false)
 
   useEffect(() => {
-    if (activeConfig && activeConfig.config?.web?.theme) {
+    if (activeConfig?.config?.web?.theme) {
       const th = activeConfig.config.web.theme
       setPrimaryColor(th.primaryColor || "#000000")
       setLogoUrl(th.logoUrl || "")
@@ -550,13 +552,13 @@ function ThemeTab({ activeConfig }: { activeConfig: Configuration }) {
                 type="color"
                 id="primaryColor"
                 value={primaryColor}
-                onChange={(e) => setPrimaryColor(e.target.value)}
+                onChange={(e) => { setPrimaryColor(e.target.value); }}
                 className="w-12 h-10 p-1"
               />
               <Input
                 type="text"
                 value={primaryColor}
-                onChange={(e) => setPrimaryColor(e.target.value)}
+                onChange={(e) => { setPrimaryColor(e.target.value); }}
                 className="font-mono text-sm"
               />
             </div>
@@ -567,7 +569,7 @@ function ThemeTab({ activeConfig }: { activeConfig: Configuration }) {
             <Input
               id="fontFamily"
               value={fontFamily}
-              onChange={(e) => setFontFamily(e.target.value)}
+              onChange={(e) => { setFontFamily(e.target.value); }}
             />
           </div>
         </div>
@@ -578,7 +580,7 @@ function ThemeTab({ activeConfig }: { activeConfig: Configuration }) {
             id="logoUrl"
             placeholder="https://example.com/logo.png"
             value={logoUrl}
-            onChange={(e) => setLogoUrl(e.target.value)}
+            onChange={(e) => { setLogoUrl(e.target.value); }}
           />
         </div>
 
@@ -645,7 +647,7 @@ function MetadataTab({ activeConfig }: { activeConfig: Configuration }) {
       <CardContent className="space-y-4">
         <Textarea
           value={jsonText}
-          onChange={(e) => setJsonText(e.target.value)}
+          onChange={(e) => { setJsonText(e.target.value); }}
           rows={10}
           className="font-mono text-xs"
         />
@@ -703,7 +705,7 @@ function PoliciesTab({ activeConfig }: { activeConfig: Configuration }) {
       <CardContent className="space-y-4">
         <Textarea
           value={jsonText}
-          onChange={(e) => setJsonText(e.target.value)}
+          onChange={(e) => { setJsonText(e.target.value); }}
           rows={10}
           className="font-mono text-xs"
         />
@@ -791,7 +793,7 @@ function SettingsTab({ app, configs }: { app: any; configs: Configuration[] }) {
           <CardContent className="space-y-4">
             <div className="space-y-1">
               <Label htmlFor="appName">Application Name *</Label>
-              <Input id="appName" value={name} onChange={(e) => setName(e.target.value)} required />
+              <Input id="appName" value={name} onChange={(e) => { setName(e.target.value); }} required />
             </div>
 
             <div className="space-y-1">
@@ -799,7 +801,7 @@ function SettingsTab({ app, configs }: { app: any; configs: Configuration[] }) {
               <Textarea
                 id="appDesc"
                 value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                onChange={(e) => { setDescription(e.target.value); }}
                 rows={3}
               />
             </div>
@@ -811,7 +813,7 @@ function SettingsTab({ app, configs }: { app: any; configs: Configuration[] }) {
                   id="appWebUrl"
                   type="url"
                   value={websiteUrl}
-                  onChange={(e) => setWebsiteUrl(e.target.value)}
+                  onChange={(e) => { setWebsiteUrl(e.target.value); }}
                 />
               </div>
               <div className="space-y-1">
@@ -820,7 +822,7 @@ function SettingsTab({ app, configs }: { app: any; configs: Configuration[] }) {
                   id="appEmail"
                   type="email"
                   value={supportEmail}
-                  onChange={(e) => setSupportEmail(e.target.value)}
+                  onChange={(e) => { setSupportEmail(e.target.value); }}
                 />
               </div>
             </div>
@@ -831,7 +833,7 @@ function SettingsTab({ app, configs }: { app: any; configs: Configuration[] }) {
                 <Input
                   id="appCompany"
                   value={companyName}
-                  onChange={(e) => setCompanyName(e.target.value)}
+                  onChange={(e) => { setCompanyName(e.target.value); }}
                 />
               </div>
               <div className="space-y-1">
@@ -839,7 +841,7 @@ function SettingsTab({ app, configs }: { app: any; configs: Configuration[] }) {
                 <Input
                   id="appIndustry"
                   value={industry}
-                  onChange={(e) => setIndustry(e.target.value)}
+                  onChange={(e) => { setIndustry(e.target.value); }}
                 />
               </div>
             </div>

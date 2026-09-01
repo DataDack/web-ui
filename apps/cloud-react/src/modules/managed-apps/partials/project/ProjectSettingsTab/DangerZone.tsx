@@ -1,8 +1,8 @@
-import { useTranslation } from "react-i18next"
 import { useState } from "react"
 
 import { Button } from "@datadack/common-ui"
 import { Trash2 } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
 import { ConfirmDialog, Section } from "@/components/console"

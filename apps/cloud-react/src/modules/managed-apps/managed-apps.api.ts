@@ -21,6 +21,8 @@ import type {
   ProjectEnvVar,
   ProjectMetrics,
   ProjectSetup,
+  RequestLogQuery,
+  RequestLogsResult,
   RepoDetection,
   ProjectType,
   SourceFile,
@@ -218,6 +220,21 @@ export const managedAppsApi = {
     const params = new URLSearchParams({ path })
     if (ref) params.set("ref", ref)
     return apiGet<SourceFile>(`${BASE}/projects/${id}/source/file?${params.toString()}`)
+  },
+
+  /**
+   * The project's per-request log. Never throws for "not configured" — the
+   * server answers 200 with configured=false, because a deployment without a
+   * log store is a configuration, not a failed request.
+   */
+  projectLogs: (id: string, query: RequestLogQuery): Promise<RequestLogsResult> => {
+    const params = new URLSearchParams()
+    for (const [key, value] of Object.entries(query)) {
+      if (value !== undefined && value !== "") params.set(key, String(value))
+    }
+    const raw = params.toString()
+    const suffix = raw === "" ? "" : `?${raw}`
+    return apiGet<RequestLogsResult>(`${BASE}/projects/${id}/logs${suffix}`)
   },
 
   projectMetrics: (id: string, range: string): Promise<ProjectMetrics> =>

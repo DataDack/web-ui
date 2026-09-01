@@ -1,12 +1,6 @@
 /* eslint-disable sonarjs/no-nested-conditional -- query states are mutually exclusive render branches */
 import { useState } from "react"
 
-import { useQuery } from "@tanstack/react-query"
-import { ArrowRight, ExternalLink, Globe, Plus, Search, ShieldCheck } from "lucide-react"
-import { useNavigate } from "react-router-dom"
-
-import { useScreen } from "@/services/api/screen"
-
 import {
   Button,
   Card,
@@ -18,6 +12,12 @@ import {
   Input,
   cn,
 } from "@datadack/common-ui"
+import { useQuery } from "@tanstack/react-query"
+import { ArrowRight, ExternalLink, Globe, Plus, Search, ShieldCheck } from "lucide-react"
+import { useNavigate } from "react-router-dom"
+
+import { useScreen } from "@/services/api/screen"
+
 
 import { ssoApi } from "../sso.api"
 

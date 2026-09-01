@@ -1,8 +1,8 @@
 import type { ReactNode } from "react"
 
+import { Button, cn } from "@datadack/common-ui"
 import { GitBranch, Settings2 } from "lucide-react"
 
-import { Button, cn } from "@datadack/common-ui"
 
 import type { RepoProjectType } from "./ProjectTypePicker"
 import { GitHubMark } from "../../../components/GitHubMark"

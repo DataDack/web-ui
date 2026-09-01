@@ -1,10 +1,12 @@
-import { useTranslation } from "react-i18next"
 import { useState } from "react"
 
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@datadack/common-ui"
 import { ExternalLink, FileCode2, Loader2, ScrollText } from "lucide-react"
+import { useTranslation } from "react-i18next"
+
 
 import { Section } from "@/components/console"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@datadack/common-ui"
+
 
 import { WorkflowPreview } from "./WorkflowPreview"
 import { BuildStatusPill } from "../../../components"

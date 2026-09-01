@@ -1,8 +1,8 @@
-import { useTranslation } from "react-i18next"
 import { useEffect, useRef, useState } from "react"
 
 import { Button } from "@datadack/common-ui"
 import { CheckCircle2, Loader2, XCircle } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { toast } from "sonner"
 

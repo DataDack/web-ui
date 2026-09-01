@@ -1,5 +1,5 @@
-import { useTranslation } from "react-i18next"
 import { Package } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
 import { SourceOptionCard } from "./SourceOptionCard"
 import { GitHubMark } from "../../../components/GitHubMark"

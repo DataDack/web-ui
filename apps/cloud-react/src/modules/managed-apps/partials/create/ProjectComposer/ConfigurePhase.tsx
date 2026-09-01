@@ -1,6 +1,6 @@
-import { useTranslation } from "react-i18next"
 import { Button, Input } from "@datadack/common-ui"
 import { ChevronLeft, GitBranch } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
 import { FieldRow } from "@/components/console"
 

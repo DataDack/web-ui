@@ -16,12 +16,13 @@ const METRIC_RANGES = [
 ] as const
 
 /**
- * Observability — the app container's own resource series, read from the
+ * The Resources layer of the Observability page — the app container's own
+ * series, read from the
  * cluster's per-guest RRD data. Real measurements only: when the container is
  * not provisioned (or the cluster cannot be read) the tab says so rather than
  * charting a fabricated series.
  */
-export function ProjectObservabilityTab({ project }: Readonly<{ project: Project }>) {
+export function ProjectResourcesSection({ project }: Readonly<{ project: Project }>) {
   const [range, setRange] = useState<string>("day")
   const { data, isLoading } = useProjectMetrics(project.id, range)
 

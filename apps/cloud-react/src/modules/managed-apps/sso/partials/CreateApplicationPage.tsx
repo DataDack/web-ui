@@ -1,5 +1,6 @@
 import { useState, type SyntheticEvent } from "react"
 
+import { Button, Input, Label, Switch, Textarea } from "@datadack/common-ui"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { ShieldCheck } from "lucide-react"
 import { useNavigate } from "react-router-dom"
@@ -7,7 +8,6 @@ import { useNavigate } from "react-router-dom"
 import { PageHeader } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
-import { Button, Input, Label, Switch, Textarea } from "@datadack/common-ui"
 
 import { ssoApi } from "../sso.api"
 import type { CreateApplicationRequest } from "../sso.types"

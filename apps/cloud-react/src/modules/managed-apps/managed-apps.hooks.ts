@@ -14,6 +14,7 @@ import {
   type GitHubCallbackRequest,
   type Plan,
   type ProjectType,
+  type RequestLogQuery,
   type UpdateProjectEnvRequest,
   type UpdateProjectRequest,
   isBuildTransitional,
@@ -595,6 +596,27 @@ export function useBuildLogs(id: string, active: boolean) {
     },
     enabled: !!id,
     refetchInterval: active ? 3_000 : false,
+  })
+}
+
+/**
+ * The project's per-request runtime log.
+ *
+ * `keepPreviousData` is deliberate: changing a filter should redraw the table
+ * with the new rows, not blank it and re-run the empty state — and this view's
+ * empty state carries real meaning ("no log store connected"), so flashing it
+ * between two successful queries would be actively misleading.
+ */
+export function useProjectLogs(projectId: string, query: RequestLogQuery) {
+  const filterKey = JSON.stringify(query)
+  return useQuery({
+    queryKey: MANAGED_APPS_QUERY_KEYS.projectLogs(projectId, filterKey),
+    queryFn: () => managedAppsApi.projectLogs(projectId, query),
+    enabled: !!projectId,
+    placeholderData: (previous) => previous,
+    // No polling. A log view that refetches under the reader moves the row they
+    // were about to click; "Refresh" is a button here, not a timer.
+    staleTime: 30_000,
   })
 }
 

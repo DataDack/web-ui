@@ -1,4 +1,3 @@
-import { useTranslation } from "react-i18next"
 import {
   Accordion,
   AccordionContent,
@@ -8,6 +7,7 @@ import {
   Button,
 } from "@datadack/common-ui"
 import { Network } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
 import { SmartSelect, type SmartSelectOption } from "@/components/console"
 import { useVPCs, useVPCSubnets } from "@/modules/vpc/vpc.hooks"

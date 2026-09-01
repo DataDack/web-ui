@@ -1,7 +1,7 @@
+import { Button, EmptyState, Skeleton } from "@datadack/common-ui"
 import {
   Activity,
   Braces,
-  ChartLine,
   GitPullRequest,
   Globe,
   Hammer,
@@ -15,12 +15,9 @@ import { Link, useNavigate, useParams } from "react-router-dom"
 import { DetailPage } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
-import { Button, EmptyState, Skeleton } from "@datadack/common-ui"
 
-import { ProjectAnalyticsTab } from "./ProjectAnalyticsTab"
 import { ProjectBuildsTab } from "./ProjectBuildsTab"
 import { ProjectEnvironmentTab } from "./ProjectEnvironmentTab"
-import { ProjectObservabilityTab } from "./ProjectObservabilityTab"
 import { ProjectOverviewTab } from "./ProjectOverviewTab"
 import { ProjectSettingsTab } from "./ProjectSettingsTab"
 import { ResourceDomainsTab } from "../../../domains/partials/ResourceDomainsTab"
@@ -29,6 +26,7 @@ import { MANAGED_APPS_ROUTES } from "../../managed-apps.constants"
 import { useProject, useProjectBuilds } from "../../managed-apps.hooks"
 import { deriveProjectState, projectPollInterval } from "../../managed-apps.state"
 import { isBuildTransitional } from "../../managed-apps.types"
+import { ProjectObservabilityPage } from "../../observability"
 
 /**
  * Project detail — deployment status and public URL (Overview), deploy
@@ -120,16 +118,13 @@ export function ProjectDetailPage() {
           content: <ProjectEnvironmentTab project={project} />,
         },
         {
+          // One tab, three layers. Analytics and Observability were two, and
+          // the split described how the platform collects the data rather than
+          // how anyone asks for it — see ProjectObservabilityPage.
           value: "observability",
           label: "Observability",
           icon: Activity,
-          content: <ProjectObservabilityTab project={project} />,
-        },
-        {
-          value: "analytics",
-          label: "Analytics",
-          icon: ChartLine,
-          content: <ProjectAnalyticsTab project={project} />,
+          content: <ProjectObservabilityPage project={project} />,
         },
         {
           value: "domains",

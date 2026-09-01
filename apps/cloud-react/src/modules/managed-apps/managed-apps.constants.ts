@@ -116,4 +116,11 @@ export const MANAGED_APPS_QUERY_KEYS = {
     ["managed-apps", "projects", id, "metrics", range] as const,
   projectAnalytics: (id: string, range: string) =>
     ["managed-apps", "projects", id, "analytics", range] as const,
+  /**
+   * Keyed by the whole filter, not just the range: every filter is a separate
+   * server query, and sharing one key would show the previous filter's rows
+   * under the new filter's heading while the refetch was in flight.
+   */
+  projectLogs: (id: string, filterKey: string) =>
+    ["managed-apps", "projects", id, "logs", filterKey] as const,
 }

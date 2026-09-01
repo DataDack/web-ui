@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next"
+
 import { KeyValueGrid, Section } from "@/components/console"
 
 import type { Project } from "../../managed-apps.types"

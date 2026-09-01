@@ -1,10 +1,10 @@
 import { useMemo, useState } from "react"
 
+import { Button, Skeleton } from "@datadack/common-ui"
 import { useTranslation } from "react-i18next"
 
 import { ConfirmDialog, Section } from "@/components/console"
 
-import { Button, Skeleton } from "@datadack/common-ui"
 
 import { EnvVarEditor, storedEnvRows, toEnvMap, type EnvRow } from "../../../components"
 import { useProjectEnv, useUpdateProjectEnv } from "../../../managed-apps.hooks"

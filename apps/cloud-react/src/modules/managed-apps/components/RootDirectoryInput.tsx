@@ -1,6 +1,6 @@
-import { useTranslation } from "react-i18next"
 import { Input } from "@datadack/common-ui"
 import { FolderTree } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
 import { FieldRow } from "@/components/console"
 

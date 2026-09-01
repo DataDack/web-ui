@@ -1,10 +1,10 @@
+import { Button, EmptyState, Skeleton } from "@datadack/common-ui"
 import { ExternalLink, FileCode2, PackageX, RotateCcw, ScrollText, X } from "lucide-react"
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom"
 
 import { AnimatedTabs } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
-import { Button, EmptyState, Skeleton } from "@datadack/common-ui"
 
 import { BuildLogPanel } from "./BuildLogPanel"
 import { BuildSourcePanel } from "./BuildSourcePanel"

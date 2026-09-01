@@ -512,6 +512,62 @@ export interface BuildLogs {
 }
 
 // ---------------------------------------------------------------------------
+// Runtime request logs — /managedapps/projects/:id/logs
+// ---------------------------------------------------------------------------
+
+/** One request the edge served, as the gateway recorded it. */
+export interface RequestLogRow {
+  ts: string
+  trace_id: string
+  host: string
+  method: string
+  path: string
+  status: number
+  /** The gateway's machine token for a failure — "ok" on success. */
+  code: string
+  /** How the edge answered: hit, stale, miss, or empty when it never resolved. */
+  cache: string
+  bytes: number
+  took_ms: number
+  upstream_ms: number
+  client_ip: string
+  proto: string
+  user_agent: string
+  referer: string
+  region: string
+  /** What the request filter did: "block", "log", or empty when nothing matched. */
+  filter: string
+  filter_rules: string
+}
+
+/**
+ * GET /projects/:id/logs
+ *
+ * `configured` is the field that matters most. False means this deployment has
+ * no log store connected, so nothing has EVER been recorded — which is a
+ * different thing from a filter that matched no rows, and the view must not
+ * render them the same way.
+ */
+export interface RequestLogsResult {
+  configured: boolean
+  rows: RequestLogRow[]
+  retention_days: number
+}
+
+/** The windows the logs view offers. Bounded by the store's retention. */
+export type RequestLogRange = "1h" | "6h" | "24h" | "7d" | "30d"
+
+export interface RequestLogQuery {
+  range?: RequestLogRange
+  /** "2xx" | "3xx" | "4xx" | "5xx" — omitted means every status. */
+  status_class?: string
+  method?: string
+  /** Case-insensitive substring of the path. */
+  search?: string
+  limit?: number
+}
+
+// ---------------------------------------------------------------------------
 // Source browsing — /managedapps/projects/:id/source
 // ---------------------------------------------------------------------------
 

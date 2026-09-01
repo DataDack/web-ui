@@ -1,8 +1,8 @@
-import { useTranslation } from "react-i18next"
 import { useState } from "react"
 
 import { Button } from "@datadack/common-ui"
 import { Check, ChevronDown, ChevronRight, Copy } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
 interface WorkflowPreviewProps {

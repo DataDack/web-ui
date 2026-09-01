@@ -1,12 +1,12 @@
 import { useState } from "react"
 
+import { Button } from "@datadack/common-ui"
 import { Info } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
 import { Section } from "@/components/console"
 
-import { Button } from "@datadack/common-ui"
 
 import { BuildSettingsSection, type BuildSettingsValue } from "../../../components"
 import { MANAGED_APPS_ROUTES } from "../../../managed-apps.constants"

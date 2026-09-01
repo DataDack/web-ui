@@ -10,9 +10,9 @@ import {
   type DataTableColumnMeta,
 } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
-import { ChevronDown, Hammer, RotateCcw, X } from "lucide-react"
+import { ChevronDown, Code2, Hammer, RotateCcw, ScrollText, X } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import { useNavigate, useSearchParams } from "react-router-dom"
+import { Link, useNavigate, useSearchParams } from "react-router-dom"
 
 import { Section } from "@/components/console"
 
@@ -211,7 +211,35 @@ export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
           // resolved one has nothing to redeploy.
           if (build.commit_sha === "") return null
           return (
-            <div className="text-right">
+            <div className="flex items-center justify-end gap-1">
+              {/* The two destinations a row actually has, stated rather than
+                  implied. Removing the chevron made the row's door invisible;
+                  naming the doors is better than restoring an arrow that said
+                  only "something happens here" — and Code was reachable from
+                  nowhere on this page once the chevron went. */}
+              <Button
+                asChild
+                size="sm"
+                variant="ghost"
+                className="h-7 gap-1 px-2 text-[12px] text-muted-foreground hover:text-foreground"
+              >
+                <Link to={MANAGED_APPS_ROUTES.build(project.id, build.id)}>
+                  <ScrollText className="size-3" />
+                  Logs
+                </Link>
+              </Button>
+              <Button
+                asChild
+                size="sm"
+                variant="ghost"
+                className="h-7 gap-1 px-2 text-[12px] text-muted-foreground hover:text-foreground"
+                title={`Browse the repository at ${shortSha(build.commit_sha)}`}
+              >
+                <Link to={`${MANAGED_APPS_ROUTES.build(project.id, build.id)}?tab=source`}>
+                  <Code2 className="size-3" />
+                  Code
+                </Link>
+              </Button>
               <Button
                 size="sm"
                 variant="ghost"

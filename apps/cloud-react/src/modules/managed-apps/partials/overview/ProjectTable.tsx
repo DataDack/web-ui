@@ -1,10 +1,10 @@
 import { type ReactNode, useMemo } from "react"
 
+import { CopyButton, DataTable } from "@datadack/common-ui"
 import type { ColumnDef, SortingState } from "@tanstack/react-table"
 import { ExternalLink, GitBranch } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
 
-import { CopyButton, DataTable } from "@datadack/common-ui"
 import { type ColumnMeta } from "@/components/console"
 
 import { ProjectActionsMenu } from "./ProjectActionsMenu"

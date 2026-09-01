@@ -1,3 +1,4 @@
+import { Button } from "@datadack/common-ui"
 import {
   Box,
   Clock3,
@@ -8,7 +9,6 @@ import {
   Timer,
 } from "lucide-react"
 
-import { Button } from "@datadack/common-ui"
 
 import { BuildWaterfall } from "./BuildWaterfall"
 import type { Build, Project } from "../../../managed-apps.types"

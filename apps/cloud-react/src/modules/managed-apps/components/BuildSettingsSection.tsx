@@ -1,4 +1,3 @@
-import { useTranslation } from "react-i18next"
 import {
   Accordion,
   AccordionContent,
@@ -6,6 +5,7 @@ import {
   AccordionTrigger,
   Skeleton,
 } from "@datadack/common-ui"
+import { useTranslation } from "react-i18next"
 
 import { OverrideField } from "@/components/console"
 

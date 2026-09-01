@@ -1,8 +1,8 @@
-import { useTranslation } from "react-i18next"
 import { useState } from "react"
 
 import { Badge, Button } from "@datadack/common-ui"
 import { Archive, ExternalLink, GitFork, Lock } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
 import { SmartSelect, type SmartSelectOption } from "@/components/console"
 

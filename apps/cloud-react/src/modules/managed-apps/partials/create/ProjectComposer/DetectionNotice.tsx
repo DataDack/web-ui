@@ -1,8 +1,8 @@
-import { useTranslation } from "react-i18next"
 import { useState } from "react"
 
 import { Button } from "@datadack/common-ui"
 import { ChevronDown, ChevronRight, Loader2, Sparkles, TriangleAlert } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
 import type { RepoDetection } from "../../../managed-apps.types"
 

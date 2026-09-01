@@ -1,5 +1,5 @@
-import { useTranslation } from "react-i18next"
 import { Badge, cn } from "@datadack/common-ui"
+import { useTranslation } from "react-i18next"
 
 import { FieldRow, SegmentedControl, type SegmentedOption } from "@/components/console"
 

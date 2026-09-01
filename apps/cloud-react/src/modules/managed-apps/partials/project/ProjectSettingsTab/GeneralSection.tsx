@@ -1,10 +1,10 @@
 import { useState } from "react"
 
+import { Button, Input } from "@datadack/common-ui"
 import { useTranslation } from "react-i18next"
 
 import { FieldRow, Section } from "@/components/console"
 
-import { Button, Input } from "@datadack/common-ui"
 
 import { PROJECT_TYPE_META } from "../../../components"
 import { useUpdateProject } from "../../../managed-apps.hooks"

@@ -1,8 +1,8 @@
 import type { ReactNode } from "react"
 
+import { cn } from "@datadack/common-ui"
 import { ArrowRight } from "lucide-react"
 
-import { cn } from "@datadack/common-ui"
 
 interface SourceOptionCardProps {
   icon: ReactNode

@@ -1,10 +1,10 @@
 import type { CSSProperties } from "react"
 
+import { cn } from "@datadack/common-ui"
 import { Check, FolderTree, Loader2, TriangleAlert } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import type { IconType } from "react-icons"
 
-import { cn } from "@datadack/common-ui"
 
 import { FRAMEWORK_MARKS } from "../../../components"
 import type { RepoDetection } from "../../../managed-apps.types"

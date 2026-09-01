@@ -1,4 +1,5 @@
 import { apiDelete, apiGet, apiPatch, apiPost, apiPut } from "@/services/api/client"
+
 import type {
   Application,
   Configuration,

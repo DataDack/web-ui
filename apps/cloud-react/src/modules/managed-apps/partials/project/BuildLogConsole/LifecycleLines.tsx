@@ -1,6 +1,6 @@
+import { cn } from "@datadack/common-ui"
 import { ExternalLink, Loader2 } from "lucide-react"
 
-import { cn } from "@datadack/common-ui"
 
 import { eventClock, eventOffset, type LifecycleEvent, type LifecycleTone } from "./lifecycle"
 

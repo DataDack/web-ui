@@ -1,6 +1,6 @@
-import { useTranslation } from "react-i18next"
 import { Button } from "@datadack/common-ui"
 import { ArrowLeft } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
 import { ImageCard } from "./ImageCard"
 import { IMAGE_CATALOG } from "./images.catalog"

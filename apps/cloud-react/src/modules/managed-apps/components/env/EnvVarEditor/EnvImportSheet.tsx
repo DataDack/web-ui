@@ -1,4 +1,3 @@
-import { useTranslation } from "react-i18next"
 import { useMemo, useState } from "react"
 
 import {
@@ -12,6 +11,7 @@ import {
   Textarea,
 } from "@datadack/common-ui"
 import { AlertTriangle } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
 import { parseDotEnv } from "./env-parse"
 

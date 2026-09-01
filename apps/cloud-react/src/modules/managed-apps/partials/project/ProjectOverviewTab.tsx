@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
 import { CurrentDeploymentHero } from "./CurrentDeploymentHero"
+import { DeploymentStats } from "./DeploymentStats"
 import { LiveDeployConsole } from "./LiveDeployConsole"
 import { RuntimePanel } from "./RuntimePanel"
 import { ProjectTypeBadge } from "../../components"
@@ -85,15 +86,23 @@ export function ProjectOverviewTab({ project }: Readonly<{ project: Project }>) 
         />
       )}
 
-      <CurrentDeploymentHero
-        project={project}
-        state={state}
-        latestBuild={latestBuild}
-        deploying={createBuild.isPending}
-        onDeploy={() => {
-          createBuild.mutate(project.id)
-        }}
-      />
+      {/* The deployment and the two numbers that describe it, side by side.
+          Both tiles read the gateway's own counters, so what the card claims is
+          live and what the tiles claim it served come from the same place. */}
+      <div className="flex flex-col gap-5 lg:flex-row lg:items-start">
+        <div className="min-w-0 flex-1">
+          <CurrentDeploymentHero
+            project={project}
+            state={state}
+            latestBuild={latestBuild}
+            deploying={createBuild.isPending}
+            onDeploy={() => {
+              createBuild.mutate(project.id)
+            }}
+          />
+        </div>
+        {!isN8n && <DeploymentStats project={project} />}
+      </div>
 
       {/* Renders itself away the moment the build settles — see the component. */}
       <LiveDeployConsole projectId={project.id} build={latestBuild} />
