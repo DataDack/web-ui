@@ -2,8 +2,8 @@ import type { CSSProperties } from "react"
 
 import { cn } from "@datadack/common-ui"
 
+import { lookupMark } from "./framework-marks"
 import type { ProjectType } from "../managed-apps.types"
-import { FRAMEWORK_MARKS } from "./project-type"
 
 /**
  * Two projects on the same repository, with the same branch and the same last
@@ -30,13 +30,32 @@ interface ProjectAvatarProps {
   seed: string
   /** Rendered inside the mark when there is no logo; the project's first character. */
   label: string
-  /** Which framework's logo to show. Omitted falls back to the initial. */
+  /**
+   * The catalogue framework id — this is what picks the logo.
+   *
+   * `type` is the fallback and nothing more. It only ever holds "opennext",
+   * "react" or "n8n", so keying the mark off it drew the React atom on every
+   * Vue, Astro, Hugo and SvelteKit project on the page — each of which reports
+   * `project_type: "react"`.
+   */
+  framework?: string
+  /** Legacy fallback for a project stored before the catalogue existed. */
   type?: ProjectType
   className?: string
 }
 
-export function ProjectAvatar({ seed, label, type, className }: Readonly<ProjectAvatarProps>) {
-  const mark = type ? FRAMEWORK_MARKS[type] : undefined
+export function ProjectAvatar({
+  seed,
+  label,
+  framework,
+  type,
+  className,
+}: Readonly<ProjectAvatarProps>) {
+  // The framework first, the legacy type only when it is absent. Partial on
+  // purpose: an id with no logo falls through to the coloured initial below,
+  // which still tells two projects apart — a shared neutral glyph would not.
+  const id = framework?.trim() || type
+  const mark = id ? lookupMark(id) : undefined
 
   if (mark) {
     const Icon = mark.icon

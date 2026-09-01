@@ -17,6 +17,7 @@ import {
   SiLit,
   SiMarkdown,
   SiNestjs,
+  SiN8N,
   SiNextdotjs,
   SiNuxt,
   SiPreact,
@@ -93,6 +94,11 @@ export const CATALOG_MARKS: Record<string, FrameworkMark> = {
   flask: { icon: SiFlask, color: "#000000", colorDark: "#FFFFFF" },
   django: { icon: SiDjango, color: "#092E20", colorDark: "#44B78B" },
   go: { icon: SiGo, color: "#00ADD8" },
+
+  // Not a catalogue framework — n8n has no repository and no build — but it IS
+  // a project_type, and markFor is the fallback path for a project whose
+  // framework field is empty, so the id has to resolve to something.
+  n8n: { icon: SiN8N, color: "#EA4B71" },
 }
 
 /** The generic mark for a framework this build has no logo for. */
@@ -106,5 +112,17 @@ const FALLBACK: FrameworkMark = { icon: Boxes, color: "#8B8B93" }
  * genuinely build is worse than one that renders a neutral glyph.
  */
 export function markFor(frameworkID: string): FrameworkMark {
-  return CATALOG_MARKS[frameworkID] ?? FALLBACK
+  return lookupMark(frameworkID) ?? FALLBACK
+}
+
+/**
+ * The mark for a catalogue id, or undefined when this build has no logo for it.
+ *
+ * The partial answer, for the callers that have something better than a generic
+ * glyph to fall back to — ProjectAvatar draws a per-project coloured initial,
+ * which keeps two unknown-framework projects telling apart. Rendering the same
+ * neutral box on both would undo the reason that component exists.
+ */
+export function lookupMark(frameworkID: string): FrameworkMark | undefined {
+  return CATALOG_MARKS[frameworkID]
 }

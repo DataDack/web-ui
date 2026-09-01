@@ -278,6 +278,15 @@ export interface Project {
   subdomain: string
   url: string
   project_type: ProjectType
+  /**
+   * Catalogue framework id — "gatsby", "sveltekit", "opennext". The API has
+   * always returned it; leaving it off this interface is what forced every
+   * consumer to fall back to `project_type`, which only distinguishes OpenNext
+   * from "react" and so drew a React logo on Vue, Astro, Hugo and the rest.
+   *
+   * Optional because a project created before the catalogue existed has none.
+   */
+  framework?: string
   plan: ProjectPlan
   installation_id: number
   repo_owner: string

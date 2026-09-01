@@ -6,7 +6,8 @@ import { useTranslation } from "react-i18next"
 
 import { FieldRow, Section } from "@/components/console"
 
-import { FRAMEWORK_MARKS, PROJECT_TYPE_META } from "../../../components"
+import { PROJECT_TYPE_META } from "../../../components"
+import { markFor } from "../../../components/framework-marks"
 import { useUpdateProject } from "../../../managed-apps.hooks"
 import type { Project } from "../../../managed-apps.types"
 
@@ -48,7 +49,10 @@ export function GeneralSection({ project }: Readonly<{ project: Project }>) {
   // The framework's OWN logo, not lucide's stand-in. A runtime row that shows
   // the Next.js mark says what it is before the word is read, and the same map
   // already colours every project tile in the list.
-  const mark = FRAMEWORK_MARKS[project.project_type]
+  // Keyed on the catalogue framework, falling back to the legacy type. Reading
+  // project_type alone only ever answered OpenNext or React, so this row showed
+  // the React atom next to "Astro", "Hugo" and every other framework.
+  const mark = markFor(project.framework?.trim() || project.project_type)
   const MarkIcon = mark.icon
 
   return (

@@ -69,6 +69,7 @@ export function ProjectCard({
         <ProjectAvatar
           seed={project.id}
           label={project.name}
+          framework={project.framework}
           type={project.project_type}
           className="size-8 rounded-sm"
         />
