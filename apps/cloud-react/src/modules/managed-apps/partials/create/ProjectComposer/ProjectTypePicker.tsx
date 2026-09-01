@@ -5,15 +5,18 @@ import { Check, FolderTree, Loader2, TriangleAlert } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import type { IconType } from "react-icons"
 
-
-import { FRAMEWORK_MARKS } from "../../../components"
-import type { RepoDetection } from "../../../managed-apps.types"
+import { markFor } from "../../../components/framework-marks"
+import type { FrameworkOption, RepoDetection } from "../../../managed-apps.types"
 
 /** What a repository can be built as here. `custom` is not buildable yet. */
 export type RepoProjectType = "opennext" | "react" | "custom"
 
 interface TypeOption {
   value: RepoProjectType
+  /** The catalogue id — what is stored on the project and sent to the runner. */
+  framework: string
+  /** The framework's own documentation, when the catalogue carries one. */
+  docs?: string
   label: string
   sub: string
   body: string
@@ -27,37 +30,77 @@ interface TypeOption {
   comingSoon?: boolean
 }
 
-const OPTIONS: TypeOption[] = [
-  {
-    value: "opennext",
-    label: "Next.js",
-    sub: "built with OpenNext",
-    body: "SSR, API routes and static assets.",
-    ...FRAMEWORK_MARKS.opennext,
-  },
-  {
-    value: "react",
-    label: "React",
-    sub: "static build",
-    body: "Vite or CRA, compiled once and served as files.",
-    ...FRAMEWORK_MARKS.react,
-  },
-  {
-    value: "custom",
-    label: "Custom",
-    sub: "your own Dockerfile",
-    body: "Bring any stack. Not available yet.",
-    ...FRAMEWORK_MARKS.custom,
-    comingSoon: true,
-  },
-]
+/**
+ * The catalogue's serving class, as a card.
+ *
+ * `class` is the field to key off — it is what the build pipeline branches on,
+ * so it is also what decides whether a framework is offerable at all:
+ *
+ *   static   the output tree IS the site. Builds today.
+ *   hybrid   a tree AND a request handler. Builds today.
+ *   dynamic  a server with nothing servable. The pipeline refuses these, and
+ *            four of the six need a toolchain the runner does not install — so
+ *            they are shown, disabled, with the reason. Hiding them would make
+ *            the console disagree with a catalogue the customer can read on the
+ *            pricing page.
+ */
+const CLASS_COPY: Record<FrameworkOption["class"], { sub: string; body: string }> = {
+  static: { sub: "static build", body: "Compiled once and served from the edge." },
+  hybrid: { sub: "server-rendered", body: "Pages and API routes, plus static assets." },
+  dynamic: { sub: "server only", body: "Runs a server. Not available yet." },
+}
+
+/** The project type a class maps to — what the create API still takes. */
+function typeForClass(cls: FrameworkOption["class"]): RepoProjectType {
+  return cls === "hybrid" ? "opennext" : "react"
+}
+
+/**
+ * Catalogue rows as cards, ordered so the detected one leads.
+ *
+ * Built from the API rather than a constant in this file. The list used to be
+ * three hardcoded entries while the platform's catalogue carried thirty-seven,
+ * so every framework the build pipeline could already produce was unreachable
+ * from the form that chooses one.
+ */
+function optionsFrom(
+  frameworks: FrameworkOption[] | undefined,
+  detectedFramework: string | undefined,
+): TypeOption[] {
+  const rows = (frameworks ?? []).map((row) => ({
+    value: typeForClass(row.class),
+    framework: row.id,
+    label: row.label,
+    sub: CLASS_COPY[row.class].sub,
+    body: CLASS_COPY[row.class].body,
+    docs: row.docs,
+    // Shown but never selectable. See CLASS_COPY.
+    comingSoon: row.class === "dynamic",
+    ...markFor(row.id),
+  }))
+
+  // The detected framework first, because it is the answer in the
+  // overwhelmingly common case and scrolling past thirty cards to reach it is
+  // the form asking a question it has already answered.
+  return rows.sort((a, b) => {
+    if (a.framework === detectedFramework) return -1
+    if (b.framework === detectedFramework) return 1
+    if (a.comingSoon !== b.comingSoon) return a.comingSoon ? 1 : -1
+    return a.label.localeCompare(b.label)
+  })
+}
 
 /** How many monorepo candidates are worth offering before it is a file browser. */
 const MAX_CANDIDATES = 6
 
 interface ProjectTypePickerProps {
   value: RepoProjectType | undefined
-  onChange: (type: RepoProjectType) => void
+  /** The catalogue id currently chosen, when one is. */
+  framework: string | undefined
+  onChange: (type: RepoProjectType, framework: string) => void
+  /** The catalogue. Undefined while it loads. */
+  frameworks: FrameworkOption[] | undefined
+  frameworksLoading: boolean
   detection: RepoDetection | undefined
   detecting: boolean
   detectionFailed: boolean
@@ -83,7 +126,10 @@ interface ProjectTypePickerProps {
  */
 export function ProjectTypePicker({
   value,
+  framework,
   onChange,
+  frameworks,
+  frameworksLoading,
   detection,
   detecting,
   detectionFailed,
@@ -95,9 +141,18 @@ export function ProjectTypePicker({
   // a repository, so it is not a case to handle here.
   const detected =
     detection?.detected && detection.project_type !== "n8n" ? detection.project_type : undefined
+  const detectedFramework = detection?.detected ? detection.framework : undefined
 
-  const labelOf = (type: RepoProjectType) =>
-    OPTIONS.find((option) => option.value === type)?.label ?? type
+  const options = optionsFrom(frameworks, detectedFramework)
+
+  // Prefer the DETECTED framework's own label over the first card that happens
+  // to share its type: "this repository looks like SvelteKit" is a sentence
+  // somebody can act on; "looks like React" when it is SvelteKit is not.
+  const labelOf = (type: RepoProjectType) => {
+    const byFramework = options.find((option) => option.framework === detectedFramework)
+    if (byFramework?.value === type) return byFramework.label
+    return options.find((option) => option.value === type)?.label ?? type
+  }
 
   // We read the tree and there is no package.json under this root: the
   // repository is not a Next.js or React app, and no choice on these cards can
@@ -106,8 +161,17 @@ export function ProjectTypePicker({
 
   const blockedReason = (option: TypeOption): string | undefined => {
     if (option.comingSoon) return "Coming soon"
+    if (frameworksLoading) return "Loading frameworks…"
     if (detecting) return "Checking the repository…"
     if (unbuildable) return "Nothing to build here"
+    if (detectedFramework) {
+      // A framework-level detection is exact, so it gates exactly one card
+      // rather than a whole type.
+      if (detectedFramework === option.framework) return undefined
+      const detectedLabel =
+        options.find((entry) => entry.framework === detectedFramework)?.label ?? detectedFramework
+      return `This repository looks like ${detectedLabel}`
+    }
     if (!detected || detected === option.value) return undefined
     return `This repository looks like ${labelOf(detected)}`
   }
@@ -133,11 +197,15 @@ export function ProjectTypePicker({
       </p>
 
       <div className="grid items-stretch gap-3 sm:grid-cols-3">
-        {OPTIONS.map((option) => {
+        {options.map((option) => {
           const reason = blockedReason(option)
           const disabled = Boolean(reason)
-          const selected = value === option.value
-          const isDetected = detected === option.value
+          // Per FRAMEWORK, not per type: twenty-five cards share the type
+          // "react", so selecting on type alone would light all of them.
+          const selected = framework ? framework === option.framework : value === option.value
+          const isDetected = detectedFramework
+            ? detectedFramework === option.framework
+            : detected === option.value
           const Icon = option.icon
 
           return (
@@ -147,7 +215,7 @@ export function ProjectTypePicker({
               disabled={disabled}
               aria-pressed={selected}
               onClick={() => {
-                onChange(option.value)
+                onChange(option.value, option.framework)
               }}
               className={cn(
                 "group relative flex h-full flex-col gap-2.5 overflow-hidden rounded-xl border glass-1-bg p-3.5 text-left shadow-xs",

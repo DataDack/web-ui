@@ -325,6 +325,8 @@ export interface Project {
 export interface CreateProjectRequest {
   name?: string
   project_type: ProjectType
+  /** Catalogue framework id. Optional; an unknown id resolves to the default. */
+  framework?: string
   /** Omit to let the server apply the free tier. */
   plan?: ProjectPlan
   installation_id?: number
@@ -680,8 +682,53 @@ export interface GitHubRepo {
  * than present a default as a detection. `confidence: "low"` means a manifest
  * was read but nothing identifiable was in it.
  */
+/**
+ * One framework as the create form consumes it.
+ *
+ * A flattened projection of the catalogue row, not the row itself: the form
+ * needs something to render, and `runs_nothing` answers the question it
+ * actually asks — whether to show memory, timeout and cold-start controls at
+ * all. A static site has none of those, and a form offering them describes a
+ * product the platform does not have.
+ */
+export interface FrameworkOption {
+  id: string
+  label: string
+  /** static | hybrid | dynamic — THE field to key UI off. */
+  class: "static" | "hybrid" | "dynamic"
+  docs?: string
+  runs_nothing: boolean
+  serves_static_from_edge: boolean
+  install_command?: string
+  build_command?: string
+  output_dir: string
+  toolchain?: string
+  toolchain_version?: string
+  /** Omitted for a static framework: there is nothing to size. */
+  memory_size_mb?: number
+  timeout_seconds?: number
+}
+
+/** GET /projects/frameworks. */
+export interface FrameworkCatalog {
+  frameworks: FrameworkOption[]
+  /**
+   * Where the catalogue came from — "seed" or the S3 collection. It is how an
+   * operator tells "my edit has not taken effect" from "my edit was wrong",
+   * which is otherwise indistinguishable from outside.
+   */
+  source: string
+}
+
 export interface RepoDetection {
   project_type: ProjectType
+  /**
+   * The catalogue framework behind the repository — "gatsby", "sveltekit",
+   * "astro". Empty when nothing in the manifest names one, which is not an
+   * error: the project falls back to its TYPE, exactly as every project created
+   * before the catalogue does.
+   */
+  framework?: string
   install_command: string
   build_command: string
   output_dir: string

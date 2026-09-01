@@ -307,6 +307,22 @@ export function useProject(id: string, refetchInterval = 30_000) {
   })
 }
 
+/**
+ * The framework catalogue.
+ *
+ * Long staleTime because this is platform data that changes when somebody edits
+ * a file in a bucket, not per account and not per render. Refetching it on
+ * every mount of the create form would be a request per keystroke of
+ * navigation for an answer that is the same all day.
+ */
+export function useFrameworks() {
+  return useQuery({
+    queryKey: MANAGED_APPS_QUERY_KEYS.frameworks,
+    queryFn: () => managedAppsApi.frameworks(),
+    staleTime: 30 * 60 * 1000,
+  })
+}
+
 export function useCreateProject() {
   const queryClient = useQueryClient()
   return useMutation({

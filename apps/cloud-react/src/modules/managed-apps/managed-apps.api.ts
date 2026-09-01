@@ -20,6 +20,7 @@ import type {
   ProjectAnalytics,
   ProjectEnvVar,
   ProjectMetrics,
+  FrameworkCatalog,
   ProjectSetup,
   RequestLogQuery,
   RequestLogsResult,
@@ -236,6 +237,15 @@ export const managedAppsApi = {
     const suffix = raw === "" ? "" : `?${raw}`
     return apiGet<RequestLogsResult>(`${BASE}/projects/${id}/logs${suffix}`)
   },
+
+  /**
+   * The framework catalogue the create form renders.
+   *
+   * Platform data, identical for every account, so it needs only the projects
+   * read permission — the same one the listing carries.
+   */
+  frameworks: (): Promise<FrameworkCatalog> =>
+    apiGet<FrameworkCatalog>(`${BASE}/projects/frameworks`),
 
   projectMetrics: (id: string, range: string): Promise<ProjectMetrics> =>
     apiGet<ProjectMetrics>(`${BASE}/projects/${id}/metrics?range=${encodeURIComponent(range)}`),

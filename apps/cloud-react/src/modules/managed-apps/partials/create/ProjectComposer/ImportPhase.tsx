@@ -4,12 +4,11 @@ import { useTranslation } from "react-i18next"
 
 import { FieldRow } from "@/components/console"
 
-
 import { ProjectTypePicker, type RepoProjectType } from "./ProjectTypePicker"
 import { GitHubAccountSelect, RepoSelect } from "../../../components"
 import { ConnectRepoArt } from "../../../components/illustrations/ConnectRepoArt"
 import { GITHUB_INSTALLATIONS_URL } from "../../../managed-apps.constants"
-import { useGitHubConnections } from "../../../managed-apps.hooks"
+import { useFrameworks, useGitHubConnections } from "../../../managed-apps.hooks"
 import type { GitHubRepo, RepoDetection } from "../../../managed-apps.types"
 
 interface ImportPhaseProps {
@@ -22,7 +21,9 @@ interface ImportPhaseProps {
   errors: { installation?: string; repo?: string }
   /** The chosen build type, and what the repository says it should be. */
   projectType: RepoProjectType | undefined
-  onProjectTypeChange: (type: RepoProjectType) => void
+  /** The catalogue id chosen, when one is. */
+  framework: string | undefined
+  onProjectTypeChange: (type: RepoProjectType, framework: string) => void
   detection: RepoDetection | undefined
   detecting: boolean
   detectionFailed: boolean
@@ -48,6 +49,7 @@ export function ImportPhase({
   connecting,
   errors,
   projectType,
+  framework,
   onProjectTypeChange,
   detection,
   detecting,
@@ -57,6 +59,9 @@ export function ImportPhase({
 }: Readonly<ImportPhaseProps>) {
   const { t } = useTranslation()
   const { data: connections = [], isLoading } = useGitHubConnections()
+  // Fetched here rather than threaded from the composer: it is platform data
+  // with a long staleTime, so a second consumer costs a cache read.
+  const catalog = useFrameworks()
   const usable = connections.filter((connection) => !connection.revoked)
 
   if (isLoading) {
@@ -182,6 +187,9 @@ export function ImportPhase({
             understandable before the first choice. */}
         {repo && (
           <ProjectTypePicker
+            framework={framework}
+            frameworks={catalog.data?.frameworks}
+            frameworksLoading={catalog.isLoading}
             value={projectType}
             onChange={onProjectTypeChange}
             detection={detection}

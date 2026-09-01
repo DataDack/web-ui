@@ -3,7 +3,6 @@ import type { ReactNode } from "react"
 import { cn } from "@datadack/common-ui"
 import { ArrowRight } from "lucide-react"
 
-
 interface SourceOptionCardProps {
   icon: ReactNode
   title: string

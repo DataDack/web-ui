@@ -121,6 +121,7 @@ export const MANAGED_APPS_QUERY_KEYS = {
    * server query, and sharing one key would show the previous filter's rows
    * under the new filter's heading while the refetch was in flight.
    */
+  frameworks: ["managed-apps", "frameworks"] as const,
   projectLogs: (id: string, filterKey: string) =>
     ["managed-apps", "projects", id, "logs", filterKey] as const,
 }

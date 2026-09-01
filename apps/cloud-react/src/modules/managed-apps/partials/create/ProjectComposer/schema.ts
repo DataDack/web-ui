@@ -34,6 +34,15 @@ export const composerSchema = z
 
     project_type: z.enum(["opennext", "react"]),
 
+    // The catalogue id the detector recognised — "gatsby", "sveltekit". Kept
+    // in the draft so it survives a reload alongside everything else the
+    // detection filled in, and sent on create.
+    //
+    // Optional and free-form on purpose: the catalogue lives in a bucket and
+    // can name a framework this build has never heard of, so a closed enum here
+    // would reject a repository the platform can actually serve.
+    framework: z.string().optional(),
+
     // No `plan`: the tier is account-scoped and lives in Managed Apps →
     // Settings. A draft that still carries one from an older build is
     // simply ignored — z.object() strips unknown keys.
@@ -118,6 +127,7 @@ export const COMPOSER_DEFAULTS: ComposerValues = {
   default_branch: "",
   branch: "",
   project_type: "react",
+  framework: undefined,
   name: "",
   root_dir: "",
   install_command: "",
