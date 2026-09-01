@@ -1,6 +1,6 @@
 import type { ComponentType } from "react"
 
-import { Braces, Gauge, Globe, Hammer, ShieldAlert, Tag } from "lucide-react"
+import { Braces, Boxes, Gauge, Globe, Hammer, ShieldAlert, Tag } from "lucide-react"
 
 import type { SectionTone } from "@/components/console"
 
@@ -9,7 +9,14 @@ import type { Project } from "../../../managed-apps.types"
 
 export const SETTINGS_SECTIONS_PARAM = "section"
 
-export type SettingsSectionId = "general" | "git" | "build" | "plan" | "danger"
+export type SettingsSectionId =
+  | "general"
+  | "git"
+  | "build"
+  | "environments"
+  | "environment-variables"
+  | "plan"
+  | "danger"
 
 export interface SettingsSectionMeta {
   id: SettingsSectionId
@@ -60,6 +67,22 @@ export const SETTINGS_SECTIONS: SettingsSectionMeta[] = [
     needsRepo: true,
   },
   {
+    id: "environments",
+    label: "Environments",
+    hint: "Production, dev and custom",
+    icon: Boxes,
+    tone: "info",
+    needsRepo: false,
+  },
+  {
+    id: "environment-variables",
+    label: "Environment variables",
+    hint: "Configuration per environment",
+    icon: Braces,
+    tone: "brand",
+    needsRepo: false,
+  },
+  {
     id: "plan",
     label: "Plan",
     hint: "Quotas this project runs under",
@@ -94,12 +117,6 @@ export interface SettingsDeparture {
  * them and marking them as a departure costs one row and answers the question.
  */
 export const SETTINGS_DEPARTURES: SettingsDeparture[] = [
-  {
-    tab: "environment",
-    label: "Environment",
-    hint: "Variables per deployment",
-    icon: Braces,
-  },
   { tab: "domains", label: "Domains", hint: "Custom addresses", icon: Globe },
 ]
 

@@ -84,7 +84,7 @@ export function SourceDeploymentPanel({ build, project }: Readonly<SourceDeploym
             {project && (
               <Button asChild size="icon" variant="ghost" className="size-7">
                 <Link
-                  to={`${MANAGED_APPS_ROUTES.project(project.id)}?tab=environment`}
+                  to={`${MANAGED_APPS_ROUTES.project(project.id)}?tab=settings&section=environment-variables`}
                   aria-label="Manage environment variables"
                   title="Manage environment variables"
                 >

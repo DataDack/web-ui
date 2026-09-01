@@ -5,6 +5,8 @@ import { DUR, EASE } from "@/components/console"
 
 import { BuildOutputSection } from "./BuildOutputSection"
 import { DangerZone } from "./DangerZone"
+import { EnvironmentsSection } from "./EnvironmentsSection"
+import { EnvSection } from "./EnvSection"
 import { GeneralSection } from "./GeneralSection"
 import { GitSection } from "./GitSection"
 import { PlanSection } from "./PlanSection"
@@ -96,6 +98,8 @@ export function ProjectSettingsTab({ project }: Readonly<{ project: Project }>) 
           {active === "build" && (
             <BuildOutputSection project={project} overrideCount={buildOverrides} />
           )}
+          {active === "environments" && <EnvironmentsSection project={project} />}
+          {active === "environment-variables" && <EnvSection project={project} />}
           {active === "plan" && <PlanSection />}
           {active === "danger" && <DangerZone project={project} />}
         </motion.div>

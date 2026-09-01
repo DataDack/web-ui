@@ -1,7 +1,6 @@
 import { Button, EmptyState, Skeleton } from "@datadack/common-ui"
 import {
   Activity,
-  Braces,
   GitPullRequest,
   Globe,
   Hammer,
@@ -16,7 +15,6 @@ import { DetailPage } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
 import { ProjectBuildsTab } from "./ProjectBuildsTab"
-import { ProjectEnvironmentTab } from "./ProjectEnvironmentTab"
 import { ProjectOverviewTab } from "./ProjectOverviewTab"
 import { ProjectSettingsTab } from "./ProjectSettingsTab"
 import { ResourceDomainsTab } from "../../../domains/partials/ResourceDomainsTab"
@@ -115,12 +113,6 @@ export function ProjectDetailPage() {
           label: "Builds",
           icon: Hammer,
           content: <ProjectBuildsTab project={project} />,
-        },
-        {
-          value: "environment",
-          label: "Environment",
-          icon: Braces,
-          content: <ProjectEnvironmentTab project={project} />,
         },
         {
           // One tab, three layers. Analytics and Observability were two, and

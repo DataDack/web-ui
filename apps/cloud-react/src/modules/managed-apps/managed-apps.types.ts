@@ -304,6 +304,9 @@ export interface Project {
    * that currently is rather than assuming a number here.
    */
   node_version: string
+  /** Configuration namespaces. Production is always present and is the only
+   * deployment target until per-environment releases are introduced. */
+  environments: string[]
   /**
    * Whether this project has a preview environment at all.
    *
@@ -407,6 +410,7 @@ export interface CreateProjectRequest {
   output_dir?: string
   /** Omit to inherit the platform default rather than pinning today's. */
   node_version?: string
+  environments?: string[]
   env?: Record<string, EnvVarInput>
   /** Opt the project into a preview environment. Omit for one deployment. */
   preview_enabled?: boolean
@@ -437,6 +441,8 @@ export interface UpdateProjectRequest {
    * reaches a build only once that file is updated.
    */
   node_version?: string
+  /** Configuration namespaces only; does not change build or deployment routing. */
+  environments?: string[]
   /** Turn the preview environment on or off. Preview-scoped variables are kept
    *  when it goes off — inert, not rewritten — so it can be turned back on. */
   preview_enabled?: boolean
