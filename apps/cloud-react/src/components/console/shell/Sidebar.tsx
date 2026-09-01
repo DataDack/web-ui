@@ -43,6 +43,19 @@ function NavItemLink({
     <NavLink
       to={item.path}
       onClick={onNavigate}
+      // Set explicitly rather than left to NavLink, which derives its own
+      // aria-current from pathname matching alone. Several items here address
+      // TABS on one path (?tab=apps, ?tab=hosting), so NavLink's version marks
+      // every one of them as the current page at once — announcing four
+      // "current" links in a row, which is worse than announcing none. This is
+      // the same `active` the highlight uses, so what is seen and what is
+      // announced cannot drift apart.
+      aria-current={active ? "page" : undefined}
+      // Collapsed, the label span below is not rendered and the link is an icon
+      // and nothing else. The tooltip that appears on hover is a VISUAL label —
+      // it gives the link no accessible name — so without this every item in a
+      // collapsed sidebar announces as an unnamed "link".
+      aria-label={collapsed ? t(item.labelKey) : undefined}
       className={cn(
         "relative flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring/50",
         collapsed && "justify-center px-0",

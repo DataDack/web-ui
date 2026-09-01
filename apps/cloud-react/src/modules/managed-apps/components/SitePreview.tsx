@@ -3,6 +3,8 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 import { cn } from "@datadack/common-ui"
 import { EyeOff, Globe, Loader2 } from "lucide-react"
 
+import { secureURL } from "../partials/project/build-format"
+
 /**
  * The viewport the site is rendered AT, before scaling. Fixed rather than
  * measured: a thumbnail that reflowed to its own container width would show a
@@ -63,11 +65,15 @@ interface SitePreviewProps {
  * of this origin's cookies and storage.
  */
 export function SitePreview({
-  url,
+  url: rawURL,
   reachable,
   reloadKey = "",
   className,
 }: Readonly<SitePreviewProps>) {
+  // An http:// frame on an https:// console is blocked before it loads, with no
+  // event to observe — it would time out and report itself as "blocks
+  // embedding", which is the wrong diagnosis and the wrong fix.
+  const url = secureURL(rawURL)
   const [phase, setPhase] = useState<PreviewPhase>("loading")
   const [scale, setScale] = useState(0)
   const shell = useRef<HTMLDivElement | null>(null)

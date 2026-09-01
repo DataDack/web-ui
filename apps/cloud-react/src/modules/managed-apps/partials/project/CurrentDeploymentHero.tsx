@@ -19,7 +19,7 @@ import {
 } from "lucide-react"
 import { Link } from "react-router-dom"
 
-import { commitURL, hostLabel, isTimeSet, shortSha, timeSince } from "./build-format"
+import { commitURL, hostLabel, isTimeSet, secureURL, shortSha, timeSince } from "./build-format"
 import { BuildProgressBar, ProjectStateChip, SitePreview } from "../../components"
 import { MANAGED_APPS_ROUTES } from "../../managed-apps.constants"
 import { useCreateBuild, useDeployProject } from "../../managed-apps.hooks"
@@ -60,7 +60,7 @@ function Fact({ label, children }: Readonly<{ label: string; children: ReactNode
  * disclosure or was already somewhere better.
  *
  * The address is only a link when something is actually serving it.
- * `project.url` is pure string concatenation server-side and exists from the
+ * `projectURL` is pure string concatenation server-side and exists from the
  * instant the row does — presenting it as a working link before a runtime
  * container exists is the single most misleading thing this page can do.
  */
@@ -71,6 +71,10 @@ export function CurrentDeploymentHero({
   onDeploy,
   deploying,
 }: Readonly<CurrentDeploymentHeroProps>) {
+  // Never hand out an http:// address from an https console: it answers 308,
+  // and the copy button is the one place a customer takes the URL away with
+  // them.
+  const projectURL = secureURL(project.url)
   const settledAt =
     latestBuild && isTimeSet(latestBuild.finished_at) ? latestBuild.finished_at : null
 
@@ -96,7 +100,7 @@ export function CurrentDeploymentHero({
         <div className="flex shrink-0 items-center gap-2">
           {state.urlReachable && (
             <Button asChild size="sm" variant="outline" className="gap-1.5">
-              <a href={project.url} target="_blank" rel="noreferrer">
+              <a href={projectURL} target="_blank" rel="noreferrer">
                 <ExternalLink className="size-3.5" />
                 Visit
               </a>
@@ -199,28 +203,28 @@ export function CurrentDeploymentHero({
             plus a status word is a poor answer to it when the thing being
             described is a web page that can simply be shown. */}
         <SitePreview
-          url={project.url}
+          url={projectURL}
           reachable={state.urlReachable}
           reloadKey={latestBuild?.id ?? ""}
           className="aspect-[16/10] w-full shrink-0 lg:w-72 xl:w-80"
         />
 
         <div className="grid min-w-0 flex-1 gap-5 sm:grid-cols-2">
-          {project.url && (
+          {projectURL && (
             <Fact label="Deployment">
               {state.urlReachable ? (
                 <a
-                  href={project.url}
+                  href={projectURL}
                   target="_blank"
                   rel="noreferrer"
                   className="flex min-w-0 items-center gap-1.5 truncate font-mono text-status-info hover:underline"
                 >
-                  {hostLabel(project.url)}
+                  {hostLabel(projectURL)}
                   <ExternalLink className="size-3 shrink-0" />
                 </a>
               ) : (
                 <span className="flex min-w-0 flex-col items-start gap-0.5">
-                  <CopyButton value={project.url} label={hostLabel(project.url)} />
+                  <CopyButton value={projectURL} label={hostLabel(projectURL)} />
                   <span className="text-[11px] text-muted-foreground/70">
                     reserved — not serving yet
                   </span>

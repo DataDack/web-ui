@@ -106,3 +106,23 @@ export function shortDateTime(iso: string): string {
 export function hostLabel(url: string): string {
   return url.replace(/^https?:\/\//, "")
 }
+
+/**
+ * The project URL, upgraded to https when the console itself is on https.
+ *
+ * Defence in depth against a control plane that reports the wrong scheme — and
+ * the failure it prevents is invisible without it. A browser silently blocks an
+ * http:// subresource on an https:// page, so an http URL in the deployment
+ * preview does not error: the frame stays blank, the load event never fires,
+ * and the console concludes the site refuses to be embedded. The link and the
+ * copy button fail more quietly still, handing out an address that answers 308.
+ *
+ * Only ever upgrades, and only when this page is already https. On a local
+ * console served over http there is no mixed-content rule to satisfy and a
+ * gratuitous upgrade would break a plain-HTTP dev deployment.
+ */
+export function secureURL(url: string): string {
+  if (url === "" || !url.startsWith("http://")) return url
+  if (typeof window !== "undefined" && window.location.protocol !== "https:") return url
+  return "https://" + url.slice("http://".length)
+}

@@ -1,6 +1,7 @@
 import { Suspense, useCallback, useEffect, useState } from "react"
 
 import { cn, Skeleton } from "@datadack/common-ui"
+import { useTranslation } from "react-i18next"
 import { useLocation, useMatches, useNavigate, useOutlet } from "react-router-dom"
 
 import { useKeySequence } from "@/hooks/use-key-sequence"
@@ -42,6 +43,7 @@ function RouteSkeleton() {
 }
 
 export function AppShell() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const location = useLocation()
   const outlet = useOutlet()
@@ -115,6 +117,18 @@ export function AppShell() {
           the shell. Without it the wheel would sink under `bg-background`. */}
       <div className="min-h-screen isolate flex flex-col bg-background text-foreground bg-gradient-surface">
         {freedomSale.active && isHome && <ChakraWatermark />}
+        {/* First thing in the tab order, and visible only once focused.
+            Without it a keyboard user tabs the topbar and then every item in a
+            forty-eight-item sidebar before reaching the page — on every
+            navigation, because focus returns to the top each time. Two visually
+            identical pages separated by ~50 tab stops is what makes this
+            console exhausting to drive from the keyboard. */}
+        <a
+          href="#main-content"
+          className="sr-only rounded-lg bg-background px-4 py-2 text-sm font-medium text-foreground ring-2 ring-ring focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50"
+        >
+          {t("console.nav.skipToContent")}
+        </a>
         {freedomSale.bannerVisible && <FreedomSaleBanner onDismiss={freedomSale.dismiss} />}
         <Topbar onOpenSearch={openSearch} seasonalAccent={freedomSale.active} />
 
@@ -129,8 +143,13 @@ export function AppShell() {
           )}
 
           <main
+            id="main-content"
+            // Focusable only as a scripted/skip-link target, never as a tab
+            // stop of its own — which is what -1 means and why the skip link
+            // moves focus here rather than merely scrolling.
+            tabIndex={-1}
             className={cn(
-              "min-w-0 flex-1",
+              "min-w-0 flex-1 outline-none",
               !showSidebar && "w-full",
               isManagedApps && "managed-apps-console",
             )}
@@ -141,9 +160,7 @@ export function AppShell() {
               // topbar + sidebar sitting on the shared tinted background.
               <div className="mt-2 min-h-[calc(100vh-96px-0.5rem)] rounded-tl-2xl border-t border-l border-border/50 bg-card shadow-sm md:min-h-[calc(100vh-52px-0.5rem)]">
                 <div className="w-full px-4 py-6 md:px-6 lg:px-8">
-                  <Suspense fallback={<RouteSkeleton />}>
-                    {routeContent}
-                  </Suspense>
+                  <Suspense fallback={<RouteSkeleton />}>{routeContent}</Suspense>
                 </div>
               </div>
             ) : (
@@ -162,9 +179,7 @@ export function AppShell() {
                     : "mx-auto w-full max-w-400 px-4 py-6 md:px-6 lg:px-8"
                 }
               >
-                <Suspense fallback={<RouteSkeleton />}>
-                  {routeContent}
-                </Suspense>
+                <Suspense fallback={<RouteSkeleton />}>{routeContent}</Suspense>
               </div>
             )}
           </main>
