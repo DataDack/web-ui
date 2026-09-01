@@ -32,6 +32,12 @@ interface CurrentDeploymentHeroProps {
   latestBuild?: Build
   onDeploy: () => void
   deploying: boolean
+  /**
+   * Rendered as a strip along the bottom of the card. Build configuration goes
+   * here: it is one collapsed line about this deployment, and as a card of its
+   * own it was a fourth box on a page that already had three.
+   */
+  footer?: ReactNode
 }
 
 /**
@@ -70,6 +76,7 @@ export function CurrentDeploymentHero({
   latestBuild,
   onDeploy,
   deploying,
+  footer,
 }: Readonly<CurrentDeploymentHeroProps>) {
   // Never hand out an http:// address from an https console: it answers 308,
   // and the copy button is the one place a customer takes the URL away with
@@ -91,6 +98,17 @@ export function CurrentDeploymentHero({
   // something already released, and the server would answer "not built yet".
   const canRelease = state.kind === "built_pending_deploy"
   const isN8n = project.project_type === "n8n"
+
+  // Where it runs, said here rather than in a titled card of its own further
+  // down the page: "Serverless, private behind the edge" is a fact about this
+  // deployment and belongs beside the branch that produced it.
+  //
+  // Only once there is a runtime to describe. A container project that has not
+  // been provisioned gets the full explanation from RuntimePanel instead —
+  // two em-dashes in a fact grid would say something untrue about a project
+  // whose builds are landing but whose fleet does not exist in this region.
+  const serverless = project.runtime_target === "serverless"
+  const hasRuntime = serverless || project.served || project.proxmox_ct_id !== 0
 
   return (
     <div className="rounded-xl border border-border/60 glass-1-bg">
@@ -197,7 +215,7 @@ export function CurrentDeploymentHero({
         </div>
       </div>
 
-      <div className="flex flex-col gap-5 p-5 lg:flex-row lg:gap-6">
+      <div className="flex flex-col gap-5 p-4 lg:flex-row lg:gap-6">
         {/* The site itself, ahead of everything written about it. A deploy
             console's first question is "what is live right now", and an address
             plus a status word is a poor answer to it when the thing being
@@ -209,7 +227,7 @@ export function CurrentDeploymentHero({
           className="aspect-[16/10] w-full shrink-0 lg:w-72 xl:w-80"
         />
 
-        <div className="grid min-w-0 flex-1 gap-5 sm:grid-cols-2">
+        <div className="grid min-w-0 flex-1 content-start gap-x-6 gap-y-4 sm:grid-cols-2">
           {projectURL && (
             <Fact label="Deployment">
               {state.urlReachable ? (
@@ -298,8 +316,35 @@ export function CurrentDeploymentHero({
               <span title={new Date(settledAt).toLocaleString()}>{timeSince(settledAt)}</span>
             </Fact>
           )}
+
+          {hasRuntime && (
+            <Fact label="Runtime">
+              {serverless ? (
+                "Serverless"
+              ) : (
+                <span className="flex items-baseline gap-1.5">
+                  Container
+                  {project.proxmox_ct_id !== 0 && (
+                    <span className="font-mono text-[12px] text-muted-foreground">
+                      {project.proxmox_ct_id}
+                    </span>
+                  )}
+                </span>
+              )}
+            </Fact>
+          )}
+
+          {hasRuntime && (
+            <Fact label="Networking">
+              {/* No address, on purpose: both runtimes sit on a private fabric
+                  only the edge gateway reaches. */}
+              {project.vpc_id ? "VPC bound" : "Private, behind the edge"}
+            </Fact>
+          )}
         </div>
       </div>
+
+      {footer}
 
       {latestBuild && isBuildTransitional(latestBuild.status) && (
         <div className="border-t border-border/60 px-5 py-3">
