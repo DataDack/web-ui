@@ -1,7 +1,7 @@
 import { useState } from "react"
 
 import { Button } from "@datadack/common-ui"
-import { Trash2 } from "lucide-react"
+import { ShieldAlert, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
@@ -13,6 +13,11 @@ import type { Project } from "../../../managed-apps.types"
 
 /**
  * Deleting the project.
+ *
+ * It reaches the reader only when they choose it from the rail, which is the
+ * point of giving it its own entry: the irreversible action is no longer a
+ * panel every other section has to be scrolled past, and it is no longer the
+ * same size and weight as renaming.
  *
  * The copy is precise about the blast radius in both directions: the platform
  * side goes, and the customer's repository — including the workflow file the
@@ -29,6 +34,8 @@ export function DangerZone({ project }: Readonly<{ project: Project }>) {
     <>
       <Section
         variant="panel"
+        icon={ShieldAlert}
+        tone="danger"
         title={t("managedApps.dangerZone.dangerZone")}
         description="Deleting a project removes it, its build history and its public address. Your repository is left untouched."
         className="border border-destructive/30"

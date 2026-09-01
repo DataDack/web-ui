@@ -1,3 +1,4 @@
+import { Gauge } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { Section } from "@/components/console"
@@ -13,6 +14,9 @@ import { PlanLimitsPanel } from "../../../components"
  * stating on the project — they are what it lives within — and the one place
  * they can be changed is Managed Apps → Settings, which the panel links to.
  *
+ * A gauge, not a credit card: the section measures, it does not sell. The
+ * upgrade path is a link inside the panel, not the section's own promise.
+ *
  * Nothing enforces most of these numbers yet — no build meters build minutes —
  * so only the project count carries a usage meter. A "0 of 100 build minutes
  * used" gauge would be inventing a measurement the platform does not take.
@@ -22,6 +26,8 @@ export function PlanSection() {
   return (
     <Section
       variant="panel"
+      icon={Gauge}
+      tone="accent"
       title="Plan"
       description={t("managedApps.planSection.theAccountPlanThisProjectRunsUnderAndTheQuot")}
     >

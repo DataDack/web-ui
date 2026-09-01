@@ -1,14 +1,14 @@
 import { useState } from "react"
 
 import { Badge, Button } from "@datadack/common-ui"
-import { ExternalLink, GitPullRequest } from "lucide-react"
+import { ExternalLink, GitBranch, GitPullRequest, Lock } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
 import { FieldRow, KeyValueGrid, Section } from "@/components/console"
 
-
 import { BranchSelect } from "../../../components"
+import { GitHubMark } from "../../../components/GitHubMark"
 import { MANAGED_APPS_ROUTES } from "../../../managed-apps.constants"
 import { useUpdateProject } from "../../../managed-apps.hooks"
 import { isSetupComplete, type Project } from "../../../managed-apps.types"
@@ -18,7 +18,13 @@ import { isSetupComplete, type Project } from "../../../managed-apps.types"
  *
  * The repository and installation are immutable by design — connecting a
  * different repo means a new project, matching how the large PaaS products
- * behave. Only the tracked branch can move, so only it is a control.
+ * behave. Only the tracked branch can move, so only it is a control, and the
+ * two that cannot move now say so with a lock instead of leaving the reader to
+ * discover it by finding no way to edit them.
+ *
+ * The section wears the Octocat rather than a generic branch glyph: everything
+ * in it — the installation, the repository, the workflow file that actually
+ * runs — is GitHub's, and the mark says that faster than the heading does.
  */
 export function GitSection({ project }: Readonly<{ project: Project }>) {
   const { t } = useTranslation()
@@ -29,6 +35,8 @@ export function GitSection({ project }: Readonly<{ project: Project }>) {
   return (
     <Section
       variant="panel"
+      icon={GitHubMark}
+      tone="info"
       title="Git"
       description={t("managedApps.gitSection.whereThisProjectSCodeComesFrom")}
       actions={
@@ -47,21 +55,29 @@ export function GitSection({ project }: Readonly<{ project: Project }>) {
             {
               label: "Repository",
               value: (
-                <a
-                  href={`https://github.com/${project.repo_owner}/${project.repo_name}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-1 font-mono text-[13px] text-status-info hover:underline"
-                >
-                  {project.repo_owner}/{project.repo_name}
-                  <ExternalLink className="size-3" />
-                </a>
+                <span className="inline-flex items-center gap-1.5">
+                  <a
+                    href={`https://github.com/${project.repo_owner}/${project.repo_name}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1 font-mono text-[13px] text-status-info hover:underline"
+                  >
+                    <GitHubMark className="size-3.5" />
+                    {project.repo_owner}/{project.repo_name}
+                    <ExternalLink className="size-3" />
+                  </a>
+                  <Lock className="size-3 text-muted-foreground" aria-label="Cannot be changed" />
+                </span>
               ),
             },
             {
               label: "Installation",
-              value: `#${String(project.installation_id)}`,
-              mono: true,
+              value: (
+                <span className="inline-flex items-center gap-1.5 font-mono text-[13px]">
+                  #{String(project.installation_id)}
+                  <Lock className="size-3 text-muted-foreground" aria-label="Cannot be changed" />
+                </span>
+              ),
             },
             {
               label: "Build workflow",
@@ -85,7 +101,12 @@ export function GitSection({ project }: Readonly<{ project: Project }>) {
         />
 
         <FieldRow
-          label={t("managedApps.gitSection.trackedBranch")}
+          label={
+            <span className="inline-flex items-center gap-1.5">
+              <GitBranch className="size-3.5" />
+              {t("managedApps.gitSection.trackedBranch")}
+            </span>
+          }
           description={t("managedApps.gitSection.everyPushToThisBranchTriggersABuild")}
         >
           <div className="sm:w-80">
