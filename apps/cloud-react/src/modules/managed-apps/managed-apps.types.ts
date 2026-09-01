@@ -306,7 +306,7 @@ export interface Project {
   node_version: string
   /** Configuration namespaces. Production is always present and is the only
    * deployment target until per-environment releases are introduced. */
-  environments: string[]
+  environments?: string[]
   /**
    * Whether this project has a preview environment at all.
    *

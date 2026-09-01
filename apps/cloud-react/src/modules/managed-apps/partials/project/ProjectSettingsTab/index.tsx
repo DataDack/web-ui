@@ -1,7 +1,8 @@
+import { LockKeyhole } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 import { useSearchParams } from "react-router-dom"
 
-import { DUR, EASE } from "@/components/console"
+import { ComingSoonPanel, DUR, EASE } from "@/components/console"
 
 import { BuildOutputSection } from "./BuildOutputSection"
 import { DangerZone } from "./DangerZone"
@@ -100,6 +101,12 @@ export function ProjectSettingsTab({ project }: Readonly<{ project: Project }>) 
           )}
           {active === "environments" && <EnvironmentsSection project={project} />}
           {active === "environment-variables" && <EnvSection project={project} />}
+          {active === "restrictions" && (
+            <ComingSoonPanel
+              icon={LockKeyhole}
+              description="Protect deployments with IP allowlists and password-based access. These controls are not active yet."
+            />
+          )}
           {active === "plan" && <PlanSection />}
           {active === "danger" && <DangerZone project={project} />}
         </motion.div>

@@ -10,7 +10,7 @@ import type { Project } from "../../../managed-apps.types"
 
 export function EnvironmentsSection({ project }: Readonly<{ project: Project }>) {
   const update = useUpdateProject(project.id)
-  const environments = project.environments.length ? project.environments : ["production"]
+  const environments = project.environments?.length ? project.environments : ["production"]
   const [name, setName] = useState("")
   const normalized = name.trim().toLowerCase()
   const valid = /^[a-z][a-z0-9-]{0,30}$/.test(normalized)

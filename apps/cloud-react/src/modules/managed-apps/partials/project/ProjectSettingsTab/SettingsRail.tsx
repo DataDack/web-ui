@@ -106,6 +106,11 @@ export function SettingsRail({
                 {buildOverrides}
               </span>
             )}
+            {section.comingSoon === true && (
+              <span className="ml-auto hidden shrink-0 rounded-full border border-border/70 px-1.5 py-0.5 font-mono text-[9px] tracking-wide text-muted-foreground uppercase lg:block">
+                Soon
+              </span>
+            )}
           </button>
         )
       })}

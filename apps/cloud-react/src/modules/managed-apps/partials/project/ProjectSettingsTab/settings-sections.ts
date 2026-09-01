@@ -1,6 +1,6 @@
 import type { ComponentType } from "react"
 
-import { Braces, Boxes, Gauge, Globe, Hammer, ShieldAlert, Tag } from "lucide-react"
+import { Braces, Boxes, Gauge, Globe, Hammer, LockKeyhole, ShieldAlert, Tag } from "lucide-react"
 
 import type { SectionTone } from "@/components/console"
 
@@ -15,6 +15,7 @@ export type SettingsSectionId =
   | "build"
   | "environments"
   | "environment-variables"
+  | "restrictions"
   | "plan"
   | "danger"
 
@@ -27,6 +28,7 @@ export interface SettingsSectionMeta {
   tone: SectionTone
   /** Sections that only exist for a project built from a repository. */
   needsRepo: boolean
+  comingSoon?: boolean
 }
 
 /**
@@ -81,6 +83,15 @@ export const SETTINGS_SECTIONS: SettingsSectionMeta[] = [
     icon: Braces,
     tone: "brand",
     needsRepo: false,
+  },
+  {
+    id: "restrictions",
+    label: "Restrictions",
+    hint: "IP and password access",
+    icon: LockKeyhole,
+    tone: "warning",
+    needsRepo: false,
+    comingSoon: true,
   },
   {
     id: "plan",
