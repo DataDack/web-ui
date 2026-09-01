@@ -18,18 +18,18 @@ import {
   SiMarkdown,
   SiNestjs,
   SiNextdotjs,
-  SiNuxtdotjs,
+  SiNuxt,
   SiPreact,
   SiQwik,
   SiReact,
   SiRemix,
-  SiRust,
   SiSolid,
   SiStorybook,
   SiSvelte,
   SiVite,
   SiVitepress,
   SiVuedotjs,
+  SiZola,
 } from "react-icons/si"
 
 import type { FrameworkMark } from "./project-type"
@@ -72,17 +72,17 @@ export const CATALOG_MARKS: Record<string, FrameworkMark> = {
   eleventy: { icon: SiEleventy, color: "#000000", colorDark: "#FFFFFF" },
   gatsby: { icon: SiGatsby, color: "#663399" },
   storybook: { icon: SiStorybook, color: "#FF4785" },
-  "nuxt-static": { icon: SiNuxtdotjs, color: "#00DC82" },
+  "nuxt-static": { icon: SiNuxt, color: "#00DC82" },
   slidev: { icon: SiMarkdown, color: "#3AB9D4" },
   mkdocs: { icon: SiMarkdown, color: "#526CFE" },
-  zola: { icon: SiRust, color: "#0E7FBF" },
+  zola: { icon: SiZola, color: "#0E7FBF" },
   html: { icon: SiHtml5, color: "#E34F26" },
 
   // hybrid — a tree AND a handler
   opennext: { icon: SiNextdotjs, color: "#000000", colorDark: "#FFFFFF" },
   remix: { icon: SiRemix, color: "#000000", colorDark: "#FFFFFF" },
   sveltekit: { icon: SiSvelte, color: "#FF3E00" },
-  nuxt: { icon: SiNuxtdotjs, color: "#00DC82" },
+  nuxt: { icon: SiNuxt, color: "#00DC82" },
   "astro-ssr": { icon: SiAstro, color: "#BC52EE" },
   "qwik-city": { icon: SiQwik, color: "#AC7EF4" },
 

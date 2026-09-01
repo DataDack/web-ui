@@ -1,10 +1,9 @@
+import { cn } from "@datadack/common-ui"
 import { Check, FolderTree, Loader2, TriangleAlert } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import type { IconType } from "react-icons"
 
 import { SmartSelect, type SmartSelectOption } from "@/components/console"
-
-import { cn } from "@datadack/common-ui"
 
 import { markFor } from "../../../components/framework-marks"
 import type { FrameworkOption, RepoDetection } from "../../../managed-apps.types"
@@ -66,15 +65,19 @@ function optionsFrom(
   // The detected framework first, because it is the answer in the
   // overwhelmingly common case and scrolling past thirty cards to reach it is
   // the form asking a question it has already answered.
+  //
+  // Matched on the FAMILY that owns the detected profile, resolved ONCE: a card
+  // is a family, so "astro-ssr was detected" has to light the Astro card.
+  // Deciding it per comparison against the whole catalogue matched whichever
+  // row came first rather than the row being compared, which pinned an
+  // undetected framework to the top whenever it preceded the detected one.
+  const detectedLabel = frameworks?.find((row) =>
+    row.profiles.some((profile) => profile.id === detectedFramework),
+  )?.label
+
   return rows.sort((a, b) => {
-    const aDetected =
-      frameworks?.find(
-        (row) => row.id === a.framework || row.profiles.some((p) => p.id === detectedFramework),
-      )?.label === a.label
-    const bDetected =
-      frameworks?.find(
-        (row) => row.id === b.framework || row.profiles.some((p) => p.id === detectedFramework),
-      )?.label === b.label
+    const aDetected = detectedLabel != null && a.label === detectedLabel
+    const bDetected = detectedLabel != null && b.label === detectedLabel
     if (aDetected !== bDetected) return aDetected ? -1 : 1
     if (a.comingSoon !== b.comingSoon) return a.comingSoon ? 1 : -1
     return a.label.localeCompare(b.label)

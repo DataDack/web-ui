@@ -1,9 +1,18 @@
-import { Button, EmptyState, Skeleton } from "@datadack/common-ui"
-import { ExternalLink, FileCode2, PackageX, RotateCcw, ScrollText, X } from "lucide-react"
+import {
+  ArrowLeft,
+  ExternalLink,
+  FileCode2,
+  PackageX,
+  RotateCcw,
+  ScrollText,
+  X,
+} from "lucide-react"
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom"
 
 import { AnimatedTabs } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
+
+import { Button, EmptyState, Skeleton } from "@datadack/common-ui"
 
 import { BuildLogPanel } from "./BuildLogPanel"
 import { BuildSourcePanel } from "./BuildSourcePanel"
@@ -109,61 +118,74 @@ export function BuildDetailPage() {
     <div className="managed-apps-console flex min-h-0 flex-1 flex-col overflow-hidden">
       <header className="shrink-0 border-b border-border/60 glass-1-bg px-4 py-3 md:px-5">
         <div className="flex min-w-0 flex-wrap items-center justify-between gap-3">
-          <div className="min-w-0">
-            <nav className="flex min-w-0 items-center gap-1.5 text-[11px] text-muted-foreground">
-              <Link to={MANAGED_APPS_ROUTES.apps} className="hover:text-foreground">
-                Apps
+          <div className="flex min-w-0 items-start gap-2">
+            <Button
+              asChild
+              variant="ghost"
+              size="icon-sm"
+              className="mt-0.5 shrink-0 text-muted-foreground hover:text-foreground"
+            >
+              <Link to={backTo} aria-label="Back to builds" title="Back to builds">
+                <ArrowLeft className="size-4" />
               </Link>
-              <span aria-hidden>/</span>
-              <Link
-                to={MANAGED_APPS_ROUTES.project(id)}
-                className="max-w-40 truncate hover:text-foreground"
-              >
-                {project?.name ?? "Project"}
-              </Link>
-              <span aria-hidden>/</span>
-              <Link to={backTo} className="hover:text-foreground">
-                Builds
-              </Link>
-            </nav>
+            </Button>
 
-            <div className="mt-1.5 flex min-w-0 items-center gap-2.5">
-              <h1 className="truncate text-balance font-mono text-[16px] font-semibold text-foreground">
-                Build{" "}
-                {commitHref ? (
-                  <a
-                    href={commitHref}
-                    target="_blank"
-                    rel="noreferrer"
-                    title={`Open commit ${build.commit_sha} on GitHub`}
-                    className="inline-flex items-center gap-1 hover:text-brand-gold hover:underline"
-                  >
-                    {buildLabel}
-                    <ExternalLink className="size-3" aria-hidden />
-                  </a>
-                ) : (
-                  buildLabel
+            <div className="min-w-0">
+              <nav className="flex min-w-0 items-center gap-1.5 text-[11px] text-muted-foreground">
+                <Link to={MANAGED_APPS_ROUTES.apps} className="hover:text-foreground">
+                  Apps
+                </Link>
+                <span aria-hidden>/</span>
+                <Link
+                  to={MANAGED_APPS_ROUTES.project(id)}
+                  className="max-w-40 truncate hover:text-foreground"
+                >
+                  {project?.name ?? "Project"}
+                </Link>
+                <span aria-hidden>/</span>
+                <Link to={backTo} className="hover:text-foreground">
+                  Builds
+                </Link>
+              </nav>
+
+              <div className="mt-1.5 flex min-w-0 items-center gap-2.5">
+                <h1 className="truncate text-balance font-mono text-[16px] font-semibold text-foreground">
+                  Build{" "}
+                  {commitHref ? (
+                    <a
+                      href={commitHref}
+                      target="_blank"
+                      rel="noreferrer"
+                      title={`Open commit ${build.commit_sha} on GitHub`}
+                      className="inline-flex items-center gap-1 hover:text-brand-gold hover:underline"
+                    >
+                      {buildLabel}
+                      <ExternalLink className="size-3" aria-hidden />
+                    </a>
+                  ) : (
+                    buildLabel
+                  )}
+                </h1>
+                <BuildStatusPill status={build.status} />
+                {serving && (
+                  <span className="hidden items-center gap-1.5 text-[11px] text-status-success sm:flex">
+                    <span className="size-1.5 rounded-full bg-status-success" aria-hidden />
+                    Serving
+                  </span>
                 )}
-              </h1>
-              <BuildStatusPill status={build.status} />
-              {serving && (
-                <span className="hidden items-center gap-1.5 text-[11px] text-status-success sm:flex">
-                  <span className="size-1.5 rounded-full bg-status-success" aria-hidden />
-                  Serving
-                </span>
-              )}
-            </div>
+              </div>
 
-            <div className="mt-1 flex min-w-0 items-center gap-2 text-[11px] text-muted-foreground lg:hidden">
-              <span className="truncate">{project?.branch ?? "No branch"}</span>
-              <span aria-hidden>·</span>
-              <span className="truncate">
-                {build.commit_message || triggerLabel(build.triggered_by)}
-              </span>
-              <span aria-hidden>·</span>
-              <span className="shrink-0 font-mono tabular-nums">
-                {active ? "in progress" : formatDuration(build.started_at, build.finished_at)}
-              </span>
+              <div className="mt-1 flex min-w-0 items-center gap-2 text-[11px] text-muted-foreground lg:hidden">
+                <span className="truncate">{project?.branch ?? "No branch"}</span>
+                <span aria-hidden>·</span>
+                <span className="truncate">
+                  {build.commit_message || triggerLabel(build.triggered_by)}
+                </span>
+                <span aria-hidden>·</span>
+                <span className="shrink-0 font-mono tabular-nums">
+                  {active ? "in progress" : formatDuration(build.started_at, build.finished_at)}
+                </span>
+              </div>
             </div>
           </div>
 
