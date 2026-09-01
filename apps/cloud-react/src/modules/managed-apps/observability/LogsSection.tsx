@@ -366,9 +366,9 @@ function NotConfigured({ project }: Readonly<{ project: Project }>) {
         platform&rsquo;s log store is not connected on this deployment yet, so there is nothing to
         search here. Your app is being served normally.
       </p>
-      {coverage && (
-        <p className="mt-4 max-w-md font-mono text-[11px] text-muted-foreground/70">
-          {coverage.note}
+      {coverage?.customerNote && (
+        <p className="mt-3 max-w-md text-[12px] text-muted-foreground/80">
+          {coverage.customerNote}
         </p>
       )}
     </div>

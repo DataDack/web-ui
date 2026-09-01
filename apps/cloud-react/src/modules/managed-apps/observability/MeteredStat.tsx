@@ -14,7 +14,11 @@ interface MeteredStatProps {
   value?: string
   /** What the plan grants. Shown under the value, and alone for entitlements. */
   entitlement?: string
-  /** The honest detail, on hover. Required for a calculating tile. */
+  /**
+   * The customer-facing detail, on hover. Never an internal note: this string
+   * reaches the customer's screen, so it says what the effect is for them and
+   * names no service, environment variable or component of ours.
+   */
   detail?: string
   loading?: boolean
   footer?: ReactNode

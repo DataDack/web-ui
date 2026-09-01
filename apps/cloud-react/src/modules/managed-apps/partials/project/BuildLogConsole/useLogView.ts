@@ -103,8 +103,11 @@ export function useLogView({
   // is being discarded is the one message here that actively wastes their time.
   let placeholder = "No log output."
   if (!storageReady) {
-    placeholder =
-      "Build logs are not being stored on this deployment — object storage is not configured, so build output is discarded. Ask your platform administrator to set S3_BUCKET."
+    // Customer-facing, so it names no service and no environment variable: a
+    // console tells someone what they can expect, not which of our components
+    // is unwired. The operator's version of this — the one that says exactly
+    // what to configure — is the log line the control plane writes at startup.
+    placeholder = "Build log history is being enabled for this region."
   } else if (isLoading) placeholder = "Loading log…"
   else if (active) placeholder = "Waiting for output…"
 

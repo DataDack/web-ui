@@ -41,11 +41,22 @@ export interface FeatureCoverage {
   group: FeatureGroup
   source: CoverageSource
   /**
-   * For `measured`: where the number is read from, so a reader can find it.
+   * INTERNAL ONLY — never rendered to a customer.
+   *
+   * For `measured`: where the number is read from, so an engineer can find it.
    * For `pending`: what has to exist before it can be measured. This is the
-   * field that turns the list into a plan.
+   * field that turns the list into a work queue, and it names infrastructure,
+   * environment variables and internal services on purpose. A console shows
+   * customers what the platform does for them, not which of our components is
+   * not wired up yet — so this string must stay out of the UI. Anything a
+   * customer should read goes in `customerNote`.
    */
   note: string
+  /**
+   * The customer-facing sentence, when a tile needs one. Describes the effect
+   * on THEM in their language, with no internal component named.
+   */
+  customerNote?: string
 }
 
 export type FeatureGroup =
@@ -237,6 +248,7 @@ export const FEATURE_COVERAGE: FeatureCoverage[] = [
     group: "build",
     source: "pending",
     note: "Every build row carries started_at and finished_at, so this is the CLOSEST pending meter — it needs summing per account per month, nothing more.",
+    customerNote: "Build minute totals are being calculated for this billing period.",
   },
   {
     slug: "concurrent_builds",
@@ -304,6 +316,7 @@ export const FEATURE_COVERAGE: FeatureCoverage[] = [
     group: "observability",
     source: "pending",
     note: "The gateway writes per-request rows to ClickHouse when REQUESTLOG_CLICKHOUSE_DSN is set. Until then nothing is retained and the Logs view says so.",
+    customerNote: "Request-level log history is being enabled for this region.",
   },
   {
     slug: "support_sla",

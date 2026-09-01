@@ -41,7 +41,7 @@ export function PlanUsagePanel({ project }: Readonly<{ project: Project }>) {
           source={requests?.source ?? "pending"}
           value={(totals?.requests ?? 0).toLocaleString()}
           entitlement={limits ? formatLimit(limits.edge_requests) : undefined}
-          detail={requests?.note}
+          detail={requests?.customerNote}
           loading={isLoading}
         />
         <MeteredStat
@@ -49,20 +49,20 @@ export function PlanUsagePanel({ project }: Readonly<{ project: Project }>) {
           source={bandwidth?.source ?? "pending"}
           value={`${bandwidthUsedGB.toFixed(2)} GB`}
           entitlement={limits ? `${formatLimit(limits.bandwidth_gb)} GB` : undefined}
-          detail={bandwidth?.note}
+          detail={bandwidth?.customerNote}
           loading={isLoading}
         />
         <MeteredStat
           label="Build minutes"
           source={buildMinutes?.source ?? "pending"}
           entitlement={limits ? `${formatLimit(limits.build_minutes)} min` : undefined}
-          detail={buildMinutes?.note}
+          detail={buildMinutes?.customerNote}
         />
         <MeteredStat
           label="Request timeout"
           source={timeout?.source ?? "entitlement"}
           entitlement={limits ? `${formatLimit(limits.request_timeout_seconds)}s` : undefined}
-          detail={timeout?.note}
+          detail={timeout?.customerNote}
         />
       </div>
     </Section>
