@@ -16,6 +16,12 @@ interface SettingsRailProps {
   onSelect: (id: SettingsSectionId) => void
   /** Rendered against Build & output — how many fields are overridden. */
   buildOverrides?: number
+  /**
+   * Sections that need looking at. A dot, not a count: the rail's job is to
+   * say WHERE the problem is, and the section itself says what it is. Marking
+   * every section that has an opinion would make the dot mean nothing.
+   */
+  attention?: Partial<Record<SettingsSectionId, boolean>>
 }
 
 const ROW =
@@ -45,6 +51,7 @@ export function SettingsRail({
   active,
   onSelect,
   buildOverrides = 0,
+  attention,
 }: Readonly<SettingsRailProps>) {
   return (
     <nav
@@ -88,6 +95,12 @@ export function SettingsRail({
                 {section.hint}
               </span>
             </span>
+            {attention?.[section.id] === true && (
+              <span
+                aria-label="Needs attention"
+                className="ml-auto size-1.5 shrink-0 rounded-full bg-status-warning"
+              />
+            )}
             {section.id === "build" && buildOverrides > 0 && (
               <span className="ml-auto hidden shrink-0 rounded-full bg-brand-gold-soft px-1.5 font-mono text-[10px] text-brand-gold-ink lg:block">
                 {buildOverrides}

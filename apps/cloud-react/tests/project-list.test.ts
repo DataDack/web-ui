@@ -41,6 +41,9 @@ function project(overrides: Partial<Project> & { id: string }): Project {
     vpc_id: null,
     subnet_id: null,
     active_build_id: null,
+    // What is running, as opposed to the newest build that succeeded. Null is
+    // the honest default here: nothing in this fixture has ever deployed.
+    deployed_build_id: null,
     proxmox_ct_id: 0,
     pve_node_id: null,
     served: false,

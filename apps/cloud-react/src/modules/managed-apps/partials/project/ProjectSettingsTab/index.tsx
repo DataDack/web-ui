@@ -15,7 +15,7 @@ import {
   type SettingsSectionId,
 } from "./settings-sections"
 import { SettingsRail } from "./SettingsRail"
-import type { Project } from "../../../managed-apps.types"
+import { isSourceConnected, type Project } from "../../../managed-apps.types"
 
 /**
  * Settings — a rail, and one section at a time.
@@ -75,6 +75,11 @@ export function ProjectSettingsTab({ project }: Readonly<{ project: Project }>) 
         active={active}
         onSelect={select}
         buildOverrides={buildOverrides}
+        // One dot, on the section that can fix it. A disconnected project shows
+        // its state in three places already — the header chip, the overview
+        // list, the Git panel — and the rail's job is only to get the reader to
+        // the one screen with the Reconnect button on it.
+        attention={{ git: !isSourceConnected(project.source_state) }}
       />
 
       <AnimatePresence mode="wait" initial={false}>

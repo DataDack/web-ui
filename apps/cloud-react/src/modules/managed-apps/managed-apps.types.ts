@@ -194,6 +194,21 @@ export function isSetupComplete(state: SetupState | undefined): boolean {
   return state === "merged" || state === "not_needed"
 }
 
+/**
+ * Whether the platform may still act on the project's repository — the
+ * customer's intent, stored separately from what happened to the connection.
+ */
+export type SourceState = "connected" | "disconnected"
+
+/**
+ * Undefined is connected. The field arrives only from a backend that has it,
+ * and every project that predates it was connected — reading absence as
+ * "disconnected" would grey out the Git section of every existing project.
+ */
+export function isSourceConnected(state: SourceState | undefined): boolean {
+  return state === undefined || state === "connected"
+}
+
 export type BuildTrigger = "push" | "manual" | "initial"
 
 /**
@@ -217,6 +232,28 @@ export type BuildStatus =
   | "failed"
   | "canceled"
   | "superseded"
+
+/**
+ * Whether this build can be RE-RELEASED without building anything.
+ *
+ * Mirrors the server's resolveDeployableBuild, and mirroring it is the point:
+ * offering a rollback the server will refuse is worse than not offering one,
+ * because the refusal arrives after the user has already decided.
+ *
+ * Two conditions, both necessary. The build has to have settled successfully —
+ * `built` (artifact stored, never released) or `ready` (released at some
+ * point). And the artifact it stored has to be the one THIS project's runtime
+ * needs: a container is created from an image, a workload is invoked from a
+ * bundle, and a build made before either existed has neither. That last case
+ * is not hypothetical — it is every build older than the runtime it would be
+ * rolled back onto.
+ */
+export function isRollbackable(build: Build, project: Project): boolean {
+  if (build.status !== "built" && build.status !== "ready") return false
+  return project.runtime_target === "serverless"
+    ? build.workload_key !== ""
+    : build.image_key !== ""
+}
 
 /** Build statuses still in flight — drives log/status polling. */
 export const TRANSITIONAL_BUILD_STATUSES: readonly BuildStatus[] = [
@@ -284,6 +321,28 @@ export interface Project {
   subnet_id: string | null
   /** Serialized as null while no build has ever deployed. */
   active_build_id: string | null
+  /**
+   * What is RUNNING, as opposed to `active_build_id` — the newest build that
+   * succeeded. The two diverge the moment a deploy fails: the newest build is
+   * built, the app still serves the previous one. Rollback compares against
+   * THIS one, because offering to roll back to what is already serving is
+   * offering to do nothing.
+   */
+  deployed_build_id: string | null
+  /**
+   * Whether the customer still wants this project wired to its repository.
+   *
+   * Not the same fact as `deploy_state: "source_disconnected"`, which is also
+   * written when GitHub removes the repository from the installation. That one
+   * says the connection is broken; this one says it was ended on purpose — and
+   * only the second can be undone from this console alone.
+   *
+   * Absent on responses from a backend that predates the field, which means
+   * connected.
+   */
+  source_state?: SourceState
+  /** When the customer disconnected. Null while connected. */
+  disconnected_at?: string | null
   /**
    * Where the app runs. "container" is an LXC guest of its own; "serverless" is
    * a workload on the shared fleet, which has no container id, no node and no
@@ -460,6 +519,58 @@ export interface UpdateProjectEnvRequest {
   env: Record<string, EnvVarInput>
 }
 
+/**
+ * POST /projects/:id/deploy.
+ *
+ * With no `build_id` this releases the newest build that succeeded — the
+ * Deploy button. Naming a build is how a ROLLBACK is expressed: the same
+ * endpoint re-releases that build's stored artifact.
+ *
+ * `mode` is what makes a rollback a rollback rather than a rebuild:
+ *   - `cache` re-releases bytes that already exist in object storage. Seconds,
+ *     and it ships exactly what was tested.
+ *   - `rebuild` goes back to source and makes new bytes. Minutes, and the
+ *     server refuses it alongside a `build_id` — one names an artifact to
+ *     reuse, the other says not to reuse any.
+ */
+export interface DeployRequest {
+  build_id?: string
+  mode?: "cache" | "rebuild"
+}
+
+/**
+ * POST /projects/:id/source/reconnect. Every field is optional and empty keeps
+ * what the project already had — they exist because the usual reason a
+ * connection ended is that the source moved.
+ */
+export interface ReconnectSourceRequest {
+  installation_id?: number
+  repo_owner?: string
+  repo_name?: string
+  branch?: string
+}
+
+/**
+ * What POST /projects/:id/source/disconnect managed to do at GitHub.
+ *
+ * The local disconnect always succeeds, so this describes the remote half
+ * only. `warnings` is not an error channel: a repository that was deleted or
+ * whose access was revoked is one of the reasons people disconnect, and the
+ * project is disconnected either way.
+ *
+ * `variable_shared_by` is why the Actions variable may still be there on
+ * purpose — it is repository-scoped, and another project on the same
+ * repository is still using it.
+ */
+export interface DisconnectSourceResult {
+  project_id: string
+  source_state: SourceState
+  webhooks_removed: number
+  variable_removed: boolean
+  variable_shared_by: number
+  warnings: string[] | null
+}
+
 // ---------------------------------------------------------------------------
 // Builds — /managedapps/projects/:id/builds + /managedapps/builds/:id
 // ---------------------------------------------------------------------------
@@ -488,6 +599,18 @@ export interface Build {
   /** Null until the runner uploads the artifact; `artifact_bytes` is 0 until then. */
   artifact_at: string | null
   artifact_bytes: number
+  /**
+   * The container image in object storage. Empty means this build has nothing
+   * a container can be created from — it predates image builds — so it can be
+   * read and browsed but never rolled back to.
+   */
+  image_key: string
+  /**
+   * The serverless bundle in object storage, the other runtime's artifact.
+   * A build carries one or the other, so which one a rollback needs depends on
+   * the PROJECT's runtime target, not on the build.
+   */
+  workload_key: string
   /** The GitHub Actions run behind this build — empty for pre-Actions rows. */
   gh_run_url: string
 }

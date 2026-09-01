@@ -7,6 +7,8 @@ import type {
   BuildLogs,
   ChangeAccountPlanRequest,
   CreateProjectRequest,
+  DeployRequest,
+  DisconnectSourceResult,
   GitHubBranch,
   GitHubCallbackRequest,
   GitHubConnection,
@@ -22,6 +24,7 @@ import type {
   ProjectMetrics,
   FrameworkCatalog,
   ProjectSetup,
+  ReconnectSourceRequest,
   RequestLogQuery,
   RequestLogsResult,
   RepoDetection,
@@ -38,6 +41,7 @@ import type {
 //   GitHub:    GET /github/install-url · POST /github/callback
 //              GET/DELETE /github/connections[/:installationId]
 //              GET /github/repos?installation_id= · GET /github/repos/:owner/:repo/branches
+//   Source:    POST /projects/:id/source/disconnect · POST /projects/:id/source/reconnect
 //   Projects:  GET/POST /projects · GET/PUT/DELETE /projects/:id
 //              GET/PUT /projects/:id/env
 //              GET /projects/:id/source/tree · GET /projects/:id/source/file
@@ -196,11 +200,39 @@ export const managedAppsApi = {
     apiPost<ProjectSetup>(`${BASE}/projects/${id}/setup/retry`),
 
   /**
-   * Release the built artifact onto a runtime container. Answers 409 with the
-   * reason until that fleet exists — the console renders a Deploy button that
-   * is disabled with a real explanation rather than hidden.
+   * Release a built artifact onto the runtime. Answers 409 with the reason
+   * when it cannot — the console renders a button that is disabled with a real
+   * explanation rather than hidden.
+   *
+   * With no body this releases the newest build that succeeded. Pass
+   * `{ build_id }` to release a specific one: that is a rollback, and it reads
+   * the artifact already in object storage instead of building anything. The
+   * default mode is `cache` server-side, but it is sent explicitly for a
+   * rollback so the request says on its face that it must not rebuild.
    */
-  deployProject: (id: string): Promise<void> => apiPost(`${BASE}/projects/${id}/deploy`),
+  deployProject: (id: string, body?: DeployRequest): Promise<void> =>
+    apiPost(`${BASE}/projects/${id}/deploy`, body),
+
+  /**
+   * End this project's connection to its repository.
+   *
+   * Removes every repository webhook that delivers to this platform and, when
+   * no other project on the account is built from the same repository, the
+   * DATADACK_PROJECT_ID Actions variable. Pushes stop producing builds
+   * immediately; what is deployed keeps serving.
+   */
+  disconnectProjectSource: (id: string): Promise<DisconnectSourceResult> =>
+    apiPost<DisconnectSourceResult>(`${BASE}/projects/${id}/source/disconnect`),
+
+  /**
+   * Wire a disconnected project back to a repository and re-run setup.
+   *
+   * Sending nothing reconnects to the repository it already had. The fields
+   * exist for the case that made the connection end in the first place — a
+   * repository that moved to an organisation, or an installation replaced.
+   */
+  reconnectProjectSource: (id: string, payload: ReconnectSourceRequest = {}): Promise<Project> =>
+    apiPost<Project>(`${BASE}/projects/${id}/source/reconnect`, payload),
 
   /** Env variable NAMES only — values never leave the backend. */
   /**

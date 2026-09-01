@@ -14,6 +14,7 @@ import {
   type GitHubCallbackRequest,
   type Plan,
   type ProjectType,
+  type ReconnectSourceRequest,
   type RequestLogQuery,
   type UpdateProjectEnvRequest,
   type UpdateProjectRequest,
@@ -522,6 +523,101 @@ export function useDeployProject(id: string) {
       void queryClient.invalidateQueries({ queryKey: MANAGED_APPS_QUERY_KEYS.project(id) })
     },
     onError: (e) => toast.error(extractError(e, "Could not deploy this project")),
+  })
+}
+
+/**
+ * Roll back to a build that already succeeded.
+ *
+ * The same endpoint as Deploy, with the build named and `mode: "cache"` said
+ * out loud. That mode is what makes this a rollback and not a rebuild: the
+ * server re-releases the artifact sitting in object storage for that build
+ * rather than going back to the repository. It ships the exact bytes that were
+ * tested, in seconds, and it works on a project whose source is disconnected
+ * or whose repository is gone — none of which is true of building again.
+ *
+ * Invalidates the builds list too: the build being released moves to
+ * `deploying`, and the row the user just clicked is the one that has to show it.
+ */
+export function useRollbackBuild(projectId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (buildId: string) =>
+      managedAppsApi.deployProject(projectId, { build_id: buildId, mode: "cache" }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: MANAGED_APPS_QUERY_KEYS.project(projectId) })
+      void queryClient.invalidateQueries({
+        queryKey: MANAGED_APPS_QUERY_KEYS.projectBuilds(projectId),
+      })
+      toast.success("Rollback started — this release serves the stored build, nothing is rebuilt")
+    },
+    onError: (e) => toast.error(extractError(e, "Could not roll back to this build")),
+  })
+}
+
+/**
+ * Disconnect a project from its repository.
+ *
+ * The toast reports what actually happened at GitHub rather than a flat
+ * "Disconnected", because the two halves can differ: the project is always
+ * disconnected here, while the cleanup there can be partial — a repository
+ * that was deleted, an installation whose access is gone. Warnings are shown
+ * as warnings, not errors; nothing about them means the disconnect failed.
+ */
+export function useDisconnectSource(projectId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: () => managedAppsApi.disconnectProjectSource(projectId),
+    onSuccess: (result) => {
+      void queryClient.invalidateQueries({ queryKey: MANAGED_APPS_QUERY_KEYS.project(projectId) })
+      void queryClient.invalidateQueries({
+        queryKey: MANAGED_APPS_QUERY_KEYS.projects(),
+      })
+      void queryClient.invalidateQueries({ queryKey: MANAGED_APPS_QUERY_KEYS.overview })
+
+      const warnings = result.warnings ?? []
+      if (warnings.length > 0) {
+        toast.warning("Disconnected from GitHub, with some cleanup left", {
+          description: warnings.join(" · "),
+        })
+        return
+      }
+      const removed =
+        result.webhooks_removed === 1
+          ? "1 webhook removed"
+          : `${String(result.webhooks_removed)} webhooks removed`
+      toast.success("Disconnected from GitHub", {
+        description: `${removed}. Pushes no longer build this project — what is deployed keeps serving.`,
+      })
+    },
+    onError: (e) => toast.error(extractError(e, "Could not disconnect this project from GitHub")),
+  })
+}
+
+/** Wire a disconnected project back to its repository and re-run setup. */
+export function useReconnectSource(projectId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (payload: ReconnectSourceRequest = {}) =>
+      managedAppsApi.reconnectProjectSource(projectId, payload),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: MANAGED_APPS_QUERY_KEYS.project(projectId) })
+      void queryClient.invalidateQueries({
+        queryKey: MANAGED_APPS_QUERY_KEYS.projectSetup(projectId),
+      })
+      void queryClient.invalidateQueries({
+        queryKey: MANAGED_APPS_QUERY_KEYS.projectBuilds(projectId),
+      })
+      void queryClient.invalidateQueries({ queryKey: MANAGED_APPS_QUERY_KEYS.projects() })
+      void queryClient.invalidateQueries({ queryKey: MANAGED_APPS_QUERY_KEYS.overview })
+      toast.success("Reconnected to GitHub", {
+        description: "Pushes to the tracked branch build this project again.",
+      })
+    },
+    // The server's message is the useful one here — "install or re-authorise
+    // the GitHub App for this repository" is a instruction, and replacing it
+    // with a generic failure would drop the only thing the user can act on.
+    onError: (e) => toast.error(extractError(e, "Could not reconnect this project to GitHub")),
   })
 }
 

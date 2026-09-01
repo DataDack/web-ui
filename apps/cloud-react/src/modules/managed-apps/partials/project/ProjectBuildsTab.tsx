@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
 
 import {
   Button,
@@ -10,11 +10,11 @@ import {
   type DataTableColumnMeta,
 } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
-import { ChevronDown, Code2, Hammer, RotateCcw, ScrollText, X } from "lucide-react"
+import { ChevronDown, Code2, Hammer, History, RotateCcw, ScrollText, X } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link, useNavigate, useSearchParams } from "react-router-dom"
 
-import { Section } from "@/components/console"
+import { ConfirmDialog, Section } from "@/components/console"
 
 import {
   commitURL,
@@ -27,8 +27,18 @@ import {
 } from "./build-format"
 import { ActivityTimeline, BuildStatusPill } from "../../components"
 import { MANAGED_APPS_ROUTES } from "../../managed-apps.constants"
-import { useCancelBuild, useCreateBuild, useProjectBuilds } from "../../managed-apps.hooks"
-import { isBuildTransitional, type Build, type Project } from "../../managed-apps.types"
+import {
+  useCancelBuild,
+  useCreateBuild,
+  useProjectBuilds,
+  useRollbackBuild,
+} from "../../managed-apps.hooks"
+import {
+  isBuildTransitional,
+  isRollbackable,
+  type Build,
+  type Project,
+} from "../../managed-apps.types"
 
 /**
  * Builds tab — deploy history, newest first, every row a door.
@@ -49,6 +59,11 @@ export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
   } = useProjectBuilds(project.id)
   const cancelBuild = useCancelBuild()
   const createBuild = useCreateBuild()
+  const rollback = useRollbackBuild(project.id)
+  // The build a rollback is being confirmed for. Held as the row rather than
+  // its id because the dialog names the commit, and looking it back up out of
+  // the list would go stale the moment a poll replaced the array.
+  const [rollbackTarget, setRollbackTarget] = useState<Build | null>(null)
   const [searchParams] = useSearchParams()
 
   // Defensive sort — the API returns newest first, but the serving marker and
@@ -81,10 +96,15 @@ export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
     }
   }, [legacyBuild, legacyCode, navigate, project.id, sortedBuilds])
 
-  // The build the public URL serves: deploys overwrite the runtime, so it is
-  // the newest deployed row — not necessarily the newest row, which may have
-  // failed after it.
-  const servingId = sortedBuilds.find((build) => build.status === "ready")?.id
+  // The build the public URL serves.
+  //
+  // deployed_build_id is the answer when the server sends it — it is the row
+  // the runtime was actually released from, which is the only thing that stays
+  // correct through a rollback: rolling back to an OLDER build leaves a newer
+  // `ready` row above it, and the heuristic below would keep pointing at that
+  // newer one and claim the console had served something it had just replaced.
+  const servingId =
+    project.deployed_build_id ?? sortedBuilds.find((build) => build.status === "ready")?.id
 
   const columns = useMemo<ColumnDef<Build>[]>(
     () => [
@@ -188,6 +208,12 @@ export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
             createBuild.isPending &&
             typeof createBuild.variables === "object" &&
             createBuild.variables.commitSha === build.commit_sha
+          const rollingBack = rollback.isPending && rollback.variables === build.id
+          // Not offered for what is already running. A rollback to the build
+          // currently being served does nothing but restart the app, and an
+          // action whose honest description is "no change" should not be on a
+          // row that looks like every other row.
+          const canRollback = build.id !== servingId && isRollbackable(build, project)
           if (build.status === "queued") {
             return (
               <div className="text-right">
@@ -240,6 +266,32 @@ export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
                   Code
                 </Link>
               </Button>
+              {/* Rollback and Rebuild sit side by side because the difference
+                  between them is the whole point, and it is a difference of
+                  minutes: this one re-releases the artifact already in object
+                  storage for this build, the one beside it goes back to the
+                  repository and makes new bytes. Naming one of them "Redeploy"
+                  — which it was — described neither.
+
+                  Hidden, not disabled, on a build with nothing to release: a
+                  greyed-out Rollback on a build that predates container images
+                  invites a hover for an explanation that is only "this is old". */}
+              {canRollback && (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-7 gap-1 px-2 text-[12px] opacity-0 transition-opacity group-hover/row:opacity-100 focus-visible:opacity-100"
+                  disabled={rollingBack}
+                  onClick={() => {
+                    setRollbackTarget(build)
+                  }}
+                  loading={rollingBack}
+                  title="Release this build's stored artifact — nothing is rebuilt"
+                >
+                  <History className="size-3" />
+                  Rollback
+                </Button>
+              )}
               <Button
                 size="sm"
                 variant="ghost"
@@ -249,16 +301,17 @@ export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
                   createBuild.mutate({ projectId: project.id, commitSha: build.commit_sha })
                 }}
                 loading={rebuilding}
+                title="Build this commit again from source"
               >
                 <RotateCcw className="size-3" />
-                Redeploy
+                Rebuild
               </Button>
             </div>
           )
         },
       },
     ],
-    [cancelBuild, createBuild, project.id, project.repo_name, project.repo_owner, servingId],
+    [cancelBuild, createBuild, project, rollback.isPending, rollback.variables, servingId],
   )
 
   // Guarded on isLoading: `builds` is empty on the first render too, and without
@@ -282,8 +335,47 @@ export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
     )
   }
 
+  const rollbackDialog = (
+    <ConfirmDialog
+      open={rollbackTarget !== null}
+      onOpenChange={(open) => {
+        if (!open) setRollbackTarget(null)
+      }}
+      title="Roll back to this build?"
+      confirmLabel="Roll back"
+      destructive={false}
+      loading={rollback.isPending}
+      description={
+        // The two facts that decide whether someone clicks: what the visitors
+        // will be served, and how long they are waiting for it. "Nothing is
+        // rebuilt" is the answer to both — and it is what makes this safe to
+        // reach for during an incident, which is when it is reached for.
+        <span className="space-y-2 text-[13px]">
+          <span className="block">
+            <span className="font-mono">{shortSha(rollbackTarget?.commit_sha ?? "")}</span>
+            {rollbackTarget?.commit_message !== "" && <> — {rollbackTarget?.commit_message}</>}
+          </span>
+          <span className="block text-muted-foreground">
+            This releases the artifact already stored for that build. Nothing is rebuilt and the
+            repository is not read, so it ships the exact bytes that were tested — and it works even
+            while the source is disconnected.
+          </span>
+        </span>
+      }
+      onConfirm={() => {
+        if (rollbackTarget === null) return
+        rollback.mutate(rollbackTarget.id, {
+          onSuccess: () => {
+            setRollbackTarget(null)
+          },
+        })
+      }}
+    />
+  )
+
   return (
     <div className="space-y-5">
+      {rollbackDialog}
       <Section
         variant="panel"
         title={t("managedApps.projectBuildsTab.buildHistory")}
