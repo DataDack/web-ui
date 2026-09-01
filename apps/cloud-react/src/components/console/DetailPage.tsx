@@ -77,9 +77,11 @@ export function DetailPage({
   const active = tabs.find((tab) => tab.value === activeTab)
 
   return (
-    // Pages mount DetailPage after their loading skeleton resolves, so this
-    // class animates the skeleton→content swap once for every detail page.
-    <div className="animate-content-enter">
+    // The bar sits outside the entrance animation on purpose: `content-enter`
+    // ends on a transform that sticks around (fill-mode: both), and page chrome
+    // that slides in on every navigation is chrome you notice. The content it
+    // frames still animates.
+    <>
       {/* One bar, not four rows. Back, identity, state, id and the tabs used to
           be three stacked blocks with their own margins — 162px of chrome above
           the first card, on a page whose first card is the reason anyone opened
@@ -153,17 +155,21 @@ export function DetailPage({
         </div>
       </div>
 
-      <AnimatePresence mode="wait" initial={false}>
-        <motion.div
-          key={activeTab}
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -4 }}
-          transition={{ duration: DUR.fast, ease: EASE.out }}
-        >
-          {active?.content}
-        </motion.div>
-      </AnimatePresence>
-    </div>
+      {/* Pages mount DetailPage after their loading skeleton resolves, so this
+          class animates the skeleton→content swap once for every detail page. */}
+      <div className="animate-content-enter">
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: DUR.fast, ease: EASE.out }}
+          >
+            {active?.content}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </>
   )
 }
