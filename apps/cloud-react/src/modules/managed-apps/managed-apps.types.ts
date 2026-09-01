@@ -682,31 +682,27 @@ export interface GitHubRepo {
  * than present a default as a detection. `confidence: "low"` means a manifest
  * was read but nothing identifiable was in it.
  */
-/**
- * One framework as the create form consumes it.
- *
- * A flattened projection of the catalogue row, not the row itself: the form
- * needs something to render, and `runs_nothing` answers the question it
- * actually asks — whether to show memory, timeout and cold-start controls at
- * all. A static site has none of those, and a form offering them describes a
- * product the platform does not have.
- */
-export interface FrameworkOption {
+export interface FrameworkProfile {
+  /** Internal build/deployment profile id stored on the project. */
   id: string
-  label: string
-  /** static | hybrid | dynamic — THE field to key UI off. */
-  class: "static" | "hybrid" | "dynamic"
-  docs?: string
-  runs_nothing: boolean
-  serves_static_from_edge: boolean
+  project_type: Extract<ProjectType, "opennext" | "react">
   install_command?: string
   build_command?: string
   output_dir: string
   toolchain?: string
   toolchain_version?: string
-  /** Omitted for a static framework: there is nothing to size. */
-  memory_size_mb?: number
-  timeout_seconds?: number
+}
+
+/** One user-recognisable framework. Serving modes stay internal as profiles. */
+export interface FrameworkOption {
+  id: string
+  label: string
+  docs?: string
+  /** Profile used when repository detection cannot identify one more exactly. */
+  default_profile: string
+  profiles: FrameworkProfile[]
+  available: boolean
+  unavailable_reason?: string
 }
 
 /** GET /projects/frameworks. */
