@@ -1,9 +1,10 @@
-import { cn } from "@datadack/common-ui"
+import type { CSSProperties } from "react"
+
 import { Check, FolderTree, Loader2, TriangleAlert } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import type { IconType } from "react-icons"
 
-import { SmartSelect, type SmartSelectOption } from "@/components/console"
+import { cn } from "@datadack/common-ui"
 
 import { markFor } from "../../../components/framework-marks"
 import type { FrameworkOption, RepoDetection } from "../../../managed-apps.types"
@@ -119,7 +120,7 @@ interface ProjectTypePickerProps {
  * GitHub API hiccup.
  */
 export function ProjectTypePicker({
-  value: _value,
+  value,
   framework,
   onChange,
   frameworks,
@@ -156,14 +157,6 @@ export function ProjectTypePicker({
   // block Hugo, Jekyll, Python, Go, Rust or plain HTML presets.
   const unbuildable = detection != null && !detection.detected && !detectionFailed
 
-  const selectOptions: SmartSelectOption<TypeOption>[] = options.map((option) => ({
-    value: option.framework,
-    item: option,
-    searchText: `${option.label} ${option.sub} ${option.framework}`,
-    disabled: option.comingSoon,
-    disabledReason: option.comingSoon ? "Coming soon" : undefined,
-  }))
-
   // Directories that hold a package.json. Offering them is what turns "no
   // package.json here" from a dead end into the one click that fixes it —
   // detection re-runs against the chosen directory.
@@ -184,33 +177,103 @@ export function ProjectTypePicker({
         {t("managedApps.projectTypePicker.weReadTheRepositoryToWorkThisOutPickOneIfWeC")}
       </p>
 
-      <SmartSelect<TypeOption>
-        ariaLabel="Framework"
-        options={selectOptions}
-        value={framework}
-        loading={frameworksLoading || detecting}
-        placeholder="Select a framework"
-        searchPlaceholder="Search frameworks…"
-        emptyText="No framework presets are available."
-        onValueChange={(_next, option) => {
-          onChange(option.value, option.framework)
-        }}
-        renderValue={(option) => option.item.label}
-        renderRow={(option) => {
-          const Icon = option.item.icon
-          const isDetected = familyForDetected?.profiles.some(
-            (profile) => profile.id === option.item.framework,
-          )
-          return {
-            leading: <Icon className="size-4 text-muted-foreground" aria-hidden />,
-            primary: option.item.label,
-            secondary: option.item.sub,
-            trailing: isDetected ? (
-              <span className="text-[10px] font-medium text-status-success">Detected</span>
-            ) : undefined,
+      <div className="grid items-stretch gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        {options.map((option) => {
+          const disabled = Boolean(option.comingSoon) || frameworksLoading || detecting
+          // Select per framework rather than per project type: many catalogue
+          // entries share the same underlying build profile type.
+          const selected = framework ? framework === option.framework : value === option.value
+          const isDetected = familyForDetected?.label === option.label
+          const Icon = option.icon
+          let badge = null
+          if (selected) {
+            badge = (
+              <span className="flex items-center gap-1 rounded-full bg-primary/10 px-1.5 py-0.5 text-[9px] font-medium tracking-wide text-primary uppercase">
+                <Check className="size-2.5" strokeWidth={3} aria-hidden />
+                {isDetected ? "Detected" : "Chosen"}
+              </span>
+            )
+          } else if (isDetected) {
+            badge = (
+              <span className="rounded-full bg-status-success-bg px-1.5 py-0.5 text-[9px] font-medium tracking-wide text-status-success uppercase">
+                Detected
+              </span>
+            )
+          } else if (option.comingSoon) {
+            badge = (
+              <span className="rounded-full border border-brand-gold/30 bg-brand-gold/10 px-1.5 py-0.5 text-[9px] font-medium tracking-wide text-brand-gold/90 uppercase">
+                Soon
+              </span>
+            )
           }
-        }}
-      />
+
+          return (
+            <button
+              key={option.framework}
+              type="button"
+              disabled={disabled}
+              aria-pressed={selected}
+              onClick={() => {
+                onChange(option.value, option.framework)
+              }}
+              className={cn(
+                "group relative flex h-full min-h-36 flex-col gap-2.5 overflow-hidden rounded-xl border glass-1-bg p-3.5 text-left shadow-xs",
+                "motion-safe:transition-[transform,box-shadow,border-color,background-color] motion-safe:duration-150 motion-safe:ease-out",
+                "focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none",
+                selected
+                  ? "border-primary/70 shadow-sm ring-1 ring-primary/20"
+                  : "border-border/60",
+                !disabled &&
+                  "hover:border-primary/35 hover:glass-1-bg-raised hover:shadow-sm motion-safe:hover:-translate-y-0.5 motion-safe:active:translate-y-0 motion-safe:active:scale-[0.98]",
+                disabled && "cursor-not-allowed opacity-45",
+              )}
+            >
+              {selected && (
+                <span aria-hidden className="absolute inset-x-0 top-0 h-0.5 bg-primary" />
+              )}
+
+              <div className="flex items-start justify-between gap-2">
+                <span
+                  className={cn(
+                    "grid size-10 shrink-0 place-items-center rounded-lg",
+                    "bg-[color-mix(in_srgb,currentColor_10%,transparent)]",
+                    "text-[var(--fw-mark)] dark:text-[var(--fw-mark-dark)]",
+                    selected
+                      ? "ring-1 ring-[color-mix(in_srgb,currentColor_32%,transparent)]"
+                      : "ring-1 ring-[color-mix(in_srgb,currentColor_18%,transparent)]",
+                  )}
+                  style={
+                    {
+                      "--fw-mark": option.color,
+                      "--fw-mark-dark": option.colorDark ?? option.color,
+                    } as CSSProperties
+                  }
+                >
+                  <Icon className="size-[18px]" aria-hidden />
+                </span>
+
+                {badge}
+              </div>
+
+              <div className="min-w-0 flex-1">
+                <p className="text-[13px] font-semibold">
+                  {option.label}{" "}
+                  <span className="font-normal text-muted-foreground">· {option.sub}</span>
+                </p>
+                <p className="mt-1 text-pretty text-[11px] leading-relaxed text-muted-foreground">
+                  {option.body}
+                </p>
+              </div>
+            </button>
+          )
+        })}
+      </div>
+
+      {!frameworksLoading && options.length === 0 && (
+        <p role="status" className="text-[12px] text-muted-foreground">
+          No framework presets are available.
+        </p>
+      )}
 
       {detecting && (
         <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
