@@ -21,7 +21,13 @@ export function BuildLogPanel({
   const { data: logs, isLoading } = useBuildLogs(build.id, active)
 
   const logText = logs?.text ?? ""
-  const view = useLogView({ buildId: build.id, active, text: logText, isLoading })
+  const view = useLogView({
+    buildId: build.id,
+    active,
+    text: logText,
+    isLoading,
+    storageReady: logs?.storageReady ?? true,
+  })
   const lifecycle = useBuildLifecycle(build)
 
   return (
@@ -54,6 +60,7 @@ export function BuildLogPanel({
           following={view.following}
           onLeaveTail={view.leaveTail}
           placeholder={view.placeholder}
+          placeholderTone={view.placeholderTone}
           {...lifecycle}
         />
       </div>

@@ -1,11 +1,17 @@
-import { Badge, Button } from "@datadack/common-ui"
-import { ExternalLink, GitBranch, GitPullRequest } from "lucide-react"
+import {
+  Badge,
+  Button,
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+  KeyValueGrid,
+} from "@datadack/common-ui"
+import { ChevronRight, GitPullRequest } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
-import { KeyValueGrid, Section } from "@/components/console"
-
 import { CurrentDeploymentHero } from "./CurrentDeploymentHero"
+import { LiveDeployConsole } from "./LiveDeployConsole"
 import { RuntimePanel } from "./RuntimePanel"
 import { ProjectTypeBadge } from "../../components"
 import { shouldBanner, StateBanner } from "../../components/StateBanner"
@@ -15,8 +21,13 @@ import { deriveProjectState } from "../../managed-apps.state"
 import { isSetupComplete, type Project } from "../../managed-apps.types"
 
 /**
- * Overview tab — what the project is doing, where its code comes from, and how
- * it is built. The deployment state leads; configuration follows.
+ * Overview tab — what the project is doing, and, if asked, how it is built.
+ *
+ * Build configuration is collapsed by default. It is seven fields that change
+ * perhaps twice in a project's life, and leaving them open put the page's least
+ * urgent information directly under its most urgent, which is how a console
+ * stops being scannable. Open, it is the same grid it always was; closed, it is
+ * one line that says where the values came from.
  */
 export function ProjectOverviewTab({ project }: Readonly<{ project: Project }>) {
   const { t } = useTranslation()
@@ -32,30 +43,29 @@ export function ProjectOverviewTab({ project }: Readonly<{ project: Project }>) 
     value !== "" ? value : (fallback ?? "—")
 
   /**
-   * Whether a field is the platform preset or the user's own value, said out
-   * loud. The old panel claimed "empty fields inherit the platform default"
-   * while showing every field filled in — nothing on the page could tell a
-   * reader which fields were theirs.
+   * Whether a field is the platform preset or the user's own value, said
+   * without a badge on every row.
+   *
+   * Seven rows each carrying a "DEFAULT"/"CUSTOM" pill turned a reference table
+   * into a wall of chips, and the chips were the loudest thing in it. Dimming
+   * the inherited values encodes exactly the same fact in the typography: what
+   * is bright is what someone chose.
    */
-  const originBadge = (value: string) => (
-    <Badge
-      variant="outline"
-      className={
-        value === ""
-          ? "px-1.5 py-0 text-[9px] uppercase tracking-wide text-muted-foreground/70"
-          : "border-brand-gold/30 px-1.5 py-0 text-[9px] uppercase tracking-wide text-brand-gold"
-      }
-    >
-      {value === "" ? "default" : "custom"}
-    </Badge>
-  )
+  const originClass = (value: string) =>
+    value === "" ? "text-muted-foreground" : "text-foreground"
 
-  // The old "Build workflow: on branch" chip, as a sentence a person can
-  // read. The not-merged case keeps its warning chip in the grid — that one
-  // is a call to action, not decoration.
-  const sourceDescription = isSetupComplete(project.setup_state)
-    ? `Deploys automatically on every push to ${project.branch || "main"}.`
-    : "The branch this project builds and deploys from."
+  // How many fields this project actually overrides — the one number worth
+  // reading without opening the section.
+  const overrides = [
+    project.root_dir,
+    project.node_version,
+    project.install_command,
+    project.build_command,
+    project.output_dir,
+  ].filter((value) => value !== "").length
+  const overrideNoun = overrides === 1 ? "override" : "overrides"
+  const overridesLabel =
+    overrides === 0 ? "all platform defaults" : `${String(overrides)} ${overrideNoun}`
 
   return (
     <div className="space-y-5">
@@ -85,162 +95,128 @@ export function ProjectOverviewTab({ project }: Readonly<{ project: Project }>) 
         }}
       />
 
-      <Section
-        variant="panel"
-        title="Source"
-        description={isN8n ? undefined : sourceDescription}
-        actions={
-          isN8n ? undefined : (
+      {/* Renders itself away the moment the build settles — see the component. */}
+      <LiveDeployConsole projectId={project.id} build={latestBuild} />
+
+      {!isN8n && (
+        <Collapsible className="rounded-xl border border-border/60 glass-1-bg">
+          <div className="flex flex-wrap items-center justify-between gap-2 px-5 py-3">
+            <CollapsibleTrigger className="group flex min-w-0 items-center gap-2 text-left">
+              <ChevronRight className="size-3.5 shrink-0 text-muted-foreground transition-transform group-data-[state=open]:rotate-90" />
+              <span className="text-[13px] font-medium text-foreground">Build configuration</span>
+              <span className="truncate text-[11px] text-muted-foreground">{overridesLabel}</span>
+            </CollapsibleTrigger>
             <Link
               to={MANAGED_APPS_ROUTES.setup(project.id)}
-              className="text-[12px] text-status-info hover:underline"
+              className="shrink-0 text-[12px] text-status-info hover:underline"
             >
               {isSetupComplete(project.setup_state) ? "View workflow" : "Finish setup"}
             </Link>
-          )
-        }
-      >
-        {isN8n ? (
-          <p className="text-sm text-muted-foreground">
-            Managed n8n instance — provisioned by the platform, with no source repository or build
-            pipeline.
-          </p>
-        ) : (
-          <KeyValueGrid
-            columns={3}
-            items={[
-              {
-                label: "Repository",
-                value:
-                  project.repo_owner && project.repo_name ? (
-                    <a
-                      href={`https://github.com/${project.repo_owner}/${project.repo_name}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex items-center gap-1 font-mono text-[13px] text-status-info hover:underline"
-                    >
-                      {project.repo_owner}/{project.repo_name}
-                      <ExternalLink className="size-3" />
-                    </a>
-                  ) : (
-                    <span className="text-muted-foreground">—</span>
-                  ),
-              },
-              {
-                label: "Branch",
-                value: (
-                  <span className="flex items-center gap-1.5 font-mono text-[13px]">
-                    <GitBranch className="size-3.5 text-muted-foreground" />
-                    {project.branch || "main"}
-                  </span>
-                ),
-              },
-              // Setup-complete is already the section's description sentence;
-              // only the abnormal state earns a third column here.
-              ...(isSetupComplete(project.setup_state)
-                ? []
-                : [
-                    {
-                      label: "Build workflow",
-                      value: (
+          </div>
+
+          <CollapsibleContent>
+            <div className="border-t border-border/60 p-5">
+              <KeyValueGrid
+                columns={3}
+                items={[
+                  {
+                    label: "Repository",
+                    value:
+                      project.repo_owner && project.repo_name ? (
+                        <a
+                          href={`https://github.com/${project.repo_owner}/${project.repo_name}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="font-mono text-[13px] text-status-info hover:underline"
+                        >
+                          {project.repo_owner}/{project.repo_name}
+                        </a>
+                      ) : (
+                        <span className="text-muted-foreground">—</span>
+                      ),
+                  },
+                  {
+                    label: "Runtime · plan",
+                    value: (
+                      <span className="flex flex-wrap items-center gap-1.5">
+                        <ProjectTypeBadge type={project.project_type} />
                         <Badge
                           variant="outline"
-                          className="border-status-warning/25 text-[11px] text-status-warning"
+                          className="font-mono text-[11px] text-muted-foreground"
                         >
-                          not merged
+                          {project.plan}
                         </Badge>
-                      ),
-                    },
-                  ]),
-            ]}
-          />
-        )}
-      </Section>
-
-      {!isN8n && (
-        <Section
-          variant="panel"
-          title="Build"
-          description={t("managedApps.projectOverviewTab.fieldsMarkedDefaultUseThePlatformPreset")}
-        >
-          <KeyValueGrid
-            columns={3}
-            items={[
-              {
-                label: "Runtime · plan",
-                value: (
-                  <span className="flex flex-wrap items-center gap-1.5">
-                    <ProjectTypeBadge type={project.project_type} />
-                    <Badge
-                      variant="outline"
-                      className="font-mono text-[11px] text-muted-foreground"
-                    >
-                      {project.plan}
-                    </Badge>
-                  </span>
-                ),
-              },
-              {
-                label: "Root directory",
-                value: (
-                  <span className="flex items-center gap-1.5 font-mono text-[13px]">
-                    {project.root_dir || "./"}
-                    {originBadge(project.root_dir)}
-                  </span>
-                ),
-              },
-              {
-                // Both halves, because they are not always the same answer: the
-                // chosen major builds the project, and a static build is served
-                // by Caddy whatever compiled it.
-                label: "Environment",
-                value: defaults ? (
-                  <span className="font-mono text-[13px]">
-                    Node {inherited(project.node_version, defaults.node_version)}{" "}
-                    <span className="text-muted-foreground">· {defaults.runtime_image}</span>
-                  </span>
-                ) : (
-                  "—"
-                ),
-              },
-              {
-                label: "Install command",
-                value: (
-                  <span className="flex items-center gap-1.5 font-mono text-[13px]">
-                    {inherited(project.install_command, defaults?.install_command)}
-                    {originBadge(project.install_command)}
-                  </span>
-                ),
-              },
-              {
-                label: "Build command",
-                value: (
-                  <span className="flex items-center gap-1.5 font-mono text-[13px]">
-                    {inherited(project.build_command, defaults?.build_command)}
-                    {originBadge(project.build_command)}
-                  </span>
-                ),
-              },
-              {
-                label: "Output directory",
-                value: (
-                  <span className="flex items-center gap-1.5 font-mono text-[13px]">
-                    {inherited(project.output_dir, defaults?.output_dir)}
-                    {originBadge(project.output_dir)}
-                  </span>
-                ),
-              },
-              {
-                label: "Created",
-                value: new Date(project.created_at).toLocaleString(undefined, {
-                  dateStyle: "medium",
-                  timeStyle: "short",
-                }),
-                mono: true,
-              },
-            ]}
-          />
-        </Section>
+                      </span>
+                    ),
+                  },
+                  {
+                    // Both halves, because they are not always the same answer:
+                    // the chosen major builds the project, and a static build is
+                    // served by Caddy whatever compiled it.
+                    label: "Environment",
+                    value: defaults ? (
+                      <span className="font-mono text-[13px]">
+                        <span className={originClass(project.node_version)}>
+                          Node {inherited(project.node_version, defaults.node_version)}
+                        </span>
+                        <span className="text-muted-foreground"> · {defaults.runtime_image}</span>
+                      </span>
+                    ) : (
+                      "—"
+                    ),
+                  },
+                  {
+                    label: "Root directory",
+                    value: (
+                      <span className={`font-mono text-[13px] ${originClass(project.root_dir)}`}>
+                        {project.root_dir || "./"}
+                      </span>
+                    ),
+                  },
+                  {
+                    label: "Install command",
+                    value: (
+                      <span
+                        className={`font-mono text-[13px] ${originClass(project.install_command)}`}
+                      >
+                        {inherited(project.install_command, defaults?.install_command)}
+                      </span>
+                    ),
+                  },
+                  {
+                    label: "Build command",
+                    value: (
+                      <span
+                        className={`font-mono text-[13px] ${originClass(project.build_command)}`}
+                      >
+                        {inherited(project.build_command, defaults?.build_command)}
+                      </span>
+                    ),
+                  },
+                  {
+                    label: "Output directory",
+                    value: (
+                      <span className={`font-mono text-[13px] ${originClass(project.output_dir)}`}>
+                        {inherited(project.output_dir, defaults?.output_dir)}
+                      </span>
+                    ),
+                  },
+                  {
+                    label: "Created",
+                    value: new Date(project.created_at).toLocaleString(undefined, {
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                    }),
+                    mono: true,
+                  },
+                ]}
+              />
+              <p className="mt-4 text-[11px] text-muted-foreground">
+                Dimmed values are the platform preset; bright values are this project&rsquo;s own.
+              </p>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
       )}
 
       <RuntimePanel project={project} />

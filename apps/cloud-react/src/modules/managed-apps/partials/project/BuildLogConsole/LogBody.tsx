@@ -22,6 +22,8 @@ interface LogBodyProps {
   /** Raised when the user scrolls away from the tail, so Follow can switch off. */
   onLeaveTail: () => void
   placeholder: string
+  /** Renders the placeholder as a warning rather than as quiet grey. */
+  placeholderTone?: "muted" | "warning"
   /** What happened before the runner printed anything, and after it stopped. */
   leading?: LifecycleEvent[]
   trailing?: LifecycleEvent[]
@@ -44,6 +46,7 @@ export function LogBody({
   following,
   onLeaveTail,
   placeholder,
+  placeholderTone = "muted",
   leading = [],
   trailing = [],
   originIso = "",
@@ -97,7 +100,15 @@ export function LogBody({
     return (
       <div ref={scrollRef} className="flex-1 overflow-auto glass-1-bg">
         <LifecycleLines events={leading} originIso={originIso} startNumber={1} edge="top" />
-        <div className="px-4 py-6 pl-16 font-mono text-[12px] text-muted-foreground">
+        {/* Capped to a readable measure: the muted cases are three words, but
+            the warning is a sentence, and a sentence set across a wide console
+            is a sentence nobody finishes. */}
+        <div
+          className={cn(
+            "max-w-prose px-4 py-6 pl-16 font-mono text-[12px]",
+            placeholderTone === "warning" ? "text-status-warning" : "text-muted-foreground",
+          )}
+        >
           {placeholder}
         </div>
         <LifecycleLines

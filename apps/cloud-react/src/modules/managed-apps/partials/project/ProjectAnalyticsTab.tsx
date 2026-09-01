@@ -1,7 +1,7 @@
 import { useState } from "react"
 
 import { cn, formatBytes, Skeleton } from "@datadack/common-ui"
-import { AlertTriangle, ArrowDownUp, ChartLine, Globe } from "lucide-react"
+import { AlertTriangle, ArrowDownUp, ChartLine, Globe, Zap } from "lucide-react"
 
 import { MetricChart, Section, StatGrid } from "@/components/console"
 
@@ -36,6 +36,17 @@ export function ProjectAnalyticsTab({ project }: Readonly<{ project: Project }>)
     totals && totals.requests > 0
       ? ((totals.status_4xx + totals.status_5xx) / totals.requests) * 100
       : 0
+
+  // What fraction of this app's traffic never reached a worker.
+  //
+  // The server computes it, rather than this dividing two counters itself: the
+  // two arrive from different flushes of a gateway that may have restarted in
+  // between, and clamping that is arithmetic worth doing in exactly one place.
+  const edgeShare = (totals?.static_share ?? 0) * 100
+  // An app that publishes nothing has no split to show. Hiding the panel is
+  // better than rendering a flat zero, which reads as "the edge is not working"
+  // rather than "this app has no static files".
+  const servesStatic = (totals?.static_requests ?? 0) > 0
 
   return (
     <div className="space-y-5">
@@ -94,6 +105,13 @@ export function ProjectAnalyticsTab({ project }: Readonly<{ project: Project }>)
             color: errorRate > 5 ? "warning" : "default",
             loading: isLoading,
           },
+          {
+            label: "Served from edge",
+            value: edgeShare,
+            format: (v) => `${v.toFixed(0)}%`,
+            icon: Zap,
+            loading: isLoading,
+          },
         ]}
       />
 
@@ -118,6 +136,23 @@ export function ProjectAnalyticsTab({ project }: Readonly<{ project: Project }>)
             ready={ready}
             agoLabel={agoLabel}
           />
+          {servesStatic ? (
+            <TrafficPanel
+              title={`Compute vs edge per ${data?.interval ?? "hour"}`}
+              // The main series is what INVOKED something, because that is the
+              // half that costs. The overlay is what the edge answered from this
+              // app's published files: no worker, no cold start, no GB-seconds.
+              data={points.map((p) => p.requests - p.static_requests)}
+              overlay={{
+                data: points.map((p) => p.static_requests),
+                color: "rgb(45,212,191)",
+              }}
+              overlayLabel="from edge"
+              color="rgb(234,179,8)"
+              ready={ready}
+              agoLabel={agoLabel}
+            />
+          ) : null}
           <TrafficPanel
             title={`Bandwidth per ${data?.interval ?? "hour"}`}
             data={points.map((p) => p.bytes_out / (1024 * 1024))}

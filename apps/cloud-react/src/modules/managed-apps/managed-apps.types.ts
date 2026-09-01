@@ -500,6 +500,15 @@ export interface Build {
 export interface BuildLogs {
   log: string
   offset: number
+  /**
+   * Whether this deployment keeps build logs at all — false when the platform
+   * has no object storage wired, in which case no build's output was ever
+   * written and every log reads back empty.
+   *
+   * Optional because a server predating the field simply omits it, and the
+   * absence of bad news is not bad news: undefined is treated as ready.
+   */
+  storage_ready?: boolean
 }
 
 // ---------------------------------------------------------------------------
@@ -692,6 +701,15 @@ export interface ProjectAnalyticsPoint {
   status_3xx: number
   status_4xx: number
   status_5xx: number
+  /**
+   * The SUBSET of `requests` the edge answered from this app's published files —
+   * traffic that reached no worker and cost no compute.
+   *
+   * A subset, not a sibling: `requests` still means everything served, so a chart
+   * that ignores these two does not change its answer.
+   */
+  static_requests: number
+  static_bytes_out: number
 }
 
 export interface ProjectAnalyticsTotals {
@@ -701,6 +719,12 @@ export interface ProjectAnalyticsTotals {
   status_3xx: number
   status_4xx: number
   status_5xx: number
+  static_requests: number
+  static_bytes_out: number
+  /** `requests` minus `static_requests`: the traffic that actually invoked something. */
+  compute_requests: number
+  /** Fraction of requests answered without compute, 0..1. Zero when nothing was served. */
+  static_share: number
 }
 
 /** GET /projects/:id/analytics — dense (zero-filled) series over the range. */

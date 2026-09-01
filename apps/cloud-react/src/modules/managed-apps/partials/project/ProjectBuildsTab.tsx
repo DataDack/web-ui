@@ -1,13 +1,20 @@
 import { useEffect, useMemo } from "react"
 
-import { Button, DataTable, EmptyState, type DataTableColumnMeta } from "@datadack/common-ui"
+import {
+  Button,
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+  DataTable,
+  EmptyState,
+  type DataTableColumnMeta,
+} from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
-import { ChevronRight, Hammer, RotateCcw, X } from "lucide-react"
+import { ChevronDown, Hammer, RotateCcw, X } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate, useSearchParams } from "react-router-dom"
 
 import { Section } from "@/components/console"
-
 
 import {
   commitURL,
@@ -17,7 +24,6 @@ import {
   shortSha,
   timeSince,
   triggerFallbackLabel,
-  triggerLabel,
 } from "./build-format"
 import { ActivityTimeline, BuildStatusPill } from "../../components"
 import { MANAGED_APPS_ROUTES } from "../../managed-apps.constants"
@@ -140,43 +146,32 @@ export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
         ),
       },
       {
-        id: "trigger",
-        header: "Trigger",
-        cell: ({ row }) => (
-          <span className="text-[12px] text-muted-foreground">
-            {triggerLabel(row.original.triggered_by)}
-          </span>
-        ),
-      },
-      {
-        id: "started",
-        header: "Started",
-        // Absolute AND relative: a column of nothing but "2d ago" cannot be
-        // correlated with anything — the wall-clock stamp is the anchor, the
-        // relative form is the glance.
-        cell: ({ row }) =>
-          isTimeSet(row.original.started_at) ? (
+        id: "when",
+        header: "Deployed",
+        // When and how long, in one column. They were two, which spent a third
+        // of the table's width on numbers nobody compares across rows — and the
+        // pair is read as one thought anyway ("2d ago, took 13s").
+        //
+        // Relative on the surface, absolute on the title: a column of nothing
+        // but "2d ago" cannot be correlated with anything, so the wall-clock
+        // stamp stays one hover away rather than one column wider.
+        cell: ({ row }) => {
+          const duration = isBuildTransitional(row.original.status)
+            ? "in progress"
+            : formatDuration(row.original.started_at, row.original.finished_at)
+          if (!isTimeSet(row.original.started_at)) {
+            return <span className="font-mono text-[12px] text-muted-foreground">—</span>
+          }
+          return (
             <span
               className="font-mono text-[12px] whitespace-nowrap text-muted-foreground"
-              title={new Date(row.original.started_at).toLocaleString()}
+              title={`Started ${shortDateTime(row.original.started_at)} · ${new Date(row.original.started_at).toLocaleString()}`}
             >
-              {shortDateTime(row.original.started_at)}
-              <span className="text-muted-foreground/60"> · {timeSince(row.original.started_at)}</span>
+              {timeSince(row.original.started_at)}
+              <span className="text-muted-foreground/60"> · {duration}</span>
             </span>
-          ) : (
-            <span className="font-mono text-[12px] text-muted-foreground">—</span>
-          ),
-      },
-      {
-        id: "duration",
-        header: "Build time",
-        cell: ({ row }) => (
-          <span className="font-mono text-[12px] whitespace-nowrap text-muted-foreground">
-            {isBuildTransitional(row.original.status)
-              ? "in progress"
-              : formatDuration(row.original.started_at, row.original.finished_at)}
-          </span>
-        ),
+          )
+        },
       },
       {
         id: "actions",
@@ -234,15 +229,6 @@ export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
           )
         },
       },
-      {
-        id: "open",
-        header: "",
-        // The row-is-a-door affordance the old "click a row" helper text
-        // stood in for.
-        cell: () => (
-          <ChevronRight className="size-3.5 text-muted-foreground/50 transition-transform group-hover/row:translate-x-0.5 group-hover/row:text-foreground" />
-        ),
-      },
     ],
     [cancelBuild, createBuild, project.id, project.repo_name, project.repo_owner, servingId],
   )
@@ -295,13 +281,25 @@ export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
         />
       </Section>
 
-      <Section
-        variant="panel"
-        title={t("managedApps.projectBuildsTab.deploymentActivity")}
-        description={t("managedApps.projectBuildsTab.lifecycleEventsGroupedPerBuild")}
-      >
-        <ActivityTimeline builds={sortedBuilds} />
-      </Section>
+      {/* Collapsed by default. The timeline restates the table above it, event
+          by event — valuable when a deploy is being reconstructed after the
+          fact, noise on every other visit, and it was the taller of the two. */}
+      <Collapsible className="rounded-xl border border-border/60 glass-1-bg">
+        <CollapsibleTrigger className="group flex w-full items-center gap-2 px-5 py-3 text-left">
+          <ChevronDown className="size-3.5 shrink-0 text-muted-foreground transition-transform group-data-[state=closed]:-rotate-90" />
+          <span className="text-[13px] font-medium text-foreground">
+            {t("managedApps.projectBuildsTab.deploymentActivity")}
+          </span>
+          <span className="truncate text-[11px] text-muted-foreground">
+            {t("managedApps.projectBuildsTab.lifecycleEventsGroupedPerBuild")}
+          </span>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <div className="border-t border-border/60 p-5">
+            <ActivityTimeline builds={sortedBuilds} />
+          </div>
+        </CollapsibleContent>
+      </Collapsible>
     </div>
   )
 }

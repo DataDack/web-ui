@@ -578,11 +578,20 @@ export function useBuildLogs(id: string, active: boolean) {
       // Reading `prev` from the cache rather than a ref keeps this correct
       // under retries: a failed attempt never wrote, so the next one asks
       // from the same offset instead of skipping a chunk.
-      const prev = queryClient.getQueryData<{ text: string; offset: number }>(
-        MANAGED_APPS_QUERY_KEYS.buildLogs(id),
-      )
+      const prev = queryClient.getQueryData<{
+        text: string
+        offset: number
+        storageReady: boolean
+      }>(MANAGED_APPS_QUERY_KEYS.buildLogs(id))
       const chunk = await managedAppsApi.buildLogs(id, prev?.offset ?? 0)
-      return { text: (prev?.text ?? "") + chunk.log, offset: chunk.offset }
+      return {
+        text: (prev?.text ?? "") + chunk.log,
+        offset: chunk.offset,
+        // Absent on a server that predates the field; treat that as ready
+        // rather than warning every user of an older backend that their logs
+        // are being dropped when they are not.
+        storageReady: chunk.storage_ready !== false,
+      }
     },
     enabled: !!id,
     refetchInterval: active ? 3_000 : false,

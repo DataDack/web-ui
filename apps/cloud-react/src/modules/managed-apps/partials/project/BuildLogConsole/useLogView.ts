@@ -10,6 +10,13 @@ interface LogViewInput {
   active: boolean
   text: string
   isLoading: boolean
+  /**
+   * False when the platform keeps no build logs at all. Changes what an empty
+   * log MEANS, so it changes the placeholder rather than adding a banner: the
+   * reader's question is "where is my output", and that is the line answering
+   * it.
+   */
+  storageReady?: boolean
 }
 
 interface LogView {
@@ -18,6 +25,12 @@ interface LogView {
   lineCount: number
   /** What the body shows while there is no text yet. */
   placeholder: string
+  /**
+   * Whether that placeholder is reporting a problem. "No log output" and "your
+   * output is being discarded" are both empty consoles, and rendering them in
+   * the same grey is how the second one goes unnoticed.
+   */
+  placeholderTone: "muted" | "warning"
   toggleFollow: () => void
   toggleWrap: () => void
   /** Raised by the body when the user scrolls away from the tail. */
@@ -36,7 +49,13 @@ interface LogView {
  * own the moment a new build starts — resets it during render instead of on a
  * second pass.
  */
-export function useLogView({ buildId, active, text, isLoading }: Readonly<LogViewInput>): LogView {
+export function useLogView({
+  buildId,
+  active,
+  text,
+  isLoading,
+  storageReady = true,
+}: Readonly<LogViewInput>): LogView {
   const [wrap, setWrap] = useState(true)
   const [followOverride, setFollowOverride] = useState<{
     buildId: string
@@ -78,8 +97,15 @@ export function useLogView({ buildId, active, text, isLoading }: Readonly<LogVie
     URL.revokeObjectURL(url)
   }, [buildId, text])
 
+  // Ordered by what the reader can act on. A deployment that stores no logs
+  // will never fill this console for any build, so that fact outranks both the
+  // in-flight and the settled wording — telling someone to wait for output that
+  // is being discarded is the one message here that actively wastes their time.
   let placeholder = "No log output."
-  if (isLoading) placeholder = "Loading log…"
+  if (!storageReady) {
+    placeholder =
+      "Build logs are not being stored on this deployment — object storage is not configured, so build output is discarded. Ask your platform administrator to set S3_BUCKET."
+  } else if (isLoading) placeholder = "Loading log…"
   else if (active) placeholder = "Waiting for output…"
 
   return {
@@ -87,6 +113,7 @@ export function useLogView({ buildId, active, text, isLoading }: Readonly<LogVie
     wrap,
     lineCount: text === "" ? 0 : text.split("\n").length,
     placeholder,
+    placeholderTone: storageReady ? "muted" : "warning",
     toggleFollow,
     toggleWrap,
     leaveTail,
