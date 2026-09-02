@@ -1,6 +1,6 @@
 import type { ComponentType } from "react"
 
-import { Braces, Boxes, Gauge, Globe, Hammer, LockKeyhole, ShieldAlert, Tag } from "lucide-react"
+import { Braces, Boxes, Gauge, Globe, Hammer, LockKeyhole, Tag } from "lucide-react"
 
 import type { SectionTone } from "@/components/console"
 
@@ -10,14 +10,7 @@ import type { Project } from "../../../managed-apps.types"
 export const SETTINGS_SECTIONS_PARAM = "section"
 
 export type SettingsSectionId =
-  | "general"
-  | "git"
-  | "build"
-  | "environments"
-  | "environment-variables"
-  | "restrictions"
-  | "plan"
-  | "danger"
+  "general" | "git" | "build" | "environments" | "environment-variables" | "restrictions" | "plan"
 
 export interface SettingsSectionMeta {
   id: SettingsSectionId
@@ -33,8 +26,8 @@ export interface SettingsSectionMeta {
 
 /**
  * The rail's inventory, in the order a user reaches for it: identity, then
- * source, then how it builds, then what it costs, then the irreversible one —
- * last, and separated.
+ * source, then how it builds, then what it costs. Project deletion lives at
+ * the bottom of General instead of posing as a settings category of its own.
  *
  * Git carries the Octocat rather than lucide's `GitBranch`. The section is not
  * about branching in the abstract: it is about the GitHub installation, the
@@ -87,11 +80,10 @@ export const SETTINGS_SECTIONS: SettingsSectionMeta[] = [
   {
     id: "restrictions",
     label: "Restrictions",
-    hint: "IP and password access",
+    hint: "IP rules, firewall, rate limit",
     icon: LockKeyhole,
     tone: "warning",
     needsRepo: false,
-    comingSoon: true,
   },
   {
     id: "plan",
@@ -101,14 +93,6 @@ export const SETTINGS_SECTIONS: SettingsSectionMeta[] = [
     // section cannot take — the tier is account-scoped and changed elsewhere.
     icon: Gauge,
     tone: "accent",
-    needsRepo: false,
-  },
-  {
-    id: "danger",
-    label: "Danger zone",
-    hint: "Delete this project",
-    icon: ShieldAlert,
-    tone: "danger",
     needsRepo: false,
   },
 ]

@@ -100,6 +100,10 @@ export const MANAGED_APPS_QUERY_KEYS = {
   projects: (type?: ProjectType) => ["managed-apps", "projects", { type: type ?? "all" }] as const,
   project: (id: string) => ["managed-apps", "projects", id] as const,
   projectEnv: (id: string) => ["managed-apps", "projects", id, "env"] as const,
+  /** The project's edge access control, its plan ceilings and the rule
+   *  catalog — one read, so they cannot be rendered from disagreeing
+   *  snapshots. */
+  projectRestrictions: (id: string) => ["managed-apps", "projects", id, "restrictions"] as const,
   projectSetup: (id: string) => ["managed-apps", "projects", id, "setup"] as const,
   projectBuilds: (id: string) => ["managed-apps", "projects", id, "builds"] as const,
   // Source reads are keyed by the commit, not just the project: a commit's tree

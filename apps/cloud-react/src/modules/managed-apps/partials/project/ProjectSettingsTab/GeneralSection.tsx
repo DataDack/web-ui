@@ -1,15 +1,18 @@
 import { type CSSProperties, useState } from "react"
 
-import { Button, CopyButton, Input } from "@datadack/common-ui"
-import { ExternalLink, Lock, Tag } from "lucide-react"
+import { ExternalLink, Globe, Lock, Pencil, Tag } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { FieldRow, Section } from "@/components/console"
 
+import { Button, CopyButton, Input } from "@datadack/common-ui"
+
+import { DangerZone } from "./DangerZone"
 import { PROJECT_TYPE_META } from "../../../components"
 import { markFor } from "../../../components/framework-marks"
 import { useUpdateProject } from "../../../managed-apps.hooks"
 import type { Project } from "../../../managed-apps.types"
+import { AppAddressDialog } from "../AppAddressDialog"
 
 const NAME_PATTERN = /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/
 
@@ -37,6 +40,7 @@ export function GeneralSection({ project }: Readonly<{ project: Project }>) {
   const { t } = useTranslation()
   const isN8n = project.project_type === "n8n"
   const [name, setName] = useState(project.name)
+  const [editingAddress, setEditingAddress] = useState(false)
   const update = useUpdateProject(project.id)
 
   let nameError: string | undefined
@@ -57,85 +61,109 @@ export function GeneralSection({ project }: Readonly<{ project: Project }>) {
   const MarkIcon = mark.icon
 
   return (
-    <Section
-      variant="panel"
-      icon={Tag}
-      tone="neutral"
-      title="General"
-      description={t("managedApps.generalSection.howThisProjectIsIdentifiedInTheConsole")}
-    >
-      <div className="space-y-5">
-        <FieldRow
-          label="Name"
-          htmlFor="settings-name"
-          error={nameError}
-          description="Lowercase letters, digits and hyphens. Shown in the console and on your builds."
-        >
-          <Input
-            id="settings-name"
-            value={name}
-            className="font-mono sm:w-80"
-            onChange={(event) => {
-              setName(event.target.value)
-            }}
-          />
-        </FieldRow>
-
-        <FieldRow
-          label="Public address"
-          description="Allocated when the project was created. A rename does not move it, so links already shared keep working."
-          aside={
-            <a
-              href={project.url}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-1 text-[11px] text-status-info hover:underline"
-            >
-              Visit
-              <ExternalLink className="size-3" />
-            </a>
-          }
-        >
-          <div className="flex h-9 items-center gap-2 rounded-md border border-dashed border-border glass-1-bg-raised px-3 sm:w-80">
-            <Lock className="size-3.5 shrink-0 text-muted-foreground" />
-            <CopyButton value={project.subdomain} className="min-w-0 flex-1 text-[13px]" />
-          </div>
-        </FieldRow>
-
-        {!isN8n && (
+    <div className="space-y-6">
+      <Section
+        variant="panel"
+        icon={Tag}
+        tone="neutral"
+        title="General"
+        description={t("managedApps.generalSection.howThisProjectIsIdentifiedInTheConsole")}
+      >
+        <div className="space-y-5">
           <FieldRow
-            label="Runtime"
-            description="Set when the project was created. It determines the build workflow in your repository, so it cannot be changed here — create a new project to build this repository a different way."
+            label="Name"
+            htmlFor="settings-name"
+            error={nameError}
+            description="Lowercase letters, digits and hyphens. Shown in the console and on your builds."
           >
-            <div className="flex h-9 items-center gap-2 rounded-md border border-dashed border-border glass-1-bg-raised px-3 sm:w-80">
-              <MarkIcon
-                aria-hidden
-                className="size-4 shrink-0 text-[var(--fw-mark)] dark:text-[var(--fw-mark-dark)]"
-                style={
-                  {
-                    "--fw-mark": mark.color,
-                    "--fw-mark-dark": mark.colorDark ?? mark.color,
-                  } as CSSProperties
-                }
-              />
-              <span className="text-sm">{runtime.label}</span>
-              <Lock className="ml-auto size-3.5 shrink-0 text-muted-foreground" />
+            <Input
+              id="settings-name"
+              value={name}
+              className="font-mono sm:w-80"
+              onChange={(event) => {
+                setName(event.target.value)
+              }}
+            />
+          </FieldRow>
+
+          {/* Allocated at creation and NOT moved by the rename above — the two
+              are deliberately separate decisions, because a customer tidying a
+              project name has not asked for every link they have shared to stop
+              working. Changing it on purpose is what the dialog is for, and it
+              says what it costs. */}
+          <FieldRow
+            label="Public address"
+            description="Allocated when the project was created, and independent of the name above. Changing it retires the old address."
+            aside={
+              <a
+                href={project.url}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1 text-[11px] text-status-info hover:underline"
+              >
+                Visit
+                <ExternalLink className="size-3" />
+              </a>
+            }
+          >
+            <div className="flex items-center gap-2 sm:w-80">
+              <div className="flex h-9 min-w-0 flex-1 items-center gap-2 rounded-md border border-border glass-1-bg-raised px-3">
+                <Globe className="size-3.5 shrink-0 text-muted-foreground" />
+                <CopyButton value={project.subdomain} className="min-w-0 flex-1 text-[13px]" />
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                className="gap-1.5"
+                onClick={() => {
+                  setEditingAddress(true)
+                }}
+              >
+                <Pencil className="size-3" />
+                Edit
+              </Button>
             </div>
           </FieldRow>
-        )}
 
-        <Button
-          size="sm"
-          className="gap-1.5"
-          disabled={!dirty || Boolean(nameError) || update.isPending}
-          onClick={() => {
-            update.mutate({ name })
-          }}
-          loading={update.isPending}
-        >
-          Save changes
-        </Button>
-      </div>
-    </Section>
+          {!isN8n && (
+            <FieldRow
+              label="Runtime"
+              description="Set when the project was created. It determines the build workflow in your repository, so it cannot be changed here — create a new project to build this repository a different way."
+            >
+              <div className="flex h-9 items-center gap-2 rounded-md border border-dashed border-border glass-1-bg-raised px-3 sm:w-80">
+                <MarkIcon
+                  aria-hidden
+                  className="size-4 shrink-0 text-[var(--fw-mark)] dark:text-[var(--fw-mark-dark)]"
+                  style={
+                    {
+                      "--fw-mark": mark.color,
+                      "--fw-mark-dark": mark.colorDark ?? mark.color,
+                    } as CSSProperties
+                  }
+                />
+                <span className="text-sm">{runtime.label}</span>
+                <Lock className="ml-auto size-3.5 shrink-0 text-muted-foreground" />
+              </div>
+            </FieldRow>
+          )}
+
+          <Button
+            size="sm"
+            className="gap-1.5"
+            disabled={!dirty || Boolean(nameError) || update.isPending}
+            onClick={() => {
+              update.mutate({ name })
+            }}
+            loading={update.isPending}
+          >
+            Save changes
+          </Button>
+        </div>
+      </Section>
+
+      <DangerZone project={project} />
+
+      <AppAddressDialog project={project} open={editingAddress} onOpenChange={setEditingAddress} />
+    </div>
   )
 }

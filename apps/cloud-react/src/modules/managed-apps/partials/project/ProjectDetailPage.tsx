@@ -17,9 +17,9 @@ import { useScreen } from "@/services/api/screen"
 
 import { commitURL, isTimeSet, shortSha, timeSince } from "./build-format"
 import { ProjectBuildsTab } from "./ProjectBuildsTab"
+import { ProjectDomainsTab } from "./ProjectDomainsTab"
 import { ProjectOverviewTab } from "./ProjectOverviewTab"
 import { ProjectSettingsTab } from "./ProjectSettingsTab"
-import { ResourceDomainsTab } from "../../../domains/partials/ResourceDomainsTab"
 import { PROJECT_TYPE_META, ProjectStateChip } from "../../components"
 import { MANAGED_APPS_ROUTES } from "../../managed-apps.constants"
 import { useProject, useProjectBuilds } from "../../managed-apps.hooks"
@@ -189,9 +189,7 @@ export function ProjectDetailPage() {
           value: "domains",
           label: "Domains",
           icon: Globe,
-          // "mgd_app_project" is the registry's resource_type for a project —
-          // the registry keys attachments by its own identifiers, not routes.
-          content: <ResourceDomainsTab resourceType="mgd_app_project" resourceId={project.id} />,
+          content: <ProjectDomainsTab project={project} />,
         },
         {
           value: "settings",

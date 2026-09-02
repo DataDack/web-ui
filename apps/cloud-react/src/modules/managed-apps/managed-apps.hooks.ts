@@ -2,6 +2,7 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tansta
 import axios from "axios"
 import { toast } from "sonner"
 
+import { DOMAINS_QUERY_KEYS } from "@/modules/domains/domains.constants"
 import { handleQuotaGateError } from "@/modules/governance/quota-gate"
 import { extractError, openTopupTab } from "@/services/api/client"
 import { publishConsoleEvent } from "@/services/broadcast"
@@ -17,6 +18,8 @@ import {
   type ReconnectSourceRequest,
   type RequestLogQuery,
   type UpdateProjectEnvRequest,
+  type UpdateProjectHostnameRequest,
+  type UpdateRestrictionsRequest,
   type UpdateProjectRequest,
   isBuildTransitional,
 } from "./managed-apps.types"
@@ -361,6 +364,29 @@ export function useUpdateProject(id: string) {
   })
 }
 
+/**
+ * Move the app onto another platform-provided address.
+ *
+ * The error is deliberately left on the mutation instead of being toasted: a
+ * taken or reserved name is something the customer fixes in the input they are
+ * still looking at, and a toast would leave the dialog looking like it worked.
+ * Both this module's caches and the domains registry's are invalidated — the
+ * hostname is rendered from the project row in one place and from the registry
+ * row in the other, and after this they disagree until both refetch.
+ */
+export function useUpdateProjectHostname(id: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (payload: UpdateProjectHostnameRequest) =>
+      managedAppsApi.updateProjectHostname(id, payload),
+    onSuccess: (project) => {
+      void queryClient.invalidateQueries({ queryKey: ["managed-apps", "projects"] })
+      void queryClient.invalidateQueries({ queryKey: DOMAINS_QUERY_KEYS.all })
+      toast.success(`Now serving at ${project.subdomain}`)
+    },
+  })
+}
+
 export function useDeleteProject() {
   const queryClient = useQueryClient()
   return useMutation({
@@ -402,6 +428,45 @@ export function useUpdateProjectEnv(id: string) {
       toast.success("Environment variables updated")
     },
     onError: (e) => toast.error(extractError(e, "Failed to update environment")),
+  })
+}
+
+/**
+ * The project's edge access control, plus the plan ceilings and rule catalog
+ * that make it renderable.
+ *
+ * No polling. Nothing changes this but a save from this page, and a security
+ * page that refetches under the reader is a page where a half-edited list can
+ * be replaced mid-thought.
+ */
+export function useProjectRestrictions(id: string) {
+  return useQuery({
+    queryKey: MANAGED_APPS_QUERY_KEYS.projectRestrictions(id),
+    queryFn: () => managedAppsApi.projectRestrictions(id),
+    enabled: !!id,
+  })
+}
+
+/**
+ * Save the whole document.
+ *
+ * The server's answer is written straight into the cache rather than
+ * invalidated into a refetch, because the two differ in a way that matters
+ * here: the response IS the normalized document — prefixes masked, disabled
+ * signatures dropped — and seeding the editor from it is what shows the user
+ * that 203.0.113.5/24 was stored as 203.0.113.0/24 before they trust a rule
+ * that would never have matched.
+ */
+export function useUpdateProjectRestrictions(id: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (payload: UpdateRestrictionsRequest) =>
+      managedAppsApi.updateProjectRestrictions(id, payload),
+    onSuccess: (result) => {
+      queryClient.setQueryData(MANAGED_APPS_QUERY_KEYS.projectRestrictions(id), result)
+      toast.success("Restrictions updated")
+    },
+    onError: (e) => toast.error(extractError(e, "Failed to update restrictions")),
   })
 }
 

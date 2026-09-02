@@ -1,6 +1,7 @@
-import { cn } from "@datadack/common-ui"
 import { ArrowUpRight } from "lucide-react"
 import { Link } from "react-router-dom"
+
+import { cn } from "@datadack/common-ui"
 
 import {
   SETTINGS_DEPARTURES,
@@ -27,9 +28,8 @@ interface SettingsRailProps {
 const ROW =
   "group flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-[13px] transition-colors"
 
-/** Gold marks where you are, destructive marks what you should not click twice. */
-function iconTone(isDanger: boolean, isActive: boolean): string {
-  if (isDanger) return "text-destructive"
+/** Gold marks the section currently in view. */
+function iconTone(isActive: boolean): string {
   if (isActive) return "text-brand-gold-ink"
   return "text-muted-foreground group-hover:text-foreground"
 }
@@ -66,8 +66,6 @@ export function SettingsRail({
       {sections.map((section) => {
         const Icon = section.icon
         const isActive = section.id === active
-        const isDanger = section.id === "danger"
-
         return (
           <button
             key={section.id}
@@ -82,11 +80,9 @@ export function SettingsRail({
               isActive
                 ? "glass-1-bg-raised font-medium text-foreground"
                 : "text-muted-foreground hover:bg-accent/40 hover:text-foreground",
-              isDanger && !isActive && "text-destructive/80 hover:text-destructive",
-              isDanger && isActive && "text-destructive",
             )}
           >
-            <Icon className={cn("size-4 shrink-0", iconTone(isDanger, isActive))} />
+            <Icon className={cn("size-4 shrink-0", iconTone(isActive))} />
             <span className="min-w-0">
               <span className="block truncate">{section.label}</span>
               {/* The hint is what makes the rail a map rather than a menu, but

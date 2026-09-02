@@ -1,17 +1,11 @@
 import { useMemo, useState } from "react"
 
-import { Eye, Globe, Plus, RefreshCw, Trash2 } from "lucide-react"
+import { Eye, Globe, Pencil, Plus, RefreshCw, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { ConfirmDialog, Section } from "@/components/console"
 
-import {
-  actionsColumn,
-  Button,
-  DataTable,
-  EmptyState,
-  type RowAction,
-} from "@datadack/common-ui"
+import { actionsColumn, Button, DataTable, EmptyState, type RowAction } from "@datadack/common-ui"
 
 import { useDomains, useRemoveDomain, useVerifyDomain } from "../domains.hooks"
 import type { Domain } from "../domains.types"
@@ -29,12 +23,24 @@ import { buildDomainColumns } from "./domain-columns"
  * not the console's route names.
  *
  * Row actions exist for CUSTOM rows only: a managed hostname lives and dies
- * with its resource, so there is nothing a tenant can do to it here.
+ * with its resource, so there is nothing a tenant can do to it here — with one
+ * exception the OWNING product has to supply. Some platform-minted names are
+ * editable, because they are stored on the resource itself (a managed app's
+ * subdomain) rather than being derived from something immovable. This table
+ * cannot know which, so it renders the action only when a caller passes
+ * onEditManaged, and leaves the editing UI to the product that owns the field.
  */
 export function ResourceDomainsTab({
   resourceType,
   resourceId,
-}: Readonly<{ resourceType: string; resourceId: string }>) {
+  onEditManaged,
+}: Readonly<{
+  resourceType: string
+  resourceId: string
+  /** Called with the resource's primary platform-minted row, when it can be
+   *  renamed. Absent means managed rows carry no actions at all. */
+  onEditManaged?: (domain: Domain) => void
+}>) {
   // Hooks first, always — early returns (none here) come after every hook.
   const { t } = useTranslation()
   const { data, isLoading, isError, refetch } = useDomains({
@@ -60,8 +66,19 @@ export function ResourceDomainsTab({
       actionsColumn<Domain>({
         ariaLabel: t("console.table.actions"),
         actions: (domain) => {
-          // Managed rows: no menu at all (actionsColumn renders nothing).
-          if (domain.managed) return []
+          // Managed rows: nothing but the address edit, and only when the owning
+          // product handed one in and this is the row that IS the resource's
+          // address. A secondary managed row is not the field being edited.
+          if (domain.managed) {
+            if (!onEditManaged || !domain.is_primary) return []
+            return [
+              {
+                label: t("domains.actions.editAddress"),
+                icon: Pencil,
+                onAction: onEditManaged,
+              },
+            ]
+          }
           const actions: RowAction<Domain>[] = []
           if (domain.status === "pending") {
             actions.push(
@@ -94,7 +111,7 @@ export function ResourceDomainsTab({
         },
       }),
     ],
-    [t, verifyDomain],
+    [t, verifyDomain, onEditManaged],
   )
 
   return (

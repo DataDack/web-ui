@@ -1912,6 +1912,7 @@
     },
     "actions": {
       "add": "Add domain",
+      "editAddress": "Edit address",
       "viewRecords": "View records",
       "verifyNow": "Verify now",
       "remove": "Remove",

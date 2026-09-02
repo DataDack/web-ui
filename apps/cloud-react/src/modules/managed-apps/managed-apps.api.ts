@@ -27,12 +27,15 @@ import type {
   ReconnectSourceRequest,
   RequestLogQuery,
   RequestLogsResult,
+  RestrictionsResult,
   RepoDetection,
   ProjectType,
   SourceFile,
   SourceTree,
   UpdateProjectEnvRequest,
+  UpdateProjectHostnameRequest,
   UpdateProjectRequest,
+  UpdateRestrictionsRequest,
 } from "./managed-apps.types"
 
 // cloud-be-go: app "managedapps".
@@ -44,6 +47,7 @@ import type {
 //   Source:    POST /projects/:id/source/disconnect · POST /projects/:id/source/reconnect
 //   Projects:  GET/POST /projects · GET/PUT/DELETE /projects/:id
 //              GET/PUT /projects/:id/env
+//              GET/PUT /projects/:id/restrictions
 //              GET /projects/:id/source/tree · GET /projects/:id/source/file
 //   Builds:    POST /projects/:id/builds · GET /projects/:id/builds
 //              GET /builds/:id · GET /builds/:id/logs · POST /builds/:id/cancel
@@ -185,6 +189,13 @@ export const managedAppsApi = {
   updateProject: (id: string, payload: UpdateProjectRequest): Promise<Project> =>
     apiPut<Project>(`${BASE}/projects/${id}`, payload),
 
+  /**
+   * Move the app onto another platform-provided address. Answers 409 when the
+   * name is taken or reserved — the dialog renders that message inline.
+   */
+  updateProjectHostname: (id: string, payload: UpdateProjectHostnameRequest): Promise<Project> =>
+    apiPut<Project>(`${BASE}/projects/${id}/hostname`, payload),
+
   deleteProject: (id: string): Promise<void> => apiDelete(`${BASE}/projects/${id}`),
 
   /**
@@ -290,6 +301,28 @@ export const managedAppsApi = {
 
   updateProjectEnv: (id: string, payload: UpdateProjectEnvRequest): Promise<void> =>
     apiPut(`${BASE}/projects/${id}/env`, payload),
+
+  // ── Restrictions ──────────────────────────────────────────────────────
+  /**
+   * The project's edge access control, with the plan's ceilings and the
+   * platform's rule catalog alongside it.
+   *
+   * One call rather than three: a rules editor cannot render a stored rule id
+   * without the catalog's title and false-positive note, and an "Add rule"
+   * button cannot know to disable itself without the quota. Three reads are
+   * three chances to paint an editor from snapshots that disagree.
+   */
+  projectRestrictions: (id: string): Promise<RestrictionsResult> =>
+    apiGet<RestrictionsResult>(`${BASE}/projects/${id}/restrictions`),
+
+  /** Replaces the whole document and answers with it as stored — prefixes
+   *  masked, disabled signatures dropped — so the editor re-seeds from what is
+   *  actually in force rather than from what was typed. */
+  updateProjectRestrictions: (
+    id: string,
+    payload: UpdateRestrictionsRequest,
+  ): Promise<RestrictionsResult> =>
+    apiPut<RestrictionsResult>(`${BASE}/projects/${id}/restrictions`, payload),
 
   // ── Builds ────────────────────────────────────────────────────────────
   /**

@@ -1,11 +1,12 @@
 import { useState } from "react"
 
-import { Button } from "@datadack/common-ui"
 import { ShieldAlert, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
 import { ConfirmDialog, Section } from "@/components/console"
+
+import { Button } from "@datadack/common-ui"
 
 import { MANAGED_APPS_ROUTES } from "../../../managed-apps.constants"
 import { useDeleteProject } from "../../../managed-apps.hooks"
@@ -14,10 +15,9 @@ import type { Project } from "../../../managed-apps.types"
 /**
  * Deleting the project.
  *
- * It reaches the reader only when they choose it from the rail, which is the
- * point of giving it its own entry: the irreversible action is no longer a
- * panel every other section has to be scrolled past, and it is no longer the
- * same size and weight as renaming.
+ * It sits last in General, after the safe identity settings. Keeping the
+ * irreversible action visually separated and at the end makes it available
+ * without presenting deletion as a settings category of its own.
  *
  * The copy is precise about the blast radius in both directions: the platform
  * side goes, and the customer's repository — including the workflow file the

@@ -419,12 +419,25 @@ export interface CreateProjectRequest {
 }
 
 /**
+ * PUT /projects/:id/hostname — move the app onto another platform-provided
+ * address. `label` is the part before the platform's app zone; the whole
+ * hostname is accepted too and the zone is trimmed server-side.
+ *
+ * Its own endpoint rather than a field on the update below, because it is not a
+ * field edit: the old address stops answering, and a name somebody else holds
+ * comes back as a 409 rather than as a validation message.
+ */
+export interface UpdateProjectHostnameRequest {
+  label: string
+}
+
+/**
  * PUT /projects/:id — omitted fields keep their stored value. Repo/installation
  * are immutable server-side and env has its own endpoint, so neither appears
  * here; project_type may only move between opennext and react.
  *
- * Renaming does NOT recompute the subdomain: that was allocated at creation and
- * the customer may already have shared the address.
+ * Renaming does NOT recompute the subdomain — that is what the hostname
+ * endpoint above is for, and it is a deliberate, separate decision.
  */
 export interface UpdateProjectRequest {
   name?: string
@@ -532,6 +545,127 @@ export interface EnvVarInput {
 /** PUT /projects/:id/env — full replacement of the project's env map. */
 export interface UpdateProjectEnvRequest {
   env: Record<string, EnvVarInput>
+}
+
+/* ── Restrictions ─────────────────────────────────────────────────────── */
+
+/**
+ * What a rule is permitted to do when it matches.
+ *
+ * `log` is the ZERO VALUE everywhere, deliberately: a rule with no mode set —
+ * an older row, a partial write, a typo'd key — must never be able to refuse a
+ * customer's traffic. `block` is only ever set explicitly, by somebody who has
+ * already watched the rule in log mode against real traffic.
+ */
+export type WafMode = "log" | "block"
+
+/** An allow rule short-circuits every other rule; a deny refuses, subject to
+ *  its mode. Order in the list decides which one a request meets first. */
+export type IpRuleAction = "allow" | "deny"
+
+/**
+ * One address rule.
+ *
+ * `mode` is read for a DENY only. "Would have allowed" is indistinguishable
+ * from what already happens, so an allow rule has no log mode that means
+ * anything and the editor does not offer one.
+ */
+export interface IpRule {
+  cidr: string
+  action: IpRuleAction
+  mode?: WafMode
+  /** Why the rule exists. Never sent to a visitor — it is for whoever finds
+   *  the rule in six months. */
+  note?: string
+}
+
+/** One managed signature's setting for this project. `score` overrides the
+ *  catalog weight; 0 keeps it. */
+export interface SignatureSetting {
+  enabled: boolean
+  mode?: WafMode
+  score?: number
+}
+
+/**
+ * The project's own request ceiling.
+ *
+ * Absent means the platform default. PRESENT WITH rps 0 means serve nothing —
+ * an app taken off the air without being deleted — so a client must never
+ * render an absent limit and a zero limit the same way.
+ */
+export interface RateLimitRule {
+  rps: number
+  burst?: number
+}
+
+/** One managed signature as the platform describes it. */
+export interface WafCatalogRule {
+  id: string
+  category: string
+  /** What a match contributes to the request's anomaly total at the catalog
+   *  weight. 2 notice · 3 warning · 4 error · 5 critical. */
+  score: number
+  title: string
+  description: string
+  /** The traffic that legitimately trips this rule. It is what decides whether
+   *  the rule is safe to promote out of log mode on THIS app. */
+  false_positives: string
+}
+
+/** The stored document. Both lists arrive non-null, so an editor never has to
+ *  tell null from empty before it can render. */
+export interface RestrictionsDocument {
+  ip_rules: IpRule[]
+  signatures: Record<string, SignatureSetting>
+  default_mode?: WafMode
+  block_threshold?: number
+  rate_limit?: RateLimitRule | null
+}
+
+/** What the account's tier sells, beside what this project already uses.
+ *  -1 is unlimited and 0 is a genuine none — render the two differently. */
+export interface RestrictionsLimits {
+  max_ip_rules: number
+  ip_rules_in_use: number
+  max_signatures: number
+  signatures_in_use: number
+  max_rate_limits: number
+  rate_limits_in_use: number
+  plan: string
+}
+
+/**
+ * GET /projects/:id/restrictions — the document, the plan's ceilings, and the
+ * rule catalog, in one read.
+ *
+ * `enforced` is the field that matters most on this page: rules are applied by
+ * the edge gateway, so a project the gateway does not front has rules that are
+ * stored and inert. Showing a saved ruleset as if it were protection is the one
+ * thing a security page must never do, so the banner is driven by this rather
+ * than by whether the document is non-empty.
+ */
+export interface RestrictionsResult {
+  restrictions: RestrictionsDocument
+  limits: RestrictionsLimits
+  catalog: WafCatalogRule[]
+  /** The anomaly score the edge uses when the document names none. */
+  default_threshold: number
+  enforced: boolean
+  not_enforced_reason?: string
+}
+
+/** PUT /projects/:id/restrictions — a full replacement.
+ *
+ *  A replace and not a patch because the IP list is ORDERED and first match
+ *  wins: appending a rule to an order the client did not send changes what the
+ *  other rules mean. */
+export interface UpdateRestrictionsRequest {
+  ip_rules: IpRule[]
+  signatures: Record<string, SignatureSetting>
+  default_mode?: WafMode
+  block_threshold?: number
+  rate_limit?: RateLimitRule | null
 }
 
 /**

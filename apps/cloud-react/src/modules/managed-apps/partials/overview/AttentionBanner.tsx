@@ -1,6 +1,9 @@
-import { Button, cn } from "@datadack/common-ui"
-import { ArrowRight, GitPullRequest, Unplug, XCircle } from "lucide-react"
+import { useState } from "react"
+
+import { ArrowRight, GitPullRequest, Unplug, X, XCircle } from "lucide-react"
 import { Link, useSearchParams } from "react-router-dom"
+
+import { Button, cn } from "@datadack/common-ui"
 
 import { MANAGED_APPS_ROUTES } from "../../managed-apps.constants"
 import type { ProjectEntry } from "../../managed-apps.state"
@@ -28,6 +31,7 @@ interface AttentionBannerProps {
  */
 export function AttentionBanner({ entries }: Readonly<AttentionBannerProps>) {
   const [searchParams, setSearchParams] = useSearchParams()
+  const [dismissedAlert, setDismissedAlert] = useState<string | null>(null)
 
   const disconnected = entries.filter((e) => e.state.kind === "source_disconnected")
   const failed = entries.filter((e) => e.state.kind === "failed")
@@ -70,6 +74,9 @@ export function AttentionBanner({ entries }: Readonly<AttentionBannerProps>) {
 
   const first = group.items.at(0)
   if (!first) return null
+
+  const alertKey = `${first.state.kind}:${group.items.map((entry) => entry.project.id).join(",")}`
+  if (dismissedAlert === alertKey) return null
 
   // The list is already filtered to this group, so the banner would only be
   // restating a filter the user can see applied above it.
@@ -133,6 +140,18 @@ export function AttentionBanner({ entries }: Readonly<AttentionBannerProps>) {
           </Link>
         </Button>
       )}
+
+      <Button
+        size="sm"
+        variant="ghost"
+        className="size-8 shrink-0 p-0"
+        aria-label="Dismiss alert"
+        onClick={() => {
+          setDismissedAlert(alertKey)
+        }}
+      >
+        <X className="size-4" />
+      </Button>
     </div>
   )
 }
