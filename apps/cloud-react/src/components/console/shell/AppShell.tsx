@@ -109,14 +109,6 @@ export function AppShell() {
     (m) => (m.handle as { fullBleed?: boolean } | undefined)?.fullBleed,
   )
 
-  // The gutter a sidebar-less route gets, published as --page-px/--page-py so a
-  // child that has to paint edge to edge (DetailPage's sticky bar) can pull
-  // back out through exactly as much padding as it was given. A full-bleed
-  // route has none, and says so rather than leaving the vars undefined.
-  const focusedGutter = fullBleed
-    ? "[--page-px:0px] [--page-py:0px]"
-    : "px-4 py-4 [--page-px:1rem] [--page-py:1rem] md:px-4 lg:px-4 lg:py-4"
-
   return (
     <MotionProvider>
       {/* `isolate` is here for the seasonal watermark: it makes this div the
@@ -167,11 +159,7 @@ export function AppShell() {
               // rounded top-left corner that connects to the dividerless
               // topbar + sidebar sitting on the shared tinted background.
               <div className="mt-2 min-h-[calc(100vh-96px-0.5rem)] rounded-tl-2xl border-t border-l border-border/50 bg-card shadow-sm md:min-h-[calc(100vh-52px-0.5rem)]">
-                {/* --page-* publishes this gutter to the page inside it, so a
-                    full-bleed element (DetailPage's sticky bar) can pull back
-                    out through exactly as much padding as it was given — and
-                    knows the panel's top-left corner is rounded. */}
-                <div className="w-full px-4 py-6 [--page-corner:var(--radius-2xl)] [--page-px:1rem] [--page-py:1.5rem] md:px-6 md:[--page-px:1.5rem] lg:px-8 lg:[--page-px:2rem]">
+                <div className="w-full px-4 py-6 md:px-6 lg:px-8">
                   <Suspense fallback={<RouteSkeleton />}>{routeContent}</Suspense>
                 </div>
               </div>
@@ -186,9 +174,9 @@ export function AppShell() {
                       // whole page sideways, taking the topbar with it.
                       cn(
                         "flex min-h-[calc(100vh-96px)] w-full min-w-0 flex-col md:min-h-[calc(100vh-52px)]",
-                        focusedGutter,
+                        !fullBleed && "px-4 py-4 md:px-4 lg:px-4 lg:py-4",
                       )
-                    : "mx-auto w-full max-w-400 px-4 py-6 [--page-px:1rem] [--page-py:1.5rem] md:px-6 md:[--page-px:1.5rem] lg:px-8 lg:[--page-px:2rem]"
+                    : "mx-auto w-full max-w-400 px-4 py-6 md:px-6 lg:px-8"
                 }
               >
                 <Suspense fallback={<RouteSkeleton />}>{routeContent}</Suspense>
