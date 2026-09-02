@@ -85,23 +85,44 @@ export function DetailPage({
   // viewport at exactly that moment, on all of them, without running a handler
   // on every frame.
   const sentinelRef = useRef<HTMLDivElement>(null)
+  const barRef = useRef<HTMLDivElement>(null)
   const [condensed, setCondensed] = useState(false)
 
   useEffect(() => {
     const sentinel = sentinelRef.current
-    if (!sentinel) return
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setCondensed(!entry.isIntersecting)
-      },
-      // The bar pins under a 52px topbar (96px while the mobile shell stacks its
-      // two rows), so the sentinel has to be considered "gone" that much before
-      // it actually leaves the viewport, or the swap fires a topbar too late.
-      { rootMargin: "-96px 0px 0px 0px", threshold: 0 },
-    )
-    observer.observe(sentinel)
+    const bar = barRef.current
+    if (!sentinel || !bar) return
+
+    let observer: IntersectionObserver | undefined
+
+    const attach = () => {
+      observer?.disconnect()
+      // The bar's OWN resolved `top` is the offset it pins at — 52px once the
+      // topbar is a single row, 96px while the mobile shell stacks two. Read it
+      // rather than hardcoding either number: the first cut hardcoded 96, the
+      // sentinel rests at ~84px on desktop, and so the bar reported itself
+      // scrolled-past on mount and rendered condensed at scroll zero.
+      const stickyTop = Number.parseFloat(getComputedStyle(bar).top) || 0
+      observer = new IntersectionObserver(
+        ([entry]) => {
+          setCondensed(!entry.isIntersecting)
+        },
+        // +1 so the swap fires as the sentinel passes under the bar's pin line,
+        // not a pixel before it.
+        { rootMargin: `-${String(stickyTop + 1)}px 0px 0px 0px`, threshold: 0 },
+      )
+      observer.observe(sentinel)
+    }
+
+    attach()
+
+    // `top` is set by a media query, so it changes at the md breakpoint and the
+    // observer has to be rebuilt with the new offset.
+    const mq = window.matchMedia("(min-width: 768px)")
+    mq.addEventListener("change", attach)
     return () => {
-      observer.disconnect()
+      observer?.disconnect()
+      mq.removeEventListener("change", attach)
     }
   }, [])
 
@@ -128,7 +149,13 @@ export function DetailPage({
           It bleeds through the shell's gutter (--page-px, published by AppShell)
           so it reads as chrome rather than as one more card, and re-applies that
           gutter inside so its contents stay on the page's left margin. */}
-      <div className="page-bleed sticky top-[96px] z-30 mb-5 border-b border-border/60 glass-3-bg md:top-[52px]">
+      {/* `backdrop-blur-xl` because glass-3-bg is translucent: without it the
+          page's own cards scroll under the bar in full focus and the text on it
+          becomes unreadable. Matches the Topbar it pins beneath. */}
+      <div
+        ref={barRef}
+        className="page-bleed sticky top-[96px] z-30 mb-5 border-b border-border/60 glass-3-bg backdrop-blur-xl md:top-[52px]"
+      >
         <div className="page-gutter">
           {/* Deck 1 — the back link. First to go when the bar condenses: by
               then the reader is deep in a build log, not looking for the exit,
