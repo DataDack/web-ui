@@ -1,6 +1,7 @@
 import { Button, EmptyState, Skeleton } from "@datadack/common-ui"
 import {
   Activity,
+  GitBranch,
   GitPullRequest,
   Globe,
   Hammer,
@@ -14,6 +15,7 @@ import { Link, useNavigate, useParams } from "react-router-dom"
 import { DetailPage } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
+import { commitURL, isTimeSet, shortSha, timeSince } from "./build-format"
 import { ProjectBuildsTab } from "./ProjectBuildsTab"
 import { ProjectOverviewTab } from "./ProjectOverviewTab"
 import { ProjectSettingsTab } from "./ProjectSettingsTab"
@@ -73,6 +75,11 @@ export function ProjectDetailPage() {
   }
 
   const state = deriveProjectState(project, latestBuild)
+  const commitHref = latestBuild?.commit_sha
+    ? commitURL(project.repo_owner, project.repo_name, latestBuild.commit_sha)
+    : ""
+  const settledAt =
+    latestBuild && isTimeSet(latestBuild.finished_at) ? latestBuild.finished_at : null
 
   return (
     <DetailPage
@@ -88,6 +95,61 @@ export function ProjectDetailPage() {
       title={project.name}
       statusNode={<ProjectStateChip state={state} />}
       id={project.id}
+      // The facts that were only ever on the Overview tab. Open Builds, Domains
+      // or Settings and you used to lose track of which branch and which commit
+      // the thing you are configuring is actually running.
+      //
+      // n8n projects have no repository — the source half is simply absent for
+      // them rather than rendering an empty "/" and a branch nobody pushed to.
+      meta={
+        <>
+          {project.repo_owner && project.repo_name && (
+            <a
+              href={`https://github.com/${project.repo_owner}/${project.repo_name}`}
+              target="_blank"
+              rel="noreferrer"
+              className="truncate hover:text-foreground hover:underline"
+            >
+              {project.repo_owner}/{project.repo_name}
+            </a>
+          )}
+          {project.branch && (
+            <>
+              <span className="opacity-40">·</span>
+              <span className="flex items-center gap-1">
+                <GitBranch className="size-3 shrink-0" />
+                {project.branch}
+              </span>
+            </>
+          )}
+          {latestBuild?.commit_sha && (
+            <>
+              <span className="opacity-40">·</span>
+              {commitHref ? (
+                <a
+                  href={commitHref}
+                  target="_blank"
+                  rel="noreferrer"
+                  title={latestBuild.commit_sha}
+                  className="hover:text-foreground hover:underline"
+                >
+                  {shortSha(latestBuild.commit_sha)}
+                </a>
+              ) : (
+                <span title={latestBuild.commit_sha}>{shortSha(latestBuild.commit_sha)}</span>
+              )}
+            </>
+          )}
+          {settledAt && (
+            <>
+              <span className="opacity-40">·</span>
+              <span title={new Date(settledAt).toLocaleString()}>
+                deployed {timeSince(settledAt)}
+              </span>
+            </>
+          )}
+        </>
+      }
       actions={
         // Visit and Deploy live on the deployment hero in the Overview
         // tab, next to the state they act on. Repeating them here would

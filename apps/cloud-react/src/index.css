@@ -546,6 +546,28 @@
   backdrop-filter: blur(16px);
 }
 
+/* ─── Page gutter ─────────────────────────────────────────────────────── */
+/* AppShell publishes its content gutter as --page-px / --page-py and the corner
+   its panel is rounded with as --page-corner, because the shell uses three
+   different gutters depending on whether the route carries the service sidebar.
+   `page-bleed` pulls an element back out through whichever one is in force, and
+   `page-gutter` re-applies it inside — together they let a bar paint edge to
+   edge while the page around it keeps its padding.
+
+   The fallbacks are the shell's base values, so an element rendered outside
+   AppShell still lands somewhere sane rather than shifting by an undefined
+   length; the max() keeps a bar readable on a full-bleed route, where the page
+   gutter is legitimately zero but a 1px-from-the-edge label is not. */
+@utility page-bleed {
+  margin-inline: calc(var(--page-px, 1rem) * -1);
+  margin-top: calc(var(--page-py, 1rem) * -1);
+  border-start-start-radius: var(--page-corner, 0px);
+}
+
+@utility page-gutter {
+  padding-inline: max(var(--page-px, 1rem), 1rem);
+}
+
 /* ─── Gradient utilities ──────────────────────────────────────────────── */
 .bg-gradient-brand {
   background-image: var(--gradient-brand);
