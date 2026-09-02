@@ -118,7 +118,7 @@ export function AppAddressDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Globe className="size-4 text-brand-gold" />
@@ -140,7 +140,7 @@ export function AppAddressDialog({
                 value={label}
                 spellCheck={false}
                 autoComplete="off"
-                className="rounded-r-none font-mono"
+                className="min-w-0 rounded-r-none font-mono"
                 aria-invalid={touched && invalid !== undefined}
                 onChange={(event) => {
                   setLabel(event.target.value)
@@ -153,7 +153,7 @@ export function AppAddressDialog({
                 }}
               />
               {zone !== "" && (
-                <span className="flex items-center rounded-r-md border border-l-0 border-border glass-1-bg-raised px-3 font-mono text-[12px] text-muted-foreground">
+                <span className="flex shrink-0 items-center whitespace-nowrap rounded-r-md border border-l-0 border-border glass-1-bg-raised px-3 font-mono text-[12px] text-muted-foreground">
                   .{zone}
                 </span>
               )}

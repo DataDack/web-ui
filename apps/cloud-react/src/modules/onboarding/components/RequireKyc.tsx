@@ -15,7 +15,7 @@ import { useOnboardingStatus } from "../onboarding.hooks"
  * gate makes verification the default destination: an authenticated, onboarded
  * user whose KYC is missing or flagged for renewal is sent to /onboarding/kyc
  * and stays there until they either verify or explicitly press "Skip for now"
- * (recorded per session by kyc-skip).
+ * (recorded for four hours by kyc-skip).
  *
  * Fails OPEN — while the status is loading we hold a skeleton, but a failed
  * lookup, a disabled KYC service (no external KYC configured) or a missing kyc

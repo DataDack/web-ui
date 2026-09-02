@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState, type ReactNode } from "react"
 
-import { Button, CopyButton } from "@datadack/common-ui"
 import { ArrowLeft, type LucideIcon } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 import { Link, useSearchParams } from "react-router-dom"
+
+import { Button, CopyButton } from "@datadack/common-ui"
 
 import { AnimatedTabs } from "./motion/AnimatedTabs"
 import { DUR, EASE } from "./motion/motion-config"
@@ -105,7 +106,12 @@ export function DetailPage({
       const stickyTop = Number.parseFloat(getComputedStyle(bar).top) || 0
       observer = new IntersectionObserver(
         ([entry]) => {
-          setCondensed(!entry.isIntersecting)
+          // Only latch INTO the compact state here. Expanding at this same
+          // boundary creates a feedback loop: expansion changes the sticky
+          // bar's height, which moves the sentinel back across the boundary,
+          // which collapses it again. The scroll handler below releases the
+          // latch once the page is genuinely back at the top.
+          if (!entry.isIntersecting) setCondensed(true)
         },
         // +1 so the swap fires as the sentinel passes under the bar's pin line,
         // not a pixel before it.
@@ -116,12 +122,18 @@ export function DetailPage({
 
     attach()
 
+    const expandAtTop = () => {
+      if (window.scrollY <= 4) setCondensed(false)
+    }
+    window.addEventListener("scroll", expandAtTop, { passive: true })
+
     // `top` is set by a media query, so it changes at the md breakpoint and the
     // observer has to be rebuilt with the new offset.
     const mq = window.matchMedia("(min-width: 768px)")
     mq.addEventListener("change", attach)
     return () => {
       observer?.disconnect()
+      window.removeEventListener("scroll", expandAtTop)
       mq.removeEventListener("change", attach)
     }
   }, [])

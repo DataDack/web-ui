@@ -25,7 +25,7 @@ import { verificationErrorMessage } from "../start-verification"
 //
 // It is also where RequireKyc lands every unverified user: verification is
 // mandatory, and the ONLY way past it is the explicit "Skip for now" button,
-// which records a per-session skip (kyc-skip) and drops the user into the
+// which records a four-hour skip (kyc-skip) and drops the user into the
 // console. Resource creation stays blocked by the backend kycguard either way.
 const STEP_META = [
   {
