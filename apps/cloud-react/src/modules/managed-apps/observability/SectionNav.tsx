@@ -1,6 +1,6 @@
 import { cn } from "@datadack/common-ui"
 
-import { groupsForTab, SECTION_GROUP_LABELS, sectionsIn, type SectionTab } from "./sections"
+import { groupsForTab, isLive, SECTION_GROUP_LABELS, sectionsIn, type SectionTab } from "./sections"
 
 /**
  * The section rail.
@@ -32,7 +32,7 @@ export function SectionNav({
             <ul className="space-y-0.5">
               {sectionsIn(group).map((section) => {
                 const Icon = section.icon
-                const live = section.source === "measured"
+                const live = isLive(section)
                 const selected = active === section.key
                 return (
                   <li key={section.key}>

@@ -85,7 +85,20 @@ export function groupsForTab(tab: SectionTab): readonly SectionGroup[] {
   return SECTION_TABS.find((entry) => entry.value === tab)?.groups ?? []
 }
 
-/** The section a tab opens on: its first, preferring one with a live meter. */
+/**
+ * Whether a section renders something real today, rather than the "Calculating"
+ * placeholder.
+ *
+ * `pending` is the only state that does not: `measured` has a meter and
+ * `entitlement` has a configuration to show. The distinction the rail and the
+ * tab default need is "is there a page here", which is not the same question as
+ * "is a number being taken" — Rules shows a policy and measures nothing.
+ */
+export function isLive(section: ObservabilitySection): boolean {
+  return section.source !== "pending"
+}
+
+/** The section a tab opens on: its first that renders something. */
 export function defaultSectionFor(tab: SectionTab): string {
   const groups = groupsForTab(tab)
   const inTab = OBSERVABILITY_SECTIONS.filter((section) => groups.includes(section.group))
@@ -93,7 +106,7 @@ export function defaultSectionFor(tab: SectionTab): string {
   // it is one deleted section away from happening — and the failure would be a
   // rail with nothing selected rather than an error anyone would notice.
   if (inTab.length === 0) return "overview"
-  const live = inTab.find((section) => section.source === "measured")
+  const live = inTab.find(isLive)
   return live ? live.key : inTab[0].key
 }
 
@@ -255,10 +268,13 @@ export const OBSERVABILITY_SECTIONS: ObservabilitySection[] = [
     label: "Rules",
     group: "security",
     icon: AlertTriangle,
-    summary: "Custom firewall and rate-limit rules for this project.",
-    source: "pending",
+    summary: "The address rules and managed signatures this app is filtered by.",
+    // Configuration, not a meter — there is no usage figure to take, which is
+    // exactly what `entitlement` means. It still renders a real panel, so it is
+    // live for every purpose the rail and the tab default care about.
+    source: "entitlement",
     origin:
-      "The edge evaluates a core ruleset, but the console owns no per-account rule set to manage or count against the plan limit.",
+      "GET /projects/:id/restrictions — the stored document, the generated WAF catalog and the plan ceilings in one read. Read-only here; the document is edited in Settings → Restrictions.",
   },
 
   // ── Deploys ───────────────────────────────────────────────────────────────
@@ -297,11 +313,16 @@ export function sectionByKey(key: string): ObservabilitySection | undefined {
 /**
  * How much of the section map is live. Rendered on the overview so the gap is a
  * number someone owns rather than a feeling.
+ *
+ * `live` counts sections that render something — a meter or a configuration —
+ * because that is what a reader experiences as a page that works. It is
+ * deliberately not the count of meters: Rules shows a real policy and takes no
+ * measurement, and counting it as a gap would overstate one.
  */
-export function sectionCoverage(): { measured: number; pending: number } {
-  const tally = { measured: 0, pending: 0 }
+export function sectionCoverage(): { live: number; pending: number } {
+  const tally = { live: 0, pending: 0 }
   for (const section of OBSERVABILITY_SECTIONS) {
-    if (section.source === "measured") tally.measured += 1
+    if (isLive(section)) tally.live += 1
     else tally.pending += 1
   }
   return tally

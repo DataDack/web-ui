@@ -5,6 +5,7 @@ import { cn } from "@datadack/common-ui"
 import { LogsSection } from "./LogsSection"
 import { PendingSection } from "./PendingSection"
 import { PlanUsagePanel } from "./PlanUsagePanel"
+import { RulesSection } from "./RulesSection"
 import { SectionNav } from "./SectionNav"
 import { defaultSectionFor, sectionByKey, SECTION_TABS, type SectionTab } from "./sections"
 import type { Project } from "../managed-apps.types"
@@ -24,9 +25,14 @@ import { ProjectResourcesSection } from "../partials/project/ProjectObservabilit
  *
  * What replaced it is a rail of seventeen sections in five groups, because the
  * platform sells about that many measurable things and they do fall into
- * groups. Nine have live meters today; the rest are listed and say they are
- * still being calculated. Listing them is deliberate — see PendingSection.
+ * groups. Seven carry a live meter and Rules shows the policy in force; the
+ * rest are listed and say they are still being calculated. Listing them is
+ * deliberate — see PendingSection.
  */
+/** Sections with a component of their own. Kept beside the switch below so the
+ *  two cannot drift into rendering a panel and its placeholder together. */
+const IMPLEMENTED = new Set(["overview", "resources", "logs", "rules"])
+
 export function ProjectObservabilityPage({ project }: Readonly<{ project: Project }>) {
   const [tab, setTab] = useState<SectionTab>("observability")
   const [active, setActive] = useState("overview")
@@ -76,15 +82,14 @@ export function ProjectObservabilityPage({ project }: Readonly<{ project: Projec
         <SectionNav tab={tab} active={active} onSelect={setActive} />
 
         <div className="min-w-0 flex-1">
-          {/* The four sections with their own implementations. Everything else
-              is described by the section map and rendered by PendingSection,
-              so adding a real one is a component plus a line in sections.ts. */}
+          {/* The sections with their own implementations. Everything else is
+              described by the section map and rendered by PendingSection, so
+              adding a real one is a component plus a line in sections.ts. */}
           {active === "overview" && <ProjectAnalyticsTab project={project} />}
           {active === "resources" && <ProjectResourcesSection project={project} />}
           {active === "logs" && <LogsSection project={project} />}
-          {active !== "overview" && active !== "resources" && active !== "logs" && section && (
-            <PendingSection section={section} />
-          )}
+          {active === "rules" && <RulesSection project={project} />}
+          {!IMPLEMENTED.has(active) && section && <PendingSection section={section} />}
         </div>
       </div>
     </div>
