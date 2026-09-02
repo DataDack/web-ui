@@ -7,10 +7,11 @@ import {
   GitCommitHorizontal,
   Play,
   Timer,
+  User,
 } from "lucide-react"
 
-
 import { BuildWaterfall } from "./BuildWaterfall"
+import { CommitAuthor } from "../../../components"
 import type { Build, Project } from "../../../managed-apps.types"
 import { formatDuration, isTimeSet, shortDateTime, shortSha, triggerLabel } from "../build-format"
 
@@ -88,6 +89,23 @@ export function BuildWorkspaceSidebar({
             </span>
           )}
         </DetailRow>
+        {/* Only when the row actually knows: a build that predates the field,
+            or one adopted from a workflow run that named no author, would
+            otherwise show a labelled row with nothing in it. */}
+        {(build.commit_author_login !== "" || build.commit_author_name !== "") && (
+          <DetailRow icon={User} label="Author">
+            <span className="flex min-w-0 items-center gap-2">
+              <CommitAuthor
+                login={build.commit_author_login}
+                name={build.commit_author_name}
+                linked
+              />
+              <span className="min-w-0 truncate">
+                {build.commit_author_name || `@${build.commit_author_login}`}
+              </span>
+            </span>
+          </DetailRow>
+        )}
         <DetailRow icon={Play} label="Triggered by">
           {triggerLabel(build.triggered_by)}
         </DetailRow>

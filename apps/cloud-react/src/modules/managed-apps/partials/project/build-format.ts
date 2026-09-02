@@ -50,6 +50,29 @@ export function commitURL(owner: string, repo: string, sha: string): string {
 }
 
 /**
+ * A GitHub account's avatar, at a pixel size.
+ *
+ * `github.com/<login>.png` rather than the `avatars.githubusercontent.com` URL
+ * the API returns, because a build row stores the LOGIN and not that URL — the
+ * numeric-id form would have to be fetched per build, and this one is derivable
+ * offline and stays correct through a rename.
+ *
+ * `size` is requested at twice the rendered box so the image is not soft on a
+ * retina display. An empty login returns "" — GitHub answers its 404 HTML page
+ * for a login it does not know, which renders as a broken image rather than as
+ * nothing.
+ */
+export function githubAvatarURL(login: string, size = 48): string {
+  if (login === "") return ""
+  return `https://github.com/${encodeURIComponent(login)}.png?size=${String(size)}`
+}
+
+/** The account's profile page. Empty login, empty string — see above. */
+export function githubProfileURL(login: string): string {
+  return login === "" ? "" : `https://github.com/${encodeURIComponent(login)}`
+}
+
+/**
  * Whether an ISO timestamp is actually set — nullable stamps (started_at,
  * finished_at) serialize as null, Go zero times as "0001-01-01T00:00:00Z"
  * (negative epoch ms), and empty strings parse as NaN.

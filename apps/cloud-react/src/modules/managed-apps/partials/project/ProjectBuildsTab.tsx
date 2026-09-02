@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
 
 import {
-  Button,
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
@@ -10,9 +9,9 @@ import {
   type DataTableColumnMeta,
 } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
-import { ChevronDown, Code2, Hammer, History, RotateCcw, ScrollText, X } from "lucide-react"
+import { ChevronDown, Hammer } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import { Link, useNavigate, useSearchParams } from "react-router-dom"
+import { useNavigate, useSearchParams } from "react-router-dom"
 
 import { ConfirmDialog, Section } from "@/components/console"
 
@@ -25,7 +24,8 @@ import {
   timeSince,
   triggerFallbackLabel,
 } from "./build-format"
-import { ActivityTimeline, BuildStatusPill } from "../../components"
+import { BuildActionsMenu } from "./BuildActionsMenu"
+import { ActivityTimeline, BuildStatusPill, CommitAuthor } from "../../components"
 import { MANAGED_APPS_ROUTES } from "../../managed-apps.constants"
 import {
   useCancelBuild,
@@ -33,12 +33,7 @@ import {
   useProjectBuilds,
   useRollbackBuild,
 } from "../../managed-apps.hooks"
-import {
-  isBuildTransitional,
-  isRollbackable,
-  type Build,
-  type Project,
-} from "../../managed-apps.types"
+import { isBuildTransitional, type Build, type Project } from "../../managed-apps.types"
 
 /**
  * Builds tab — deploy history, newest first, every row a door.
@@ -112,10 +107,7 @@ export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
         id: "status",
         header: "Status",
         cell: ({ row }) => (
-          <BuildStatusPill
-            status={row.original.status}
-            serving={row.original.id === servingId}
-          />
+          <BuildStatusPill status={row.original.status} serving={row.original.id === servingId} />
         ),
       },
       {
@@ -125,41 +117,54 @@ export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
         // target in the row and clicking it should still open the build. Only
         // the sha itself swallows the click, below.
         cell: ({ row }) => (
-          <span className="flex min-w-0 max-w-80 flex-col gap-0.5">
-            <span className="flex min-w-0 items-baseline gap-2">
-              {row.original.commit_sha !== "" && (
-                // Short because seven characters identify a commit; the full
-                // sha is on the title, and the link goes to the commit on
-                // GitHub — the build page's Source tab shows the tree.
-                <a
-                  href={commitURL(project.repo_owner, project.repo_name, row.original.commit_sha)}
-                  target="_blank"
-                  rel="noreferrer"
-                  title={row.original.commit_sha}
-                  // Without this the row's own handler also fires, so following
-                  // the link would open the build page behind the new tab.
-                  onClick={(event) => {
-                    event.stopPropagation()
-                  }}
-                  className="shrink-0 font-mono text-[12px] text-muted-foreground hover:text-foreground hover:underline"
+          <span className="flex min-w-0 max-w-80 items-start gap-2.5">
+            {/* Who wrote it, before what it says. A build history is read to
+                find a change, and "whose change" narrows the list faster than
+                any other column — it is the one fact a reader already knows
+                before they open the page. Not linked: the row is itself a door
+                to the build, and a link inside it is a click the reader cannot
+                predict the destination of. */}
+            <CommitAuthor
+              login={row.original.commit_author_login}
+              name={row.original.commit_author_name}
+              className="mt-0.5"
+            />
+            <span className="flex min-w-0 flex-col gap-0.5">
+              <span className="flex min-w-0 items-baseline gap-2">
+                {row.original.commit_sha !== "" && (
+                  // Short because seven characters identify a commit; the full
+                  // sha is on the title, and the link goes to the commit on
+                  // GitHub — the build page's Source tab shows the tree.
+                  <a
+                    href={commitURL(project.repo_owner, project.repo_name, row.original.commit_sha)}
+                    target="_blank"
+                    rel="noreferrer"
+                    title={row.original.commit_sha}
+                    // Without this the row's own handler also fires, so following
+                    // the link would open the build page behind the new tab.
+                    onClick={(event) => {
+                      event.stopPropagation()
+                    }}
+                    className="shrink-0 font-mono text-[12px] text-muted-foreground hover:text-foreground hover:underline"
+                  >
+                    {shortSha(row.original.commit_sha)}
+                  </a>
+                )}
+                <span
+                  className="min-w-0 truncate text-[13px] text-foreground"
+                  title={row.original.commit_message || undefined}
                 >
-                  {shortSha(row.original.commit_sha)}
-                </a>
-              )}
-              <span
-                className="min-w-0 truncate text-[13px] text-foreground"
-                title={row.original.commit_message || undefined}
-              >
-                {row.original.commit_message || triggerFallbackLabel(row.original.triggered_by)}
+                  {row.original.commit_message || triggerFallbackLabel(row.original.triggered_by)}
+                </span>
               </span>
-            </span>
-            {/* The first line of why it failed, on the row itself — a failure
+              {/* The first line of why it failed, on the row itself — a failure
                 a reader must click to even see is a failure they scroll past. */}
-            {row.original.status === "failed" && row.original.build_error !== "" && (
-              <span className="min-w-0 truncate font-mono text-[11px] text-destructive">
-                ↳ {row.original.build_error}
-              </span>
-            )}
+              {row.original.status === "failed" && row.original.build_error !== "" && (
+                <span className="min-w-0 truncate font-mono text-[11px] text-destructive">
+                  ↳ {row.original.build_error}
+                </span>
+              )}
+            </span>
           </span>
         ),
       },
@@ -194,116 +199,37 @@ export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
       {
         id: "actions",
         header: "",
-        // Holds its own buttons, so a click here must not open the build.
+        // Holds its own menu, so a click here must not open the build.
         meta: { interactive: true } satisfies DataTableColumnMeta,
         cell: ({ row }) => {
           const build = row.original
           // One mutation object backs every row, so its bare `isPending` is
           // true for the whole column. Match it against the row it was fired
-          // for, or all the buttons spin whenever any one of them is clicked.
+          // for, or every trigger in the table spins whenever any one of them
+          // is clicked.
           const cancelling = cancelBuild.isPending && cancelBuild.variables === build.id
           const rebuilding =
             createBuild.isPending &&
             typeof createBuild.variables === "object" &&
             createBuild.variables.commitSha === build.commit_sha
           const rollingBack = rollback.isPending && rollback.variables === build.id
-          // Not offered for what is already running. A rollback to the build
-          // currently being served does nothing but restart the app, and an
-          // action whose honest description is "no change" should not be on a
-          // row that looks like every other row.
-          const canRollback = build.id !== servingId && isRollbackable(build, project)
-          if (build.status === "queued") {
-            return (
-              <div className="text-right">
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="h-7 gap-1 px-2 text-[12px] text-destructive hover:text-destructive"
-                  disabled={cancelling}
-                  onClick={() => {
-                    cancelBuild.mutate(build.id)
-                  }}
-                  loading={cancelling}
-                >
-                  <X className="size-3" />
-                  Cancel
-                </Button>
-              </div>
-            )
-          }
-          // Rebuilding a past commit needs the commit — a build that never
-          // resolved one has nothing to redeploy.
-          if (build.commit_sha === "") return null
           return (
-            <div className="flex items-center justify-end gap-1">
-              {/* The two destinations a row actually has, stated rather than
-                  implied. Removing the chevron made the row's door invisible;
-                  naming the doors is better than restoring an arrow that said
-                  only "something happens here" — and Code was reachable from
-                  nowhere on this page once the chevron went. */}
-              <Button
-                asChild
-                size="sm"
-                variant="ghost"
-                className="h-7 gap-1 px-2 text-[12px] text-muted-foreground hover:text-foreground"
-              >
-                <Link to={MANAGED_APPS_ROUTES.build(project.id, build.id)}>
-                  <ScrollText className="size-3" />
-                  Logs
-                </Link>
-              </Button>
-              <Button
-                asChild
-                size="sm"
-                variant="ghost"
-                className="h-7 gap-1 px-2 text-[12px] text-muted-foreground hover:text-foreground"
-                title={`Browse the repository at ${shortSha(build.commit_sha)}`}
-              >
-                <Link to={`${MANAGED_APPS_ROUTES.build(project.id, build.id)}?tab=source`}>
-                  <Code2 className="size-3" />
-                  Code
-                </Link>
-              </Button>
-              {/* Rollback and Rebuild sit side by side because the difference
-                  between them is the whole point, and it is a difference of
-                  minutes: this one re-releases the artifact already in object
-                  storage for this build, the one beside it goes back to the
-                  repository and makes new bytes. Naming one of them "Redeploy"
-                  — which it was — described neither.
-
-                  Hidden, not disabled, on a build with nothing to release: a
-                  greyed-out Rollback on a build that predates container images
-                  invites a hover for an explanation that is only "this is old". */}
-              {canRollback && (
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="h-7 gap-1 px-2 text-[12px] opacity-0 transition-opacity group-hover/row:opacity-100 focus-visible:opacity-100"
-                  disabled={rollingBack}
-                  onClick={() => {
-                    setRollbackTarget(build)
-                  }}
-                  loading={rollingBack}
-                  title="Release this build's stored artifact — nothing is rebuilt"
-                >
-                  <History className="size-3" />
-                  Rollback
-                </Button>
-              )}
-              <Button
-                size="sm"
-                variant="ghost"
-                className="h-7 gap-1 px-2 text-[12px] opacity-0 transition-opacity group-hover/row:opacity-100 focus-visible:opacity-100"
-                disabled={rebuilding}
-                onClick={() => {
-                  createBuild.mutate({ projectId: project.id, commitSha: build.commit_sha })
+            <div className="flex justify-end">
+              <BuildActionsMenu
+                build={build}
+                project={project}
+                servingId={servingId}
+                cancelling={cancelling}
+                rebuilding={rebuilding}
+                rollingBack={rollingBack}
+                onCancel={(target) => {
+                  cancelBuild.mutate(target.id)
                 }}
-                loading={rebuilding}
-                title="Build this commit again from source"
-              >
-                <RotateCcw className="size-3" />
-                Rebuild
-              </Button>
+                onRebuild={(target) => {
+                  createBuild.mutate({ projectId: project.id, commitSha: target.commit_sha })
+                }}
+                onRollback={setRollbackTarget}
+              />
             </div>
           )
         },
@@ -386,9 +312,6 @@ export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
           onRowClick={(build) => {
             void navigate(MANAGED_APPS_ROUTES.build(project.id, build.id))
           }}
-          // The Redeploy control only appears on the hovered row, which needs a
-          // named hover group on the row itself.
-          rowClassName="group/row"
           empty={
             <EmptyState icon={Hammer} title={t("managedApps.projectBuildsTab.noBuildsYet2")} />
           }

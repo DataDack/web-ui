@@ -729,6 +729,18 @@ export interface Build {
   project_id: string
   commit_sha: string
   commit_message: string
+  /**
+   * The GitHub account that wrote the commit — a login, not a display name, so
+   * `github.com/<login>.png` is the author's avatar.
+   *
+   * Empty whenever GitHub could not resolve the commit's author email to an
+   * account, and on every build that predates the field, so a reader falls back
+   * to `commit_author_name` and then to nothing. Never render a face for an
+   * empty login: the URL resolves to GitHub's 404 page, not a placeholder.
+   */
+  commit_author_login: string
+  /** What git recorded. Present whenever the commit is, login or no login. */
+  commit_author_name: string
   triggered_by: BuildTrigger
   status: BuildStatus
   build_error: string

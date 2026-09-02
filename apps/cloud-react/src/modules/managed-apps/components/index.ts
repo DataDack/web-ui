@@ -2,6 +2,7 @@
 export { ActivityTimeline } from "./ActivityTimeline"
 export { BuildProgressBar } from "./BuildProgressBar"
 export { BuildStatusPill } from "./BuildStatusPill"
+export { CommitAuthor } from "./CommitAuthor"
 export { ProjectAvatar } from "./ProjectAvatar"
 export { ProjectStateChip } from "./ProjectStateChip"
 export { SitePreview } from "./SitePreview"
