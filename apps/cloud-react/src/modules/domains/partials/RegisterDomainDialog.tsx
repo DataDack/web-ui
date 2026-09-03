@@ -104,7 +104,11 @@ export function RegisterDomainDialog({
     if (!valid) return
     register.mutate(
       { domain: trimmed },
-      { onSuccess: (created) => { setRegistered(created.domain); } },
+      {
+        onSuccess: (created) => {
+          setRegistered(created.domain)
+        },
+      },
     )
   }
 
@@ -132,7 +136,9 @@ export function RegisterDomainDialog({
               <Input
                 id="registrar-domain"
                 value={input}
-                onChange={(e) => { setInput(e.target.value); }}
+                onChange={(e) => {
+                  setInput(e.target.value)
+                }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") submit()
                 }}
@@ -179,9 +185,7 @@ export function RegisterDomainDialog({
             </p>
             {/* The last failure, in DNS's own words. It is the difference between
                 "keep waiting" and "you pasted the wrong value". */}
-            {row.last_error && (
-              <p className="text-xs text-status-warning">{row.last_error}</p>
-            )}
+            {row.last_error && <p className="text-xs text-status-warning">{row.last_error}</p>}
           </div>
         )}
 
@@ -220,11 +224,18 @@ export function RegisterDomainDialog({
           )}
           {step === "record" && row && (
             <>
-              <Button variant="outline" onClick={() => { onOpenChange(false); }}>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  onOpenChange(false)
+                }}
+              >
                 {t("domains.registrar.dialog.close")}
               </Button>
               <Button
-                onClick={() => { verify.mutate(row.domain); }}
+                onClick={() => {
+                  verify.mutate(row.domain)
+                }}
                 disabled={verify.isPending}
               >
                 {verify.isPending && <Loader2 className="mr-2 size-4 animate-spin" />}
@@ -233,7 +244,13 @@ export function RegisterDomainDialog({
             </>
           )}
           {step === "done" && (
-            <Button onClick={() => { onOpenChange(false); }}>{t("domains.registrar.dialog.done")}</Button>
+            <Button
+              onClick={() => {
+                onOpenChange(false)
+              }}
+            >
+              {t("domains.registrar.dialog.done")}
+            </Button>
           )}
         </DialogFooter>
       </DialogContent>

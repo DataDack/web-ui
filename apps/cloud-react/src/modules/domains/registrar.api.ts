@@ -39,6 +39,5 @@ export const registrarApi = {
     apiPost<RegisteredDomain>(`${BASE}/${encodeURIComponent(domain)}/verify`),
 
   /** Refused with 409 while hostnames are still attached under the domain. */
-  remove: (domain: string): Promise<void> =>
-    apiDelete(`${BASE}/${encodeURIComponent(domain)}`),
+  remove: (domain: string): Promise<void> => apiDelete(`${BASE}/${encodeURIComponent(domain)}`),
 }

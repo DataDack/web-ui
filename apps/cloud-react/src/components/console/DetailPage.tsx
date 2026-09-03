@@ -22,6 +22,17 @@ interface DetailPageProps {
   backTo: string
   backLabel: string
   icon?: LucideIcon
+  /**
+   * A pre-rendered mark, for a resource whose identity is a LOGO rather than a
+   * glyph — a managed app is a Next.js app or an Angular app, and its own
+   * framework's mark says so before the title is read.
+   *
+   * Takes precedence over `icon`, and brings its own background: the neutral
+   * glass tile below would be a second surface behind a mark that already has
+   * one. It is sized by this header, not by itself, so it condenses with
+   * everything else on scroll.
+   */
+  iconNode?: ReactNode
   title: string
   status?: string
   /**
@@ -50,6 +61,7 @@ export function DetailPage({
   backTo,
   backLabel,
   icon: Icon,
+  iconNode,
   title,
   status,
   statusNode,
@@ -205,13 +217,22 @@ export function DetailPage({
               className="flex min-w-0 items-center gap-2.5 py-2 data-[condensed=true]:flex-1"
               data-condensed={condensed}
             >
-              {Icon && (
+              {iconNode ? (
                 <div
-                  className="flex shrink-0 items-center justify-center rounded-xl glass-1 transition-all duration-200 data-[condensed=true]:size-6.5 data-[condensed=true]:rounded-md size-9 motion-reduce:transition-none"
+                  className="flex shrink-0 items-center justify-center transition-all duration-200 data-[condensed=true]:size-6.5 size-9 [&>*]:size-full motion-reduce:transition-none"
                   data-condensed={condensed}
                 >
-                  <Icon className="size-4 text-muted-foreground" />
+                  {iconNode}
                 </div>
+              ) : (
+                Icon && (
+                  <div
+                    className="flex shrink-0 items-center justify-center rounded-xl glass-1 transition-all duration-200 data-[condensed=true]:size-6.5 data-[condensed=true]:rounded-md size-9 motion-reduce:transition-none"
+                    data-condensed={condensed}
+                  >
+                    <Icon className="size-4 text-muted-foreground" />
+                  </div>
+                )
               )}
 
               <h1

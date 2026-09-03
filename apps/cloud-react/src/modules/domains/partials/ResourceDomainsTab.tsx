@@ -1,16 +1,16 @@
 import { useMemo, useState } from "react"
 
-import { Eye, Globe, Pencil, Plus, RefreshCw, Trash2 } from "lucide-react"
+import { actionsColumn, Button, DataTable, EmptyState, type RowAction } from "@datadack/common-ui"
+import { CornerUpRight, Eye, Globe, Pencil, Plus, RefreshCw, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { ConfirmDialog, Section } from "@/components/console"
-
-import { actionsColumn, Button, DataTable, EmptyState, type RowAction } from "@datadack/common-ui"
 
 import { useDomains, useRemoveDomain, useVerifyDomain } from "../domains.hooks"
 import type { Domain } from "../domains.types"
 import { AddDomainDialog } from "./AddDomainDialog"
 import { buildDomainColumns } from "./domain-columns"
+import { DomainRedirectDialog } from "./DomainRedirectDialog"
 
 /**
  * The hostnames attached to ONE resource, for embedding in that resource's
@@ -58,6 +58,10 @@ export function ResourceDomainsTab({
   // the hostname input and lands straight on that row's DNS records.
   const [dialogRow, setDialogRow] = useState<Domain | null>(null)
   const [toRemove, setToRemove] = useState<Domain | null>(null)
+  // The row whose redirect is being edited. Held as the row, like toRemove: the
+  // dialog reads its current redirect, and an id would go stale the moment a
+  // refetch replaced the array.
+  const [redirecting, setRedirecting] = useState<Domain | null>(null)
 
   const rows = data?.rows ?? []
   const columns = useMemo(
@@ -80,6 +84,21 @@ export function ResourceDomainsTab({
             ]
           }
           const actions: RowAction<Domain>[] = []
+          // Offered on a verified row only, which is the same gate the server
+          // applies: an unverified hostname has not proven it is the tenant's to
+          // answer for, and letting it redirect would publish one on any name
+          // whose DNS happened to point here.
+          if (domain.status === "active") {
+            actions.push({
+              label: domain.policy?.redirect
+                ? t("domains.actions.editRedirect")
+                : t("domains.actions.redirect"),
+              icon: CornerUpRight,
+              onAction: (row) => {
+                setRedirecting(row)
+              },
+            })
+          }
           if (domain.status === "pending") {
             actions.push(
               {
@@ -160,6 +179,14 @@ export function ResourceDomainsTab({
         resourceType={resourceType}
         resourceId={resourceId}
         existing={dialogRow}
+      />
+
+      <DomainRedirectDialog
+        open={redirecting !== null}
+        onOpenChange={(open) => {
+          if (!open) setRedirecting(null)
+        }}
+        domain={redirecting}
       />
 
       <ConfirmDialog

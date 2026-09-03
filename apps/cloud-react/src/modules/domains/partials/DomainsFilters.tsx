@@ -64,7 +64,9 @@ export function DomainsFilters({
         <SelectContent>
           {TYPE_FILTERS.map((value) => (
             <SelectItem key={value} value={value}>
-              {value === "all" ? t("domains.filters.allTypes") : t(`domains.filters.types.${value}`)}
+              {value === "all"
+                ? t("domains.filters.allTypes")
+                : t(`domains.filters.types.${value}`)}
             </SelectItem>
           ))}
         </SelectContent>

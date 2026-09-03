@@ -42,7 +42,8 @@ export function useRegisteredDomain(domain: string | null) {
     queryKey: REGISTRAR_QUERY_KEYS.detail(domain ?? ""),
     queryFn: () => registrarApi.get(domain ?? ""),
     enabled: domain !== null && domain !== "",
-    refetchInterval: (query) => (query.state.data?.status === "pending" ? POLL_WHILE_PENDING : false),
+    refetchInterval: (query) =>
+      query.state.data?.status === "pending" ? POLL_WHILE_PENDING : false,
   })
 }
 

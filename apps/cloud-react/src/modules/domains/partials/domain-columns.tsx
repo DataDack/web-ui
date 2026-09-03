@@ -1,6 +1,7 @@
 import { Badge, CopyButton, dateColumn, textColumn } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import type { TFunction } from "i18next"
+import { CornerDownRight } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
@@ -39,9 +40,7 @@ function resourceLabel(domain: Domain, resourceNames?: ReadonlyMap<string, strin
   if (domain.type === "app") {
     return resourceNames?.get(domain.resource_id) ?? domain.resource_id
   }
-  return domain.type === "func" && domain.function_name
-    ? domain.function_name
-    : domain.resource_id
+  return domain.type === "func" && domain.function_name ? domain.function_name : domain.resource_id
 }
 
 function AttachedToCell({
@@ -104,11 +103,26 @@ export function buildDomainColumns(
       // The copy button lives here; clicks on it must not bubble to the row.
       meta: { interactive: true } satisfies ColumnMeta,
       cell: ({ row }) => (
-        <div className="flex items-center gap-2">
-          <CopyButton value={row.original.hostname} copiedLabel={t("console.copy.copied")} />
-          {row.original.is_primary && (
-            <span className="shrink-0 rounded-full border border-border/60 bg-muted/40 px-1.5 py-px text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
-              {t("domains.primary")}
+        <div className="flex min-w-0 flex-col gap-0.5">
+          <div className="flex items-center gap-2">
+            <CopyButton value={row.original.hostname} copiedLabel={t("console.copy.copied")} />
+            {row.original.is_primary && (
+              <span className="shrink-0 rounded-full border border-border/60 bg-muted/40 px-1.5 py-px text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+                {t("domains.primary")}
+              </span>
+            )}
+          </div>
+          {/* Where it actually goes, on the row. A hostname that redirects does
+              NOT serve the resource this table is attached to, and a row that
+              looks identical to its neighbours while answering 308 is the kind
+              of configuration people rediscover during an incident. */}
+          {row.original.policy?.redirect && (
+            <span className="flex min-w-0 items-center gap-1.5 font-mono text-[11px] text-muted-foreground">
+              <CornerDownRight className="size-3 shrink-0" aria-hidden />
+              <span className="shrink-0 rounded border border-border/60 px-1 py-px text-[10px]">
+                {row.original.policy.redirect.status}
+              </span>
+              <span className="truncate">{row.original.policy.redirect.to}</span>
             </span>
           )}
         </div>
@@ -178,7 +192,14 @@ export function buildDomainColumns(
     // question nobody asked — every row IS that resource — and the type column
     // repeats the page the reader is on. Drop both, keep everything else, so
     // the standalone and embedded tables cannot drift on how a row reads.
-    return columns.filter((c) => c.id !== "attachedTo" && c.id !== "type")
+    //
+    // Region goes with them, and for a third reason: it is EMPTY on every row
+    // here. A hostname inherits its region from the resource it points at, and
+    // a managed app's rows carry none — so the column rendered a full width of
+    // em-dashes and read as data that had failed to load. Every row on this
+    // table belongs to the resource whose page the reader is already on, so
+    // even once it is populated it would only restate that page's own header.
+    return columns.filter((c) => c.id !== "attachedTo" && c.id !== "type" && c.id !== "region")
   }
 
   // There is no owning-account column. This table is tenant-scoped: every row on

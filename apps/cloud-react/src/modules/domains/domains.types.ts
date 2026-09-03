@@ -40,6 +40,32 @@ export interface DomainDnsInstructions {
   ownership_proven: boolean
 }
 
+/**
+ * A hostname that answers 3xx instead of serving its resource.
+ *
+ * `to` is a HOSTNAME, never a URL — the edge builds `https://<to><path>` itself,
+ * which is what stops a stored redirect from becoming an open one. The path and
+ * query are carried across unless `drop_path` says otherwise.
+ */
+export interface DomainRedirect {
+  to: string
+  /** 301, 302, 307 or 308 — resolved by the server, so never 0 on a read. */
+  status: number
+  drop_path?: boolean
+}
+
+/**
+ * What the edge does with a request beyond where to send it.
+ *
+ * Only `redirect` is a tenant's to write, and only through its own endpoints —
+ * the same document carries the WAF an operator configured and the static
+ * release the build publisher writes. There is deliberately no "save the whole
+ * policy" call in this client.
+ */
+export interface DomainPolicy {
+  redirect?: DomainRedirect
+}
+
 export interface Domain {
   id: string
   hostname: string
@@ -71,6 +97,8 @@ export interface Domain {
   tenant_serial: number
   created_at: string
   updated_at: string
+  /** Edge policy. Absent on almost every row — see DomainPolicy. */
+  policy?: DomainPolicy
   /** Present on CUSTOM rows only (list/get/create/verify responses). */
   verification?: DomainVerification
   dns_instructions?: DomainDnsInstructions
@@ -82,6 +110,39 @@ export interface CreateDomainRequest {
   resource_type: string
   resource_id: string
 }
+
+/** PUT /domains/registry/:hostname/redirect */
+export interface SetDomainRedirectRequest {
+  hostname: string
+  to: string
+  /** Omit to take the platform default (308), which preserves the method. */
+  status?: number
+  drop_path?: boolean
+}
+
+/** The redirect status codes the platform accepts, with what each one means. */
+export const REDIRECT_STATUSES = [
+  {
+    value: 308,
+    label: "308 Permanent",
+    hint: "Permanent, and keeps the request method. The safe default.",
+  },
+  {
+    value: 307,
+    label: "307 Temporary",
+    hint: "Temporary, and keeps the request method.",
+  },
+  {
+    value: 301,
+    label: "301 Moved permanently",
+    hint: "Permanent. Browsers may turn a POST into a GET and drop its body.",
+  },
+  {
+    value: 302,
+    label: "302 Found",
+    hint: "Temporary. Browsers may turn a POST into a GET and drop its body.",
+  },
+] as const
 
 /** Query params for the tenant list — only set values are sent. */
 export interface DomainListParams {

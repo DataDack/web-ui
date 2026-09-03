@@ -36,10 +36,7 @@ export function buildRegistrarColumns(t: TFunction): ColumnDef<RegisteredDomain>
         // "verified" is the resting state and the one worth a steady badge;
         // pending pulses because it is genuinely in flight and resolves on its
         // own once the tenant publishes the record.
-        <StatusBadge
-          status={row.original.status}
-          pulse={row.original.status === "pending"}
-        />
+        <StatusBadge status={row.original.status} pulse={row.original.status === "pending"} />
       ),
     },
     {

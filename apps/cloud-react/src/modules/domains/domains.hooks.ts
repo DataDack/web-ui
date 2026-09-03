@@ -7,7 +7,12 @@ import { extractError } from "@/services/api/client"
 
 import { domainsApi } from "./domains.api"
 import { DOMAINS_QUERY_KEYS, isDomainTransitional } from "./domains.constants"
-import type { CreateDomainRequest, DomainList, DomainListParams } from "./domains.types"
+import type {
+  CreateDomainRequest,
+  DomainList,
+  DomainListParams,
+  SetDomainRedirectRequest,
+} from "./domains.types"
 
 // Poll fast while any row is still pending (DNS/routing being realized), and
 // keep a slow background cadence otherwise — registry rows can change from
@@ -89,6 +94,48 @@ export function useVerifyDomain() {
       }
     },
     onError: (e) => toast.error(extractError(e, t("domains.actions.verifyFailed"))),
+  })
+}
+
+/**
+ * Point a hostname at another one, or stop it redirecting.
+ *
+ * Both write the returned row into the detail cache and invalidate the lists,
+ * because a redirect changes what the table says a hostname DOES — the row's
+ * badge is read straight off `policy.redirect`.
+ */
+export function useSetDomainRedirect() {
+  const { t } = useTranslation()
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (body: SetDomainRedirectRequest) => domainsApi.setRedirect(body),
+    onSuccess: (domain) => {
+      queryClient.setQueryData(DOMAINS_QUERY_KEYS.detail(domain.hostname), domain)
+      void queryClient.invalidateQueries({ queryKey: DOMAINS_QUERY_KEYS.all })
+      toast.success(
+        t("domains.redirect.saved", {
+          hostname: domain.hostname,
+          to: domain.policy?.redirect?.to ?? "",
+        }),
+      )
+    },
+    // Surfaced verbatim: the server's refusals here are the actionable ones —
+    // "cannot redirect to itself", "verify this domain first".
+    onError: (e) => toast.error(extractError(e, t("domains.redirect.saveFailed"))),
+  })
+}
+
+export function useClearDomainRedirect() {
+  const { t } = useTranslation()
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (hostname: string) => domainsApi.clearRedirect(hostname),
+    onSuccess: (domain, hostname) => {
+      queryClient.setQueryData(DOMAINS_QUERY_KEYS.detail(hostname), domain)
+      void queryClient.invalidateQueries({ queryKey: DOMAINS_QUERY_KEYS.all })
+      toast.success(t("domains.redirect.cleared", { hostname }))
+    },
+    onError: (e) => toast.error(extractError(e, t("domains.redirect.clearFailed"))),
   })
 }
 

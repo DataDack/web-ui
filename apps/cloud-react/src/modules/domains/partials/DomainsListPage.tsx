@@ -81,10 +81,7 @@ export function DomainsListPage() {
     <div className="space-y-5">
       <PageHeader
         icon={Globe}
-        breadcrumbs={[
-          { label: t("console.nav.groups.domains") },
-          { label: t("domains.title") },
-        ]}
+        breadcrumbs={[{ label: t("console.nav.groups.domains") }, { label: t("domains.title") }]}
         title={t("domains.title")}
         description={t("domains.subtitle")}
         actions={

@@ -1904,6 +1904,23 @@
       "region": "Region",
       "status": "Status"
     },
+    "redirect": {
+      "title": "Redirect this domain",
+      "toLabel": "Redirect to",
+      "toHint": "A domain name, not a URL — https:// is added for you.",
+      "invalidTo": "Enter a domain name like example.com.",
+      "selfRedirect": "A domain cannot redirect to itself.",
+      "statusLabel": "Status code",
+      "dropPathLabel": "Ignore the path",
+      "dropPathOn": "Every request lands on the destination's home page.",
+      "dropPathOff": "/pricing goes to {{host}}/pricing. Deep links keep working.",
+      "save": "Save redirect",
+      "remove": "Stop redirecting",
+      "saved": "{{hostname}} now redirects to {{to}}",
+      "cleared": "{{hostname}} no longer redirects",
+      "saveFailed": "Could not save the redirect",
+      "clearFailed": "Could not remove the redirect"
+    },
     "resourceTab": {
       "title": "Domains",
       "description": "Hostnames that answer for this resource — the platform-provided address and any custom domains attached to it.",
@@ -1913,6 +1930,8 @@
     "actions": {
       "add": "Add domain",
       "editAddress": "Edit address",
+      "redirect": "Redirect…",
+      "editRedirect": "Edit redirect…",
       "viewRecords": "View records",
       "verifyNow": "Verify now",
       "remove": "Remove",
@@ -1946,6 +1965,13 @@
       "doneCertificate": "Certificate issues on the first request",
       "done": "Done",
       "close": "Close",
+      "hostnameInvalidNamed": "Not a valid hostname: {{names}}",
+      "willAddCount": "{{count}} domains will be added.",
+      "submitMany": "Add {{count}} domains",
+      "batchTitle": "Domains added",
+      "batchDescription": "Each one still needs its own DNS records.",
+      "batchSummary": "{{added}} of {{total}} domains were added.",
+      "apexAlias": "This is an apex domain, where plain CNAME records are not allowed. Create it as an ALIAS or ANAME record — or turn on CNAME flattening — whichever your DNS provider calls it.",
       "apexAlternative": "Apex domain? Use this A record instead of the CNAME.",
       "subdomainAlternative": "Subdomain? Use this CNAME instead of the A record.",
       "terminal": {

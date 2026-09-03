@@ -62,19 +62,25 @@ export function RegistrarPage() {
             actions.push({
               label: t("domains.registrar.actions.viewRecord"),
               icon: ScrollText,
-              onAction: () => { openFor(row); },
+              onAction: () => {
+                openFor(row)
+              },
             })
             actions.push({
               label: t("domains.registrar.actions.checkNow"),
               icon: RefreshCw,
-              onAction: () => { verify.mutate(row.domain); },
+              onAction: () => {
+                verify.mutate(row.domain)
+              },
             })
           }
           actions.push({
             label: t("domains.registrar.actions.remove"),
             icon: Trash2,
             destructive: true,
-            onAction: () => { remove.mutate(row.domain); },
+            onAction: () => {
+              remove.mutate(row.domain)
+            },
           })
           return actions
         },
@@ -104,7 +110,11 @@ export function RegistrarPage() {
             >
               <RefreshCw className={`w-4 h-4 ${isFetching ? "animate-spin" : ""}`} />
             </Button>
-            <Button onClick={() => { openFor(null); }}>
+            <Button
+              onClick={() => {
+                openFor(null)
+              }}
+            >
               <Plus className="mr-2 size-4" />
               {t("domains.registrar.add")}
             </Button>
@@ -133,7 +143,9 @@ export function RegistrarPage() {
             description={t("domains.registrar.emptySubtitle")}
             action={{
               label: t("domains.registrar.add"),
-              onClick: () => { openFor(null); },
+              onClick: () => {
+                openFor(null)
+              },
             }}
           />
         }
@@ -142,11 +154,7 @@ export function RegistrarPage() {
         refreshing={isFetching}
       />
 
-      <RegisterDomainDialog
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        existing={editing}
-      />
+      <RegisterDomainDialog open={dialogOpen} onOpenChange={setDialogOpen} existing={editing} />
     </div>
   )
 }

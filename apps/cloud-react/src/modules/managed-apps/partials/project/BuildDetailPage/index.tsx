@@ -1,18 +1,8 @@
-import {
-  ArrowLeft,
-  ExternalLink,
-  FileCode2,
-  PackageX,
-  RotateCcw,
-  ScrollText,
-  X,
-} from "lucide-react"
+import { Button, EmptyState, Skeleton } from "@datadack/common-ui"
+import { ArrowLeft, Code2, ExternalLink, PackageX, RotateCcw, ScrollText, X } from "lucide-react"
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom"
 
-import { AnimatedTabs } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
-
-import { Button, EmptyState, Skeleton } from "@datadack/common-ui"
 
 import { BuildLogPanel } from "./BuildLogPanel"
 import { BuildSourcePanel } from "./BuildSourcePanel"
@@ -30,11 +20,6 @@ import {
 import { isBuildTransitional } from "../../../managed-apps.types"
 import { commitURL, formatDuration, shortSha, triggerLabel } from "../build-format"
 
-const BUILD_TABS = [
-  { value: "log", label: "Build logs", icon: ScrollText },
-  { value: "source", label: "Source", icon: FileCode2 },
-]
-
 /**
  * One build as a page — its log and the source it was built from.
  *
@@ -43,6 +28,17 @@ const BUILD_TABS = [
  * can be pasted into a ticket, a breadcrumb back out, and the full viewport —
  * a code browser in half a drawer answered "which file is this" by making the
  * reader horizontally scroll the answer.
+ *
+ * THE LOG IS THE PAGE; the source is a place you go. They were two tabs of
+ * equal rank, which was a poor description of how the page is used: a build is
+ * opened to read its log essentially every time, and the tab bar spent a
+ * permanent strip of the workbench asking a question already answered. So the
+ * log now fills the workbench with nothing above it, and the source browser is
+ * reached from a button in the header, beside the other places this build can
+ * be looked at from — the Actions run and the commit.
+ *
+ * ?tab=source still selects it, so every existing deep link — the Builds
+ * table's own "Browse source", anything pasted into a ticket — keeps working.
  */
 export function BuildDetailPage() {
   useScreen("managed-apps-build-detail")
@@ -58,18 +54,20 @@ export function BuildDetailPage() {
   const createBuild = useCreateBuild()
   const cancelBuild = useCancelBuild()
 
-  const requestedTab = searchParams.get("tab") ?? "log"
-  const activeTab = BUILD_TABS.some((tab) => tab.value === requestedTab) ? requestedTab : "log"
-  const setTab = (value: string) => {
-    setSearchParams(
-      (prev) => {
-        const next = new URLSearchParams(prev)
-        if (value === "log") next.delete("tab")
-        else next.set("tab", value)
-        return next
-      },
-      { replace: true },
-    )
+  // Only two views, and anything unrecognised is the log — a bad ?tab= should
+  // land somewhere useful rather than on an empty workbench.
+  const activeTab = searchParams.get("tab") === "source" ? "source" : "log"
+  // Pushed onto history rather than replacing it. The tab strip these two views
+  // used to share made switching feel like nothing happened, so replacing was
+  // right; now the source browser takes the whole workbench and reads as a place
+  // you went, and Back has to come back from it instead of leaving the build.
+  const setTab = (value: "log" | "source") => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev)
+      if (value === "log") next.delete("tab")
+      else next.set("tab", value)
+      return next
+    })
   }
 
   const backTo = `${MANAGED_APPS_ROUTES.project(id)}?tab=builds`
@@ -98,6 +96,11 @@ export function BuildDetailPage() {
     )
   }
 
+  // One decision, read by the header toggle, the sidebar and the workbench, so
+  // the three cannot disagree about which view is on screen. A ?tab=source on a
+  // build with no commit resolves to the log: there is no tree at a ref that
+  // does not exist.
+  const showSource = activeTab === "source" && build.commit_sha !== ""
   const active = isBuildTransitional(build.status)
   const serving =
     build.status === "ready" &&
@@ -190,6 +193,42 @@ export function BuildDetailPage() {
           </div>
 
           <div className="flex shrink-0 items-center gap-2">
+            {/* The way in and out of the source browser, and the reason there is
+                no tab bar. It is a TOGGLE rather than a one-way door: the source
+                view fills the workbench, so without a labelled way back the only
+                exit is the browser's Back button or the breadcrumb, both of which
+                leave the build.
+
+                Hidden on a build with no commit — queued, or failed before a
+                runner resolved one. There is no tree to browse at a ref that does
+                not exist, and the panel behind it can only render its own error. */}
+            {build.commit_sha !== "" &&
+              (showSource ? (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="gap-1.5"
+                  onClick={() => {
+                    setTab("log")
+                  }}
+                >
+                  <ScrollText className="size-3.5" />
+                  Build logs
+                </Button>
+              ) : (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="gap-1.5"
+                  title={`Browse the repository at ${shortSha(build.commit_sha)}`}
+                  onClick={() => {
+                    setTab("source")
+                  }}
+                >
+                  <Code2 className="size-3.5" />
+                  Source
+                </Button>
+              ))}
             {build.gh_run_url !== "" && (
               <Button asChild size="sm" variant="outline" className="gap-1.5">
                 <a href={build.gh_run_url} target="_blank" rel="noreferrer">
@@ -236,7 +275,7 @@ export function BuildDetailPage() {
       </header>
 
       <div className="flex min-h-0 flex-1 overflow-hidden border-b border-border/60">
-        {activeTab === "log" && (
+        {!showSource && (
           <BuildWorkspaceSidebar
             build={build}
             project={project}
@@ -245,24 +284,19 @@ export function BuildDetailPage() {
           />
         )}
 
+        {/* No tab strip above it: the workbench is one view at a time, chosen
+            in the header, so the panel gets the whole height. */}
         <section aria-label="Build workbench" className="flex min-h-0 min-w-0 flex-1 flex-col">
-          <AnimatedTabs
-            tabs={BUILD_TABS}
-            value={activeTab}
-            onChange={setTab}
-            layoutId="build-detail-tabs"
-            className="shrink-0 glass-1-bg"
-          />
-
           <div className="min-h-0 flex-1 overflow-hidden">
-            {activeTab === "log" && <BuildLogPanel build={build} />}
-            {activeTab === "source" && (
+            {showSource ? (
               <BuildSourcePanel
                 projectId={id}
                 gitRef={build.commit_sha}
                 build={build}
                 project={project}
               />
+            ) : (
+              <BuildLogPanel build={build} />
             )}
           </div>
         </section>

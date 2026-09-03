@@ -20,7 +20,7 @@ import { ProjectBuildsTab } from "./ProjectBuildsTab"
 import { ProjectDomainsTab } from "./ProjectDomainsTab"
 import { ProjectOverviewTab } from "./ProjectOverviewTab"
 import { ProjectSettingsTab } from "./ProjectSettingsTab"
-import { PROJECT_TYPE_META, ProjectStateChip } from "../../components"
+import { GitHubMark, ProjectAvatar, ProjectStateChip } from "../../components"
 import { MANAGED_APPS_ROUTES } from "../../managed-apps.constants"
 import { useProject, useProjectBuilds } from "../../managed-apps.hooks"
 import { deriveProjectState, projectPollInterval } from "../../managed-apps.state"
@@ -91,7 +91,20 @@ export function ProjectDetailPage() {
       // second navigation every time.
       backTo={MANAGED_APPS_ROUTES.apps}
       backLabel="Apps"
-      icon={PROJECT_TYPE_META[project.project_type].icon}
+      // The FRAMEWORK's mark, not the project type's glyph. project_type only
+      // ever holds "opennext", "react" or "n8n", so the type icon drew the React
+      // atom on this Angular project — and on every Vue, Astro and SvelteKit one
+      // besides, all of which report `project_type: "react"`. ProjectAvatar
+      // already resolves the catalogue id to its brand mark for the overview
+      // cards; the two views now agree on what a project looks like.
+      iconNode={
+        <ProjectAvatar
+          seed={project.id}
+          label={project.name}
+          framework={project.framework}
+          type={project.project_type}
+        />
+      }
       title={project.name}
       statusNode={<ProjectStateChip state={state} />}
       id={project.id}
@@ -108,9 +121,15 @@ export function ProjectDetailPage() {
               href={`https://github.com/${project.repo_owner}/${project.repo_name}`}
               target="_blank"
               rel="noreferrer"
-              className="truncate hover:text-foreground hover:underline"
+              className="flex min-w-0 items-center gap-1.5 truncate hover:text-foreground hover:underline"
             >
-              {project.repo_owner}/{project.repo_name}
+              {/* Marked like the branch and the commit beside it. Without it the
+                  repository was the one fact on this line with no glyph, which
+                  read as a stray string rather than as a link to GitHub. */}
+              <GitHubMark className="size-3 shrink-0" />
+              <span className="truncate">
+                {project.repo_owner}/{project.repo_name}
+              </span>
             </a>
           )}
           {project.branch && (
