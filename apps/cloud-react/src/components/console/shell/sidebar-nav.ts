@@ -223,6 +223,11 @@ export const CONSOLE_SERVICES: ConsoleService[] = [
         path: "/managed-apps/sso",
       },
       {
+        labelKey: "console.nav.items.plan",
+        icon: Gauge,
+        path: "/managed-apps/upgrade",
+      },
+      {
         labelKey: "console.nav.items.settings",
         icon: Settings2,
         path: "/managed-apps/settings",

@@ -37,7 +37,7 @@ export const MANAGED_APPS_ROUTES = {
   /** The cPanel accounts list, grouped with Domains in the console. */
   hosting: "/domains/hosting",
   create: "/managed-apps/create",
-  /** Dedicated account plan selection flow. */
+  /** Account plan, promoted to the Managed Apps service navigation. */
   upgrade: "/managed-apps/upgrade",
   /** Section settings — the one place the account's tier can be changed. */
   settings: "/managed-apps/settings",

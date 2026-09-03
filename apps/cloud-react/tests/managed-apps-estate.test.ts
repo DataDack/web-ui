@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test"
 import { LayoutDashboard } from "lucide-react"
 
 import {
+  CONSOLE_SERVICES,
   isItemActive,
   isItemActiveAmong,
   type SidebarNavItem,
@@ -129,6 +130,19 @@ describe("query-bearing nav targets", () => {
     expect(isItemActive("/hosting/plans", "/hosting/plans")).toBe(true)
     expect(isItemActive("/hosting/abc", "/hosting")).toBe(true)
     expect(isItemActive("/hostingx", "/hosting")).toBe(false)
+  })
+})
+
+describe("Managed Apps service navigation", () => {
+  test("places the account plan directly below SSO Applications", () => {
+    const service = CONSOLE_SERVICES.find((candidate) => candidate.key === "managed-apps")
+
+    expect(service?.items.map((navItem) => navItem.path)).toEqual([
+      "/managed-apps",
+      "/managed-apps/sso",
+      "/managed-apps/upgrade",
+      "/managed-apps/settings",
+    ])
   })
 })
 

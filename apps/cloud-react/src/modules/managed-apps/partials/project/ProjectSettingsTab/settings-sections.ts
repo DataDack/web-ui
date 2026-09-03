@@ -1,6 +1,6 @@
 import type { ComponentType } from "react"
 
-import { Braces, Boxes, Gauge, Globe, Hammer, LockKeyhole, Tag } from "lucide-react"
+import { Braces, Boxes, Globe, Hammer, LockKeyhole, Tag } from "lucide-react"
 
 import type { SectionTone } from "@/components/console"
 
@@ -9,8 +9,7 @@ import type { Project } from "../../../managed-apps.types"
 
 export const SETTINGS_SECTIONS_PARAM = "section"
 
-export type SettingsSectionId =
-  "general" | "git" | "build" | "environments" | "restrictions" | "plan"
+export type SettingsSectionId = "general" | "git" | "build" | "environments" | "restrictions"
 
 export interface SettingsSectionMeta {
   id: SettingsSectionId
@@ -26,7 +25,7 @@ export interface SettingsSectionMeta {
 
 /**
  * The rail's inventory, in the order a user reaches for it: identity, then
- * source, then how it builds, then what it costs. Project deletion lives at
+ * source, then how it builds. Project deletion lives at
  * the bottom of General instead of posing as a settings category of its own.
  *
  * Git carries the Octocat rather than lucide's `GitBranch`. The section is not
@@ -75,16 +74,6 @@ export const SETTINGS_SECTIONS: SettingsSectionMeta[] = [
     hint: "IP rules and firewall, per environment",
     icon: LockKeyhole,
     tone: "warning",
-    needsRepo: false,
-  },
-  {
-    id: "plan",
-    label: "Plan",
-    hint: "Quotas this project runs under",
-    // Quotas are a measurement. `CreditCard` would promise a payment this
-    // section cannot take — the tier is account-scoped and changed elsewhere.
-    icon: Gauge,
-    tone: "accent",
     needsRepo: false,
   },
 ]

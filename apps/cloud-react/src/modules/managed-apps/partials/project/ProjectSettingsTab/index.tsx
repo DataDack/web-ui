@@ -7,7 +7,6 @@ import { BuildOutputSection } from "./BuildOutputSection"
 import { GeneralSection } from "./GeneralSection"
 import { EnvironmentsPanel } from "../EnvironmentsPanel"
 import { GitSection } from "./GitSection"
-import { PlanSection } from "./PlanSection"
 import { RestrictionsSection } from "./RestrictionsSection"
 import {
   resolveSection,
@@ -99,7 +98,6 @@ export function ProjectSettingsTab({ project }: Readonly<{ project: Project }>) 
           )}
           {active === "environments" && <EnvironmentsPanel project={project} />}
           {active === "restrictions" && <RestrictionsSection project={project} />}
-          {active === "plan" && <PlanSection />}
         </motion.div>
       </AnimatePresence>
     </div>

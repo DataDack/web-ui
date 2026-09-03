@@ -79,6 +79,7 @@
         "apps": "Apps",
         "cpanelHosting": "cPanel Hosting",
         "ssoApps": "SSO Applications",
+        "plan": "Plan",
         "automationsOverview": "Overview",
         "automationsWorkflows": "Workflows",
         "automationsIntegrations": "Integrations",

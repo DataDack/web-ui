@@ -24,7 +24,6 @@ export const managedAppsRoutes: RouteObject[] = [
   },
   {
     path: "managed-apps/upgrade",
-    handle: { hideSidebar: true },
     lazy: async () => {
       const { ManagedAppsUpgradePage } = await import("./partials/settings/ManagedAppsUpgradePage")
       return { Component: ManagedAppsUpgradePage }
