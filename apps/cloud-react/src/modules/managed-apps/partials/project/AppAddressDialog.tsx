@@ -1,9 +1,5 @@
 import { useEffect, useRef, useState } from "react"
 
-import { AlertTriangle, Globe } from "lucide-react"
-
-import { extractError } from "@/services/api/client"
-
 import {
   Button,
   Dialog,
@@ -15,6 +11,9 @@ import {
   Input,
   Label,
 } from "@datadack/common-ui"
+import { AlertTriangle, Globe } from "lucide-react"
+
+import { extractError } from "@/services/api/client"
 
 import { useUpdateProjectHostname } from "../../managed-apps.hooks"
 import type { Project } from "../../managed-apps.types"

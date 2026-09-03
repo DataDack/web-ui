@@ -1,7 +1,7 @@
 import { Button, EmptyState, Skeleton } from "@datadack/common-ui"
 import {
   Activity,
-  Boxes,
+  Braces,
   GitBranch,
   GitPullRequest,
   Globe,
@@ -19,8 +19,8 @@ import { DetailPage } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
 import { commitURL, isTimeSet, shortSha, timeSince } from "./build-format"
+import { EnvironmentVariablesTab } from "./EnvironmentVariablesTab"
 import { ProjectBuildsTab } from "./ProjectBuildsTab"
-import { EnvironmentsTab } from "./EnvironmentsTab"
 import { ProjectDomainsTab } from "./ProjectDomainsTab"
 import { ProjectOverviewTab } from "./ProjectOverviewTab"
 import { ProjectSettingsTab } from "./ProjectSettingsTab"
@@ -239,12 +239,15 @@ export function ProjectDetailPage() {
           content: <ProjectObservabilityPage project={project} tab="cdn" />,
         },
         {
-          // Environments own the variables and the access rules, so they are a
-          // thing rather than a setting — see EnvironmentsTab.
-          value: "environments",
-          label: "Environments",
-          icon: Boxes,
-          content: <EnvironmentsTab project={project} />,
+          // The VARIABLES are the tab, not the environments that hold them.
+          // Defining an environment is a once-and-rarely job and sits in
+          // Settings with the rest of them; editing what an environment builds
+          // with is the daily one, and it is what somebody opens this project
+          // for. The environment picker lives inside.
+          value: "environment-variables",
+          label: "Environment variables",
+          icon: Braces,
+          content: <EnvironmentVariablesTab project={project} />,
         },
         {
           value: "domains",

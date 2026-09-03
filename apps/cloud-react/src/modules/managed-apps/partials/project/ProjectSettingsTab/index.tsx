@@ -4,8 +4,8 @@ import { useSearchParams } from "react-router-dom"
 import { DUR, EASE } from "@/components/console"
 
 import { BuildOutputSection } from "./BuildOutputSection"
-import { EnvSection } from "./EnvSection"
 import { GeneralSection } from "./GeneralSection"
+import { EnvironmentsPanel } from "../EnvironmentsPanel"
 import { GitSection } from "./GitSection"
 import { PlanSection } from "./PlanSection"
 import { RestrictionsSection } from "./RestrictionsSection"
@@ -97,7 +97,7 @@ export function ProjectSettingsTab({ project }: Readonly<{ project: Project }>) 
           {active === "build" && (
             <BuildOutputSection project={project} overrideCount={buildOverrides} />
           )}
-          {active === "environment-variables" && <EnvSection project={project} />}
+          {active === "environments" && <EnvironmentsPanel project={project} />}
           {active === "restrictions" && <RestrictionsSection project={project} />}
           {active === "plan" && <PlanSection />}
         </motion.div>

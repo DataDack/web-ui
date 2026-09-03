@@ -50,6 +50,21 @@ export function commitURL(owner: string, repo: string, sha: string): string {
 }
 
 /**
+ * Who to show for a commit: the git author's name, or the GitHub handle when
+ * that is all the row has.
+ *
+ * The NAME leads, not the login. A build history is read to find whose change
+ * something was, and the name is what a colleague is known by in conversation —
+ * the handle is what they are known by to GitHub. Returns "" when the row knows
+ * neither, so a caller renders a dash rather than the word "unknown" repeated
+ * down a column.
+ */
+export function authorLabel(login: string, name: string): string {
+  if (name !== "") return name
+  return login === "" ? "" : `@${login}`
+}
+
+/**
  * A GitHub account's avatar, at a pixel size.
  *
  * `github.com/<login>.png` rather than the `avatars.githubusercontent.com` URL

@@ -1,11 +1,10 @@
 import { type CSSProperties, useState } from "react"
 
+import { Button, CopyButton, Input } from "@datadack/common-ui"
 import { ExternalLink, Globe, Lock, Pencil, Tag } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { FieldRow, Section } from "@/components/console"
-
-import { Button, CopyButton, Input } from "@datadack/common-ui"
 
 import { DangerZone } from "./DangerZone"
 import { PROJECT_TYPE_META } from "../../../components"

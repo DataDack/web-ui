@@ -1,12 +1,11 @@
 import { useState } from "react"
 
+import { Button } from "@datadack/common-ui"
 import { ShieldAlert, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
 import { ConfirmDialog, Section } from "@/components/console"
-
-import { Button } from "@datadack/common-ui"
 
 import { MANAGED_APPS_ROUTES } from "../../../managed-apps.constants"
 import { useDeleteProject } from "../../../managed-apps.hooks"

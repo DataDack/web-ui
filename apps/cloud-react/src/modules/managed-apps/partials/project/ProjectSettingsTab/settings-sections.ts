@@ -10,7 +10,7 @@ import type { Project } from "../../../managed-apps.types"
 export const SETTINGS_SECTIONS_PARAM = "section"
 
 export type SettingsSectionId =
-  "general" | "git" | "build" | "environment-variables" | "restrictions" | "plan"
+  "general" | "git" | "build" | "environments" | "restrictions" | "plan"
 
 export interface SettingsSectionMeta {
   id: SettingsSectionId
@@ -62,11 +62,11 @@ export const SETTINGS_SECTIONS: SettingsSectionMeta[] = [
     needsRepo: true,
   },
   {
-    id: "environment-variables",
-    label: "Environment variables",
-    hint: "Per environment",
-    icon: Braces,
-    tone: "brand",
+    id: "environments",
+    label: "Environments",
+    hint: "Branches and scopes",
+    icon: Boxes,
+    tone: "info",
     needsRepo: false,
   },
   {
@@ -104,11 +104,15 @@ export interface SettingsDeparture {
  * them and marking them as a departure costs one row and answers the question.
  */
 export const SETTINGS_DEPARTURES: SettingsDeparture[] = [
-  // Environments moved out of this rail and became a tab. An environment is not
-  // a setting — it is the thing that OWNS the settings below it, and the two
-  // sections that follow are both scoped to one. Leaving a stub here would be a
-  // second, staler list of the same rows.
-  { tab: "environments", label: "Environments", hint: "Branches and scopes", icon: Boxes },
+  // The variables are a tab of their own — see ProjectDetailPage for why the
+  // daily job was promoted and the once-and-rarely one stayed here. Naming it
+  // costs one row and answers the question somebody scrolls this rail asking.
+  {
+    tab: "environment-variables",
+    label: "Environment variables",
+    hint: "Per environment",
+    icon: Braces,
+  },
   { tab: "domains", label: "Domains", hint: "Custom addresses", icon: Globe },
 ]
 

@@ -16,6 +16,7 @@ import { useNavigate, useSearchParams } from "react-router-dom"
 import { ConfirmDialog, Section } from "@/components/console"
 
 import {
+  authorLabel,
   commitURL,
   formatDuration,
   isTimeSet,
@@ -118,19 +119,6 @@ export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
         // the sha itself swallows the click, below.
         cell: ({ row }) => (
           <span className="flex min-w-0 max-w-80 items-start gap-2.5">
-            {/* Who wrote it, before what it says. A build history is read to
-                find a change, and "whose change" narrows the list faster than
-                any other column — it is the one fact a reader already knows
-                before they open the page.
-                Linked to the GitHub profile, and it swallows its own click the
-                way the sha beside it does, so the row still opens the build
-                everywhere except on the face itself. */}
-            <CommitAuthor
-              login={row.original.commit_author_login}
-              name={row.original.commit_author_name}
-              className="mt-0.5"
-              linked
-            />
             <span className="flex min-w-0 flex-col gap-0.5">
               <span className="flex min-w-0 items-baseline gap-2">
                 {row.original.commit_sha !== "" && (
@@ -169,6 +157,46 @@ export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
             </span>
           </span>
         ),
+      },
+      {
+        id: "author",
+        header: "Author",
+        // A COLUMN, not a face tucked into the commit cell. An avatar alone
+        // identifies somebody only to a reader who already knows the face —
+        // which is nobody on their first week, and nobody at all for an
+        // outside contributor. The name is the part that can be read, searched
+        // for and said out loud; the avatar is what makes it scannable.
+        //
+        // Its own column rather than a second line under the message, because
+        // "whose change was this" is the question a history gets scanned for,
+        // and a column can be scanned where a wrapped sub-line cannot.
+        meta: { responsive: "md", interactive: true } satisfies DataTableColumnMeta,
+        cell: ({ row }) => {
+          const label = authorLabel(
+            row.original.commit_author_login,
+            row.original.commit_author_name,
+          )
+          // A build with no author at all: one that predates the field and
+          // whose commit GitHub could not resolve. A dash, not a placeholder
+          // name — the row genuinely does not know.
+          if (label === "") {
+            return <span className="text-[12px] text-muted-foreground">—</span>
+          }
+          return (
+            <span className="flex min-w-0 items-center gap-2">
+              {/* Linked, and it swallows its own click the way the sha does, so
+                  the row still opens the build everywhere else. */}
+              <CommitAuthor
+                login={row.original.commit_author_login}
+                name={row.original.commit_author_name}
+                linked
+              />
+              <span className="min-w-0 truncate text-[12px] text-foreground/90" title={label}>
+                {label}
+              </span>
+            </span>
+          )
+        },
       },
       {
         id: "when",

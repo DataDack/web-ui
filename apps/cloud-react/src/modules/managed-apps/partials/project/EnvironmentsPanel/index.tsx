@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
   Skeleton,
 } from "@datadack/common-ui"
-import { Boxes, GitBranch, MoreHorizontal, Pencil, Plus, Trash2 } from "lucide-react"
+import { GitBranch, MoreHorizontal, Pencil, Plus, Trash2 } from "lucide-react"
 
 import { ConfirmDialog, Section } from "@/components/console"
 
@@ -24,11 +24,11 @@ import type { ProjectEnvironment, Project } from "../../../managed-apps.types"
  * The project's environments: what each one tracks, what it carries, and
  * whether it deploys.
  *
- * ITS OWN TAB rather than a settings section, because an environment is not a
- * setting — it is a thing that owns settings. Its variables and its access
- * control hang off it, and burying the list inside Settings made "which
- * variables does staging build with" a question you answered by opening a rail
- * inside a tab and picking the right row twice.
+ * A SETTINGS SECTION, not a tab. Defining an environment — its name, the branch
+ * it tracks — is something done once and then rarely; editing the VARIABLES
+ * inside one is the daily job, and that is what earned the tab. Filing the
+ * definition beside the other things you configure once, and promoting the
+ * thing you open every day, is the split that matches how the two are used.
  *
  * The DEPLOYS column is the one that keeps this honest. A project has one
  * running container and one public address, so exactly one environment is
@@ -36,7 +36,7 @@ import type { ProjectEnvironment, Project } from "../../../managed-apps.types"
  * difference between a feature somebody can use and one they discover by
  * pushing to a branch and waiting for a site that never changes.
  */
-export function EnvironmentsTab({ project }: Readonly<{ project: Project }>) {
+export function EnvironmentsPanel({ project }: Readonly<{ project: Project }>) {
   const { data: environments = [], isLoading } = useProjectEnvironments(project.id)
   const remove = useDeleteEnvironment(project.id)
 
@@ -231,6 +231,3 @@ function EnvironmentRow({
     </div>
   )
 }
-
-/** Re-exported so the settings rail can point at the tab that replaced it. */
-export { Boxes as EnvironmentsIcon }

@@ -5,16 +5,22 @@ import { useTranslation } from "react-i18next"
 
 import { ConfirmDialog, Section } from "@/components/console"
 
-import { EnvVarEditor, storedEnvRows, toEnvValues, type EnvRow } from "../../../components"
+import { EnvVarEditor, storedEnvRows, toEnvValues, type EnvRow } from "../../components"
 import {
   useEnvironmentEnv,
   useProjectEnvironments,
   useSetEnvironmentEnv,
-} from "../../../managed-apps.hooks"
-import type { Project, ProjectEnvVar } from "../../../managed-apps.types"
+} from "../../managed-apps.hooks"
+import type { Project, ProjectEnvVar } from "../../managed-apps.types"
 
 /**
  * Environment variables, scoped to one environment.
+ *
+ * ITS OWN TAB. Defining an environment is a once-and-rarely job and sits in
+ * Settings; editing what one builds with is the daily one, and it is what
+ * somebody opens a project for. The environment picker below is what makes a
+ * tab enough — the scope travels with the editor instead of being chosen two
+ * levels up.
  *
  * THE ENVIRONMENT IS THE SCOPE NOW, and that replaces something that never
  * worked. Each row used to carry Production/Preview chips, and the backend
@@ -35,7 +41,7 @@ import type { Project, ProjectEnvVar } from "../../../managed-apps.types"
  * variable about to be cleared. The real fix is a per-key PATCH on the API;
  * until then this is the honest behaviour.
  */
-export function EnvSection({ project }: Readonly<{ project: Project }>) {
+export function EnvironmentVariablesTab({ project }: Readonly<{ project: Project }>) {
   const { t } = useTranslation()
   const { data: environments = [], isLoading: loadingEnvironments } = useProjectEnvironments(
     project.id,

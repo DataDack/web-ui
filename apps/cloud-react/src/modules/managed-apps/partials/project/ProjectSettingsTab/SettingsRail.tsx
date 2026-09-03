@@ -1,7 +1,6 @@
+import { cn } from "@datadack/common-ui"
 import { ArrowUpRight } from "lucide-react"
 import { Link } from "react-router-dom"
-
-import { cn } from "@datadack/common-ui"
 
 import {
   SETTINGS_DEPARTURES,
