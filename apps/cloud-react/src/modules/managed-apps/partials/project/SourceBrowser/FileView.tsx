@@ -13,7 +13,6 @@ import {
 } from "lucide-react"
 import { toast } from "sonner"
 
-
 import { useProjectSourceFile } from "../../../managed-apps.hooks"
 
 interface FileViewProps {

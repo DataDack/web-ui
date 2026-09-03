@@ -121,13 +121,15 @@ export function ProjectBuildsTab({ project }: Readonly<{ project: Project }>) {
             {/* Who wrote it, before what it says. A build history is read to
                 find a change, and "whose change" narrows the list faster than
                 any other column — it is the one fact a reader already knows
-                before they open the page. Not linked: the row is itself a door
-                to the build, and a link inside it is a click the reader cannot
-                predict the destination of. */}
+                before they open the page.
+                Linked to the GitHub profile, and it swallows its own click the
+                way the sha beside it does, so the row still opens the build
+                everywhere except on the face itself. */}
             <CommitAuthor
               login={row.original.commit_author_login}
               name={row.original.commit_author_name}
               className="mt-0.5"
+              linked
             />
             <span className="flex min-w-0 flex-col gap-0.5">
               <span className="flex min-w-0 items-baseline gap-2">

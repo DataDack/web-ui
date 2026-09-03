@@ -2,7 +2,7 @@ import { useMemo } from "react"
 
 import { Link } from "react-router-dom"
 
-import { BuildStatusPill } from "../../../components"
+import { BuildStatusPill, CommitAuthor } from "../../../components"
 import { MANAGED_APPS_ROUTES } from "../../../managed-apps.constants"
 import type { Build, Project } from "../../../managed-apps.types"
 import { isTimeSet, shortSha, timeSince, triggerLabel } from "../../project/build-format"
@@ -53,6 +53,14 @@ export function RecentDeploys({ builds, projects }: Readonly<RecentDeploysProps>
               className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2.5 outline-none transition-colors hover:glass-1-bg-raised focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-inset"
             >
               <BuildStatusPill status={build.status} />
+              {/* Not linked here: the whole row is already a link to the
+                  project, and a second destination inside it is a click whose
+                  outcome the reader cannot predict. */}
+              <CommitAuthor
+                login={build.commit_author_login}
+                name={build.commit_author_name}
+                className="size-4"
+              />
               <span className="min-w-0 shrink-0 truncate text-[13px] font-medium">{name}</span>
               <span className="min-w-0 flex-1 truncate text-[12px] text-muted-foreground">
                 {build.commit_message || "No commit message"}

@@ -2,7 +2,6 @@ import { Button, Skeleton } from "@datadack/common-ui"
 import { ExternalLink, KeyRound, Settings2 } from "lucide-react"
 import { Link } from "react-router-dom"
 
-
 import { BuildStatusPill, projectTypeLabel } from "../../../components"
 import { MANAGED_APPS_ROUTES } from "../../../managed-apps.constants"
 import { useProjectEnv } from "../../../managed-apps.hooks"

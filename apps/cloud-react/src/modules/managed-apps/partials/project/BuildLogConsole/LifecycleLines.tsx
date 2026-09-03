@@ -1,7 +1,6 @@
 import { cn } from "@datadack/common-ui"
 import { ExternalLink, Loader2 } from "lucide-react"
 
-
 import { eventClock, eventOffset, type LifecycleEvent, type LifecycleTone } from "./lifecycle"
 
 const TONE_TEXT: Record<LifecycleTone, string> = {

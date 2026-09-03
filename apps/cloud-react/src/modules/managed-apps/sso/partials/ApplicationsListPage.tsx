@@ -18,7 +18,6 @@ import { useNavigate } from "react-router-dom"
 
 import { useScreen } from "@/services/api/screen"
 
-
 import { ssoApi } from "../sso.api"
 
 const SSO_ROOT = "/managed-apps/sso"

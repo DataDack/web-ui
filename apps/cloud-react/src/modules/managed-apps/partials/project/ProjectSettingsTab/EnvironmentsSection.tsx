@@ -76,7 +76,8 @@ export function EnvironmentsSection({ project }: Readonly<{ project: Project }>)
           </Button>
         </div>
         <p className="text-[11px] text-muted-foreground">
-          Use lowercase letters, numbers and hyphens. Environment names currently scope configuration only.
+          Use lowercase letters, numbers and hyphens. Environment names currently scope
+          configuration only.
         </p>
       </div>
     </Section>

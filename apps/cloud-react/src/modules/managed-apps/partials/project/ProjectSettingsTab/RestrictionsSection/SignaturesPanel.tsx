@@ -25,11 +25,7 @@ import {
   SCORE_LABELS,
   settingFor,
 } from "./restrictions-draft"
-import type {
-  SignatureSetting,
-  WafCatalogRule,
-  WafMode,
-} from "../../../../managed-apps.types"
+import type { SignatureSetting, WafCatalogRule, WafMode } from "../../../../managed-apps.types"
 
 interface SignaturesPanelProps {
   catalog: readonly WafCatalogRule[]
@@ -129,7 +125,10 @@ export function SignaturesPanel({
                 onDefaultModeChange(value as WafMode)
               }}
             >
-              <SelectTrigger className="h-9 w-[136px]" aria-label="Default action for enabled rules">
+              <SelectTrigger
+                className="h-9 w-[136px]"
+                aria-label="Default action for enabled rules"
+              >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -245,7 +244,9 @@ export function SignaturesPanel({
                           <div className="mt-2 space-y-2 rounded-md bg-muted/40 p-2.5 text-[12px] leading-relaxed">
                             <p className="text-muted-foreground">{rule.description}</p>
                             <p>
-                              <span className="font-medium">Legitimate traffic that trips it: </span>
+                              <span className="font-medium">
+                                Legitimate traffic that trips it:{" "}
+                              </span>
                               <span className="text-muted-foreground">{rule.false_positives}</span>
                             </p>
                             <p className="font-mono text-[11px] text-muted-foreground">{rule.id}</p>

@@ -5,7 +5,6 @@ import { useTranslation } from "react-i18next"
 
 import { ConfirmDialog, Section } from "@/components/console"
 
-
 import { EnvVarEditor, storedEnvRows, toEnvMap, type EnvRow } from "../../../components"
 import { useProjectEnv, useUpdateProjectEnv } from "../../../managed-apps.hooks"
 import type { Project } from "../../../managed-apps.types"

@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom"
 import { PageHeader } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
-
 import { ssoApi } from "../sso.api"
 import type { CreateApplicationRequest } from "../sso.types"
 

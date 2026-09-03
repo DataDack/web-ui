@@ -19,7 +19,6 @@ import { useNavigate } from "react-router-dom"
 import { SUPPORT_ROUTES } from "@/modules/support-tickets/support-tickets.constants"
 import { useCreateSupportTicket } from "@/modules/support-tickets/support-tickets.hooks"
 
-
 const NEEDS_MAX = 4000
 
 interface CustomPlanDialogProps {

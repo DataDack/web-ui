@@ -3,7 +3,6 @@ import { useMemo, useState } from "react"
 import { formatBytes, Input, ScrollArea } from "@datadack/common-ui"
 import { ChevronDown, ChevronRight, File, Folder, FolderOpen, Search } from "lucide-react"
 
-
 import { buildTree, searchPaths, type TreeNode } from "./source-tree"
 import type { SourceEntry } from "../../../managed-apps.types"
 

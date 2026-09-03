@@ -6,6 +6,7 @@ import { cardAction } from "./card-action"
 import { CardActionButton } from "./CardActionButton"
 import {
   BuildProgressBar,
+  CommitAuthor,
   ProjectAvatar,
   ProjectStateChip,
   projectTypeLabel,
@@ -149,11 +150,19 @@ export function ProjectCard({
               </span>
               <span className="shrink-0 font-mono opacity-70">{project.branch || "main"}</span>
             </p>
-            <p className="truncate">
+            <p className="flex min-w-0 items-center gap-1.5 truncate">
               {latestBuild?.commit_sha ? (
                 <>
+                  {/* Unlinked: the card is one big link to the project. */}
+                  <CommitAuthor
+                    login={latestBuild.commit_author_login}
+                    name={latestBuild.commit_author_name}
+                    className="size-4"
+                  />
                   <span className="font-mono">{shortSha(latestBuild.commit_sha)}</span>
-                  {latestBuild.commit_message && <> {latestBuild.commit_message}</>}
+                  {latestBuild.commit_message && (
+                    <span className="truncate">{latestBuild.commit_message}</span>
+                  )}
                 </>
               ) : (
                 <>No build has run yet · created {timeSince(project.created_at)}</>

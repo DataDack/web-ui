@@ -58,11 +58,7 @@ export function BuildStatusPill({
   return (
     <Badge
       variant="outline"
-      className={cn(
-        "gap-1.5 px-2 py-1 font-mono text-[11px]",
-        TONE_CLASSES[tone],
-        className,
-      )}
+      className={cn("gap-1.5 px-2 py-1 font-mono text-[11px]", TONE_CLASSES[tone], className)}
     >
       {serving ? (
         <span className="size-1.5 rounded-full bg-current" aria-hidden />

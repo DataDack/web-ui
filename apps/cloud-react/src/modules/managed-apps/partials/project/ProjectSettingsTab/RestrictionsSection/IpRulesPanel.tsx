@@ -247,8 +247,8 @@ export function IpRulesPanel({ rules, onChange, max, disabled }: Readonly<IpRule
                 )}
                 {rule.action === "deny" && rule.mode === "log" && rule.cidr.trim() !== "" && (
                   <p className="mt-1.5 pl-7 text-[11px] text-muted-foreground">
-                    Watching only — this range is recorded and still served. Switch to Block once the
-                    range looks right.
+                    Watching only — this range is recorded and still served. Switch to Block once
+                    the range looks right.
                   </p>
                 )}
               </li>

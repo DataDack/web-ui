@@ -20,7 +20,7 @@ import {
 import { Link } from "react-router-dom"
 
 import { commitURL, hostLabel, isTimeSet, secureURL, shortSha, timeSince } from "./build-format"
-import { BuildProgressBar, ProjectStateChip, SitePreview } from "../../components"
+import { BuildProgressBar, CommitAuthor, ProjectStateChip, SitePreview } from "../../components"
 import { MANAGED_APPS_ROUTES } from "../../managed-apps.constants"
 import { useCreateBuild, useDeployProject } from "../../managed-apps.hooks"
 import type { ProjectState } from "../../managed-apps.state"
@@ -254,7 +254,17 @@ export function CurrentDeploymentHero({
                   {project.branch || "main"}
                 </span>
                 {latestBuild?.commit_sha && (
-                  <span className="flex min-w-0 items-baseline gap-1.5">
+                  <span className="flex min-w-0 items-center gap-1.5">
+                    {/* Who shipped what is live right now. On the hero rather
+                        than only in the build list, because this is the panel
+                        somebody opens to answer "what is running" — and half
+                        that answer is whose change it was. */}
+                    <CommitAuthor
+                      login={latestBuild.commit_author_login}
+                      name={latestBuild.commit_author_name}
+                      className="size-4"
+                      linked
+                    />
                     {/* The sha links to the commit on GitHub — "View code"
                         shows the tree, not the diff. */}
                     <a

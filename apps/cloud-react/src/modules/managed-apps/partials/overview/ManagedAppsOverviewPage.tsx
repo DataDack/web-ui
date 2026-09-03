@@ -111,11 +111,7 @@ export function ManagedAppsOverviewPage({ fixedTab }: Readonly<ManagedAppsOvervi
   )
 
   const newHosting = (
-    <Button
-      size="sm"
-      className="gap-1.5"
-      onClick={() => void navigate(HOSTING_ROUTES.pricing)}
-    >
+    <Button size="sm" className="gap-1.5" onClick={() => void navigate(HOSTING_ROUTES.pricing)}>
       <Plus className="size-3.5" />
       New hosting
     </Button>

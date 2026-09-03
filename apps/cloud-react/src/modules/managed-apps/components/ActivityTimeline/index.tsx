@@ -12,6 +12,7 @@ import { buildFallbackLabel, deriveBuildEvents, eventStamp, shortSha } from "./a
 import { ActivityEventRow } from "./ActivityEventRow"
 import type { Build } from "../../managed-apps.types"
 import { BuildStatusPill } from "../BuildStatusPill"
+import { CommitAuthor } from "../CommitAuthor"
 
 interface ActivityTimelineProps {
   builds: readonly Build[]
@@ -63,6 +64,13 @@ export function ActivityTimeline({ builds, className }: Readonly<ActivityTimelin
             <AccordionTrigger className="py-3 hover:no-underline">
               <span className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2.5 gap-y-1">
                 <BuildStatusPill status={build.status} />
+                {/* Unlinked: the trigger opens the accordion, and a link inside
+                    a button is a control with two answers to one click. */}
+                <CommitAuthor
+                  login={build.commit_author_login}
+                  name={build.commit_author_name}
+                  className="size-4"
+                />
                 {build.commit_sha !== "" && (
                   <span className="font-mono text-[12px] text-muted-foreground">
                     {shortSha(build.commit_sha)}

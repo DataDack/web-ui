@@ -1,4 +1,4 @@
-import type React from "react";
+import type React from "react"
 import { useEffect, useState } from "react"
 
 import {
@@ -155,7 +155,13 @@ export function ApplicationDetailPage() {
               </Select>
             )}
 
-            <Button variant="outline" size="sm" onClick={() => { setNewEnvOpen(true); }}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setNewEnvOpen(true)
+              }}
+            >
               <Plus className="mr-1 h-4 w-4" /> Add Env
             </Button>
           </div>
@@ -215,7 +221,11 @@ export function ApplicationDetailPage() {
           <p className="text-muted-foreground text-sm mb-4">
             This application doesn't have any environments configured.
           </p>
-          <Button onClick={() => { setNewEnvOpen(true); }}>
+          <Button
+            onClick={() => {
+              setNewEnvOpen(true)
+            }}
+          >
             <Plus className="mr-2 h-4 w-4" /> Add Environment
           </Button>
         </div>
@@ -239,14 +249,22 @@ export function ApplicationDetailPage() {
                   id="envName"
                   placeholder="e.g. staging"
                   value={newEnvName}
-                  onChange={(e) => { setNewEnvName(e.target.value); }}
+                  onChange={(e) => {
+                    setNewEnvName(e.target.value)
+                  }}
                   required
                 />
               </div>
             </div>
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => { setNewEnvOpen(false); }}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setNewEnvOpen(false)
+                }}
+              >
                 Cancel
               </Button>
               <Button type="submit" disabled={createConfigMutation.isPending || !newEnvName.trim()}>
@@ -285,10 +303,10 @@ function IntegrationTab({
           <CardTitle>Client credentials</CardTitle>
           <CardDescription>
             This endpoint authenticates with an IAM access key, not a console session. Create a key
-            under IAM &rarr; API keys: the <strong>client ID</strong> is the key prefix shown in that
-            list, and the <strong>client secret</strong> is the full key revealed once at creation.
-            Any active key in this account can read this application&apos;s configuration, so treat
-            it as a server-side secret and never ship it in a browser bundle.
+            under IAM &rarr; API keys: the <strong>client ID</strong> is the key prefix shown in
+            that list, and the <strong>client secret</strong> is the full key revealed once at
+            creation. Any active key in this account can read this application&apos;s configuration,
+            so treat it as a server-side secret and never ship it in a browser bundle.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -463,7 +481,9 @@ function EnvVarsTab({ activeConfig }: { activeConfig: Configuration }) {
               <Input
                 placeholder="VARIABLE_NAME"
                 value={v.key}
-                onChange={(e) => { handleChangeRow(i, "key", e.target.value); }}
+                onChange={(e) => {
+                  handleChangeRow(i, "key", e.target.value)
+                }}
                 className="font-mono text-xs"
               />
             </div>
@@ -471,14 +491,18 @@ function EnvVarsTab({ activeConfig }: { activeConfig: Configuration }) {
               <Input
                 placeholder="value"
                 value={v.value}
-                onChange={(e) => { handleChangeRow(i, "value", e.target.value); }}
+                onChange={(e) => {
+                  handleChangeRow(i, "value", e.target.value)
+                }}
                 className="font-mono text-xs"
               />
             </div>
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => { handleRemoveRow(i); }}
+              onClick={() => {
+                handleRemoveRow(i)
+              }}
               className="text-red-500 hover:text-red-700"
             >
               <Trash2 className="h-4 w-4" />
@@ -552,13 +576,17 @@ function ThemeTab({ activeConfig }: { activeConfig: Configuration }) {
                 type="color"
                 id="primaryColor"
                 value={primaryColor}
-                onChange={(e) => { setPrimaryColor(e.target.value); }}
+                onChange={(e) => {
+                  setPrimaryColor(e.target.value)
+                }}
                 className="w-12 h-10 p-1"
               />
               <Input
                 type="text"
                 value={primaryColor}
-                onChange={(e) => { setPrimaryColor(e.target.value); }}
+                onChange={(e) => {
+                  setPrimaryColor(e.target.value)
+                }}
                 className="font-mono text-sm"
               />
             </div>
@@ -569,7 +597,9 @@ function ThemeTab({ activeConfig }: { activeConfig: Configuration }) {
             <Input
               id="fontFamily"
               value={fontFamily}
-              onChange={(e) => { setFontFamily(e.target.value); }}
+              onChange={(e) => {
+                setFontFamily(e.target.value)
+              }}
             />
           </div>
         </div>
@@ -580,7 +610,9 @@ function ThemeTab({ activeConfig }: { activeConfig: Configuration }) {
             id="logoUrl"
             placeholder="https://example.com/logo.png"
             value={logoUrl}
-            onChange={(e) => { setLogoUrl(e.target.value); }}
+            onChange={(e) => {
+              setLogoUrl(e.target.value)
+            }}
           />
         </div>
 
@@ -647,7 +679,9 @@ function MetadataTab({ activeConfig }: { activeConfig: Configuration }) {
       <CardContent className="space-y-4">
         <Textarea
           value={jsonText}
-          onChange={(e) => { setJsonText(e.target.value); }}
+          onChange={(e) => {
+            setJsonText(e.target.value)
+          }}
           rows={10}
           className="font-mono text-xs"
         />
@@ -705,7 +739,9 @@ function PoliciesTab({ activeConfig }: { activeConfig: Configuration }) {
       <CardContent className="space-y-4">
         <Textarea
           value={jsonText}
-          onChange={(e) => { setJsonText(e.target.value); }}
+          onChange={(e) => {
+            setJsonText(e.target.value)
+          }}
           rows={10}
           className="font-mono text-xs"
         />
@@ -793,7 +829,14 @@ function SettingsTab({ app, configs }: { app: any; configs: Configuration[] }) {
           <CardContent className="space-y-4">
             <div className="space-y-1">
               <Label htmlFor="appName">Application Name *</Label>
-              <Input id="appName" value={name} onChange={(e) => { setName(e.target.value); }} required />
+              <Input
+                id="appName"
+                value={name}
+                onChange={(e) => {
+                  setName(e.target.value)
+                }}
+                required
+              />
             </div>
 
             <div className="space-y-1">
@@ -801,7 +844,9 @@ function SettingsTab({ app, configs }: { app: any; configs: Configuration[] }) {
               <Textarea
                 id="appDesc"
                 value={description}
-                onChange={(e) => { setDescription(e.target.value); }}
+                onChange={(e) => {
+                  setDescription(e.target.value)
+                }}
                 rows={3}
               />
             </div>
@@ -813,7 +858,9 @@ function SettingsTab({ app, configs }: { app: any; configs: Configuration[] }) {
                   id="appWebUrl"
                   type="url"
                   value={websiteUrl}
-                  onChange={(e) => { setWebsiteUrl(e.target.value); }}
+                  onChange={(e) => {
+                    setWebsiteUrl(e.target.value)
+                  }}
                 />
               </div>
               <div className="space-y-1">
@@ -822,7 +869,9 @@ function SettingsTab({ app, configs }: { app: any; configs: Configuration[] }) {
                   id="appEmail"
                   type="email"
                   value={supportEmail}
-                  onChange={(e) => { setSupportEmail(e.target.value); }}
+                  onChange={(e) => {
+                    setSupportEmail(e.target.value)
+                  }}
                 />
               </div>
             </div>
@@ -833,7 +882,9 @@ function SettingsTab({ app, configs }: { app: any; configs: Configuration[] }) {
                 <Input
                   id="appCompany"
                   value={companyName}
-                  onChange={(e) => { setCompanyName(e.target.value); }}
+                  onChange={(e) => {
+                    setCompanyName(e.target.value)
+                  }}
                 />
               </div>
               <div className="space-y-1">
@@ -841,7 +892,9 @@ function SettingsTab({ app, configs }: { app: any; configs: Configuration[] }) {
                 <Input
                   id="appIndustry"
                   value={industry}
-                  onChange={(e) => { setIndustry(e.target.value); }}
+                  onChange={(e) => {
+                    setIndustry(e.target.value)
+                  }}
                 />
               </div>
             </div>

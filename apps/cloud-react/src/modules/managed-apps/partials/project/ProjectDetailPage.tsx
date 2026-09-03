@@ -22,7 +22,7 @@ import { ProjectBuildsTab } from "./ProjectBuildsTab"
 import { ProjectDomainsTab } from "./ProjectDomainsTab"
 import { ProjectOverviewTab } from "./ProjectOverviewTab"
 import { ProjectSettingsTab } from "./ProjectSettingsTab"
-import { GitHubMark, ProjectAvatar, ProjectStateChip } from "../../components"
+import { CommitAuthor, GitHubMark, ProjectAvatar, ProjectStateChip } from "../../components"
 import { MANAGED_APPS_ROUTES } from "../../managed-apps.constants"
 import { useProject, useProjectBuilds } from "../../managed-apps.hooks"
 import { deriveProjectState, projectPollInterval } from "../../managed-apps.state"
@@ -146,6 +146,17 @@ export function ProjectDetailPage() {
           {latestBuild?.commit_sha && (
             <>
               <span className="opacity-40">·</span>
+              {/* Whose commit is deployed, on the line that follows the reader
+                  across every tab. The rest of this line already says which
+                  branch and which sha; a sha identifies a change, a face
+                  identifies a person, and the second is the one somebody can
+                  act on without looking anything up. */}
+              <CommitAuthor
+                login={latestBuild.commit_author_login}
+                name={latestBuild.commit_author_name}
+                className="size-4"
+                linked
+              />
               {commitHref ? (
                 <a
                   href={commitHref}

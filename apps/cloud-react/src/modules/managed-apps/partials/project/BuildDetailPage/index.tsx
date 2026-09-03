@@ -7,7 +7,7 @@ import { useScreen } from "@/services/api/screen"
 import { BuildLogPanel } from "./BuildLogPanel"
 import { BuildSourcePanel } from "./BuildSourcePanel"
 import { BuildWorkspaceSidebar } from "./BuildWorkspaceSidebar"
-import { BuildStatusPill } from "../../../components"
+import { BuildStatusPill, CommitAuthor } from "../../../components"
 import { formatArtifactBytes } from "../../../components/ActivityTimeline/activity-events"
 import { MANAGED_APPS_ROUTES } from "../../../managed-apps.constants"
 import {
@@ -179,6 +179,14 @@ export function BuildDetailPage() {
               </div>
 
               <div className="mt-1 flex min-w-0 items-center gap-2 text-[11px] text-muted-foreground lg:hidden">
+                {/* The sidebar carries the author on a wide screen; this line is
+                    what replaces the sidebar below lg, so it carries it too. */}
+                <CommitAuthor
+                  login={build.commit_author_login}
+                  name={build.commit_author_name}
+                  className="size-4"
+                  linked
+                />
                 <span className="truncate">{project?.branch ?? "No branch"}</span>
                 <span aria-hidden>·</span>
                 <span className="truncate">

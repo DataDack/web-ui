@@ -9,7 +9,7 @@ import { type ColumnMeta } from "@/components/console"
 
 import { ProjectActionsMenu } from "./ProjectActionsMenu"
 import { cardAction } from "./ProjectCard/card-action"
-import { ProjectAvatar, ProjectStateChip } from "../../components"
+import { CommitAuthor, ProjectAvatar, ProjectStateChip } from "../../components"
 import { MANAGED_APPS_ROUTES } from "../../managed-apps.constants"
 import { PROJECT_STATE_URGENCY, type ProjectEntry } from "../../managed-apps.state"
 import type { Project } from "../../managed-apps.types"
@@ -161,6 +161,12 @@ export function ProjectTable({
           if (!build?.commit_sha) return DASH
           return (
             <span className="flex max-w-72 items-center gap-1.5 truncate text-[11px] text-muted-foreground">
+              {/* Unlinked: the row opens the project. */}
+              <CommitAuthor
+                login={build.commit_author_login}
+                name={build.commit_author_name}
+                className="size-4"
+              />
               <span className="font-mono">{shortSha(build.commit_sha)}</span>
               <span className="truncate">{build.commit_message}</span>
             </span>

@@ -14,7 +14,6 @@ import { Link, useNavigate, useParams } from "react-router-dom"
 
 import { useScreen } from "@/services/api/screen"
 
-
 import { SetupFlowGraphic } from "./SetupFlowGraphic"
 import { SetupWorkPanel } from "./SetupWorkPanel"
 import { GitHubMark } from "../../../components/GitHubMark"
