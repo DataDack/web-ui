@@ -70,3 +70,52 @@ export function parseHostnames(input: string): ParsedHostnames {
   }
   return { valid, invalid }
 }
+
+// --- internal names ---
+
+// One label under a platform zone. Deliberately stricter than the hostname
+// check above and deliberately looser than the server's: length and shape are
+// worth catching before a round trip, while the reserved list is not — it is
+// the platform's to change, and a copy here would start refusing names the
+// server had since released.
+const LABEL_RE = new RegExp(`^${HOSTNAME_LABEL}$`)
+
+/** Shortest address a tenant may take. Mirrors entity.MinTenantLabelLen. */
+const MIN_LABEL_LEN = 3
+
+/**
+ * One internal name as typed, reduced to the label that will be sent.
+ *
+ * The zone comes off if it was pasted with it — people copy the whole thing out
+ * of the address bar — but only its own zone: a name under some other domain is
+ * left as it is, so it fails the check below and is named as invalid rather
+ * than being silently turned into a label of the platform's zone.
+ */
+export function normalizeLabel(raw: string, zone: string): string {
+  const value = normalizeHostname(raw)
+  const suffix = `.${zone.toLowerCase()}`
+  return zone !== "" && value.endsWith(suffix) ? value.slice(0, -suffix.length) : value
+}
+
+export function isValidLabel(value: string): boolean {
+  return value.length >= MIN_LABEL_LEN && LABEL_RE.test(value)
+}
+
+/**
+ * Split the internal-name field into labels, same separators and same
+ * de-duplication as parseHostnames — the field accepts several names for the
+ * same reason: the realistic add is `checkout` and `pay`, not one name.
+ */
+export function parseLabels(input: string, zone: string): ParsedHostnames {
+  const seen = new Set<string>()
+  const valid: string[] = []
+  const invalid: string[] = []
+  for (const piece of input.split(/[\s,;]+/)) {
+    const value = normalizeLabel(piece, zone)
+    if (value === "" || seen.has(value)) continue
+    seen.add(value)
+    if (isValidLabel(value)) valid.push(value)
+    else invalid.push(value)
+  }
+  return { valid, invalid }
+}

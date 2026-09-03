@@ -1869,12 +1869,12 @@
     "primary": "Primary",
     "tabs": {
       "all": "All",
-      "system": "System",
-      "custom": "Custom"
+      "system": "Internal",
+      "custom": "External"
     },
     "source": {
-      "system": "System",
-      "custom": "Custom"
+      "system": "Internal",
+      "custom": "External"
     },
     "types": {
       "func": "Function",
@@ -1923,7 +1923,7 @@
     },
     "resourceTab": {
       "title": "Domains",
-      "description": "Hostnames that answer for this resource — the platform-provided address and any custom domains attached to it.",
+      "description": "Hostnames that answer for this resource — its platform-provided address, any extra internal names, and any domains of your own attached to it.",
       "empty": "No domains yet",
       "emptySubtitle": "This resource has no hostnames registered. The platform address appears here once one is minted."
     },
@@ -1942,11 +1942,12 @@
       "removeFailed": "Could not remove the domain",
       "verified": "{{hostname}} is verified and active",
       "notYetVerified": "Not verified yet — the DNS records were not found",
-      "verifyFailed": "The verification check could not run"
+      "verifyFailed": "The verification check could not run",
+      "removeInternalConfirmBody": "The platform stops answering for this hostname immediately, and the name is released for anyone else to claim. Your resource's own address is not affected."
     },
     "add": {
-      "title": "Add custom domain",
-      "description": "Point a domain you own at this resource.",
+      "title": "Add domain",
+      "description": "Point another name at this resource — one of ours, or one you own.",
       "hostnameLabel": "Hostname",
       "hostnamePlaceholder": "app.example.com",
       "hostnameHint": "A domain you own, e.g. app.example.com. You'll create two DNS records at your registrar to prove ownership and route traffic.",
@@ -1978,7 +1979,33 @@
         "suspended": "This domain is suspended — its app is gone or was disabled. It will not verify until the app is back.",
         "released": "This domain was removed. Close this dialog, or add the domain again to restart verification."
       },
-      "ownershipProven": "Ownership is already proven — you registered this domain, so only the routing record above is needed."
+      "ownershipProven": "Ownership is already proven — you registered this domain, so only the routing record above is needed.",
+      "kind": {
+        "label": "Kind of domain",
+        "internal": {
+          "title": "Internal domain",
+          "subtitle": "Another name in a DataDack zone.",
+          "subtitleZoned": "Another name under {{zone}}.",
+          "note": "Live immediately. No DNS to configure.",
+          "unavailable": "Available once this resource has an address."
+        },
+        "external": {
+          "title": "External domain",
+          "subtitle": "A domain you own, like app.example.com.",
+          "note": "Needs two DNS records at your registrar."
+        }
+      },
+      "labelLabel": "Name",
+      "labelPlaceholder": "checkout",
+      "labelHint": "One name per line. Each becomes <name>.{{zone}} — lowercase letters, digits and hyphens, at least 3 characters.",
+      "labelInvalidNamed": "Not a valid name: {{names}}",
+      "andMore": "and {{count}} more",
+      "submitInternal": "Add domain",
+      "doneInternalTitle": "Domain added",
+      "doneInternalLive": "Answering now",
+      "doneInternalCertificate": "Covered by the platform certificate",
+      "doneInternalNoDns": "Nothing to configure at a registrar",
+      "batchInternalDescription": "Each one answers already."
     },
     "registrar": {
       "title": "Domains",

@@ -104,11 +104,23 @@ export interface Domain {
   dns_instructions?: DomainDnsInstructions
 }
 
-/** POST /domains/registry — attach the tenant's own hostname to a resource. */
+/**
+ * Which kind of name is being claimed.
+ *
+ * `internal` is another hostname in the platform's own zone: nothing to prove
+ * and nothing to publish, so the row comes back already serving. `external` is
+ * a domain the tenant owns, which starts pending with DNS records to create.
+ */
+export type DomainClaimKind = "internal" | "external"
+
+/** POST /domains/registry — attach another hostname to a resource. */
 export interface CreateDomainRequest {
+  /** A domain the tenant owns (external), or a bare label (internal). */
   hostname: string
   resource_type: string
   resource_id: string
+  /** Omitted means external — the server's own default, kept for old clients. */
+  kind?: DomainClaimKind
 }
 
 /** PUT /domains/registry/:hostname/redirect */

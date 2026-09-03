@@ -30,8 +30,13 @@ export function AddDomainBatchResults({
   onViewRecords,
 }: Readonly<{
   results: BatchResult[]
-  /** Open one added hostname's DNS records without leaving the dialog. */
-  onViewRecords: (hostname: string) => void
+  /**
+   * Open one added hostname's DNS records without leaving the dialog. Absent
+   * when there are none to open — an internal name is answering already — and
+   * the button is then not rendered at all rather than leading to an empty
+   * step.
+   */
+  onViewRecords?: (hostname: string) => void
 }>) {
   const { t } = useTranslation()
 
@@ -55,7 +60,7 @@ export function AddDomainBatchResults({
           {/* Every added row still needs its DNS records, and they differ per
               hostname. This is the way to each one without closing the dialog
               and hunting for the row in the table. */}
-          {result.ok && (
+          {result.ok && onViewRecords && (
             <Button
               type="button"
               size="sm"

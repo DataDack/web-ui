@@ -64,17 +64,25 @@ export function ResourceDomainsTab({
   const [redirecting, setRedirecting] = useState<Domain | null>(null)
 
   const rows = data?.rows ?? []
+  // The platform zone this resource's names live in, read off its own primary
+  // row rather than from configuration: the row IS the answer, and a second
+  // copy of the zone in the console is a second thing to get wrong when a
+  // resource sits in a zone the current setting no longer names. Empty until
+  // the resource has an address at all, which is what makes the dialog offer
+  // the internal option as unavailable instead of as a claim the server would
+  // refuse with a 422.
+  const zone = rows.find((domain) => domain.managed && domain.is_primary)?.zone ?? ""
   const columns = useMemo(
     () => [
       ...buildDomainColumns(t, { forResource: true }),
       actionsColumn<Domain>({
         ariaLabel: t("console.table.actions"),
         actions: (domain) => {
-          // Managed rows: nothing but the address edit, and only when the owning
-          // product handed one in and this is the row that IS the resource's
-          // address. A secondary managed row is not the field being edited.
-          if (domain.managed) {
-            if (!onEditManaged || !domain.is_primary) return []
+          // The resource's own address: nothing but the edit, and only when the
+          // owning product handed one in — the field lives on the resource, so
+          // this table cannot know whether it is editable.
+          if (domain.managed && domain.is_primary) {
+            if (!onEditManaged) return []
             return [
               {
                 label: t("domains.actions.editAddress"),
@@ -82,6 +90,34 @@ export function ResourceDomainsTab({
                 onAction: onEditManaged,
               },
             ]
+          }
+          // An ADDITIONAL internal name is managed too, and it is the tenant's
+          // to remove: they claimed it by hand beside the address, and the
+          // registry's DELETE accepts it for exactly that reason. It never has
+          // records to view and never needs verifying — the platform owns its
+          // zone — so those two actions are not offered.
+          if (domain.managed) {
+            const managedActions: RowAction<Domain>[] = []
+            if (domain.status === "active") {
+              managedActions.push({
+                label: domain.policy?.redirect
+                  ? t("domains.actions.editRedirect")
+                  : t("domains.actions.redirect"),
+                icon: CornerUpRight,
+                onAction: (row) => {
+                  setRedirecting(row)
+                },
+              })
+            }
+            managedActions.push({
+              label: t("domains.actions.remove"),
+              icon: Trash2,
+              destructive: true,
+              onAction: (row) => {
+                setToRemove(row)
+              },
+            })
+            return managedActions
           }
           const actions: RowAction<Domain>[] = []
           // Offered on a verified row only, which is the same gate the server
@@ -179,6 +215,7 @@ export function ResourceDomainsTab({
         resourceType={resourceType}
         resourceId={resourceId}
         existing={dialogRow}
+        zone={zone}
       />
 
       <DomainRedirectDialog
@@ -195,7 +232,14 @@ export function ResourceDomainsTab({
           if (!open) setToRemove(null)
         }}
         title={t("domains.actions.removeConfirmTitle", { hostname: toRemove?.hostname ?? "" })}
-        description={t("domains.actions.removeConfirmBody")}
+        // Two different consequences, so two sentences. Telling somebody
+        // removing an internal name to go and clean up DNS records at their
+        // registrar sends them looking for records that were never theirs.
+        description={t(
+          toRemove?.managed
+            ? "domains.actions.removeInternalConfirmBody"
+            : "domains.actions.removeConfirmBody",
+        )}
         confirmLabel={t("domains.actions.removeConfirmLabel")}
         destructive
         loading={removing}

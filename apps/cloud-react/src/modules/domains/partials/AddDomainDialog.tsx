@@ -9,8 +9,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  Label,
-  Textarea,
 } from "@datadack/common-ui"
 import type { TFunction } from "i18next"
 import { CheckCircle2, Globe, Info, Loader2 } from "lucide-react"
@@ -21,9 +19,10 @@ import { quotaGatePayload } from "@/modules/governance/quota-gate"
 import { extractError } from "@/services/api/client"
 
 import { useAddDomain, useDomain, useVerifyDomain } from "../domains.hooks"
-import type { Domain, DomainDnsInstructions } from "../domains.types"
+import type { Domain, DomainClaimKind, DomainDnsInstructions } from "../domains.types"
 import { AddDomainBatchResults, type BatchResult } from "./AddDomainBatchResults"
-import { parseHostnames } from "./hostname-input"
+import { AddDomainInputStep } from "./AddDomainInputStep"
+import { parseHostnames, parseLabels } from "./hostname-input"
 import { RecordLine } from "./RecordLine"
 
 /** Compact "12s" / "3m" / "2h" for the "checked … ago" line. */
@@ -87,18 +86,78 @@ function recordsFor(
     .sort((a, b) => Number(a.alternative ?? false) - Number(b.alternative ?? false))
 }
 
-/** The dialog's own heading and subheading, which differ per step. */
-function headerFor(step: Step, hostname: string, t: TFunction): { title: string; sub: string } {
+/**
+ * The dialog's own heading and subheading, which differ per step — and, on the
+ * two steps that report an outcome, per KIND: an internal name is live when it
+ * is added, so "Domain verified" over a list of names nothing had to verify
+ * would describe a step that never ran.
+ */
+function headerFor(
+  step: Step,
+  hostname: string,
+  internal: boolean,
+  t: TFunction,
+): { title: string; sub: string } {
   switch (step) {
     case "done":
-      return { title: t("domains.add.doneTitle"), sub: hostname }
+      return {
+        title: internal ? t("domains.add.doneInternalTitle") : t("domains.add.doneTitle"),
+        sub: hostname,
+      }
     case "batch":
-      return { title: t("domains.add.batchTitle"), sub: t("domains.add.batchDescription") }
+      return {
+        title: t("domains.add.batchTitle"),
+        sub: internal
+          ? t("domains.add.batchInternalDescription")
+          : t("domains.add.batchDescription"),
+      }
     case "records":
       return { title: t("domains.add.title"), sub: hostname }
     default:
       return { title: t("domains.add.title"), sub: t("domains.add.description") }
   }
+}
+
+/**
+ * The three things that are true once a name is live, per kind.
+ *
+ * An internal name proved nothing and published nothing, so "Ownership
+ * verified" over it would credit a step that never ran; an external one earned
+ * all three and the list is the receipt for the work the tenant just did.
+ */
+function doneLines(internal: boolean, t: TFunction): string[] {
+  if (internal) {
+    return [
+      t("domains.add.doneInternalLive"),
+      t("domains.add.doneInternalCertificate"),
+      t("domains.add.doneInternalNoDns"),
+    ]
+  }
+  return [
+    t("domains.add.doneOwnership"),
+    t("domains.add.doneRouting"),
+    t("domains.add.doneCertificate"),
+  ]
+}
+
+/**
+ * What the dialog is currently talking about: a name of ours or one of theirs,
+ * and whether the field is taking bare labels.
+ *
+ * The two answers differ, and that is the point. What the dialog REPORTS is a
+ * property of the row once one exists — a table row reopened on its DNS
+ * records is a customer domain no matter which card is lit — while what the
+ * FIELD accepts is whatever the chooser says. A zone is required for the label
+ * field to mean anything, so an internal choice with no zone still types
+ * hostnames.
+ */
+function kindStateOf(
+  kind: DomainClaimKind,
+  zone: string,
+  row: Domain | undefined,
+): { internal: boolean; labelMode: boolean } {
+  const chose = kind === "internal" && zone !== ""
+  return { internal: row ? row.managed : chose, labelMode: chose }
 }
 
 interface DnsRecordRow {
@@ -122,11 +181,31 @@ interface AddDomainDialogProps {
   resourceId: string
   /** A custom row that already exists: skip input, open on its DNS records. */
   existing?: Domain | null
+  /**
+   * The platform zone this resource's own address sits in, e.g.
+   * "apps.datadack.cloud". Read off the resource's primary row by the caller —
+   * this dialog is generic and the zone is the owning product's fact.
+   *
+   * Empty means the resource has no platform address yet, which is exactly the
+   * case the server refuses with a 422, so the internal option is offered as
+   * unavailable rather than as a claim that cannot succeed.
+   */
+  zone?: string
 }
 
 /**
- * The whole add-a-custom-domain flow in one dialog: hostname in → the DNS
- * records to create → live polling until the ownership check passes → done.
+ * The whole add-a-domain flow in one dialog, for both kinds of name.
+ *
+ * INTERNAL is another hostname in the platform's own zone: the zone's wildcard
+ * DNS and wildcard certificate already cover it, so there is nothing to publish
+ * and nothing to prove — the claim comes back active and the dialog goes
+ * straight to its outcome. EXTERNAL is a domain the tenant owns: hostname in →
+ * the DNS records to create → live polling until the ownership check passes →
+ * done.
+ *
+ * One dialog rather than two, because it is one question ("what else should
+ * reach this?") with two answers, and a console that hides the free instant one
+ * behind a different button is a console where nobody finds it.
  *
  * Closable at any step — the row already exists after the first submit, the
  * table underneath keeps polling it, and reopening via "View records" lands
@@ -138,9 +217,19 @@ export function AddDomainDialog({
   resourceType,
   resourceId,
   existing = null,
+  zone = "",
 }: Readonly<AddDomainDialogProps>) {
   // Hooks first, always — every conditional render happens below them.
   const { t } = useTranslation()
+  // Null until the tenant picks, rather than a state seeded from the zone.
+  //
+  // The zone arrives with the resource's rows and can still be empty on the
+  // render that opens this dialog, so a seeded default would be decided by
+  // whether a fetch had landed — and an effect that corrected it afterwards
+  // would also overwrite a choice the tenant had already made. Deriving the
+  // default instead means it follows the zone until there IS a choice, and
+  // never after.
+  const [kind, setKind] = useState<DomainClaimKind | null>(null)
   const [hostname, setHostname] = useState("")
   // The entries that failed the client-side check, named. A bare "invalid"
   // boolean could not say WHICH line of a pasted column was the bad one.
@@ -184,6 +273,7 @@ export function AddDomainDialog({
       setCreated(null)
       setBatch(null)
       setSubmitting(false)
+      setKind(null)
       resetCreate()
     }
   }, [open, resetCreate])
@@ -199,10 +289,25 @@ export function AddDomainDialog({
     }
   }, [open, step])
 
-  const parsed = parseHostnames(hostname)
+  // Internal by default whenever there is a platform address to add a name
+  // beside: it is the answer that needs no registrar, no waiting and no DNS,
+  // and the card next to it says plainly what the other one is for.
+  const chosenKind = kind ?? (zone ? "internal" : "external")
+  const { internal, labelMode } = kindStateOf(chosenKind, zone, row)
+
+  // An internal claim sends the LABEL and the server puts it under the
+  // resource's own zone; an external one sends the whole hostname. Same field,
+  // same parser shape, different rules — a label has no dots and a hostname
+  // must have one.
+  const parsed = labelMode ? parseLabels(hostname, zone) : parseHostnames(hostname)
 
   const claim = (value: string) =>
-    createDomainAsync({ hostname: value, resource_type: resourceType, resource_id: resourceId })
+    createDomainAsync({
+      hostname: value,
+      resource_type: resourceType,
+      resource_id: resourceId,
+      kind: labelMode ? "internal" : "external",
+    })
 
   /**
    * Claim ONE hostname and land on its DNS records.
@@ -238,12 +343,16 @@ export function AddDomainDialog({
     setSubmitting(true)
     const results: BatchResult[] = []
     for (const value of values) {
+      // Reported under the name it will ANSWER on, not the label that was
+      // typed: a report listing "checkout" beside a failure for
+      // "pay.apps.datadack.cloud" would read as two different things.
+      const name = labelMode ? `${value}.${zone}` : value
       try {
         await claim(value)
-        results.push({ hostname: value, ok: true })
+        results.push({ hostname: name, ok: true })
       } catch (e) {
         results.push({
-          hostname: value,
+          hostname: name,
           ok: false,
           error: extractError(e, t("domains.add.createFailed")),
         })
@@ -293,7 +402,17 @@ export function AddDomainDialog({
       ? extractError(createError, t("domains.add.createFailed"))
       : null
 
-  const header = headerFor(step, activeHostname ?? "", t)
+  const header = headerFor(step, activeHostname ?? "", internal, t)
+
+  // Internal names have no records to show: they are already answering. An
+  // absent callback drops the batch report's per-row button rather than
+  // offering a way to an empty step.
+  const viewRecords = internal
+    ? undefined
+    : (name: string) => {
+        setBatch(null)
+        setCreated(name)
+      }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -307,72 +426,32 @@ export function AddDomainDialog({
         </DialogHeader>
 
         {step === "input" && (
-          <>
-            <div className="space-y-1.5">
-              <Label htmlFor="custom-domain-hostname">{t("domains.add.hostnameLabel")}</Label>
-              {/* A textarea rather than an input, because the realistic add is
-                  not one domain: it is the apex and the www, or a column pasted
-                  out of a registrar. Enter still submits a single name — the
-                  one-line case must not get slower to serve the many-line one —
-                  so a newline needs Shift. */}
-              <Textarea
-                id="custom-domain-hostname"
-                value={hostname}
-                placeholder={t("domains.add.hostnamePlaceholder")}
-                spellCheck={false}
-                autoComplete="off"
-                rows={hostname.includes("\n") ? 5 : 2}
-                className="resize-y font-mono text-[13px]"
-                onChange={(event) => {
-                  setHostname(event.target.value)
-                  if (rejected.length > 0) setRejected([])
-                }}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter" && !event.shiftKey) {
-                    event.preventDefault()
-                    void submit()
-                  }
-                }}
-              />
-              {rejected.length > 0 ? (
-                <p className="text-[12px] text-destructive">
-                  {t("domains.add.hostnameInvalidNamed", { names: rejected.join(", ") })}
-                </p>
-              ) : (
-                <p className="text-[11px] text-muted-foreground">{t("domains.add.hostnameHint")}</p>
-              )}
-              {parsed.valid.length > 1 && rejected.length === 0 && (
-                <p className="text-[11px] text-muted-foreground">
-                  {t("domains.add.willAddCount", { count: parsed.valid.length })}
-                </p>
-              )}
-              {serverError && <p className="text-[12px] text-destructive">{serverError}</p>}
-            </div>
-
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="ghost"
-                disabled={creating}
-                onClick={() => {
-                  onOpenChange(false)
-                }}
-              >
-                {t("console.confirm.cancel")}
-              </Button>
-              <Button
-                type="button"
-                variant="gold"
-                disabled={creating || parsed.valid.length === 0}
-                loading={creating}
-                onClick={() => void submit()}
-              >
-                {parsed.valid.length > 1
-                  ? t("domains.add.submitMany", { count: parsed.valid.length })
-                  : t("domains.add.submit")}
-              </Button>
-            </DialogFooter>
-          </>
+          <AddDomainInputStep
+            kind={chosenKind}
+            onKindChange={(next) => {
+              setKind(next)
+              // The field means something different under each kind — a label
+              // is not a hostname — so a draft typed for one is cleared rather
+              // than re-read under the other's rules and named as invalid.
+              setHostname("")
+              setRejected([])
+            }}
+            zone={zone}
+            labelMode={labelMode}
+            value={hostname}
+            onValueChange={(next) => {
+              setHostname(next)
+              if (rejected.length > 0) setRejected([])
+            }}
+            parsed={parsed}
+            rejected={rejected}
+            serverError={serverError}
+            creating={creating}
+            onSubmit={() => void submit()}
+            onCancel={() => {
+              onOpenChange(false)
+            }}
+          />
         )}
 
         {step === "batch" && batch !== null && (
@@ -384,13 +463,7 @@ export function AddDomainDialog({
               })}
             </p>
 
-            <AddDomainBatchResults
-              results={batch}
-              onViewRecords={(name) => {
-                setBatch(null)
-                setCreated(name)
-              }}
-            />
+            <AddDomainBatchResults results={batch} onViewRecords={viewRecords} />
 
             <DialogFooter>
               <Button
@@ -521,11 +594,7 @@ export function AddDomainDialog({
         {step === "done" && (
           <>
             <div className="space-y-2.5">
-              {[
-                t("domains.add.doneOwnership"),
-                t("domains.add.doneRouting"),
-                t("domains.add.doneCertificate"),
-              ].map((line) => (
+              {doneLines(internal, t).map((line) => (
                 <div key={line} className="flex items-center gap-2 text-[13px] text-foreground">
                   <CheckCircle2 className="size-4 shrink-0 text-status-success" />
                   <span>{line}</span>
