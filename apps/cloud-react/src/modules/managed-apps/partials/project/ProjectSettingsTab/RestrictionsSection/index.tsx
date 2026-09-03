@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react"
 
-import { Button, Skeleton } from "@datadack/common-ui"
+import { Button, cn, Skeleton } from "@datadack/common-ui"
 import { Info, ShieldOff } from "lucide-react"
 
 import { ConfirmDialog } from "@/components/console"
@@ -10,8 +10,10 @@ import { RateLimitPanel } from "./RateLimitPanel"
 import { isDirty, toDraft, toRequest, type RestrictionsDraft } from "./restrictions-draft"
 import { SignaturesPanel } from "./SignaturesPanel"
 import {
+  useEnvironmentRestrictions,
+  useProjectEnvironments,
   useProjectRestrictions,
-  useUpdateProjectRestrictions,
+  useSetEnvironmentRestrictions,
 } from "../../../../managed-apps.hooks"
 import type { Project } from "../../../../managed-apps.types"
 
@@ -38,11 +40,23 @@ import type { Project } from "../../../../managed-apps.types"
  * looking at a rule that reads differently from the one in force.
  */
 export function RestrictionsSection({ project }: Readonly<{ project: Project }>) {
+  // TWO READS, and they answer different questions. The project-scoped call
+  // carries the rule CATALOG, the plan's ceilings and the platform default
+  // threshold — none of which vary per environment, and all of which the editor
+  // needs before it can render a single stored rule. The environment-scoped one
+  // carries the DOCUMENT being edited.
   const { data, isLoading } = useProjectRestrictions(project.id)
-  const update = useUpdateProjectRestrictions(project.id)
+  const { data: environments = [] } = useProjectEnvironments(project.id)
+  const [selected, setSelected] = useState("")
+  const active = selected !== "" ? selected : (environments[0]?.name ?? "")
+  const { data: scoped, isLoading: loadingScoped } = useEnvironmentRestrictions(project.id, active)
+  const update = useSetEnvironmentRestrictions(project.id)
   const [confirmOpen, setConfirmOpen] = useState(false)
 
-  const stored = data?.restrictions
+  // The environment's own document, falling back to the project's while the
+  // scoped read is in flight — production's are the same document, so the fall
+  // back shows the right rules rather than an empty editor that invites a save.
+  const stored = scoped?.restrictions ?? data?.restrictions
   const seeded = useMemo(() => (stored ? toDraft(stored) : null), [stored])
   // The draft carries the version it was made against. When the server's
   // document changes — including after a save — the anchor stops matching and
@@ -59,9 +73,17 @@ export function RestrictionsSection({ project }: Readonly<{ project: Project }>)
     setDraft({ base: seeded, value: { ...value, ...next } })
   }
 
-  if (isLoading || !data || !value || !stored) {
+  if (isLoading || loadingScoped || !data || !value || !stored) {
     return <Skeleton className="h-96 rounded-xl" />
   }
+
+  const activeEnvironment = environments.find((environment) => environment.name === active)
+  // Whether THIS environment's rules reach live traffic. A project serves one
+  // deployment and it is production's, so a staging document is stored and
+  // inert — which is the same class of fact the not-enforced banner already
+  // exists to state, and it must not be left for somebody to discover by
+  // watching an allowlist not apply.
+  const scopedEnforced = scoped?.enforced ?? true
 
   const dirty = isDirty(value, stored)
   const payload = toRequest(value)
@@ -82,19 +104,71 @@ export function RestrictionsSection({ project }: Readonly<{ project: Project }>)
   )
 
   const save = () => {
-    update.mutate(payload, {
-      onSuccess: () => {
-        setConfirmOpen(false)
-        // Dropped so the editor re-seeds from the server's normalized answer
-        // rather than from what was typed.
-        setDraft(null)
+    update.mutate(
+      { name: active, restrictions: payload },
+      {
+        onSuccess: () => {
+          setConfirmOpen(false)
+          // Dropped so the editor re-seeds from the server's normalized answer
+          // rather than from what was typed.
+          setDraft(null)
+        },
       },
-    })
+    )
   }
 
   return (
     <div className="space-y-4">
-      {data.not_enforced_reason && (
+      {/* Which environment's rules are being edited. Above the banners, because
+          "are these in force" is a question about the selected environment and
+          reading the answer before the question is confusing. */}
+      {environments.length > 1 && (
+        <div
+          role="tablist"
+          aria-label="Environment"
+          className="flex w-fit flex-wrap items-center gap-0.5 rounded-lg border border-border-glass p-0.5"
+        >
+          {environments.map((environment) => (
+            <button
+              key={environment.name}
+              type="button"
+              role="tab"
+              aria-selected={environment.name === active}
+              onClick={() => {
+                setSelected(environment.name)
+                // The draft belongs to the environment being left; carrying it
+                // across would offer to write one environment's rules into
+                // another's document.
+                setDraft(null)
+              }}
+              className={cn(
+                "rounded-md px-3 py-1.5 font-mono text-[12px] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
+                environment.name === active
+                  ? "glass-1-bg-raised text-foreground"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {environment.name}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {!scopedEnforced && activeEnvironment && (
+        <p className="flex items-start gap-2 rounded-lg border border-status-warning/30 bg-status-warning-bg/40 px-3 py-2.5 text-[12px] leading-relaxed">
+          <ShieldOff className="mt-0.5 size-4 shrink-0 text-status-warning" aria-hidden />
+          <span>
+            <span className="font-medium">
+              {activeEnvironment.name}&apos;s rules are stored, not enforced.{" "}
+            </span>
+            This project serves one deployment and it is production&apos;s, so only
+            production&apos;s rules reach live traffic. These are kept and applied the day this
+            environment can run.
+          </span>
+        </p>
+      )}
+
+      {scopedEnforced && data.not_enforced_reason && (
         <p className="flex items-start gap-2 rounded-lg border border-status-warning/30 bg-status-warning-bg/40 px-3 py-2.5 text-[12px] leading-relaxed">
           <ShieldOff className="mt-0.5 size-4 shrink-0 text-status-warning" aria-hidden />
           <span>
@@ -103,7 +177,7 @@ export function RestrictionsSection({ project }: Readonly<{ project: Project }>)
           </span>
         </p>
       )}
-      {data.enforced && (
+      {scopedEnforced && data.enforced && (
         <p className="flex items-start gap-2 rounded-lg border border-status-success/30 bg-status-success-bg/40 px-3 py-2.5 text-[12px] leading-relaxed">
           <Info className="mt-0.5 size-4 shrink-0 text-status-success" aria-hidden />
           <span>

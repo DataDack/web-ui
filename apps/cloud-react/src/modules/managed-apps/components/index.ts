@@ -52,6 +52,6 @@ export {
   duplicateKeys,
   newEnvRow,
   storedEnvRows,
-  toEnvMap,
+  toEnvValues,
 } from "./env/EnvVarEditor/env-types"
 export type { EnvRow, EnvRowState } from "./env/EnvVarEditor/env-types"

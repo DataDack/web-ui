@@ -1,4 +1,4 @@
-import { apiDelete, apiGet, apiPost, apiPut, LIST_QUERY } from "@/services/api/client"
+import { apiDelete, apiGet, apiPatch, apiPost, apiPut, LIST_QUERY } from "@/services/api/client"
 
 import type {
   AccountPlan,
@@ -20,7 +20,12 @@ import type {
   PlanCostBreakdown,
   Project,
   ProjectAnalytics,
+  CreateEnvironmentRequest,
+  EnvironmentRestrictions,
+  ProjectEnvironment,
   ProjectEnvVar,
+  RestrictionsDocument,
+  UpdateEnvironmentRequest,
   ProjectMetrics,
   FrameworkCatalog,
   ProjectSetup,
@@ -301,6 +306,58 @@ export const managedAppsApi = {
 
   updateProjectEnv: (id: string, payload: UpdateProjectEnvRequest): Promise<void> =>
     apiPut(`${BASE}/projects/${id}/env`, payload),
+
+  // ── Environments ──────────────────────────────────────────────────────
+  //
+  // Nested under the project because an environment has no meaning without one,
+  // and because every route carries the PROJECT's permission — reading an
+  // environment's variable names is reading the project.
+
+  projectEnvironments: (id: string): Promise<ProjectEnvironment[]> =>
+    apiGet<ProjectEnvironment[]>(`${BASE}/projects/${id}/environments`),
+
+  createEnvironment: (id: string, payload: CreateEnvironmentRequest): Promise<ProjectEnvironment> =>
+    apiPost<ProjectEnvironment>(`${BASE}/projects/${id}/environments`, payload),
+
+  updateEnvironment: (
+    id: string,
+    name: string,
+    payload: UpdateEnvironmentRequest,
+  ): Promise<ProjectEnvironment> =>
+    apiPatch<ProjectEnvironment>(
+      `${BASE}/projects/${id}/environments/${encodeURIComponent(name)}`,
+      payload,
+    ),
+
+  deleteEnvironment: (id: string, name: string): Promise<void> =>
+    apiDelete(`${BASE}/projects/${id}/environments/${encodeURIComponent(name)}`),
+
+  /** One environment's variable NAMES. Values are write-only, as always. */
+  environmentEnv: (id: string, name: string): Promise<string[]> =>
+    apiGet<string[]>(`${BASE}/projects/${id}/environments/${encodeURIComponent(name)}/env`),
+
+  /** Replaces one environment's variables. The whole set, because a read
+   *  returns names only — a partial write would have no way to say "leave this
+   *  one alone" that a client could tell apart from "set it to empty". */
+  setEnvironmentEnv: (id: string, name: string, env: Record<string, string>): Promise<string[]> =>
+    apiPut<string[]>(`${BASE}/projects/${id}/environments/${encodeURIComponent(name)}/env`, {
+      env,
+    }),
+
+  environmentRestrictions: (id: string, name: string): Promise<EnvironmentRestrictions> =>
+    apiGet<EnvironmentRestrictions>(
+      `${BASE}/projects/${id}/environments/${encodeURIComponent(name)}/restrictions`,
+    ),
+
+  setEnvironmentRestrictions: (
+    id: string,
+    name: string,
+    restrictions: RestrictionsDocument | null,
+  ): Promise<EnvironmentRestrictions> =>
+    apiPut<EnvironmentRestrictions>(
+      `${BASE}/projects/${id}/environments/${encodeURIComponent(name)}/restrictions`,
+      { restrictions },
+    ),
 
   // ── Restrictions ──────────────────────────────────────────────────────
   /**

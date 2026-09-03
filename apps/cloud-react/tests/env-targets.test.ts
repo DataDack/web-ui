@@ -4,8 +4,15 @@ import {
   allEnvTargets,
   newEnvRow,
   storedEnvRows,
-  toEnvMap,
+  toEnvValues,
 } from "@/modules/managed-apps/components/env/EnvVarEditor/env-types"
+
+// The per-row Production/Preview scope is gone from the WRITE path. It was
+// never stored: the backend took a flat {name: value} map, so the scope a user
+// picked was accepted by the form and discarded on save. The environment a
+// variable belongs to is the scope now — a different set of variables, not a
+// label on one — so the payload is flat and the row's `targets` survives only
+// as display state on rows the server still describes that way.
 
 describe("env row targets", () => {
   test("a new row applies to every deployment", () => {
@@ -24,29 +31,27 @@ describe("env row targets", () => {
   })
 
   test("a server row with no targets is read as every deployment", () => {
-    // The API normalises this too; a console that disagreed would show a scope
-    // the next save would then change.
     expect(storedEnvRows([{ key: "OLD", targets: [] }])[0].targets).toEqual(allEnvTargets())
   })
+})
 
-  test("the payload carries value and targets per variable", () => {
+describe("the payload sent to an environment", () => {
+  // Flat, because that is what the backend has always accepted. The previous
+  // {value, targets} shape was rejected by it — the write went through with the
+  // scope thrown away, which is why this is the regression worth pinning.
+  test("is a plain name-to-value map", () => {
     const rows = [newEnvRow("A", "1", ["production"]), newEnvRow("B", "2")]
-    expect(toEnvMap(rows)).toEqual({
-      A: { value: "1", targets: ["production"] },
-      B: { value: "2", targets: allEnvTargets() },
-    })
+    expect(toEnvValues(rows)).toEqual({ A: "1", B: "2" })
   })
 
-  test("blank keys are dropped and the last row wins a collision", () => {
+  test("drops blank keys, and the last row wins a collision", () => {
     const rows = [newEnvRow("", "ignored"), newEnvRow("A", "first"), newEnvRow("A", "second")]
-    expect(toEnvMap(rows)).toEqual({ A: { value: "second", targets: allEnvTargets() } })
+    expect(toEnvValues(rows)).toEqual({ A: "second" })
   })
 
-  test("an empty scope is sent as every deployment, never as nothing", () => {
-    // The API reads an empty list as "everywhere", so sending one would mean
-    // the opposite of the row the user is looking at.
-    expect(toEnvMap([newEnvRow("A", "1", [])])).toEqual({
-      A: { value: "1", targets: allEnvTargets() },
-    })
+  test("carries an empty value rather than omitting the key", () => {
+    // An omitted key would read as "leave it alone", and the write replaces the
+    // whole set — so a variable the user deliberately blanked has to be sent.
+    expect(toEnvValues([newEnvRow("A", "")])).toEqual({ A: "" })
   })
 })

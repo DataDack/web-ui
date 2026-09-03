@@ -11,8 +11,7 @@ import type {
 const BASE = "/managedapps/sso"
 
 export const ssoApi = {
-  listApplications: (): Promise<Application[]> =>
-    apiGet<Application[]>(`${BASE}/applications`),
+  listApplications: (): Promise<Application[]> => apiGet<Application[]>(`${BASE}/applications`),
 
   createApplication: (payload: CreateApplicationRequest): Promise<Application> =>
     apiPost<Application>(`${BASE}/applications`, payload),
@@ -23,13 +22,15 @@ export const ssoApi = {
   updateApplication: (id: string, payload: UpdateApplicationRequest): Promise<Application> =>
     apiPut<Application>(`${BASE}/applications/${id}`, payload),
 
-  deleteApplication: (id: string): Promise<void> =>
-    apiDelete(`${BASE}/applications/${id}`),
+  deleteApplication: (id: string): Promise<void> => apiDelete(`${BASE}/applications/${id}`),
 
   listConfigurations: (appId: string): Promise<Configuration[]> =>
     apiGet<Configuration[]>(`${BASE}/applications/${appId}/configurations`),
 
-  createConfiguration: (appId: string, payload: CreateConfigurationRequest): Promise<Configuration> =>
+  createConfiguration: (
+    appId: string,
+    payload: CreateConfigurationRequest,
+  ): Promise<Configuration> =>
     apiPost<Configuration>(`${BASE}/applications/${appId}/configurations`, payload),
 
   getConfiguration: (configId: string): Promise<Configuration> =>
@@ -39,7 +40,7 @@ export const ssoApi = {
     configId: string,
     section: "env" | "theme" | "metadata" | "policies",
     op: "replace" | "merge",
-    payload: Record<string, any>
+    payload: Record<string, any>,
   ): Promise<void> => {
     const url = `${BASE}/configurations/${configId}/${section === "metadata" ? "metadata" : section}`
     if (op === "replace") {

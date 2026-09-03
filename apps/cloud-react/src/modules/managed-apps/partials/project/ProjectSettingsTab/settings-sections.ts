@@ -10,7 +10,7 @@ import type { Project } from "../../../managed-apps.types"
 export const SETTINGS_SECTIONS_PARAM = "section"
 
 export type SettingsSectionId =
-  "general" | "git" | "build" | "environments" | "environment-variables" | "restrictions" | "plan"
+  "general" | "git" | "build" | "environment-variables" | "restrictions" | "plan"
 
 export interface SettingsSectionMeta {
   id: SettingsSectionId
@@ -62,17 +62,9 @@ export const SETTINGS_SECTIONS: SettingsSectionMeta[] = [
     needsRepo: true,
   },
   {
-    id: "environments",
-    label: "Environments",
-    hint: "Production, dev and custom",
-    icon: Boxes,
-    tone: "info",
-    needsRepo: false,
-  },
-  {
     id: "environment-variables",
     label: "Environment variables",
-    hint: "Configuration per environment",
+    hint: "Per environment",
     icon: Braces,
     tone: "brand",
     needsRepo: false,
@@ -80,7 +72,7 @@ export const SETTINGS_SECTIONS: SettingsSectionMeta[] = [
   {
     id: "restrictions",
     label: "Restrictions",
-    hint: "IP rules, firewall, rate limit",
+    hint: "IP rules and firewall, per environment",
     icon: LockKeyhole,
     tone: "warning",
     needsRepo: false,
@@ -112,6 +104,11 @@ export interface SettingsDeparture {
  * them and marking them as a departure costs one row and answers the question.
  */
 export const SETTINGS_DEPARTURES: SettingsDeparture[] = [
+  // Environments moved out of this rail and became a tab. An environment is not
+  // a setting — it is the thing that OWNS the settings below it, and the two
+  // sections that follow are both scoped to one. Leaving a stub here would be a
+  // second, staler list of the same rows.
+  { tab: "environments", label: "Environments", hint: "Branches and scopes", icon: Boxes },
   { tab: "domains", label: "Domains", hint: "Custom addresses", icon: Globe },
 ]
 

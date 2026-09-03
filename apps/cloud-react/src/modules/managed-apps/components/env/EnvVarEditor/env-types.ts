@@ -1,5 +1,5 @@
 import { ENV_TARGETS } from "../../../managed-apps.constants"
-import type { EnvTarget, EnvVarInput, ProjectEnvVar } from "../../../managed-apps.types"
+import type { EnvTarget, ProjectEnvVar } from "../../../managed-apps.types"
 
 /**
  * One row in the environment editor.
@@ -66,17 +66,12 @@ export function duplicateKeys(rows: readonly EnvRow[]): Set<string> {
 }
 
 /** The map to send. Blank keys are dropped; later rows win a key collision. */
-export function toEnvMap(rows: readonly EnvRow[]): Record<string, EnvVarInput> {
-  const out: Record<string, EnvVarInput> = {}
+export function toEnvValues(rows: readonly EnvRow[]): Record<string, string> {
+  const out: Record<string, string> = {}
   for (const row of rows) {
     const key = row.key.trim()
     if (key === "") continue
-    out[key] = {
-      value: row.value,
-      // An empty list would be read as "every deployment" server-side, which is
-      // the opposite of what an empty row of toggles looks like it means.
-      targets: row.targets.length > 0 ? [...row.targets] : allEnvTargets(),
-    }
+    out[key] = row.value
   }
   return out
 }

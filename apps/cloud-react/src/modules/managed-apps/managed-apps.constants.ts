@@ -100,6 +100,13 @@ export const MANAGED_APPS_QUERY_KEYS = {
   projects: (type?: ProjectType) => ["managed-apps", "projects", { type: type ?? "all" }] as const,
   project: (id: string) => ["managed-apps", "projects", id] as const,
   projectEnv: (id: string) => ["managed-apps", "projects", id, "env"] as const,
+  // Nested under the project so any project invalidation refreshes them too —
+  // an environment's branch rule is read against the project's own branch.
+  environments: (id: string) => ["managed-apps", "projects", id, "environments"] as const,
+  environmentEnv: (id: string, name: string) =>
+    ["managed-apps", "projects", id, "environments", name, "env"] as const,
+  environmentRestrictions: (id: string, name: string) =>
+    ["managed-apps", "projects", id, "environments", name, "restrictions"] as const,
   /** The project's edge access control, its plan ceilings and the rule
    *  catalog — one read, so they cannot be rendered from disagreeing
    *  snapshots. */

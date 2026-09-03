@@ -1,20 +1,32 @@
 import { useMemo, useState } from "react"
 
-import { Button, Skeleton } from "@datadack/common-ui"
+import { Button, cn, Skeleton } from "@datadack/common-ui"
 import { useTranslation } from "react-i18next"
 
 import { ConfirmDialog, Section } from "@/components/console"
 
-import { EnvVarEditor, storedEnvRows, toEnvMap, type EnvRow } from "../../../components"
-import { useProjectEnv, useUpdateProjectEnv } from "../../../managed-apps.hooks"
-import type { Project } from "../../../managed-apps.types"
+import { EnvVarEditor, storedEnvRows, toEnvValues, type EnvRow } from "../../../components"
+import {
+  useEnvironmentEnv,
+  useProjectEnvironments,
+  useSetEnvironmentEnv,
+} from "../../../managed-apps.hooks"
+import type { Project, ProjectEnvVar } from "../../../managed-apps.types"
 
 /**
- * Environment variables for an existing project.
+ * Environment variables, scoped to one environment.
  *
- * This section carries a hazard the create flow does not. `GET /env` returns
+ * THE ENVIRONMENT IS THE SCOPE NOW, and that replaces something that never
+ * worked. Each row used to carry Production/Preview chips, and the backend
+ * stored one flat map with no notion of a target — so the scope a user picked
+ * was discarded on save, and every variable applied everywhere regardless. The
+ * chips are gone (`previewEnabled={false}`) because the picker above the editor
+ * is the real thing they were pretending to be: a variable belongs to the
+ * environment whose set it is in, and that set is what the build is handed.
+ *
+ * This section carries a hazard the create flow does not. `GET .../env` returns
  * variable NAMES only — values are sealed at rest and never leave the backend —
- * while `PUT /env` replaces the whole set. So the console genuinely cannot
+ * while `PUT .../env` replaces the whole set. So the console genuinely cannot
  * re-send a value it was never given, and saving a variable the user did not
  * retype would blank it.
  *
@@ -25,16 +37,33 @@ import type { Project } from "../../../managed-apps.types"
  */
 export function EnvSection({ project }: Readonly<{ project: Project }>) {
   const { t } = useTranslation()
-  const { data: variables = [], isLoading } = useProjectEnv(project.id)
-  const update = useUpdateProjectEnv(project.id)
+  const { data: environments = [], isLoading: loadingEnvironments } = useProjectEnvironments(
+    project.id,
+  )
+  // Production first — the server sorts them that way, and it is the set
+  // somebody opening this page is nearly always looking for.
+  const [selected, setSelected] = useState("")
+  const active = selected !== "" ? selected : (environments[0]?.name ?? "")
+
+  const { data: names = [], isLoading: loadingEnv } = useEnvironmentEnv(project.id, active)
+  const update = useSetEnvironmentEnv(project.id)
   const [confirmOpen, setConfirmOpen] = useState(false)
+
+  // The editor still speaks ProjectEnvVar, which carries targets. They are
+  // filled in as "everywhere" and never rendered — see the component note. Not
+  // dropped from the type because the create flow still sends that shape.
+  const variables = useMemo<ProjectEnvVar[]>(
+    () => names.map((key) => ({ key, targets: [] })),
+    [names],
+  )
 
   // Rows are derived from the server's set, with the user's edits layered on
   // top and anchored to the version they were made against. When the server
-  // set changes — including after a save — the anchor no longer matches and
-  // the rows re-seed as `stored`, so they stop claiming to hold values. Doing
-  // this during render rather than in an effect avoids a second pass that
-  // would briefly show the previous project's variables.
+  // set changes — including after a save, and including on switching
+  // environment — the anchor no longer matches and the rows re-seed as
+  // `stored`, so they stop claiming to hold values. Doing this during render
+  // rather than in an effect avoids a second pass that would briefly show the
+  // previous environment's variables.
   const seeded = useMemo(() => storedEnvRows(variables), [variables])
   const [draft, setDraft] = useState<{ base: EnvRow[]; rows: EnvRow[] } | null>(null)
   const rows = draft?.base === seeded ? draft.rows : seeded
@@ -50,7 +79,7 @@ export function EnvSection({ project }: Readonly<{ project: Project }>) {
 
   const save = () => {
     update.mutate(
-      { env: toEnvMap(rows) },
+      { name: active, env: toEnvValues(rows) },
       {
         onSuccess: () => {
           setConfirmOpen(false)
@@ -59,30 +88,76 @@ export function EnvSection({ project }: Readonly<{ project: Project }>) {
     )
   }
 
-  if (isLoading) return <Skeleton className="h-52 rounded-xl" />
+  if (loadingEnvironments) return <Skeleton className="h-52 rounded-xl" />
 
-  const countLabel =
-    variables.length === 1 ? "1 variable set" : `${String(variables.length)} variables set`
+  const countLabel = names.length === 1 ? "1 variable set" : `${String(names.length)} variables set`
+  const activeEnvironment = environments.find((environment) => environment.name === active)
 
   return (
     <>
       <Section
         variant="panel"
         title={t("managedApps.envSection.environmentVariables")}
-        description={`${countLabel}. Values are write-only — only names are returned.`}
+        description={`${countLabel} for ${active || "this project"}. Values are write-only — only names are returned.`}
       >
         <div className="space-y-4">
-          <EnvVarEditor
-            rows={rows}
-            onChange={setRows}
-            previewEnabled={project.preview_enabled}
-            description="Available to the build on your GitHub Actions runner and masked in its log. Changes apply to the next build. Production and Preview say where each variable applies — a preview-only variable is kept out of production builds."
-          />
+          {/* The scope, stated once, above the rows it applies to. A picker
+              rather than a chip per row: a variable belongs to exactly one
+              environment's set, and per-row chips implied it could be in two. */}
+          <div
+            role="tablist"
+            aria-label="Environment"
+            className="flex w-fit flex-wrap items-center gap-0.5 rounded-lg border border-border-glass p-0.5"
+          >
+            {environments.map((environment) => (
+              <button
+                key={environment.name}
+                type="button"
+                role="tab"
+                aria-selected={environment.name === active}
+                onClick={() => {
+                  setSelected(environment.name)
+                  // Drop the draft: it belongs to the environment being left,
+                  // and carrying it across would offer to write one
+                  // environment's values into another's set.
+                  setDraft(null)
+                }}
+                className={cn(
+                  "rounded-md px-3 py-1.5 font-mono text-[12px] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
+                  environment.name === active
+                    ? "glass-1-bg-raised text-foreground"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                {environment.name}
+                <span className="ml-1.5 text-[10px] text-muted-foreground tabular-nums">
+                  {environment.var_count}
+                </span>
+              </button>
+            ))}
+          </div>
+
+          {loadingEnv ? (
+            <Skeleton className="h-40 rounded-xl" />
+          ) : (
+            <EnvVarEditor
+              rows={rows}
+              onChange={setRows}
+              // The environment picker above IS the scope. Per-row target chips
+              // would be a second, contradictory answer to the same question.
+              previewEnabled={false}
+              description={
+                (activeEnvironment?.deploys ?? true)
+                  ? "Handed to the build on your GitHub Actions runner and masked in its log. Changes apply to the next build."
+                  : "Handed to builds of this environment. Those builds are stored rather than released — this project serves production."
+              }
+            />
+          )}
 
           <Button
             size="sm"
             className="gap-1.5"
-            disabled={update.isPending}
+            disabled={update.isPending || active === ""}
             onClick={() => {
               if (wouldClear.length > 0) setConfirmOpen(true)
               else save()
@@ -104,8 +179,8 @@ export function EnvSection({ project }: Readonly<{ project: Project }>) {
         description={
           <span className="block space-y-2">
             <span className="block">
-              Saving replaces the whole set, and the console was never given the values of variables
-              you have not retyped. These would be saved empty:
+              Saving replaces {active}&apos;s whole set, and the console was never given the values
+              of variables you have not retyped. These would be saved empty:
             </span>
             <span className="block font-mono text-[12px] text-destructive">
               {wouldClear.join(", ")}

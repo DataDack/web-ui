@@ -1,6 +1,7 @@
 import { Button, EmptyState, Skeleton } from "@datadack/common-ui"
 import {
   Activity,
+  Boxes,
   GitBranch,
   GitPullRequest,
   Globe,
@@ -19,6 +20,7 @@ import { useScreen } from "@/services/api/screen"
 
 import { commitURL, isTimeSet, shortSha, timeSince } from "./build-format"
 import { ProjectBuildsTab } from "./ProjectBuildsTab"
+import { EnvironmentsTab } from "./EnvironmentsTab"
 import { ProjectDomainsTab } from "./ProjectDomainsTab"
 import { ProjectOverviewTab } from "./ProjectOverviewTab"
 import { ProjectSettingsTab } from "./ProjectSettingsTab"
@@ -235,6 +237,14 @@ export function ProjectDetailPage() {
           label: "CDN",
           icon: Zap,
           content: <ProjectObservabilityPage project={project} tab="cdn" />,
+        },
+        {
+          // Environments own the variables and the access rules, so they are a
+          // thing rather than a setting — see EnvironmentsTab.
+          value: "environments",
+          label: "Environments",
+          icon: Boxes,
+          content: <EnvironmentsTab project={project} />,
         },
         {
           value: "domains",

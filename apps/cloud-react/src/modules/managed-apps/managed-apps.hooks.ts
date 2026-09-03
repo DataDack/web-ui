@@ -11,12 +11,15 @@ import { managedAppsApi } from "./managed-apps.api"
 import { MANAGED_APPS_QUERY_KEYS } from "./managed-apps.constants"
 import { isProjectBusy, projectPollInterval } from "./managed-apps.state"
 import {
+  type CreateEnvironmentRequest,
   type CreateProjectRequest,
   type GitHubCallbackRequest,
   type Plan,
   type ProjectType,
   type ReconnectSourceRequest,
   type RequestLogQuery,
+  type RestrictionsDocument,
+  type UpdateEnvironmentRequest,
   type UpdateProjectEnvRequest,
   type UpdateProjectHostnameRequest,
   type UpdateRestrictionsRequest,
@@ -347,6 +350,128 @@ export function useCreateProject() {
     onError: (e) => {
       if (!handleQuotaGateError(e)) toast.error(extractError(e, "Failed to create project"))
     },
+  })
+}
+
+// ---------------------------------------------------------------------------
+// Environments
+// ---------------------------------------------------------------------------
+
+/** A project's configuration namespaces, in the order the server sorts them. */
+export function useProjectEnvironments(projectId: string) {
+  return useQuery({
+    queryKey: MANAGED_APPS_QUERY_KEYS.environments(projectId),
+    queryFn: () => managedAppsApi.projectEnvironments(projectId),
+    enabled: projectId !== "",
+  })
+}
+
+export function useCreateEnvironment(projectId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (body: CreateEnvironmentRequest) =>
+      managedAppsApi.createEnvironment(projectId, body),
+    onSuccess: (environment) => {
+      void queryClient.invalidateQueries({
+        queryKey: MANAGED_APPS_QUERY_KEYS.environments(projectId),
+      })
+      toast.success(`${environment.name} created`)
+    },
+    // Surfaced verbatim: the refusals here are the actionable ones — the name
+    // is taken, another environment already tracks all unassigned branches.
+    onError: (e) => toast.error(extractError(e, "Could not create the environment")),
+  })
+}
+
+export function useUpdateEnvironment(projectId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ name, ...body }: UpdateEnvironmentRequest & { name: string }) =>
+      managedAppsApi.updateEnvironment(projectId, name, body),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: MANAGED_APPS_QUERY_KEYS.environments(projectId),
+      })
+      toast.success("Environment updated")
+    },
+    onError: (e) => toast.error(extractError(e, "Could not update the environment")),
+  })
+}
+
+export function useDeleteEnvironment(projectId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (name: string) => managedAppsApi.deleteEnvironment(projectId, name),
+    onSuccess: (_data, name) => {
+      void queryClient.invalidateQueries({
+        queryKey: MANAGED_APPS_QUERY_KEYS.environments(projectId),
+      })
+      toast.success(`${name} deleted`)
+    },
+    onError: (e) => toast.error(extractError(e, "Could not delete the environment")),
+  })
+}
+
+/** One environment's variable NAMES. Values never leave the backend. */
+export function useEnvironmentEnv(projectId: string, name: string) {
+  return useQuery({
+    queryKey: MANAGED_APPS_QUERY_KEYS.environmentEnv(projectId, name),
+    queryFn: () => managedAppsApi.environmentEnv(projectId, name),
+    enabled: projectId !== "" && name !== "",
+  })
+}
+
+export function useSetEnvironmentEnv(projectId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ name, env }: { name: string; env: Record<string, string> }) =>
+      managedAppsApi.setEnvironmentEnv(projectId, name, env),
+    onSuccess: (_names, { name }) => {
+      void queryClient.invalidateQueries({
+        queryKey: MANAGED_APPS_QUERY_KEYS.environmentEnv(projectId, name),
+      })
+      // The list shows a per-environment variable count, so it goes stale on
+      // every save here.
+      void queryClient.invalidateQueries({
+        queryKey: MANAGED_APPS_QUERY_KEYS.environments(projectId),
+      })
+      toast.success(`Variables saved for ${name}`)
+    },
+    onError: (e) => toast.error(extractError(e, "Could not save the variables")),
+  })
+}
+
+export function useEnvironmentRestrictions(projectId: string, name: string) {
+  return useQuery({
+    queryKey: MANAGED_APPS_QUERY_KEYS.environmentRestrictions(projectId, name),
+    queryFn: () => managedAppsApi.environmentRestrictions(projectId, name),
+    enabled: projectId !== "" && name !== "",
+  })
+}
+
+export function useSetEnvironmentRestrictions(projectId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({
+      name,
+      restrictions,
+    }: {
+      name: string
+      restrictions: RestrictionsDocument | null
+    }) => managedAppsApi.setEnvironmentRestrictions(projectId, name, restrictions),
+    onSuccess: (_result, { name }) => {
+      void queryClient.invalidateQueries({
+        queryKey: MANAGED_APPS_QUERY_KEYS.environmentRestrictions(projectId, name),
+      })
+      void queryClient.invalidateQueries({
+        queryKey: MANAGED_APPS_QUERY_KEYS.environments(projectId),
+      })
+      // Production's document is mirrored onto the project, which is what the
+      // edge reads — so the project-level view goes stale with it.
+      void queryClient.invalidateQueries({ queryKey: MANAGED_APPS_QUERY_KEYS.project(projectId) })
+      toast.success(`Restrictions saved for ${name}`)
+    },
+    onError: (e) => toast.error(extractError(e, "Could not save the restrictions")),
   })
 }
 

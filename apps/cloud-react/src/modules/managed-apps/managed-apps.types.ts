@@ -411,7 +411,8 @@ export interface CreateProjectRequest {
   /** Omit to inherit the platform default rather than pinning today's. */
   node_version?: string
   environments?: string[]
-  env?: Record<string, EnvVarInput>
+  /** Seeds production's variables. A flat map — see EnvVarInput for why. */
+  env?: Record<string, string>
   /** Opt the project into a preview environment. Omit for one deployment. */
   preview_enabled?: boolean
   vpc_id?: string
@@ -529,14 +530,100 @@ export interface BuildDefaults {
  */
 export type EnvTarget = "production" | "preview"
 
+// ---------------------------------------------------------------------------
+// Environments — a project's configuration namespaces.
+// ---------------------------------------------------------------------------
+
+/**
+ * What kind of environment this is.
+ *
+ * The three the platform creates, plus the ones a customer adds. It decides
+ * what may be edited — production's name and its deploy behaviour are not a
+ * customer's to change — and it is what the console reads to pick an icon and
+ * an order, rather than matching on the name.
+ */
+export type EnvironmentKind = "production" | "preview" | "development" | "custom"
+
+/**
+ * How a pushed branch is matched to an environment.
+ *
+ * `unassigned` is the catch-all: any branch no other environment claimed. At
+ * most one environment per project may hold it — two would make which one built
+ * a branch depend on row order.
+ */
+export type BranchMode = "none" | "exact" | "prefix" | "unassigned"
+
+/** GET /projects/:id/environments */
+export interface ProjectEnvironment {
+  id: string
+  name: string
+  description: string
+  kind: EnvironmentKind
+  branch_mode: BranchMode
+  branch_value: string
+  /** How many variables this environment carries. */
+  var_count: number
+  /** Whether an access-control document was ever written — distinct from an
+   *  empty one, which means somebody turned everything off. */
+  has_restrictions: boolean
+  /**
+   * Whether a build of this environment is RELEASED, or only built and stored.
+   *
+   * True for production alone today. A project has one running container and
+   * one public address, so releasing whatever built last would let a push to a
+   * staging branch replace the live site. The console states this rather than
+   * letting somebody discover it by pushing and waiting.
+   */
+  deploys: boolean
+  /** False for the fixed parts of production: it cannot be renamed or deleted. */
+  editable: boolean
+  created_at: string
+  updated_at: string
+}
+
+/** POST /projects/:id/environments */
+export interface CreateEnvironmentRequest {
+  name: string
+  description?: string
+  branch_mode?: BranchMode
+  branch_value?: string
+  /** Copy another environment's variables in. Empty starts with none. */
+  import_from?: string
+}
+
+/** PATCH /projects/:id/environments/:name — only the sent fields change. */
+export interface UpdateEnvironmentRequest {
+  description?: string
+  branch_mode?: BranchMode
+  branch_value?: string
+}
+
+/** GET /projects/:id/environments/:name/restrictions */
+export interface EnvironmentRestrictions {
+  environment: string
+  restrictions: RestrictionsDocument | null
+  /** Whether these rules are actually in force at the edge — production only. */
+  enforced: boolean
+}
+
 /** GET /projects/:id/env — names and targets; values never leave the backend. */
 export interface ProjectEnvVar {
   key: string
   targets: EnvTarget[]
 }
 
-/** One variable on a write. The server also accepts a bare string (= every
- *  target), but the console always states the scope it is showing. */
+/**
+ * One variable on a write.
+ *
+ * KEPT ONLY AS A RECORD OF WHAT THE CONSOLE USED TO SEND, and nothing sends it
+ * now. The backend has always taken a flat {name: value} map; this shape was
+ * built for a per-variable target the storage never had, so the scope a user
+ * picked was accepted by the form and discarded on save. The environment a
+ * variable belongs to is the scope now, and it is a different set of variables
+ * rather than a label on one — see the environments API.
+ *
+ * @deprecated Write Record<string, string> against an environment instead.
+ */
 export interface EnvVarInput {
   value: string
   targets: EnvTarget[]
@@ -544,7 +631,7 @@ export interface EnvVarInput {
 
 /** PUT /projects/:id/env — full replacement of the project's env map. */
 export interface UpdateProjectEnvRequest {
-  env: Record<string, EnvVarInput>
+  env: Record<string, string>
 }
 
 /* ── Restrictions ─────────────────────────────────────────────────────── */
