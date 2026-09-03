@@ -1,6 +1,21 @@
 import { describe, expect, test } from "bun:test"
 
-import { secureURL } from "../src/modules/managed-apps/partials/project/build-format"
+import {
+  commitMessageExcerpt,
+  secureURL,
+} from "../src/modules/managed-apps/partials/project/build-format"
+
+describe("commitMessageExcerpt", () => {
+  test("shows no more than seven words and marks a shortened subject", () => {
+    expect(
+      commitMessageExcerpt("Merge pull request #1 from kepler-b/datadack setup branch now"),
+    ).toBe("Merge pull request #1 from kepler-b/datadack setup…")
+  })
+
+  test("normalizes whitespace without adding an ellipsis to a short subject", () => {
+    expect(commitMessageExcerpt("  Fix   deployment preview  ")).toBe("Fix deployment preview")
+  })
+})
 
 // The bug this guards is silent by construction: a browser blocks an http://
 // subresource on an https:// page without firing an error, so an http project

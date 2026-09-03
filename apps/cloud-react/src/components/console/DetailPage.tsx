@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState, type ReactNode } from "react"
 
+import { Button, CopyButton } from "@datadack/common-ui"
 import { ArrowLeft, type LucideIcon } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 import { Link, useSearchParams } from "react-router-dom"
-
-import { Button, CopyButton } from "@datadack/common-ui"
 
 import { AnimatedTabs } from "./motion/AnimatedTabs"
 import { DUR, EASE } from "./motion/motion-config"
@@ -45,8 +44,8 @@ interface DetailPageProps {
   actions?: ReactNode
   /**
    * The facts that identify this resource beyond its name — branch, commit,
-   * address, runtime. Rendered on the bar's last line, to the LEFT of the tabs,
-   * and hidden while the bar is condensed.
+   * address, runtime. Rendered right-aligned above the tabs and hidden while
+   * the bar is condensed.
    *
    * Optional on purpose. Twelve of the thirteen detail pages pass nothing and
    * render exactly the header they always had; only the page with facts worth
@@ -166,9 +165,9 @@ export function DetailPage({
       <div ref={sentinelRef} aria-hidden className="h-px" />
 
       {/* One bar, not four stacked rows with their own margins. Back link and
-          identity share the top deck; the facts and the tab strip share the
-          bottom one, facts left and tabs right, so the active tab's underline
-          lands on the bar's own bottom rule.
+          identity share the top deck; resource facts sit above the tab strip
+          on the right, so the active tab's underline lands on the bar's own
+          bottom rule.
 
           It bleeds through the shell's gutter (--page-px, published by AppShell)
           so it reads as chrome rather than as one more card, and re-applies that
@@ -255,19 +254,20 @@ export function DetailPage({
               {actions && <div className="ml-auto flex shrink-0 items-center gap-2">{actions}</div>}
             </div>
 
-            {/* Deck 3 — the facts, and the tab strip they share a line with.
-              Facts left, tabs right; `-mb-px` drops the strip's own bottom rule
+            {/* Deck 3 — resource facts above the tabs. Project metadata stays
+              visually tied to the navigation without competing with the app's
+              identity on the left. `-mb-px` drops the strip's own bottom rule
               onto the bar's, so the active tab underlines the bar's edge. */}
             <div
-              className="flex min-w-0 flex-wrap items-end gap-x-5 gap-y-1 data-[condensed=true]:shrink-0 data-[condensed=true]:flex-nowrap"
+              className="flex min-w-0 flex-col items-end data-[condensed=true]:shrink-0"
               data-condensed={condensed}
             >
               {(meta ?? id) && (
                 <div
-                  className="grid min-w-0 flex-1 transition-[grid-template-rows,opacity] duration-200 ease-out data-[condensed=true]:hidden data-[condensed=true]:opacity-0 grid-rows-[1fr] motion-reduce:transition-none"
+                  className="grid max-w-full min-w-0 transition-[grid-template-rows,opacity] duration-200 ease-out data-[condensed=true]:hidden data-[condensed=true]:opacity-0 grid-rows-[1fr] motion-reduce:transition-none"
                   data-condensed={condensed}
                 >
-                  <div className="flex min-h-0 flex-wrap items-center gap-x-2.5 gap-y-1 overflow-hidden pb-2.5 font-mono text-[11px] text-muted-foreground">
+                  <div className="flex min-h-0 flex-wrap items-center justify-end gap-x-2.5 gap-y-1 overflow-hidden pb-1.5 font-mono text-[11px] text-muted-foreground">
                     {meta}
                     {meta && id && <span className="opacity-40">·</span>}
                     {/* The whole id, not eight characters of it. It is the string

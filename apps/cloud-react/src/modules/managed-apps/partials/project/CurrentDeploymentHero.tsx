@@ -19,7 +19,15 @@ import {
 } from "lucide-react"
 import { Link } from "react-router-dom"
 
-import { commitURL, hostLabel, isTimeSet, secureURL, shortSha, timeSince } from "./build-format"
+import {
+  commitMessageExcerpt,
+  commitURL,
+  hostLabel,
+  isTimeSet,
+  secureURL,
+  shortSha,
+  timeSince,
+} from "./build-format"
 import { BuildProgressBar, CommitAuthor, ProjectStateChip, SitePreview } from "../../components"
 import { MANAGED_APPS_ROUTES } from "../../managed-apps.constants"
 import { useCreateBuild, useDeployProject } from "../../managed-apps.hooks"
@@ -265,8 +273,8 @@ export function CurrentDeploymentHero({
                       className="size-4"
                       linked
                     />
-                    {/* The sha links to the commit on GitHub — "View code"
-                        shows the tree, not the diff. */}
+                    {/* The sha and its short subject are one commit link —
+                        "View code" shows the tree, not the diff. */}
                     <a
                       href={commitURL(
                         project.repo_owner,
@@ -275,19 +283,16 @@ export function CurrentDeploymentHero({
                       )}
                       target="_blank"
                       rel="noreferrer"
-                      title={latestBuild.commit_sha}
-                      className="shrink-0 font-mono text-[12px] text-muted-foreground hover:text-foreground hover:underline"
+                      title={latestBuild.commit_message || latestBuild.commit_sha}
+                      className="flex min-w-0 items-baseline gap-1.5 text-[12px] text-muted-foreground hover:text-foreground hover:underline"
                     >
-                      {shortSha(latestBuild.commit_sha)}
+                      <span className="shrink-0 font-mono">{shortSha(latestBuild.commit_sha)}</span>
+                      {latestBuild.commit_message && (
+                        <span className="min-w-0 truncate">
+                          {commitMessageExcerpt(latestBuild.commit_message)}
+                        </span>
+                      )}
                     </a>
-                    {latestBuild.commit_message && (
-                      <span
-                        className="min-w-0 truncate text-[12px] text-muted-foreground"
-                        title={latestBuild.commit_message}
-                      >
-                        {latestBuild.commit_message}
-                      </span>
-                    )}
                   </span>
                 )}
                 {latestBuild?.commit_sha && (

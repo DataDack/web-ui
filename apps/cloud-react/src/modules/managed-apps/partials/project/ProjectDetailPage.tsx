@@ -111,7 +111,6 @@ export function ProjectDetailPage() {
       }
       title={project.name}
       statusNode={<ProjectStateChip state={state} />}
-      id={project.id}
       // The facts that were only ever on the Overview tab. Open Builds, Domains
       // or Settings and you used to lose track of which branch and which commit
       // the thing you are configuring is actually running.

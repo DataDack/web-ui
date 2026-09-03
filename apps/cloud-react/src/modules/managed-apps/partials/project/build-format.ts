@@ -39,6 +39,13 @@ export function shortSha(sha: string): string {
   return sha.slice(0, 7)
 }
 
+/** A compact, word-safe commit subject for dense deployment surfaces. */
+export function commitMessageExcerpt(message: string, maxWords = 7): string {
+  const words = message.trim().split(/\s+/).filter(Boolean)
+  if (words.length <= maxWords) return words.join(" ")
+  return `${words.slice(0, maxWords).join(" ")}…`
+}
+
 /**
  * The commit on GitHub. Empty for a build whose commit never resolved — queued,
  * or failed before the runner reported one — so callers render plain text
