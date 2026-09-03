@@ -8,6 +8,8 @@ import {
   Info,
   PackageX,
   Settings,
+  ShieldCheck,
+  Zap,
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link, useNavigate, useParams } from "react-router-dom"
@@ -195,14 +197,33 @@ export function ProjectDetailPage() {
           icon: Hammer,
           content: <ProjectBuildsTab project={project} />,
         },
+        // The three measurement areas, each its own tab.
+        //
+        // They were one tab with a second strip inside it, which put two tab
+        // bars on the same screen and made Firewall and CDN reachable only by
+        // first guessing they lived behind "Observability". They are three
+        // different questions — is it up, is something attacking it, is it
+        // being served fast — and each is the reason somebody opened the page.
+        //
+        // Still one component: the area is a filter over the section map, so
+        // adding a section is a line in sections.ts and nothing here.
         {
-          // One tab, three layers. Analytics and Observability were two, and
-          // the split described how the platform collects the data rather than
-          // how anyone asks for it — see ProjectObservabilityPage.
           value: "observability",
           label: "Observability",
           icon: Activity,
-          content: <ProjectObservabilityPage project={project} />,
+          content: <ProjectObservabilityPage project={project} tab="observability" />,
+        },
+        {
+          value: "firewall",
+          label: "Firewall",
+          icon: ShieldCheck,
+          content: <ProjectObservabilityPage project={project} tab="firewall" />,
+        },
+        {
+          value: "cdn",
+          label: "CDN",
+          icon: Zap,
+          content: <ProjectObservabilityPage project={project} tab="cdn" />,
         },
         {
           value: "domains",

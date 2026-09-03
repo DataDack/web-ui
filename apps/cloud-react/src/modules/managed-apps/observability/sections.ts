@@ -56,17 +56,24 @@ export const SECTION_GROUP_LABELS: Record<SectionGroup, string> = {
 }
 
 /**
- * The project's top-level tabs, and which section groups each one owns.
+ * The three measurement areas, and which section groups each one owns.
  *
- * Three tabs rather than one, because "Observability", "Firewall" and "CDN" are
- * how the questions actually arrive — is it up, is something attacking it, is
- * it being served fast — and a single tab hiding seventeen sections behind a
- * rail buried two of those three. It is also the split every comparable console
- * uses, which is worth something on its own: a reader arriving from one of them
- * should not have to learn a new map.
+ * Three rather than one, because "Observability", "Firewall" and "CDN" are how
+ * the questions actually arrive — is it up, is something attacking it, is it
+ * being served fast — and a single area hiding seventeen sections behind a rail
+ * buried two of those three. It is also the split every comparable console uses,
+ * which is worth something on its own: a reader arriving from one of them should
+ * not have to learn a new map.
  *
- * The section map stays the single source. A tab is a filter over it, so adding
- * a section is still one entry in OBSERVABILITY_SECTIONS and nothing else.
+ * EACH ONE IS A TOP-LEVEL PROJECT TAB, beside Overview, Builds, Domains and
+ * Settings — see ProjectDetailPage. They were briefly a second strip nested
+ * inside a single "Observability" tab, which put two tab bars on one screen and
+ * left Firewall and CDN findable only by guessing what they were filed under.
+ * This list is what those tabs are built from; it does not render one itself.
+ *
+ * The section map stays the single source. An area is a filter over it, so
+ * adding a section is still one entry in OBSERVABILITY_SECTIONS and nothing
+ * else.
  */
 export const SECTION_TABS = [
   { value: "observability", label: "Observability", groups: ["traffic", "compute", "deploys"] },

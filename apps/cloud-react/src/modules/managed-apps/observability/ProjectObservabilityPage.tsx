@@ -1,19 +1,18 @@
-import { useState } from "react"
-
-import { cn } from "@datadack/common-ui"
+import { useEffect, useState } from "react"
 
 import { LogsSection } from "./LogsSection"
 import { PendingSection } from "./PendingSection"
 import { PlanUsagePanel } from "./PlanUsagePanel"
 import { RulesSection } from "./RulesSection"
 import { SectionNav } from "./SectionNav"
-import { defaultSectionFor, sectionByKey, SECTION_TABS, type SectionTab } from "./sections"
+import { defaultSectionFor, sectionByKey, type SectionTab } from "./sections"
 import type { Project } from "../managed-apps.types"
 import { ProjectAnalyticsTab } from "../partials/project/ProjectAnalyticsTab"
 import { ProjectResourcesSection } from "../partials/project/ProjectObservabilityTab"
 
 /**
- * Observability — one section for everything measured about a running app.
+ * One of the three measurement areas — Observability, Firewall or CDN — as a
+ * rail of sections and the panel for the selected one.
  *
  * Analytics and Observability used to be two tabs, and the split did not
  * survive contact with the question people arrive with. "Analytics" charted
@@ -28,55 +27,42 @@ import { ProjectResourcesSection } from "../partials/project/ProjectObservabilit
  * groups. Seven carry a live meter and Rules shows the policy in force; the
  * rest are listed and say they are still being calculated. Listing them is
  * deliberate — see PendingSection.
+ *
+ * THE AREA IS THE PROJECT'S OWN TAB NOW, not a second strip inside this one.
+ * Three areas nested under a fourth tab put two tab bars on the page, one above
+ * the other, and made Firewall and CDN reachable only by first guessing that
+ * they lived behind "Observability". They are top-level questions — is it up,
+ * is something attacking it, is it being served fast — so they are top-level
+ * tabs, and this component renders whichever one it is handed.
  */
 /** Sections with a component of their own. Kept beside the switch below so the
  *  two cannot drift into rendering a panel and its placeholder together. */
 const IMPLEMENTED = new Set(["overview", "resources", "logs", "rules"])
 
-export function ProjectObservabilityPage({ project }: Readonly<{ project: Project }>) {
-  const [tab, setTab] = useState<SectionTab>("observability")
-  const [active, setActive] = useState("overview")
+export function ProjectObservabilityPage({
+  project,
+  tab = "observability",
+}: Readonly<{ project: Project; tab?: SectionTab }>) {
+  const [active, setActive] = useState(() => defaultSectionFor(tab))
   const isN8n = project.project_type === "n8n"
   const section = sectionByKey(active)
 
-  // Changing tab moves the rail's selection with it, to that tab's first live
-  // section. Leaving the old key selected would show a Firewall page under the
-  // CDN tab — the rail and the content have to agree, and the tab is the one
-  // the reader just acted on.
-  const selectTab = (next: SectionTab) => {
-    setTab(next)
-    setActive(defaultSectionFor(next))
-  }
+  // The rail follows the tab. Each area owns a different set of section groups,
+  // so a key selected under one is not in the other's rail at all — leaving it
+  // would render a Firewall panel beside the CDN rail, with nothing in that rail
+  // marked active. Keyed on the tab so it only runs when the area changes.
+  useEffect(() => {
+    setActive(defaultSectionFor(tab))
+  }, [tab])
 
   return (
     <div className="space-y-5">
-      {!isN8n && <PlanUsagePanel project={project} />}
-
-      <div
-        role="tablist"
-        aria-label="Observability areas"
-        className="flex w-fit items-center gap-0.5 rounded-lg border border-border-glass p-0.5"
-      >
-        {SECTION_TABS.map((entry) => (
-          <button
-            key={entry.value}
-            type="button"
-            role="tab"
-            aria-selected={tab === entry.value}
-            onClick={() => {
-              selectTab(entry.value)
-            }}
-            className={cn(
-              "rounded-md px-3 py-1.5 text-[12px] font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
-              tab === entry.value
-                ? "glass-1-bg-raised text-foreground"
-                : "text-muted-foreground hover:text-foreground",
-            )}
-          >
-            {entry.label}
-          </button>
-        ))}
-      </div>
+      {/* Plan usage heads the Observability area only. It is the account's
+          monthly allowance for requests, bandwidth and build minutes — the
+          subject of this area — and repeating it above Firewall and CDN would
+          be the same four numbers on three tabs, none of which those two are
+          about. */}
+      {!isN8n && tab === "observability" && <PlanUsagePanel project={project} />}
 
       <div className="flex flex-col gap-5 lg:flex-row">
         <SectionNav tab={tab} active={active} onSelect={setActive} />
