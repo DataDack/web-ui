@@ -175,10 +175,23 @@ export const managedAppsApi = {
   // nodeVersion is the version being considered, not a stored one: it only
   // changes the runtime image in the response. Omitted means "not chosen yet",
   // which resolves the image against the platform default.
-  buildDefaults: (projectType: ProjectType, nodeVersion = ""): Promise<BuildDefaults> =>
+  //
+  // framework is what makes the OUTPUT DIRECTORY true. project_type has three
+  // values, so without it every framework was told its output is `dist` — while
+  // the build resolves the framework's own from the catalog and uses `build` for
+  // SvelteKit, `.output` for Nuxt, `public` for Hugo. Somebody reading the wrong
+  // placeholder corrects it, which STORES an override, and the override then
+  // beats the catalog: the default nobody should have had to touch was the thing
+  // making them touch it.
+  buildDefaults: (
+    projectType: ProjectType,
+    nodeVersion = "",
+    framework = "",
+  ): Promise<BuildDefaults> =>
     apiGet<BuildDefaults>(
       `${BASE}/projects/defaults?project_type=${projectType}` +
-        (nodeVersion ? `&node_version=${nodeVersion}` : ""),
+        (nodeVersion ? `&node_version=${encodeURIComponent(nodeVersion)}` : "") +
+        (framework ? `&framework=${encodeURIComponent(framework)}` : ""),
     ),
 
   listProjects: (type?: ProjectType): Promise<Project[]> => {

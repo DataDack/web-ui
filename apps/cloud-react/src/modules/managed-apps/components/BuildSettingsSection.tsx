@@ -25,6 +25,13 @@ export interface BuildSettingsValue {
 
 interface BuildSettingsSectionProps {
   projectType: ProjectType
+  /**
+   * The catalogue framework id, which is what decides the OUTPUT DIRECTORY the
+   * placeholders show. Without it the server answers from the project type
+   * alone — three values — and every framework is told `dist`, while the build
+   * uses the framework's own (`build` for SvelteKit, `.output` for Nuxt).
+   */
+  framework?: string
   value: BuildSettingsValue
   onChange: (value: BuildSettingsValue) => void
   /** Open on first render — the settings tab wants this, the composer does not. */
@@ -48,6 +55,7 @@ interface BuildSettingsSectionProps {
  */
 export function BuildSettingsSection({
   projectType,
+  framework,
   value,
   onChange,
   defaultOpen = false,
@@ -57,7 +65,7 @@ export function BuildSettingsSection({
   // the runtime image for it, and that image is not always the choice — a
   // static build is served by Caddy whatever Node compiled it. Sending the
   // override (not the resolved value) keeps this non-circular.
-  const { data: defaults, isLoading } = useBuildDefaults(projectType, value.node_version)
+  const { data: defaults, isLoading } = useBuildDefaults(projectType, value.node_version, framework)
 
   const set = (patch: Partial<BuildSettingsValue>) => {
     onChange({ ...value, ...patch })

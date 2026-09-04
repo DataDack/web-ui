@@ -37,7 +37,11 @@ export function ProjectOverviewTab({ project }: Readonly<{ project: Project }>) 
   const latestBuild = builds.at(0)
   const state = deriveProjectState(project, latestBuild)
   const createBuild = useCreateBuild()
-  const { data: defaults } = useBuildDefaults(project.project_type, project.node_version)
+  const { data: defaults } = useBuildDefaults(
+    project.project_type,
+    project.node_version,
+    project.framework,
+  )
 
   /** Empty build fields inherit — show what will actually run. */
   const inherited = (value: string, fallback: string | undefined) =>

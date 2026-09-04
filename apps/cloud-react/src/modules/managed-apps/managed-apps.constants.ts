@@ -84,8 +84,8 @@ export const MANAGED_APPS_QUERY_KEYS = {
   planEstimate: (code: string) => ["managed-apps", "plans", "account", "estimate", code] as const,
   // The Node version is part of the key because the response resolves the
   // runtime image for it — same type on a different major is a different answer.
-  buildDefaults: (type: ProjectType, nodeVersion: string) =>
-    ["managed-apps", "build-defaults", type, nodeVersion] as const,
+  buildDefaults: (type: ProjectType, nodeVersion: string, framework: string) =>
+    ["managed-apps", "build-defaults", type, nodeVersion, framework] as const,
   githubConnections: ["managed-apps", "github", "connections"] as const,
   // The query is part of the key: searching is a server round-trip, so each
   // term is its own cached result rather than a filter over one cached list.

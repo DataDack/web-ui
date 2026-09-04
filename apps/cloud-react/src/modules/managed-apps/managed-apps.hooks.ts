@@ -604,10 +604,13 @@ export function useUpdateProjectRestrictions(id: string) {
  * for it. Previous data is kept across that change: picking a Node version
  * would otherwise blank the whole section back to skeletons to update one line.
  */
-export function useBuildDefaults(type: ProjectType | undefined, nodeVersion = "") {
+export function useBuildDefaults(type: ProjectType | undefined, nodeVersion = "", framework = "") {
   return useQuery({
-    queryKey: MANAGED_APPS_QUERY_KEYS.buildDefaults(type ?? "react", nodeVersion),
-    queryFn: () => managedAppsApi.buildDefaults(type ?? "react", nodeVersion),
+    // The framework is part of the KEY, not just the request: it changes the
+    // answer, so two frameworks sharing one cache entry would show whichever
+    // was fetched first — which is the bug this parameter exists to fix.
+    queryKey: MANAGED_APPS_QUERY_KEYS.buildDefaults(type ?? "react", nodeVersion, framework),
+    queryFn: () => managedAppsApi.buildDefaults(type ?? "react", nodeVersion, framework),
     // n8n has no build pipeline, so there is nothing to ask for.
     enabled: type != null && type !== "n8n",
     staleTime: 30 * 60_000,

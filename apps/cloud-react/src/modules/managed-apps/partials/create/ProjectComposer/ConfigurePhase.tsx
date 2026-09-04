@@ -146,6 +146,7 @@ export function ConfigurePhase({
 
       <BuildSettingsSection
         projectType={values.project_type}
+        framework={values.framework}
         value={{
           root_dir: values.root_dir,
           install_command: values.install_command,

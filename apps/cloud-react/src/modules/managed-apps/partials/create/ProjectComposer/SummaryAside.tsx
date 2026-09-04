@@ -43,7 +43,11 @@ export function SummaryAside({
   onDeploy,
 }: Readonly<SummaryAsideProps>) {
   const { t } = useTranslation()
-  const { data: defaults } = useBuildDefaults(values.project_type, values.node_version)
+  const { data: defaults } = useBuildDefaults(
+    values.project_type,
+    values.node_version,
+    values.framework,
+  )
   // The account's tier, not a choice made in this form — the project inherits
   // it. Its NAME rather than its code: "developer_pro" is a storage key, not a
   // thing to show someone about to create something under it.

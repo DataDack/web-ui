@@ -74,6 +74,7 @@ export function BuildOutputSection({
       <div className="space-y-4">
         <BuildSettingsSection
           projectType={project.project_type}
+          framework={project.framework}
           value={value}
           onChange={setValue}
           defaultOpen
