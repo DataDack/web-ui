@@ -126,7 +126,7 @@ export function DomainDialog({
               <SelectContent>
                 {(["REGIONAL", "EDGE", "PRIVATE"] as const).map((value) => (
                   <SelectItem key={value} value={value}>
-                    {value}
+                    {t(`apiGateway.domains.endpointTypes.${value}`)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -146,7 +146,7 @@ export function DomainDialog({
               <SelectContent>
                 {(["TLS_1_0", "TLS_1_2"] as const).map((value) => (
                   <SelectItem key={value} value={value}>
-                    {value.replaceAll("_", ".")}
+                    {t(`apiGateway.domains.securityPolicies.${value}`)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -164,8 +164,10 @@ export function DomainDialog({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="ipv4">IPv4</SelectItem>
-                <SelectItem value="dualstack">Dual-stack</SelectItem>
+                <SelectItem value="ipv4">{t("apiGateway.domains.ipAddressTypes.ipv4")}</SelectItem>
+                <SelectItem value="dualstack">
+                  {t("apiGateway.domains.ipAddressTypes.dualstack")}
+                </SelectItem>
               </SelectContent>
             </Select>
           </Label>

@@ -6328,6 +6328,19 @@
       "editTitle": "Edit custom domain",
       "editDescription": "Update how this custom domain accepts and secures traffic.",
       "nameImmutable": "The domain name cannot be changed because it uniquely identifies this custom domain.",
+      "endpointTypes": {
+        "REGIONAL": "Regional",
+        "EDGE": "Edge",
+        "PRIVATE": "Private"
+      },
+      "securityPolicies": {
+        "TLS_1_0": "TLS 1.0",
+        "TLS_1_2": "TLS 1.2"
+      },
+      "ipAddressTypes": {
+        "ipv4": "IPv4",
+        "dualstack": "Dual-stack"
+      },
       "fields": {
         "domain": "Domain name",
         "region": "Region",
