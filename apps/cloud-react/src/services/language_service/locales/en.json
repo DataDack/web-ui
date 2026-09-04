@@ -6015,7 +6015,16 @@
       "resources": "Defined resources",
       "invokeUrl": "Invoke URL",
       "routingInactive": "This is the URL the API will answer on. Routing is not active yet.",
-      "controlPlaneOnly": "This console stores the configuration. Nothing is serving traffic from it yet."
+      "controlPlaneOnly": "This console stores the configuration. Nothing is serving traffic from it yet.",
+      "id": "API ID",
+      "protocol": "Protocol",
+      "region": "Region",
+      "endpointType": "Endpoint type",
+      "ipAddressType": "IP address type",
+      "tlsPolicy": "Minimum TLS version",
+      "version": "Version",
+      "created": "Created",
+      "updated": "Last updated"
     },
     "routes": {
       "create": "Add route",
@@ -6114,9 +6123,18 @@
       "addValue": "Add value",
       "removeValue": "Remove value",
       "types": {
-        "JWT": { "label": "JWT", "description": "Validate signed tokens from an issuer and audience." },
-        "REQUEST": { "label": "Request", "description": "Send request identity data to an authorizer function." },
-        "TOKEN": { "label": "Token", "description": "Send a bearer token to an authorizer function." }
+        "JWT": {
+          "label": "JWT",
+          "description": "Validate signed tokens from an issuer and audience."
+        },
+        "REQUEST": {
+          "label": "Request",
+          "description": "Send request identity data to an authorizer function."
+        },
+        "TOKEN": {
+          "label": "Token",
+          "description": "Send a bearer token to an authorizer function."
+        }
       },
       "columns": {
         "name": "Name",
@@ -6277,6 +6295,12 @@
       "empty": {
         "title": "No API keys yet",
         "description": "Create a key, attach it to a usage plan, and require it on the routes that should be metered."
+      },
+      "fields": {
+        "name": "Name",
+        "description": "Description",
+        "customer_id": "Customer ID",
+        "value": "Key value"
       }
     },
     "usagePlans": {
@@ -6507,6 +6531,17 @@
       "vpcLinkDeleted": "VPC link deleted",
       "vpcLinkUpdateFailed": "Could not update the VPC link",
       "vpcLinkUpdated": "VPC link updated"
+    },
+    "tabs": {
+      "overview": "Overview",
+      "routes": "Routes",
+      "integrations": "Integrations",
+      "authorizers": "Authorizers",
+      "cors": "CORS",
+      "stages": "Stages",
+      "deployments": "Deployments",
+      "models": "Models",
+      "settings": "Settings"
     }
   }
 }

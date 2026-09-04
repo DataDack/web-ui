@@ -6058,7 +6058,16 @@
       "resources": "तय किए गए संसाधन",
       "invokeUrl": "इनवोक URL",
       "routingInactive": "यह वह URL है जिस पर API उत्तर देगा। रूटिंग अभी सक्रिय नहीं है।",
-      "controlPlaneOnly": "यह कंसोल केवल कॉन्फ़िगरेशन संग्रहित करता है। अभी इससे कोई ट्रैफ़िक नहीं चल रहा।"
+      "controlPlaneOnly": "यह कंसोल केवल कॉन्फ़िगरेशन संग्रहित करता है। अभी इससे कोई ट्रैफ़िक नहीं चल रहा।",
+      "id": "API ID",
+      "protocol": "प्रोटोकॉल",
+      "region": "क्षेत्र",
+      "endpointType": "एंडपॉइंट प्रकार",
+      "ipAddressType": "IP पता प्रकार",
+      "tlsPolicy": "न्यूनतम TLS संस्करण",
+      "version": "संस्करण",
+      "created": "बनाया गया",
+      "updated": "अंतिम अपडेट"
     },
     "routes": {
       "create": "रूट जोड़ें",
@@ -6329,6 +6338,12 @@
       "empty": {
         "title": "अभी कोई API कुंजी नहीं",
         "description": "कुंजी बनाएं, उसे किसी उपयोग योजना से जोड़ें, और जिन रूट पर माप ज़रूरी है वहाँ उसे अनिवार्य करें।"
+      },
+      "fields": {
+        "name": "नाम",
+        "description": "विवरण",
+        "customer_id": "ग्राहक ID",
+        "value": "कुंजी मान"
       }
     },
     "usagePlans": {
@@ -6559,6 +6574,17 @@
       "vpcLinkDeleted": "VPC लिंक हटाया गया",
       "vpcLinkUpdateFailed": "VPC लिंक नहीं अपडेट किया जा सका",
       "vpcLinkUpdated": "VPC लिंक अपडेट किया गया"
+    },
+    "tabs": {
+      "overview": "अवलोकन",
+      "routes": "रूट",
+      "integrations": "इंटीग्रेशन",
+      "authorizers": "प्राधिकारी",
+      "cors": "CORS",
+      "stages": "स्टेज",
+      "deployments": "डिप्लॉयमेंट",
+      "models": "मॉडल",
+      "settings": "सेटिंग्स"
     }
   }
 }

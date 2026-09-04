@@ -122,7 +122,7 @@ export function DeploymentsTab({ api }: Readonly<{ api: APIGateway }>) {
                         {d.description || t("apiGateway.deployments.noDescription")}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {new Date(d.created_at).toLocaleString()} · {d.user_id}
+                        {new Date(d.created_at).toLocaleString()} · {d.id}
                       </p>
                     </div>
                     <div className="flex gap-2">
