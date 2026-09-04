@@ -29,6 +29,7 @@
       "items": {
         "dashboard": "Dashboard",
         "settings": "Settings",
+        "integrations": "Integrations",
         "overview": "Overview",
         "functions": "Functions",
         "layers": "Layers",
@@ -84,7 +85,8 @@
         "automationsWorkflows": "Workflows",
         "automationsIntegrations": "Integrations",
         "registeredDomains": "Registered domains",
-        "hostnames": "Domain Connections"
+        "hostnames": "Domain Connections",
+        "apiGateway": "API Gateway"
       },
       "soon": "Soon",
       "collapse": "Collapse",
@@ -5891,6 +5893,607 @@
       "title": "Happy Independence Day",
       "welcome": "Welcome to DataDack Cloud — sovereign infrastructure, built in India.",
       "dismiss": "Dismiss greeting"
+    }
+  },
+  "apiGateway": {
+    "title": "API Gateway",
+    "description": "Publish APIs that map routes onto your backends, with staged configuration, authorization and throttling.",
+    "search": {
+      "placeholder": "Filter by name or invoke URL"
+    },
+    "defaultStage": "Default stage",
+    "panels": {
+      "label": "Section",
+      "apis": "APIs",
+      "domains": "Custom domains",
+      "keys": "API keys",
+      "plans": "Usage plans",
+      "links": "VPC links"
+    },
+    "stats": {
+      "total": "Total APIs",
+      "http": "HTTP",
+      "rest": "REST",
+      "websocket": "WebSocket"
+    },
+    "columns": {
+      "name": "Name",
+      "protocol": "Protocol",
+      "invokeUrl": "Invoke URL",
+      "endpoint": "Endpoint",
+      "routes": "Routes",
+      "stages": "Stages"
+    },
+    "actions": {
+      "open": "Open",
+      "copyUrl": "Copy invoke URL",
+      "export": "Export definition",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "common": {
+      "save": "Save",
+      "cancel": "Cancel",
+      "edit": "Edit",
+      "delete": "Delete",
+      "yes": "Yes",
+      "no": "No"
+    },
+    "empty": {
+      "title": "No APIs yet",
+      "description": "An API is the front door to your services: it maps incoming routes onto the backends that answer them. Create one to get started."
+    },
+    "create": {
+      "title": "Create API",
+      "description": "Define the API, its routes and its stages in one pass. You can change all of it afterwards.",
+      "action": "Create API",
+      "submit": "Create API"
+    },
+    "delete": {
+      "title": "Delete this API?",
+      "description": "{{name}} will be removed along with its routes, integrations, authorizers, stages and deployments. This cannot be undone."
+    },
+    "fields": {
+      "name": "Name",
+      "description": "Description",
+      "region": "Region",
+      "regionPlaceholder": "Select a region",
+      "protocol": "Protocol",
+      "endpointType": "Endpoint type",
+      "ipType": "IP address type",
+      "tlsPolicy": "Minimum TLS version",
+      "version": "Version",
+      "disableEndpoint": "Disable the generated endpoint",
+      "routeExpression": "Route selection expression",
+      "keyExpression": "API key selection expression"
+    },
+    "wizard": {
+      "advanced": "Advanced settings",
+      "configure": {
+        "title": "Configure API",
+        "description": "Name the API and choose how it is exposed."
+      },
+      "routes": {
+        "title": "Configure routes",
+        "description": "A route is a method and a path. Point it at a backend now, or leave it unattached and wire it up later.",
+        "add": "Add route",
+        "remove": "Remove route",
+        "later": "Routes are optional here. You can add them later.",
+        "none": "No routes yet"
+      },
+      "stages": {
+        "title": "Define stages",
+        "description": "A stage is an independently configurable environment of this API.",
+        "add": "Add stage",
+        "remove": "Remove stage",
+        "autoDeploy": "Auto-deploy",
+        "autoDeployHelp": "With auto-deploy on, every change to the API takes effect on this stage without an explicit deployment.",
+        "defaultCreated": "Leave this empty and a single default stage will be created for you."
+      }
+    },
+    "preview": {
+      "title": "Preview",
+      "unnamed": "Unnamed API",
+      "routes": "Routes",
+      "stages": "Stages",
+      "routingInactive": "This URL is reserved for the API. Routing is not active yet."
+    },
+    "detail": {
+      "back": "Back to API Gateway",
+      "export": "Export definition",
+      "delete": "Delete API",
+      "deleteTitle": "Delete this API?",
+      "deleteDescription": "{{name}} will be removed along with everything defined under it. This cannot be undone.",
+      "notFound": {
+        "title": "API not found",
+        "description": "This API may have been deleted, or it belongs to another account.",
+        "back": "Back to API Gateway"
+      }
+    },
+    "overview": {
+      "identity": "Identity",
+      "resources": "Defined resources",
+      "invokeUrl": "Invoke URL",
+      "routingInactive": "This is the URL the API will answer on. Routing is not active yet.",
+      "controlPlaneOnly": "This console stores the configuration. Nothing is serving traffic from it yet."
+    },
+    "routes": {
+      "create": "Add route",
+      "edit": "Edit route",
+      "default": "Default route",
+      "defaultHelp": "The default route matches any request no other route claims.",
+      "method": "Method",
+      "path": "Path",
+      "integration": "Integration",
+      "operationName": "Operation name",
+      "authorization": "Authorization",
+      "authorizer": "Authorizer",
+      "scopes": "Authorization scopes",
+      "apiKeyRequired": "Require an API key",
+      "unattached": "Unattached",
+      "requestParameters": "Request parameters",
+      "requestParametersHelp": "Name a parameter and mark whether it is required.",
+      "dialogDescription": "A route pairs a method and a path with the backend that answers it.",
+      "columns": {
+        "route": "Route",
+        "method": "Method",
+        "path": "Path",
+        "integration": "Integration",
+        "authorization": "Authorization",
+        "apiKey": "API key"
+      },
+      "deleteTitle": "Delete this route?",
+      "deleteDescription": "{{name}} will no longer be matched.",
+      "empty": {
+        "title": "No routes yet",
+        "description": "A route maps a method and a path onto an integration. Add one to describe what this API answers."
+      }
+    },
+    "integrations": {
+      "create": "Add integration",
+      "createTitle": "Add integration",
+      "editTitle": "Edit integration",
+      "dialogDescription": "Configure the backend and request and response transformations for this integration.",
+      "name": "Name",
+      "description": "Description",
+      "type": "Integration type",
+      "uri": "Backend URI",
+      "method": "Integration method",
+      "payloadFormat": "Payload format version",
+      "connectionType": "Connection type",
+      "timeout": "Timeout in milliseconds",
+      "advanced": "Advanced",
+      "requestParameters": "Request parameters",
+      "responseParameters": "Response parameters",
+      "requestTemplates": "Request templates",
+      "responseTemplates": "Response templates",
+      "templateExpression": "Template selection expression",
+      "passthrough": "Passthrough behavior",
+      "contentHandling": "Content handling strategy",
+      "tlsName": "TLS server name to verify",
+      "credentials": "Credentials ID",
+      "none": "None",
+      "key": "Key",
+      "value": "Value",
+      "addRow": "Add row",
+      "removeRow": "Remove row",
+      "internet": "Internet",
+      "vpcLink": "VPC link",
+      "timeoutValue": "{{value}} ms",
+      "columns": {
+        "name": "Name",
+        "type": "Type",
+        "uri": "Backend URI",
+        "method": "Method",
+        "connection": "Connection",
+        "timeout": "Timeout"
+      },
+      "deleteTitle": "Delete this integration?",
+      "deleteDescription": "{{name}} will be removed. Routes still pointing at it must be detached first.",
+      "empty": {
+        "title": "No integrations yet",
+        "description": "An integration is the backend a route forwards to, plus the transformations applied on the way there and back."
+      }
+    },
+    "authorizers": {
+      "create": "Add authorizer",
+      "createTitle": "Add authorizer",
+      "editTitle": "Edit authorizer",
+      "dialogDescription": "Configure how this authorizer identifies callers and makes authorization decisions.",
+      "name": "Name",
+      "type": "Authorizer type",
+      "identitySource": "Identity source",
+      "jwtIssuer": "JWT issuer",
+      "jwtAudience": "JWT audience",
+      "authorizerUri": "Authorizer URI",
+      "payloadFormat": "Payload format version",
+      "simpleResponses": "Enable simple responses",
+      "credentials": "Authorizer credentials",
+      "ttl": "Result cache TTL in seconds",
+      "ttlHelp": "Set to 0 to disable caching.",
+      "addValue": "Add value",
+      "removeValue": "Remove value",
+      "types": {
+        "JWT": { "label": "JWT", "description": "Validate signed tokens from an issuer and audience." },
+        "REQUEST": { "label": "Request", "description": "Send request identity data to an authorizer function." },
+        "TOKEN": { "label": "Token", "description": "Send a bearer token to an authorizer function." }
+      },
+      "columns": {
+        "name": "Name",
+        "type": "Type",
+        "identitySource": "Identity source",
+        "source": "Issuer or function",
+        "ttl": "Cache TTL"
+      },
+      "deleteTitle": "Delete this authorizer?",
+      "deleteDescription": "{{name}} will be removed. Routes still using it must be changed first.",
+      "empty": {
+        "title": "No authorizers yet",
+        "description": "An authorizer is a reusable decision about who may call a route: a JWT it validates, or a function it asks."
+      }
+    },
+    "cors": {
+      "title": "Cross-origin resource sharing",
+      "description": "CORS decides which browsers on which origins may call this API.",
+      "enabled": "Enable CORS",
+      "origins": "Allowed origins",
+      "methods": "Allowed methods",
+      "allowHeaders": "Allowed headers",
+      "exposeHeaders": "Exposed headers",
+      "maxAge": "Preflight cache",
+      "seconds": "seconds",
+      "credentials": "Allow credentials",
+      "listPlaceholder": "Add a value and press Enter",
+      "preview": "Response headers this configuration produces",
+      "warningTitle": "This combination will be rejected",
+      "credentialsWildcardWarning": "Browsers refuse a wildcard origin when credentials are allowed. Name the origins explicitly instead."
+    },
+    "stages": {
+      "create": "Add stage",
+      "default": "Default stage",
+      "autoDeploy": "Auto-deploy",
+      "manualDeploy": "Manual deployment",
+      "deployment": "Deployment",
+      "throttle": "Throttle",
+      "logging": "Logging",
+      "deleteTitle": "Delete this stage?",
+      "deleteDescription": "{{name}} will be removed along with its settings.",
+      "empty": {
+        "title": "No stages yet",
+        "description": "A stage is an independently configurable environment of this API, with its own variables, throttle and logging."
+      },
+      "createTitle": "Add stage",
+      "editTitle": "Edit stage",
+      "dialogDescription": "A stage is an independently configurable environment of this API.",
+      "name": "Stage name",
+      "description": "Description",
+      "rate": "Rate per second",
+      "burst": "Burst",
+      "throttleHelp": "Zero leaves the stage unthrottled. These are the defaults every route inherits.",
+      "detailedMetrics": "Detailed metrics",
+      "dataTrace": "Full request and response tracing",
+      "accessLog": "Access logging",
+      "accessLogDestination": "Log destination",
+      "accessLogFormat": "Log format",
+      "variables": "Stage variables",
+      "variablesHelp": "Substituted into integration URIs at request time.",
+      "addVariable": "Add variable",
+      "removeVariable": "Remove variable",
+      "overrides": "Per-route overrides",
+      "overridesHelp": "Leave a field empty to inherit the stage default. A value of 0 is an explicit block, not an inherit.",
+      "addOverride": "Add override",
+      "removeOverride": "Remove override",
+      "selectRoute": "Select a route",
+      "inherit": "Inherit"
+    },
+    "deployments": {
+      "create": "Create deployment",
+      "createAction": "Create deployment",
+      "description": "Description",
+      "pointStage": "Point a stage at this deployment",
+      "noStage": "Do not attach it to a stage",
+      "noDescription": "No description",
+      "auto": "Auto-deployed",
+      "rollback": "Roll back to this",
+      "rollbackTitle": "Roll back to this deployment?",
+      "rollbackDescription": "The stage you choose will start serving the configuration captured in this deployment.",
+      "rollbackConfirm": "Roll back",
+      "deleteTitle": "Delete {{name}}?",
+      "deleteDescription": "{{name}} will be permanently deleted.",
+      "deleteAttached": "This deployment cannot be deleted while a stage points at it.",
+      "empty": {
+        "title": "No deployments yet",
+        "description": "A deployment is an immutable snapshot of the routes and integrations as they are right now."
+      }
+    },
+    "models": {
+      "create": "Add model",
+      "createTitle": "Add model",
+      "editTitle": "Edit model",
+      "dialogDescription": "Define a named JSON Schema for validating request bodies.",
+      "name": "Name",
+      "description": "Description",
+      "contentType": "Content type",
+      "schema": "JSON Schema",
+      "invalidSchema": "The schema must be valid JSON.",
+      "viewSchema": "View schema",
+      "schemaDescription": "A JSON Schema document that a request body is validated against.",
+      "columns": {
+        "name": "Name",
+        "contentType": "Content type",
+        "description": "Description"
+      },
+      "deleteTitle": "Delete this model?",
+      "deleteDescription": "{{name}} will be removed. Routes validating against it will stop doing so.",
+      "empty": {
+        "title": "No models yet",
+        "description": "A model is a named JSON Schema a route can validate an incoming request body against."
+      }
+    },
+    "settings": {
+      "title": "API settings",
+      "description": "Change how this API is identified and exposed.",
+      "apiDescription": "Description",
+      "name": "Name",
+      "version": "Version",
+      "status": "Status",
+      "available": "Available",
+      "inactive": "Inactive",
+      "endpointType": "Endpoint type",
+      "ipAddressType": "IP address type",
+      "dualStack": "Dual-stack",
+      "tlsPolicy": "Minimum TLS version",
+      "disableEndpoint": "Disable the generated endpoint",
+      "disableEndpointHelp": "Hides the generated invoke URL so the API is reachable only through a custom domain.",
+      "routeExpression": "Route selection expression",
+      "keyExpression": "API key selection expression",
+      "tags": "Tags",
+      "dangerTitle": "Delete this API",
+      "dangerDescription": "Removes the API and everything defined under it. This cannot be undone."
+    },
+    "apiKeys": {
+      "title": "API keys",
+      "description": "A key a caller presents on a route that requires one.",
+      "create": "Create API key",
+      "createTitle": "Create API key",
+      "createDescription": "Generate a key, or paste one you already issue elsewhere.",
+      "generateHint": "Leave this empty and a key will be generated for you.",
+      "reveal": "Reveal",
+      "revealing": "Revealing",
+      "toggle": "Enabled",
+      "done": "Done",
+      "secretTitle": "Copy this key now",
+      "secretOnce": "This is the only time the full value is shown. Store it somewhere safe.",
+      "columns": {
+        "name": "Name",
+        "value": "Value",
+        "enabled": "Enabled",
+        "customer": "Customer"
+      },
+      "delete": {
+        "title": "Delete this API key?",
+        "description": "{{name}} will stop working immediately for every caller using it."
+      },
+      "empty": {
+        "title": "No API keys yet",
+        "description": "Create a key, attach it to a usage plan, and require it on the routes that should be metered."
+      }
+    },
+    "usagePlans": {
+      "title": "Usage plans",
+      "description": "Throttle and cap the keys attached to a plan.",
+      "create": "Create usage plan",
+      "createTitle": "Create usage plan",
+      "editTitle": "Edit usage plan",
+      "save": "Save plan",
+      "formDescription": "A plan sets a sustained rate, a burst allowance and a request quota.",
+      "unlimited": "Unlimited",
+      "throttle": {
+        "title": "Throttle",
+        "description": "The sustained request rate and the burst above it that callers may reach."
+      },
+      "quota": {
+        "title": "Quota",
+        "description": "A hard cap on requests over a window. Zero means no cap."
+      },
+      "fields": {
+        "name": "Name",
+        "rate": "Rate per second",
+        "burst": "Burst",
+        "limit": "Quota limit",
+        "period": "Quota period"
+      },
+      "columns": {
+        "name": "Name",
+        "throttle": "Throttle",
+        "quota": "Quota",
+        "keys": "Keys",
+        "stages": "Stages"
+      },
+      "delete": {
+        "title": "Delete this usage plan?",
+        "description": "{{name}} will be removed and its keys will no longer be throttled by it."
+      },
+      "empty": {
+        "title": "No usage plans yet",
+        "description": "A usage plan groups API keys under one throttle and quota."
+      }
+    },
+    "domains": {
+      "title": "Custom domains",
+      "description": "Serve APIs on a hostname you own.",
+      "create": "Add custom domain",
+      "createTitle": "Add custom domain",
+      "createDescription": "Records that this account intends to serve APIs on the name. It does not register the name.",
+      "editTitle": "Edit custom domain",
+      "editDescription": "Update how this custom domain accepts and secures traffic.",
+      "nameImmutable": "The domain name cannot be changed because it uniquely identifies this custom domain.",
+      "fields": {
+        "domain": "Domain name",
+        "region": "Region",
+        "endpointType": "Endpoint type",
+        "securityPolicy": "TLS security policy",
+        "ipAddressType": "IP address type",
+        "certificateId": "Certificate ID"
+      },
+      "columns": {
+        "domain": "Domain",
+        "endpoint": "Endpoint",
+        "tls": "TLS policy",
+        "status": "Status",
+        "mappings": "Mappings"
+      },
+      "manageMappings": "Manage mappings",
+      "mappingsTitle": "API mappings",
+      "mappingsDescription": "Publish an API stage under a path prefix of this domain.",
+      "addMapping": "Add mapping",
+      "deleteMapping": "Remove mapping",
+      "editMapping": "Edit mapping",
+      "saveMapping": "Save mapping",
+      "root": "Root of the domain",
+      "apiPlaceholder": "Select an API",
+      "stagePlaceholder": "Select a stage",
+      "pathPlaceholder": "Path prefix, or empty for the root",
+      "done": "Done",
+      "delete": {
+        "title": "Remove this custom domain?",
+        "description": "{{name}} and its API mappings will be removed."
+      },
+      "empty": {
+        "title": "No custom domains yet",
+        "description": "Add a hostname you own, then map API stages onto paths beneath it."
+      }
+    },
+    "vpcLinks": {
+      "title": "VPC links",
+      "description": "Let an integration reach a private backend inside a VPC network.",
+      "create": "Create VPC link",
+      "createTitle": "Create VPC link",
+      "createDescription": "Choose the VPC and the subnets the link should reach into.",
+      "editTitle": "Edit VPC link",
+      "editDescription": "Update the name, subnets, and security groups for this VPC link.",
+      "vpcImmutable": "The VPC cannot be changed because a VPC link cannot move between VPCs.",
+      "vpcPlaceholder": "Select a VPC",
+      "fields": {
+        "name": "Name",
+        "vpc": "VPC",
+        "subnets": "Subnets",
+        "securityGroups": "Security groups"
+      },
+      "columns": {
+        "name": "Name",
+        "vpc": "VPC",
+        "subnets": "Subnets",
+        "securityGroups": "Security groups",
+        "status": "Status"
+      },
+      "delete": {
+        "title": "Delete this VPC link?",
+        "description": "{{name}} will be removed. Integrations still using it must be changed first."
+      },
+      "empty": {
+        "title": "No VPC links yet",
+        "description": "A VPC link is how an integration reaches a backend that has no public address."
+      }
+    },
+    "import": {
+      "title": "Import API",
+      "description": "Create an API from an OpenAPI 3 document.",
+      "action": "Import",
+      "document": "OpenAPI document",
+      "name": "Name",
+      "namePlaceholder": "Defaults to the title in the document",
+      "region": "Region",
+      "regionPlaceholder": "Select a region",
+      "failOnWarnings": "Fail if any operation cannot be imported",
+      "warnings": "Some operations could not be mapped onto routes",
+      "submit": "Import API"
+    },
+    "toasts": {
+      "apiKeyCreateFailed": "Could not create the API key",
+      "apiKeyCreated": "API key created",
+      "apiKeyDeleteFailed": "Could not delete the API key",
+      "apiKeyDeleted": "API key deleted",
+      "apiKeyRevealFailed": "Could not reveal the API key",
+      "apiKeyRevealed": "API key revealed",
+      "apiKeyUpdateFailed": "Could not update the API key",
+      "apiKeyUpdated": "API key updated",
+      "authorizerCreateFailed": "Could not create the authorizer",
+      "authorizerCreated": "Authorizer created",
+      "authorizerDeleteFailed": "Could not delete the authorizer",
+      "authorizerDeleted": "Authorizer deleted",
+      "authorizerUpdateFailed": "Could not update the authorizer",
+      "authorizerUpdated": "Authorizer updated",
+      "corsUpdateFailed": "Could not update the CORS configuration",
+      "corsUpdated": "CORS configuration updated",
+      "createFailed": "Could not create the API",
+      "created": "API created",
+      "deleteFailed": "Could not delete the API",
+      "deleted": "API deleted",
+      "deploymentCreateFailed": "Could not create the deployment",
+      "deploymentCreated": "Deployment created",
+      "deploymentDeleteFailed": "Could not delete the deployment",
+      "deploymentDeleted": "Deployment deleted",
+      "domainCreateFailed": "Could not create the custom domain",
+      "domainCreated": "Custom domain created",
+      "domainDeleteFailed": "Could not delete the custom domain",
+      "domainDeleted": "Custom domain deleted",
+      "domainUpdateFailed": "Could not update the custom domain",
+      "domainUpdated": "Custom domain updated",
+      "importFailed": "Could not import the API",
+      "imported": "API imported",
+      "integrationCreateFailed": "Could not create the integration",
+      "integrationCreated": "Integration created",
+      "integrationDeleteFailed": "Could not delete the integration",
+      "integrationDeleted": "Integration deleted",
+      "integrationUpdateFailed": "Could not update the integration",
+      "integrationUpdated": "Integration updated",
+      "mappingCreateFailed": "Could not create the API mapping",
+      "mappingCreated": "API mapping created",
+      "mappingDeleteFailed": "Could not delete the API mapping",
+      "mappingDeleted": "API mapping deleted",
+      "mappingUpdateFailed": "Could not update the API mapping",
+      "mappingUpdated": "API mapping updated",
+      "modelCreateFailed": "Could not create the model",
+      "modelCreated": "Model created",
+      "modelDeleteFailed": "Could not delete the model",
+      "modelDeleted": "Model deleted",
+      "modelUpdateFailed": "Could not update the model",
+      "modelUpdated": "Model updated",
+      "routeCreateFailed": "Could not create the route",
+      "routeCreated": "Route created",
+      "routeDeleteFailed": "Could not delete the route",
+      "routeDeleted": "Route deleted",
+      "routeUpdateFailed": "Could not update the route",
+      "routeUpdated": "Route updated",
+      "stageCreateFailed": "Could not create the stage",
+      "stageCreated": "Stage created",
+      "stageDeleteFailed": "Could not delete the stage",
+      "stageDeleted": "Stage deleted",
+      "stageUpdateFailed": "Could not update the stage",
+      "stageUpdated": "Stage updated",
+      "updateFailed": "Could not update the API",
+      "updated": "API updated",
+      "usagePlanCreateFailed": "Could not create the usage plan",
+      "usagePlanCreated": "Usage plan created",
+      "usagePlanDeleteFailed": "Could not delete the usage plan",
+      "usagePlanDeleted": "Usage plan deleted",
+      "usagePlanKeyAttachFailed": "Could not attach the API key on the usage plan",
+      "usagePlanKeyAttached": "API key attached on the usage plan",
+      "usagePlanKeyDetachFailed": "Could not detach the API key on the usage plan",
+      "usagePlanKeyDetached": "API key detached on the usage plan",
+      "usagePlanStageAttachFailed": "Could not attach the stage on the usage plan",
+      "usagePlanStageAttached": "Stage attached on the usage plan",
+      "usagePlanStageDetachFailed": "Could not detach the stage on the usage plan",
+      "usagePlanStageDetached": "Stage detached on the usage plan",
+      "usagePlanUpdateFailed": "Could not update the usage plan",
+      "usagePlanUpdated": "Usage plan updated",
+      "vpcLinkCreateFailed": "Could not create the VPC link",
+      "vpcLinkCreated": "VPC link created",
+      "vpcLinkDeleteFailed": "Could not delete the VPC link",
+      "vpcLinkDeleted": "VPC link deleted",
+      "vpcLinkUpdateFailed": "Could not update the VPC link",
+      "vpcLinkUpdated": "VPC link updated"
     }
   }
 }

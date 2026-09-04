@@ -27,13 +27,13 @@ import {
   Router,
   ScrollText,
   Server,
-  Settings2,
   ShieldCheck,
   Ship,
   Sparkles,
   UserCog,
   Users,
   Waypoints,
+  Webhook,
 } from "lucide-react"
 
 export interface SidebarNavItem {
@@ -111,6 +111,11 @@ export const CONSOLE_SERVICES: ConsoleService[] = [
         labelKey: "console.nav.items.securityGroups",
         icon: Lock,
         path: "/networking/security-groups",
+      },
+      {
+        labelKey: "console.nav.items.apiGateway",
+        icon: Webhook,
+        path: "/networking/api-gateway",
       },
       {
         labelKey: "console.nav.items.routers",
@@ -228,8 +233,8 @@ export const CONSOLE_SERVICES: ConsoleService[] = [
         path: "/managed-apps/upgrade",
       },
       {
-        labelKey: "console.nav.items.settings",
-        icon: Settings2,
+        labelKey: "console.nav.items.integrations",
+        icon: Cable,
         path: "/managed-apps/settings",
       },
     ],

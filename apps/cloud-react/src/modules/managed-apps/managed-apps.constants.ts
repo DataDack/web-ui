@@ -39,9 +39,9 @@ export const MANAGED_APPS_ROUTES = {
   create: "/managed-apps/create",
   /** Account plan, promoted to the Managed Apps service navigation. */
   upgrade: "/managed-apps/upgrade",
-  /** Section settings — the one place the account's tier can be changed. */
+  /** Legacy URL for the Managed Apps integrations surface. */
   settings: "/managed-apps/settings",
-  /** Settings, opened on the GitHub accounts we can build from. Every
+  /** Integrations, opened on the GitHub accounts we can build from. Every
    *  "reconnect this repo" path ends here, so it is one constant. */
   connections: "/managed-apps/settings",
   project: (id: string) => `/managed-apps/projects/${id}`,

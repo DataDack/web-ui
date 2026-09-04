@@ -18,6 +18,7 @@ import {
   ShieldCheck,
   Users,
   Wifi,
+  Webhook,
 } from "lucide-react"
 
 import type { ServiceDefinition } from "./services.types"
@@ -144,6 +145,15 @@ export const SERVICE_REGISTRY: Record<string, ServiceDefinition> = {
         path: "/networking/security-groups",
         icon: Shield,
         description: "Stateful firewall rules controlling inbound and outbound traffic.",
+        status: "operational",
+      },
+      {
+        id: "api-gateway",
+        name: "API Gateway",
+        path: "/networking/api-gateway",
+        icon: Webhook,
+        description:
+          "Publish, secure, and manage APIs through configurable routes and integrations.",
         status: "operational",
       },
       {

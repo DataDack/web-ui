@@ -403,7 +403,7 @@ function ConnectionsPanel({ rows, providers, isLoading, error, onChanged }) {
               <tr>
                 <th className="px-3 py-2 font-medium">Provider</th>
                 <th className="px-3 py-2 font-medium">Account</th>
-                <th className="px-3 py-2 font-medium">Scopes</th>
+                <th className="px-3 py-2 font-medium">Used by</th>
                 <th className="px-3 py-2 text-right font-medium">Actions</th>
               </tr>
             </thead>
@@ -469,12 +469,16 @@ function ConnectButton({ provider, onChanged }) {
 function ConnectionRow({ row, onChanged }) {
   const [busy, setBusy] = useState(false)
   const meta = getPlatformMeta(row.provider)
-  const scopeCount = row.scopes ? row.scopes.trim().split(/\s+/).filter(Boolean).length : 0
+  const capabilities = row.credentials?.capabilities ?? []
+  const uses = [
+    capabilities.includes("managed_apps") && "Managed Apps",
+    capabilities.includes("workflows") && "Workflows",
+  ].filter(Boolean)
 
   const disconnect = useCallback(async () => {
     if (
       !globalThis.confirm(
-        `Disconnect ${row.account_label || row.account_email}? Any trigger using it is paused.`,
+        `Disconnect ${row.account_label || row.account_email}? ${capabilities.includes("managed_apps") ? "Managed Apps will no longer be able to build from its repositories, and " : ""}any workflow trigger using it will be paused.`,
       )
     ) {
       return
@@ -489,7 +493,7 @@ function ConnectionRow({ row, onChanged }) {
     } finally {
       setBusy(false)
     }
-  }, [row.id, row.account_label, row.account_email, onChanged])
+  }, [row.id, row.account_label, row.account_email, capabilities, onChanged])
 
   return (
     <tr className="border-b last:border-0">
@@ -518,7 +522,7 @@ function ConnectionRow({ row, onChanged }) {
         </div>
       </td>
       <td className="px-3 py-2 text-[11px] text-muted-foreground">
-        {scopeCount > 0 ? `${scopeCount} granted` : "—"}
+        {uses.length > 0 ? uses.join(" · ") : "OAuth account"}
       </td>
       <td className="px-3 py-2 text-right">
         <Button
@@ -555,7 +559,7 @@ const MECHANISM = {
   meta: { label: "Set up on a trigger", hint: "Add the trigger to a workflow, then finish the Meta connection there." },
   self_service: { label: "Paste a URL", hint: "Add the trigger to a workflow — it shows the URL and secret to paste." },
   bot_token: { label: "Paste a token", hint: "Add the trigger to a workflow and give it your bot token." },
-  github_app: { label: "Install the app", hint: "Installed from Managed Apps; it deploys from a repository rather than driving workflows." },
+  github_app: { label: "Install the app", hint: "One GitHub App installation serves Managed Apps and workflow triggers." },
 }
 
 const CATEGORY_LABEL = {
@@ -670,6 +674,11 @@ function CatalogCard({ item, connected, onChanged }) {
           a flow with nothing to complete it against. */}
       {item.available && item.mechanism === "oauth" && !connected && (
         <ConnectButton provider={item.provider} onChanged={onChanged} />
+      )}
+      {item.available && item.mechanism === "github_app" && !connected && (
+        <Button asChild size="sm" variant="outline" className="h-8 text-[11px]">
+          <Link to="/managed-apps/settings">Install GitHub App</Link>
+        </Button>
       )}
     </div>
   )

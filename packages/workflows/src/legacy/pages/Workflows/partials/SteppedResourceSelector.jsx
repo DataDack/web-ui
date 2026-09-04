@@ -220,7 +220,7 @@ const STEPS = {
       dependsOn: ['repo'],
       fetch: () => integrationsApi.githubEvents(),
       mapOption: (e) => ({
-        value: e.name || e.Name,
+        value: e.id || e.ID || e.name || e.Name,
         label: e.name || e.Name,
         description: e.description || e.Description,
         category: e.category || e.Category,

@@ -3,7 +3,7 @@ import type { RouteObject } from "react-router-dom"
 export const managedAppsRoutes: RouteObject[] = [
   {
     path: "managed-apps",
-    // The landing page carries the service sidebar (Overview · Settings),
+    // The landing page carries the service sidebar (Apps · Integrations),
     // like every other service in the console. Only the focused task
     // surfaces below opt out of it.
     lazy: async () => {

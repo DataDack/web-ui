@@ -94,4 +94,26 @@ export const vpcRoutes: RouteObject[] = [
       return { Component: VpnPage }
     },
   },
+  {
+    path: "networking/api-gateway",
+    lazy: async () => {
+      const { APIGatewayListPage } = await import("./api-gateway/APIGatewayListPage")
+      return { Component: APIGatewayListPage }
+    },
+  },
+  {
+    path: "networking/api-gateway/create",
+    handle: { hideSidebar: true },
+    lazy: async () => {
+      const { APIGatewayCreatePage } = await import("./api-gateway/APIGatewayCreatePage")
+      return { Component: APIGatewayCreatePage }
+    },
+  },
+  {
+    path: "networking/api-gateway/:id",
+    lazy: async () => {
+      const { APIGatewayDetailPage } = await import("./api-gateway/APIGatewayDetailPage")
+      return { Component: APIGatewayDetailPage }
+    },
+  },
 ]
