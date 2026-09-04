@@ -368,8 +368,10 @@ function RouteDialog({
               <FieldRow label={t("apiGateway.routes.authorization")}>
                 <SegmentedControl
                   value={field.value}
-                  onValueChange={field.onChange}
+                  onChange={field.onChange}
+                  ariaLabel={t("apiGateway.routes.authorization")}
                   options={AUTH_TYPE_OPTIONS.map((x) => ({ value: x.value, label: x.label }))}
+                  showLabels
                 />
               </FieldRow>
             )}

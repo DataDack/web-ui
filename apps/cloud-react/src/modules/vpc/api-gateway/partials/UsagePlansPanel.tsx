@@ -46,7 +46,8 @@ const schema = z.object({
   quota_limit: z.coerce.number().int().min(0),
   quota_period: z.enum(["DAY", "WEEK", "MONTH"]),
 })
-type Values = z.infer<typeof schema>
+type Values = z.output<typeof schema>
+type Input = z.input<typeof schema>
 const LABEL = "text-xs font-semibold tracking-wide uppercase text-muted-foreground"
 export function UsagePlansPanel() {
   const { t } = useTranslation()
@@ -173,7 +174,7 @@ function PlanDialog({
   const { t } = useTranslation()
   const { mutate: create, isPending: creating } = useCreateUsagePlan()
   const { mutate: update, isPending: updating } = useUpdateUsagePlan()
-  const f = useForm<Values>({
+  const f = useForm<Input, unknown, Values>({
     resolver: zodResolver(schema),
     values: {
       name: plan?.name ?? "",

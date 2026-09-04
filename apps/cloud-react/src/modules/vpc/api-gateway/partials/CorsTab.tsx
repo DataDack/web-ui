@@ -1,15 +1,6 @@
 import { useState } from "react"
 
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-  Button,
-  Card,
-  Checkbox,
-  Input,
-  Switch,
-} from "@datadack/common-ui"
+import { Button, Card, Checkbox, Input, Switch } from "@datadack/common-ui"
 import { AlertTriangle } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
@@ -116,13 +107,18 @@ export function CorsTab({ api }: Readonly<{ api: APIGateway }>) {
               <span />
             </FieldRow>
             {credentials && csv(origins).includes("*") && (
-              <Alert>
-                <AlertTriangle className="size-4" />
-                <AlertTitle>{t("apiGateway.cors.warningTitle")}</AlertTitle>
-                <AlertDescription>
-                  {t("apiGateway.cors.credentialsWildcardWarning")}
-                </AlertDescription>
-              </Alert>
+              <div
+                role="status"
+                className="flex items-start gap-2.5 rounded-md border border-status-warning/40 bg-status-warning/10 p-3"
+              >
+                <AlertTriangle className="mt-0.5 size-4 shrink-0 text-status-warning" />
+                <div className="space-y-0.5">
+                  <p className="text-[13px] font-semibold">{t("apiGateway.cors.warningTitle")}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {t("apiGateway.cors.credentialsWildcardWarning")}
+                  </p>
+                </div>
+              </div>
             )}
           </div>
         )}

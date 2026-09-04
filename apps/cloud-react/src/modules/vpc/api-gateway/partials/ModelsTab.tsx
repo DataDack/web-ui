@@ -23,6 +23,17 @@ import { ConfirmDialog } from "@/components/console"
 import { useDeleteModel, useModels } from "../apigw.hooks"
 import type { APIGateway, APIGatewayModel } from "../apigw.types"
 import { ModelDialog } from "./ModelDialog"
+/** The schema column holds JSON text; JsonViewer wants the parsed value. A row
+ *  written before validation existed may not parse, so fall back to the raw
+ *  string rather than throwing inside a dialog. */
+function safeParse(raw: string): unknown {
+  try {
+    return JSON.parse(raw)
+  } catch {
+    return raw
+  }
+}
+
 export function ModelsTab({ api }: Readonly<{ api: APIGateway }>) {
   const { t } = useTranslation()
   const query = useModels(api.id),
@@ -104,7 +115,7 @@ export function ModelsTab({ api }: Readonly<{ api: APIGateway }>) {
             <DialogTitle>{viewing?.name}</DialogTitle>
             <DialogDescription>{t("apiGateway.models.schemaDescription")}</DialogDescription>
           </DialogHeader>
-          {viewing && <JsonViewer value={viewing.schema} />}
+          {viewing && <JsonViewer data={safeParse(viewing.schema)} />}
         </DialogContent>
       </Dialog>
       <ConfirmDialog

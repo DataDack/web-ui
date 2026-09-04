@@ -9,9 +9,7 @@ import {
   dateColumn,
   EmptyState,
   Input,
-  nameColumn,
   type RowAction,
-  StatGrid,
   textColumn,
 } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
@@ -29,7 +27,7 @@ import {
 import { useTranslation } from "react-i18next"
 import { Link, useNavigate, useSearchParams } from "react-router-dom"
 
-import { ConfirmDialog, PageHeader, SegmentedControl } from "@/components/console"
+import { ConfirmDialog, PageHeader, SegmentedControl, StatGrid } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
 import { APIGW_ROUTES } from "./apigw.constants"
@@ -105,11 +103,20 @@ export function APIGatewayListPage() {
   )
   const columns = useMemo<ColumnDef<APIGateway>[]>(
     () => [
-      nameColumn({
-        header: t("apiGateway.columns.name"),
-        accessor: (a: APIGateway) => a.name,
-        href: (a: APIGateway) => APIGW_ROUTES.detail(a.id),
-      }),
+      {
+        id: "name",
+        accessorFn: (a: APIGateway) => a.name,
+        header: () => t("apiGateway.columns.name"),
+        meta: { interactive: true },
+        cell: ({ row }) => (
+          <Link
+            to={APIGW_ROUTES.detail(row.original.id)}
+            className="font-medium text-status-info hover:underline"
+          >
+            {row.original.name}
+          </Link>
+        ),
+      },
       {
         id: "protocol",
         header: () => t("apiGateway.columns.protocol"),
@@ -129,6 +136,7 @@ export function APIGatewayListPage() {
         ),
       },
       textColumn({
+        id: "endpoint",
         header: t("apiGateway.columns.endpoint"),
         accessor: (a: APIGateway) => `${a.endpoint_type} · ${a.ip_address_type}`,
         responsive: "md",
