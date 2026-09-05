@@ -71,9 +71,13 @@ export function ImportApiDialog({
               importApi(
                 { ...v, name: v.name || undefined },
                 {
+                  // The import route is the one that answers with more than the
+                  // resource: warnings are the operations the document
+                  // described that could not be mapped onto a route. Landing on
+                  // the new API would hide them, so the dialog stays open and
+                  // shows them instead.
                   onSuccess: (api) => {
-                    const result = api as typeof api & { warnings?: string[] }
-                    if (result.warnings?.length) setWarnings(result.warnings)
+                    if (api.warnings.length > 0) setWarnings(api.warnings)
                     else void navigate(APIGW_ROUTES.detail(api.id))
                   },
                 },

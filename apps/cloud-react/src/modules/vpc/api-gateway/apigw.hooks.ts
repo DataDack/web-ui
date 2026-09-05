@@ -2,9 +2,6 @@ import { useMutation, useQuery, useQueryClient, type QueryKey } from "@tanstack/
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 
-import { handleQuotaGateError } from "@/modules/governance/quota-gate"
-import { handleKycGateError } from "@/modules/onboarding/kyc-gate"
-
 import { apigwApi } from "./apigw.api"
 import { APIGW_QUERY_KEYS as K } from "./apigw.constants"
 import type * as T from "./apigw.types"
@@ -14,7 +11,6 @@ function useAction<D, V>(
   success: string,
   failure: string,
   keys: (variables: V) => QueryKey[],
-  gated = false,
 ) {
   const client = useQueryClient()
   const { t } = useTranslation()
@@ -24,8 +20,11 @@ function useAction<D, V>(
       keys(variables).forEach((queryKey) => void client.invalidateQueries({ queryKey }))
       toast.success(t(`apiGateway.${success}`))
     },
-    onError: (error) => {
-      if (gated && (handleQuotaGateError(error) || handleKycGateError(error))) return
+    // The quota- and KYC-gate handlers are deliberately absent. They read the
+    // platform gateway's error envelope, and every mutation here now goes
+    // straight to the serverless control plane, which answers in its own shape
+    // — so calling them would be dead code that reads as a working gate.
+    onError: () => {
       toast.error(t(`apiGateway.${failure}`))
     },
   })
@@ -34,8 +33,15 @@ function useAction<D, V>(
 export const useAPIs = () => useQuery({ queryKey: K.list, queryFn: apigwApi.list })
 export const useAPI = (id: string) =>
   useQuery({ queryKey: K.detail(id), queryFn: () => apigwApi.get(id), enabled: !!id })
+// NOT quota-gated any more, and that is a real change rather than an oversight.
+// The quota check lived in cloud-be-go's quotaguard, which reads the platform's
+// quota tables; the control plane moved to the serverless service on 2026-09-05
+// and that service has no channel to those tables. `vpc.api_gateways` was
+// removed from the quota registry with it. Nothing limits how many APIs an
+// account creates today — restoring that needs the serverless side to consult
+// the platform's quota API, the way it already does for functions.
 export const useCreateAPI = () =>
-  useAction(apigwApi.create, "toasts.created", "toasts.createFailed", () => [K.list], true)
+  useAction(apigwApi.create, "toasts.created", "toasts.createFailed", () => [K.list])
 export const useUpdateAPI = () =>
   useAction(
     ({ id, payload }: { id: string; payload: T.UpdateAPIRequest }) => apigwApi.update(id, payload),

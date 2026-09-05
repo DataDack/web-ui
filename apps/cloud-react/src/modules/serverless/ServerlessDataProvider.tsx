@@ -1,4 +1,4 @@
-import { useMemo, type ReactNode } from "react"
+import { useEffect, useMemo, type ReactNode } from "react"
 
 import { useQuery } from "@tanstack/react-query"
 
@@ -7,6 +7,7 @@ import { useAuth } from "@/modules/auth/auth.context"
 import { useActiveRegion } from "@/modules/region/region.context"
 import { useResourceGroup } from "@/modules/resource-groups/resource-group.context"
 import { apiGet } from "@/services/api/client"
+import { serverlessOrigin } from "@/services/api/serverless-origin"
 
 import {
   ServerlessProvider,
@@ -80,6 +81,15 @@ export function ServerlessDataProvider({ children }: Readonly<{ children: ReactN
     if (endpoints.length === 1) return trimBase(endpoints[0].url)
     return null
   }, [envBase, endpoints, activeRegionCode])
+
+  // Publish the resolved origin for the console sections that talk to FaaS
+  // without going through this provider's transport — API Gateway reaches it
+  // from a plain query function, which has no React context to read. This
+  // provider is mounted app-wide in main.tsx, so resolving it once here is what
+  // stops three sections making the same endpoint-map call.
+  useEffect(() => {
+    serverlessOrigin.set(baseUrl)
+  }, [baseUrl])
 
   // One transport per resolved base (and region, which the gateway-side create
   // closes over). A region switch swaps the closure, not the axios instance.

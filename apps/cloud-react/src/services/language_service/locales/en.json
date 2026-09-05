@@ -6542,6 +6542,10 @@
       "deployments": "Deployments",
       "models": "Models",
       "settings": "Settings"
+    },
+    "unavailable": {
+      "title": "API Gateway is not available in this region",
+      "description": "This region has no API Gateway control plane yet. Switch to a region that does, or contact support if you expected one here."
     }
   }
 }

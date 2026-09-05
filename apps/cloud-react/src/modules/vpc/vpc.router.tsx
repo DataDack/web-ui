@@ -94,26 +94,57 @@ export const vpcRoutes: RouteObject[] = [
       return { Component: VpnPage }
     },
   },
+  // API Gateway's control plane is the serverless service, not this backend, so
+  // each of its three pages is wrapped in RegionGate — the section is only
+  // reachable in a region that has a FaaS origin. Wrapping here rather than
+  // inside each page keeps the gate one decision rather than three.
   {
     path: "networking/api-gateway",
     lazy: async () => {
-      const { APIGatewayListPage } = await import("./api-gateway/APIGatewayListPage")
-      return { Component: APIGatewayListPage }
+      const [{ APIGatewayListPage }, { RegionGate }] = await Promise.all([
+        import("./api-gateway/APIGatewayListPage"),
+        import("./api-gateway/partials/RegionGate"),
+      ])
+      return {
+        Component: () => (
+          <RegionGate>
+            <APIGatewayListPage />
+          </RegionGate>
+        ),
+      }
     },
   },
   {
     path: "networking/api-gateway/create",
     handle: { hideSidebar: true },
     lazy: async () => {
-      const { APIGatewayCreatePage } = await import("./api-gateway/APIGatewayCreatePage")
-      return { Component: APIGatewayCreatePage }
+      const [{ APIGatewayCreatePage }, { RegionGate }] = await Promise.all([
+        import("./api-gateway/APIGatewayCreatePage"),
+        import("./api-gateway/partials/RegionGate"),
+      ])
+      return {
+        Component: () => (
+          <RegionGate>
+            <APIGatewayCreatePage />
+          </RegionGate>
+        ),
+      }
     },
   },
   {
     path: "networking/api-gateway/:id",
     lazy: async () => {
-      const { APIGatewayDetailPage } = await import("./api-gateway/APIGatewayDetailPage")
-      return { Component: APIGatewayDetailPage }
+      const [{ APIGatewayDetailPage }, { RegionGate }] = await Promise.all([
+        import("./api-gateway/APIGatewayDetailPage"),
+        import("./api-gateway/partials/RegionGate"),
+      ])
+      return {
+        Component: () => (
+          <RegionGate>
+            <APIGatewayDetailPage />
+          </RegionGate>
+        ),
+      }
     },
   },
 ]
