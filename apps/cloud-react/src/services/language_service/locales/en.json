@@ -1907,6 +1907,29 @@
       "region": "Region",
       "status": "Status"
     },
+    "behavior": {
+      "title": "Configure domain",
+      "description": "Choose how this hostname handles incoming requests.",
+      "label": "Traffic behavior",
+      "connect": {
+        "title": "Connect to an environment",
+        "subtitle": "Serve this managed app on the domain.",
+        "environment": "Production"
+      },
+      "redirect": {
+        "title": "Redirect to another domain",
+        "subtitle": "Send each request to a different hostname.",
+        "route": "301, 302, 307 or 308"
+      },
+      "environmentLabel": "Environment",
+      "environmentHint": "Only Production can receive public traffic right now.",
+      "batchConnects": "Multiple domains are connected to Production. Configure redirects individually after they are added.",
+      "pendingRedirect": "The redirect to {{to}} will be applied after DNS verification. If you close this dialog first, configure it later from the domain row.",
+      "applyingRedirect": "Applying the redirect…",
+      "redirectApplied": "{{status}} redirect to {{to}} is active",
+      "redirectApplyFailed": "The domain was added, but the redirect could not be applied.",
+      "save": "Save configuration"
+    },
     "redirect": {
       "title": "Redirect this domain",
       "toLabel": "Redirect to",
@@ -1932,6 +1955,8 @@
     },
     "actions": {
       "add": "Add domain",
+      "configure": "Configure domain…",
+      "changeAddress": "Change address…",
       "editAddress": "Edit address",
       "redirect": "Redirect…",
       "editRedirect": "Edit redirect…",

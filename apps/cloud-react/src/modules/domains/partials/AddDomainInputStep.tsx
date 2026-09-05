@@ -2,8 +2,10 @@ import { Button, DialogFooter, Label, Textarea } from "@datadack/common-ui"
 import { useTranslation } from "react-i18next"
 
 import type { DomainClaimKind } from "../domains.types"
+import { DomainBehaviorChoice, type DomainBehavior } from "./DomainBehaviorChoice"
 import { DomainKindChoice } from "./DomainKindChoice"
 import type { ParsedHostnames } from "./hostname-input"
+import { RedirectSettingsFields } from "./RedirectSettingsFields"
 
 /** How many previewed hostnames are spelled out before the count takes over. */
 const PREVIEW_LIMIT = 3
@@ -28,6 +30,16 @@ export function AddDomainInputStep({
   parsed,
   rejected,
   serverError,
+  behavior,
+  onBehaviorChange,
+  redirectTo,
+  onRedirectToChange,
+  redirectStatus,
+  onRedirectStatusChange,
+  dropPath,
+  onDropPathChange,
+  redirectError,
+  redirectReady,
   creating,
   onSubmit,
   onCancel,
@@ -43,6 +55,16 @@ export function AddDomainInputStep({
   parsed: ParsedHostnames
   rejected: string[]
   serverError: string | null
+  behavior: DomainBehavior
+  onBehaviorChange: (behavior: DomainBehavior) => void
+  redirectTo: string
+  onRedirectToChange: (value: string) => void
+  redirectStatus: number
+  onRedirectStatusChange: (value: number) => void
+  dropPath: boolean
+  onDropPathChange: (value: boolean) => void
+  redirectError: string
+  redirectReady: boolean
   creating: boolean
   onSubmit: () => void
   onCancel: () => void
@@ -141,6 +163,29 @@ export function AddDomainInputStep({
         {serverError && <p className="text-[12px] text-destructive">{serverError}</p>}
       </div>
 
+      {many ? (
+        <p className="rounded-md border border-border/60 glass-1-bg-raised p-3 text-[12px] text-muted-foreground">
+          {t("domains.behavior.batchConnects")}
+        </p>
+      ) : (
+        <div className="space-y-3">
+          <DomainBehaviorChoice value={behavior} onChange={onBehaviorChange} />
+          {behavior === "redirect" && (
+            <RedirectSettingsFields
+              idPrefix="add-domain"
+              to={redirectTo}
+              onToChange={onRedirectToChange}
+              status={redirectStatus}
+              onStatusChange={onRedirectStatusChange}
+              dropPath={dropPath}
+              onDropPathChange={onDropPathChange}
+              fieldError={redirectError}
+              onSubmit={onSubmit}
+            />
+          )}
+        </div>
+      )}
+
       <DialogFooter>
         <Button type="button" variant="ghost" disabled={creating} onClick={onCancel}>
           {t("console.confirm.cancel")}
@@ -148,7 +193,11 @@ export function AddDomainInputStep({
         <Button
           type="button"
           variant="gold"
-          disabled={creating || parsed.valid.length === 0}
+          disabled={
+            creating ||
+            parsed.valid.length === 0 ||
+            (!many && behavior === "redirect" && !redirectReady)
+          }
           loading={creating}
           onClick={onSubmit}
         >

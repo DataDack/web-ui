@@ -8,22 +8,20 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  Input,
   Label,
   Select,
-  SelectContent,
-  SelectItem,
   SelectTrigger,
   SelectValue,
-  Switch,
 } from "@datadack/common-ui"
 import type { TFunction } from "i18next"
-import { CornerUpRight } from "lucide-react"
+import { GitFork } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { useClearDomainRedirect, useSetDomainRedirect } from "../domains.hooks"
 import { REDIRECT_STATUSES, type Domain } from "../domains.types"
+import { DomainBehaviorChoice, type DomainBehavior } from "./DomainBehaviorChoice"
 import { isValidHostname, normalizeHostname } from "./hostname-input"
+import { RedirectSettingsFields } from "./RedirectSettingsFields"
 
 /** The field's error, or "" for none. Self-redirect wins: it is the specific
  *  diagnosis, where "enter a domain name" would send somebody hunting a typo. */
@@ -41,7 +39,7 @@ interface DomainRedirectDialogProps {
 }
 
 /**
- * Send a hostname somewhere else instead of serving it.
+ * Choose what an active hostname does: serve Production or redirect.
  *
  * The destination is a HOSTNAME, and the field says so rather than accepting a
  * URL and stripping it: the edge builds `https://<host><path>` itself, which is
@@ -49,9 +47,9 @@ interface DomainRedirectDialogProps {
  * normalised rather than rejected — that is what people have in their clipboard
  * — but what is stored and shown back is the host.
  *
- * Removing the redirect is in here, beside the thing it undoes, rather than as a
- * separate row action: somebody who opens this to check where a hostname points
- * is the same person who wants to stop it.
+ * “Connect to an environment” currently names Production because it is the only
+ * environment that deploys. Showing preview/custom environments here would be a
+ * convincing control for a route the backend cannot make.
  */
 export function DomainRedirectDialog({
   open,
@@ -60,6 +58,8 @@ export function DomainRedirectDialog({
 }: Readonly<DomainRedirectDialogProps>) {
   const { t } = useTranslation()
   const existing = domain?.policy?.redirect
+  const hasExisting = existing != null
+  const [behavior, setBehavior] = useState<DomainBehavior>("connect")
   const [to, setTo] = useState("")
   const [status, setStatus] = useState<number>(REDIRECT_STATUSES[0].value)
   const [dropPath, setDropPath] = useState(false)
@@ -72,11 +72,12 @@ export function DomainRedirectDialog({
   // that row's redirect, not the one left over from the first.
   useEffect(() => {
     if (!open) return
+    setBehavior(hasExisting ? "redirect" : "connect")
     setTo(existing?.to ?? "")
     setStatus(existing?.status ?? REDIRECT_STATUSES[0].value)
     setDropPath(existing?.drop_path ?? false)
     setInvalid(false)
-  }, [open, domain?.hostname, existing?.to, existing?.status, existing?.drop_path])
+  }, [open, domain?.hostname, hasExisting, existing?.to, existing?.status, existing?.drop_path])
 
   if (!domain) return null
 
@@ -94,6 +95,18 @@ export function DomainRedirectDialog({
 
   const submit = () => {
     if (busy) return
+    if (behavior === "connect") {
+      if (!existing) {
+        onOpenChange(false)
+        return
+      }
+      clear.mutate(domain.hostname, {
+        onSuccess: () => {
+          onOpenChange(false)
+        },
+      })
+      return
+    }
     if (!isValidHostname(destination) || selfRedirect) {
       setInvalid(true)
       return
@@ -110,130 +123,77 @@ export function DomainRedirectDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="glass-3 sm:max-w-lg">
+      <DialogContent className="glass-3 sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <CornerUpRight className="size-4" />
-            {t("domains.redirect.title")}
+            <GitFork className="size-4" />
+            {t("domains.behavior.title")}
           </DialogTitle>
-          <DialogDescription className="font-mono text-[12px]">{domain.hostname}</DialogDescription>
+          <DialogDescription>
+            <span className="font-mono text-[12px] text-foreground">{domain.hostname}</span>
+            <span className="mt-1 block">{t("domains.behavior.description")}</span>
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
-          <div className="space-y-1.5">
-            <Label htmlFor="redirect-to">{t("domains.redirect.toLabel")}</Label>
-            <Input
-              id="redirect-to"
-              value={to}
-              placeholder="example.com"
-              spellCheck={false}
-              autoComplete="off"
-              className="font-mono"
-              onChange={(event) => {
-                setTo(event.target.value)
-                if (invalid) setInvalid(false)
-              }}
-              onKeyDown={(event) => {
-                if (event.key === "Enter") submit()
-              }}
-            />
-            {fieldError === "" ? (
-              <p className="text-[11px] text-muted-foreground">{t("domains.redirect.toHint")}</p>
-            ) : (
-              <p className="text-[12px] text-destructive">{fieldError}</p>
-            )}
-          </div>
+          <DomainBehaviorChoice
+            value={behavior}
+            onChange={(next) => {
+              setBehavior(next)
+              setInvalid(false)
+            }}
+          />
 
-          <div className="space-y-1.5">
-            <Label htmlFor="redirect-status">{t("domains.redirect.statusLabel")}</Label>
-            <Select
-              value={String(status)}
-              onValueChange={(value) => {
-                setStatus(Number(value))
-              }}
-            >
-              <SelectTrigger id="redirect-status" className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {REDIRECT_STATUSES.map((option) => (
-                  <SelectItem key={option.value} value={String(option.value)}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {/* The hint is the difference that actually bites: 301 and 302 let a
-                browser turn a POST into a GET and drop the body. */}
-            <p className="text-[11px] text-muted-foreground">
-              {REDIRECT_STATUSES.find((option) => option.value === status)?.hint}
-            </p>
-          </div>
-
-          <div className="flex items-start justify-between gap-4 rounded-md border border-border/60 p-3">
-            <div className="min-w-0">
-              <p className="text-[13px] text-foreground">{t("domains.redirect.dropPathLabel")}</p>
-              <p className="mt-0.5 text-[11px] text-muted-foreground">
-                {dropPath
-                  ? t("domains.redirect.dropPathOn")
-                  : t("domains.redirect.dropPathOff", {
-                      host: destination === "" ? "example.com" : destination,
-                    })}
+          {behavior === "connect" ? (
+            <div className="space-y-1.5 rounded-lg border border-border/60 glass-1-bg-raised p-3">
+              <Label htmlFor="domain-environment">{t("domains.behavior.environmentLabel")}</Label>
+              <Select value="production" disabled>
+                <SelectTrigger id="domain-environment" className="w-full">
+                  <SelectValue>{t("domains.behavior.connect.environment")}</SelectValue>
+                </SelectTrigger>
+              </Select>
+              <p className="text-[11px] text-muted-foreground">
+                {t("domains.behavior.environmentHint")}
               </p>
             </div>
-            <Switch
-              checked={dropPath}
-              onCheckedChange={setDropPath}
-              aria-label={t("domains.redirect.dropPathLabel")}
+          ) : (
+            <RedirectSettingsFields
+              idPrefix="domain-configure"
+              to={to}
+              onToChange={(value) => {
+                setTo(value)
+                if (invalid) setInvalid(false)
+              }}
+              status={status}
+              onStatusChange={setStatus}
+              dropPath={dropPath}
+              onDropPathChange={setDropPath}
+              fieldError={fieldError}
+              onSubmit={submit}
             />
-          </div>
+          )}
         </div>
 
-        <DialogFooter className="sm:justify-between">
-          {/* Only offered when there is something to undo. A destructive-looking
-              button on a hostname that has never redirected is a control whose
-              honest description is "does nothing". */}
-          {existing ? (
-            <Button
-              type="button"
-              variant="ghost"
-              className="text-destructive hover:text-destructive"
-              disabled={busy}
-              loading={clear.isPending}
-              onClick={() => {
-                clear.mutate(domain.hostname, {
-                  onSuccess: () => {
-                    onOpenChange(false)
-                  },
-                })
-              }}
-            >
-              {t("domains.redirect.remove")}
-            </Button>
-          ) : (
-            <span />
-          )}
-          <div className="flex items-center gap-2">
-            <Button
-              type="button"
-              variant="ghost"
-              disabled={busy}
-              onClick={() => {
-                onOpenChange(false)
-              }}
-            >
-              {t("console.confirm.cancel")}
-            </Button>
-            <Button
-              type="button"
-              variant="gold"
-              disabled={busy || destination === ""}
-              loading={save.isPending}
-              onClick={submit}
-            >
-              {t("domains.redirect.save")}
-            </Button>
-          </div>
+        <DialogFooter>
+          <Button
+            type="button"
+            variant="ghost"
+            disabled={busy}
+            onClick={() => {
+              onOpenChange(false)
+            }}
+          >
+            {t("console.confirm.cancel")}
+          </Button>
+          <Button
+            type="button"
+            variant="gold"
+            disabled={busy || (behavior === "redirect" && destination === "")}
+            loading={busy}
+            onClick={submit}
+          >
+            {t("domains.behavior.save")}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react"
 
 import { actionsColumn, Button, DataTable, EmptyState, type RowAction } from "@datadack/common-ui"
-import { CornerUpRight, Eye, Globe, Pencil, Plus, RefreshCw, Trash2 } from "lucide-react"
+import { Eye, GitFork, Globe, Pencil, Plus, RefreshCw, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { ConfirmDialog, Section } from "@/components/console"
@@ -78,18 +78,29 @@ export function ResourceDomainsTab({
       actionsColumn<Domain>({
         ariaLabel: t("console.table.actions"),
         actions: (domain) => {
-          // The resource's own address: nothing but the edit, and only when the
-          // owning product handed one in — the field lives on the resource, so
-          // this table cannot know whether it is editable.
+          // The resource's own address can be routed just like every other
+          // active hostname. Renaming remains a separate action because it
+          // changes the hostname itself, while Configure changes what requests
+          // to that hostname do.
           if (domain.managed && domain.is_primary) {
-            if (!onEditManaged) return []
-            return [
-              {
-                label: t("domains.actions.editAddress"),
+            const primaryActions: RowAction<Domain>[] = []
+            if (domain.status === "active") {
+              primaryActions.push({
+                label: t("domains.actions.configure"),
+                icon: GitFork,
+                onAction: (row) => {
+                  setRedirecting(row)
+                },
+              })
+            }
+            if (onEditManaged) {
+              primaryActions.push({
+                label: t("domains.actions.changeAddress"),
                 icon: Pencil,
                 onAction: onEditManaged,
-              },
-            ]
+              })
+            }
+            return primaryActions
           }
           // An ADDITIONAL internal name is managed too, and it is the tenant's
           // to remove: they claimed it by hand beside the address, and the
@@ -100,10 +111,8 @@ export function ResourceDomainsTab({
             const managedActions: RowAction<Domain>[] = []
             if (domain.status === "active") {
               managedActions.push({
-                label: domain.policy?.redirect
-                  ? t("domains.actions.editRedirect")
-                  : t("domains.actions.redirect"),
-                icon: CornerUpRight,
+                label: t("domains.actions.configure"),
+                icon: GitFork,
                 onAction: (row) => {
                   setRedirecting(row)
                 },
@@ -126,10 +135,8 @@ export function ResourceDomainsTab({
           // whose DNS happened to point here.
           if (domain.status === "active") {
             actions.push({
-              label: domain.policy?.redirect
-                ? t("domains.actions.editRedirect")
-                : t("domains.actions.redirect"),
-              icon: CornerUpRight,
+              label: t("domains.actions.configure"),
+              icon: GitFork,
               onAction: (row) => {
                 setRedirecting(row)
               },

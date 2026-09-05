@@ -18,11 +18,17 @@ import { TONE_CLASSES } from "@/components/console/status-config"
 import { quotaGatePayload } from "@/modules/governance/quota-gate"
 import { extractError } from "@/services/api/client"
 
-import { useAddDomain, useDomain, useVerifyDomain } from "../domains.hooks"
-import type { Domain, DomainClaimKind, DomainDnsInstructions } from "../domains.types"
+import { useAddDomain, useDomain, useSetDomainRedirect, useVerifyDomain } from "../domains.hooks"
+import {
+  REDIRECT_STATUSES,
+  type Domain,
+  type DomainClaimKind,
+  type DomainDnsInstructions,
+} from "../domains.types"
 import { AddDomainBatchResults, type BatchResult } from "./AddDomainBatchResults"
 import { AddDomainInputStep } from "./AddDomainInputStep"
-import { parseHostnames, parseLabels } from "./hostname-input"
+import type { DomainBehavior } from "./DomainBehaviorChoice"
+import { isValidHostname, normalizeHostname, parseHostnames, parseLabels } from "./hostname-input"
 import { RecordLine } from "./RecordLine"
 
 /** Compact "12s" / "3m" / "2h" for the "checked … ago" line. */
@@ -160,6 +166,72 @@ function kindStateOf(
   return { internal: row ? row.managed : chose, labelMode: chose }
 }
 
+/** The hostname a one-row behavior choice applies to; batches have no single source. */
+function behaviorSourceHostname(valid: string[], labelMode: boolean, zone: string): string {
+  if (valid.length !== 1) return ""
+  const value = valid[0] ?? ""
+  return labelMode ? `${value}.${zone}` : value
+}
+
+function redirectFieldError(
+  touched: boolean,
+  selfRedirect: boolean,
+  ready: boolean,
+  t: TFunction,
+): string {
+  if (!touched) return ""
+  if (selfRedirect) return t("domains.redirect.selfRedirect")
+  if (!ready) return t("domains.redirect.invalidTo")
+  return ""
+}
+
+function RedirectOutcome({
+  behavior,
+  row,
+  redirecting,
+  failed,
+  onRetry,
+}: Readonly<{
+  behavior: DomainBehavior
+  row: Domain | undefined
+  redirecting: boolean
+  failed: boolean
+  onRetry: () => void
+}>) {
+  const { t } = useTranslation()
+  if (behavior !== "redirect") return null
+  if (redirecting) {
+    return (
+      <div className="flex items-center gap-2 text-[13px] text-muted-foreground">
+        <Loader2 className="size-4 shrink-0 animate-spin" />
+        <span>{t("domains.behavior.applyingRedirect")}</span>
+      </div>
+    )
+  }
+  if (row?.policy?.redirect) {
+    return (
+      <div className="flex items-center gap-2 text-[13px] text-foreground">
+        <CheckCircle2 className="size-4 shrink-0 text-status-success" />
+        <span>
+          {t("domains.behavior.redirectApplied", {
+            status: row.policy.redirect.status,
+            to: row.policy.redirect.to,
+          })}
+        </span>
+      </div>
+    )
+  }
+  if (!failed) return null
+  return (
+    <div className="flex items-center justify-between gap-3 rounded-md border border-status-warning/30 p-3">
+      <p className="text-[12px] text-status-warning">{t("domains.behavior.redirectApplyFailed")}</p>
+      <Button type="button" variant="outline" size="sm" onClick={onRetry}>
+        {t("console.table.retry")}
+      </Button>
+    </div>
+  )
+}
+
 interface DnsRecordRow {
   type: "TXT" | "CNAME" | "A"
   name: string
@@ -240,6 +312,15 @@ export function AddDomainDialog({
   const [batch, setBatch] = useState<BatchResult[] | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [now, setNow] = useState(() => Date.now())
+  const [behavior, setBehavior] = useState<DomainBehavior>("connect")
+  const [redirectTo, setRedirectTo] = useState("")
+  const [redirectStatus, setRedirectStatus] = useState<number>(REDIRECT_STATUSES[0].value)
+  const [dropPath, setDropPath] = useState(false)
+  const [redirectTouched, setRedirectTouched] = useState(false)
+  // A pending external domain may become active while this dialog is open.
+  // One attempt marker prevents a failed redirect request from retrying on
+  // every render; the outcome stays visible and the tenant can retry once.
+  const [redirectAttempted, setRedirectAttempted] = useState(false)
 
   const {
     mutateAsync: createDomainAsync,
@@ -250,7 +331,13 @@ export function AddDomainDialog({
   // The batch drives its own pending flag: the mutation's own isPending drops
   // between the calls in the loop, and a button that flickers off mid-batch
   // invites a second click that would submit the whole list again.
-  const creating = creatingOne || submitting
+  const {
+    mutate: setRedirect,
+    isPending: redirecting,
+    isError: redirectFailed,
+    reset: resetRedirect,
+  } = useSetDomainRedirect()
+  const creating = creatingOne || submitting || redirecting
   const { mutate: verifyDomain, isPending: verifying } = useVerifyDomain()
 
   const activeHostname = created ?? existing?.hostname ?? null
@@ -274,9 +361,16 @@ export function AddDomainDialog({
       setBatch(null)
       setSubmitting(false)
       setKind(null)
+      setBehavior("connect")
+      setRedirectTo("")
+      setRedirectStatus(REDIRECT_STATUSES[0].value)
+      setDropPath(false)
+      setRedirectTouched(false)
+      setRedirectAttempted(false)
       resetCreate()
+      resetRedirect()
     }
-  }, [open, resetCreate])
+  }, [open, resetCreate, resetRedirect])
 
   // A 1s tick keeps "checked Xs ago" honest between 5s polls.
   useEffect(() => {
@@ -300,6 +394,11 @@ export function AddDomainDialog({
   // same parser shape, different rules — a label has no dots and a hostname
   // must have one.
   const parsed = labelMode ? parseLabels(hostname, zone) : parseHostnames(hostname)
+  const sourceHostname = behaviorSourceHostname(parsed.valid, labelMode, zone)
+  const destination = normalizeHostname(redirectTo)
+  const selfRedirect = sourceHostname !== "" && destination !== "" && sourceHostname === destination
+  const redirectReady = isValidHostname(destination) && !selfRedirect
+  const redirectError = redirectFieldError(redirectTouched, selfRedirect, redirectReady, t)
 
   const claim = (value: string) =>
     createDomainAsync({
@@ -367,6 +466,10 @@ export function AddDomainDialog({
     setRejected(parsed.invalid)
     if (parsed.valid.length === 0) return
     if (parsed.valid.length === 1) {
+      if (behavior === "redirect" && !redirectReady) {
+        setRedirectTouched(true)
+        return
+      }
       await submitOne(parsed.valid[0] ?? "")
       return
     }
@@ -403,6 +506,42 @@ export function AddDomainDialog({
       : null
 
   const header = headerFor(step, activeHostname ?? "", internal, t)
+
+  // Internal names become active immediately; external names reach this branch
+  // after their DNS check succeeds. The same staged intent therefore works for
+  // both without asking the redirect endpoint to trust an unverified domain.
+  useEffect(() => {
+    if (
+      !open ||
+      behavior !== "redirect" ||
+      !redirectReady ||
+      !created ||
+      row?.hostname !== created ||
+      row.status !== "active" ||
+      row.policy?.redirect != null ||
+      redirectAttempted
+    ) {
+      return
+    }
+    setRedirectAttempted(true)
+    setRedirect({
+      hostname: created,
+      to: destination,
+      status: redirectStatus,
+      drop_path: dropPath,
+    })
+  }, [
+    behavior,
+    created,
+    destination,
+    dropPath,
+    open,
+    redirectAttempted,
+    redirectReady,
+    redirectStatus,
+    row,
+    setRedirect,
+  ])
 
   // Internal names have no records to show: they are already answering. An
   // absent callback drops the batch report's per-row button rather than
@@ -446,6 +585,23 @@ export function AddDomainDialog({
             parsed={parsed}
             rejected={rejected}
             serverError={serverError}
+            behavior={behavior}
+            onBehaviorChange={(next) => {
+              setBehavior(next)
+              setRedirectTouched(false)
+            }}
+            redirectTo={redirectTo}
+            onRedirectToChange={(next) => {
+              setRedirectTo(next)
+              setRedirectTouched(false)
+              setRedirectAttempted(false)
+            }}
+            redirectStatus={redirectStatus}
+            onRedirectStatusChange={setRedirectStatus}
+            dropPath={dropPath}
+            onDropPathChange={setDropPath}
+            redirectError={redirectError}
+            redirectReady={redirectReady}
             creating={creating}
             onSubmit={() => void submit()}
             onCancel={() => {
@@ -482,6 +638,12 @@ export function AddDomainDialog({
         {step === "records" && (
           <>
             <p className="text-[13px] text-muted-foreground">{t("domains.add.recordsIntro")}</p>
+
+            {behavior === "redirect" && (
+              <p className="rounded-md border border-status-info/30 glass-1-bg-raised p-3 text-[12px] leading-relaxed text-muted-foreground">
+                {t("domains.behavior.pendingRedirect", { to: destination })}
+              </p>
+            )}
 
             {records.length > 0 && (
               <div className="divide-y divide-border/60 rounded-md border border-border/60">
@@ -600,6 +762,16 @@ export function AddDomainDialog({
                   <span>{line}</span>
                 </div>
               ))}
+              <RedirectOutcome
+                behavior={behavior}
+                row={row}
+                redirecting={redirecting}
+                failed={redirectFailed}
+                onRetry={() => {
+                  setRedirectAttempted(false)
+                  resetRedirect()
+                }}
+              />
             </div>
 
             <DialogFooter>
