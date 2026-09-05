@@ -13,8 +13,9 @@ import TsWorker from "monaco-editor/language/typescript/ts.worker?worker"
 // control-plane binary and served from installs with no outbound internet at
 // all. `loader.config({ monaco })` hands the wrapper the copy Vite bundled.
 //
-// Vite's `base: "/admin/"` (vite.config.ts) prefixes the emitted worker URLs
-// too, so the workers load from /admin/assets/… exactly like every other chunk.
+// Vite's `base: "/admin_serverless/"` (vite.config.ts) prefixes the emitted
+// worker URLs too, so the workers load from /admin_serverless/assets/… exactly
+// like every other chunk.
 //
 // Import paths go through monaco-editor's `exports` map (0.56 publishes
 // "./*" → "./esm/vs/*"), which is why they read `monaco-editor/editor/...`

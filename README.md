@@ -25,7 +25,7 @@ Clone the parent projects with `--recurse-submodules`, or run
 `git submodule update --init` afterwards; otherwise `web/` is empty and the Go
 build fails on a missing embed.
 
-> `apps/serverless-web` **is** the admin console served at `/admin`. Its
+> `apps/serverless-web` **is** the admin console served at `/admin_serverless`. Its
 > `dist/` is embedded into the Go binary via `assets.go` but is **not**
 > committed — build it with `make admin-ui-build` from the `serverless_faas`
 > root, or `nx build serverless-web` here, before building a release binary.
@@ -41,7 +41,7 @@ web-ui/
 │   └── eslint-config/         # flat configs: base and react
 ├── packages/                  # publishable, reusable across apps
 └── apps/
-    ├── serverless-web/      # Vite + React app (admin console at /admin)
+    ├── serverless-web/      # Vite + React app (admin console at /admin_serverless)
     └── cloud-react/           # Vite + React app (DataDack cloud console)
 ```
 
@@ -67,7 +67,7 @@ and never hit a registry. `packages/*` are versioned and publishable.
 
 ```bash
 bun install
-bun run dev          # builds packages, then serves the app on :3000/admin/
+bun run dev          # builds packages, then serves the app on :3000/admin_serverless/
 ```
 
 The dev server proxies `/v1`, `/function`, `/async-function`, `/system` and

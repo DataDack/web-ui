@@ -48,9 +48,9 @@ ReactDOM.createRoot(rootElement).render(
             cache never serves one tenant's data to another. */}
         <ServerlessProvider transport={faasTransport}>
           <AIAutomationsProvider transport={aiAutomationsTransport}>
-          {/* The control plane serves this SPA from /admin, so the router shares
-              that basename and every route resolves under it. */}
-          <BrowserRouter basename="/admin">
+          {/* The control plane serves this SPA from /admin_serverless, so the
+              router shares that basename and every route resolves under it. */}
+          <BrowserRouter basename="/admin_serverless">
             <App />
             <Toaster position="bottom-right" closeButton richColors />
           </BrowserRouter>

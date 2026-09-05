@@ -14,7 +14,7 @@ export const aiAutomationsTransport: AIAutomationsTransport = {
   //
   // Realtime execution events still have no socket here either.
   capabilities: { connectedAccounts: false, integrations: false, realtimeEvents: false },
-  brandIconUrl: "/admin/datadack-icon.png",
+  brandIconUrl: "/admin_serverless/datadack-icon.png",
   publicUrl(path) {
     return `/v1/workflows${path}`
   },

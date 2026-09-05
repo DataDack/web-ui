@@ -23,22 +23,27 @@ const CONTROL_PLANE_AUTHORIZATION = process.env.CONTROL_PLANE_AUTHORIZATION
 const proxied = ["/v1", "/2015-03-31", "/system", "/metrics"]
 
 export default defineConfig({
-  // The control plane serves this bundle from /admin, so every asset URL must
-  // be prefixed to match. See apps/controlplane/roles/api/api.go.
-  base: "/admin/",
+  // The control plane serves this bundle from /admin_serverless, so every asset
+  // URL must be prefixed to match. The server side of this is adminUIBasePath in
+  // apps/faas/controlplane/roles/api/adminui.go, and the two are checked by
+  // nothing but agreement: this value is baked into index.html as absolute asset
+  // URLs at build time, so if it drifts the console loads a document whose
+  // scripts 404 and renders blank.
+  base: "/admin_serverless/",
   plugins: [
     react(),
     tailwindcss(),
-    // `base: '/admin/'` means Vite serves nothing at `/admin` without the
-    // trailing slash — a bare 404 that looks exactly like a broken app. Redirect
-    // instead, so the slash stops being something anyone has to remember.
+    // `base: '/admin_serverless/'` means Vite serves nothing at
+    // `/admin_serverless` without the trailing slash — a bare 404 that looks
+    // exactly like a broken app. Redirect instead, so the slash stops being
+    // something anyone has to remember.
     {
       name: "admin-trailing-slash",
       configureServer(server) {
         server.middlewares.use((req, res, next) => {
-          if (req.url === "/admin") {
+          if (req.url === "/admin_serverless") {
             res.statusCode = 302
-            res.setHeader("Location", "/admin/")
+            res.setHeader("Location", "/admin_serverless/")
             res.end()
             return
           }

@@ -20,7 +20,7 @@ export function Topbar({ onRefresh, refreshing = false, status }: Readonly<Topba
           className="focus-visible:ring-ring/50 shrink-0 rounded-md outline-none focus-visible:ring-2"
         >
           <Logo
-            iconSrc="/admin/datadack-icon.png"
+            iconSrc="/admin_serverless/datadack-icon.png"
             iconClassName="size-6"
             className="text-[15px]"
             wordmarkClassName="whitespace-nowrap"

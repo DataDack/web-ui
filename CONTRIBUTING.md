@@ -4,7 +4,7 @@
 
 ```bash
 bun install     # also installs the husky pre-commit hook via `prepare`
-bun run dev     # builds packages, serves the app on :3000/admin/
+bun run dev     # builds packages, serves the app on :3000/admin_serverless/
 ```
 
 Run `make run-server` from the `serverless_faas` root alongside the dev server —
