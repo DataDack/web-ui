@@ -1,4 +1,4 @@
-import { Button, DialogFooter, Label, Textarea } from "@datadack/common-ui"
+import { Button, DialogFooter, Input, Label, Textarea } from "@datadack/common-ui"
 import { useTranslation } from "react-i18next"
 
 import type { DomainClaimKind } from "../domains.types"
@@ -6,9 +6,6 @@ import { DomainBehaviorChoice, type DomainBehavior } from "./DomainBehaviorChoic
 import { DomainKindChoice } from "./DomainKindChoice"
 import type { ParsedHostnames } from "./hostname-input"
 import { RedirectSettingsFields } from "./RedirectSettingsFields"
-
-/** How many previewed hostnames are spelled out before the count takes over. */
-const PREVIEW_LIMIT = 3
 
 /**
  * The dialog's first step: which kind of name, and which name.
@@ -91,8 +88,6 @@ export function AddDomainInputStep({
       }
 
   const many = parsed.valid.length > 1
-  const preview = parsed.valid.slice(0, PREVIEW_LIMIT)
-
   return (
     <>
       <DomainKindChoice
@@ -104,53 +99,56 @@ export function AddDomainInputStep({
 
       <div className="space-y-1.5">
         <Label htmlFor="custom-domain-hostname">{copy.field}</Label>
-        {/* A textarea rather than an input, because the realistic add is not one
-            name: it is the apex and the www, a column pasted out of a registrar,
-            or the two internal names an app answers on. Enter still submits a
-            single name — the one-line case must not get slower to serve the
-            many-line one — so a newline needs Shift. */}
-        <Textarea
-          id="custom-domain-hostname"
-          value={value}
-          placeholder={copy.placeholder}
-          spellCheck={false}
-          autoComplete="off"
-          rows={value.includes("\n") ? 5 : 2}
-          className="resize-y font-mono text-[13px]"
-          onChange={(event) => {
-            onValueChange(event.target.value)
-          }}
-          onKeyDown={(event) => {
-            if (event.key === "Enter" && !event.shiftKey) {
-              event.preventDefault()
-              onSubmit()
-            }
-          }}
-        />
+        {labelMode ? (
+          <div className="flex items-stretch">
+            <Input
+              id="custom-domain-hostname"
+              value={value}
+              placeholder={copy.placeholder}
+              spellCheck={false}
+              autoComplete="off"
+              className="min-w-0 rounded-r-none font-mono text-[13px]"
+              onChange={(event) => {
+                onValueChange(event.target.value)
+              }}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  event.preventDefault()
+                  onSubmit()
+                }
+              }}
+            />
+            <span className="flex shrink-0 items-center whitespace-nowrap rounded-r-md border border-l-0 border-border glass-1-bg-raised px-3 font-mono text-[12px] text-muted-foreground">
+              .{zone}
+            </span>
+          </div>
+        ) : (
+          // External domains commonly arrive as an apex/www pair, so this path
+          // keeps the paste-friendly multi-domain textarea.
+          <Textarea
+            id="custom-domain-hostname"
+            value={value}
+            placeholder={copy.placeholder}
+            spellCheck={false}
+            autoComplete="off"
+            rows={value.includes("\n") ? 5 : 2}
+            className="resize-y font-mono text-[13px]"
+            onChange={(event) => {
+              onValueChange(event.target.value)
+            }}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" && !event.shiftKey) {
+                event.preventDefault()
+                onSubmit()
+              }
+            }}
+          />
+        )}
 
         {rejected.length > 0 ? (
           <p className="text-[12px] text-destructive">{copy.invalid}</p>
         ) : (
           <p className="text-[11px] text-muted-foreground">{copy.hint}</p>
-        )}
-
-        {/* The whole name, spelled out. A label field under a zone the tenant
-            cannot see is the field where somebody types the full hostname and is
-            told it is invalid. */}
-        {labelMode && preview.length > 0 && (
-          <ul className="space-y-0.5">
-            {preview.map((label) => (
-              <li key={label} className="font-mono text-[12px] text-foreground">
-                {label}
-                <span className="text-muted-foreground">.{zone}</span>
-              </li>
-            ))}
-            {parsed.valid.length > PREVIEW_LIMIT && (
-              <li className="text-[11px] text-muted-foreground">
-                {t("domains.add.andMore", { count: parsed.valid.length - PREVIEW_LIMIT })}
-              </li>
-            )}
-          </ul>
         )}
 
         {/* The count is the preview's job whenever there is one. */}

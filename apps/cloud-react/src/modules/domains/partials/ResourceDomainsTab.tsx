@@ -78,26 +78,25 @@ export function ResourceDomainsTab({
       actionsColumn<Domain>({
         ariaLabel: t("console.table.actions"),
         actions: (domain) => {
-          // The resource's own address can be routed just like every other
-          // active hostname. Renaming remains a separate action because it
-          // changes the hostname itself, while Configure changes what requests
-          // to that hostname do.
+          // A product that owns an editable primary address also owns its edit
+          // experience. Managed apps combine address and traffic behavior in
+          // one dialog, so a second Configure action would create two competing
+          // settings screens for the same hostname.
           if (domain.managed && domain.is_primary) {
             const primaryActions: RowAction<Domain>[] = []
-            if (domain.status === "active") {
+            if (onEditManaged) {
+              primaryActions.push({
+                label: t("domains.actions.editAddress"),
+                icon: Pencil,
+                onAction: onEditManaged,
+              })
+            } else if (domain.status === "active") {
               primaryActions.push({
                 label: t("domains.actions.configure"),
                 icon: GitFork,
                 onAction: (row) => {
                   setRedirecting(row)
                 },
-              })
-            }
-            if (onEditManaged) {
-              primaryActions.push({
-                label: t("domains.actions.changeAddress"),
-                icon: Pencil,
-                onAction: onEditManaged,
               })
             }
             return primaryActions

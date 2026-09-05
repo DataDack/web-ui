@@ -1,5 +1,6 @@
 import { useState } from "react"
 
+import type { Domain } from "@/modules/domains/domains.types"
 import { ResourceDomainsTab } from "@/modules/domains/partials/ResourceDomainsTab"
 
 import { AppAddressDialog } from "./AppAddressDialog"
@@ -15,7 +16,7 @@ import type { Project } from "../../managed-apps.types"
  * from here rather than built into the table for every resource type.
  */
 export function ProjectDomainsTab({ project }: Readonly<{ project: Project }>) {
-  const [editing, setEditing] = useState(false)
+  const [editing, setEditing] = useState<Domain | null>(null)
 
   return (
     <>
@@ -24,11 +25,18 @@ export function ProjectDomainsTab({ project }: Readonly<{ project: Project }>) {
         // registry keys attachments by its own identifiers, not by routes.
         resourceType="mgd_app_project"
         resourceId={project.id}
-        onEditManaged={() => {
-          setEditing(true)
+        onEditManaged={(domain) => {
+          setEditing(domain)
         }}
       />
-      <AppAddressDialog project={project} open={editing} onOpenChange={setEditing} />
+      <AppAddressDialog
+        project={project}
+        domain={editing}
+        open={editing !== null}
+        onOpenChange={(open) => {
+          if (!open) setEditing(null)
+        }}
+      />
     </>
   )
 }
