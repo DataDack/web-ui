@@ -12,6 +12,7 @@ import {
   statusColumn,
   textColumn,
 } from "@datadack/common-ui"
+
 import type { TabProps } from "./types"
 import { useAdminPlatformOverview } from "../../superadmin.hooks"
 import type { OverviewOrg } from "../../superadmin.types"
@@ -92,8 +93,6 @@ export function OrganizationsTab({ q, page, pageSize, onPageChange }: Readonly<T
       empty={
         <EmptyState icon={Building2} title={t("superAdmin.organizations.empty.organizations")} />
       }
-      onRefresh={() => void refetch()}
-      refreshLabel={t("console.table.refresh")}
     />
   )
 }

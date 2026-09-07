@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react"
 
-import { Building2, Loader2, Search } from "lucide-react"
+import { Building2, Loader2, RefreshCw, Search } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useSearchParams } from "react-router-dom"
 
@@ -8,7 +8,7 @@ import { PageHeader } from "@/components/console"
 import { useDebounce } from "@/hooks/use-debounce"
 import { useScreen } from "@/services/api/screen"
 
-import { cn, Input, Tabs, TabsContent, TabsList, TabsTrigger } from "@datadack/common-ui"
+import { Button, cn, Input, Tabs, TabsContent, TabsList, TabsTrigger } from "@datadack/common-ui"
 
 import { useAdminPlatformOverview } from "../../superadmin.hooks"
 import { AccountBalanceDialog } from "../AccountBalanceDialog"
@@ -69,7 +69,7 @@ export function TenancyPage() {
   // Same key as the active tab's own query, so this is the SAME request, not a
   // second one — it's read here only for the counts on the tab labels.
   const section = usersWithoutOrganization && tab === "users" ? "orphan_users" : tab
-  const { data, isFetching } = useAdminPlatformOverview(section, q, page, PAGE_SIZE)
+  const { data, isFetching, refetch } = useAdminPlatformOverview(section, q, page, PAGE_SIZE)
   const matched = data?.matched
 
   // The account whose wallet is being adjusted; null closes the dialog. The
@@ -154,24 +154,39 @@ export function TenancyPage() {
         title={t("superAdmin.nav.tenancy")}
         description={t("superAdmin.tenancy.subtitle")}
         actions={
-          <div className="relative">
-            {/* The query runs on the server, so it lands a beat after typing
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="relative">
+              {/* The query runs on the server, so it lands a beat after typing
 						    stops — swap the icon for a spinner while it's in flight, or the
 						    stale rows (kept on purpose, to avoid a blank table) read as
 						    "no results". */}
-            {isFetching ? (
-              <Loader2 className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 animate-spin text-muted-foreground" />
-            ) : (
-              <Search className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-            )}
-            <Input
-              value={search}
-              onChange={(e) => {
-                changeSearch(e.target.value)
+              {isFetching ? (
+                <Loader2 className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 animate-spin text-muted-foreground" />
+              ) : (
+                <Search className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              )}
+              <Input
+                value={search}
+                onChange={(e) => {
+                  changeSearch(e.target.value)
+                }}
+                placeholder={t("superAdmin.organizations.searchPlaceholder")}
+                className={cn("h-9 w-48 pl-8 sm:w-72")}
+              />
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              aria-label={t("console.table.refresh")}
+              title={t("console.table.refresh")}
+              disabled={isFetching}
+              onClick={() => {
+                void refetch()
               }}
-              placeholder={t("superAdmin.organizations.searchPlaceholder")}
-              className={cn("h-9 w-48 pl-8 sm:w-72")}
-            />
+            >
+              <RefreshCw className={cn("size-4", isFetching && "animate-spin")} />
+            </Button>
           </div>
         }
       />

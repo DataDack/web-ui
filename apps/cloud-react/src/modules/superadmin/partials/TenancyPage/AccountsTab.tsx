@@ -49,17 +49,22 @@ export function AccountsTab({
         accessor: (a) => a.account_number,
         mono: true,
       }),
-      textColumn<AccountRow>({
+      {
         id: "name",
-        header: t("superAdmin.organizations.fields.accountName"),
-        accessor: (a) => a.name,
-      }),
-      textColumn<AccountRow>({
-        id: "org",
-        header: t("superAdmin.organizations.fields.organization"),
-        accessor: (a) => a.orgName,
-        muted: true,
-      }),
+        accessorFn: (account) => account.name,
+        header: () => t("superAdmin.organizations.fields.accountName"),
+        cell: ({ row }) => (
+          <div className="flex min-w-0 flex-col gap-0.5">
+            <span className="text-[13px] font-medium text-foreground">{row.original.name}</span>
+            {row.original.org_name && (
+              <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
+                <Building2 className="size-3 shrink-0" aria-hidden="true" />
+                <span>{row.original.org_name}</span>
+              </span>
+            )}
+          </div>
+        ),
+      },
       {
         id: "owner",
         header: () => t("superAdmin.organizations.fields.owner", { defaultValue: "Owner" }),
@@ -135,8 +140,6 @@ export function AccountsTab({
       getRowId={(a) => a.id}
       onRowClick={(a) => void navigate(`/admin/accounts/${a.id}/resources`)}
       empty={<EmptyState icon={Building2} title={t("superAdmin.organizations.empty.accounts")} />}
-      onRefresh={() => void refetch()}
-      refreshLabel={t("console.table.refresh")}
     />
   )
 }

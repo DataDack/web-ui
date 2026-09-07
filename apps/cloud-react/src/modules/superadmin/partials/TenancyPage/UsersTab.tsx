@@ -188,8 +188,6 @@ export function UsersTab({
             <EmptyState icon={Building2} title={t("superAdmin.organizations.empty.users")} />
           )
         }
-        onRefresh={() => void refetch()}
-        refreshLabel={t("console.table.refresh")}
       />
     </div>
   )
