@@ -1,18 +1,8 @@
-import { useTranslation } from "react-i18next"
 import { useMemo, useState } from "react"
 
-import {
-  Badge,
-  Button,
-  DataTable,
-  dateColumn,
-  EmptyState,
-  nameColumn,
-  statusColumn,
-  textColumn,
-} from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { ArrowLeft, Boxes, CalendarClock, Clock, RefreshCw, Trash2, Wallet } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
 
 import {
@@ -25,13 +15,24 @@ import {
 import { useScreen } from "@/services/api/screen"
 
 import {
+  Badge,
+  Button,
+  DataTable,
+  dateColumn,
+  EmptyState,
+  nameColumn,
+  statusColumn,
+  textColumn,
+} from "@datadack/common-ui"
+
+import { PaymentLedgerTable } from "../components/PaymentLedgerTable"
+import {
   useAdminAccountResources,
   useAdminAccountSpend,
   useAdminPaymentLedger,
   useAdminPlatformOverview,
   useDeleteAccount,
 } from "../superadmin.hooks"
-import { PaymentLedgerTable } from "../components/PaymentLedgerTable"
 import type { AccountResource, OverviewAccount } from "../superadmin.types"
 
 const ORGS_PATH = "/admin/organizations"
@@ -162,10 +163,7 @@ export function AccountResourcesPage() {
   const title = account ? account.name : `Account ${accountId ?? ""}`
   const total = String(resources.length)
   const deleteConfirmText = account?.account_number ?? accountId ?? ""
-  const deleteDisabled =
-    !accountId ||
-    deleteAccount.isPending ||
-    account?.status === "deleting"
+  const deleteDisabled = !accountId || deleteAccount.isPending || account?.status === "deleting"
 
   // Spend tiles: monthly run-rate (combined), its two components, and wallet.
   const spendStats: StatCardProps[] = [
@@ -346,11 +344,25 @@ export function AccountResourcesPage() {
             <fieldset className="space-y-2" disabled={deleteAccount.isPending}>
               <legend className="font-medium">Account record</legend>
               <label className="flex items-center gap-2">
-                <input type="radio" name="account-deletion-mode" checked={!permanentDelete} onChange={() => setPermanentDelete(false)} />
+                <input
+                  type="radio"
+                  name="account-deletion-mode"
+                  checked={!permanentDelete}
+                  onChange={() => {
+                    setPermanentDelete(false)
+                  }}
+                />
                 Keep record and mark as deleted
               </label>
               <label className="flex items-center gap-2">
-                <input type="radio" name="account-deletion-mode" checked={permanentDelete} onChange={() => setPermanentDelete(true)} />
+                <input
+                  type="radio"
+                  name="account-deletion-mode"
+                  checked={permanentDelete}
+                  onChange={() => {
+                    setPermanentDelete(true)
+                  }}
+                />
                 Permanently delete account and billing history
               </label>
             </fieldset>
@@ -361,7 +373,9 @@ export function AccountResourcesPage() {
             <ul className="list-disc space-y-1 pl-4">
               <li>{t("superAdmin.accountResourcesPage.staticIpsWillBeReleasedBackToThePool")}</li>
               <li>
-                {permanentDelete ? "The account record and its billing history will be permanently removed after resource cleanup completes." : "The account record, creator link, and billing history will be kept with deleted status."}
+                {permanentDelete
+                  ? "The account record and its billing history will be permanently removed after resource cleanup completes."
+                  : "The account record, creator link, and billing history will be kept with deleted status."}
               </li>
               <li>{t("superAdmin.accountResourcesPage.authUsersAreNotDeleted")}</li>
             </ul>
@@ -372,11 +386,14 @@ export function AccountResourcesPage() {
         loading={deleteAccount.isPending}
         onConfirm={() => {
           if (!accountId) return
-          deleteAccount.mutate({ accountId, permanent: permanentDelete }, {
-            onSuccess: () => {
-              setDeleteOpen(false)
+          deleteAccount.mutate(
+            { accountId, permanent: permanentDelete },
+            {
+              onSuccess: () => {
+                setDeleteOpen(false)
+              },
             },
-          })
+          )
         }}
       />
     </div>

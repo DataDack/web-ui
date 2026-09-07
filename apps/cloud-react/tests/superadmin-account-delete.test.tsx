@@ -191,7 +191,9 @@ test("delete account confirmation calls the super-admin teardown API and refresh
 
   expect(await screen.findByText(/All active resources will be deleted/i)).not.toBeNull()
   expect(screen.getByText(/Static IPs will be released back to the pool/i)).not.toBeNull()
-  expect(screen.getByText(/account record, creator link, and billing history will be kept/i)).not.toBeNull()
+  expect(
+    screen.getByText(/account record, creator link, and billing history will be kept/i),
+  ).not.toBeNull()
   expect(screen.getByText(/Auth users are not deleted/i)).not.toBeNull()
 
   const confirmButton = screen.getAllByRole("button", { name: /delete account/i }).at(-1)
@@ -216,23 +218,26 @@ test("delete account confirmation calls the super-admin teardown API and refresh
   })
 })
 
-
 test("permanent deletion is explicit and available for an already deleted account", async () => {
   const user = userEvent.setup()
-  overview.accounts[0]!.status = "deleted"
+  overview.accounts[0].status = "deleted"
   const page = renderPage()
   try {
     await screen.findByRole("heading", { name: "Demo Account" })
     await user.click(screen.getByRole("button", { name: /delete account/i }))
-    const keep = screen.getByRole("radio", { name: /keep record/i }) as HTMLInputElement
+    const keep = screen.getByRole<HTMLInputElement>("radio", { name: /keep record/i })
     expect(keep.checked).toBe(true)
     await user.click(screen.getByRole("radio", { name: /permanently delete/i }))
     expect(screen.getByText(/billing history will be permanently removed/i)).not.toBeNull()
     await user.type(screen.getByPlaceholderText(ACCOUNT_NUMBER), ACCOUNT_NUMBER)
-    await user.click(screen.getAllByRole("button", { name: /delete account/i }).at(-1)!)
-    await waitFor(() => expect(deleteCalls).toContain(`/org/accounts/${ACCOUNT_ID}/super-admin-delete?permanent=true`))
+    const confirm = screen.getAllByRole("button", { name: /delete account/i }).at(-1)
+    if (!confirm) throw new Error("Expected delete confirmation button")
+    await user.click(confirm)
+    await waitFor(() => {
+      expect(deleteCalls).toContain(`/org/accounts/${ACCOUNT_ID}/super-admin-delete?permanent=true`)
+    })
   } finally {
     page.unmount()
-    overview.accounts[0]!.status = "active"
+    overview.accounts[0].status = "active"
   }
 })

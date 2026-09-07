@@ -9,6 +9,7 @@ import { apiGet, extractError } from "@/services/api/client"
 import { superAdminApi } from "./superadmin.api"
 import { SUPERADMIN_QUERY_KEYS } from "./superadmin.constants"
 import type {
+  AdminResourceFilters,
   CatalogServiceAdmin,
   KycStatusPatch,
   AddImageVersionRequest,
@@ -983,9 +984,7 @@ export function useAdminAccountResources(accountId: string | undefined) {
   })
 }
 
-export function useAdminResourceInventory(
-  filters: import("./superadmin.types").AdminResourceFilters,
-) {
+export function useAdminResourceInventory(filters: AdminResourceFilters) {
   return useQuery({
     queryKey: [...SUPERADMIN_QUERY_KEYS.resourceInventory, filters] as const,
     queryFn: () => superAdminApi.getResourceInventory(filters),
@@ -1012,7 +1011,8 @@ export function useDeleteAccount() {
   const queryClient = useQueryClient()
   const { t } = useTranslation()
   return useMutation({
-    mutationFn: ({ accountId, permanent }: { accountId: string; permanent: boolean }) => superAdminApi.deleteAccount(accountId, permanent),
+    mutationFn: ({ accountId, permanent }: { accountId: string; permanent: boolean }) =>
+      superAdminApi.deleteAccount(accountId, permanent),
     onSuccess: (_data, { accountId }) => {
       void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.platformOverview })
       void queryClient.invalidateQueries({

@@ -1129,7 +1129,7 @@ export interface PaymentLedgerEntry {
   amount: number
   currency: string
   description: string
-  status: "created" | "paid" | "failed" | "expired" | "cancelled" | string
+  status: string
   customer_name?: string
   customer_email?: string
   customer_contact?: string
