@@ -1,5 +1,14 @@
 import { useMemo, useState } from "react"
 
+import type { ColumnDef } from "@tanstack/react-table"
+import { Mail, Plus, RefreshCw, Send, Trash2, Users, X } from "lucide-react"
+import { useTranslation } from "react-i18next"
+import { useNavigate, useSearchParams } from "react-router-dom"
+
+import { ConfirmDialog, PageHeader, StatGrid } from "@/components/console"
+import { useAuth } from "@/modules/auth/auth.context"
+import { useScreen } from "@/services/api/screen"
+
 import {
   actionsColumn,
   Button,
@@ -8,15 +17,11 @@ import {
   EmptyState,
   statusColumn,
   textColumn,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
 } from "@datadack/common-ui"
-import type { ColumnDef } from "@tanstack/react-table"
-import { Mail, Plus, RefreshCw, Send, Trash2, Users, X } from "lucide-react"
-import { useTranslation } from "react-i18next"
-import { useNavigate, useSearchParams } from "react-router-dom"
-
-import { ConfirmDialog, PageHeader, StatGrid } from "@/components/console"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@datadack/common-ui"
-import { useScreen } from "@/services/api/screen"
 
 import { IAM_ROUTES } from "../iam.constants"
 import {
@@ -42,6 +47,8 @@ export function UsersListPage() {
   useScreen("iam.users-list")
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const { user: caller } = useAuth()
+  const canDeleteUsers = caller?.is_super_admin === true
   const [searchParams, setSearchParams] = useSearchParams()
 
   const tab = searchParams.get("tab") === "invitations" ? "invitations" : "users"
@@ -165,19 +172,22 @@ export function UsersListPage() {
       }),
       actionsColumn<IAMUser>({
         ariaLabel: t("console.table.actions"),
-        actions: () => [
-          {
-            label: t("iam.actions.deleteUser"),
-            icon: Trash2,
-            destructive: true,
-            onAction: (user: IAMUser) => {
-              setToDelete(user)
-            },
-          },
-        ],
+        actions: () =>
+          canDeleteUsers
+            ? [
+                {
+                  label: t("iam.actions.deleteUser"),
+                  icon: Trash2,
+                  destructive: true,
+                  onAction: (user: IAMUser) => {
+                    setToDelete(user)
+                  },
+                },
+              ]
+            : [],
       }),
     ],
-    [t, accountRole],
+    [t, accountRole, canDeleteUsers],
   )
 
   const invitationColumns = useMemo<ColumnDef<Invitation>[]>(

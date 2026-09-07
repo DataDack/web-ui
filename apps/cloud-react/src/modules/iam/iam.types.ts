@@ -14,6 +14,7 @@ export interface IAMUser {
 }
 
 export interface IAMRole {
+  account_id: string
   id: string
   created_at: string
   updated_at: string
@@ -23,6 +24,7 @@ export interface IAMRole {
 }
 
 export interface IAMPolicy {
+  account_id: string | null
   id: string
   created_at: string
   updated_at: string
@@ -41,6 +43,7 @@ export interface UserRoleBinding {
 
 /** A row from policy_attachments (the unified principal↔policy join). */
 export interface PolicyAttachment {
+  account_id: string | null
   id: string
   policy_id: string
   principal_type: string

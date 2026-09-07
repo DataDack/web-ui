@@ -1,12 +1,14 @@
 import { useState } from "react"
 
-import { Button, CopyButton, Skeleton } from "@datadack/common-ui"
 import { FileText, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
 
 import { ConfirmDialog, DetailPage, KeyValueGrid, Section } from "@/components/console"
+import { useActiveScope } from "@/services/api/active-scope"
 import { useScreen } from "@/services/api/screen"
+
+import { Button, CopyButton, Skeleton } from "@datadack/common-ui"
 
 import { IAM_ROUTES } from "../iam.constants"
 import { useDeleteIAMPolicy, useIAMPolicy } from "../iam.hooks"
@@ -24,9 +26,26 @@ export function PolicyDetailPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { id = "" } = useParams()
-  const { data: policy, isLoading } = useIAMPolicy(id)
+  const { accountId } = useActiveScope()
+  const { data: policy, isLoading, isError, refetch } = useIAMPolicy(id)
   const { mutate: deletePolicy, isPending: isDeleting } = useDeleteIAMPolicy()
   const [deleteOpen, setDeleteOpen] = useState(false)
+
+  if (isError) {
+    return (
+      <div role="alert" className="space-y-3 p-4">
+        <p>{t("console.table.error")}</p>
+        <Button
+          variant="outline"
+          onClick={() => {
+            void refetch()
+          }}
+        >
+          {t("common.retry")}
+        </Button>
+      </div>
+    )
+  }
 
   if (isLoading || !policy) {
     return (
@@ -49,7 +68,8 @@ export function PolicyDetailPage() {
         title={policy.name}
         id={policy.id}
         actions={
-          !policy.is_managed && (
+          !policy.is_managed &&
+          policy.account_id === accountId && (
             <Button
               size="sm"
               variant="destructive"

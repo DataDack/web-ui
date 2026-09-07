@@ -1,5 +1,14 @@
 import { useMemo, useState } from "react"
 
+import type { ColumnDef } from "@tanstack/react-table"
+import { FileText, Lock, Plus, RefreshCw, Trash2 } from "lucide-react"
+import { useTranslation } from "react-i18next"
+import { useNavigate } from "react-router-dom"
+
+import { ConfirmDialog, PageHeader } from "@/components/console"
+import { useActiveScope } from "@/services/api/active-scope"
+import { useScreen } from "@/services/api/screen"
+
 import {
   actionsColumn,
   Button,
@@ -8,15 +17,11 @@ import {
   EmptyState,
   nameColumn,
   textColumn,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
 } from "@datadack/common-ui"
-import type { ColumnDef } from "@tanstack/react-table"
-import { FileText, Lock, Plus, RefreshCw, Trash2 } from "lucide-react"
-import { useTranslation } from "react-i18next"
-import { useNavigate } from "react-router-dom"
-
-import { ConfirmDialog, PageHeader } from "@/components/console"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@datadack/common-ui"
-import { useScreen } from "@/services/api/screen"
 
 import { IAM_ROUTES } from "../iam.constants"
 import { useDeleteIAMPolicy, useIAMPolicies } from "../iam.hooks"
@@ -26,6 +31,7 @@ export function PoliciesListPage() {
   useScreen("iam.policies-list")
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const { accountId } = useActiveScope()
   const { data: policies = [], isLoading, isError, refetch, isFetching } = useIAMPolicies()
   const { mutate: deletePolicy, isPending: isDeleting } = useDeleteIAMPolicy()
 
@@ -59,19 +65,22 @@ export function PoliciesListPage() {
       ...systemColumns,
       actionsColumn<IAMPolicy>({
         ariaLabel: t("console.table.actions"),
-        actions: () => [
-          {
-            label: t("iam.actions.deletePolicy"),
-            icon: Trash2,
-            destructive: true,
-            onAction: (p: IAMPolicy) => {
-              setToDelete(p)
-            },
-          },
-        ],
+        actions: (policy) =>
+          policy.account_id !== accountId
+            ? []
+            : [
+                {
+                  label: t("iam.actions.deletePolicy"),
+                  icon: Trash2,
+                  destructive: true,
+                  onAction: (p: IAMPolicy) => {
+                    setToDelete(p)
+                  },
+                },
+              ],
       }),
     ],
-    [t, systemColumns],
+    [t, systemColumns, accountId],
   )
 
   return (

@@ -1,15 +1,5 @@
 import { useState } from "react"
 
-import {
-  Button,
-  EmptyState,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Skeleton,
-} from "@datadack/common-ui"
 import { FileText, Info, Loader2, Plus, Trash2, Users, X } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link, useNavigate, useParams } from "react-router-dom"
@@ -22,6 +12,17 @@ import {
   staggerDelay,
 } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
+
+import {
+  Button,
+  EmptyState,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Skeleton,
+} from "@datadack/common-ui"
 
 import { IAM_ROUTES } from "../iam.constants"
 import {
@@ -43,9 +44,25 @@ export function GroupDetailPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { id = "" } = useParams()
-  const { data: group, isLoading } = useIAMGroup(id)
+  const { data: group, isLoading, isError, refetch } = useIAMGroup(id)
   const { mutate: deleteGroup, isPending: isDeleting } = useDeleteIAMGroup()
   const [deleteOpen, setDeleteOpen] = useState(false)
+
+  if (isError) {
+    return (
+      <div role="alert" className="space-y-3 p-4">
+        <p>{t("console.table.error")}</p>
+        <Button
+          variant="outline"
+          onClick={() => {
+            void refetch()
+          }}
+        >
+          {t("common.retry")}
+        </Button>
+      </div>
+    )
+  }
 
   if (isLoading || !group) {
     return (
@@ -143,7 +160,7 @@ function OverviewTab({ group }: Readonly<{ group: IAMGroup }>) {
 
 function MembersTab({ groupId }: Readonly<{ groupId: string }>) {
   const { t } = useTranslation()
-  const { data: members = [], isLoading } = useGroupMembers(groupId)
+  const { data: members = [], isLoading, isError, refetch } = useGroupMembers(groupId)
   const { data: users = [] } = useIAMUsers()
   const { mutate: addMember, isPending: isAdding } = useAddGroupMember()
   const { mutate: removeMember } = useRemoveGroupMember()
@@ -151,6 +168,22 @@ function MembersTab({ groupId }: Readonly<{ groupId: string }>) {
 
   const memberIds = new Set(members.map((m) => m.user_id))
   const addable = users.filter((u) => !memberIds.has(u.id))
+
+  if (isError) {
+    return (
+      <div role="alert" className="space-y-3 p-4">
+        <p>{t("console.table.error")}</p>
+        <Button
+          variant="outline"
+          onClick={() => {
+            void refetch()
+          }}
+        >
+          {t("common.retry")}
+        </Button>
+      </div>
+    )
+  }
 
   if (isLoading) {
     return <Skeleton className="h-48 rounded-xl" />
@@ -245,7 +278,7 @@ function MembersTab({ groupId }: Readonly<{ groupId: string }>) {
 
 function PoliciesTab({ groupId }: Readonly<{ groupId: string }>) {
   const { t } = useTranslation()
-  const { data: bindings = [], isLoading } = useGroupPolicies(groupId)
+  const { data: bindings = [], isLoading, isError, refetch } = useGroupPolicies(groupId)
   const { data: policies = [] } = useIAMPolicies()
   const { mutate: attachPolicy, isPending: isAttaching } = useAttachGroupPolicy()
   const { mutate: detachPolicy } = useDetachGroupPolicy()
@@ -253,6 +286,22 @@ function PoliciesTab({ groupId }: Readonly<{ groupId: string }>) {
 
   const attachedIds = new Set(bindings.map((b) => b.policy_id))
   const attachable = policies.filter((policy) => !attachedIds.has(policy.id))
+
+  if (isError) {
+    return (
+      <div role="alert" className="space-y-3 p-4">
+        <p>{t("console.table.error")}</p>
+        <Button
+          variant="outline"
+          onClick={() => {
+            void refetch()
+          }}
+        >
+          {t("common.retry")}
+        </Button>
+      </div>
+    )
+  }
 
   if (isLoading) {
     return <Skeleton className="h-48 rounded-xl" />

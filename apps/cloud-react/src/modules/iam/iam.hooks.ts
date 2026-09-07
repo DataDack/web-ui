@@ -1,6 +1,8 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient, type UseQueryOptions } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
+
+import { useActiveScope } from "@/services/api/active-scope"
 
 import { IAM_QUERY_KEYS } from "./iam.constants"
 import { iamService } from "./iam.service"
@@ -14,14 +16,25 @@ import type {
   SimulateRequest,
 } from "./iam.types"
 
+// Keep the initial unselected scope and each account in separate cache entries.
+// Existing mutation invalidations still match the unchanged key prefixes.
+function useAccountIAMQuery<T>(options: UseQueryOptions<T>) {
+  const { accountId } = useActiveScope()
+  return useQuery({
+    ...options,
+    queryKey: [...options.queryKey, accountId],
+    enabled: accountId ? options.enabled : false,
+  })
+}
+
 /* ── Users ─────────────────────────────────────────────────────────────── */
 
 export function useIAMUsers() {
-  return useQuery({ queryKey: IAM_QUERY_KEYS.users, queryFn: iamService.fetchUsers })
+  return useAccountIAMQuery({ queryKey: IAM_QUERY_KEYS.users, queryFn: iamService.fetchUsers })
 }
 
 export function useIAMUser(id: string) {
-  return useQuery({
+  return useAccountIAMQuery({
     queryKey: IAM_QUERY_KEYS.user(id),
     queryFn: () => iamService.fetchUser(id),
     enabled: !!id,
@@ -57,11 +70,11 @@ export function useDeleteIAMUser() {
 /* ── Roles ─────────────────────────────────────────────────────────────── */
 
 export function useIAMRoles() {
-  return useQuery({ queryKey: IAM_QUERY_KEYS.roles, queryFn: iamService.fetchRoles })
+  return useAccountIAMQuery({ queryKey: IAM_QUERY_KEYS.roles, queryFn: iamService.fetchRoles })
 }
 
 export function useIAMRole(id: string) {
-  return useQuery({
+  return useAccountIAMQuery({
     queryKey: IAM_QUERY_KEYS.role(id),
     queryFn: () => iamService.fetchRole(id),
     enabled: !!id,
@@ -97,7 +110,7 @@ export function useDeleteIAMRole() {
 /* ── User ↔ role bindings ──────────────────────────────────────────────── */
 
 export function useUserRoles(userId: string) {
-  return useQuery({
+  return useAccountIAMQuery({
     queryKey: IAM_QUERY_KEYS.userRoles(userId),
     queryFn: () => iamService.fetchUserRoles(userId),
     enabled: !!userId,
@@ -106,7 +119,7 @@ export function useUserRoles(userId: string) {
 
 /** Members of a role, via the backend reverse-lookup endpoint. */
 export function useRoleMembers(roleId: string) {
-  return useQuery({
+  return useAccountIAMQuery({
     queryKey: IAM_QUERY_KEYS.roleMembers(roleId),
     queryFn: () => iamService.fetchRoleMembers(roleId),
     enabled: !!roleId,
@@ -143,7 +156,7 @@ export function useRevokeRole() {
 
 /** Groups a user belongs to (reverse lookup). */
 export function useUserGroups(userId: string) {
-  return useQuery({
+  return useAccountIAMQuery({
     queryKey: IAM_QUERY_KEYS.userGroups(userId),
     queryFn: () => iamService.fetchUserGroups(userId),
     enabled: !!userId,
@@ -152,7 +165,7 @@ export function useUserGroups(userId: string) {
 
 /** Policies attached directly to a user. */
 export function useUserPolicies(userId: string) {
-  return useQuery({
+  return useAccountIAMQuery({
     queryKey: IAM_QUERY_KEYS.userPolicies(userId),
     queryFn: () => iamService.fetchPrincipalPolicies("user", userId),
     enabled: !!userId,
@@ -190,11 +203,14 @@ export function useDetachUserPolicy() {
 /* ── Policies ──────────────────────────────────────────────────────────── */
 
 export function useIAMPolicies() {
-  return useQuery({ queryKey: IAM_QUERY_KEYS.policies, queryFn: iamService.fetchPolicies })
+  return useAccountIAMQuery({
+    queryKey: IAM_QUERY_KEYS.policies,
+    queryFn: iamService.fetchPolicies,
+  })
 }
 
 export function useIAMPolicy(id: string) {
-  return useQuery({
+  return useAccountIAMQuery({
     queryKey: IAM_QUERY_KEYS.policy(id),
     queryFn: () => iamService.fetchPolicy(id),
     enabled: !!id,
@@ -230,7 +246,7 @@ export function useDeleteIAMPolicy() {
 /* ── Role ↔ policy bindings ────────────────────────────────────────────── */
 
 export function useRolePolicies(roleId: string) {
-  return useQuery({
+  return useAccountIAMQuery({
     queryKey: IAM_QUERY_KEYS.rolePolicies(roleId),
     queryFn: () => iamService.fetchPrincipalPolicies("role", roleId),
     enabled: !!roleId,
@@ -268,11 +284,11 @@ export function useDetachPolicy() {
 /* ── Groups ────────────────────────────────────────────────────────────── */
 
 export function useIAMGroups() {
-  return useQuery({ queryKey: IAM_QUERY_KEYS.groups, queryFn: iamService.fetchGroups })
+  return useAccountIAMQuery({ queryKey: IAM_QUERY_KEYS.groups, queryFn: iamService.fetchGroups })
 }
 
 export function useIAMGroup(id: string) {
-  return useQuery({
+  return useAccountIAMQuery({
     queryKey: IAM_QUERY_KEYS.group(id),
     queryFn: () => iamService.fetchGroup(id),
     enabled: !!id,
@@ -306,7 +322,7 @@ export function useDeleteIAMGroup() {
 }
 
 export function useGroupMembers(groupId: string) {
-  return useQuery({
+  return useAccountIAMQuery({
     queryKey: IAM_QUERY_KEYS.groupMembers(groupId),
     queryFn: () => iamService.fetchGroupMembers(groupId),
     enabled: !!groupId,
@@ -342,7 +358,7 @@ export function useRemoveGroupMember() {
 }
 
 export function useGroupPolicies(groupId: string) {
-  return useQuery({
+  return useAccountIAMQuery({
     queryKey: IAM_QUERY_KEYS.groupPolicies(groupId),
     queryFn: () => iamService.fetchPrincipalPolicies("group", groupId),
     enabled: !!groupId,
@@ -388,12 +404,15 @@ export function useSimulate() {
 }
 
 export function useAuditLogs() {
-  return useQuery({ queryKey: IAM_QUERY_KEYS.auditLogs, queryFn: iamService.fetchAuditLogs })
+  return useAccountIAMQuery({
+    queryKey: IAM_QUERY_KEYS.auditLogs,
+    queryFn: iamService.fetchAuditLogs,
+  })
 }
 
 /** Members (with member_role) of the caller's default account. */
 export function useCurrentAccountMembers() {
-  return useQuery({
+  return useAccountIAMQuery({
     queryKey: IAM_QUERY_KEYS.accountMembers,
     queryFn: iamService.fetchCurrentAccountMembers,
   })
@@ -402,7 +421,7 @@ export function useCurrentAccountMembers() {
 /* ── Invitations ───────────────────────────────────────────────────────── */
 
 export function useInvitations(status?: string) {
-  return useQuery({
+  return useAccountIAMQuery({
     queryKey: IAM_QUERY_KEYS.invitations(status),
     queryFn: () => iamService.fetchInvitations(status),
   })

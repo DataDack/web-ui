@@ -1,15 +1,5 @@
 import { useState } from "react"
 
-import {
-  Button,
-  EmptyState,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Skeleton,
-} from "@datadack/common-ui"
 import { FileText, Info, Loader2, Plus, ShieldCheck, Trash2, Users, X } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link, useNavigate, useParams } from "react-router-dom"
@@ -21,7 +11,19 @@ import {
   Section,
   staggerDelay,
 } from "@/components/console"
+import { useActiveScope } from "@/services/api/active-scope"
 import { useScreen } from "@/services/api/screen"
+
+import {
+  Button,
+  EmptyState,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Skeleton,
+} from "@datadack/common-ui"
 
 import { IAM_ROUTES } from "../iam.constants"
 import {
@@ -41,9 +43,26 @@ export function RoleDetailPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { id = "" } = useParams()
-  const { data: role, isLoading } = useIAMRole(id)
+  const { accountId } = useActiveScope()
+  const { data: role, isLoading, isError, refetch } = useIAMRole(id)
   const { mutate: deleteRole, isPending: isDeleting } = useDeleteIAMRole()
   const [deleteOpen, setDeleteOpen] = useState(false)
+
+  if (isError) {
+    return (
+      <div role="alert" className="space-y-3 p-4">
+        <p>{t("console.table.error")}</p>
+        <Button
+          variant="outline"
+          onClick={() => {
+            void refetch()
+          }}
+        >
+          {t("common.retry")}
+        </Button>
+      </div>
+    )
+  }
 
   if (isLoading || !role) {
     return (
@@ -65,7 +84,8 @@ export function RoleDetailPage() {
         status={role.is_system ? "active" : undefined}
         id={role.id}
         actions={
-          !role.is_system && (
+          !role.is_system &&
+          role.account_id === accountId && (
             <Button
               size="sm"
               variant="destructive"
@@ -147,8 +167,9 @@ function OverviewTab({ role }: Readonly<{ role: IAMRole }>) {
 }
 
 function PoliciesTab({ roleId }: Readonly<{ roleId: string }>) {
+  const { accountId } = useActiveScope()
   const { t } = useTranslation()
-  const { data: bindings = [], isLoading } = useRolePolicies(roleId)
+  const { data: bindings = [], isLoading, isError, refetch } = useRolePolicies(roleId)
   const { data: policies = [] } = useIAMPolicies()
   const { mutate: attachPolicy, isPending: isAttaching } = useAttachPolicy()
   const { mutate: detachPolicy } = useDetachPolicy()
@@ -156,6 +177,22 @@ function PoliciesTab({ roleId }: Readonly<{ roleId: string }>) {
 
   const attachedIds = new Set(bindings.map((b) => b.policy_id))
   const attachable = policies.filter((policy) => !attachedIds.has(policy.id))
+
+  if (isError) {
+    return (
+      <div role="alert" className="space-y-3 p-4">
+        <p>{t("console.table.error")}</p>
+        <Button
+          variant="outline"
+          onClick={() => {
+            void refetch()
+          }}
+        >
+          {t("common.retry")}
+        </Button>
+      </div>
+    )
+  }
 
   if (isLoading) {
     return <Skeleton className="h-48 rounded-xl" />
@@ -234,6 +271,7 @@ function PoliciesTab({ roleId }: Readonly<{ roleId: string }>) {
                   size="sm"
                   variant="ghost"
                   className="h-7 gap-1.5 text-muted-foreground hover:text-destructive shrink-0"
+                  disabled={binding.account_id !== accountId}
                   onClick={() => {
                     detachPolicy({ roleId, policyId: binding.policy_id })
                   }}
@@ -252,8 +290,24 @@ function PoliciesTab({ roleId }: Readonly<{ roleId: string }>) {
 
 function MembersTab({ roleId }: Readonly<{ roleId: string }>) {
   const { t } = useTranslation()
-  const { data: bindings = [], isLoading } = useRoleMembers(roleId)
+  const { data: bindings = [], isLoading, isError, refetch } = useRoleMembers(roleId)
   const { data: users = [] } = useIAMUsers()
+
+  if (isError) {
+    return (
+      <div role="alert" className="space-y-3 p-4">
+        <p>{t("console.table.error")}</p>
+        <Button
+          variant="outline"
+          onClick={() => {
+            void refetch()
+          }}
+        >
+          {t("common.retry")}
+        </Button>
+      </div>
+    )
+  }
 
   if (isLoading) {
     return <Skeleton className="h-48 rounded-xl" />
