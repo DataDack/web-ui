@@ -931,11 +931,6 @@
       "invite": "उपयोगकर्ता जोड़ें",
       "empty": "कोई उपयोगकर्ता नहीं",
       "emptySubtitle": "प्लेटफ़ॉर्म तक पहुंच देने के लिए उपयोगकर्ता जोड़ें।",
-      "inviteForm": {
-        "title": "उपयोगकर्ता जोड़ें",
-        "subtitle": "उन्हें साइन-इन निर्देशों के साथ आमंत्रण ईमेल मिलेगा।",
-        "inviting": "जोड़ा जा रहा है…"
-      },
       "deleteConfirm": {
         "title": "उपयोगकर्ता हटाएं?",
         "description": "\"{{name}}\" की सारी पहुंच तुरंत समाप्त हो जाएगी। इसे पूर्ववत नहीं किया जा सकता।"
@@ -1041,8 +1036,6 @@
       }
     },
     "toasts": {
-      "userCreated": "उपयोगकर्ता \"{{name}}\" जोड़ा गया",
-      "userCreateFailed": "उपयोगकर्ता जोड़ने में विफल",
       "userDeleted": "उपयोगकर्ता हटाया गया",
       "userDeleteFailed": "उपयोगकर्ता हटाने में विफल",
       "roleCreated": "भूमिका \"{{name}}\" बनाई गई",
@@ -1197,10 +1190,6 @@
     },
     "inviteMemberDialog": {
       "teammateCompanyCom": "teammate@company.com"
-    },
-    "inviteUserSheet": {
-      "janeDoe": "Jane Doe",
-      "janeCompanyCom": "jane@company.com"
     },
     "policySimulatorPage": {
       "vmInstancesCreate": "vm:instances:create",

@@ -3,18 +3,13 @@ import { api, apiGet, apiPost, apiPut } from "@/services/api/client"
 import type {
   AuthTokenResponse,
   LoginOtpSentResponse,
-  LoginRequest,
   OAuthPreview,
   OAuthProvider,
   OAuthTokenResponse,
-  RegisterRequest,
   UserProfile,
 } from "./auth.types"
 
 export const authApi = {
-  login: (payload: LoginRequest) => apiPost<AuthTokenResponse>("/auth/users/login", payload),
-  register: (payload: RegisterRequest) =>
-    apiPost<AuthTokenResponse>("/auth/users/register", payload),
   // Verify an OIDC ID token and preview the account it would create — no signup.
   oauthPreview: (provider: OAuthProvider, idToken: string) =>
     apiPost<OAuthPreview>(`/auth/users/oauth/${provider}/preview`, {

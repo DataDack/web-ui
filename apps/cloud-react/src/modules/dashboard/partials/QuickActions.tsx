@@ -1,4 +1,3 @@
-import { cn, Skeleton } from "@datadack/common-ui"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
@@ -6,6 +5,8 @@ import { Stagger, StaggerItem } from "@/components/console"
 import { useCatalogServices } from "@/modules/services/catalog.hooks"
 import type { CatalogService } from "@/modules/services/catalog.types"
 import { ServiceIcon } from "@/modules/services/ServiceIcon"
+
+import { cn, Skeleton } from "@datadack/common-ui"
 
 /**
  * The Console-home tile grid.
@@ -57,7 +58,9 @@ function ServiceTile({ service }: Readonly<{ service: CatalogService }>) {
     <span
       className={cn(
         "text-center text-xs leading-tight",
-        comingSoon ? "text-muted-foreground/60" : "text-muted-foreground group-hover:text-foreground",
+        comingSoon
+          ? "text-muted-foreground/60"
+          : "text-muted-foreground group-hover:text-foreground",
       )}
     >
       {service.short_name}
@@ -81,7 +84,10 @@ function ServiceTile({ service }: Readonly<{ service: CatalogService }>) {
   }
 
   return (
-    <Link to={service.path} className="group flex w-[88px] flex-col items-center gap-2 outline-none">
+    <Link
+      to={service.path}
+      className="group flex w-[88px] flex-col items-center gap-2 outline-none"
+    >
       {tile}
       {label}
     </Link>
@@ -114,11 +120,13 @@ export function QuickActions() {
 
   return (
     <Stagger className="flex flex-wrap gap-3 sm:gap-4" stagger={0.04}>
-      {services.map((svc) => (
-        <StaggerItem key={svc.id}>
-          <ServiceTile service={svc} />
-        </StaggerItem>
-      ))}
+      {services
+        .filter((service) => service.state === "enabled")
+        .map((svc) => (
+          <StaggerItem key={svc.id}>
+            <ServiceTile service={svc} />
+          </StaggerItem>
+        ))}
     </Stagger>
   )
 }

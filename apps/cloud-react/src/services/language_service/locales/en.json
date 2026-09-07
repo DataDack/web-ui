@@ -931,11 +931,6 @@
       "invite": "Add User",
       "empty": "No users",
       "emptySubtitle": "Add a user to grant access to the platform.",
-      "inviteForm": {
-        "title": "Add User",
-        "subtitle": "They'll receive an invitation email with sign-in instructions.",
-        "inviting": "Adding…"
-      },
       "deleteConfirm": {
         "title": "Delete user?",
         "description": "\"{{name}}\" will immediately lose all access. This cannot be undone."
@@ -1041,8 +1036,6 @@
       }
     },
     "toasts": {
-      "userCreated": "User \"{{name}}\" added",
-      "userCreateFailed": "Failed to add user",
       "userDeleted": "User deleted",
       "userDeleteFailed": "Failed to delete user",
       "roleCreated": "Role \"{{name}}\" created",
@@ -1197,10 +1190,6 @@
     },
     "inviteMemberDialog": {
       "teammateCompanyCom": "teammate@company.com"
-    },
-    "inviteUserSheet": {
-      "janeDoe": "Jane Doe",
-      "janeCompanyCom": "jane@company.com"
     },
     "policySimulatorPage": {
       "vmInstancesCreate": "vm:instances:create",

@@ -12,7 +12,6 @@ import type {
   CreateInvitationRequest,
   CreatePolicyRequest,
   CreateRoleRequest,
-  CreateUserRequest,
   GroupMember,
   IAMGroup,
   IAMPolicy,
@@ -39,7 +38,6 @@ export const iamApi = {
   /* users */
   listUsers: () => apiGet<IAMUser[]>(`/auth/users${LIST_QUERY}`),
   getUser: (id: string) => apiGet<IAMUser>(`/auth/users/${id}`),
-  createUser: (payload: CreateUserRequest) => apiPost<IAMUser>("/auth/users", payload),
   deleteUser: (id: string) => apiDelete(`/auth/users/${id}`),
 
   /* roles */

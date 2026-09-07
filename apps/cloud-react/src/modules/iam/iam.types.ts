@@ -186,13 +186,6 @@ export interface AuditLog {
 
 /* ── Request DTOs ──────────────────────────────────────────────────────── */
 
-export interface CreateUserRequest {
-  name: string
-  email: string
-  password: string
-  role: string
-}
-
 export interface CreateRoleRequest {
   name: string
   description: string

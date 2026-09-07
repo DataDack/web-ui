@@ -5,23 +5,7 @@ import { extractError } from "@/services/api/client"
 import { authApi } from "./auth.api"
 import { AUTH_QUERY_KEYS } from "./auth.constants"
 import { useAuth } from "./auth.context"
-import type { LoginRequest, OAuthProvider, RegisterRequest, UserProfile } from "./auth.types"
-
-export function useLogin() {
-  const { authenticate } = useAuth()
-  return useMutation({
-    mutationFn: (payload: LoginRequest) => authApi.login(payload),
-    onSuccess: authenticate,
-  })
-}
-
-export function useRegister() {
-  const { authenticate } = useAuth()
-  return useMutation({
-    mutationFn: (payload: RegisterRequest) => authApi.register(payload),
-    onSuccess: authenticate,
-  })
-}
+import type { OAuthProvider, UserProfile } from "./auth.types"
 
 /** Verify an OIDC ID token and preview the account it would create — used to
  *  show the "confirm the account you're creating" step before signing up. */

@@ -5,14 +5,12 @@ import type {
   CreateInvitationRequest,
   CreatePolicyRequest,
   CreateRoleRequest,
-  CreateUserRequest,
   SimulateRequest,
 } from "./iam.types"
 
 export const iamService = {
   fetchUsers: () => iamApi.listUsers(),
   fetchUser: (id: string) => iamApi.getUser(id),
-  createUser: (payload: CreateUserRequest) => iamApi.createUser(payload),
   removeUser: (id: string) => iamApi.deleteUser(id),
 
   fetchRoles: () => iamApi.listRoles(),

@@ -1,4 +1,3 @@
-import { cn, Skeleton } from "@datadack/common-ui"
 import { CheckCircle2, Grip } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
@@ -7,6 +6,8 @@ import { Stagger, StaggerItem } from "@/components/console"
 import { useCatalogServices } from "@/modules/services/catalog.hooks"
 import type { CatalogMetric, CatalogService, CatalogStatus } from "@/modules/services/catalog.types"
 import { ServiceIcon } from "@/modules/services/ServiceIcon"
+
+import { cn, Skeleton } from "@datadack/common-ui"
 
 // Health-dot colour per operational status.
 const STATUS_DOT: Record<CatalogStatus, string> = {
@@ -143,11 +144,13 @@ export function SovereignServices() {
         </div>
       ) : (
         <Stagger className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3" stagger={0.05}>
-          {services.map((svc) => (
-            <StaggerItem key={svc.id}>
-              <ServiceCard service={svc} />
-            </StaggerItem>
-          ))}
+          {services
+            .filter((service) => service.state === "enabled")
+            .map((svc) => (
+              <StaggerItem key={svc.id}>
+                <ServiceCard service={svc} />
+              </StaggerItem>
+            ))}
         </Stagger>
       )}
     </section>

@@ -1,26 +1,27 @@
 import { useMemo } from "react"
 
-import { actionsColumn, Badge, Button, DataTable, EmptyState } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
-import {
-  Cpu,
-  Disc,
-  HardDrive,
-  Package,
-  RefreshCw,
-  Rocket,
-  Store,
-  type LucideIcon,
-} from "lucide-react"
+import { Cpu, Disc, HardDrive, RefreshCw, Rocket } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
-import { FadeIn, PageHeader, StatGrid } from "@/components/console"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@datadack/common-ui"
+import { PageHeader, StatGrid } from "@/components/console"
 import { useImageCatalog } from "@/modules/catalog/catalog.hooks"
 import type { ImageCatalogFamily } from "@/modules/catalog/catalog.types"
 import { OSIcon } from "@/modules/catalog/os-icons"
 import { useScreen } from "@/services/api/screen"
+
+import {
+  actionsColumn,
+  Badge,
+  Button,
+  DataTable,
+  EmptyState,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@datadack/common-ui"
 
 import { VMS_ROUTES } from "../vms.constants"
 
@@ -218,16 +219,6 @@ export function ImagesListPage() {
             <Disc className="size-3.5" />
             {t("vms.images.tabs.system", "System images")}
           </TabsTrigger>
-          <TabsTrigger value="my-amis" className="gap-1.5">
-            <Package className="size-3.5" />
-            {t("vms.images.tabs.myAmis", "My AMIs")}
-            <SoonBadge />
-          </TabsTrigger>
-          <TabsTrigger value="marketplace" className="gap-1.5">
-            <Store className="size-3.5" />
-            {t("vms.images.tabs.marketplace", "Marketplace AMIs")}
-            <SoonBadge />
-          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="system" className="mt-3 space-y-5">
@@ -257,64 +248,7 @@ export function ImagesListPage() {
             refreshing={isFetching}
           />
         </TabsContent>
-
-        <TabsContent value="my-amis" className="mt-3">
-          <ComingSoonPanel
-            icon={Package}
-            title={t("vms.images.myAmis.title", "My AMIs")}
-            description={t(
-              "vms.images.myAmis.description",
-              "Create custom AMIs from your instances and reuse them to launch identical machines. This feature is on its way.",
-            )}
-          />
-        </TabsContent>
-
-        <TabsContent value="marketplace" className="mt-3">
-          <ComingSoonPanel
-            icon={Store}
-            title={t("vms.images.marketplace.title", "Marketplace AMIs")}
-            description={t(
-              "vms.images.marketplace.description",
-              "Launch instances from pre-configured third-party images — databases, app stacks, and appliances. This feature is on its way.",
-            )}
-          />
-        </TabsContent>
       </Tabs>
     </div>
-  )
-}
-
-/** Tiny "Soon" pill rendered inside a tab trigger for not-yet-live surfaces. */
-function SoonBadge() {
-  const { t } = useTranslation()
-  return (
-    <Badge
-      variant="outline"
-      className="ml-0.5 h-4 px-1.5 font-mono text-[9px] uppercase tracking-wider text-brand-gold border-brand-gold/40"
-    >
-      {t("console.comingSoon.badge", "Coming soon")}
-    </Badge>
-  )
-}
-
-/** In-tab "coming soon" placeholder — the ComingSoon page body without its
- *  PageHeader (this page already renders one above the tabs). */
-function ComingSoonPanel({
-  icon: Icon,
-  title,
-  description,
-}: Readonly<{ icon: LucideIcon; title: string; description: string }>) {
-  const { t } = useTranslation()
-  return (
-    <FadeIn className="flex flex-col items-center justify-center rounded-xl glass-1 border border-dashed border-border/60 px-6 py-20 text-center">
-      <div className="mb-5 flex size-14 items-center justify-center rounded-2xl glass-2">
-        <Icon className="size-6 text-brand-gold" />
-      </div>
-      <span className="mb-2 font-mono text-[10px] uppercase tracking-[0.18em] text-brand-gold/90">
-        {t("console.comingSoon.badge", "Coming soon")}
-      </span>
-      <h2 className="text-lg font-semibold text-foreground">{title}</h2>
-      <p className="mt-1.5 max-w-md text-[13px] text-muted-foreground">{description}</p>
-    </FadeIn>
   )
 }

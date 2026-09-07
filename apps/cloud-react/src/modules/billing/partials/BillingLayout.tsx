@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from "react"
 
-import { Button, cn } from "@datadack/common-ui"
 import { useIsFetching, useQueryClient } from "@tanstack/react-query"
 import { CreditCard, Plus, RefreshCw } from "lucide-react"
 import { useTranslation } from "react-i18next"
@@ -10,6 +9,8 @@ import { toast } from "sonner"
 import { PageHeader } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 import { publishConsoleEvent } from "@/services/broadcast"
+
+import { Button, cn } from "@datadack/common-ui"
 
 import { BILLING_ROUTES } from "../billing.constants"
 import type { BillingOutletContext } from "../billing.context"
@@ -39,7 +40,7 @@ function BillingNav() {
   const { t } = useTranslation()
   return (
     <nav className="flex items-center gap-1 overflow-x-auto border-b border-border">
-      {NAV_TABS.map((tab) => (
+      {NAV_TABS.filter((tab) => !tab.soon).map((tab) => (
         <NavLink
           key={tab.to}
           to={tab.to}

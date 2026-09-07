@@ -44,17 +44,6 @@ export interface OAuthTokenResponse {
   expires_in: number
 }
 
-export interface LoginRequest {
-  email: string
-  password: string
-}
-
-export interface RegisterRequest {
-  name: string
-  email: string
-  password: string
-}
-
 export type OAuthProvider = "google" | "microsoft"
 
 /** Non-committal preview of the account an OIDC ID token would create — returned

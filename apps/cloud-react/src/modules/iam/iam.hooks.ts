@@ -12,7 +12,6 @@ import type {
   CreateInvitationRequest,
   CreatePolicyRequest,
   CreateRoleRequest,
-  CreateUserRequest,
   SimulateRequest,
 } from "./iam.types"
 
@@ -38,19 +37,6 @@ export function useIAMUser(id: string) {
     queryKey: IAM_QUERY_KEYS.user(id),
     queryFn: () => iamService.fetchUser(id),
     enabled: !!id,
-  })
-}
-
-export function useCreateIAMUser() {
-  const queryClient = useQueryClient()
-  const { t } = useTranslation()
-  return useMutation({
-    mutationFn: (payload: CreateUserRequest) => iamService.createUser(payload),
-    onSuccess: (user) => {
-      void queryClient.invalidateQueries({ queryKey: IAM_QUERY_KEYS.users })
-      toast.success(t("iam.toasts.userCreated", { name: user.name }))
-    },
-    onError: () => toast.error(t("iam.toasts.userCreateFailed")),
   })
 }
 

@@ -125,7 +125,6 @@ export const CONSOLE_SERVICES: ConsoleService[] = [
         labelKey: "console.nav.items.routers",
         icon: Router,
         path: "/networking/routers",
-        comingSoon: true,
       },
       // Hidden from navigation for now; retain the entry for later.
       // {
@@ -310,7 +309,6 @@ export const CONSOLE_SERVICES: ConsoleService[] = [
         labelKey: "console.nav.items.iamRoles",
         icon: ShieldCheck,
         path: "/iam/roles",
-        comingSoon: true,
       },
       { labelKey: "console.nav.items.iamPolicies", icon: FileText, path: "/iam/policies" },
       {
@@ -385,8 +383,8 @@ export const ALL_NAV_GROUPS: { labelKey: string; items: SidebarNavItem[] }[] = [
   },
   ...CONSOLE_SERVICES.map((service) => ({
     labelKey: service.labelKey,
-    items: service.items,
-  })),
+    items: service.items.filter((item) => !item.comingSoon),
+  })).filter((group) => group.items.length > 0),
 ]
 
 /** Splits "/managed-apps?tab=hosting" into its path and its query string. */
