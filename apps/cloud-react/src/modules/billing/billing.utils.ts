@@ -122,3 +122,23 @@ export function costByService(usage: UsageRecordApi[]): ServiceSlice[] {
 export function credits(value: number): string {
   return `${new Intl.NumberFormat("en-IN", { maximumFractionDigits: 4 }).format(value)} credits`
 }
+
+/** Describe recorded credit provenance without treating free credits as purchases. */
+export function creditSourceLabel(
+  entry: Pick<LedgerEntry, "kind" | "ref_type" | "reason" | "description">,
+): string {
+  if (entry.kind === "debit")
+    return entry.ref_type === "usage" || entry.ref_type === "invoice"
+      ? "Billed resource usage"
+      : "Credit deduction"
+  if (entry.reason === "resource_reversal" || entry.description.startsWith("Reversal —"))
+    return "Resource charge returned"
+  if (entry.reason === "refund_reversal") return "Payment refund reversed"
+  if (entry.ref_type === "topup") return "Purchased credits"
+  if (entry.ref_type === "promo") return "Promotional coupon credit"
+  if (entry.reason === "trial_bonus") return "Trial promotional credit"
+  if (entry.reason === "goodwill") return "Admin-provided goodwill credit"
+  if (entry.reason === "refund") return "Refund credit"
+  if (entry.ref_type === "adjustment") return "Admin-provided credit"
+  return "Credit adjustment"
+}

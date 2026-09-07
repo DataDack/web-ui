@@ -30,7 +30,7 @@ export function InvoicesPage() {
     queryFn: billingApi.listStatements,
   })
   const [downloading, setDownloading] = useState<string | null>(null)
-  async function download(id: string, kind: "invoice" | "statement", month = "") {
+  async function download(id: string, kind: "invoice" | "statement" | "statement-pdf", month = "") {
     setDownloading(id)
     try {
       if (kind === "invoice") {
@@ -38,7 +38,10 @@ export function InvoicesPage() {
         const bytes = Uint8Array.from(atob(invoice.pdf), (c) => c.charCodeAt(0))
         saveBlob(new Blob([bytes], { type: "application/pdf" }), invoice.filename)
       } else {
-        saveBlob(await billingApi.downloadStatement(id), `credit-statement-${month}.xlsx`)
+        saveBlob(
+          await billingApi.downloadStatement(id, kind === "statement-pdf" ? "pdf" : "excel"),
+          `credit-statement-${month}.${kind === "statement-pdf" ? "pdf" : "xlsx"}`,
+        )
       }
     } catch {
       toast.error("Could not download the document. Please try again.")
@@ -101,8 +104,8 @@ export function InvoicesPage() {
     }),
     textColumn<CreditStatement>({
       id: "used",
-      header: "Used",
-      accessor: (s) => credits(s.credits_used),
+      header: "Billed resource usage",
+      accessor: (s) => credits(s.usage_credits),
     }),
     textColumn<CreditStatement>({
       id: "closing",
@@ -113,14 +116,24 @@ export function InvoicesPage() {
       id: "download",
       header: "",
       cell: ({ row }) => (
-        <Button
-          variant="ghost"
-          size="sm"
-          disabled={downloading !== null}
-          onClick={() => void download(row.original.id, "statement", row.original.month)}
-        >
-          Download Excel
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            disabled={downloading !== null}
+            onClick={() => void download(row.original.id, "statement-pdf", row.original.month)}
+          >
+            Download PDF
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            disabled={downloading !== null}
+            onClick={() => void download(row.original.id, "statement", row.original.month)}
+          >
+            Download Excel
+          </Button>
+        </div>
       ),
     },
   ]
@@ -149,8 +162,10 @@ export function InvoicesPage() {
           Monthly credit-usage statements
         </h2>
         <p className="text-sm text-muted-foreground">
-          One statement per month, with module, service, price and credits in Excel. Statements do
-          not create another charge. Late usage appears in the month it was charged.
+          One consolidated monthly statement covers billed resources across all services. Hourly
+          usage is cumulative. Free usage, credit grants and fully reversed charges are excluded
+          from the line items. No additional GST or payment is due. Late usage appears in the month
+          it was charged.
         </p>
         <DataTable
           data={statements.data ?? []}

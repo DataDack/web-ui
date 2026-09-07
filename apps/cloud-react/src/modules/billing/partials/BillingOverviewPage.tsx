@@ -13,7 +13,13 @@ import { BILLING_ROUTES, GST_RATE } from "../billing.constants"
 import { useBillingOutlet } from "../billing.context"
 import { useCreditBalance, useCreditPurchases, useLedger, useUsage } from "../billing.hooks"
 import type { LedgerEntry } from "../billing.types"
-import { burnSummary, costByService, credits, spendSeries } from "../billing.utils"
+import {
+  burnSummary,
+  costByService,
+  credits,
+  creditSourceLabel,
+  spendSeries,
+} from "../billing.utils"
 import { BillingHero } from "./BillingHero"
 
 export function BillingOverviewPage() {
@@ -175,7 +181,8 @@ function ActivityRow({ entry }: Readonly<{ entry: LedgerEntry }>) {
   return (
     <li className="flex items-center justify-between gap-3 py-2.5">
       <div className="min-w-0">
-        <p className="truncate text-[13px] text-foreground">{entry.description}</p>
+        <p className="text-[13px] font-medium text-foreground">{creditSourceLabel(entry)}</p>
+        <p className="truncate text-[12px] text-muted-foreground">{entry.description}</p>
         <p className="font-mono text-[11px] text-muted-foreground">
           {new Date(entry.created_at).toLocaleDateString()}
         </p>

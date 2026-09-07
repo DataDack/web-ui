@@ -24,8 +24,10 @@ import type {
 // account id comes from the balance response.
 export const billingApi = {
   listStatements: () => apiGet<CreditStatement[]>("/billing/charge/statements"),
-  downloadStatement: async (id: string): Promise<Blob> => {
-    const res = await api.get(`/billing/charge/statements/${id}/excel`, { responseType: "blob" })
+  downloadStatement: async (id: string, format: "excel" | "pdf" = "excel"): Promise<Blob> => {
+    const res = await api.get(`/billing/charge/statements/${id}/${format}`, {
+      responseType: "blob",
+    })
     return res.data as Blob
   },
   topupInvoice: (id: string) =>

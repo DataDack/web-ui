@@ -18,7 +18,7 @@ import {
 
 import { useCreditBalance, useCreditPurchases, useLedger } from "../billing.hooks"
 import type { LedgerEntry } from "../billing.types"
-import { credits, paiseToInr } from "../billing.utils"
+import { credits, creditSourceLabel, paiseToInr } from "../billing.utils"
 
 interface TopupRow {
   id: string
@@ -79,8 +79,12 @@ export function LedgerPage() {
       textColumn<LedgerEntry>({
         id: "description",
         header: t("billing.columns.description"),
-        accessor: (e) =>
-          e.reason ? `${e.reason.replaceAll("_", " ")}: ${e.description}` : e.description,
+        accessor: (e) => e.description || creditSourceLabel(e),
+      }),
+      textColumn<LedgerEntry>({
+        id: "source",
+        header: "Source / reason",
+        accessor: creditSourceLabel,
       }),
       statusColumn<LedgerEntry>({
         header: t("billing.columns.type"),
@@ -95,7 +99,7 @@ export function LedgerPage() {
       }),
       textColumn<LedgerEntry>({
         id: "balance",
-        header: t("billing.columns.balance"),
+        header: "Balance after latest charge",
         accessor: (e) => credits(e.balance),
         mono: true,
         muted: true,
@@ -110,19 +114,22 @@ export function LedgerPage() {
       ...purchases.map((p) => ({
         id: `purchase-${p.id}`,
         label: `#${p.id}`,
-        type: "Paid top-up",
+        type: p.status === "paid" ? "Purchased credits" : `Top-up (${p.status})`,
         credits: p.status === "paid" ? p.credits : null,
         base: p.base_amount,
-        gst: p.gst_amount,
-        total: p.total_amount,
-        benefit: "—",
+        gst: p.status === "paid" ? p.gst_amount : null,
+        total: p.status === "paid" ? p.total_amount : null,
+        benefit:
+          p.status === "paid"
+            ? "Purchased credits; GST paid at checkout"
+            : "No credits added or GST paid yet",
         status: p.status,
         created_at: p.created_at,
       })),
       ...(promotions.data ?? []).map((p) => ({
         id: `coupon-${p.id}`,
-        label: p.code,
-        type: p.kind === "credit" ? "Credit coupon" : "Discount coupon",
+        label: p.description ? `${p.code} — ${p.description}` : p.code,
+        type: p.kind === "credit" ? "Promotional coupon credit" : "Discount coupon",
         credits: p.kind === "credit" ? p.credit_amount : null,
         base: null,
         gst: null,
@@ -139,7 +146,7 @@ export function LedgerPage() {
         .map((e) => ({
           id: `grant-${e.id}`,
           label: e.description,
-          type: e.reason ? e.reason.replaceAll("_", " ") : "Admin adjustment",
+          type: creditSourceLabel(e),
           credits: e.amount,
           base: null,
           gst: null,
@@ -162,13 +169,13 @@ export function LedgerPage() {
     }),
     textColumn<TopupRow>({
       id: "gst",
-      header: "GST",
-      accessor: (p) => (p.gst === null ? "—" : paiseToInr(p.gst)),
+      header: "GST paid",
+      accessor: (p) => (p.gst === null ? "Not applicable" : paiseToInr(p.gst)),
       mono: true,
     }),
     textColumn<TopupRow>({
       id: "total",
-      header: "Checkout total",
+      header: "Amount paid",
       accessor: (p) => (p.total === null ? "—" : paiseToInr(p.total)),
       mono: true,
     }),
@@ -215,6 +222,11 @@ export function LedgerPage() {
   return (
     <div className="space-y-6">
       <StatGrid stats={ledgerStats} />
+      <p className="text-sm text-muted-foreground">
+        Trial, promotional and admin-provided credits are free credits with no GST. GST applies only
+        when you purchase a top-up. Hourly usage accumulates per resource and month; the balance
+        column shows the balance after its latest charge.
+      </p>
 
       <AnimatedTabs
         tabs={tabs}

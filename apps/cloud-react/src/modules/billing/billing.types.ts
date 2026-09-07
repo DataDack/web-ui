@@ -212,6 +212,7 @@ export interface PurchaseCreditsResponse {
 }
 
 export interface CreditStatement {
+  usage_credits: number
   id: string
   month: string
   opening_balance: number
