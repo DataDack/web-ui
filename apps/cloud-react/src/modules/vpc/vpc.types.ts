@@ -7,6 +7,7 @@
 export type VPCNetworkStatus = "pending" | "available" | "active" | "deleting" | "deleted" | "error"
 
 export interface VPCNetwork {
+  zone_type?: string
   id: string
   tenant_serial: number
   created_at: string
@@ -161,13 +162,7 @@ export interface NetworkInterface {
   user_id: string
 }
 
-// The router is the realization record of a VyOS guest, not a static row, so
-// its lifecycle has a state for each place provisioning can get stuck: no
-// guest yet (pending), clone/config/start running (provisioning), guest up
-// but no transport yet (booting), transport up and pushing config
-// (configuring), fully up (available), reachable-but-drifted and being
-// retried (degraded — NOT the same as failed), gave up (failed), or tearing
-// down (deleting).
+// Native SDN routing is applied asynchronously by Proxmox Manager.
 export type RouterStatus =
   | "pending"
   | "provisioning"
@@ -179,6 +174,9 @@ export type RouterStatus =
   | "deleting"
 
 export interface Router {
+  role: string
+  enable_snat: boolean
+  provision_error?: string
   id: string
   created_at: string
   updated_at: string
@@ -322,8 +320,9 @@ export interface CreateNetworkInterfaceRequest {
 export interface CreateRouterRequest {
   name: string
   region: string
-  /** Attach the router to a VPC on creation; omit to leave it unattached. */
-  network_id?: string
+  /** Native routing belongs to exactly one EVPN VPC. */
+  network_id: string
+  enable_snat: boolean
 }
 
 export interface CreateInternetGatewayRequest {

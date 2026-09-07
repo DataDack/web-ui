@@ -483,8 +483,22 @@ export function useCreateRouter() {
       toast.success(t("routers.toasts.created", { name: router.name }))
     },
     onError: (e) => {
-      if (!handleQuotaGateError(e)) toast.error(t("routers.toasts.createFailed"))
+      if (!handleQuotaGateError(e)) toast.error(extractError(e, t("routers.toasts.createFailed")))
     },
+  })
+}
+
+export function useUpdateRouter() {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: ({ id, enableSNAT }: { id: string; enableSNAT: boolean }) =>
+      vpcService.updateRouter(id, enableSNAT),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: VPC_QUERY_KEYS.routers })
+      toast.success(t("routers.toasts.updated"))
+    },
+    onError: (e) => toast.error(extractError(e, t("routers.toasts.updateFailed"))),
   })
 }
 

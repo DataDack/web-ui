@@ -3,7 +3,6 @@ import { useMemo, useState } from "react"
 import {
   actionsColumn,
   Button,
-  copyColumn,
   DataTable,
   dateColumn,
   Dialog,
@@ -22,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
   statusColumn,
+  Switch,
   textColumn,
 } from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -40,11 +40,17 @@ import { namingNameSchema } from "@/modules/governance/governance.validation"
 import { useScreen } from "@/services/api/screen"
 
 import { VPC_ROUTES } from "../vpc.constants"
-import { useCreateRouter, useDeleteRouter, useRegions, useRouters, useVPCs } from "../vpc.hooks"
+import {
+  useCreateRouter,
+  useDeleteRouter,
+  useRegions,
+  useRouters,
+  useUpdateRouter,
+  useVPCs,
+} from "../vpc.hooks"
 import type { Router } from "../vpc.types"
 
 const FIELD_LABEL_CLASS = "text-xs font-semibold tracking-wide uppercase text-muted-foreground"
-const NO_VPC = "__none__"
 
 /* ── Create dialog ─────────────────────────────────────────────────────── */
 
@@ -52,7 +58,8 @@ const makeCreateSchema = (rule: NamingRule) =>
   z.object({
     name: namingNameSchema(rule),
     region: z.string().min(1, "Required"),
-    network_id: z.string(),
+    network_id: z.string().min(1, "Select a VPC"),
+    enable_snat: z.boolean(),
   })
 
 type CreateValues = z.infer<ReturnType<typeof makeCreateSchema>>
@@ -78,7 +85,7 @@ function CreateRouterDialog({
     formState: { errors },
   } = useForm<CreateValues>({
     resolver: zodResolver(createSchema),
-    defaultValues: { name: "", region: "", network_id: NO_VPC },
+    defaultValues: { name: "", region: "", network_id: "", enable_snat: false },
   })
 
   const close = () => {
@@ -91,7 +98,8 @@ function CreateRouterDialog({
       {
         name: values.name,
         region: values.region,
-        network_id: values.network_id === NO_VPC ? undefined : values.network_id,
+        network_id: values.network_id,
+        enable_snat: values.enable_snat,
       },
       { onSuccess: close },
     )
@@ -107,15 +115,20 @@ function CreateRouterDialog({
         <form onSubmit={(e) => void handleSubmit(onSubmit)(e)} className="space-y-5">
           <QuotaNotice code="vpc.routers" />
           <div className="space-y-1.5">
-            <Label className={FIELD_LABEL_CLASS}>
+            <Label htmlFor="router-name" className={FIELD_LABEL_CLASS}>
               {t("routers.createForm.name")}
               <span className="text-destructive ml-0.5">*</span>
             </Label>
-            <Input {...register("name")} placeholder="my-router" className="font-mono" />
+            <Input
+              id="router-name"
+              {...register("name")}
+              placeholder="my-router"
+              className="font-mono"
+            />
             {errors.name && <p className="text-[11px] text-destructive">{errors.name.message}</p>}
           </div>
           <div className="space-y-1.5">
-            <Label className={FIELD_LABEL_CLASS}>
+            <Label htmlFor="router-region" className={FIELD_LABEL_CLASS}>
               {t("routers.createForm.region")}
               <span className="text-destructive ml-0.5">*</span>
             </Label>
@@ -124,9 +137,10 @@ function CreateRouterDialog({
               disabled={regions.length === 0}
               onValueChange={(value) => {
                 setValue("region", value, { shouldValidate: true })
+                setValue("network_id", "")
               }}
             >
-              <SelectTrigger className="w-full">
+              <SelectTrigger id="router-region" className="w-full">
                 <SelectValue placeholder={t("routers.createForm.regionPlaceholder")} />
               </SelectTrigger>
               <SelectContent>
@@ -142,26 +156,48 @@ function CreateRouterDialog({
             )}
           </div>
           <div className="space-y-1.5">
-            <Label className={FIELD_LABEL_CLASS}>{t("routers.createForm.vpc")}</Label>
+            <Label htmlFor="router-vpc" className={FIELD_LABEL_CLASS}>
+              {t("routers.createForm.vpc")}
+            </Label>
             <Select
               value={watch("network_id")}
               onValueChange={(value) => {
                 setValue("network_id", value)
               }}
             >
-              <SelectTrigger className="w-full">
+              <SelectTrigger id="router-vpc" className="w-full">
                 <SelectValue placeholder={t("routers.createForm.vpcPlaceholder")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={NO_VPC}>{t("routers.createForm.vpcNone")}</SelectItem>
-                {vpcs.map((vpc) => (
-                  <SelectItem key={vpc.id} value={vpc.id}>
-                    {vpc.name} — {vpc.cidr}
-                  </SelectItem>
-                ))}
+                {vpcs
+                  .filter((vpc) => vpc.region === watch("region") && vpc.zone_type === "evpn")
+                  .map((vpc) => (
+                    <SelectItem key={vpc.id} value={vpc.id}>
+                      {vpc.name} — {vpc.cidr}
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
           </div>
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <Label htmlFor="router-snat">{t("routers.snat.label")}</Label>
+              <p id="router-snat-help" className="text-xs text-muted-foreground">
+                {t("routers.snat.description")}
+              </p>
+            </div>
+            <Switch
+              id="router-snat"
+              aria-describedby="router-snat-help"
+              checked={watch("enable_snat")}
+              onCheckedChange={(value) => setValue("enable_snat", value)}
+            />
+          </div>
+          {errors.network_id && (
+            <p role="alert" className="text-xs text-destructive">
+              {errors.network_id.message}
+            </p>
+          )}
           <DialogFooter>
             <Button type="button" variant="ghost" onClick={close}>
               {t("console.wizard.cancel")}
@@ -189,6 +225,7 @@ export function RoutersPage() {
   const { data: routers = [], isLoading, isError, refetch, isFetching } = useRouters()
   const { data: vpcs = [] } = useVPCs()
   const { mutate: deleteRouter, isPending: isDeleting } = useDeleteRouter()
+  const { mutate: updateRouter, isPending: isUpdating } = useUpdateRouter()
 
   const [query, setQuery] = useState("")
   const [createOpen, setCreateOpen] = useState(false)
@@ -259,11 +296,25 @@ export function RoutersPage() {
           )
         },
       },
-      copyColumn<Router>({
-        id: "wan_ip",
-        header: t("routers.columns.wanIp"),
-        accessor: (r) => r.wan_ip ?? "",
-        responsive: "md",
+      {
+        id: "snat",
+        header: () => t("routers.snat.label"),
+        cell: ({ row }) => (
+          <Switch
+            aria-label={t("routers.snat.toggle", { name: row.original.name })}
+            checked={row.original.enable_snat}
+            disabled={
+              isUpdating || row.original.role !== "sdn" || row.original.status === "deleting"
+            }
+            onCheckedChange={(enableSNAT) => updateRouter({ id: row.original.id, enableSNAT })}
+          />
+        ),
+      },
+      textColumn<Router>({
+        id: "error",
+        header: t("routers.columns.error"),
+        accessor: (r) => r.provision_error ?? "",
+        responsive: "lg",
       }),
       dateColumn<Router>({
         header: t("common.created"),
@@ -284,7 +335,7 @@ export function RoutersPage() {
         ],
       }),
     ],
-    [t, vpcNames],
+    [t, vpcNames, isUpdating, updateRouter],
   )
 
   return (
@@ -337,6 +388,7 @@ export function RoutersPage() {
               onChange={(e) => {
                 setQuery(e.target.value)
               }}
+              aria-label={t("routers.searchPlaceholder")}
               placeholder={t("routers.searchPlaceholder")}
               className="pl-8 h-8 text-[13px]"
             />

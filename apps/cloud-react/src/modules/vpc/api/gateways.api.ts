@@ -1,4 +1,4 @@
-import { apiDelete, apiGet, apiPost, LIST_QUERY } from "@/services/api/client"
+import { apiDelete, apiGet, apiPost, apiPut, LIST_QUERY } from "@/services/api/client"
 
 import type {
   CreateInternetGatewayRequest,
@@ -40,12 +40,18 @@ export const routersApi = {
   },
 
   create: async (payload: CreateRouterRequest): Promise<Router> => {
-    const body: Record<string, unknown> = { name: payload.name, region: payload.region }
+    const body: Record<string, unknown> = {
+      name: payload.name,
+      region: payload.region,
+      enable_snat: payload.enable_snat,
+    }
     if (payload.network_id) body.vpc_id = payload.network_id
     const raw = await apiPost<RawRouter>(ROUTERS_BASE, body)
     return toRouter(raw)
   },
 
+  update: async (id: string, enable_snat: boolean): Promise<Router> =>
+    toRouter(await apiPut<RawRouter>(`${ROUTERS_BASE}/${id}`, { enable_snat })),
   delete: (id: string): Promise<void> => apiDelete(`${ROUTERS_BASE}/${id}`),
 }
 

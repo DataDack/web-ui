@@ -661,7 +661,8 @@
       "reloadVpcs": "Reload VPCs",
       "reloadSubnets": "Reload subnets",
       "reloadSecurityGroups": "Reload security groups",
-      "createVpc": "Create VPC"
+      "createVpc": "Create VPC",
+      "inheritedFirewall": "This VM inherits its VPC firewall policy. Manage security groups in Networking → Firewall."
     },
     "toasts": {
       "created": "Instance \"{{name}}\" is being provisioned",
@@ -1565,7 +1566,8 @@
       "save": "Save rule",
       "cancel": "Cancel edit",
       "description": "Description",
-      "descriptionPlaceholder": "Allow HTTPS from anywhere…"
+      "descriptionPlaceholder": "Allow HTTPS from anywhere…",
+      "vnetScope": "On native EVPN networks, these rules apply to every workload on this VPC’s VNet. Forwarded traffic is filtered in both directions; configure the return path as well."
     },
     "actions": {
       "delete": "Delete",
@@ -1590,7 +1592,7 @@
     },
     "sgForm": {
       "title": "New Security Group",
-      "subtitle": "Group firewall rules and apply them to instances.",
+      "subtitle": "Create a reusable firewall policy. On EVPN VPCs, it applies to the whole network.",
       "name": "Name",
       "description": "Description",
       "descriptionPlaceholder": "Allow web traffic to frontend instances…",
@@ -2163,7 +2165,7 @@
   },
   "routers": {
     "title": "Routers",
-    "subtitle": "Route traffic between subnets and external networks.",
+    "subtitle": "Manage subnet gateways and outbound internet access for your VPCs.",
     "create": "Create router",
     "empty": "No routers",
     "emptySubtitle": "Create a router to route traffic for a VPC network.",
@@ -2178,32 +2180,40 @@
       "status": "Status",
       "region": "Region",
       "vpc": "VPC",
-      "wanIp": "WAN IP"
+      "wanIp": "WAN IP",
+      "error": "Provisioning details"
     },
     "actions": {
       "delete": "Delete"
     },
     "createForm": {
       "title": "Create router",
-      "description": "Provisions a gateway that routes traffic for a VPC network.",
+      "description": "Connect the subnets in an EVPN VPC using native network routing.",
       "name": "Name",
       "region": "Region",
       "regionPlaceholder": "Select a region",
       "vpc": "VPC",
-      "vpcPlaceholder": "Attach to a VPC (optional)",
+      "vpcPlaceholder": "Select an EVPN VPC",
       "vpcNone": "None — unattached",
       "submit": "Create router",
       "submitting": "Creating…"
     },
     "deleteConfirm": {
       "title": "Delete router?",
-      "description": "\"{{name}}\" will be permanently deleted. Any routes through it stop working."
+      "description": "Remove gateway addresses and outbound NAT for \"{{name}}\"? Its subnets will lose routed connectivity."
     },
     "toasts": {
       "created": "Provisioning \"{{name}}\"…",
       "createFailed": "Failed to create router",
-      "deleted": "Router deleted",
-      "deleteFailed": "Failed to delete router"
+      "deleted": "Removing router configuration…",
+      "deleteFailed": "Failed to delete router",
+      "updated": "Applying router changes…",
+      "updateFailed": "Failed to update router"
+    },
+    "snat": {
+      "label": "Outbound NAT",
+      "description": "Allows public subnets to reach the internet through configured network exit nodes.",
+      "toggle": "Outbound NAT for {{name}}"
     }
   },
   "internetGateways": {

@@ -391,6 +391,9 @@ function RulesPanel({
 
   return (
     <div className="space-y-4">
+      {group.network_id && (
+        <p className="text-sm text-muted-foreground">{t("vpc.rules.vnetScope")}</p>
+      )}
       {group.status === "error" && group.provision_error && (
         <div
           role="alert"

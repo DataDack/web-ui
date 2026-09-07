@@ -472,7 +472,11 @@ export function LocationAndNetworkStep({
 
         {/* Security groups apply to both wiring modes: a VPS can attach
 				    account-wide groups, a VPC instance can also use the VPC's own. */}
-        <SecurityGroupPicker form={form} />
+        {vpcs.find((vpc) => vpc.id === vpcId)?.zone_type === "evpn" ? (
+          <p className="text-sm text-muted-foreground">{t("vms.wizard.inheritedFirewall")}</p>
+        ) : (
+          <SecurityGroupPicker form={form} />
+        )}
 
         {/* Public IPv4 applies to both wiring modes: a VPS is defined by it,
 				    and a VPC instance can take one as its public ingress alongside its
