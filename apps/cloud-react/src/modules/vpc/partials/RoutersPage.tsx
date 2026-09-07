@@ -1,5 +1,20 @@
 import { useMemo, useState } from "react"
 
+import { zodResolver } from "@hookform/resolvers/zod"
+import type { ColumnDef } from "@tanstack/react-table"
+import { Plus, RefreshCw, Router as RouterIcon, Search, Trash2 } from "lucide-react"
+import { useForm } from "react-hook-form"
+import { useTranslation } from "react-i18next"
+import { Link } from "react-router-dom"
+import { z } from "zod/v4"
+
+import { ConfirmDialog, PageHeader, StatGrid } from "@/components/console"
+import { QuotaNotice, useQuotaBlocked } from "@/modules/governance/components/QuotaNotice"
+import { useNamingRule } from "@/modules/governance/governance.hooks"
+import type { NamingRule } from "@/modules/governance/governance.types"
+import { namingNameSchema } from "@/modules/governance/governance.validation"
+import { useScreen } from "@/services/api/screen"
+
 import {
   actionsColumn,
   Button,
@@ -24,20 +39,6 @@ import {
   Switch,
   textColumn,
 } from "@datadack/common-ui"
-import { zodResolver } from "@hookform/resolvers/zod"
-import type { ColumnDef } from "@tanstack/react-table"
-import { Plus, RefreshCw, Router as RouterIcon, Search, Trash2 } from "lucide-react"
-import { useForm } from "react-hook-form"
-import { useTranslation } from "react-i18next"
-import { Link } from "react-router-dom"
-import { z } from "zod/v4"
-
-import { ConfirmDialog, PageHeader, StatGrid } from "@/components/console"
-import { QuotaNotice, useQuotaBlocked } from "@/modules/governance/components/QuotaNotice"
-import { useNamingRule } from "@/modules/governance/governance.hooks"
-import type { NamingRule } from "@/modules/governance/governance.types"
-import { namingNameSchema } from "@/modules/governance/governance.validation"
-import { useScreen } from "@/services/api/screen"
 
 import { VPC_ROUTES } from "../vpc.constants"
 import {
@@ -190,7 +191,7 @@ function CreateRouterDialog({
               id="router-snat"
               aria-describedby="router-snat-help"
               checked={watch("enable_snat")}
-              onCheckedChange={(value) => setValue("enable_snat", value)}
+              onCheckedChange={(value) => { setValue("enable_snat", value); }}
             />
           </div>
           {errors.network_id && (
@@ -306,7 +307,7 @@ export function RoutersPage() {
             disabled={
               isUpdating || row.original.role !== "sdn" || row.original.status === "deleting"
             }
-            onCheckedChange={(enableSNAT) => updateRouter({ id: row.original.id, enableSNAT })}
+            onCheckedChange={(enableSNAT) => { updateRouter({ id: row.original.id, enableSNAT }); }}
           />
         ),
       },

@@ -1,8 +1,25 @@
 import { useMemo, useState } from "react"
 
 import { zodResolver } from "@hookform/resolvers/zod"
+import type { ColumnDef } from "@tanstack/react-table"
+import {
+  AlertTriangle,
+  ArrowDownToLine,
+  ArrowUpFromLine,
+  Check,
+  Lock,
+  Pencil,
+  Plus,
+  Trash2,
+  X,
+} from "lucide-react"
 import { useForm } from "react-hook-form"
+import { useTranslation } from "react-i18next"
+import { useNavigate, useParams } from "react-router-dom"
 import { z } from "zod/v4"
+
+import { ConfirmDialog, DetailPage } from "@/components/console"
+import { useScreen } from "@/services/api/screen"
 
 import {
   Badge,
@@ -21,23 +38,6 @@ import {
   textColumn,
   type DataTableColumnMeta,
 } from "@datadack/common-ui"
-import type { ColumnDef } from "@tanstack/react-table"
-import {
-  AlertTriangle,
-  ArrowDownToLine,
-  ArrowUpFromLine,
-  Check,
-  Lock,
-  Pencil,
-  Plus,
-  Trash2,
-  X,
-} from "lucide-react"
-import { useTranslation } from "react-i18next"
-import { useNavigate, useParams } from "react-router-dom"
-
-import { ConfirmDialog, DetailPage } from "@/components/console"
-import { useScreen } from "@/services/api/screen"
 
 import { sgProtocolUsesPorts } from "../api/shared"
 import { SG_PROTOCOLS, SG_RULE_ACTIONS, VPC_ROUTES } from "../vpc.constants"
