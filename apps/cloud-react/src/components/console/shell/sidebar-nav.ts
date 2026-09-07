@@ -64,13 +64,27 @@ export interface ConsoleService {
 // service's sections in the sidebar. The global drawer lists everything.
 export const CONSOLE_SERVICES: ConsoleService[] = [
   {
+    key: "traffic",
+    labelKey: "console.nav.groups.traffic",
+    icon: Layers,
+    extraMatch: ["/compute/target-groups"],
+    items: [
+      {
+        labelKey: "console.nav.items.apiGateway",
+        icon: Webhook,
+        path: "/networking/api-gateway",
+      },
+      {
+        labelKey: "console.nav.items.loadBalancers",
+        icon: Layers,
+        path: "/compute/load-balancers",
+      },
+    ],
+  },
+  {
     key: "compute",
     labelKey: "console.nav.groups.compute",
     icon: Server,
-    // Target groups no longer have a nav item — they live as a tab on the
-    // load balancer detail page — but their list/detail/create routes still
-    // belong to compute, so keep them on this service's sidebar.
-    extraMatch: ["/compute/target-groups"],
     items: [
       {
         labelKey: "console.nav.items.overview",
@@ -80,11 +94,6 @@ export const CONSOLE_SERVICES: ConsoleService[] = [
       { labelKey: "console.nav.items.vms", icon: Server, path: "/compute/instances" },
       { labelKey: "console.nav.items.images", icon: Disc, path: "/compute/images" },
       { labelKey: "console.nav.items.sshKeys", icon: KeyRound, path: "/compute/ssh-keys" },
-      {
-        labelKey: "console.nav.items.loadBalancers",
-        icon: Layers,
-        path: "/compute/load-balancers",
-      },
       {
         labelKey: "console.nav.items.autoscaling",
         icon: Activity,
@@ -111,11 +120,6 @@ export const CONSOLE_SERVICES: ConsoleService[] = [
         labelKey: "console.nav.items.securityGroups",
         icon: Lock,
         path: "/networking/security-groups",
-      },
-      {
-        labelKey: "console.nav.items.apiGateway",
-        icon: Webhook,
-        path: "/networking/api-gateway",
       },
       {
         labelKey: "console.nav.items.routers",

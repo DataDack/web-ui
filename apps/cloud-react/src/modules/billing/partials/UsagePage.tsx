@@ -1,5 +1,11 @@
 import { useMemo, useState } from "react"
 
+import type { ColumnDef } from "@tanstack/react-table"
+import { Activity, CreditCard, Layers } from "lucide-react"
+import { useTranslation } from "react-i18next"
+
+import { type AnimatedTab, AnimatedTabs, StatGrid } from "@/components/console"
+
 import {
   DataTable,
   dateColumn,
@@ -8,15 +14,10 @@ import {
   statusColumn,
   textColumn,
 } from "@datadack/common-ui"
-import type { ColumnDef } from "@tanstack/react-table"
-import { Activity, CreditCard, Layers } from "lucide-react"
-import { useTranslation } from "react-i18next"
-
-import { type AnimatedTab, AnimatedTabs, StatGrid } from "@/components/console"
 
 import { useSubscriptions, useUsage } from "../billing.hooks"
 import type { SubscriptionApi, UsageRecordApi } from "../billing.types"
-import { inr } from "../billing.utils"
+import { credits } from "../billing.utils"
 
 interface UsageRow {
   id: string
@@ -92,7 +93,10 @@ export function UsagePage() {
 
   const usageRows = useMemo(() => combineUsageRecords(usage), [usage])
   const resourceNames = useMemo(
-    () => new Map(subscriptions.map((subscription) => [subscription.resource_id, subscription.description])),
+    () =>
+      new Map(
+        subscriptions.map((subscription) => [subscription.resource_id, subscription.description]),
+      ),
     [subscriptions],
   )
 
@@ -108,7 +112,7 @@ export function UsagePage() {
       {
         label: t("billing.usage.totalStat"),
         value: totalUsed,
-        format: (v: number) => inr(v),
+        format: (v: number) => credits(v),
         color: "warning" as const,
         icon: Activity,
       },
@@ -147,7 +151,7 @@ export function UsagePage() {
         header: t("billing.columns.rate"),
         accessor: (r) =>
           r.meters
-            .map((meter) => `${inr(meter.unit_price)}/${usageUnit(meter.unit, 1)}`)
+            .map((meter) => `${credits(meter.unit_price)}/${usageUnit(meter.unit, 1)}`)
             .join(" + "),
         mono: true,
         muted: true,
@@ -156,7 +160,7 @@ export function UsagePage() {
       textColumn<UsageRow>({
         id: "used",
         header: t("billing.columns.used"),
-        accessor: (r) => inr(r.cost),
+        accessor: (r) => credits(r.cost),
         mono: true,
       }),
       dateColumn<UsageRow>({
@@ -190,7 +194,9 @@ export function UsagePage() {
         id: "rate",
         header: t("billing.columns.rate"),
         accessor: (s) =>
-          s.cycle === "monthly" ? `${inr(s.monthly_amount)}/mo` : `${inr(s.hourly_rate)}/hr`,
+          s.cycle === "monthly"
+            ? `${credits(s.monthly_amount)}/mo`
+            : `${credits(s.hourly_rate)}/hr`,
         mono: true,
       }),
       statusColumn<SubscriptionApi>({

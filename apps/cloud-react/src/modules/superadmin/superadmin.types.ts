@@ -1101,6 +1101,7 @@ export type LedgerEntryType = "credit" | "debit"
  * indexed, so a resubmitted request is rejected rather than credited twice.
  */
 export interface AdjustBalanceRequest {
+  reason: "refund" | "trial_bonus" | "goodwill"
   account_id: string
   entry_type: LedgerEntryType
   amount: number

@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 
-import { Button, cn, EmptyState, Input, Skeleton } from "@datadack/common-ui"
 import { CheckCircle2, Coins, Gift, Percent, Ticket, Wallet } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useSearchParams } from "react-router-dom"
@@ -19,7 +18,9 @@ import {
 } from "@/modules/promotions"
 import { useScreen } from "@/services/api/screen"
 
-import { inr } from "../billing.utils"
+import { Button, cn, EmptyState, Input, Skeleton } from "@datadack/common-ui"
+
+import { credits } from "../billing.utils"
 
 /** Resource-kind slug → the service name a customer recognises. */
 function useScopeLabels(): Record<PromoScope, string> {
@@ -169,11 +170,7 @@ export function PromotionsPage() {
                 className="font-mono uppercase tracking-widest"
               />
             </div>
-            <Button
-              type="submit"
-              variant="gold"
-              disabled={!code.trim() || previewing || redeeming}
-            >
+            <Button type="submit" variant="gold" disabled={!code.trim() || previewing || redeeming}>
               {preview
                 ? t("billing.promotions.redeem.apply")
                 : t("billing.promotions.redeem.check")}
@@ -188,7 +185,7 @@ export function PromotionsPage() {
                 <CheckCircle2 className="size-4 text-brand-gold" />
                 {preview.kind === "credit"
                   ? t("billing.promotions.preview.credit", {
-                      amount: inr(preview.credit_amount ?? 0),
+                      amount: credits(preview.credit_amount ?? 0),
                     })
                   : t("billing.promotions.preview.discount", { pct: preview.discount_pct ?? 0 })}
               </p>
@@ -228,20 +225,20 @@ export function PromotionsPage() {
               <SplitCell
                 icon={<Wallet className="size-4 text-status-success" />}
                 label={t("billing.promotions.wallet.purchased")}
-                value={inr(split?.purchased ?? 0)}
+                value={credits(split?.purchased ?? 0)}
                 hint={t("billing.promotions.wallet.purchasedHint")}
               />
               <SplitCell
                 icon={<Gift className="size-4 text-brand-gold" />}
                 label={t("billing.promotions.wallet.granted")}
-                value={inr(split?.granted ?? 0)}
+                value={credits(split?.granted ?? 0)}
                 hint={t("billing.promotions.wallet.grantedHint")}
                 accent
               />
               <SplitCell
                 icon={<Coins className="size-4 text-muted-foreground" />}
                 label={t("billing.promotions.wallet.balance")}
-                value={inr(split?.balance ?? 0)}
+                value={credits(split?.balance ?? 0)}
                 hint={t("billing.promotions.wallet.balanceHint")}
               />
             </div>
@@ -250,7 +247,7 @@ export function PromotionsPage() {
             <p className="mt-3 text-[12px] leading-relaxed text-muted-foreground">
               {(split?.granted ?? 0) > 0
                 ? t("billing.promotions.wallet.note", {
-                    amount: inr(split?.granted_share ?? 0),
+                    amount: credits(split?.granted_share ?? 0),
                   })
                 : t("billing.promotions.wallet.noneYet")}
             </p>
@@ -264,11 +261,7 @@ export function PromotionsPage() {
         title={t("billing.promotions.active.title")}
         description={t("billing.promotions.active.subtitle")}
       >
-        <ActivePromotions
-          loading={isLoading}
-          promotions={active}
-          scopeLabels={scopeLabels}
-        />
+        <ActivePromotions loading={isLoading} promotions={active} scopeLabels={scopeLabels} />
       </Section>
 
       {past.length > 0 && (
@@ -372,7 +365,7 @@ function PromotionRow({
   })()
 
   const detail = isCredit
-    ? t("billing.promotions.row.credited", { amount: inr(promo.credit_amount) })
+    ? t("billing.promotions.row.credited", { amount: credits(promo.credit_amount) })
     : t("billing.promotions.row.covers", {
         scope:
           promo.applies_to.length === 0
@@ -391,7 +384,9 @@ function PromotionRow({
         <span
           className={cn(
             "flex size-8 shrink-0 items-center justify-center rounded-full",
-            isCredit ? "bg-status-success-bg text-status-success" : "bg-brand-gold/10 text-brand-gold",
+            isCredit
+              ? "bg-status-success-bg text-status-success"
+              : "bg-brand-gold/10 text-brand-gold",
           )}
         >
           {isCredit ? <Coins className="size-4" /> : <Percent className="size-4" />}
@@ -408,7 +403,7 @@ function PromotionRow({
 
       <div className="text-right">
         <p className="font-mono text-sm font-semibold tabular-nums text-foreground">
-          {isCredit ? inr(promo.credit_amount) : `${String(promo.discount_pct)}%`}
+          {isCredit ? credits(promo.credit_amount) : `${String(promo.discount_pct)}%`}
         </p>
         <p className="text-[11px] text-muted-foreground">{status}</p>
       </div>

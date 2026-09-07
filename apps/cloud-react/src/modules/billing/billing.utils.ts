@@ -117,3 +117,8 @@ export function costByService(usage: UsageRecordApi[]): ServiceSlice[] {
     .map(([service, cost]) => ({ service, cost, fraction: grand > 0 ? cost / grand : 0 }))
     .sort((a, b) => b.cost - a.cost)
 }
+
+/** Wallet balances and consumption are credits; only checkout money uses INR. */
+export function credits(value: number): string {
+  return `${new Intl.NumberFormat("en-IN", { maximumFractionDigits: 4 }).format(value)} credits`
+}

@@ -25,6 +25,7 @@ import {
   ShieldCheck,
   Wallet,
   Wifi,
+  Webhook,
   Zap,
   type LucideIcon,
 } from "lucide-react"
@@ -45,6 +46,7 @@ export const SERVICE_ICONS: Record<string, LucideIcon> = {
   GitBranch,
   Globe,
   Wifi,
+  Webhook,
   Database,
   HardDrive,
   Container,

@@ -1,3 +1,5 @@
+import { findServiceByPath } from "@/components/console/shell/sidebar-nav"
+
 import type { CatalogService } from "./catalog.types"
 
 /**
@@ -20,8 +22,7 @@ export type ServiceGate = "active" | "maintenance"
 /**
  * Whether the console should render `pathname` or the maintenance notice —
  * decided by the admin-managed service catalog (super admin → Services), which
- * is the single source of truth for what is open. Nothing about this list is
- * hardcoded in the frontend any more: flipping a service's state or status in
+ * is the single source of truth for what is open. Flipping a service's state or status in
  * the admin table opens or closes its pages on the next catalog fetch.
  *
  * A service is open when its row is `enabled` and its status is not
@@ -34,8 +35,21 @@ export type ServiceGate = "active" | "maintenance"
  * services entirely, a missing row is not evidence of anything either way.
  */
 export function gateForPath(pathname: string, services: CatalogService[]): ServiceGate {
+  // Both route families share the Traffic service's single admin state.
+  if (findServiceByPath(pathname)?.key === "traffic") {
+    const traffic = services.find((service) => service.key === "traffic")
+    if (!traffic) return "active"
+    return traffic.state === "enabled" && traffic.status !== "maintenance" ? "active" : "maintenance"
+  }
   const root = serviceRoot(pathname)
-  const owner = services.find((svc) => serviceRoot(svc.path) === root)
+  // Explicit nested services take precedence over their parent catalog row.
+  const owner = [...services]
+    .sort((a, b) => b.path.length - a.path.length)
+    .find((svc) => {
+      const path = svc.path.split("?")[0]
+      return pathname === path || pathname.startsWith(`${path}/`)
+    })
+    ?? services.find((svc) => serviceRoot(svc.path) === root)
   if (!owner) return "active"
   return owner.state === "enabled" && owner.status !== "maintenance" ? "active" : "maintenance"
 }

@@ -16,6 +16,7 @@
         "overview": "Overview",
         "compute": "Compute",
         "networking": "Networking",
+        "traffic": "Load Balancer & API Gateway",
         "storage": "Storage",
         "iam": "IAM",
         "governance": "Manage Account",

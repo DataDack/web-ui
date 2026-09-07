@@ -1,4 +1,7 @@
+import { AlertTriangle, Wallet } from "lucide-react"
 import { useTranslation } from "react-i18next"
+import { useNavigate } from "react-router-dom"
+
 import {
   Button,
   Dialog,
@@ -8,8 +11,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@datadack/common-ui"
-import { AlertTriangle, Wallet } from "lucide-react"
-import { useNavigate } from "react-router-dom"
 
 import { BILLING_ROUTES } from "../billing.constants"
 import {
@@ -20,11 +21,9 @@ import {
 
 const formatCredits = (v: number) =>
   new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: "INR",
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  }).format(v)
+  }).format(v) + " credits"
 
 function AmountRow({
   label,
@@ -101,13 +100,19 @@ export function CreditGuardDialog({
         {verdict.kind === "insufficient" && (
           <div className="space-y-2 rounded-lg border border-border-glass bg-muted/20 p-4">
             <AmountRow label="Required" value={formatCredits(verdict.required)} />
-            <AmountRow label={t("billing.creditGuardDialog.currentBalance")} value={formatCredits(verdict.balance)} />
+            <AmountRow
+              label={t("billing.creditGuardDialog.currentBalance")}
+              value={formatCredits(verdict.balance)}
+            />
             <AmountRow label="Shortfall" value={formatCredits(verdict.shortfall)} accent />
           </div>
         )}
         {verdict.kind === "low-runway" && (
           <div className="space-y-2 rounded-lg border border-border-glass bg-muted/20 p-4">
-            <AmountRow label={t("billing.creditGuardDialog.currentBalance2")} value={formatCredits(verdict.balance)} />
+            <AmountRow
+              label={t("billing.creditGuardDialog.currentBalance2")}
+              value={formatCredits(verdict.balance)}
+            />
             <AmountRow
               label={t("billing.creditGuardDialog.runwayLeft")}
               value={`~${verdict.runwayHours.toFixed(1)} hours`}

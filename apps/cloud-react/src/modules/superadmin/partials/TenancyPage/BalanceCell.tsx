@@ -1,13 +1,12 @@
-import { Button, cn } from "@datadack/common-ui"
 import { Plus } from "lucide-react"
 import { useTranslation } from "react-i18next"
+
+import { Button, cn } from "@datadack/common-ui"
 
 import type { AccountRow } from "./types"
 
 // ₹ formatter — the wallet is rupee-denominated (1 credit = ₹1).
 const inr = new Intl.NumberFormat("en-IN", {
-  style: "currency",
-  currency: "INR",
   maximumFractionDigits: 2,
 })
 
@@ -22,7 +21,7 @@ export function BalanceCell({
   return (
     <div className="flex items-center gap-1.5">
       <span className={cn("tabular-nums text-[13px]", account.balance < 0 && "text-destructive")}>
-        {inr.format(account.balance)}
+        {inr.format(account.balance)} credits
       </span>
       <Button
         variant="ghost"

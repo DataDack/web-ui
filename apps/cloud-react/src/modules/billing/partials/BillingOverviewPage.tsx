@@ -1,6 +1,5 @@
 import { useMemo } from "react"
 
-import { Button, cn, EmptyState } from "@datadack/common-ui"
 import { Activity, AlertTriangle, ArrowUpRight, Layers } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
@@ -8,11 +7,13 @@ import { Link } from "react-router-dom"
 import { MetricChart, Section } from "@/components/console"
 import { useWalletSplit } from "@/modules/promotions"
 
+import { Button, cn, EmptyState } from "@datadack/common-ui"
+
 import { BILLING_ROUTES, GST_RATE } from "../billing.constants"
 import { useBillingOutlet } from "../billing.context"
 import { useCreditBalance, useCreditPurchases, useLedger, useUsage } from "../billing.hooks"
 import type { LedgerEntry } from "../billing.types"
-import { burnSummary, costByService, inr, spendSeries } from "../billing.utils"
+import { burnSummary, costByService, credits, spendSeries } from "../billing.utils"
 import { BillingHero } from "./BillingHero"
 
 export function BillingOverviewPage() {
@@ -100,7 +101,7 @@ export function BillingOverviewPage() {
           description={t("billing.overview.spendSubtitle")}
           actions={
             <span className="font-mono text-sm font-semibold tabular-nums text-foreground">
-              {inr(spendTotal)}
+              {credits(spendTotal)}
             </span>
           }
         >
@@ -123,7 +124,7 @@ export function BillingOverviewPage() {
                   <div className="mb-1 flex items-center justify-between text-[13px]">
                     <span className="truncate text-foreground">{slice.service}</span>
                     <span className="ml-2 font-mono tabular-nums text-muted-foreground">
-                      {inr(slice.cost)}
+                      {credits(slice.cost)}
                     </span>
                   </div>
                   <div className="h-2 overflow-hidden rounded-full bg-muted">
@@ -186,7 +187,7 @@ function ActivityRow({ entry }: Readonly<{ entry: LedgerEntry }>) {
         )}
       >
         {credit ? "+" : "−"}
-        {inr(entry.amount)}
+        {credits(entry.amount)}
       </span>
     </li>
   )

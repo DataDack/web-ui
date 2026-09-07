@@ -28,13 +28,12 @@ import type { AdjustBalanceRequest, OverviewAccount } from "../superadmin.types"
 
 // ₹ formatter — the wallet is rupee-denominated (1 credit = ₹1).
 const inr = new Intl.NumberFormat("en-IN", {
-  style: "currency",
-  currency: "INR",
   maximumFractionDigits: 2,
 })
 
 const schema = z.object({
   entry_type: z.enum(["credit", "debit"]),
+  reason: z.enum(["refund", "trial_bonus", "goodwill"]),
   // The wallet moves by a DELTA, never to an absolute total — an operator who
   // means "set the balance to 500" would otherwise silently add 500 to it.
   amount: z.coerce.number().positive("Enter an amount greater than 0"),
@@ -43,7 +42,12 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>
 
-const EMPTY: FormValues = { entry_type: "credit", amount: 0, description: "" }
+const EMPTY: FormValues = {
+  entry_type: "credit",
+  amount: 0,
+  reason: "trial_bonus",
+  description: "",
+}
 
 interface Props {
   account: OverviewAccount | null
@@ -93,6 +97,7 @@ export function AccountBalanceDialog({ account, refId, onOpenChange }: Readonly<
       amount: values.amount,
       currency: "INR",
       description: values.description.trim(),
+      reason: values.reason,
       // A manual grant is an ADJUSTMENT, not a "topup": ref_type=topup means
       // money actually changed hands through the payment gateway, and folding
       // operator grants into it would overstate revenue in the ledger.
@@ -130,7 +135,7 @@ export function AccountBalanceDialog({ account, refId, onOpenChange }: Readonly<
               {t("superAdmin.organizations.balance.current")}
             </span>
             <span className="font-mono text-[15px] tabular-nums text-foreground">
-              {inr.format(account?.balance ?? 0)}
+              {inr.format(account?.balance ?? 0)} credits
             </span>
           </div>
 
@@ -161,10 +166,10 @@ export function AccountBalanceDialog({ account, refId, onOpenChange }: Readonly<
           </Field>
 
           <Field
-            label={t("superAdmin.organizations.balance.amount")}
+            label="Amount (credits)"
             required
             error={errors.amount?.message}
-            hint={t("superAdmin.organizations.balance.amountHint")}
+            hint="1 credit = ₹1. Enter the credits to add or deduct."
           >
             <Input
               type="number"
@@ -172,6 +177,25 @@ export function AccountBalanceDialog({ account, refId, onOpenChange }: Readonly<
               step="0.01"
               className="font-mono tabular-nums"
               {...register("amount")}
+            />
+          </Field>
+
+          <Field label="Reason type" required error={errors.reason?.message}>
+            <Controller
+              control={control}
+              name="reason"
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger aria-label="Reason type">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="refund">Refund</SelectItem>
+                    <SelectItem value="trial_bonus">Trial bonus</SelectItem>
+                    <SelectItem value="goodwill">Goodwill</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
             />
           </Field>
 
@@ -189,7 +213,7 @@ export function AccountBalanceDialog({ account, refId, onOpenChange }: Readonly<
               {t("superAdmin.organizations.balance.projected")}
             </span>
             <span className="font-mono text-[15px] font-medium tabular-nums text-foreground">
-              {inr.format(projected)}
+              {inr.format(projected)} credits
             </span>
           </div>
 

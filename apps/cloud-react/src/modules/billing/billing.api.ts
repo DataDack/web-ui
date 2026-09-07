@@ -2,6 +2,7 @@ import { api, apiGet, apiPost, LIST_QUERY } from "@/services/api/client"
 
 import type {
   CreditBalance,
+  CreditStatement,
   CreditPurchase,
   Invoice,
   LedgerApiEntry,
@@ -22,6 +23,13 @@ import type {
 // The credit ledger (apps/billing/ledger) is account-scoped by path param; the
 // account id comes from the balance response.
 export const billingApi = {
+  listStatements: () => apiGet<CreditStatement[]>("/billing/charge/statements"),
+  downloadStatement: async (id: string): Promise<Blob> => {
+    const res = await api.get(`/billing/charge/statements/${id}/excel`, { responseType: "blob" })
+    return res.data as Blob
+  },
+  topupInvoice: (id: string) =>
+    apiGet<{ pdf: string; filename: string }>(`/billing/credits/purchases/${id}/invoice`),
   getBalance: () => apiGet<CreditBalance>("/billing/credits/balance"),
   listPurchases: () => apiGet<CreditPurchase[]>("/billing/credits/purchases"),
   purchaseCredits: (payload: PurchaseCreditsRequest) =>

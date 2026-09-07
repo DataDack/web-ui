@@ -4,6 +4,9 @@ import type { ColumnDef } from "@tanstack/react-table"
 import { Receipt, Wallet } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
+import { type AnimatedTab, AnimatedTabs, StatGrid } from "@/components/console"
+import { useMyPromotions } from "@/modules/promotions"
+
 import {
   DataTable,
   dateColumn,
@@ -12,14 +15,27 @@ import {
   statusColumn,
   textColumn,
 } from "@datadack/common-ui"
-import { type AnimatedTab, AnimatedTabs, StatGrid } from "@/components/console"
 
 import { useCreditBalance, useCreditPurchases, useLedger } from "../billing.hooks"
-import type { CreditPurchase, LedgerEntry } from "../billing.types"
-import { inr, paiseToInr } from "../billing.utils"
+import type { LedgerEntry } from "../billing.types"
+import { credits, paiseToInr } from "../billing.utils"
+
+interface TopupRow {
+  id: string
+  label: string
+  type: string
+  credits: number | null
+  base: number | null
+  gst: number | null
+  total: number | null
+  benefit: string
+  status: string
+  created_at: string
+}
 
 export function LedgerPage() {
   const { t } = useTranslation()
+  const promotions = useMyPromotions()
   const { data: balance } = useCreditBalance()
   const {
     data: ledger = [],
@@ -41,13 +57,13 @@ export function LedgerPage() {
       {
         label: t("billing.ledger.creditedStat"),
         value: credited,
-        format: (v: number) => inr(v),
+        format: (v: number) => credits(v),
         color: "success" as const,
       },
       {
         label: t("billing.ledger.debitedStat"),
         value: debited,
-        format: (v: number) => inr(v),
+        format: (v: number) => credits(v),
         color: "danger" as const,
       },
     ]
@@ -63,7 +79,8 @@ export function LedgerPage() {
       textColumn<LedgerEntry>({
         id: "description",
         header: t("billing.columns.description"),
-        accessor: (e) => e.description,
+        accessor: (e) =>
+          e.reason ? `${e.reason.replaceAll("_", " ")}: ${e.description}` : e.description,
       }),
       statusColumn<LedgerEntry>({
         header: t("billing.columns.type"),
@@ -73,13 +90,13 @@ export function LedgerPage() {
       textColumn<LedgerEntry>({
         id: "amount",
         header: t("billing.columns.amount"),
-        accessor: (e) => `${e.kind === "credit" ? "+" : "−"}${inr(e.amount)}`,
+        accessor: (e) => `${e.kind === "credit" ? "+" : "−"}${credits(e.amount)}`,
         mono: true,
       }),
       textColumn<LedgerEntry>({
         id: "balance",
         header: t("billing.columns.balance"),
-        accessor: (e) => inr(e.balance),
+        accessor: (e) => credits(e.balance),
         mono: true,
         muted: true,
         responsive: "lg",
@@ -88,44 +105,92 @@ export function LedgerPage() {
     [t],
   )
 
-  const purchaseColumns = useMemo<ColumnDef<CreditPurchase>[]>(
+  const topups = useMemo<TopupRow[]>(
     () => [
-      nameColumn<CreditPurchase>({
-        header: t("billing.columns.purchase"),
-        accessor: (p) => `#${p.id}`,
-      }),
-      textColumn<CreditPurchase>({
-        id: "credits",
-        header: t("billing.columns.credits"),
-        accessor: (p) => inr(p.credits),
-        mono: true,
-      }),
-      textColumn<CreditPurchase>({
-        id: "gst",
-        header: t("billing.columns.gst"),
-        accessor: (p) => paiseToInr(p.gst_amount),
-        mono: true,
-        responsive: "md",
-      }),
-      textColumn<CreditPurchase>({
-        id: "total",
-        header: t("billing.columns.total"),
-        accessor: (p) => paiseToInr(p.total_amount),
-        mono: true,
-      }),
-      statusColumn<CreditPurchase>({
-        header: t("billing.columns.status"),
-        accessor: (p) => p.status,
-      }),
-      dateColumn<CreditPurchase>({
-        id: "created",
-        header: t("billing.columns.created"),
-        accessor: (p) => p.created_at,
-        responsive: "lg",
-      }),
+      ...purchases.map((p) => ({
+        id: `purchase-${p.id}`,
+        label: `#${p.id}`,
+        type: "Paid top-up",
+        credits: p.status === "paid" ? p.credits : null,
+        base: p.base_amount,
+        gst: p.gst_amount,
+        total: p.total_amount,
+        benefit: "—",
+        status: p.status,
+        created_at: p.created_at,
+      })),
+      ...(promotions.data ?? []).map((p) => ({
+        id: `coupon-${p.id}`,
+        label: p.code,
+        type: p.kind === "credit" ? "Credit coupon" : "Discount coupon",
+        credits: p.kind === "credit" ? p.credit_amount : null,
+        base: null,
+        gst: null,
+        total: null,
+        benefit:
+          p.kind === "credit"
+            ? credits(p.credit_amount)
+            : `${p.discount_pct}% · ${p.applies_to.join(", ") || "All services"}`,
+        status: p.status,
+        created_at: p.redeemed_at,
+      })),
+      ...ledger
+        .filter((e) => e.kind === "credit" && e.ref_type === "adjustment")
+        .map((e) => ({
+          id: `grant-${e.id}`,
+          label: e.description,
+          type: e.reason ? e.reason.replaceAll("_", " ") : "Admin adjustment",
+          credits: e.amount,
+          base: null,
+          gst: null,
+          total: null,
+          benefit: credits(e.amount),
+          status: "posted",
+          created_at: e.created_at,
+        })),
     ],
-    [t],
+    [purchases, promotions.data, ledger],
   )
+  const purchaseColumns: ColumnDef<TopupRow>[] = [
+    nameColumn<TopupRow>({ header: "Top-up / coupon", accessor: (p) => p.label }),
+    textColumn<TopupRow>({ id: "type", header: "Type", accessor: (p) => p.type }),
+    textColumn<TopupRow>({
+      id: "amount",
+      header: "Top-up amount",
+      accessor: (p) => (p.base === null ? "—" : paiseToInr(p.base)),
+      mono: true,
+    }),
+    textColumn<TopupRow>({
+      id: "gst",
+      header: "GST",
+      accessor: (p) => (p.gst === null ? "—" : paiseToInr(p.gst)),
+      mono: true,
+    }),
+    textColumn<TopupRow>({
+      id: "total",
+      header: "Checkout total",
+      accessor: (p) => (p.total === null ? "—" : paiseToInr(p.total)),
+      mono: true,
+    }),
+    textColumn<TopupRow>({
+      id: "credits",
+      header: "Credits added",
+      accessor: (p) => (p.credits === null ? "—" : credits(p.credits)),
+      mono: true,
+    }),
+    textColumn<TopupRow>({
+      id: "coupon",
+      header: "Coupon / grant benefit",
+      accessor: (p) => p.benefit,
+    }),
+    statusColumn<TopupRow>({ header: "Status", accessor: (p) => p.status }),
+    dateColumn<TopupRow>({ id: "created", header: "Date", accessor: (p) => p.created_at }),
+  ]
+  const refreshTopups = () => {
+    void refetchPurchases()
+    void refetchLedger()
+    void promotions.refetch()
+  }
 
   const [activeTab, setActiveTab] = useState<"ledger" | "topups">("ledger")
 
@@ -141,10 +206,10 @@ export function LedgerPage() {
         value: "topups",
         label: t("billing.sections.topupsTitle"),
         icon: Receipt,
-        count: purchases.length,
+        count: topups.length,
       },
     ],
-    [t, ledger.length, purchases.length],
+    [t, ledger.length, topups.length],
   )
 
   return (
@@ -175,17 +240,21 @@ export function LedgerPage() {
           refreshLabel={t("console.table.refresh")}
         />
       ) : (
-        <DataTable<CreditPurchase>
-          data={purchases}
+        <DataTable<TopupRow>
+          data={topups}
           columns={purchaseColumns}
-          loading={purchasesLoading}
-          error={purchasesError ? t("console.table.error") : undefined}
-          onRetry={() => void refetchPurchases()}
+          loading={purchasesLoading || ledgerLoading || promotions.isLoading}
+          error={
+            purchasesError || ledgerError || promotions.isError
+              ? t("console.table.error")
+              : undefined
+          }
+          onRetry={refreshTopups}
           retryLabel={t("console.table.retry")}
           getRowId={(p) => p.id}
           defaultSorting={[{ id: "created", desc: true }]}
           empty={<EmptyState icon={Wallet} title={t("billing.credits.empty")} />}
-          onRefresh={() => void refetchPurchases()}
+          onRefresh={refreshTopups}
           refreshLabel={t("console.table.refresh")}
         />
       )}

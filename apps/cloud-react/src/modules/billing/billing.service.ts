@@ -16,6 +16,7 @@ export const billingService = {
       amount: e.amount,
       balance: e.balance_after,
       ref_type: e.ref_type,
+      reason: e.reason,
     }))
   },
   fetchInvoices: () => billingApi.listInvoices(),

@@ -1,5 +1,7 @@
 import { useState } from "react"
 
+import { useTranslation } from "react-i18next"
+
 import {
   Button,
   Dialog,
@@ -11,11 +13,10 @@ import {
   Input,
   Label,
 } from "@datadack/common-ui"
-import { useTranslation } from "react-i18next"
 
-import { useBuyCredits } from "../billing.hooks"
 import { GST_RATE } from "../billing.constants"
-import { inr } from "../billing.utils"
+import { useBuyCredits } from "../billing.hooks"
+import { credits, inr } from "../billing.utils"
 
 /** Preset top-up amounts (₹). One tap fills a common wallet load. */
 const PRESETS = [500, 1000, 5000, 10000] as const
@@ -84,7 +85,7 @@ export function TopupDialog({
                     : "border-border/60 text-muted-foreground hover:bg-accent/40 hover:text-foreground")
                 }
               >
-                {inr(amount)}
+                {credits(amount)}
               </button>
             ))}
           </div>
@@ -115,7 +116,7 @@ export function TopupDialog({
             </div>
             <div className="flex items-center justify-between px-3 py-2">
               <dt className="text-muted-foreground">{t("billing.buyDialog.credits")}</dt>
-              <dd className="font-mono">{inr(creditsNum)}</dd>
+              <dd className="font-mono">{credits(creditsNum)}</dd>
             </div>
             <div className="flex items-center justify-between px-3 py-2">
               <dt className="font-medium">{t("billing.buyDialog.total")}</dt>

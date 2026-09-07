@@ -5,6 +5,7 @@ import { toast } from "sonner"
 import type { RegionCatalog } from "@/modules/catalog/catalog.types"
 import { SUPPORT_QUERY_KEYS } from "@/modules/support-tickets/support-tickets.constants"
 import { apiGet, extractError } from "@/services/api/client"
+import { publishConsoleEvent } from "@/services/broadcast"
 
 import { superAdminApi } from "./superadmin.api"
 import { SUPERADMIN_QUERY_KEYS } from "./superadmin.constants"
@@ -929,6 +930,8 @@ export function useAdjustAccountBalance() {
   return useMutation({
     mutationFn: (payload: AdjustBalanceRequest) => superAdminApi.adjustAccountBalance(payload),
     onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["billing"] })
+      publishConsoleEvent({ type: "billing:credited" })
       void queryClient.invalidateQueries({
         queryKey: SUPERADMIN_QUERY_KEYS.platformOverview,
       })

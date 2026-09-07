@@ -1,6 +1,5 @@
 import { useMemo } from "react"
 
-import { cn, Skeleton } from "@datadack/common-ui"
 import { Flame, Gift, TimerReset, Wallet } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
@@ -8,9 +7,11 @@ import { Link } from "react-router-dom"
 import { AnimatedNumber, Sparkline } from "@/components/console"
 import type { WalletSplit } from "@/modules/promotions"
 
+import { cn, Skeleton } from "@datadack/common-ui"
+
 import { GST_RATE } from "../billing.constants"
 import type { CreditBalance, CreditPurchase, LedgerEntry, UsageRecordApi } from "../billing.types"
-import { balanceSeries, burnSummary, inr } from "../billing.utils"
+import { balanceSeries, burnSummary, credits } from "../billing.utils"
 
 interface BillingHeroProps {
   balance?: CreditBalance
@@ -73,7 +74,7 @@ export function BillingHero({
           ) : (
             <AnimatedNumber
               value={balanceValue}
-              format={(v) => inr(v)}
+              format={(v) => credits(v)}
               className="mt-1.5 block text-4xl font-bold tracking-tight tabular-nums text-foreground md:text-5xl"
             />
           )}
@@ -98,7 +99,7 @@ export function BillingHero({
         <MetricCell
           icon={<Flame className="size-4 text-status-warning" />}
           label={t("billing.hero.burn")}
-          value={loading ? null : `${inr(burn.perDay)}${t("billing.hero.perDay")}`}
+          value={loading ? null : `${credits(burn.perDay)}${t("billing.hero.perDay")}`}
         />
         <MetricCell
           icon={<TimerReset className={cn("size-4", tone.className)} />}
@@ -113,7 +114,7 @@ export function BillingHero({
         <MetricCell
           icon={<Wallet className="size-4 text-status-success" />}
           label={t("billing.hero.toppedUp")}
-          value={loading ? null : inr(totalPurchased)}
+          value={loading ? null : credits(totalPurchased)}
         />
       </div>
     </div>
@@ -134,13 +135,13 @@ export function BillingHero({
  */
 function WalletSplitLine({ split }: Readonly<{ split?: WalletSplit }>) {
   const { t } = useTranslation()
-  if (!split || split.granted <= 0) return null
+  if (!split || (split.granted <= 0 && split.adjusted <= 0)) return null
 
   return (
     <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px]">
       <span className="text-muted-foreground">
         {t("billing.hero.split.added")}{" "}
-        <span className="font-mono tabular-nums text-foreground">{inr(split.purchased)}</span>
+        <span className="font-mono tabular-nums text-foreground">{credits(split.purchased)}</span>
       </span>
       <span className="text-border" aria-hidden>
         |
@@ -151,8 +152,13 @@ function WalletSplitLine({ split }: Readonly<{ split?: WalletSplit }>) {
       >
         <Gift className="size-3.5" />
         {t("billing.hero.split.granted")}{" "}
-        <span className="font-mono tabular-nums">{inr(split.granted)}</span>
+        <span className="font-mono tabular-nums">{credits(split.granted)}</span>
       </Link>
+      {split.adjusted > 0 && (
+        <Link to="/billing/ledger" className="text-muted-foreground underline underline-offset-4">
+          Adjustments <span className="font-mono tabular-nums">{credits(split.adjusted)}</span>
+        </Link>
+      )}
     </div>
   )
 }

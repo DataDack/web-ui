@@ -35,16 +35,6 @@ const NAT_MAINTENANCE = {
   impact: "partial" as const,
 }
 
-const LB_MAINTENANCE = {
-  id: "maint-lb-001",
-  title: "Load Balancer Health Check Update",
-  message:
-    "Updating health check configuration for all load balancers. Brief latency spikes possible.",
-  startTime: "2024-04-01T16:00:00Z",
-  endTime: "2024-04-01T17:00:00Z",
-  impact: "none" as const,
-}
-
 /* ── Service registry ──────────────────────────────────────────────────── */
 
 export const SERVICE_REGISTRY: Record<string, ServiceDefinition> = {
@@ -76,15 +66,6 @@ export const SERVICE_REGISTRY: Record<string, ServiceDefinition> = {
         icon: Server,
         description: "Virtual machine instances — create, start, stop, delete.",
         status: "operational",
-      },
-      {
-        id: "load-balancer",
-        name: "Load Balancer",
-        path: "/compute/load-balancers",
-        icon: Layers,
-        description: "Distribute inbound traffic across multiple instances.",
-        status: "degraded",
-        maintenance: LB_MAINTENANCE,
       },
       {
         id: "auto-scaling",
@@ -148,15 +129,6 @@ export const SERVICE_REGISTRY: Record<string, ServiceDefinition> = {
         status: "operational",
       },
       {
-        id: "api-gateway",
-        name: "API Gateway",
-        path: "/networking/api-gateway",
-        icon: Webhook,
-        description:
-          "Publish, secure, and manage APIs through configurable routes and integrations.",
-        status: "operational",
-      },
-      {
         id: "static-ips",
         name: "Static IPs",
         path: "/networking/static-ips",
@@ -207,6 +179,36 @@ export const SERVICE_REGISTRY: Record<string, ServiceDefinition> = {
       },
     ],
     tags: ["network", "vpc", "security"],
+  },
+
+  traffic: {
+    id: "traffic",
+    name: "Load Balancer & API Gateway",
+    path: "/networking/api-gateway",
+    icon: Layers,
+    description: "Publish APIs and distribute traffic across your services.",
+    category: "network",
+    status: "operational",
+    subServices: [
+      {
+        id: "api-gateway",
+        name: "API Gateway",
+        path: "/networking/api-gateway",
+        icon: Webhook,
+        description:
+          "Publish, secure, and manage APIs through configurable routes and integrations.",
+        status: "operational",
+      },
+      {
+        id: "load-balancer",
+        name: "Load Balancer",
+        path: "/compute/load-balancers",
+        icon: Layers,
+        description: "Distribute inbound traffic across multiple instances.",
+        status: "operational",
+      },
+    ],
+    tags: ["api", "gateway", "load balancer", "traffic"],
   },
 
   iam: {
@@ -277,4 +279,4 @@ export const SERVICES_QUERY_KEYS = {
 }
 
 /** Ordered list for the dashboard service grid */
-export const DASHBOARD_SERVICE_ORDER = ["vms", "vpc", "iam", "billing", "resource-groups"]
+export const DASHBOARD_SERVICE_ORDER = ["vms", "vpc", "traffic", "iam", "billing", "resource-groups"]

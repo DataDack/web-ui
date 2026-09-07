@@ -91,6 +91,7 @@ export type LedgerKind = "credit" | "debit"
  * {@link LedgerApiEntry} returned by cloud-be-go.
  */
 export interface LedgerEntry {
+  reason?: string
   id: string
   created_at: string
   description: string
@@ -108,6 +109,7 @@ export interface LedgerEntry {
  * (apps/billing/ledger). `amount`/`balance_after` are in credits (₹).
  */
 export interface LedgerApiEntry {
+  reason?: string
   id: string
   created_at: string
   account_id: string
@@ -207,4 +209,13 @@ export interface PurchaseCreditsResponse {
   amount: number
   currency: string
   breakdown: Breakdown
+}
+
+export interface CreditStatement {
+  id: string
+  month: string
+  opening_balance: number
+  credits_added: number
+  credits_used: number
+  closing_balance: number
 }
