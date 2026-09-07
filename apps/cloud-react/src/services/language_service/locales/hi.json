@@ -75,6 +75,7 @@
         "internetGateways": "इंटरनेट गेटवे",
         "natGateways": "NAT गेटवे",
         "vpn": "VPN",
+        "ipsec": "IPSec",
         "taxSettings": "कर सेटिंग्स",
         "supportTickets": "सहायता टिकट",
         "images": "AMI",

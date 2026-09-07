@@ -94,6 +94,13 @@ export const vpcRoutes: RouteObject[] = [
       return { Component: VpnPage }
     },
   },
+  {
+    path: "networking/ipsec",
+    lazy: async () => {
+      const { IpsecComingSoon } = await import("./partials/IpsecComingSoon")
+      return { Component: IpsecComingSoon }
+    },
+  },
   // API Gateway's control plane is the serverless service, not this backend, so
   // each of its three pages is wrapped in RegionGate — the section is only
   // reachable in a region that has a FaaS origin. Wrapping here rather than

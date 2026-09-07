@@ -123,12 +123,13 @@ export const CONSOLE_SERVICES: ConsoleService[] = [
         path: "/networking/routers",
         comingSoon: true,
       },
-      {
-        labelKey: "console.nav.items.internetGateways",
-        icon: Waypoints,
-        path: "/networking/internet-gateways",
-        comingSoon: true,
-      },
+      // Hidden from navigation for now; retain the entry for later.
+      // {
+      //   labelKey: "console.nav.items.internetGateways",
+      //   icon: Waypoints,
+      //   path: "/networking/internet-gateways",
+      //   comingSoon: true,
+      // },
       {
         labelKey: "console.nav.items.natGateways",
         icon: ArrowRightLeft,
@@ -139,6 +140,12 @@ export const CONSOLE_SERVICES: ConsoleService[] = [
         labelKey: "console.nav.items.vpn",
         icon: Cable,
         path: "/networking/vpn",
+        comingSoon: true,
+      },
+      {
+        labelKey: "console.nav.items.ipsec",
+        icon: ShieldCheck,
+        path: "/networking/ipsec",
         comingSoon: true,
       },
       {

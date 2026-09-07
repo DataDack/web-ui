@@ -60,6 +60,7 @@
         "internetGateways": "Internet Gateways",
         "natGateways": "NAT Gateways",
         "vpn": "VPN",
+        "ipsec": "IPSec",
         "organization": "Organization",
         "account": "Account",
         "accounts": "Accounts",
