@@ -67,7 +67,7 @@ export function AccountsTab({
           // Ownership is member_role. is_owner is the member's own "home
           // account" flag — false on every account they provisioned
           // beyond their first, which left those rows showing no owner.
-          const owner = row.original.members.find((m) => m.member_role === "owner")
+          const owner = row.original.members.find((m) => m.member_role === "owner") ?? row.original.created_by
           if (!owner) return <span className="text-[12px] text-muted-foreground">—</span>
           return (
             <button

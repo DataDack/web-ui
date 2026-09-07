@@ -82,6 +82,7 @@ export function AccountResourcesPage() {
   const navigate = useNavigate()
   const { accountId } = useParams<{ accountId: string }>()
   const [deleteOpen, setDeleteOpen] = useState(false)
+  const [permanentDelete, setPermanentDelete] = useState(false)
   const deleteAccount = useDeleteAccount()
 
   const {
@@ -164,8 +165,7 @@ export function AccountResourcesPage() {
   const deleteDisabled =
     !accountId ||
     deleteAccount.isPending ||
-    account?.status === "deleting" ||
-    account?.status === "deleted"
+    account?.status === "deleting"
 
   // Spend tiles: monthly run-rate (combined), its two components, and wallet.
   const spendStats: StatCardProps[] = [
@@ -343,6 +343,17 @@ export function AccountResourcesPage() {
         title={t("superAdmin.accountResourcesPage.deleteAccount")}
         description={
           <div className="space-y-3">
+            <fieldset className="space-y-2" disabled={deleteAccount.isPending}>
+              <legend className="font-medium">Account record</legend>
+              <label className="flex items-center gap-2">
+                <input type="radio" name="account-deletion-mode" checked={!permanentDelete} onChange={() => setPermanentDelete(false)} />
+                Keep record and mark as deleted
+              </label>
+              <label className="flex items-center gap-2">
+                <input type="radio" name="account-deletion-mode" checked={permanentDelete} onChange={() => setPermanentDelete(true)} />
+                Permanently delete account and billing history
+              </label>
+            </fieldset>
             <p>
               This starts teardown for {title}. All active resources will be deleted, including VMs,
               load balancers, disks, VPC resources, and related networking state.
@@ -350,7 +361,7 @@ export function AccountResourcesPage() {
             <ul className="list-disc space-y-1 pl-4">
               <li>{t("superAdmin.accountResourcesPage.staticIpsWillBeReleasedBackToThePool")}</li>
               <li>
-                Billing history, invoices, ledger entries, payments, and usage records will be kept.
+                {permanentDelete ? "The account record and its billing history will be permanently removed after resource cleanup completes." : "The account record, creator link, and billing history will be kept with deleted status."}
               </li>
               <li>{t("superAdmin.accountResourcesPage.authUsersAreNotDeleted")}</li>
             </ul>
@@ -361,7 +372,7 @@ export function AccountResourcesPage() {
         loading={deleteAccount.isPending}
         onConfirm={() => {
           if (!accountId) return
-          deleteAccount.mutate(accountId, {
+          deleteAccount.mutate({ accountId, permanent: permanentDelete }, {
             onSuccess: () => {
               setDeleteOpen(false)
             },

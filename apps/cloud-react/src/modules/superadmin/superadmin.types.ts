@@ -1086,6 +1086,7 @@ export interface OverviewAccount {
   balance: number // wallet balance in credits (1 credit = ₹1), authoritative
   created_at: string
   members: OverviewMember[]
+  created_by?: OverviewMember
 }
 
 /** Direction of a manual wallet movement posted by a platform operator. */

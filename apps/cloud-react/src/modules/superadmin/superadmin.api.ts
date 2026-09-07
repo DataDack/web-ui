@@ -376,8 +376,8 @@ export const superAdminApi = {
     })
     return apiGet<AdminResourceInventory>(`/resources/search/admin/inventory?${query.toString()}`)
   },
-  deleteAccount: (accountId: string) =>
-    apiDelete<DeleteAccountResponse>(`/org/accounts/${accountId}/super-admin-delete`),
+  deleteAccount: (accountId: string, permanent = false) =>
+    apiDelete<DeleteAccountResponse>(`/org/accounts/${accountId}/super-admin-delete${permanent ? "?permanent=true" : ""}`),
 
   /* account active-spend summary (monthly run-rate, per-kind breakdown, wallet) */
   getAccountSpend: (accountId: string) =>
