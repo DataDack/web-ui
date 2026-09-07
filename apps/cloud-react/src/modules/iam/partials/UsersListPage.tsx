@@ -34,7 +34,6 @@ import {
 } from "../iam.hooks"
 import type { IAMUser, Invitation } from "../iam.types"
 import { InviteMemberDialog } from "./InviteMemberDialog"
-import { InviteUserSheet } from "./InviteUserSheet"
 
 const INVITATION_STATUS_CLASS: Record<string, string> = {
   pending: "text-amber-500 border-amber-500/30 bg-amber-500/10",
@@ -86,7 +85,6 @@ export function UsersListPage() {
     [members],
   )
 
-  const [inviteOpen, setInviteOpen] = useState(false)
   // Seeded from ?invite=1 so links to the old /iam/invitations/new page (now a
   // redirect here) land with the invite dialog already open.
   const [inviteMemberOpen, setInviteMemberOpen] = useState(() => searchParams.get("invite") === "1")
@@ -269,27 +267,15 @@ export function UsersListPage() {
             >
               <RefreshCw className={`w-4 h-4 ${activeFetching ? "animate-spin" : ""}`} />
             </Button>
-            {tab === "invitations" ? (
-              <Button
-                className="gap-2"
-                onClick={() => {
-                  setInviteMemberOpen(true)
-                }}
-              >
-                <Plus className="w-4 h-4" />
-                {t("iam.invitations.invite")}
-              </Button>
-            ) : (
-              <Button
-                className="gap-2"
-                onClick={() => {
-                  setInviteOpen(true)
-                }}
-              >
-                <Plus className="w-4 h-4" />
-                {t("iam.users.invite")}
-              </Button>
-            )}
+            <Button
+              className="gap-2"
+              onClick={() => {
+                setInviteMemberOpen(true)
+              }}
+            >
+              <Plus className="w-4 h-4" />
+              {t("iam.invitations.invite")}
+            </Button>
           </>
         }
       />
@@ -328,9 +314,9 @@ export function UsersListPage() {
                 title={t("iam.users.empty")}
                 description={t("iam.users.emptySubtitle")}
                 action={{
-                  label: t("iam.users.invite"),
+                  label: t("iam.invitations.invite"),
                   onClick: () => {
-                    setInviteOpen(true)
+                    setInviteMemberOpen(true)
                   },
                 }}
               />
@@ -370,7 +356,6 @@ export function UsersListPage() {
         </TabsContent>
       </Tabs>
 
-      <InviteUserSheet open={inviteOpen} onOpenChange={setInviteOpen} />
       <InviteMemberDialog open={inviteMemberOpen} onOpenChange={closeInviteMember} />
 
       <ConfirmDialog
