@@ -39,7 +39,6 @@ import type { NamingRule } from "@/modules/governance/governance.types"
 import { namingNameSchema } from "@/modules/governance/governance.validation"
 import { useScreen } from "@/services/api/screen"
 
-
 import { VPC_ROUTES } from "../vpc.constants"
 import {
   useCreateRouter,
@@ -278,11 +277,7 @@ export function RoutersPage() {
       statusColumn<Router>({
         header: t("routers.columns.status"),
         accessor: (r) => r.status,
-        pulse: (r) =>
-          r.status === "pending" ||
-          r.status === "provisioning" ||
-          r.status === "booting" ||
-          r.status === "configuring",
+        pulse: (r) => r.status === "pending" || r.status === "deleting",
       }),
       textColumn<Router>({
         id: "region",

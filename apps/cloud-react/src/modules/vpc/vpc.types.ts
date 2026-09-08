@@ -163,15 +163,7 @@ export interface NetworkInterface {
 }
 
 // Native SDN routing is applied asynchronously by Proxmox Manager.
-export type RouterStatus =
-  | "pending"
-  | "provisioning"
-  | "booting"
-  | "configuring"
-  | "available"
-  | "degraded"
-  | "failed"
-  | "deleting"
+export type RouterStatus = "pending" | "available" | "degraded" | "failed" | "deleting"
 
 export interface Router {
   role: string
@@ -185,8 +177,6 @@ export interface Router {
   network_id: string
   region: string
   status: RouterStatus
-  /** The router's WAN address once assigned (dhcp or static); unset while pending/booting. */
-  wan_ip?: string
   user_id: string
 }
 

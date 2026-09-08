@@ -82,7 +82,8 @@ export function RouteTablesPage() {
             to={`${routeTablePath(row.original.id)}?tab=subnets`}
           >
             <GitBranch className="size-3.5" />
-            {row.original.associations.length} subnets
+            {row.original.associations.length}{" "}
+            {row.original.associations.length === 1 ? "subnet" : "subnets"}
           </Link>
         ),
       },

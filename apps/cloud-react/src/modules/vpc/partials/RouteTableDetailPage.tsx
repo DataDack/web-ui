@@ -8,12 +8,16 @@ import {
   EmptyState,
   Skeleton,
   textColumn,
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
 } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { AlertTriangle, GitBranch, Info, Route, Trash2 } from "lucide-react"
-import { Link, useNavigate, useParams } from "react-router-dom"
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom"
 
-import { ConfirmDialog, DetailPage, StatusBadge } from "@/components/console"
+import { ConfirmDialog, PageHeader, StatusBadge } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
 import { useRouteTable, useRouteTableActions, type NetworkRoute } from "../route-tables"
@@ -57,6 +61,8 @@ const routeColumns: ColumnDef<NetworkRoute>[] = [
 export function RouteTableDetailPage() {
   useScreen("vpc.routers")
   const { id = "" } = useParams()
+  const [params, setParams] = useSearchParams()
+  const tab = params.get("tab") === "subnets" ? "subnets" : "routes"
   const query = useRouteTable(id)
   const { remove } = useRouteTableActions()
   const navigate = useNavigate()
@@ -101,7 +107,9 @@ export function RouteTableDetailPage() {
         </div>
         <div>
           <dt className="text-xs text-muted-foreground">Explicit subnet associations</dt>
-          <dd className="mt-2 text-sm font-medium">{table.associations.length} subnets</dd>
+          <dd className="mt-2 text-sm font-medium">
+            {table.associations.length} {table.associations.length === 1 ? "subnet" : "subnets"}
+          </dd>
         </div>
         <div>
           <dt className="text-xs text-muted-foreground">Region</dt>
@@ -110,7 +118,6 @@ export function RouteTableDetailPage() {
         <div className="sm:col-span-2">
           <dt className="text-xs text-muted-foreground">Owner account</dt>
           <dd className="mt-2 flex min-w-0 items-center gap-2">
-            <span className="break-all font-mono text-xs">{table.account_id}</span>
             <CopyButton value={table.account_id} />
           </dd>
         </div>
@@ -119,7 +126,6 @@ export function RouteTableDetailPage() {
   )
   const routes = (
     <div className="space-y-5">
-      {details}
       {(table.provision_error || table.zone_type !== "evpn") && (
         <div
           role="status"
@@ -172,37 +178,60 @@ export function RouteTableDetailPage() {
   )
   return (
     <>
-      <DetailPage
-        backTo="/networking/route-tables"
-        backLabel="Route tables"
-        icon={Route}
-        title={table.name}
-        id={table.id}
-        statusNode={table.is_main ? <Badge variant="outline">Main</Badge> : undefined}
-        actions={
-          <Button
-            variant="outline"
-            disabled={table.is_main || table.associations.length > 0}
-            title={table.is_main ? "The main route table cannot be deleted" : "Remove subnet associations before deleting"}
-            onClick={() => {
-              setDeleting(true)
-            }}
-          >
-            <Trash2 className="mr-2 size-4" />
-            Delete
-          </Button>
-        }
-        tabs={[
-          { value: "routes", label: "Routes", icon: Route, content: routes },
-          {
-            value: "subnets",
-            label: "Subnet associations",
-            icon: GitBranch,
-            content: <SubnetAssociations table={table} />,
-          },
-        ]}
-        layoutId="route-table-tabs"
-      />
+      <div className="space-y-5">
+        <PageHeader
+          icon={Route}
+          title={table.name}
+          breadcrumbs={[
+            { label: "Networking", to: "/networking" },
+            { label: "Route tables", to: "/networking/route-tables" },
+            { label: table.name },
+          ]}
+          actions={
+            <Button
+              variant="outline"
+              disabled={table.is_main || table.associations.length > 0}
+              title={
+                table.is_main
+                  ? "The main route table cannot be deleted"
+                  : "Remove subnet associations before deleting"
+              }
+              onClick={() => {
+                setDeleting(true)
+              }}
+            >
+              <Trash2 className="mr-2 size-4" />
+              Delete
+            </Button>
+          }
+        />
+        <div className="flex min-w-0 flex-wrap items-center gap-3">
+          <CopyButton value={table.id} />
+          {table.is_main && <Badge variant="outline">Main route table</Badge>}
+        </div>
+        {details}
+        <Tabs
+          value={tab}
+          onValueChange={(value) => {
+            setParams(value === "routes" ? {} : { tab: value }, { replace: true })
+          }}
+        >
+          <TabsList className="mb-5 max-w-full">
+            <TabsTrigger value="routes">
+              <Route className="mr-2 size-4" />
+              Routes
+            </TabsTrigger>
+            <TabsTrigger value="subnets">
+              <GitBranch className="mr-2 size-4" />
+              Subnet associations
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="routes">{routes}</TabsContent>
+          <TabsContent value="subnets">
+            <SubnetAssociations table={table} />
+          </TabsContent>
+        </Tabs>
+      </div>
       <ConfirmDialog
         open={deleting}
         onOpenChange={setDeleting}
