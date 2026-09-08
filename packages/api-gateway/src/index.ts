@@ -15,6 +15,7 @@ export { ApiKeysPage } from "./console/ApiKeysPage"
 export { UsagePlansPage } from "./console/UsagePlansPage"
 
 export { createApiGatewayTransport } from "./data/createTransport"
+export { REACHABLE_PREFIX } from "./data/http"
 export type { ApiGatewayHttp, ApiGatewayRequest, ApiGatewayResponse } from "./data/http"
 
 export {

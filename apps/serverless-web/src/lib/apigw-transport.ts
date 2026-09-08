@@ -1,6 +1,10 @@
 import { http } from "@/lib/api"
 
-import { createApiGatewayTransport, type ApiGatewayHttp } from "@datadack/api-gateway"
+import {
+  createApiGatewayTransport,
+  REACHABLE_PREFIX,
+  type ApiGatewayHttp,
+} from "@datadack/api-gateway"
 
 /**
  * This console's half of the API Gateway transport: how a request is
@@ -26,7 +30,11 @@ import { createApiGatewayTransport, type ApiGatewayHttp } from "@datadack/api-ga
 const requestApiGateway: ApiGatewayHttp = async ({ method, path, query, body }) => {
   const response = await http.request<unknown>({
     method,
-    url: path,
+    // Prefixed here rather than on `http`: that instance's baseURL is the
+    // operator's API base, shared with every other /v1 call this console makes,
+    // so it cannot carry a prefix specific to this surface. See REACHABLE_PREFIX
+    // for why the bare /v2 path does not reach the control plane in production.
+    url: REACHABLE_PREFIX + path,
     params: query,
     data: body,
     validateStatus: () => true,

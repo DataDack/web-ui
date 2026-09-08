@@ -4,7 +4,11 @@ import { activeScope } from "@/services/api/active-scope"
 import { authToken, refreshAccessToken } from "@/services/api/auth-token"
 import { serverlessOrigin } from "@/services/api/serverless-origin"
 
-import { createApiGatewayTransport, type ApiGatewayHttp } from "@datadack/api-gateway"
+import {
+  createApiGatewayTransport,
+  REACHABLE_PREFIX,
+  type ApiGatewayHttp,
+} from "@datadack/api-gateway"
 
 /**
  * This console's half of the API Gateway transport: how a request is
@@ -47,7 +51,11 @@ const faas = axios.create({ withCredentials: false })
 faas.interceptors.request.use((config) => {
   const base = serverlessOrigin.get()
   if (base === null) throw new NoServerlessOriginError()
-  config.baseURL = base
+  // REACHABLE_PREFIX, not the bare origin: see its definition for why /v2 alone
+  // reaches datadack-cloud and comes back as the console's own HTML at 200. The
+  // origin is per-region and may carry a trailing slash, so it is trimmed before
+  // the prefix is joined on.
+  config.baseURL = base.replace(/\/+$/, "") + REACHABLE_PREFIX
   const token = authToken.get()
   if (token) config.headers.Authorization = `Bearer ${token}`
   const accountId = activeScope.getAccountId()
