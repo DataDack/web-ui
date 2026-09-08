@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react"
 
-import { Button, DataTable, EmptyState, Tabs, TabsList, TabsTrigger } from "@datadack/common-ui"
 import { Globe, RefreshCw } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
@@ -9,23 +8,19 @@ import { useDebounce } from "@/hooks/use-debounce"
 import { useProjects } from "@/modules/managed-apps/managed-apps.hooks"
 import { useScreen } from "@/services/api/screen"
 
+import { Button, DataTable, EmptyState } from "@datadack/common-ui"
+
 import { DOMAINS_PAGE_SIZE } from "../domains.constants"
 import { useDomains } from "../domains.hooks"
 import type { Domain, DomainListParams } from "../domains.types"
 import { buildDomainColumns } from "./domain-columns"
 import { DomainsFilters, type DomainStatusFilter, type DomainTypeFilter } from "./DomainsFilters"
 
-// The tabs map straight onto the `managed` param: System = platform-minted
-// hostnames (managed=true), Custom = the tenant's own domains (managed=false).
-const SOURCE_TABS = ["all", "system", "custom"] as const
-type SourceTab = (typeof SOURCE_TABS)[number]
-
 export function DomainsListPage() {
   useScreen("domains.registry-list")
   const { t } = useTranslation()
 
   // Hooks first, always — early returns (none here) come after every hook.
-  const [tab, setTab] = useState<SourceTab>("all")
   const [type, setType] = useState<DomainTypeFilter>("all")
   const [status, setStatus] = useState<DomainStatusFilter>("all")
   const [search, setSearch] = useState("")
@@ -37,12 +32,12 @@ export function DomainsListPage() {
     () => ({
       page,
       limit: DOMAINS_PAGE_SIZE,
-      managed: tab === "all" ? undefined : tab === "system",
+      managed: false,
       type: type === "all" ? undefined : type,
       status: status === "all" ? undefined : status,
       q: q || undefined,
     }),
-    [page, tab, type, status, q],
+    [page, type, status, q],
   )
 
   const { data, isLoading, isError, refetch, isFetching } = useDomains(params)
@@ -60,10 +55,6 @@ export function DomainsListPage() {
 
   // Changing any filter invalidates the page number — page 4 of one filter
   // combination means nothing under another — so every change resets it.
-  const changeTab = (value: SourceTab) => {
-    setTab(value)
-    setPage(1)
-  }
   const changeType = (value: DomainTypeFilter) => {
     setType(value)
     setPage(1)
@@ -96,23 +87,6 @@ export function DomainsListPage() {
           </Button>
         }
       />
-
-      {/* The tab bar only switches the `managed` param — the one table below
-          re-fetches, so there is no per-tab TabsContent to mount. */}
-      <Tabs
-        value={tab}
-        onValueChange={(value) => {
-          changeTab(value as SourceTab)
-        }}
-      >
-        <TabsList>
-          {SOURCE_TABS.map((value) => (
-            <TabsTrigger key={value} value={value}>
-              {t(`domains.tabs.${value}`)}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-      </Tabs>
 
       <DataTable<Domain>
         data={rows}

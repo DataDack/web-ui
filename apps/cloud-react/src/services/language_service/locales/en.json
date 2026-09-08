@@ -86,7 +86,9 @@
         "automationsOverview": "Overview",
         "automationsWorkflows": "Workflows",
         "automationsIntegrations": "Integrations",
-        "registeredDomains": "Registered domains",
+        "registeredDomains": "Register Domain",
+        "certsManager": "Certs Manager",
+        "domainDns": "DNS",
         "hostnames": "Domain Connections",
         "apiGateway": "API Gateway"
       },
@@ -1856,11 +1858,16 @@
   },
   "domains": {
     "title": "Domain Connections",
-    "subtitle": "Every hostname on your account — what it points at and where it came from.",
+    "subtitle": "External domains connected to your resources.",
+    "comingSoon": {
+      "registration": "Buy and register a domain directly from DataDack. Coming soon.",
+      "certificates": "Manage TLS certificates for your domains. Coming soon.",
+      "dns": "Manage DNS records for your domains. Coming soon."
+    },
     "adminSubtitle": "Every hostname the platform answers for, across all accounts.",
     "searchPlaceholder": "Search hostnames…",
     "empty": "No domains",
-    "emptySubtitle": "Hostnames assigned to your resources will appear here.",
+    "emptySubtitle": "External domains connected to your resources will appear here.",
     "adminEmptySubtitle": "No registry rows match the current filters.",
     "primary": "Primary",
     "tabs": {

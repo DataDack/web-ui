@@ -170,26 +170,29 @@ export const CONSOLE_SERVICES: ConsoleService[] = [
     // cPanel plans and account detail pages use the older /hosting route
     // family, but they belong to this service's sidebar.
     extraMatch: ["/hosting"],
-    // Domain management is its own service, not a page inside Networking.
-    //
-    // It was an item there because the registry was one table of hostnames the
-    // platform minted for other products — a networking detail. It is a product
-    // now: an account registers a domain it owns, proves it, and attaches it to
-    // apps and functions. Nothing about that belongs to VPC, and burying the
-    // entry point under Networking is why somebody looking for "use my own
-    // domain" would never find it.
     items: [
       {
         labelKey: "console.nav.items.registeredDomains",
         icon: Globe,
         path: "/domains",
+        comingSoon: true,
       },
       {
         labelKey: "console.nav.items.hostnames",
         icon: Waypoints,
-        // Every name the platform answers for, most of them minted
-        // automatically. The deeper, operational half of the same service.
         path: "/domains/hostnames",
+      },
+      {
+        labelKey: "console.nav.items.certsManager",
+        icon: ShieldCheck,
+        path: "/domains/certificates",
+        comingSoon: true,
+      },
+      {
+        labelKey: "console.nav.items.domainDns",
+        icon: Network,
+        path: "/domains/dns",
+        comingSoon: true,
       },
       {
         labelKey: "console.nav.items.cpanelHosting",

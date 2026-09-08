@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test"
 
 import { findServiceByPath } from "../src/components/console/shell/sidebar-nav"
+import { resolveCatalogService } from "../src/modules/services/catalog.paths"
 import { gateForPath } from "../src/modules/services/catalog.gate"
 import type { CatalogService } from "../src/modules/services/catalog.types"
 
@@ -36,6 +37,19 @@ const routes = [
 ]
 
 describe("combined Load Balancer & API Gateway service", () => {
+  test("legacy traffic links open API Gateway without claiming Networking", () => {
+    const catalog = [
+      service("traffic", "/networking", "maintenance"),
+      service("vpc", "/networking"),
+    ].map(resolveCatalogService)
+    expect(catalog[0].path).toBe("/api-gateway")
+    expect(gateForPath("/networking/subnets", catalog)).toBe("active")
+    expect(gateForPath("/api-gateway", catalog)).toBe("maintenance")
+    expect(resolveCatalogService(service("traffic", "/networking/")).path).toBe("/api-gateway")
+    expect(resolveCatalogService(service("traffic", "/compute/load-balancers")).path).toBe(
+      "/compute/load-balancers",
+    )
+  })
   test("one admin record controls both features independently of compute and networking", () => {
     const catalog = [
       service("compute", "/compute", "maintenance"),
