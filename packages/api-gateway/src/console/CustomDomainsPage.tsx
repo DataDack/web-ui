@@ -30,8 +30,6 @@ import {
 } from "../data/queries"
 import type { DomainName } from "../data/schemas"
 
-
-
 /**
  * Custom domains, and the base-path mappings that publish an API stage under
  * one.
@@ -106,7 +104,9 @@ export function CustomDomainsPage() {
           </Button>
         </div>
         {create.error ? (
-          <p className="text-status-danger mt-2 text-xs">{errorMessage(create.error, "Could not create")}</p>
+          <p className="text-status-danger mt-2 text-xs">
+            {errorMessage(create.error, "Could not create")}
+          </p>
         ) : null}
       </div>
 
@@ -307,7 +307,9 @@ function MappingsPanel({
           </Button>
         </div>
         {create.error ? (
-          <p className="text-status-danger mt-2 text-xs">{errorMessage(create.error, "Could not create")}</p>
+          <p className="text-status-danger mt-2 text-xs">
+            {errorMessage(create.error, "Could not create")}
+          </p>
         ) : null}
       </div>
 

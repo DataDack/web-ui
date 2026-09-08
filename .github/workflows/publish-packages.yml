@@ -12,6 +12,10 @@ on:
   push:
     tags:
       - "serverless-v*"
+      # api-gateway is published like serverless: both are consumed by BOTH
+      # apps in this workspace, so a change to either has to reach cloud-react
+      # and serverless-web through a version rather than a lockfile bump.
+      - "api-gateway-v*"
   workflow_dispatch:
     inputs:
       package:
@@ -50,7 +54,12 @@ jobs:
         id: pkg
         run: |
           if [[ "$GITHUB_REF" == refs/tags/* ]]; then
-            # `<package>-v<version>` → `<package>`
+            # `<package>-v<version>` → `<package>`.
+            #
+            # `%` (shortest match from the right), not `%%`. They agree on every
+            # tag today, because no package name contains "-v" — but one that
+            # did, say api-v2-gateway-v1.0.0, would have `%%` strip back to
+            # "api" and look for a directory that does not exist.
             NAME="${GITHUB_REF_NAME%-v*}"
           else
             NAME="${{ github.event.inputs.package }}"

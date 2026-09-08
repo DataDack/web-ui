@@ -50,17 +50,17 @@ ReactDOM.createRoot(rootElement).render(
             cache never serves one tenant's data to another. */}
         <ServerlessProvider transport={faasTransport}>
           <AIAutomationsProvider transport={aiAutomationsTransport}>
-          {/* The API Gateway console. No scope is passed: the ScopeSwitcher
+            {/* The API Gateway console. No scope is passed: the ScopeSwitcher
               already does a wholesale invalidateQueries() on an account switch,
               so the default is safe here for the same reason it is above. */}
-          <ApiGatewayProvider transport={apiGatewayTransport}>
-          {/* The control plane serves this SPA from /admin_serverless, so the
+            <ApiGatewayProvider transport={apiGatewayTransport}>
+              {/* The control plane serves this SPA from /admin_serverless, so the
               router shares that basename and every route resolves under it. */}
-          <BrowserRouter basename="/admin_serverless">
-            <App />
-            <Toaster position="bottom-right" closeButton richColors />
-          </BrowserRouter>
-          </ApiGatewayProvider>
+              <BrowserRouter basename="/admin_serverless">
+                <App />
+                <Toaster position="bottom-right" closeButton richColors />
+              </BrowserRouter>
+            </ApiGatewayProvider>
           </AIAutomationsProvider>
         </ServerlessProvider>
       </QueryClientProvider>

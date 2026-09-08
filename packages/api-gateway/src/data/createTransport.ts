@@ -167,11 +167,12 @@ export function createApiGatewayTransport(http: ApiGatewayHttp): ApiGatewayTrans
       return body.value ?? ""
     },
 
-    listUsagePlans: async () =>
-      usagePlanListSchema.parse(await get("/v2/usageplans", PAGE)).items,
+    listUsagePlans: async () => usagePlanListSchema.parse(await get("/v2/usageplans", PAGE)).items,
     createUsagePlan: async (input) => usagePlanSchema.parse(await post("/v2/usageplans", input)),
     updateUsagePlan: async (usagePlanId, input) =>
-      usagePlanSchema.parse(await patch(`/v2/usageplans/${encodeURIComponent(usagePlanId)}`, input)),
+      usagePlanSchema.parse(
+        await patch(`/v2/usageplans/${encodeURIComponent(usagePlanId)}`, input),
+      ),
     deleteUsagePlan: (usagePlanId) => remove(`/v2/usageplans/${encodeURIComponent(usagePlanId)}`),
 
     listUsagePlanKeys: async (usagePlanId) =>

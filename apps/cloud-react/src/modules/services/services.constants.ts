@@ -279,4 +279,11 @@ export const SERVICES_QUERY_KEYS = {
 }
 
 /** Ordered list for the dashboard service grid */
-export const DASHBOARD_SERVICE_ORDER = ["vms", "vpc", "traffic", "iam", "billing", "resource-groups"]
+export const DASHBOARD_SERVICE_ORDER = [
+  "vms",
+  "vpc",
+  "traffic",
+  "iam",
+  "billing",
+  "resource-groups",
+]

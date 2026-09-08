@@ -23,7 +23,7 @@ else falls back to the action's label.
 ```tsx
 import { ApiGatewayProvider, ApiGatewayRoutes } from "@datadack/api-gateway"
 
-<QueryClientProvider client={queryClient}>
+;<QueryClientProvider client={queryClient}>
   <ApiGatewayProvider transport={apiGatewayTransport}>
     <BrowserRouter>
       <Routes>

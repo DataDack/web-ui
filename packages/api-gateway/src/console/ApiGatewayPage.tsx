@@ -30,8 +30,6 @@ import { errorMessage } from "./errorMessage"
 import { useApis, useCreateApi } from "../data/queries"
 import type { Api } from "../data/schemas"
 
-
-
 /**
  * Every HTTP API this account has configured.
  *
@@ -241,7 +239,9 @@ function CreateApiDialog({
             />
           </div>
           {create.error ? (
-            <p className="text-status-danger text-xs">{errorMessage(create.error, "Could not create")}</p>
+            <p className="text-status-danger text-xs">
+              {errorMessage(create.error, "Could not create")}
+            </p>
           ) : null}
         </div>
         <DialogFooter>
