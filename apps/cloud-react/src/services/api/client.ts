@@ -62,6 +62,12 @@ api.interceptors.request.use((config) => {
   return config
 })
 
+// The backend's message when X-Account-Id names an account the caller is not a
+// member of. Kept in sync with middleware.MsgAccountNotSelectable (cloud-be-go).
+const ACCOUNT_NOT_SELECTABLE = "selected account is not available for this user"
+const SCOPE_RESET_KEY = "dd:scope-reset"
+let accountScopeReset = false
+
 // Routes exempt from the 401 refresh-and-retry: a 401 here means the credentials
 // themselves are bad, so retrying with a fresh access token can't help.
 const AUTH_ROUTES = ["/auth/users/token", "/auth/users/otp"]
@@ -70,7 +76,13 @@ const AUTH_ROUTES = ["/auth/users/token", "/auth/users/otp"]
 // request once. A second 401 (or a request that is itself the refresh/login
 // probe) means the session is truly gone: clear the token and bounce to login.
 api.interceptors.response.use(
-  (res) => res,
+  (res) => {
+    // A request got through, so whatever scope is pinned now works: release the
+    // one-shot guard below so a genuinely stale scope later in the tab's life
+    // can still be reset.
+    if (sessionStorage.getItem(SCOPE_RESET_KEY)) sessionStorage.removeItem(SCOPE_RESET_KEY)
+    return res
+  },
   async (error: AxiosError) => {
     const original = error.config as
       (InternalAxiosRequestConfig & { _retried?: boolean }) | undefined
@@ -89,6 +101,29 @@ api.interceptors.response.use(
       const { pathname } = window.location
       if (!pathname.startsWith("/login") && !pathname.startsWith("/signup")) {
         window.location.href = "/login"
+      }
+    }
+
+    // 403 with the backend's stale-selector message: the pinned X-Account-Id is
+    // not an account this user belongs to (membership revoked, account deleted,
+    // or a scope left behind by another session on this browser). Drop the
+    // stored scope and reload once — boot re-pins a live account from
+    // /org/accounts/me — instead of leaving the console 403ing on every call.
+    // Guarded per page load AND per tab: if it recurs the reset did not help,
+    // and a reload loop is worse than the error.
+    if (
+      error.response?.status === 403 &&
+      !accountScopeReset &&
+      !sessionStorage.getItem(SCOPE_RESET_KEY)
+    ) {
+      const message = (error.response.data as { meta?: { message?: string } } | undefined)
+        ?.meta?.message
+      if (message === ACCOUNT_NOT_SELECTABLE) {
+        accountScopeReset = true
+        sessionStorage.setItem(SCOPE_RESET_KEY, "1")
+        activeScope.clear()
+        window.location.reload()
+        return Promise.reject(error)
       }
     }
 
