@@ -183,13 +183,7 @@ export function RouteTableDetailPage() {
           <Button
             variant="outline"
             disabled={table.is_main || table.associations.length > 0}
-            title={
-              table.is_main
-                ? "The main route table cannot be deleted"
-                : table.associations.length
-                  ? "Remove subnet associations first"
-                  : "Delete route table"
-            }
+            title={table.is_main ? "The main route table cannot be deleted" : "Remove subnet associations before deleting"}
             onClick={() => {
               setDeleting(true)
             }}

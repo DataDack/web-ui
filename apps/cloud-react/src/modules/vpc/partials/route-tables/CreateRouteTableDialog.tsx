@@ -66,7 +66,6 @@ export function CreateRouteTableDialog({
             <Label htmlFor="route-table-name">Name</Label>
             <Input
               id="route-table-name"
-              autoFocus
               required
               maxLength={128}
               placeholder="private-routes"

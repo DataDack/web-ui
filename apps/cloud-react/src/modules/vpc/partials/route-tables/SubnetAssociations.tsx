@@ -127,9 +127,11 @@ export function SubnetAssociations({ table }: Readonly<{ table: RouteTable }>) {
               .map((subnet) => (
                 <label
                   key={subnet.id}
+                  htmlFor={`associate-${subnet.id}`}
                   className="flex cursor-pointer items-center gap-3 p-4 hover:bg-muted/40"
                 >
                   <Checkbox
+                    id={`associate-${subnet.id}`}
                     checked={selected.includes(subnet.id)}
                     disabled={associate.isPending}
                     onCheckedChange={(checked) => {
