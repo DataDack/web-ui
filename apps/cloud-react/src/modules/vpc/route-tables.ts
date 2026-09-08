@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
+
 import { apiDelete, apiGet, apiPost, apiPut, extractError } from "@/services/api/client"
 
 export interface NetworkRoute {
@@ -30,20 +31,51 @@ const base = "/vpc/routers/tables"
 const key = ["vpc", "route-tables"] as const
 export const routeTablePath = (id: string) => `/networking/route-tables/${id}`
 export function useRouteTables() {
-  return useQuery({ queryKey: key, queryFn: () => apiGet<RouteTable[]>(base), refetchInterval: 15000 })
+  return useQuery({
+    queryKey: key,
+    queryFn: () => apiGet<RouteTable[]>(base),
+    refetchInterval: 15000,
+  })
 }
 export function useRouteTable(id: string) {
-  return useQuery({ queryKey: [...key, id], queryFn: () => apiGet<RouteTable>(`${base}/${id}`), enabled: !!id, refetchInterval: 15000 })
+  return useQuery({
+    queryKey: [...key, id],
+    queryFn: () => apiGet<RouteTable>(`${base}/${id}`),
+    enabled: !!id,
+    refetchInterval: 15000,
+  })
 }
 export function useRouteTableActions() {
   const client = useQueryClient()
-  const refresh = () => { void client.invalidateQueries({ queryKey: ["vpc"] }) }
-  const onError = (error: unknown) => toast.error(extractError(error))
+  const refresh = () => {
+    void client.invalidateQueries({ queryKey: ["vpc"] })
+  }
+  const onError = (error: unknown) =>
+    toast.error(extractError(error, "The route-table operation failed. Please try again."))
   const create = useMutation({
     mutationFn: (body: { name: string; vpc_id: string }) => apiPost<RouteTable>(base, body),
-    onSuccess: () => { refresh(); toast.success("Route table created") }, onError,
+    onSuccess: () => {
+      refresh()
+      toast.success("Route table created")
+    },
+    onError,
   })
-  const remove = useMutation({ mutationFn: (id: string) => apiDelete(`${base}/${id}`), onSuccess: () => { refresh(); toast.success("Route table deleted") }, onError })
-  const associate = useMutation({ mutationFn: ({ id, subnet_ids }: { id: string; subnet_ids: string[] }) => apiPut(`${base}/${id}/associations`, { subnet_ids }), onSuccess: () => { refresh(); toast.success("Subnet associations saved") }, onError })
+  const remove = useMutation({
+    mutationFn: (id: string) => apiDelete(`${base}/${id}`),
+    onSuccess: () => {
+      refresh()
+      toast.success("Route table deleted")
+    },
+    onError,
+  })
+  const associate = useMutation({
+    mutationFn: ({ id, subnet_ids }: { id: string; subnet_ids: string[] }) =>
+      apiPut(`${base}/${id}/associations`, { subnet_ids }),
+    onSuccess: () => {
+      refresh()
+      toast.success("Subnet associations saved")
+    },
+    onError,
+  })
   return { create, remove, associate }
 }

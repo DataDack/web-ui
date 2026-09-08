@@ -1,20 +1,5 @@
 import { useMemo, useState } from "react"
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import type { ColumnDef } from "@tanstack/react-table"
-import { Plus, RefreshCw, Router as RouterIcon, Search, Trash2 } from "lucide-react"
-import { useForm } from "react-hook-form"
-import { useTranslation } from "react-i18next"
-import { Link } from "react-router-dom"
-import { z } from "zod/v4"
-
-import { ConfirmDialog, PageHeader, StatGrid } from "@/components/console"
-import { QuotaNotice, useQuotaBlocked } from "@/modules/governance/components/QuotaNotice"
-import { useNamingRule } from "@/modules/governance/governance.hooks"
-import type { NamingRule } from "@/modules/governance/governance.types"
-import { namingNameSchema } from "@/modules/governance/governance.validation"
-import { useScreen } from "@/services/api/screen"
-
 import {
   actionsColumn,
   Button,
@@ -39,6 +24,21 @@ import {
   Switch,
   textColumn,
 } from "@datadack/common-ui"
+import { zodResolver } from "@hookform/resolvers/zod"
+import type { ColumnDef } from "@tanstack/react-table"
+import { AlertTriangle, Plus, RefreshCw, Router as RouterIcon, Search, Trash2 } from "lucide-react"
+import { useForm } from "react-hook-form"
+import { useTranslation } from "react-i18next"
+import { Link } from "react-router-dom"
+import { z } from "zod/v4"
+
+import { ConfirmDialog, PageHeader, StatGrid } from "@/components/console"
+import { QuotaNotice, useQuotaBlocked } from "@/modules/governance/components/QuotaNotice"
+import { useNamingRule } from "@/modules/governance/governance.hooks"
+import type { NamingRule } from "@/modules/governance/governance.types"
+import { namingNameSchema } from "@/modules/governance/governance.validation"
+import { useScreen } from "@/services/api/screen"
+
 
 import { VPC_ROUTES } from "../vpc.constants"
 import {
@@ -73,6 +73,7 @@ function CreateRouterDialog({
   const { mutate: create, isPending } = useCreateRouter()
   const { data: regions = [] } = useRegions()
   const { data: vpcs = [] } = useVPCs()
+  const { data: existingRouters = [] } = useRouters()
   const { rule } = useNamingRule("router")
   const createSchema = useMemo(() => makeCreateSchema(rule), [rule])
   const quotaBlocked = useQuotaBlocked("vpc.routers")
@@ -171,7 +172,15 @@ function CreateRouterDialog({
               </SelectTrigger>
               <SelectContent>
                 {vpcs
-                  .filter((vpc) => vpc.region === watch("region") && vpc.zone_type === "evpn")
+                  .filter(
+                    (vpc) =>
+                      vpc.region === watch("region") &&
+                      vpc.zone_type === "evpn" &&
+                      vpc.status !== "deleting" &&
+                      !existingRouters.some(
+                        (router) => router.network_id === vpc.id && router.role === "sdn",
+                      ),
+                  )
                   .map((vpc) => (
                     <SelectItem key={vpc.id} value={vpc.id}>
                       {vpc.name} — {vpc.cidr}
@@ -191,7 +200,9 @@ function CreateRouterDialog({
               id="router-snat"
               aria-describedby="router-snat-help"
               checked={watch("enable_snat")}
-              onCheckedChange={(value) => { setValue("enable_snat", value); }}
+              onCheckedChange={(value) => {
+                setValue("enable_snat", value)
+              }}
             />
           </div>
           {errors.network_id && (
@@ -307,7 +318,9 @@ export function RoutersPage() {
             disabled={
               isUpdating || row.original.role !== "sdn" || row.original.status === "deleting"
             }
-            onCheckedChange={(enableSNAT) => { updateRouter({ id: row.original.id, enableSNAT }); }}
+            onCheckedChange={(enableSNAT) => {
+              updateRouter({ id: row.original.id, enableSNAT })
+            }}
           />
         ),
       },
@@ -371,6 +384,21 @@ export function RoutersPage() {
       />
 
       <StatGrid stats={stats} className="grid-cols-3" />
+      {routers
+        .filter((router) => router.provision_error)
+        .map((router) => (
+          <div
+            key={router.id}
+            role="status"
+            className="flex items-start gap-3 rounded-lg border border-status-warning/30 bg-status-warning/5 p-4"
+          >
+            <AlertTriangle className="mt-0.5 size-4 shrink-0 text-status-warning" />
+            <div className="min-w-0 text-sm">
+              <p className="font-medium">{router.name}: routing needs attention</p>
+              <p className="mt-1 break-words text-muted-foreground">{router.provision_error}</p>
+            </div>
+          </div>
+        ))}
 
       <DataTable<Router>
         data={filtered}

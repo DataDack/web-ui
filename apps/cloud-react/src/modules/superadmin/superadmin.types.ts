@@ -62,11 +62,6 @@ export interface PVENode {
   // UI reports them separately.
   has_webhook_secret?: boolean
   webhook_registered_at?: string | null
-  // VMID of the golden VyOS LXC template on THIS node, cloned for every VPC
-  // gateway placed here. Per node rather than per region because a VMID only
-  // identifies a guest inside one Proxmox cluster. 0 means the node carries no
-  // gateway image — gateway provisioning on it fails until one is set.
-  vyos_template_vmid?: number
 }
 
 /* ── PVE node graphs ───────────────────────────────────────────────────── */
@@ -151,7 +146,6 @@ export interface CreatePVENodeRequest {
   ram_total_mb: number
   storage_total_gb: number
   status?: PVENodeStatus
-  vyos_template_vmid?: number
 }
 
 export interface UpdatePVENodeRequest {
@@ -171,7 +165,6 @@ export interface UpdatePVENodeRequest {
   storage_total_gb?: number
   // 0 is a meaningful value here ("this node has no gateway template"), so the
   // API distinguishes it from the field being omitted, which keeps the stored id.
-  vyos_template_vmid?: number
 }
 
 /* ── Platform policy switches ──────────────────────────────────────────── */

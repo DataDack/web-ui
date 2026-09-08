@@ -1,5 +1,15 @@
 import { useMemo, useState } from "react"
 
+import {
+  Button,
+  CopyButton,
+  Input,
+  Label,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+} from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
   AlertTriangle,
@@ -18,16 +28,6 @@ import { z } from "zod/v4"
 import { CreateWizard, PageHeader, Section, type WizardStep } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
-import {
-  Button,
-  CopyButton,
-  Input,
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-} from "@datadack/common-ui"
 
 import {
   useAdminAvailabilityZones,
@@ -61,14 +61,7 @@ const schema = z.object({
   cpu_total: z.coerce.number().int().min(0),
   ram_total_mb: z.coerce.number().int().min(0),
   storage_total_gb: z.coerce.number().int().min(0),
-  // Proxmox guest ids start at 100; 0 is the sentinel for "this node carries no
-  // gateway image", so the range is 0 or 100+ rather than a plain min.
-  vyos_template_vmid: z.coerce
-    .number()
-    .int()
-    .min(0)
-    .max(999999999)
-    .refine((v) => v === 0 || v >= 100, "Use 0 for none, or a VMID of 100 or above"),
+
 })
 
 type FormValues = z.infer<typeof schema>
@@ -85,7 +78,6 @@ const EMPTY: FormValues = {
   cpu_total: 0,
   ram_total_mb: 0,
   storage_total_gb: 0,
-  vyos_template_vmid: 0,
 }
 
 // Secrets are never read back from the API, so the review step can only report
@@ -111,7 +103,6 @@ function nodeToValues(node: PVENode): FormValues {
     cpu_total: node.cpu_total,
     ram_total_mb: node.ram_total_mb,
     storage_total_gb: node.storage_total_gb,
-    vyos_template_vmid: node.vyos_template_vmid ?? 0,
   }
 }
 
@@ -260,23 +251,7 @@ function PVENodeForm({
           },
         ],
       },
-      {
-        id: "gateway",
-        title: t("superAdmin.pveNodes.wizard.gateway"),
-        description: t("superAdmin.pveNodes.wizard.gatewayDesc"),
-        fields: ["vyos_template_vmid"],
-        render: (f) => <GatewayStep form={f} />,
-        reviewItems: (v) => [
-          {
-            label: t("superAdmin.pveNodes.fields.vyosTemplateVmid"),
-            value:
-              v.vyos_template_vmid > 0
-                ? String(v.vyos_template_vmid)
-                : t("superAdmin.pveNodes.fields.vyosTemplateNone"),
-            mono: v.vyos_template_vmid > 0,
-          },
-        ],
-      },
+
     ],
     [t, isEdit, azCode, azs],
   )
@@ -303,7 +278,6 @@ function PVENodeForm({
           // Always sent, including 0 — unlike the secrets above, 0 is a real
           // value ("no gateway template on this node") and must be able to
           // clear a previously set id, so it is never omitted.
-          vyos_template_vmid: values.vyos_template_vmid,
         }
       : {
           availability_zone_id: values.availability_zone_id,
@@ -317,7 +291,6 @@ function PVENodeForm({
           cpu_total: values.cpu_total,
           ram_total_mb: values.ram_total_mb,
           storage_total_gb: values.storage_total_gb,
-          vyos_template_vmid: values.vyos_template_vmid,
         }
     save({ id, payload: body }, { onSuccess: back })
   }
@@ -819,43 +792,6 @@ function ConnectionStep({
           )}
         />
       </div>
-    </div>
-  )
-}
-
-// The VyOS golden template this node clones VPC gateways from. It lives on the
-// node — not on a regional setting — because a VMID only identifies a guest
-// inside one Proxmox cluster and the image sits on this node's storage, so two
-// nodes can carry the same image at different ids.
-function GatewayStep({ form }: Readonly<{ form: UseFormReturn<FormValues> }>) {
-  const { t } = useTranslation()
-  const vmid = form.watch("vyos_template_vmid")
-
-  return (
-    <div className="space-y-5">
-      <div className="space-y-1.5 max-w-xs">
-        <FieldLabel>{t("superAdmin.pveNodes.fields.vyosTemplateVmid")}</FieldLabel>
-        <Input
-          type="number"
-          min={0}
-          {...form.register("vyos_template_vmid")}
-          placeholder="9161"
-          className="font-mono"
-        />
-        <p className="text-[11px] text-muted-foreground">
-          {t("superAdmin.pveNodes.fields.vyosTemplateVmidHint")}
-        </p>
-        <FieldError message={form.formState.errors.vyos_template_vmid?.message} />
-      </div>
-
-      {vmid === 0 && (
-        <div className="flex items-start gap-2 rounded-md border border-status-warning/40 bg-status-warning/10 p-3">
-          <AlertTriangle className="mt-0.5 size-4 shrink-0 text-status-warning" />
-          <p className="text-[12px] text-muted-foreground">
-            {t("superAdmin.pveNodes.fields.vyosTemplateUnsetWarning")}
-          </p>
-        </div>
-      )}
     </div>
   )
 }

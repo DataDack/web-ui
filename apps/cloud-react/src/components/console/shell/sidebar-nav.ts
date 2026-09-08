@@ -122,6 +122,11 @@ export const CONSOLE_SERVICES: ConsoleService[] = [
         path: "/networking/security-groups",
       },
       {
+        labelKey: "console.nav.items.routeTables",
+        icon: GitBranch,
+        path: "/networking/route-tables",
+      },
+      {
         labelKey: "console.nav.items.routers",
         icon: Router,
         path: "/networking/routers",

@@ -2,6 +2,20 @@ import type { RouteObject } from "react-router-dom"
 
 export const vpcRoutes: RouteObject[] = [
   {
+    path: "networking/route-tables",
+    lazy: async () => {
+      const { RouteTablesPage } = await import("./partials/RouteTablesPage")
+      return { Component: RouteTablesPage }
+    },
+  },
+  {
+    path: "networking/route-tables/:id",
+    lazy: async () => {
+      const { RouteTableDetailPage } = await import("./partials/RouteTableDetailPage")
+      return { Component: RouteTableDetailPage }
+    },
+  },
+  {
     path: "networking",
     lazy: async () => {
       const { VpcListPage } = await import("./partials/VpcListPage")
