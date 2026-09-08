@@ -8,8 +8,8 @@ const service = (key: string, path: string, status: CatalogService["status"] = "
   id: key.length, key, path, status, name: key, short_name: key, description: "", icon: "Layers",
   category: "network", state: "enabled", sort_order: 0, metrics: [],
 })
-const traffic = service("traffic", "/networking/api-gateway")
-const routes = ["/networking/api-gateway", "/networking/api-gateway/create", "/networking/api-gateway/123", "/compute/load-balancers", "/compute/load-balancers/create", "/compute/load-balancers/123", "/compute/target-groups/123"]
+const traffic = service("traffic", "/api-gateway")
+const routes = ["/api-gateway", "/api-gateway/domains", "/api-gateway/keys", "/api-gateway/usage-plans", "/api-gateway/123", "/compute/load-balancers", "/compute/load-balancers/create", "/compute/load-balancers/123", "/compute/target-groups/123"]
 
 describe("combined Load Balancer & API Gateway service", () => {
   test("one admin record controls both features independently of compute and networking", () => {
@@ -30,8 +30,8 @@ describe("combined Load Balancer & API Gateway service", () => {
   test("all pages share their own sidebar with both feature sections", () => {
     for (const path of routes) expect(findServiceByPath(path)?.key).toBe("traffic")
     const sidebar = findServiceByPath(routes[0])
-    expect(sidebar?.items.map((item) => item.path)).toEqual(["/networking/api-gateway", "/compute/load-balancers"])
+    expect(sidebar?.items.map((item) => item.path)).toEqual(["/api-gateway", "/compute/load-balancers"])
     expect(findServiceByPath("/compute/instances")?.items.some((item) => item.path === "/compute/load-balancers")).toBe(false)
-    expect(findServiceByPath("/networking/subnets")?.items.some((item) => item.path === "/networking/api-gateway")).toBe(false)
+    expect(findServiceByPath("/networking/subnets")?.items.some((item) => item.path === "/api-gateway")).toBe(false)
   })
 })

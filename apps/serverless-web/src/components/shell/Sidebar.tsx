@@ -1,8 +1,11 @@
 import {
   Activity,
   Bot,
+  Gauge,
   Globe,
+  Globe2,
   KeyRound,
+  Network,
   LayoutTemplate,
   Layers,
   ScrollText,
@@ -56,7 +59,18 @@ const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
     // item under Compute because it answers for four products, and an operator
     // looking for "why does this name not resolve" is not looking at functions.
     label: "Edge",
-    items: [{ to: "/domains", label: "Domains", icon: Globe }],
+    items: [
+      { to: "/domains", label: "Domains", icon: Globe },
+      // API Gateway is its own product with its own tables — its APIs, and its
+      // own custom domains, which are NOT the platform registry above. Two
+      // items rather than one because an operator publishing an API on a
+      // hostname and an operator asking why a hostname does not resolve are
+      // doing unrelated things.
+      { to: "/apigateway", label: "API Gateway", icon: Network },
+      { to: "/apigateway/domains", label: "API domains", icon: Globe2 },
+      { to: "/apigateway/keys", label: "API keys", icon: KeyRound },
+      { to: "/apigateway/usage-plans", label: "Usage plans", icon: Gauge },
+    ],
   },
   {
     label: "Observability",

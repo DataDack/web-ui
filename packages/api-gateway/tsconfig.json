@@ -1,0 +1,7 @@
+{
+  "extends": "@serverless-ui/typescript-config/react-library.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "include": ["src", "tsup.config.ts"]
+}

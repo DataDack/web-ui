@@ -1,0 +1,61 @@
+{
+  "name": "@datadack/api-gateway",
+  "version": "1.0.0",
+  "description": "Shared API Gateway console for DataDack web surfaces: APIs, routes, integrations, stages, deployments, authorizers and custom domains, over the apigatewayv2-compatible control plane.",
+  "license": "UNLICENSED",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DataDack/web-ui.git",
+    "directory": "packages/api-gateway"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "clean": "rm -rf dist node_modules/.cache"
+  },
+  "dependencies": {
+    "zod": "^4.0.0"
+  },
+  "peerDependencies": {
+    "@tanstack/react-query": "^5.0.0",
+    "@tanstack/react-table": "^8.0.0",
+    "lucide-react": ">=1.0.0",
+    "react": ">=19.0.0",
+    "react-dom": ">=19.0.0",
+    "react-router-dom": ">=7.0.0"
+  },
+  "devDependencies": {
+    "@datadack/common-ui": "workspace:*",
+    "tsup": "^8.5.0"
+  },
+  "nx": {
+    "tags": [
+      "scope:package",
+      "publishable"
+    ],
+    "implicitDependencies": [
+      "@serverless-ui/eslint-config",
+      "@serverless-ui/typescript-config"
+    ]
+  }
+}

@@ -1,10 +1,11 @@
 import type { ReactNode } from "react"
 
-import { EmptyState } from "@datadack/common-ui"
 import { Webhook } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { useServerlessOrigin } from "@/services/api/serverless-origin"
+
+import { EmptyState } from "@datadack/common-ui"
 
 /**
  * Renders its children only when the active region has a reachable API Gateway

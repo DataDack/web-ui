@@ -13,9 +13,11 @@ import { BrowserRouter } from "react-router-dom"
 import { Toaster } from "sonner"
 
 import { App } from "@/App"
-import { faasTransport } from "@/lib/faas-transport"
 import { aiAutomationsTransport } from "@/lib/ai-automations-transport"
+import { apiGatewayTransport } from "@/lib/apigw-transport"
+import { faasTransport } from "@/lib/faas-transport"
 
+import { ApiGatewayProvider } from "@datadack/api-gateway"
 import { ThemeProvider } from "@datadack/common-ui"
 import { ServerlessProvider } from "@datadack/serverless"
 import { AIAutomationsProvider } from "@datadack/workflows"
@@ -48,12 +50,17 @@ ReactDOM.createRoot(rootElement).render(
             cache never serves one tenant's data to another. */}
         <ServerlessProvider transport={faasTransport}>
           <AIAutomationsProvider transport={aiAutomationsTransport}>
+          {/* The API Gateway console. No scope is passed: the ScopeSwitcher
+              already does a wholesale invalidateQueries() on an account switch,
+              so the default is safe here for the same reason it is above. */}
+          <ApiGatewayProvider transport={apiGatewayTransport}>
           {/* The control plane serves this SPA from /admin_serverless, so the
               router shares that basename and every route resolves under it. */}
           <BrowserRouter basename="/admin_serverless">
             <App />
             <Toaster position="bottom-right" closeButton richColors />
           </BrowserRouter>
+          </ApiGatewayProvider>
           </AIAutomationsProvider>
         </ServerlessProvider>
       </QueryClientProvider>

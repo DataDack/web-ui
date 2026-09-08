@@ -72,7 +72,7 @@ export const CONSOLE_SERVICES: ConsoleService[] = [
       {
         labelKey: "console.nav.items.apiGateway",
         icon: Webhook,
-        path: "/networking/api-gateway",
+        path: "/api-gateway",
       },
       {
         labelKey: "console.nav.items.loadBalancers",

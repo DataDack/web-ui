@@ -16,6 +16,7 @@
     "clean": "rm -rf dist node_modules/.vite node_modules/.tmp"
   },
   "dependencies": {
+    "@datadack/api-gateway": "workspace:*",
     "@datadack/common-ui": "workspace:*",
     "@datadack/integration": "workspace:*",
     "@datadack/serverless": "workspace:*",

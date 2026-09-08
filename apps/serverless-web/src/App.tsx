@@ -13,6 +13,7 @@ import { MetricsPage } from "@/features/metrics/MetricsPage"
 import { NodeDetailPage } from "@/features/workers/NodeDetailPage"
 import { WorkersPage } from "@/features/workers/WorkersPage"
 
+import { ApiGatewayRoutes } from "@datadack/api-gateway"
 import { IntegrationsPage } from "@datadack/integration"
 import { AIAgentStudio, AIAutomationsRoutes, AIWorkflowStudio } from "@datadack/workflows"
 
@@ -37,6 +38,12 @@ export function App() {
         {/* Every hostname the platform hands out. The registry moved into this
             control plane, so the operator view of it lives here too. */}
         <Route path="/domains" element={<DomainsPage />} />
+        {/* API Gateway, from the shared package so cloud-react renders the
+            same console. Custom domains sit UNDER it rather than beside
+            /domains: these are the API product's own hostnames, a different
+            table from the platform registry, and putting them on one screen
+            would imply a hostname claimed in one is claimed in both. */}
+        <Route path="/apigateway/*" element={<ApiGatewayRoutes />} />
         <Route path="/debug-preview" element={<DebugPreviewPage />} />
         <Route
           path="/automations/*"

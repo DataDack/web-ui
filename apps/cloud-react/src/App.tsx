@@ -2,6 +2,7 @@ import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom"
 
 import { AppShell } from "@/components/console"
 import { accountsRoutes } from "@/modules/accounts/accounts.router"
+import { apiGatewayRoutes } from "@/modules/api-gateway/api-gateway.router"
 import { authRoutes } from "@/modules/auth/auth.router"
 import { RequireAuth } from "@/modules/auth/components/RequireAuth"
 import { automationsRoutes } from "@/modules/automations/automations.router"
@@ -101,6 +102,7 @@ const router = createBrowserRouter([
           ...disksRoutes,
           ...iamRoutes,
           ...billingRoutes,
+          ...apiGatewayRoutes,
           ...vpcRoutes,
           ...domainsRoutes,
           ...monitoringRoutes,

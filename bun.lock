@@ -82,6 +82,7 @@
       "name": "cloud-react",
       "version": "0.0.0",
       "dependencies": {
+        "@datadack/api-gateway": "workspace:*",
         "@datadack/common-ui": "workspace:*",
         "@datadack/integration": "workspace:*",
         "@datadack/serverless": "workspace:*",
@@ -95,6 +96,7 @@
       "name": "serverless-web",
       "version": "0.0.0",
       "dependencies": {
+        "@datadack/api-gateway": "workspace:*",
         "@datadack/common-ui": "workspace:*",
         "@datadack/integration": "workspace:*",
         "@datadack/serverless": "workspace:*",
@@ -126,6 +128,25 @@
     "config/typescript-config": {
       "name": "@serverless-ui/typescript-config",
       "version": "0.0.0",
+    },
+    "packages/api-gateway": {
+      "name": "@datadack/api-gateway",
+      "version": "1.0.0",
+      "dependencies": {
+        "zod": "^4.0.0",
+      },
+      "devDependencies": {
+        "@datadack/common-ui": "workspace:*",
+        "tsup": "^8.5.0",
+      },
+      "peerDependencies": {
+        "@tanstack/react-query": "^5.0.0",
+        "@tanstack/react-table": "^8.0.0",
+        "lucide-react": ">=1.0.0",
+        "react": ">=19.0.0",
+        "react-dom": ">=19.0.0",
+        "react-router-dom": ">=7.0.0",
+      },
     },
     "packages/common-ui": {
       "name": "@datadack/common-ui",
@@ -368,6 +389,8 @@
     "@changesets/write": ["@changesets/write@0.4.0", "", { "dependencies": { "@changesets/types": "^6.1.0", "fs-extra": "^7.0.1", "human-id": "^4.1.1", "prettier": "^2.7.1" } }, "sha512-CdTLvIOPiCNuH71pyDu3rA+Q0n65cmAbXnwWH84rKGiFumFzkmHNT8KHTMEchcxN+Kl8I54xGUhJ7l3E7X396Q=="],
 
     "@chevrotain/types": ["@chevrotain/types@11.1.2", "", {}, "sha512-U+HFai5+zmJCkK86QsaJtoITlboZHBqrVketcO2ROv865xfCMSFpELQoz1GkX5GzME8pTa+3kbKrZHQtI0gdbw=="],
+
+    "@datadack/api-gateway": ["@datadack/api-gateway@workspace:packages/api-gateway"],
 
     "@datadack/common-ui": ["@datadack/common-ui@workspace:packages/common-ui"],
 

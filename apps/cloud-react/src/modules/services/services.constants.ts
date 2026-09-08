@@ -184,7 +184,7 @@ export const SERVICE_REGISTRY: Record<string, ServiceDefinition> = {
   traffic: {
     id: "traffic",
     name: "Load Balancer & API Gateway",
-    path: "/networking/api-gateway",
+    path: "/api-gateway",
     icon: Layers,
     description: "Publish APIs and distribute traffic across your services.",
     category: "network",
@@ -193,7 +193,7 @@ export const SERVICE_REGISTRY: Record<string, ServiceDefinition> = {
       {
         id: "api-gateway",
         name: "API Gateway",
-        path: "/networking/api-gateway",
+        path: "/api-gateway",
         icon: Webhook,
         description:
           "Publish, secure, and manage APIs through configurable routes and integrations.",
