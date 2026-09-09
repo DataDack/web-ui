@@ -340,6 +340,43 @@ export function useRefreshPVENodes() {
   })
 }
 
+/**
+ * Dry run for the hard-delete confirmation. Enabled only while a node is
+ * actually queued for confirmation, so opening the page never fires it, and
+ * never cached: what a purge would destroy must be read fresh at the moment the
+ * operator is asked to approve it.
+ */
+export function useHardDeletePreview(nodeId?: string) {
+  return useQuery({
+    queryKey: [...SUPERADMIN_QUERY_KEYS.pveNodes, nodeId, "hard-delete-preview"],
+    queryFn: () => superAdminApi.previewHardDeletePVENode(nodeId ?? ""),
+    enabled: !!nodeId,
+    staleTime: 0,
+    gcTime: 0,
+  })
+}
+
+/**
+ * Records-only node removal. Invalidates the node AND cluster lists because the
+ * purge changes both, and reports what it destroyed rather than a bare success:
+ * the operator should see the row count they just made unrecoverable.
+ */
+export function useHardDeletePVENode() {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (vars: { id: string }) => superAdminApi.hardDeletePVENode(vars.id),
+    onSuccess: (report) => {
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.pveNodes })
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.pveClusters })
+      toast.success(
+        t("superAdmin.toasts.pveNodeHardDeleted", { name: report.node, count: report.total }),
+      )
+    },
+    onError: (e) => toast.error(extractError(e, t("superAdmin.toasts.pveNodeHardDeleteFailed"))),
+  })
+}
+
 export function useDeletePVENode() {
   const queryClient = useQueryClient()
   const { t } = useTranslation()

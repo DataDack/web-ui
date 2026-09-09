@@ -94,6 +94,8 @@ import type {
   PVECluster,
   RegisterClusterRequest,
   ClusterSyncResult,
+  HardDeleteReport,
+  HardDeletePreview,
 } from "./superadmin.types"
 
 // Platform infra catalog admin endpoints — restricted to platform super admins
@@ -175,6 +177,13 @@ export const superAdminApi = {
   updatePVENode: (id: string, payload: UpdatePVENodeRequest) =>
     apiPut<PVENode>(`${BASE}/pve-nodes/${id}`, payload),
   deletePVENode: (id: string) => apiDelete(`${BASE}/pve-nodes/${id}`),
+  // Records-only removal: drops the node and everything referencing it without
+  // contacting the hypervisor. Refused while the node is still a live member of
+  // its cluster.
+  previewHardDeletePVENode: (id: string) =>
+    apiGet<HardDeletePreview>(`${BASE}/pve-nodes/${id}/hard-delete`),
+  hardDeletePVENode: (id: string) =>
+    apiPost<HardDeleteReport>(`${BASE}/pve-nodes/${id}/hard-delete`, {}),
   // Force an immediate live Proxmox poll and return the refreshed nodes.
   refreshPVENodes: () => apiPost<PVENode[]>(`${BASE}/pve-nodes/refresh`, {}),
   // Generate/regenerate this node's lbagent credential pair. The secret is

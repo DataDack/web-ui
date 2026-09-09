@@ -3267,7 +3267,18 @@
         "secret": "Webhook secret",
         "registerHint": "This node has never been registered. Pressing Register configures it end to end — no manual Proxmox setup needed.",
         "reregisterHint": "Safe to press again: the target and matcher are updated in place and the stored secret is reused. Use Rotate only when the secret must change."
-      }
+      },
+      "hardDelete": "Hard delete",
+      "hardDeleteTitle": "Hard delete this node?",
+      "hardDeleteConfirm": "This permanently removes {{name}} AND every instance, network, subnet, router, load balancer and managed app record that points at it. Nothing is torn down on Proxmox and none of it can be recovered. Use this only for a node that is gone for good.",
+      "hardDeleteHint": "Refused while the node is still a live member of its cluster.",
+      "hardDeletePreviewFailed": "Could not read what this node holds. Retry, or check the node still exists.",
+      "hardDeleteBlocked": "This node is still a live member of cluster {{cluster}}. Remove it from the cluster first, or use the normal delete.",
+      "hardDeleteMembershipUnknown": "The cluster could not be reached, so membership was not verified. That is expected for a node that is genuinely gone.",
+      "hardDeleteNothing": "No resources point at this node. Only the node record will be removed.",
+      "hardDeleteWillRemove": "This will permanently remove {{count}} resource record(s):",
+      "hardDeleteMore": "+{{count}} more not listed",
+      "hardDeleteConfirmCount": "Hard delete node + {{count}} resource(s)"
     },
     "loadBalancers": {
       "title": "Load balancers",
@@ -3951,7 +3962,9 @@
       "clusterSynced": "Synced {{name}} — {{count}} node(s)",
       "clusterSyncFailed": "Could not sync the cluster",
       "clusterDeleted": "Cluster registration removed",
-      "clusterDeleteFailed": "Could not remove the cluster registration"
+      "clusterDeleteFailed": "Could not remove the cluster registration",
+      "pveNodeHardDeleted": "Hard deleted {{name}} and {{count}} associated resource(s)",
+      "pveNodeHardDeleteFailed": "Could not hard delete the node"
     },
     "shell": {
       "console": "Console",

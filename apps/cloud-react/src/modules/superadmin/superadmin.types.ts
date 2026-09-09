@@ -89,6 +89,43 @@ export interface PVECluster {
   node_count: number
 }
 
+/** One row a hard delete would destroy, named so the operator sees real resources. */
+export interface NodeResourceRow {
+  id: string
+  name: string
+  status: string
+}
+
+/** One resource kind on a node. `count` is exact; `items` is capped at 50. */
+export interface NodeResourceGroup {
+  kind: string
+  table: string
+  count: number
+  items: NodeResourceRow[]
+}
+
+/** GET /pve-nodes/:id/hard-delete — dry run behind the confirmation dialog. */
+export interface HardDeletePreview {
+  node: string
+  node_status: string
+  cluster?: string
+  /** Still a live member of its cluster: the hard delete will be refused. */
+  still_member: boolean
+  /** The cluster could not be reached, so membership could not be checked. */
+  membership_unknown: boolean
+  groups: NodeResourceGroup[]
+  total: number
+}
+
+/** Result of POST /pve-nodes/:id/hard-delete — what the purge actually removed. */
+export interface HardDeleteReport {
+  node: string
+  cluster?: string
+  /** Resource kind -> rows removed. Kinds with nothing to remove are omitted. */
+  removed: Record<string, number>
+  total: number
+}
+
 export interface RegisterClusterRequest {
   endpoint: string
   username: string

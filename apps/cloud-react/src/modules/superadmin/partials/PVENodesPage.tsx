@@ -13,6 +13,7 @@ import {
   HardDrive,
   Globe,
   Trash2,
+  ShieldAlert,
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
@@ -20,10 +21,12 @@ import { useNavigate } from "react-router-dom"
 import { ConfirmDialog, PageHeader } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
+import { HardDeleteNodeDialog } from "./HardDeleteNodeDialog"
 import {
   useAdminAvailabilityZones,
   useAdminPVENodes,
   useDeletePVENode,
+  useHardDeletePVENode,
   useRefreshPVENodes,
 } from "../superadmin.hooks"
 import type { PVENode } from "../superadmin.types"
@@ -36,8 +39,12 @@ export function PVENodesPage() {
   const { data: azs = [] } = useAdminAvailabilityZones()
   const refreshMetrics = useRefreshPVENodes()
   const { mutate: removeNode, isPending: isDeleting } = useDeletePVENode()
+  const { mutate: hardRemoveNode, isPending: isHardDeleting } = useHardDeletePVENode()
 
   const [deleting, setDeleting] = useState<PVENode | null>(null)
+  // Kept separate from `deleting` so the two confirmations can never be
+  // confused: one tears down properly, the other destroys records outright.
+  const [hardDeleting, setHardDeleting] = useState<PVENode | null>(null)
 
   const azName = useMemo(() => {
     const byId = new Map(azs.map((a) => [a.id, a.code]))
@@ -184,7 +191,7 @@ export function PVENodesPage() {
       }),
       actionsColumn<PVENode>({
         ariaLabel: t("console.table.actions"),
-        actions: () => [
+        actions: (node) => [
           {
             label: t("superAdmin.pveNodes.graphs.view", "View graphs"),
             icon: LineChart,
@@ -195,10 +202,25 @@ export function PVENodesPage() {
             label: t("superAdmin.actions.delete"),
             icon: Trash2,
             destructive: true,
-            onAction: (node: PVENode) => {
-              setDeleting(node)
+            onAction: (n: PVENode) => {
+              setDeleting(n)
             },
           },
+          // Offered ONLY for a node that is not online. A reachable node can be
+          // torn down properly, and hard-deleting it would strand its guests on
+          // a hypervisor with no record of them.
+          ...(node.status === "online"
+            ? []
+            : [
+                {
+                  label: t("superAdmin.pveNodes.hardDelete"),
+                  icon: ShieldAlert,
+                  destructive: true,
+                  onAction: (n: PVENode) => {
+                    setHardDeleting(n)
+                  },
+                },
+              ]),
         ],
       }),
     ],
@@ -253,6 +275,25 @@ export function PVENodesPage() {
             action={{ label: t("superAdmin.pveNodes.add"), onClick: openCreate }}
           />
         }
+      />
+
+      <HardDeleteNodeDialog
+        node={hardDeleting}
+        loading={isHardDeleting}
+        onOpenChange={(open) => {
+          if (!open) setHardDeleting(null)
+        }}
+        onConfirm={() => {
+          if (!hardDeleting) return
+          hardRemoveNode(
+            { id: hardDeleting.id },
+            {
+              onSuccess: () => {
+                setHardDeleting(null)
+              },
+            },
+          )
+        }}
       />
 
       <ConfirmDialog
