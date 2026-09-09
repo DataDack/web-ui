@@ -77,7 +77,11 @@ export const networksApi = {
     return toNetwork(res.network)
   },
 
-  delete: (id: string): Promise<void> => apiDelete(`${NETWORKS_BASE}/${id}`),
+  // force: the console's delete is an explicit, confirmed act, so it tears down
+  // what the VPC still holds (its instances) instead of returning "delete the
+  // instances first" and leaving the operator to do it by hand. The API keeps
+  // refusing without the flag, so a stray call cannot destroy a live network.
+  delete: (id: string): Promise<void> => apiDelete(`${NETWORKS_BASE}/${id}?force=true`),
 }
 
 export const subnetsApi = {

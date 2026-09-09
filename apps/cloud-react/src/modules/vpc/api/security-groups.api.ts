@@ -102,7 +102,10 @@ export const securityGroupsApi = {
     return toSecurityGroup(raw)
   },
 
-  delete: (id: string): Promise<void> => apiDelete(`${SG_BASE}/${id}`),
+  // force detaches the group from anything still referencing it — including a
+  // stale lb_security_groups row left by a deleted load balancer, which the
+  // operator has no way to detach and which otherwise 409s forever.
+  delete: (id: string): Promise<void> => apiDelete(`${SG_BASE}/${id}?force=true`),
 
   listRules: async (sgId: string): Promise<SGRule[]> => {
     const rows = await apiGet<RawSGRule[]>(`${SG_BASE}/${sgId}/rules`)

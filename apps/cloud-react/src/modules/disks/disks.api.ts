@@ -112,7 +112,10 @@ export const disksApi = {
     return toDisk(raw)
   },
 
+  // force detaches an in-use data disk before deleting it, so the console's
+  // confirmed delete does not stop at "detach it first". A boot disk is still
+  // refused — its lifecycle belongs to the instance, not to this call.
   delete: async (id: string): Promise<void> => {
-    await apiDelete(`${BASE}/${id}`)
+    await apiDelete(`${BASE}/${id}?force=true`)
   },
 }

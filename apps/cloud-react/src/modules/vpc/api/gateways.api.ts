@@ -52,7 +52,7 @@ export const routersApi = {
 
   update: async (id: string, enable_snat: boolean): Promise<Router> =>
     toRouter(await apiPut<RawRouter>(`${ROUTERS_BASE}/${id}`, { enable_snat })),
-  delete: (id: string): Promise<void> => apiDelete(`${ROUTERS_BASE}/${id}`),
+  delete: (id: string): Promise<void> => apiDelete(`${ROUTERS_BASE}/${id}?force=true`),
 }
 
 /* ── NAT gateways ──────────────────────────────────────────────────────── */

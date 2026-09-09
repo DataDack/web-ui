@@ -160,7 +160,7 @@ export const vmsApi = {
     return enrich(raw, prices, families)
   },
 
-  delete: (id: string): Promise<void> => apiDelete(`/compute/instances/${id}`),
+  delete: (id: string): Promise<void> => apiDelete(`/compute/instances/${id}?force=true`),
 
   // Live resource time series over a window (hour/day/week/month/year);
   // Proxmox-backed when available, else simulated.
