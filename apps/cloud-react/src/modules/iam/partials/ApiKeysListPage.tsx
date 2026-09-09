@@ -163,9 +163,6 @@ export function ApiKeysListPage() {
             }}
           />
         }
-        onRefresh={() => void refetch()}
-        refreshLabel={t("console.table.refresh")}
-        refreshing={isFetching}
       />
 
       <CreateApiKeyDialog

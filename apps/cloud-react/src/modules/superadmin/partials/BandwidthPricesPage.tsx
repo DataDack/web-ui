@@ -133,9 +133,6 @@ export function BandwidthPricesPage() {
             action={{ label: t("superAdmin.bandwidthPrices.add"), onClick: openCreate }}
           />
         }
-        onRefresh={() => void refetch()}
-        refreshLabel={t("console.table.refresh")}
-        refreshing={isFetching}
       />
 
       <BandwidthPriceFormSheet open={formOpen} onOpenChange={setFormOpen} price={editing} />

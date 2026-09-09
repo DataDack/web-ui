@@ -187,8 +187,6 @@ export function ServerlessLayersPage() {
         error={isError ? t("console.table.error") : undefined}
         onRetry={() => void refetch()}
         retryLabel={t("console.table.retry")}
-        onRefresh={() => void refetch()}
-        refreshLabel={t("console.table.refresh")}
         getRowId={(layer) => layer.id || `${layer.name}:${String(layer.version)}`}
         toolbar={
           <div className="relative w-full max-w-xs">

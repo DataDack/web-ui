@@ -184,8 +184,6 @@ export function ServerlessFunctionsPage() {
         error={isError ? t("console.table.error") : undefined}
         onRetry={() => void refetch()}
         retryLabel={t("console.table.retry")}
-        onRefresh={() => void refetch()}
-        refreshLabel={t("console.table.refresh")}
         getRowId={(fn) => fn.name}
         onRowClick={(fn) => void navigate(SERVERLESS_ROUTES.detail(fn.name))}
         toolbar={

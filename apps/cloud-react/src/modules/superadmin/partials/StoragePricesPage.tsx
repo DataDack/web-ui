@@ -262,9 +262,6 @@ export function StoragePricesPage() {
             action={{ label: t("superAdmin.storagePrices.add"), onClick: openCreate }}
           />
         }
-        onRefresh={() => void refetch()}
-        refreshLabel={t("console.table.refresh")}
-        refreshing={isFetching}
       />
 
       <StoragePriceFormSheet open={formOpen} onOpenChange={setFormOpen} price={editing} />

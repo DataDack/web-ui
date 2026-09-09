@@ -79,6 +79,13 @@ export const ADMIN_NAV: AdminNavGroup[] = [
         icon: MapPin,
         path: "/admin/availability-zones",
       },
+      // Clusters first: registering one is how nodes get added now, so the
+      // hierarchy is the way in and the flat node list is the detail view.
+      {
+        labelKey: "superAdmin.pveClusters.title",
+        icon: ServerCog,
+        path: "/admin/pve-clusters",
+      },
       { labelKey: "superAdmin.pveNodes.title", icon: Server, path: "/admin/pve-nodes" },
       // Directly under the nodes it runs on: the manager is per-node
       // infrastructure, not a setting of the load-balancer product it started

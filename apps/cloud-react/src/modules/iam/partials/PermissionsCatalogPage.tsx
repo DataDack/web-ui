@@ -103,9 +103,6 @@ export function PermissionsCatalogPage() {
             description={t("iam.permissions.emptySubtitle")}
           />
         }
-        onRefresh={() => void refetch()}
-        refreshLabel={t("console.table.refresh")}
-        refreshing={isFetching}
       />
     </div>
   )

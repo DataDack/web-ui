@@ -437,9 +437,6 @@ export function InternetGatewaysPage() {
             }}
           />
         }
-        onRefresh={() => void refetch()}
-        refreshLabel={t("console.table.refresh")}
-        refreshing={isFetching}
       />
 
       <CreateIgwDialog open={createOpen} onOpenChange={setCreateOpen} />

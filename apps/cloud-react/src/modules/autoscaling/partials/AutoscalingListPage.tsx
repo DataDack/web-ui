@@ -202,9 +202,6 @@ export function AutoscalingListPage() {
             }}
           />
         }
-        onRefresh={() => void refetch()}
-        refreshLabel={t("console.table.refresh")}
-        refreshing={isFetching}
       />
 
       <CreateAsgSheet open={createOpen} onOpenChange={setCreateOpen} />

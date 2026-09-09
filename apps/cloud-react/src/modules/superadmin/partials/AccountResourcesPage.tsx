@@ -330,9 +330,6 @@ export function AccountResourcesPage() {
             )}
           />
         }
-        onRefresh={() => void refetch()}
-        refreshLabel={"Refresh"}
-        refreshing={isFetching}
       />
 
       <ConfirmDialog

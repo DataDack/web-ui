@@ -628,8 +628,9 @@ export interface DataTableProps<T> {
   bordered?: boolean
 
   /**
-   * Refetch handler. Given one, the toolbar grows a refresh button — so every
-   * list offers the same way to reload without each page building its own.
+   * Refetch handler for standalone tables or independently loaded datasets.
+   * Omit when the page header already refreshes this data so the page has
+   * only one refresh control for the same dataset.
    */
   onRefresh?: () => void
   /** Spins the refresh icon and disables the button while a refetch is in flight. */

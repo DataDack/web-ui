@@ -62,6 +62,44 @@ export interface PVENode {
   // UI reports them separately.
   has_webhook_secret?: boolean
   webhook_registered_at?: string | null
+  // Set when the node was discovered from a registered cluster rather than
+  // typed in. Nodes added by hand before cluster registration existed have no
+  // cluster until their cluster is registered, which adopts them by name/IP.
+  cluster_id?: string | null
+}
+
+/* ── Proxmox clusters ──────────────────────────────────────────────────── */
+// A registered cluster is what enrolls nodes now: the operator supplies one
+// reachable address plus a cluster-wide API token, and every member node is
+// discovered from the live Proxmox API. Name, member addresses and capacity are
+// therefore facts read from the hypervisor, never re-typed.
+
+export interface PVECluster {
+  id: string
+  /** Discovered from Proxmox, not supplied — a standalone node is a cluster of one. */
+  name: string
+  /** Address used to reach the API. Any member answers for the whole cluster. */
+  endpoint: string
+  username: string
+  availability_zone_id: string
+  last_synced_at?: string | null
+  /** Non-empty when the most recent sync failed; surfaced so a broken cluster is visible in the list. */
+  last_sync_error: string
+  /** Transient, filled by the list endpoint so cluster size needs no second call. */
+  node_count: number
+}
+
+export interface RegisterClusterRequest {
+  endpoint: string
+  username: string
+  token: string
+  availability_zone_id: string
+}
+
+/** POST /pve-clusters and POST /pve-clusters/:id/sync both return this. */
+export interface ClusterSyncResult {
+  cluster: PVECluster
+  nodes: PVENode[]
 }
 
 /* ── PVE node graphs ───────────────────────────────────────────────────── */

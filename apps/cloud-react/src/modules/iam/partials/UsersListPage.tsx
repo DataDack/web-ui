@@ -321,9 +321,6 @@ export function UsersListPage() {
                 }}
               />
             }
-            onRefresh={() => void refetch()}
-            refreshLabel={t("console.table.refresh")}
-            refreshing={isFetching}
           />
         </TabsContent>
 
@@ -349,9 +346,6 @@ export function UsersListPage() {
                 }}
               />
             }
-            onRefresh={() => void refetch()}
-            refreshLabel={t("console.table.refresh")}
-            refreshing={isFetching}
           />
         </TabsContent>
       </Tabs>

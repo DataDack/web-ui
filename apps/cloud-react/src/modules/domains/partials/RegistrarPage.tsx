@@ -149,9 +149,6 @@ export function RegistrarPage() {
             }}
           />
         }
-        onRefresh={() => void refetch()}
-        refreshLabel={t("console.table.refresh")}
-        refreshing={isFetching}
       />
 
       <RegisterDomainDialog open={dialogOpen} onOpenChange={setDialogOpen} existing={editing} />

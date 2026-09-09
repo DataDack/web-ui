@@ -66,6 +66,10 @@ const STATUS_TONES: Record<string, StatusTone> = {
   deleting: "warning",
   degraded: "warning",
   maintenance: "warning",
+  // Hypervisor node reachability. Without these an online node fell through to
+  // the neutral default and read like an inert row.
+  online: "success",
+  offline: "danger",
   overdue: "warning",
   detaching: "warning",
   // terminal / inert

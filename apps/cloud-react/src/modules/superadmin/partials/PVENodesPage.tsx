@@ -253,9 +253,6 @@ export function PVENodesPage() {
             action={{ label: t("superAdmin.pveNodes.add"), onClick: openCreate }}
           />
         }
-        onRefresh={() => void refetch()}
-        refreshLabel={t("console.table.refresh")}
-        refreshing={isFetching}
       />
 
       <ConfirmDialog

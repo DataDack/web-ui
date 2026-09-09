@@ -89,6 +89,15 @@ export const superadminRoutes: RouteObject[] = [
         },
       },
       {
+        // The hierarchy: clusters, and the nodes discovered from each. Nodes
+        // added by hand before cluster registration show as unassigned here.
+        path: "pve-clusters",
+        lazy: async () => {
+          const { PVEClustersPage } = await import("./partials/PVEClustersPage")
+          return { Component: PVEClustersPage }
+        },
+      },
+      {
         path: "pve-nodes",
         lazy: async () => {
           const { PVENodesPage } = await import("./partials/PVENodesPage")

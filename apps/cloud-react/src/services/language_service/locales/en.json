@@ -199,7 +199,10 @@
     "resolved": "Resolved",
     "starting": "Starting",
     "stopping": "Stopping",
-    "released": "Released"
+    "released": "Released",
+    "online": "Online",
+    "offline": "Offline",
+    "unknown": "Unknown"
   },
   "modules": {
     "dashboard": "Dashboard",
@@ -1522,7 +1525,7 @@
       "routingActive_other": "Regional (Dynamic) · {{count}} routers",
       "routingPending": "Router provisioning…",
       "routers": "Routers",
-        "routeTables": "Route tables",
+      "routeTables": "Route tables",
       "routersDescription": "Route traffic between subnets and external networks.",
       "noRouters": "No routers configured",
       "internetGateways": "Internet Gateways",
@@ -3942,7 +3945,13 @@
       "staticIpReleased": "Static IP released",
       "staticIpReleaseFailed": "Couldn’t release the static IP",
       "serviceOrderSaved": "Service order updated",
-      "serviceOrderFailed": "Could not save the new service order"
+      "serviceOrderFailed": "Could not save the new service order",
+      "clusterRegistered": "Registered {{name}} with {{count}} node(s)",
+      "clusterRegisterFailed": "Could not register the cluster",
+      "clusterSynced": "Synced {{name}} — {{count}} node(s)",
+      "clusterSyncFailed": "Could not sync the cluster",
+      "clusterDeleted": "Cluster registration removed",
+      "clusterDeleteFailed": "Could not remove the cluster registration"
     },
     "shell": {
       "console": "Console",
@@ -4513,6 +4522,39 @@
         "failed": "Couldn't save the promo code",
         "linkCopied": "Share link copied",
         "linkCopyFailed": "Couldn't copy the link"
+      }
+    },
+    "pveClusters": {
+      "title": "Proxmox clusters",
+      "subtitle": "Register a cluster once; its member nodes are discovered from Proxmox.",
+      "add": "Register cluster",
+      "registerTitle": "Register a Proxmox cluster",
+      "registerSubtitle": "Give one reachable address and a cluster-wide API token. The cluster name, its member nodes, their addresses and capacity are read from Proxmox.",
+      "empty": "No clusters registered",
+      "emptySubtitle": "Register a Proxmox cluster to discover its nodes automatically.",
+      "deleteTitle": "Remove cluster registration",
+      "deleteConfirm": "Remove the registration for {{name}}? Its nodes are kept and simply detached, because they may still run guests.",
+      "sync": "Sync now",
+      "syncedNever": "Never synced",
+      "syncedAt": "Synced {{when}}",
+      "syncFailed": "Last sync failed",
+      "nodeCount_one": "{{count}} node",
+      "nodeCount_other": "{{count}} nodes",
+      "unassignedTitle": "Nodes outside any cluster",
+      "unassignedSubtitle": "Added by hand before cluster registration. Registering their cluster adopts them automatically.",
+      "noNodes": "No nodes discovered yet",
+      "fields": {
+        "endpoint": "Endpoint",
+        "endpointHint": "IP or hostname of any member node. Any member answers for the whole cluster.",
+        "username": "Token ID",
+        "usernameHint": "Full API token id, for example root@pam!datadack",
+        "token": "Token secret",
+        "tokenHint": "Stored encrypted and never shown again.",
+        "availabilityZone": "Availability zone",
+        "availabilityZonePlaceholder": "Select an availability zone",
+        "name": "Cluster",
+        "nodes": "Nodes",
+        "lastSynced": "Last synced"
       }
     }
   },

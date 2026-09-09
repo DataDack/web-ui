@@ -119,9 +119,6 @@ export function DomainsListPage() {
             description={t("domains.emptySubtitle")}
           />
         }
-        onRefresh={() => void refetch()}
-        refreshLabel={t("console.table.refresh")}
-        refreshing={isFetching}
       />
     </div>
   )

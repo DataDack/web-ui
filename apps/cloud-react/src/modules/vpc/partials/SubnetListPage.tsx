@@ -240,9 +240,6 @@ export function SubnetListPage() {
             description={t("vpc.subnets.empty")}
           />
         }
-        onRefresh={() => void refetch()}
-        refreshLabel={t("console.table.refresh")}
-        refreshing={isFetching}
       />
 
       <ConfirmDialog

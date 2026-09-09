@@ -239,9 +239,6 @@ export function VpcListPage() {
             }}
           />
         }
-        onRefresh={() => void refetch()}
-        refreshLabel={t("console.table.refresh")}
-        refreshing={isFetching}
       />
 
       <ConfirmDialog

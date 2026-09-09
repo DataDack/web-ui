@@ -6,6 +6,7 @@ export const SUPERADMIN_ROUTES = {
 // query keys distinct from the public, read-only catalog cache.
 export const SUPERADMIN_QUERY_KEYS = {
   availabilityZones: ["superadmin", "availability-zones"] as const,
+  pveClusters: ["superadmin", "pve-clusters"] as const,
   pveNodes: ["superadmin", "pve-nodes"] as const,
   // Per-window graph series; each (node, range, cf) caches independently.
   pveNodeMetrics: (id: string, range: string, cf: string) =>

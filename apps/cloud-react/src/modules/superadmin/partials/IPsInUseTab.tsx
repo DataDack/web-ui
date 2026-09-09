@@ -221,9 +221,6 @@ export function IPsInUseTab() {
             description={t("superAdmin.staticIps.inUse.emptySubtitle")}
           />
         }
-        onRefresh={() => void refetch()}
-        refreshLabel={t("console.table.refresh")}
-        refreshing={isFetching}
       />
 
       <ReleaseIPDialog

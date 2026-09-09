@@ -300,9 +300,6 @@ export function ServicesPage() {
             action={{ label: t("superAdmin.services.add"), onClick: openCreate }}
           />
         }
-        onRefresh={() => void refetch()}
-        refreshLabel={t("console.table.refresh")}
-        refreshing={isFetching}
       />
 
       <ServiceFormSheet open={formOpen} onOpenChange={setFormOpen} service={editing} />

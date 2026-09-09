@@ -148,9 +148,6 @@ export function VpnPage() {
         empty={
           <EmptyState icon={Cable} title={t("vpn.empty")} description={t("vpn.emptySubtitle")} />
         }
-        onRefresh={() => void refetch()}
-        refreshLabel={t("console.table.refresh")}
-        refreshing={isFetching}
       />
 
       <ConfirmDialog

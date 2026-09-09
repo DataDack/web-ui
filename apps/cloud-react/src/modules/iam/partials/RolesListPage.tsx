@@ -123,9 +123,6 @@ export function RolesListPage() {
             }}
           />
         }
-        onRefresh={() => void refetch()}
-        refreshLabel={t("console.table.refresh")}
-        refreshing={isFetching}
       />
 
       <CreateRoleSheet open={createOpen} onOpenChange={setCreateOpen} />

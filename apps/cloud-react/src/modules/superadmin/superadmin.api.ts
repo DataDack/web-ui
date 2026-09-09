@@ -91,6 +91,9 @@ import type {
   UpdateStoragePriceRequest,
   UpdateVMPriceRequest,
   VMPrice,
+  PVECluster,
+  RegisterClusterRequest,
+  ClusterSyncResult,
 } from "./superadmin.types"
 
 // Platform infra catalog admin endpoints — restricted to platform super admins
@@ -157,6 +160,13 @@ export const superAdminApi = {
     apiPost<AvailabilityZone>(`${BASE}/availability-zones`, payload),
   updateAvailabilityZone: (id: string, payload: UpdateAvailabilityZoneRequest) =>
     apiPut<AvailabilityZone>(`${BASE}/availability-zones/${id}`, payload),
+
+  /* pve clusters — registering one discovers its member nodes */
+  listPVEClusters: () => apiGet<PVECluster[]>(`${BASE}/pve-clusters`),
+  registerPVECluster: (payload: RegisterClusterRequest) =>
+    apiPost<ClusterSyncResult>(`${BASE}/pve-clusters`, payload),
+  syncPVECluster: (id: string) => apiPost<ClusterSyncResult>(`${BASE}/pve-clusters/${id}/sync`, {}),
+  deletePVECluster: (id: string) => apiDelete(`${BASE}/pve-clusters/${id}`),
 
   /* pve nodes */
   listPVENodes: () => apiGet<PVENode[]>(`${BASE}/pve-nodes`),

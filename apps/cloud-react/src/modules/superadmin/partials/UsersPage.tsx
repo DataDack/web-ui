@@ -186,9 +186,6 @@ export function UsersPage() {
             description={t("superAdmin.users.emptySubtitle")}
           />
         }
-        onRefresh={() => void refetch()}
-        refreshLabel={t("console.table.refresh")}
-        refreshing={isFetching}
       />
 
       <ConfirmDialog

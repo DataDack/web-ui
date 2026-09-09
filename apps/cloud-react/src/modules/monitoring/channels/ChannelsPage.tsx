@@ -304,9 +304,6 @@ export function ChannelsPage() {
             }}
           />
         }
-        onRefresh={() => void refetch()}
-        refreshLabel={"Refresh"}
-        refreshing={isFetching}
       />
 
       <ChannelCreateDialog open={createOpen} onOpenChange={setCreateOpen} />

@@ -143,9 +143,6 @@ export function PoliciesListPage() {
                 }}
               />
             }
-            onRefresh={() => void refetch()}
-            refreshLabel={t("console.table.refresh")}
-            refreshing={isFetching}
           />
         </TabsContent>
 
@@ -170,9 +167,6 @@ export function PoliciesListPage() {
                 description={t("iam.policies.systemEmptySubtitle")}
               />
             }
-            onRefresh={() => void refetch()}
-            refreshLabel={t("console.table.refresh")}
-            refreshing={isFetching}
           />
         </TabsContent>
       </Tabs>

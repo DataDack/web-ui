@@ -552,9 +552,6 @@ export function StaticIpsPage() {
             }}
           />
         }
-        onRefresh={() => void refetch()}
-        refreshLabel={t("console.table.refresh")}
-        refreshing={isFetching}
       />
 
       <ReserveIpDialog open={reserveOpen} onOpenChange={setReserveOpen} />

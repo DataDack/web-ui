@@ -537,9 +537,6 @@ export function AlarmsListPage() {
         getRowId={(row) => row.alarm.id}
         onRowClick={(row) => void navigate(MONITORING_ROUTES.alarm(row.alarm.id))}
         empty={filtersActive && rows.length > 0 ? noMatchState : noAlarmsState}
-        onRefresh={() => void refetch()}
-        refreshLabel={"Refresh"}
-        refreshing={isFetching}
       />
 
       <ConfirmDialog

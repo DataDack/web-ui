@@ -459,9 +459,6 @@ export function NatGatewaysPage() {
             }}
           />
         }
-        onRefresh={() => void refetch()}
-        refreshLabel={t("console.table.refresh")}
-        refreshing={isFetching}
       />
 
       <CreateNatGatewayDialog open={createOpen} onOpenChange={setCreateOpen} />

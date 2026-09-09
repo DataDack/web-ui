@@ -267,9 +267,6 @@ export function DisksListPage() {
             }}
           />
         }
-        onRefresh={() => void refetch()}
-        refreshLabel={t("console.table.refresh")}
-        refreshing={isFetching}
       />
 
       <CreateDiskSheet open={createOpen} onOpenChange={setCreateOpen} />

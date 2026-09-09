@@ -243,9 +243,6 @@ export function ImagesListPage() {
                 description={t("vms.images.emptySubtitle")}
               />
             }
-            onRefresh={() => void refetch()}
-            refreshLabel={t("console.table.refresh")}
-            refreshing={isFetching}
           />
         </TabsContent>
       </Tabs>

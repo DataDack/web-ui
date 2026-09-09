@@ -431,9 +431,6 @@ export function RoutersPage() {
             }}
           />
         }
-        onRefresh={() => void refetch()}
-        refreshLabel={t("console.table.refresh")}
-        refreshing={isFetching}
       />
 
       <CreateRouterDialog open={createOpen} onOpenChange={setCreateOpen} />

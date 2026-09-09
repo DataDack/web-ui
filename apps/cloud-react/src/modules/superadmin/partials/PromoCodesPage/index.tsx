@@ -317,9 +317,6 @@ export function PromoCodesPage() {
             description={t("superAdmin.promoCodes.noResultsSubtitle")}
           />
         }
-        onRefresh={() => void refetch()}
-        refreshLabel={t("console.table.refresh")}
-        refreshing={isFetching}
       />
 
       <PromoCodeFormSheet open={formOpen} onOpenChange={setFormOpen} code={editing} />

@@ -55,6 +55,7 @@ import type {
   UpdateStaticIPPriceRequest,
   UpdateStoragePriceRequest,
   UpdateVMPriceRequest,
+  RegisterClusterRequest,
 } from "./superadmin.types"
 
 /* ── Platform regions (public catalog, for the region selector) ────────── */
@@ -75,6 +76,72 @@ export function useAdminAvailabilityZones() {
   return useQuery({
     queryKey: SUPERADMIN_QUERY_KEYS.availabilityZones,
     queryFn: superAdminApi.listAvailabilityZones,
+  })
+}
+
+/* ── Proxmox clusters ──────────────────────────────────────────────────── */
+
+export function useAdminPVEClusters() {
+  return useQuery({
+    queryKey: SUPERADMIN_QUERY_KEYS.pveClusters,
+    queryFn: superAdminApi.listPVEClusters,
+  })
+}
+
+/**
+ * Registering a cluster creates or updates node rows, so the node list is
+ * invalidated alongside the cluster list — the hierarchy is one view of two
+ * queries and must not show a cluster whose nodes are still stale.
+ */
+export function useRegisterPVECluster() {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (payload: RegisterClusterRequest) => superAdminApi.registerPVECluster(payload),
+    onSuccess: (res) => {
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.pveClusters })
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.pveNodes })
+      toast.success(
+        t("superAdmin.toasts.clusterRegistered", {
+          name: res.cluster.name,
+          count: res.nodes.length,
+        }),
+      )
+    },
+    onError: (e) => toast.error(extractError(e, t("superAdmin.toasts.clusterRegisterFailed"))),
+  })
+}
+
+export function useSyncPVECluster() {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (vars: { id: string }) => superAdminApi.syncPVECluster(vars.id),
+    onSuccess: (res) => {
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.pveClusters })
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.pveNodes })
+      toast.success(
+        t("superAdmin.toasts.clusterSynced", {
+          name: res.cluster.name,
+          count: res.nodes.length,
+        }),
+      )
+    },
+    onError: (e) => toast.error(extractError(e, t("superAdmin.toasts.clusterSyncFailed"))),
+  })
+}
+
+export function useDeletePVECluster() {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (vars: { id: string }) => superAdminApi.deletePVECluster(vars.id),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.pveClusters })
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.pveNodes })
+      toast.success(t("superAdmin.toasts.clusterDeleted"))
+    },
+    onError: (e) => toast.error(extractError(e, t("superAdmin.toasts.clusterDeleteFailed"))),
   })
 }
 

@@ -232,9 +232,6 @@ export function ImagesPage() {
             action={{ label: t("superAdmin.images.add"), onClick: openCreate }}
           />
         }
-        onRefresh={() => void refetch()}
-        refreshLabel={t("console.table.refresh")}
-        refreshing={isFetching}
       />
 
       <ImageFormSheet open={formOpen} onOpenChange={setFormOpen} image={editing} />

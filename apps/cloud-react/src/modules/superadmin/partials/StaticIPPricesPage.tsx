@@ -158,9 +158,6 @@ export function StaticIPPricesPage() {
             action={{ label: t("superAdmin.staticIpPrices.add"), onClick: openCreate }}
           />
         }
-        onRefresh={() => void refetch()}
-        refreshLabel={t("console.table.refresh")}
-        refreshing={isFetching}
       />
 
       <StaticIPPriceFormSheet open={formOpen} onOpenChange={setFormOpen} price={editing} />
