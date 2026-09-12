@@ -7,7 +7,6 @@ import {
   Inbox,
   LayoutDashboard,
   LayoutGrid,
-  ListTree,
   MailX,
   MapPin,
   Network,
@@ -24,6 +23,13 @@ export interface AdminNavItem {
   labelKey: string
   icon: LucideIcon
   path: string
+  /**
+   * Path PREFIX that should light this item up, when the routes it owns do not
+   * all sit under `path`. The PVE fleet entry links to /admin/pve-clusters but
+   * also owns /admin/pve-nodes and every node detail route, which NavLink's own
+   * prefix matching would never associate with it.
+   */
+  match?: string
   comingSoon?: boolean
 }
 
@@ -68,12 +74,9 @@ export const ADMIN_NAV: AdminNavGroup[] = [
   {
     labelKey: "superAdmin.nav.groups.catalog",
     items: [
-      { labelKey: "superAdmin.services.title", icon: LayoutGrid, path: "/admin/services" },
-      {
-        labelKey: "superAdmin.serviceModules.title",
-        icon: ListTree,
-        path: "/admin/services/modules",
-      },
+      // One entry: the sidebar modules live inside the service they belong to,
+      // so there is no second place navigation can be turned off from.
+      { labelKey: "superAdmin.serviceCatalog.title", icon: LayoutGrid, path: "/admin/services" },
       { labelKey: "superAdmin.images.title", icon: Disc3, path: "/admin/images" },
     ],
   },
@@ -85,14 +88,15 @@ export const ADMIN_NAV: AdminNavGroup[] = [
         icon: MapPin,
         path: "/admin/availability-zones",
       },
-      // Clusters first: registering one is how nodes get added now, so the
-      // hierarchy is the way in and the flat node list is the detail view.
+      // One entry for the whole fleet. Clusters and the flat node list are tabs
+      // of the same page — they describe the same hardware, and two sidebar
+      // rows meant every question started with guessing which page answered it.
       {
-        labelKey: "superAdmin.pveClusters.title",
+        labelKey: "superAdmin.pveFleet.title",
         icon: ServerCog,
         path: "/admin/pve-clusters",
+        match: "/admin/pve-",
       },
-      { labelKey: "superAdmin.pveNodes.title", icon: Server, path: "/admin/pve-nodes" },
       // Directly under the nodes it runs on: the manager is per-node
       // infrastructure, not a setting of the load-balancer product it started
       // out serving.

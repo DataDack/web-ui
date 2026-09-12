@@ -4071,14 +4071,38 @@
       "reorderRow": "Reorder service",
       "reorderBlocked": "Clear the sort and search to reorder services."
     },
-    "serviceModules": {
-      "title": "Sidebar Modules",
-      "subtitle": "Control which pages appear inside each console service, and which are badged as coming soon.",
-      "empty": "No sidebar modules",
-      "emptySubtitle": "Modules are seeded from the console sidebar definition.",
-      "searchPlaceholder": "Search by name, key, service or path",
+    "serviceCatalog": {
+      "title": "Services & modules",
+      "subtitle": "Every console service, and the sidebar pages inside it. Expand a service to control its pages.",
+      "searchPlaceholder": "Search services, modules, keys or paths",
+      "expandAll": "Expand all",
+      "collapseAll": "Collapse all",
+      "moduleCount_one": "{{count}} module",
+      "moduleCount_other": "{{count}} modules",
+      "soonCount": "{{count}} coming soon",
+      "hiddenCount": "{{count}} hidden",
+      "modulesHeading": "Sidebar modules",
+      "modulesHint": "Which pages appear inside this service, and which are badged coming soon.",
+      "noModules": "No sidebar modules are registered for this service. Items ship from the console's sidebar definition.",
+      "noMatchingModules": "No modules here match this search.",
+      "noMatches": "Nothing matches this search",
+      "noMatchesSubtitle": "Clear the search to see the whole catalog.",
+      "unmatchedBadge": "No catalog service",
+      "unmatchedSubtitle": "This sidebar group has no service in the catalog, so nothing here controls a Console home tile for it. The states below still apply.",
+      "reorderBlocked": "Clear the search to reorder services.",
+      "openPage": "Open page",
+      "moduleSheet": {
+        "title": "Sidebar module",
+        "subtitle": "Controls whether this page appears in the tenant console sidebar.",
+        "stateLegend": "Visibility",
+        "options": {
+          "enabled": "Listed in the sidebar and reachable.",
+          "coming_soon": "Listed with a “Soon” badge; the page itself stays gated.",
+          "disabled": "Hidden from the sidebar entirely."
+        },
+        "referenceHint": "Label, path and order come from the console's own sidebar definition — this sheet sets visibility only."
+      },
       "fields": {
-        "name": "Module",
         "service": "Service",
         "path": "Path"
       }
@@ -4583,6 +4607,14 @@
         "name": "Cluster",
         "nodes": "Nodes",
         "lastSynced": "Last synced"
+      }
+    },
+    "pveFleet": {
+      "title": "Proxmox Fleet",
+      "subtitle": "Registered clusters and every hypervisor node the control plane manages.",
+      "tabs": {
+        "clusters": "Clusters",
+        "nodes": "Nodes"
       }
     }
   },

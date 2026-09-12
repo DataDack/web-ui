@@ -68,20 +68,17 @@ export const superadminRoutes: RouteObject[] = [
         },
       },
       {
+        // Services and the sidebar modules inside them are one page: a service
+        // is a row you expand to find its pages.
         path: "services",
         lazy: async () => {
-          const { ServicesPage } = await import("./partials/ServicesPage")
-          return { Component: ServicesPage }
+          const { ServiceCatalogPage } = await import("./partials/ServiceCatalogPage")
+          return { Component: ServiceCatalogPage }
         },
       },
-      {
-        // Two segments, so it never collides with a service id under "services".
-        path: "services/modules",
-        lazy: async () => {
-          const { ServiceModulesPage } = await import("./partials/ServiceModulesPage")
-          return { Component: ServiceModulesPage }
-        },
-      },
+      // The old modules table redirects rather than 404s — it was a sidebar
+      // entry of its own, so it is bookmarked.
+      { path: "services/modules", element: <Navigate to="/admin/services" replace /> },
       {
         path: "users/:userId",
         lazy: async () => {
@@ -97,19 +94,20 @@ export const superadminRoutes: RouteObject[] = [
         },
       },
       {
-        // The hierarchy: clusters, and the nodes discovered from each. Nodes
-        // added by hand before cluster registration show as unassigned here.
+        // Both legacy paths render the combined fleet page; it picks its
+        // default tab from the pathname, so old links still land on the view
+        // they named instead of being redirected.
         path: "pve-clusters",
         lazy: async () => {
-          const { PVEClustersPage } = await import("./partials/PVEClustersPage")
-          return { Component: PVEClustersPage }
+          const { PVEFleetPage } = await import("./partials/PVEFleetPage")
+          return { Component: PVEFleetPage }
         },
       },
       {
         path: "pve-nodes",
         lazy: async () => {
-          const { PVENodesPage } = await import("./partials/PVENodesPage")
-          return { Component: PVENodesPage }
+          const { PVEFleetPage } = await import("./partials/PVEFleetPage")
+          return { Component: PVEFleetPage }
         },
       },
       {

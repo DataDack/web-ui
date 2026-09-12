@@ -1,6 +1,6 @@
 import { ShieldCheck } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import { NavLink } from "react-router-dom"
+import { NavLink, useLocation } from "react-router-dom"
 
 import { cn } from "@datadack/common-ui"
 
@@ -12,6 +12,7 @@ import { ADMIN_NAV } from "./admin-nav"
  */
 export function AdminSidebar({ onNavigate }: Readonly<{ onNavigate?: () => void }>) {
   const { t } = useTranslation()
+  const { pathname } = useLocation()
 
   return (
     <aside className="flex h-full w-full shrink-0 flex-col border-r border-border-glass bg-[var(--glass-2-bg)] backdrop-blur-2xl">
@@ -54,6 +55,9 @@ export function AdminSidebar({ onNavigate }: Readonly<{ onNavigate?: () => void 
                     </li>
                   )
                 }
+                // An item that owns routes outside its own path says so with
+                // `match`; NavLink cannot work that out from `to` alone.
+                const forcedActive = item.match ? pathname.startsWith(item.match) : false
                 return (
                   <li key={item.path}>
                     <NavLink
@@ -62,7 +66,7 @@ export function AdminSidebar({ onNavigate }: Readonly<{ onNavigate?: () => void 
                       className={({ isActive }) =>
                         cn(
                           "flex items-center gap-2 rounded-md px-2 py-1.5 text-[12px] leading-4 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
-                          isActive
+                          isActive || forcedActive
                             ? "bg-accent/70 font-medium text-foreground border border-border-glass"
                             : "text-muted-foreground hover:bg-accent/40 hover:text-foreground",
                         )

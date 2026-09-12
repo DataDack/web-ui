@@ -31,7 +31,6 @@ import {
   KeyRound,
   MemoryStick,
   Network,
-  Plus,
   RefreshCw,
   Server,
   ServerCog,
@@ -41,7 +40,7 @@ import {
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
-import { ConfirmDialog, PageHeader, StatusBadge } from "@/components/console"
+import { ConfirmDialog, StatusBadge } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
 import {
@@ -249,7 +248,24 @@ function ClusterCard({
   )
 }
 
-export function PVEClustersPage() {
+interface PVEClustersTabProps {
+  /** Lifted so the "Register cluster" button can live in the page header. */
+  registerOpen: boolean
+  onRegisterOpenChange: (open: boolean) => void
+}
+
+/**
+ * The cluster hierarchy: one card per registered cluster listing its member
+ * nodes, plus a section for nodes that belong to no cluster.
+ *
+ * Rendered as a tab of PVEFleetPage alongside the flat node table. The two used
+ * to be separate admin pages, which meant the same fleet was described twice in
+ * the sidebar and an operator had to know which page answered their question.
+ */
+export function PVEClustersTab({
+  registerOpen,
+  onRegisterOpenChange,
+}: Readonly<PVEClustersTabProps>) {
   useScreen("superadmin.p-v-e-clusters")
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -262,7 +278,6 @@ export function PVEClustersPage() {
   const sync = useSyncPVECluster()
   const { mutate: removeCluster, isPending: isDeleting } = useDeletePVECluster()
 
-  const [showRegister, setShowRegister] = useState(false)
   const [deleting, setDeleting] = useState<PVECluster | null>(null)
   const [form, setForm] = useState({
     endpoint: "",
@@ -315,7 +330,7 @@ export function PVEClustersPage() {
       },
       {
         onSuccess: () => {
-          setShowRegister(false)
+          onRegisterOpenChange(false)
           setForm({ endpoint: "", username: "", token: "", availability_zone_id: "" })
         },
       },
@@ -332,27 +347,6 @@ export function PVEClustersPage() {
 
   return (
     <div className="space-y-5">
-      <PageHeader
-        icon={ServerCog}
-        breadcrumbs={[
-          { label: t("superAdmin.title") },
-          { label: t("superAdmin.pveClusters.title") },
-        ]}
-        title={t("superAdmin.pveClusters.title")}
-        description={t("superAdmin.pveClusters.subtitle")}
-        actions={
-          <Button
-            className="gap-2"
-            onClick={() => {
-              setShowRegister(true)
-            }}
-          >
-            <Plus className="w-4 h-4" />
-            {t("superAdmin.pveClusters.add")}
-          </Button>
-        }
-      />
-
       {loading ? (
         <div className="space-y-3">
           <Skeleton className="h-24 w-full rounded-xl" />
@@ -368,7 +362,7 @@ export function PVEClustersPage() {
           action={{
             label: t("superAdmin.pveClusters.add"),
             onClick: () => {
-              setShowRegister(true)
+              onRegisterOpenChange(true)
             },
           }}
         />
@@ -419,7 +413,7 @@ export function PVEClustersPage() {
         </div>
       ) : null}
 
-      <Dialog open={showRegister} onOpenChange={setShowRegister}>
+      <Dialog open={registerOpen} onOpenChange={onRegisterOpenChange}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>{t("superAdmin.pveClusters.registerTitle")}</DialogTitle>
@@ -507,7 +501,7 @@ export function PVEClustersPage() {
             <Button
               variant="outline"
               onClick={() => {
-                setShowRegister(false)
+                onRegisterOpenChange(false)
               }}
             >
               {t("common.cancel")}

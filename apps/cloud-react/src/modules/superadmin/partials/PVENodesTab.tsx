@@ -5,7 +5,6 @@ import type { ColumnDef } from "@tanstack/react-table"
 import {
   LineChart,
   Pencil,
-  Plus,
   RefreshCw,
   Server,
   Cpu,
@@ -18,7 +17,7 @@ import {
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
-import { ConfirmDialog, PageHeader } from "@/components/console"
+import { ConfirmDialog } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
 import { HardDeleteNodeDialog } from "./HardDeleteNodeDialog"
@@ -31,7 +30,15 @@ import {
 } from "../superadmin.hooks"
 import type { PVENode } from "../superadmin.types"
 
-export function PVENodesPage() {
+/**
+ * The flat node table: every hypervisor the control plane knows about,
+ * regardless of which cluster it belongs to.
+ *
+ * Rendered as a tab of PVEFleetPage beside the cluster hierarchy. It keeps the
+ * per-node operations the hierarchy view has no room for — graphs, edit, delete
+ * and hard delete.
+ */
+export function PVENodesTab() {
   useScreen("superadmin.p-v-e-nodes")
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -229,34 +236,26 @@ export function PVENodesPage() {
 
   return (
     <div className="space-y-5">
-      <PageHeader
-        icon={Server}
-        breadcrumbs={[{ label: t("superAdmin.title") }, { label: t("superAdmin.pveNodes.title") }]}
-        title={t("superAdmin.pveNodes.title")}
-        description={t("superAdmin.pveNodes.formSubtitle")}
-        actions={
-          <>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => {
-                refreshMetrics.mutate()
-              }}
-              disabled={refreshMetrics.isPending || isFetching}
-              aria-label={t("common.refresh")}
-              loading={refreshMetrics.isPending}
-            >
-              <RefreshCw
-                className={`w-4 h-4 ${isFetching || refreshMetrics.isPending ? "animate-spin" : ""}`}
-              />
-            </Button>
-            <Button className="gap-2" onClick={openCreate}>
-              <Plus className="w-4 h-4" />
-              {t("superAdmin.pveNodes.add")}
-            </Button>
-          </>
-        }
-      />
+      {/* Refresh stays with the table rather than moving to the page header:
+          it re-polls THIS list's metrics and its spinner tracks this table's
+          fetch, so in the header it would look like it refreshed whichever tab
+          happened to be open. "Add node" is a page action and does live there. */}
+      <div className="flex justify-end">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => {
+            refreshMetrics.mutate()
+          }}
+          disabled={refreshMetrics.isPending || isFetching}
+          aria-label={t("common.refresh")}
+          loading={refreshMetrics.isPending}
+        >
+          <RefreshCw
+            className={`w-4 h-4 ${isFetching || refreshMetrics.isPending ? "animate-spin" : ""}`}
+          />
+        </Button>
+      </div>
 
       <DataTable<PVENode>
         data={nodes}
