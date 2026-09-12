@@ -36,3 +36,25 @@ export function useServiceGate(pathname: string): { pending: boolean; blocked: b
   if (isLoading) return { pending: true, blocked: false }
   return { pending: false, blocked: gateForPath(pathname, data ?? []) === "maintenance" }
 }
+
+/**
+ * Sidebar nav-item states, admin-controlled.
+ *
+ * Polled on the same cadence and for the same reason as the service catalog: an
+ * operator flipping a nav item to coming_soon or disabled should reach open tabs
+ * without a reload. The response is one small shared list (no per-tenant
+ * shaping), Redis-cached and invalidated on every admin write, so the poll is a
+ * cache hit.
+ *
+ * On failure this resolves to an empty list, which means every item keeps the
+ * state hardcoded in `sidebar-nav.ts`. That is the same call the gate above
+ * makes: an unreachable catalog must not empty the tenant's navigation.
+ */
+export function useCatalogModules() {
+  return useQuery({
+    queryKey: CATALOG_QUERY_KEYS.modules,
+    queryFn: catalogApi.listModules,
+    staleTime: 60 * 1000,
+    refetchInterval: 2 * 60 * 1000,
+  })
+}

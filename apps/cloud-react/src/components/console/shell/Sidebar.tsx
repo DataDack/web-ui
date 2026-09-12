@@ -5,12 +5,14 @@ import { useTranslation } from "react-i18next"
 import { NavLink, useLocation } from "react-router-dom"
 
 import {
-  ALL_NAV_GROUPS,
+  allNavGroupsWithStates,
+  applyNavStates,
   type ConsoleService,
   findServiceByPath,
   isItemActiveAmong,
   type SidebarNavItem,
 } from "./sidebar-nav"
+import { useNavModuleStates } from "./use-nav-states"
 import { DUR, EASE } from "../motion/motion-config"
 
 const EXPANDED_W = 240
@@ -118,10 +120,12 @@ interface SidebarNavProps {
 /** Full grouped navigation — used by the global mobile drawer */
 export function SidebarNav({ collapsed, layoutIdPrefix, onNavigate }: Readonly<SidebarNavProps>) {
   const { t } = useTranslation()
+  const navStates = useNavModuleStates()
+  const groups = allNavGroupsWithStates(navStates)
 
   return (
     <nav className="flex-1 overflow-x-hidden overflow-y-auto px-3 py-2">
-      {ALL_NAV_GROUPS.map((group, groupIndex) => (
+      {groups.map((group, groupIndex) => (
         <div key={group.labelKey} className={cn(groupIndex > 0 && "mt-4")}>
           {!collapsed && (
             <div className="mb-1.5 px-2 font-mono text-[10px] font-medium tracking-[0.15em] whitespace-nowrap text-muted-foreground/80 uppercase">
@@ -218,7 +222,13 @@ interface SidebarProps {
 export function Sidebar({ collapsed, onToggle }: Readonly<SidebarProps>) {
   const { t } = useTranslation()
   const { pathname } = useLocation()
-  const service = findServiceByPath(pathname)
+  const navStates = useNavModuleStates()
+  const staticService = findServiceByPath(pathname)
+  // Path matching stays on the STATIC definition above, then states are
+  // overlaid: a disabled item is dropped from the list but its route still
+  // belongs to this service, so the user keeps the right sidebar if they reach
+  // the page by URL.
+  const service = staticService ? applyNavStates(staticService, navStates) : undefined
 
   return (
     <aside

@@ -51,6 +51,7 @@ import type {
   UpdatePlatformSettings,
   UpdatePVENodeRequest,
   UpdateServiceRequest,
+  UpdateModuleStateRequest,
   UpdateServiceStateRequest,
   UpdateStaticIPPriceRequest,
   UpdateStoragePriceRequest,
@@ -1397,5 +1398,35 @@ export function useUpdateOptOutRequest() {
     },
     onError: (e) =>
       toast.error(extractError(e, t("superAdmin.optOutRequests.toasts.actionFailed"))),
+  })
+}
+
+/* ── Service modules (console sidebar nav items) ───────────────────────────── */
+
+export function useAdminServiceModules() {
+  return useQuery({
+    queryKey: SUPERADMIN_QUERY_KEYS.serviceModules,
+    queryFn: superAdminApi.listModules,
+  })
+}
+
+/**
+ * Flips one nav item between enabled / coming_soon / disabled.
+ *
+ * The tenant console polls its own copy of this list every two minutes, so a
+ * change here reaches open sessions without a reload — there is nothing to
+ * invalidate cross-client, only this table's own view.
+ */
+export function useUpdateServiceModuleState() {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (vars: { id: string; payload: UpdateModuleStateRequest }) =>
+      superAdminApi.updateModuleState(vars.id, vars.payload),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.serviceModules })
+      toast.success(t("superAdmin.toasts.serviceUpdated"))
+    },
+    onError: (e) => toast.error(extractError(e, t("superAdmin.toasts.serviceFailed"))),
   })
 }

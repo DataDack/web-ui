@@ -29,6 +29,7 @@ import type {
   ApproveQuotaRequestInput,
   AvailabilityZone,
   BandwidthPrice,
+  CatalogModuleAdmin,
   CatalogServiceAdmin,
   CreateAvailabilityZoneRequest,
   CreateBandwidthPriceRequest,
@@ -86,6 +87,7 @@ import type {
   UpdatePVENodeRequest,
   ReorderServicesRequest,
   UpdateServiceRequest,
+  UpdateModuleStateRequest,
   UpdateServiceStateRequest,
   UpdateStaticIPPriceRequest,
   UpdateStoragePriceRequest,
@@ -313,6 +315,12 @@ export const superAdminApi = {
   reorderServices: (payload: ReorderServicesRequest) =>
     apiPatch<{ count: number }>(`${CATALOG_BASE}/services/reorder`, payload),
   deleteService: (id: string) => apiDelete(`${CATALOG_BASE}/services/${id}`),
+
+  /* sidebar sub-modules — the per-nav-item state toggle. Structure lives in the
+     frontend's sidebar definition; only the state is stored server-side. */
+  listModules: () => apiGet<CatalogModuleAdmin[]>(`${CATALOG_BASE}/services/modules/all`),
+  updateModuleState: (id: string, payload: UpdateModuleStateRequest) =>
+    apiPatch<CatalogModuleAdmin>(`${CATALOG_BASE}/services/modules/${id}/state`, payload),
 
   /* platform users — list everyone + grant/revoke the super-admin flag */
   listUsers: (q?: string) => {

@@ -24,6 +24,7 @@ export const SUPERADMIN_QUERY_KEYS = {
   bandwidthPrices: ["superadmin", "bandwidth-prices"] as const,
   storagePrices: ["superadmin", "storage-prices"] as const,
   services: ["superadmin", "services"] as const,
+  serviceModules: ["superadmin", "service-modules"] as const,
   serviceMetricSources: ["superadmin", "service-metric-sources"] as const,
   users: ["superadmin", "users"] as const,
   // The increase request carried by one support ticket, keyed on the ticket.

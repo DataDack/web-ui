@@ -4071,6 +4071,18 @@
       "reorderRow": "Reorder service",
       "reorderBlocked": "Clear the sort and search to reorder services."
     },
+    "serviceModules": {
+      "title": "Sidebar Modules",
+      "subtitle": "Control which pages appear inside each console service, and which are badged as coming soon.",
+      "empty": "No sidebar modules",
+      "emptySubtitle": "Modules are seeded from the console sidebar definition.",
+      "searchPlaceholder": "Search by name, key, service or path",
+      "fields": {
+        "name": "Module",
+        "service": "Service",
+        "path": "Path"
+      }
+    },
     "support": {
       "title": "Support Tickets",
       "subtitle": "Triage and resolve customer tickets across every account and organization.",

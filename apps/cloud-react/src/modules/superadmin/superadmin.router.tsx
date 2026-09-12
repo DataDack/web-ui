@@ -75,6 +75,14 @@ export const superadminRoutes: RouteObject[] = [
         },
       },
       {
+        // Two segments, so it never collides with a service id under "services".
+        path: "services/modules",
+        lazy: async () => {
+          const { ServiceModulesPage } = await import("./partials/ServiceModulesPage")
+          return { Component: ServiceModulesPage }
+        },
+      },
+      {
         path: "users/:userId",
         lazy: async () => {
           const { AdminUserProfilePage } = await import("./partials/AdminUserProfilePage")

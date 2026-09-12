@@ -30,3 +30,26 @@ export interface CatalogService {
   sort_order: number
   metrics: CatalogMetric[]
 }
+
+/**
+ * One sidebar nav item whose visibility the platform admin controls.
+ *
+ * The backend stores STATE ONLY — icons, translation keys and route paths stay
+ * in `sidebar-nav.ts`, which is the only place they can live. A module the API
+ * does not mention keeps whatever the static definition says, so a nav item
+ * shipped ahead of its catalog row still renders.
+ *
+ * `service_key` matches CONSOLE_SERVICES[].key, not CatalogService.key: the
+ * sidebar groups by navigation and the catalog by product, and the two names
+ * differ for networking/vpc, managed-apps/managedapps and
+ * automations/ai-workflows.
+ */
+export interface CatalogModule {
+  id: string
+  service_key: string
+  key: string
+  name: string
+  path: string
+  state: CatalogState
+  sort_order: number
+}

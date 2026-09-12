@@ -1590,3 +1590,25 @@ export interface UpdateOptOutRequestInput {
   status?: OptOutStatus
   notes?: string
 }
+
+/* ── Service modules (console sidebar nav items) ───────────────────────────── */
+
+/**
+ * One sidebar nav item whose visibility the admin controls. Structure (icon,
+ * label, route) lives in the frontend's sidebar definition; only `state` is
+ * authoritative here. `name` and `path` are carried so this table is readable
+ * and can link out.
+ */
+export interface CatalogModuleAdmin {
+  id: string
+  service_key: string
+  key: string
+  name: string
+  path: string
+  state: ServiceState
+  sort_order: number
+}
+
+export interface UpdateModuleStateRequest {
+  state: ServiceState
+}

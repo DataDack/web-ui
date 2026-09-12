@@ -432,3 +432,77 @@ export function findServiceByPath(pathname: string): ConsoleService | undefined 
       service.extraMatch?.some((prefix) => isItemActive(pathname, prefix)),
   )
 }
+
+/* ── Admin-controlled nav states ──────────────────────────────────────────── */
+
+/**
+ * The three states the platform admin can put a nav item in. Declared here
+ * rather than imported from modules/services so the dependency keeps pointing
+ * one way — modules/ already imports this file (catalog.gate.ts), and the
+ * reverse would make it a cycle.
+ */
+export type NavModuleState = "enabled" | "coming_soon" | "disabled"
+
+/** Keyed `<serviceKey>/<itemKey>`; absent means "use the static default". */
+export type NavStateMap = ReadonlyMap<string, NavModuleState>
+
+/**
+ * The catalog key for a nav item: the last segment of its labelKey, e.g.
+ * "console.nav.items.natGateways" → "natGateways".
+ *
+ * Derived rather than stored as a separate field so there is one name to keep
+ * in sync instead of two. Keys only have to be unique WITHIN a service, which
+ * matters: "overview" appears under both compute and monitoring, and
+ * "integrations" under both managed-apps and automations.
+ */
+export function navItemKey(item: SidebarNavItem): string {
+  const dot = item.labelKey.lastIndexOf(".")
+  return dot === -1 ? item.labelKey : item.labelKey.slice(dot + 1)
+}
+
+export function navStateKey(serviceKey: string, itemKey: string): string {
+  return `${serviceKey}/${itemKey}`
+}
+
+/**
+ * Overlays admin states onto one service's items.
+ *
+ * `disabled` drops the item; `coming_soon` badges it; `enabled` clears any
+ * badge the static definition carried. An item the map does not mention keeps
+ * its static `comingSoon`, so a nav item shipped before its catalog row exists
+ * still renders exactly as the frontend declared it.
+ */
+export function applyNavStates(service: ConsoleService, states: NavStateMap): ConsoleService {
+  if (states.size === 0) return service
+  const items: SidebarNavItem[] = []
+  for (const item of service.items) {
+    const state = states.get(navStateKey(service.key, navItemKey(item)))
+    if (state === "disabled") continue
+    if (state === undefined) {
+      items.push(item)
+      continue
+    }
+    items.push({ ...item, comingSoon: state === "coming_soon" })
+  }
+  return { ...service, items }
+}
+
+/**
+ * The global drawer's groups with admin states applied. Coming-soon items are
+ * filtered out here exactly as ALL_NAV_GROUPS does statically — the drawer is a
+ * jump list, so an entry that only leads to a placeholder is noise.
+ */
+export function allNavGroupsWithStates(
+  states: NavStateMap,
+): { labelKey: string; items: SidebarNavItem[] }[] {
+  if (states.size === 0) return ALL_NAV_GROUPS
+  const overview = ALL_NAV_GROUPS[0]
+  const rest = CONSOLE_SERVICES.map((service) => {
+    const resolved = applyNavStates(service, states)
+    return {
+      labelKey: resolved.labelKey,
+      items: resolved.items.filter((item) => !item.comingSoon),
+    }
+  }).filter((group) => group.items.length > 0)
+  return [overview, ...rest]
+}

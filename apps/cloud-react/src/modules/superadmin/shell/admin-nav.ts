@@ -1,22 +1,23 @@
 import {
-  type LucideIcon,
+  BadgeIndianRupee,
+  Boxes,
   Building2,
   Disc3,
   Flame,
+  Inbox,
   LayoutDashboard,
   LayoutGrid,
-  Inbox,
+  ListTree,
   MailX,
-  BadgeIndianRupee,
   MapPin,
   Network,
   ReceiptText,
   Scale,
   Server,
   ServerCog,
-  Ticket,
   SlidersHorizontal,
-  Boxes,
+  Ticket,
+  type LucideIcon,
 } from "lucide-react"
 
 export interface AdminNavItem {
@@ -68,6 +69,11 @@ export const ADMIN_NAV: AdminNavGroup[] = [
     labelKey: "superAdmin.nav.groups.catalog",
     items: [
       { labelKey: "superAdmin.services.title", icon: LayoutGrid, path: "/admin/services" },
+      {
+        labelKey: "superAdmin.serviceModules.title",
+        icon: ListTree,
+        path: "/admin/services/modules",
+      },
       { labelKey: "superAdmin.images.title", icon: Disc3, path: "/admin/images" },
     ],
   },
