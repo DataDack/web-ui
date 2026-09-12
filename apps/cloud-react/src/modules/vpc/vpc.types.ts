@@ -358,3 +358,34 @@ export interface CreateVpcPeeringRequest {
   requesterVpcId: string
   accepterVpcId: string
 }
+
+/* ── Security group scoping ─────────────────────────────────────────────── */
+
+/** One rule an address receives today and would lose if scoping is enabled. */
+export interface SGScopingLostRule {
+  group_name: string
+  action: string
+  direction: string
+  protocol: string
+  port_from: number
+  port_to: number
+  peer: string
+}
+
+export interface SGScopingImpact {
+  address: string
+  /** In no security group at all: loses everything, not just one port. */
+  orphaned: boolean
+  loses_rules: SGScopingLostRule[]
+}
+
+/**
+ * Member-scoped security groups hold each group's rules to its own members
+ * instead of the whole VPC. Enabling is a one-way tightening, so the impact
+ * report is part of the state rather than a separate call.
+ */
+export interface SGScopingState {
+  enabled: boolean
+  impact: SGScopingImpact[]
+  orphans: number
+}

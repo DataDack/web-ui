@@ -1,17 +1,6 @@
 import { useState } from "react"
 
-import { Badge, Button, EmptyState, parseTags, Skeleton, TagList } from "@datadack/common-ui"
-import {
-  GitBranch,
-  Globe,
-  Info,
-  Lock,
-  MapPin,
-  Network,
-  Router as RouterIcon,
-  Server,
-  Trash2,
-} from "lucide-react"
+import { GitBranch, Globe, Info, Lock, MapPin, Network, Router as RouterIcon, Server, ShieldCheck, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
 
@@ -25,6 +14,8 @@ import {
 import { useAvailabilityZoneMap } from "@/modules/catalog/catalog.hooks"
 import { useScreen } from "@/services/api/screen"
 
+import { Badge, Button, EmptyState, parseTags, Skeleton, TagList } from "@datadack/common-ui"
+
 import { VPC_ROUTES } from "../vpc.constants"
 import {
   useDeleteVPC,
@@ -36,6 +27,7 @@ import {
   useVPCSubnets,
 } from "../vpc.hooks"
 import type { InternetGateway, Subnet, VPCNetwork, VPCNetworkStatus } from "../vpc.types"
+import { SGScopingCard } from "./detail/SGScopingCard"
 import { SubnetsTab } from "./detail/SubnetsTab"
 
 export function VpcDetailPage() {
@@ -91,6 +83,12 @@ export function VpcDetailPage() {
             label: t("vpc.tabs.subnets"),
             icon: GitBranch,
             content: <SubnetsTab network={network} />,
+          },
+          {
+            value: "security",
+            label: t("vpc.tabs.security"),
+            icon: ShieldCheck,
+            content: <SGScopingCard vpcId={network.id} />,
           },
         ]}
       />

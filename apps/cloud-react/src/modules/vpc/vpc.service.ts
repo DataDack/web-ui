@@ -6,6 +6,7 @@ import {
   networksApi,
   routersApi,
   securityGroupsApi,
+  sgScopingApi,
   staticIpsApi,
   subnetsApi,
   vpnApi,
@@ -87,6 +88,10 @@ export const vpcService = {
   removeInternetGateway: (id: string) => internetGatewaysApi.delete(id),
   attachIGW: (id: string, networkId: string) => internetGatewaysApi.attach(id, networkId),
   detachIGW: (id: string) => internetGatewaysApi.detach(id),
+  fetchSGScoping: (vpcId: string) => sgScopingApi.get(vpcId),
+  setSGScoping: (vpcId: string, enabled: boolean, acknowledge: boolean) =>
+    sgScopingApi.set(vpcId, enabled, acknowledge),
+
   fetchPeerings: () => peeringsApi.list(),
   createPeering: (payload: CreateVpcPeeringRequest) => peeringsApi.create(payload),
   acceptPeering: (id: string) => peeringsApi.accept(id),

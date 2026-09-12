@@ -1503,7 +1503,8 @@
       "subnets": "Subnets",
       "securityGroups": "Security Groups",
       "gateways": "Routes & Gateways",
-      "vpn": "VPN"
+      "vpn": "VPN",
+      "security": "Security"
     },
     "detail": {
       "configuration": "Configuration",
@@ -6679,6 +6680,29 @@
     "selectPlaceholder": "Select",
     "columns": {
       "status": "Status"
+    }
+  },
+  "sgScoping": {
+    "title": "Member-scoped security groups",
+    "description": "Hold each security group's rules to its own members instead of the whole VPC.",
+    "badge": {
+      "enabled": "Enabled"
+    },
+    "enabledHelp": "Each group's rules apply only to the guests in that group.",
+    "noImpact": "Nothing would change: every guest already receives exactly the rules of the groups it belongs to. Safe to enable.",
+    "impactSummary": "Enabling would close access for {{count}} address(es) that receive it today.",
+    "orphanWarning": "{{count}} guest(s) are in no security group at all. They would lose all access, not just one port — attach them to a group first.",
+    "orphanBadge": "No group",
+    "more": "and {{count}} more",
+    "confirm": {
+      "title": "Enable member-scoped security groups?",
+      "description": "{{count}} address(es) will stop receiving traffic they receive today, including {{orphans}} guest(s) in no group that will lose all access. This takes effect on the next apply.",
+      "action": "Enable anyway"
+    },
+    "toasts": {
+      "enabled": "Member-scoped security groups enabled",
+      "disabled": "Member-scoped security groups disabled",
+      "failed": "Could not change security group scoping"
     }
   }
 }

@@ -707,3 +707,29 @@ export function useDeletePeering() {
     onError: (e) => toast.error(extractError(e, t("peerings.toasts.deleteFailed"))),
   })
 }
+
+/* ── Security group scoping ─────────────────────────────────────────────── */
+
+export function useSGScoping(vpcId: string) {
+  return useQuery({
+    queryKey: VPC_QUERY_KEYS.sgScoping(vpcId),
+    queryFn: () => vpcService.fetchSGScoping(vpcId),
+    enabled: Boolean(vpcId),
+  })
+}
+
+export function useSetSGScoping(vpcId: string) {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: ({ enabled, acknowledge }: { enabled: boolean; acknowledge: boolean }) =>
+      vpcService.setSGScoping(vpcId, enabled, acknowledge),
+    onSuccess: (state) => {
+      void queryClient.invalidateQueries({ queryKey: VPC_QUERY_KEYS.sgScoping(vpcId) })
+      toast.success(state.enabled ? t("sgScoping.toasts.enabled") : t("sgScoping.toasts.disabled"))
+    },
+    // The backend refuses an unacknowledged enable with a message naming the
+    // reason; showing it verbatim is what tells the user to read the report.
+    onError: (e) => toast.error(extractError(e, t("sgScoping.toasts.failed"))),
+  })
+}

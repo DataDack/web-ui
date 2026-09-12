@@ -1,6 +1,12 @@
-import { apiDelete, apiGet, apiPost, LIST_QUERY } from "@/services/api/client"
+import { apiDelete, apiGet, apiPost, apiPut, LIST_QUERY } from "@/services/api/client"
 
-import type { CreateSubnetRequest, CreateVPCRequest, Subnet, VPCNetwork } from "../vpc.types"
+import type {
+  CreateSubnetRequest,
+  CreateVPCRequest,
+  SGScopingState,
+  Subnet,
+  VPCNetwork,
+} from "../vpc.types"
 
 const NETWORKS_BASE = "/vpc/networks"
 const SUBNETS_BASE = "/vpc/subnets"
@@ -108,4 +114,18 @@ export const subnetsApi = {
   },
 
   delete: (id: string): Promise<void> => apiDelete(`${SUBNETS_BASE}/${id}`),
+}
+
+/* ── Security group scoping ─────────────────────────────────────────────── */
+
+export const sgScopingApi = {
+  get: (vpcId: string): Promise<SGScopingState> =>
+    apiGet<SGScopingState>(`/vpc/networks/${vpcId}/sg-scoping`),
+
+  /**
+   * `acknowledge` is required to ENABLE while the impact report is non-empty.
+   * Disabling never needs it — it only widens what is permitted back.
+   */
+  set: (vpcId: string, enabled: boolean, acknowledge: boolean): Promise<SGScopingState> =>
+    apiPut<SGScopingState>(`/vpc/networks/${vpcId}/sg-scoping`, { enabled, acknowledge }),
 }
