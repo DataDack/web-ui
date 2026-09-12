@@ -1612,3 +1612,210 @@ export interface CatalogModuleAdmin {
 export interface UpdateModuleStateRequest {
   state: ServiceState
 }
+
+/* ── Platform networking ────────────────────────────────────────────────── */
+//
+// The platform's OWN network, as configuration: the address plan every region
+// shares, and one document per Proxmox cluster. Stored as JSON in the service
+// S3 bucket under system_data/networking/, not in the database — so an operator
+// may equally have edited it in the S3 console since this page loaded.
+//
+// Documents are replaced WHOLE, never patched: a network's numbers are only
+// correct relative to each other (an overlay MTU is right only for its
+// underlay, a gateway only for its own CIDR, an exit node only against the node
+// list), so validating a merge of stored-and-submitted state would validate
+// something nobody ever read.
+
+/** One named range of platform space. */
+export interface PlatformBlock {
+  name: string
+  cidr: string
+  purpose?: string
+  notes?: string
+  /** false | "never" | "granted /32 only" — documentation, not a switch. */
+  tenant_reachable?: boolean | string
+  is_overlay_vnet: boolean
+  subdivisions?: { cidr: string; purpose?: string }[]
+}
+
+/**
+ * A range that breaks something concrete, with the reason a tenant is shown.
+ * These are NOT an allow-list: a tenant may ask for any range. "reject" means
+ * the tenant's own guests stop working; "warn" means they lose a platform
+ * feature they may never use.
+ */
+export interface FunctionalConflict {
+  cidr: string
+  severity: "reject" | "warn"
+  reason: string
+}
+
+export interface VNIRange {
+  from: number
+  to: number
+}
+
+export interface AddressPlan {
+  version: number
+  revision: number
+  updated_at?: string
+  updated_by?: string
+  platform_supernet: string
+  blocks: PlatformBlock[]
+  vpc_ops?: { cidr: string; reserve_from_tenant_pool: boolean; notes?: string }
+  tenant_rules: {
+    /** "any" in the shipped plan. A list narrows it. */
+    allowed_cidrs: string | string[]
+    min_prefix: number
+    max_prefix: number
+    overlaps_between_vpcs_allowed: boolean
+    functional_conflicts: FunctionalConflict[]
+    uniqueness_enforced?: string
+  }
+  link_local?: { metadata: string; dns_resolver: string; ntp: string }
+  vni_reservations: {
+    platform_l2_vni_range: VNIRange
+    platform_l3_vni_range: VNIRange
+    tenant_l2_vni_range: VNIRange
+    notes?: string
+  }
+}
+
+export interface PlatformVNet {
+  vnet: string
+  name: string
+  l2_vni: number
+  cidr: string
+  gateway: string
+  snat: boolean
+  dhcp: boolean
+  tenant_reachable?: string
+  alias?: string
+}
+
+/**
+ * The COMMON platform network — one document, every cluster.
+ *
+ * Almost nothing about the platform network varies by site: the zone, the VNets
+ * and their CIDRs, both VNI layers, the MTUs, the firewall posture and the
+ * preflight requirements are the same in every datacentre. Only the machines
+ * differ. So this is the document an operator normally edits, and editing it
+ * reaches every cluster at once — which is why saving it is validated against
+ * all of them first.
+ */
+export interface PlatformDefaults {
+  version: number
+  revision: number
+  updated_at?: string
+  updated_by?: string
+  fabric: {
+    name: string
+    protocol: string
+    underlay_vlan: number
+    underlay_interface: string
+    underlay_cidr: string
+    loopback_cidr: string
+    underlay_mtu: number
+    overlay_mtu: number
+    mtu_check: string
+    mtu_notes?: string
+  }
+  evpn: {
+    controller: string
+    asn: number
+    underlay_asn: number | null
+    exit_nodes_local_routing: boolean
+  }
+  platform_zone: {
+    zone: string
+    l3_vni: number
+    mtu: number
+    vnets: PlatformVNet[]
+  }
+}
+
+export interface FabricNode {
+  name: string
+  loopback: string
+  underlay_address: string
+  underlay_interface?: string
+  roles?: string[]
+}
+
+/**
+ * What is specific to ONE cluster, and nothing else: its machines, and which of
+ * them reflect routes and carry egress. If a field here could be copied
+ * unchanged to the next datacentre, it belongs in PlatformDefaults instead.
+ *
+ * Credentials are deliberately absent and must stay absent — they are the one
+ * thing about a cluster that lives in the database, encrypted, rather than S3.
+ */
+export interface ClusterNetwork {
+  version: number
+  revision: number
+  updated_at?: string
+  updated_by?: string
+  cluster: string
+  region: string
+  availability_zone: string
+  datacenter?: string
+  enabled: boolean
+  proxmox: { min_version: string; api_endpoint: string; insecure_tls: boolean }
+  nodes: FabricNode[]
+  route_reflectors: string[]
+  exit_nodes: string[]
+  exit_node_primary: string
+  /**
+   * An HA gap recorded in configuration rather than left to be discovered
+   * during an outage. A one-node cluster CANNOT have two route reflectors —
+   * that is hardware, not a backlog item.
+   */
+  redundancy?: { status: string; reason?: string; required_nodes_for_ha?: number }
+  /** Deliberate, rare divergence from the common document. Carries a reason. */
+  overrides?: { reason: string } & Record<string, unknown>
+  known_gaps?: string[]
+}
+
+/**
+ * What a cluster will actually get: the common document merged with that
+ * cluster's own machines. Never stored — computed, validated as a unit, and
+ * applied. Neither stored file says this on its own.
+ */
+export interface EffectiveNetwork
+  extends Omit<ClusterNetwork, "nodes" | "route_reflectors" | "exit_nodes" | "exit_node_primary"> {
+  defaults_revision: number
+  fabric: PlatformDefaults["fabric"] & { nodes: FabricNode[] }
+  evpn: PlatformDefaults["evpn"] & {
+    route_reflectors: string[]
+    exit_nodes: string[]
+    exit_node_primary: string
+    redundancy?: { status: string; reason?: string; required_nodes_for_ha?: number }
+  }
+  platform_zone: PlatformDefaults["platform_zone"] & { nodes: string[] }
+}
+
+/** One thing wrong, named by the field it is wrong in. */
+export interface NetworkingProblem {
+  field: string
+  detail: string
+}
+
+/**
+ * Validation collects rather than short-circuiting: an operator fixing one
+ * thing, re-running and finding a second is a slow way to learn there were
+ * three.
+ */
+export interface NetworkingValidation {
+  valid: boolean
+  problems: NetworkingProblem[]
+}
+
+/** What a proposed tenant CIDR would cost. */
+export interface CIDRDecision {
+  allowed: boolean
+  severity?: "reject" | "warn"
+  reason?: string
+  conflict_cidr?: string
+  /** True when the address plan could not be read and the built-in floor answered. */
+  from_defaults?: boolean
+}

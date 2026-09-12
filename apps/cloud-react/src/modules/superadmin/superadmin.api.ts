@@ -9,6 +9,12 @@ import {
 } from "@/services/api/client"
 
 import type {
+  AddressPlan,
+  CIDRDecision,
+  ClusterNetwork,
+  EffectiveNetwork,
+  PlatformDefaults,
+  NetworkingValidation,
   KycStatusPatch,
   AddImageVersionRequest,
   AdminLedgerEntry,
@@ -108,6 +114,8 @@ const CATALOG_BASE = "/platform/catalog"
 const CACHE_BASE = "/platform/cache"
 const SETTINGS_BASE = "/platform/settings"
 const EMAIL_POLICY_BASE = "/platform/email-policy"
+// The platform's own network. Documents in S3, replaced whole, validated on write.
+const NETWORKING_BASE = "/platform/networking"
 // IP pools live in the VPC (regional) domain, not the platform catalog.
 const IPPOOL_BASE = "/vpc/ippools"
 
@@ -484,6 +492,52 @@ export const superAdminApi = {
 	   happens to a plus-addressed alias. Backed by JSON in the service S3
 	   bucket rather than a table, which is why the read takes a `refresh`:
 	   the folder is also editable by hand, and the backend caches it. */
+  /* ── Platform networking ─────────────────────────────────────────────── */
+
+  // refresh re-reads S3 rather than serving the cached snapshot, because the
+  // documents live in a bucket somebody may have edited by hand since the page
+  // opened — the same reason the email policy offers it.
+  getAddressPlan: (refresh = false) =>
+    apiGet<AddressPlan>(`${NETWORKING_BASE}/address-plan${refresh ? "?refresh=true" : ""}`),
+  // PUT, not PATCH: the document is replaced whole. See the note on the types.
+  updateAddressPlan: (payload: AddressPlan & { reason?: string }) =>
+    apiPut<AddressPlan>(`${NETWORKING_BASE}/address-plan`, payload),
+  // Dry run. Creates nothing, saves nothing — so an operator iterating toward a
+  // valid document never has to bump revision just to find out what is wrong.
+  validateAddressPlan: (payload: AddressPlan) =>
+    apiPost<NetworkingValidation>(`${NETWORKING_BASE}/address-plan/validate`, payload),
+
+  // The COMMON document. Editing it reaches every cluster at once, which is why
+  // its validate endpoint checks it against all of them.
+  getPlatformDefaults: (refresh = false) =>
+    apiGet<PlatformDefaults>(`${NETWORKING_BASE}/defaults${refresh ? "?refresh=true" : ""}`),
+  updatePlatformDefaults: (payload: PlatformDefaults & { reason?: string }) =>
+    apiPut<PlatformDefaults>(`${NETWORKING_BASE}/defaults`, payload),
+  validatePlatformDefaults: (payload: PlatformDefaults) =>
+    apiPost<NetworkingValidation>(`${NETWORKING_BASE}/defaults/validate`, payload),
+
+  // What a cluster will ACTUALLY get. Neither stored document says this alone.
+  getEffectiveNetwork: (az: string) =>
+    apiGet<EffectiveNetwork>(`${NETWORKING_BASE}/clusters/${encodeURIComponent(az)}/effective`),
+
+  listClusterNetworks: () => apiGet<ClusterNetwork[]>(`${NETWORKING_BASE}/clusters`),
+  getClusterNetwork: (az: string, refresh = false) =>
+    apiGet<ClusterNetwork>(
+      `${NETWORKING_BASE}/clusters/${encodeURIComponent(az)}${refresh ? "?refresh=true" : ""}`,
+    ),
+  updateClusterNetwork: (az: string, payload: ClusterNetwork & { reason?: string }) =>
+    apiPut<ClusterNetwork>(`${NETWORKING_BASE}/clusters/${encodeURIComponent(az)}`, payload),
+  validateClusterNetwork: (az: string, payload: ClusterNetwork) =>
+    apiPost<NetworkingValidation>(
+      `${NETWORKING_BASE}/clusters/${encodeURIComponent(az)}/validate`,
+      payload,
+    ),
+
+  // The same function VPC create calls, so this answer and the product's
+  // behaviour cannot drift.
+  checkTenantCIDR: (cidr: string) =>
+    apiPost<CIDRDecision>(`${NETWORKING_BASE}/check-cidr`, { cidr }),
+
   getEmailPolicy: (refresh = false) =>
     apiGet<EmailPolicy>(`${EMAIL_POLICY_BASE}${refresh ? "?refresh=true" : ""}`),
   updateEmailPolicy: (payload: UpdateEmailPolicy) =>

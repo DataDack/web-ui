@@ -40,6 +40,9 @@ import type {
   ReserveAddressesRequest,
   UpdateAvailabilityZoneRequest,
   AddBlockedDomainsRequest,
+  AddressPlan,
+  ClusterNetwork,
+  PlatformDefaults,
   EmailPolicy,
   EmailPolicyCheckRequest,
   UpdateBandwidthPriceRequest,
@@ -1428,5 +1431,142 @@ export function useUpdateServiceModuleState() {
       toast.success(t("superAdmin.toasts.serviceUpdated"))
     },
     onError: (e) => toast.error(extractError(e, t("superAdmin.toasts.serviceFailed"))),
+  })
+}
+
+/* ── Platform networking ───────────────────────────────────────────────── */
+//
+// staleTime is 0 throughout, for the same reason the email policy sets it: the
+// documents live in an S3 bucket somebody may have edited by hand since the
+// page opened, so a cached answer can be confidently wrong.
+
+export function useAddressPlan() {
+  return useQuery({
+    queryKey: SUPERADMIN_QUERY_KEYS.addressPlan,
+    queryFn: () => superAdminApi.getAddressPlan(),
+    staleTime: 0,
+    // A missing document is a legitimate state — nothing has been uploaded yet —
+    // and retrying a 404 four times only delays saying so.
+    retry: false,
+  })
+}
+
+export function usePlatformDefaults() {
+  return useQuery({
+    queryKey: SUPERADMIN_QUERY_KEYS.platformDefaults,
+    queryFn: () => superAdminApi.getPlatformDefaults(),
+    staleTime: 0,
+    retry: false,
+  })
+}
+
+/** What a cluster will actually get, both documents merged. */
+export function useEffectiveNetwork(az: string | undefined) {
+  return useQuery({
+    queryKey: SUPERADMIN_QUERY_KEYS.effectiveNetwork(az ?? ""),
+    queryFn: () => superAdminApi.getEffectiveNetwork(az as string),
+    enabled: Boolean(az),
+    staleTime: 0,
+    retry: false,
+  })
+}
+
+export function useClusterNetworks() {
+  return useQuery({
+    queryKey: SUPERADMIN_QUERY_KEYS.clusterNetworks,
+    queryFn: () => superAdminApi.listClusterNetworks(),
+    staleTime: 0,
+    retry: false,
+  })
+}
+
+export function useClusterNetwork(az: string | undefined) {
+  return useQuery({
+    queryKey: SUPERADMIN_QUERY_KEYS.clusterNetwork(az ?? ""),
+    queryFn: () => superAdminApi.getClusterNetwork(az as string),
+    enabled: Boolean(az),
+    staleTime: 0,
+    retry: false,
+  })
+}
+
+export function useUpdateAddressPlan() {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (payload: AddressPlan & { reason?: string }) =>
+      superAdminApi.updateAddressPlan(payload),
+    onSuccess: (plan) => {
+      // The server re-reads the stored document and returns it, so the page
+      // shows what the bucket now holds rather than what was submitted.
+      queryClient.setQueryData(SUPERADMIN_QUERY_KEYS.addressPlan, plan)
+      toast.success(t("superAdmin.networking.planSaved"))
+    },
+    onError: (e) => toast.error(extractError(e, t("superAdmin.networking.saveFailed"))),
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.addressPlan })
+    },
+  })
+}
+
+export function useUpdatePlatformDefaults() {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (payload: PlatformDefaults & { reason?: string }) =>
+      superAdminApi.updatePlatformDefaults(payload),
+    onSuccess: (d) => {
+      queryClient.setQueryData(SUPERADMIN_QUERY_KEYS.platformDefaults, d)
+      toast.success(t("superAdmin.networking.defaultsSaved"))
+    },
+    onError: (e) => toast.error(extractError(e, t("superAdmin.networking.saveFailed"))),
+    onSettled: () => {
+      // Every cluster's resolved view changed, because they all read this one.
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.platformDefaults })
+      void queryClient.invalidateQueries({ queryKey: ["superadmin", "networking", "effective"] })
+    },
+  })
+}
+
+export function useUpdateClusterNetwork(az: string) {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (payload: ClusterNetwork & { reason?: string }) =>
+      superAdminApi.updateClusterNetwork(az, payload),
+    onSuccess: (cluster) => {
+      queryClient.setQueryData(SUPERADMIN_QUERY_KEYS.clusterNetwork(az), cluster)
+      toast.success(t("superAdmin.networking.clusterSaved"))
+    },
+    onError: (e) => toast.error(extractError(e, t("superAdmin.networking.saveFailed"))),
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.clusterNetworks })
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.clusterNetwork(az) })
+    },
+  })
+}
+
+/**
+ * The dry run. Deliberately NOT a query: it answers a document the operator is
+ * holding, not one the server has, so caching it by key would answer the wrong
+ * question the moment they typed.
+ */
+export function useValidateNetworking() {
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (vars: { az?: string; plan?: AddressPlan; cluster?: ClusterNetwork }) =>
+      vars.az && vars.cluster
+        ? superAdminApi.validateClusterNetwork(vars.az, vars.cluster)
+        : superAdminApi.validateAddressPlan(vars.plan as AddressPlan),
+    onError: (e) => toast.error(extractError(e, t("superAdmin.networking.validateFailed"))),
+  })
+}
+
+/** Asks what a proposed tenant range would cost, without creating anything. */
+export function useCheckTenantCIDR() {
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (cidr: string) => superAdminApi.checkTenantCIDR(cidr),
+    onError: (e) => toast.error(extractError(e, t("superAdmin.networking.checkFailed"))),
   })
 }
