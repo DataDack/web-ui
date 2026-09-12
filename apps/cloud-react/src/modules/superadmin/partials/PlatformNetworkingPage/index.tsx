@@ -21,6 +21,7 @@ import {
   Globe,
   Layers,
   Network,
+  Play,
   Search,
   ShieldAlert,
 } from "lucide-react"
@@ -32,6 +33,7 @@ import { useScreen } from "@/services/api/screen"
 
 import {
   useAddressPlan,
+  useApplyClusterNetwork,
   useCheckTenantCIDR,
   useClusterNetworks,
   usePlatformDefaults,
@@ -352,6 +354,7 @@ function AddressPlanTab() {
 function ClustersTab() {
   const { t } = useTranslation()
   const { data, isLoading } = useClusterNetworks()
+  const apply = useApplyClusterNetwork()
 
   if (isLoading) return <Skeleton className="h-48 w-full" />
   if (!data || data.length === 0) {
@@ -376,9 +379,27 @@ function ClustersTab() {
                 {c.datacenter ? ` · ${c.datacenter}` : ""}
               </p>
             </div>
-            <Badge variant={c.enabled ? "success" : "secondary"}>
-              {c.enabled ? t("superAdmin.networking.enabled") : t("superAdmin.networking.disabled")}
-            </Badge>
+            <div className="flex shrink-0 items-center gap-2">
+              <Badge variant={c.enabled ? "success" : "secondary"}>
+                {c.enabled
+                  ? t("superAdmin.networking.enabled")
+                  : t("superAdmin.networking.disabled")}
+              </Badge>
+              {/* Writes the zone and its VNets onto every placed node in this
+                  availability zone, through the same manager endpoint a tenant
+                  VPC uses. */}
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={!c.enabled || apply.isPending}
+                onClick={() => {
+                  apply.mutate(c.availability_zone)
+                }}
+              >
+                <Play className={cn("size-4", apply.isPending && "animate-pulse")} />
+                {t("superAdmin.networking.apply")}
+              </Button>
+            </div>
           </div>
 
           <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-sm">

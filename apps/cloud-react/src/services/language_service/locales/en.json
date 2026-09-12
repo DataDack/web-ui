@@ -4737,7 +4737,11 @@
       "saveFailed": "Couldn't save",
       "validateFailed": "Couldn't validate",
       "checkFailed": "Couldn't check that CIDR",
-      "cidrExample": "10.0.0.0/16"
+      "cidrExample": "10.0.0.0/16",
+      "apply": "Apply to cluster",
+      "applied": "Platform zone applied to {{count}} node(s)",
+      "appliedPartial": "Applied to {{ok}} of {{total}} nodes. Failed: {{names}}",
+      "applyFailed": "Couldn't apply the platform zone"
     }
   },
   "region": {

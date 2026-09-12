@@ -1884,3 +1884,14 @@ export interface ClusterDetail {
   /** Opens the real Proxmox dashboard. */
   console_url?: string
 }
+
+/** One node's result from applying the platform zone. Collected per node rather
+ *  than failing on the first: an operator fixing one node and re-running to
+ *  discover a second was also broken is the slow path this avoids. */
+export interface PlatformZoneApplyResult {
+  node_id: string
+  node_name: string
+  applied: boolean
+  revision?: string
+  error?: string
+}

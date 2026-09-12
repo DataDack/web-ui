@@ -16,6 +16,7 @@ import type {
   ClusterNetwork,
   EffectiveNetwork,
   PlatformDefaults,
+  PlatformZoneApplyResult,
   NetworkingValidation,
   KycStatusPatch,
   AddImageVersionRequest,
@@ -533,6 +534,14 @@ export const superAdminApi = {
     apiPost<NetworkingValidation>(
       `${NETWORKING_BASE}/clusters/${encodeURIComponent(az)}/validate`,
       payload,
+    ),
+
+  // Converges the platform zone onto every placed node in the zone, through the
+  // same manager endpoint a tenant VPC uses.
+  applyClusterNetwork: (az: string) =>
+    apiPost<PlatformZoneApplyResult[]>(
+      `${NETWORKING_BASE}/clusters/${encodeURIComponent(az)}/apply`,
+      {},
     ),
 
   // The same function VPC create calls, so this answer and the product's

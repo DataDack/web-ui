@@ -1589,6 +1589,34 @@ export function useUpdateClusterNetwork(az: string) {
 }
 
 /**
+ * Applying the platform zone. Not a query — it changes a live cluster, and it
+ * reports per node, so the result belongs to the attempt rather than to a key.
+ */
+export function useApplyClusterNetwork() {
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (az: string) => superAdminApi.applyClusterNetwork(az),
+    onSuccess: (results) => {
+      const failed = results.filter((r) => !r.applied)
+      if (failed.length === 0) {
+        toast.success(t("superAdmin.networking.applied", { count: results.length }))
+        return
+      }
+      // Partial success is the common case with a node rebooting, and reporting
+      // it as a flat failure would hide that the rest converged.
+      toast.warning(
+        t("superAdmin.networking.appliedPartial", {
+          ok: results.length - failed.length,
+          total: results.length,
+          names: failed.map((f) => f.node_name).join(", "),
+        }),
+      )
+    },
+    onError: (e) => toast.error(extractError(e, t("superAdmin.networking.applyFailed"))),
+  })
+}
+
+/**
  * The dry run. Deliberately NOT a query: it answers a document the operator is
  * holding, not one the server has, so caching it by key would answer the wrong
  * question the moment they typed.
