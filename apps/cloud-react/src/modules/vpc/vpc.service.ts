@@ -4,6 +4,7 @@ import {
   peeringsApi,
   networkInterfacesApi,
   networksApi,
+  reachabilityApi,
   routersApi,
   securityGroupsApi,
   sgScopingApi,
@@ -21,6 +22,7 @@ import type {
   CreateSubnetRequest,
   CreateVPCRequest,
   CreateVpcPeeringRequest,
+  ReachabilityQuery,
   ReserveStaticIPRequest,
   UpdateSGRuleRequest,
 } from "./vpc.types"
@@ -88,6 +90,7 @@ export const vpcService = {
   removeInternetGateway: (id: string) => internetGatewaysApi.delete(id),
   attachIGW: (id: string, networkId: string) => internetGatewaysApi.attach(id, networkId),
   detachIGW: (id: string) => internetGatewaysApi.detach(id),
+  analyzeReachability: (q: ReachabilityQuery) => reachabilityApi.analyze(q),
   fetchSGScoping: (vpcId: string) => sgScopingApi.get(vpcId),
   setSGScoping: (vpcId: string, enabled: boolean, acknowledge: boolean) =>
     sgScopingApi.set(vpcId, enabled, acknowledge),

@@ -1,4 +1,4 @@
-import { Activity, ArrowRightLeft, BellRing, Building2, Cable, CreditCard, Disc, EthernetPort, FileText, FolderKanban, FunctionSquare, Gauge, GitBranch, Globe, HardDrive, KeyRound, Layers, LayoutDashboard, LifeBuoy, Lock, Network, Receipt, Rocket, Router, ScrollText, Server, Share2, ShieldCheck, Ship, Sparkles, type LucideIcon, UserCog, Users, Waypoints, Webhook, Zap } from "lucide-react"
+import { Activity, ArrowRightLeft, BellRing, Building2, Cable, CreditCard, Disc, EthernetPort, FileText, FolderKanban, FunctionSquare, Gauge, GitBranch, Globe, HardDrive, KeyRound, Layers, LayoutDashboard, LifeBuoy, Lock, Network, Receipt, Rocket, Router, ScrollText, Search, Server, Share2, ShieldCheck, Ship, Sparkles, type LucideIcon, UserCog, Users, Waypoints, Webhook, Zap } from "lucide-react"
 
 export interface SidebarNavItem {
   labelKey: string
@@ -99,6 +99,11 @@ export const CONSOLE_SERVICES: ConsoleService[] = [
         labelKey: "console.nav.items.peerings",
         icon: Share2,
         path: "/networking/peerings",
+      },
+      {
+        labelKey: "console.nav.items.reachability",
+        icon: Search,
+        path: "/networking/reachability",
       },
       // Hidden from navigation for now; retain the entry for later.
       // {

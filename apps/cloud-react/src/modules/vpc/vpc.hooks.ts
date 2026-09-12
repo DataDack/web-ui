@@ -19,6 +19,7 @@ import type {
   CreateSubnetRequest,
   CreateVPCRequest,
   CreateVpcPeeringRequest,
+  ReachabilityQuery,
   ReserveStaticIPRequest,
   UpdateSGRuleRequest,
 } from "./vpc.types"
@@ -731,5 +732,20 @@ export function useSetSGScoping(vpcId: string) {
     // The backend refuses an unacknowledged enable with a message naming the
     // reason; showing it verbatim is what tells the user to read the report.
     onError: (e) => toast.error(extractError(e, t("sgScoping.toasts.failed"))),
+  })
+}
+
+/* ── Reachability ───────────────────────────────────────────────────────── */
+
+/**
+ * A mutation rather than a query: this is a question the user asks on demand,
+ * and re-running it should be an explicit act. Silently refetching would give a
+ * different answer from the one on screen the moment someone edits a rule.
+ */
+export function useAnalyzeReachability() {
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (q: ReachabilityQuery) => vpcService.analyzeReachability(q),
+    onError: (e) => toast.error(extractError(e, t("reachability.toasts.failed"))),
   })
 }

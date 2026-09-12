@@ -3,6 +3,8 @@ import { apiDelete, apiGet, apiPost, apiPut, LIST_QUERY } from "@/services/api/c
 import type {
   CreateSubnetRequest,
   CreateVPCRequest,
+  ReachabilityQuery,
+  ReachabilityVerdict,
   SGScopingState,
   Subnet,
   VPCNetwork,
@@ -128,4 +130,11 @@ export const sgScopingApi = {
    */
   set: (vpcId: string, enabled: boolean, acknowledge: boolean): Promise<SGScopingState> =>
     apiPut<SGScopingState>(`/vpc/networks/${vpcId}/sg-scoping`, { enabled, acknowledge }),
+}
+
+/* ── Reachability ───────────────────────────────────────────────────────── */
+
+export const reachabilityApi = {
+  analyze: (q: ReachabilityQuery): Promise<ReachabilityVerdict> =>
+    apiPost<ReachabilityVerdict>(`${NETWORKS_BASE}/reachability`, q),
 }

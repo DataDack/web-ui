@@ -102,6 +102,13 @@ export const vpcRoutes: RouteObject[] = [
     },
   },
   {
+    path: "networking/reachability",
+    lazy: async () => {
+      const { ReachabilityPage } = await import("./partials/ReachabilityPage")
+      return { Component: ReachabilityPage }
+    },
+  },
+  {
     path: "networking/peerings",
     lazy: async () => {
       const { VpcPeeringsPage } = await import("./partials/VpcPeeringsPage")

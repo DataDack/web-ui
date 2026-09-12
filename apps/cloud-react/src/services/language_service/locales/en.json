@@ -92,7 +92,8 @@
         "certsManager": "Certs Manager",
         "domainDns": "DNS",
         "hostnames": "Domain Connections",
-        "apiGateway": "API Gateway"
+        "apiGateway": "API Gateway",
+        "reachability": "Reachability"
       },
       "soon": "Soon",
       "collapse": "Collapse",
@@ -6703,6 +6704,32 @@
       "enabled": "Member-scoped security groups enabled",
       "disabled": "Member-scoped security groups disabled",
       "failed": "Could not change security group scoping"
+    }
+  },
+  "reachability": {
+    "title": "Reachability analyzer",
+    "description": "Check whether one private address can reach another, and see exactly which rule — or which missing piece — decides it.",
+    "form": {
+      "title": "Flow to check",
+      "submit": "Analyze"
+    },
+    "fields": {
+      "source": "Source address",
+      "destination": "Destination address",
+      "protocol": "Protocol",
+      "port": "Port",
+      "sourceExample": "e.g. 10.0.1.5",
+      "destExample": "e.g. 10.0.2.9"
+    },
+    "result": {
+      "title": "Result",
+      "allowed": "Traffic is allowed",
+      "blocked": "Traffic is blocked",
+      "decidingRule": "Deciding rule",
+      "howToFix": "How to fix it"
+    },
+    "toasts": {
+      "failed": "Could not analyze reachability"
     }
   }
 }

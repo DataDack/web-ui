@@ -14,6 +14,7 @@ export const VPC_ROUTES = {
   NAT_GATEWAYS: "/networking/nat-gateways",
   VPN: "/networking/vpn",
   PEERINGS: "/networking/peerings",
+  REACHABILITY: "/networking/reachability",
   detail: (id: string) => `/networking/${id}`,
   securityGroup: (id: string) => `/networking/security-groups/${id}`,
 } as const

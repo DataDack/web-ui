@@ -389,3 +389,38 @@ export interface SGScopingState {
   impact: SGScopingImpact[]
   orphans: number
 }
+
+/* ── Reachability ───────────────────────────────────────────────────────── */
+
+/** The rule that decided a verdict, when one exists. */
+export interface ReachabilityRule {
+  group_name: string
+  action: string
+  direction: string
+  protocol: string
+  port_from: number
+  port_to: number
+  peer: string
+}
+
+/**
+ * Why one address can or cannot reach another. The verdict matters less than
+ * the reason: a missing rule, an unaccepted peering and a guest in no group all
+ * look identical from inside the guest — a connection that hangs — and each has
+ * a different fix.
+ */
+export interface ReachabilityVerdict {
+  allowed: boolean
+  reason: string
+  /** Which layer decided: "routing", "security-group" or "input". */
+  stage: string
+  matched_rule?: ReachabilityRule
+  hints?: string[]
+}
+
+export interface ReachabilityQuery {
+  source_address: string
+  dest_address: string
+  protocol: string
+  port: number
+}
