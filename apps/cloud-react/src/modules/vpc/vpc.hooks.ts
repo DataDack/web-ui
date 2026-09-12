@@ -18,6 +18,7 @@ import type {
   CreateSecurityGroupRequest,
   CreateSubnetRequest,
   CreateVPCRequest,
+  CreateVpcPeeringRequest,
   ReserveStaticIPRequest,
   UpdateSGRuleRequest,
 } from "./vpc.types"
@@ -636,5 +637,73 @@ export function useDeleteVPNConnection() {
       toast.success(t("vpn.toasts.deleted"))
     },
     onError: (e) => toast.error(extractError(e, t("vpn.toasts.deleteFailed"))),
+  })
+}
+
+/* ── VPC peering ────────────────────────────────────────────────────────── */
+
+export function usePeerings() {
+  return useQuery({
+    queryKey: VPC_QUERY_KEYS.peerings,
+    queryFn: vpcService.fetchPeerings,
+    // An accepted peering reconciles both VPCs on the fabric, so the row keeps
+    // moving after the click; poll while anything is mid-transition.
+    refetchInterval: (query) =>
+      query.state.data?.some((p) => p.status === "deleting") ? 4000 : false,
+  })
+}
+
+export function useCreatePeering() {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (payload: CreateVpcPeeringRequest) => vpcService.createPeering(payload),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: VPC_QUERY_KEYS.peerings })
+      toast.success(t("peerings.toasts.requested"))
+    },
+    // The backend refuses overlapping CIDRs, self-peering and duplicates with a
+    // specific message; surfacing it beats a generic failure, because every one
+    // of them tells the user exactly what to change.
+    onError: (e) => toast.error(extractError(e, t("peerings.toasts.requestFailed"))),
+  })
+}
+
+export function useAcceptPeering() {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (id: string) => vpcService.acceptPeering(id),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: VPC_QUERY_KEYS.peerings })
+      toast.success(t("peerings.toasts.accepted"))
+    },
+    onError: (e) => toast.error(extractError(e, t("peerings.toasts.acceptFailed"))),
+  })
+}
+
+export function useRejectPeering() {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (id: string) => vpcService.rejectPeering(id),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: VPC_QUERY_KEYS.peerings })
+      toast.success(t("peerings.toasts.rejected"))
+    },
+    onError: (e) => toast.error(extractError(e, t("peerings.toasts.rejectFailed"))),
+  })
+}
+
+export function useDeletePeering() {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (id: string) => vpcService.removePeering(id),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: VPC_QUERY_KEYS.peerings })
+      toast.success(t("peerings.toasts.deleted"))
+    },
+    onError: (e) => toast.error(extractError(e, t("peerings.toasts.deleteFailed"))),
   })
 }

@@ -1,25 +1,4 @@
-import {
-  Activity,
-  ArrowLeftRight,
-  CreditCard,
-  EthernetPort,
-  FileText,
-  FolderTree,
-  GitBranch,
-  Globe,
-  HardDrive,
-  Key,
-  LayoutDashboard,
-  Layers,
-  Lock,
-  Network,
-  Server,
-  Shield,
-  ShieldCheck,
-  Users,
-  Wifi,
-  Webhook,
-} from "lucide-react"
+import { Activity, ArrowLeftRight, CreditCard, EthernetPort, FileText, FolderTree, GitBranch, Globe, HardDrive, Key, Layers, LayoutDashboard, Lock, Network, Server, Share2, Shield, ShieldCheck, Users, Webhook, Wifi } from "lucide-react"
 
 import type { ServiceDefinition } from "./services.types"
 
@@ -150,6 +129,14 @@ export const SERVICE_REGISTRY: Record<string, ServiceDefinition> = {
         path: "/networking/routers",
         icon: ArrowLeftRight,
         description: "Custom routing tables for fine-grained traffic control.",
+        status: "operational",
+      },
+      {
+        id: "vpc-peering",
+        name: "VPC Peering",
+        path: "/networking/peerings",
+        icon: Share2,
+        description: "Private routing between two VPCs, without traversing the internet.",
         status: "operational",
       },
       {

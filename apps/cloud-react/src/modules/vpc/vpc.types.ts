@@ -328,3 +328,33 @@ export interface CreateNATGatewayRequest {
   /** Defaults to "public" server-side when omitted. */
   connectivity?: NATGatewayConnectivity
 }
+
+/* ── VPC peering ────────────────────────────────────────────────────────── */
+
+/**
+ * A peering makes two VPCs' routes visible to each other. It is deliberately
+ * NOT transitive: peering A-B and B-C does not connect A to C, because each VPC
+ * only imports the route target of the VPC it is directly peered with.
+ */
+export type VpcPeeringStatus =
+  | "pending_acceptance"
+  | "active"
+  | "rejected"
+  | "deleting"
+  | "deleted"
+
+export interface VpcPeering {
+  id: string
+  name: string
+  requester_vpc_id: string
+  accepter_vpc_id: string
+  status: VpcPeeringStatus
+  created_at: string
+  updated_at: string
+}
+
+export interface CreateVpcPeeringRequest {
+  name: string
+  requesterVpcId: string
+  accepterVpcId: string
+}

@@ -102,6 +102,13 @@ export const vpcRoutes: RouteObject[] = [
     },
   },
   {
+    path: "networking/peerings",
+    lazy: async () => {
+      const { VpcPeeringsPage } = await import("./partials/VpcPeeringsPage")
+      return { Component: VpcPeeringsPage }
+    },
+  },
+  {
     path: "networking/vpn",
     lazy: async () => {
       const { VpnPage } = await import("./partials/VpnPage")

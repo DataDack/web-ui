@@ -13,6 +13,7 @@ export const VPC_ROUTES = {
   INTERNET_GATEWAYS: "/networking/internet-gateways",
   NAT_GATEWAYS: "/networking/nat-gateways",
   VPN: "/networking/vpn",
+  PEERINGS: "/networking/peerings",
   detail: (id: string) => `/networking/${id}`,
   securityGroup: (id: string) => `/networking/security-groups/${id}`,
 } as const
@@ -32,6 +33,7 @@ export const VPC_QUERY_KEYS = {
   nat: ["vpc", "nat"] as const,
   igw: ["vpc", "igw"] as const,
   vpn: ["vpc", "vpn"] as const,
+  peerings: ["vpc", "peerings"] as const,
 }
 
 // Gateway resources (routers, NAT/internet gateways, VPN connections) all

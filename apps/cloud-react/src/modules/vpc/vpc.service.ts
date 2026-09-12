@@ -1,6 +1,7 @@
 import {
   internetGatewaysApi,
   natGatewaysApi,
+  peeringsApi,
   networkInterfacesApi,
   networksApi,
   routersApi,
@@ -18,6 +19,7 @@ import type {
   CreateSecurityGroupRequest,
   CreateSubnetRequest,
   CreateVPCRequest,
+  CreateVpcPeeringRequest,
   ReserveStaticIPRequest,
   UpdateSGRuleRequest,
 } from "./vpc.types"
@@ -85,6 +87,11 @@ export const vpcService = {
   removeInternetGateway: (id: string) => internetGatewaysApi.delete(id),
   attachIGW: (id: string, networkId: string) => internetGatewaysApi.attach(id, networkId),
   detachIGW: (id: string) => internetGatewaysApi.detach(id),
+  fetchPeerings: () => peeringsApi.list(),
+  createPeering: (payload: CreateVpcPeeringRequest) => peeringsApi.create(payload),
+  acceptPeering: (id: string) => peeringsApi.accept(id),
+  rejectPeering: (id: string) => peeringsApi.reject(id),
+  removePeering: (id: string) => peeringsApi.delete(id),
   fetchVPNConnections: () => vpnApi.list(),
   removeVPNConnection: (id: string) => vpnApi.delete(id),
 }

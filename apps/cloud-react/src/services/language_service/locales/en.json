@@ -59,6 +59,7 @@
         "securityGroups": "Security Groups",
         "routers": "Routers",
         "routeTables": "Route tables",
+        "peerings": "VPC Peering",
         "internetGateways": "Internet Gateways",
         "natGateways": "NAT Gateways",
         "vpn": "VPN",
@@ -6636,6 +6637,48 @@
     "unavailable": {
       "title": "API Gateway is not available in this region",
       "description": "This region has no API Gateway control plane yet. Switch to a region that does, or contact support if you expected one here."
+    }
+  },
+  "peerings": {
+    "title": "VPC peering",
+    "description": "Connect two VPCs so their private addresses can reach each other. Peering is not transitive and requires non-overlapping CIDRs.",
+    "fields": {
+      "requester": "Requester VPC",
+      "accepter": "Accepter VPC"
+    },
+    "actions": {
+      "accept": "Accept",
+      "reject": "Reject"
+    },
+    "create": {
+      "action": "Request peering",
+      "title": "Request VPC peering",
+      "description": "The peering stays inactive until the other side accepts it. Peered VPCs must not have overlapping CIDRs, and peering is not transitive — connecting A to B and B to C does not connect A to C.",
+      "submit": "Request peering"
+    },
+    "empty": {
+      "title": "No VPC peerings",
+      "description": "Peer two VPCs to let their workloads reach each other over private addresses instead of the internet."
+    },
+    "delete": {
+      "title": "Delete peering",
+      "description": "The two VPCs stop routing to each other. Traffic between them over private addresses will stop immediately.",
+      "action": "Delete"
+    },
+    "toasts": {
+      "requested": "Peering requested",
+      "requestFailed": "Could not request the peering",
+      "accepted": "Peering accepted",
+      "acceptFailed": "Could not accept the peering",
+      "rejected": "Peering rejected",
+      "rejectFailed": "Could not reject the peering",
+      "deleted": "Peering deleted",
+      "deleteFailed": "Could not delete the peering"
+    },
+    "name": "Name",
+    "selectPlaceholder": "Select",
+    "columns": {
+      "status": "Status"
     }
   }
 }
