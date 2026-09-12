@@ -105,6 +105,10 @@ export function useRegisterPVECluster() {
     onSuccess: (res) => {
       void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.pveClusters })
       void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.pveNodes })
+      // The detail page shows this cluster's members; a sync is exactly when
+      // they change, so leaving it stale is showing the pre-sync fleet.
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.clusterDetail(res.cluster.id) })
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.fleetStatus })
       toast.success(
         t("superAdmin.toasts.clusterRegistered", {
           name: res.cluster.name,
@@ -124,6 +128,10 @@ export function useSyncPVECluster() {
     onSuccess: (res) => {
       void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.pveClusters })
       void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.pveNodes })
+      // The detail page shows this cluster's members; a sync is exactly when
+      // they change, so leaving it stale is showing the pre-sync fleet.
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.clusterDetail(res.cluster.id) })
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.fleetStatus })
       toast.success(
         t("superAdmin.toasts.clusterSynced", {
           name: res.cluster.name,
@@ -143,6 +151,10 @@ export function useDeletePVECluster() {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.pveClusters })
       void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.pveNodes })
+      // The detail page shows this cluster's members; a sync is exactly when
+      // they change, so leaving it stale is showing the pre-sync fleet.
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.clusterDetail(res.cluster.id) })
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.fleetStatus })
       toast.success(t("superAdmin.toasts.clusterDeleted"))
     },
     onError: (e) => toast.error(extractError(e, t("superAdmin.toasts.clusterDeleteFailed"))),
@@ -1451,6 +1463,36 @@ export function useAddressPlan() {
   })
 }
 
+/** Fleet health. staleTime 0: an operator deciding whether to act must not be
+ *  shown a cached answer the client also cached. The server's own 20-second
+ *  snapshot is the only caching layer, and it reports itself. */
+export function useFleetStatus() {
+  return useQuery({
+    queryKey: SUPERADMIN_QUERY_KEYS.fleetStatus,
+    queryFn: () => superAdminApi.getFleetStatus(),
+    staleTime: 0,
+  })
+}
+
+export function useRefreshFleetStatus() {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: () => superAdminApi.getFleetStatus(true),
+    onSuccess: (data) => queryClient.setQueryData(SUPERADMIN_QUERY_KEYS.fleetStatus, data),
+    onError: (e) => toast.error(extractError(e, t("superAdmin.fleet.refreshFailed"))),
+  })
+}
+
+export function useClusterDetail(id: string | undefined) {
+  return useQuery({
+    queryKey: SUPERADMIN_QUERY_KEYS.clusterDetail(id ?? ""),
+    queryFn: () => superAdminApi.getClusterDetail(id!),
+    enabled: Boolean(id),
+    staleTime: 0,
+  })
+}
+
 export function usePlatformDefaults() {
   return useQuery({
     queryKey: SUPERADMIN_QUERY_KEYS.platformDefaults,
@@ -1464,7 +1506,7 @@ export function usePlatformDefaults() {
 export function useEffectiveNetwork(az: string | undefined) {
   return useQuery({
     queryKey: SUPERADMIN_QUERY_KEYS.effectiveNetwork(az ?? ""),
-    queryFn: () => superAdminApi.getEffectiveNetwork(az as string),
+    queryFn: () => superAdminApi.getEffectiveNetwork(az!),
     enabled: Boolean(az),
     staleTime: 0,
     retry: false,
@@ -1483,7 +1525,7 @@ export function useClusterNetworks() {
 export function useClusterNetwork(az: string | undefined) {
   return useQuery({
     queryKey: SUPERADMIN_QUERY_KEYS.clusterNetwork(az ?? ""),
-    queryFn: () => superAdminApi.getClusterNetwork(az as string),
+    queryFn: () => superAdminApi.getClusterNetwork(az!),
     enabled: Boolean(az),
     staleTime: 0,
     retry: false,
@@ -1557,7 +1599,7 @@ export function useValidateNetworking() {
     mutationFn: (vars: { az?: string; plan?: AddressPlan; cluster?: ClusterNetwork }) =>
       vars.az && vars.cluster
         ? superAdminApi.validateClusterNetwork(vars.az, vars.cluster)
-        : superAdminApi.validateAddressPlan(vars.plan as AddressPlan),
+        : superAdminApi.validateAddressPlan(vars.plan!),
     onError: (e) => toast.error(extractError(e, t("superAdmin.networking.validateFailed"))),
   })
 }

@@ -47,6 +47,33 @@ export const superadminRoutes: RouteObject[] = [
       { path: "organizations", element: <Navigate to="/admin/tenancy" replace /> },
       { path: "users", element: <Navigate to="/admin/tenancy?tab=users" replace /> },
       {
+        // A cluster, as an operator thinks about it: its machines, where they
+        // are, and a link to the real Proxmox dashboard. The fleet tables
+        // answer "which clusters" and "which nodes"; neither answers "what is
+        // THIS cluster", which used to mean cross-referencing both.
+        path: "pve-clusters/:clusterId",
+        lazy: async () => {
+          const { ClusterDetailPage } = await import("./partials/ClusterDetailPage")
+          return { Component: ClusterDetailPage }
+        },
+      },
+      {
+        // Is anything wrong, across every node, in one answer. The per-node
+        // probes still exist behind a node's detail page.
+        path: "fleet-status",
+        lazy: async () => {
+          const { FleetStatusPage } = await import("./partials/FleetStatusPage")
+          return { Component: FleetStatusPage }
+        },
+      },
+      {
+        path: "networking",
+        lazy: async () => {
+          const { PlatformNetworkingPage } = await import("./partials/PlatformNetworkingPage")
+          return { Component: PlatformNetworkingPage }
+        },
+      },
+      {
         path: "resources",
         lazy: async () => {
           const { AdminResourcesPage } = await import("./partials/AdminResourcesPage")

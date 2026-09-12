@@ -1,4 +1,5 @@
 import {
+  Activity,
   BadgeIndianRupee,
   Boxes,
   Building2,
@@ -96,6 +97,22 @@ export const ADMIN_NAV: AdminNavGroup[] = [
         icon: ServerCog,
         path: "/admin/pve-clusters",
         match: "/admin/pve-",
+      },
+      // Health, separate from inventory. The fleet pages answer "what do we
+      // have"; this answers "is anything wrong", which is a different question
+      // and the one an operator opens the console to ask.
+      {
+        labelKey: "superAdmin.fleet.title",
+        icon: Activity,
+        path: "/admin/fleet-status",
+      },
+      // The platform's own network, as configuration. Under Infrastructure
+      // rather than Platform: it describes the hardware's fabric, not a product
+      // switch.
+      {
+        labelKey: "superAdmin.networking.title",
+        icon: Network,
+        path: "/admin/networking",
       },
       // Directly under the nodes it runs on: the manager is per-node
       // infrastructure, not a setting of the load-balancer product it started

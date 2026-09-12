@@ -18,9 +18,9 @@ import {
 import { Save, TriangleAlert } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
+import { OPTOUT_STATUSES } from "./optout-constants"
 import { OptOutStatusPill } from "./OptOutStatusPill"
 import { SubmittedForm } from "./SubmittedForm"
-import { OPTOUT_STATUSES } from "./optout-constants"
 import { useUpdateOptOutRequest } from "../../superadmin.hooks"
 import type { OptOutRequest, OptOutStatus } from "../../superadmin.types"
 

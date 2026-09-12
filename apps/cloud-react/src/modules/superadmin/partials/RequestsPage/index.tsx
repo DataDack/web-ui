@@ -10,9 +10,9 @@ import { useAllSupportTickets } from "@/modules/support-tickets/support-tickets.
 import { useScreen } from "@/services/api/screen"
 
 import { SupportTicketsTab } from "./SupportTicketsTab"
+import { useAdminContactSubmissionCount, useAdminOptOutRequestCount } from "../../superadmin.hooks"
 import { ContactSubmissionsTab } from "../ContactSubmissionsPage"
 import { OptOutRequestsTab } from "../OptOutRequestsPage"
-import { useAdminContactSubmissionCount, useAdminOptOutRequestCount } from "../../superadmin.hooks"
 
 // Three queues, one page. All of them are "somebody is waiting on an operator to
 // decide", and splitting them across sidebar entries meant an operator had to

@@ -1,5 +1,21 @@
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react"
 
+import {
+  Badge,
+  Button,
+  cn,
+  CopyButton,
+  DataTable,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  Input,
+  TableCell,
+  TableRow,
+} from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQueryClient } from "@tanstack/react-query"
 import type { ColumnDef } from "@tanstack/react-table"
@@ -25,22 +41,6 @@ import { PageHeader, Section } from "@/components/console"
 import { TONE_CLASSES, TONE_DOT_CLASSES, type StatusTone } from "@/components/console/status-config"
 import { useScreen } from "@/services/api/screen"
 
-import {
-  Badge,
-  Button,
-  cn,
-  CopyButton,
-  DataTable,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  Input,
-  TableCell,
-  TableRow,
-} from "@datadack/common-ui"
 
 import { Field } from "../components/form-fields"
 import { superAdminApi } from "../superadmin.api"
@@ -737,9 +737,7 @@ export function ProxmoxManagerPage() {
           )
         }
         return (
-          <Fragment>
-            <ManagerConnection settings={settings} />
-          </Fragment>
+          <ManagerConnection settings={settings} />
         )
       })()}
 

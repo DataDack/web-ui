@@ -9,13 +9,13 @@ import {
   type RowAction,
   textColumn,
 } from "@datadack/common-ui"
+import { Tabs, TabsList, TabsTrigger } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Disc3, Layers, Pencil, Plus, RefreshCw, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
 import { ConfirmDialog, PageHeader } from "@/components/console"
-import { Tabs, TabsList, TabsTrigger } from "@datadack/common-ui"
 import { useQueryParamState } from "@/hooks/use-query-param-state"
 import { useScreen } from "@/services/api/screen"
 

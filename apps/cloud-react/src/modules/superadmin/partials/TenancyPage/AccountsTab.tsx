@@ -1,11 +1,11 @@
 import { useMemo } from "react"
 
+import { DataTable, dateColumn, EmptyState, statusColumn, textColumn } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Building2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
-import { DataTable, dateColumn, EmptyState, statusColumn, textColumn } from "@datadack/common-ui"
 
 import { BalanceCell } from "./BalanceCell"
 import { DiscountCell } from "./DiscountCell"

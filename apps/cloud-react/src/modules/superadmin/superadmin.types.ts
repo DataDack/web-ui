@@ -1819,3 +1819,68 @@ export interface CIDRDecision {
   /** True when the address plan could not be read and the built-in floor answered. */
   from_defaults?: boolean
 }
+
+/* ── Fleet status ───────────────────────────────────────────────────────── */
+//
+// One probe per node, answered in one call. The per-node endpoints still exist
+// for a detail view; this is what makes "are the templates synced" answerable
+// without clicking a thousand times.
+
+export interface FleetNodeStatus {
+  id: string
+  name: string
+  ip_address: string
+  cluster_id?: string
+  cluster_name?: string
+  availability_zone_id?: string
+  /** False for a node discovered from a sync that nobody has located yet. It
+   *  receives no workloads, because placement matches a region through a zone
+   *  it does not have. */
+  placed: boolean
+  node_status: string
+  /** healthy | unreachable | no_manager — "no_manager" means never enrolled,
+   *  which is a different problem from one that will not answer. */
+  manager_status: "healthy" | "unreachable" | "no_manager"
+  manager_url: string
+  manager_version?: string
+  latency_ms: number
+  template_state: string
+  templates_missing: number
+  templates_stale: number
+  templates_out_of_date: boolean
+  last_seen_at?: string
+}
+
+export interface FleetStatus {
+  nodes: FleetNodeStatus[]
+  total: number
+  managers_healthy: number
+  managers_unreachable: number
+  managers_unenrolled: number
+  templates_out_of_date: number
+  unplaced: number
+  probed_at: string
+  /** Shown, not hidden: a silently cached "healthy" is how a dead fleet looks
+   *  fine to whoever is deciding whether to act. */
+  cached: boolean
+}
+
+/* ── Cluster detail ─────────────────────────────────────────────────────── */
+
+export interface ClusterDetail {
+  cluster: PVECluster
+  nodes: PVENode[]
+  node_count: number
+  online_nodes: number
+  /** Members nobody has placed. The number an operator has to act on. */
+  unplaced_nodes: number
+  /** The zones this cluster's nodes are ACTUALLY in. A cluster spans racks and
+   *  has no zone of its own; this is derived from the members, so it cannot
+   *  disagree with them. */
+  availability_zone_ids: string[]
+  cpu_total: number
+  ram_total_mb: number
+  storage_total_gb: number
+  /** Opens the real Proxmox dashboard. */
+  console_url?: string
+}

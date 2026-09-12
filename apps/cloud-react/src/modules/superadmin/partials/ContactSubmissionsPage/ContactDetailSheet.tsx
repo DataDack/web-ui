@@ -18,8 +18,8 @@ import {
 import { Mail, Save } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { ContactStatusPill } from "./ContactStatusPill"
 import { CONTACT_STATUSES } from "./contact-constants"
+import { ContactStatusPill } from "./ContactStatusPill"
 import { useUpdateContactSubmission } from "../../superadmin.hooks"
 import type { ContactSubmission, ContactSubmissionStatus } from "../../superadmin.types"
 

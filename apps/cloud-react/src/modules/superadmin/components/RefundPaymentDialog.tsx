@@ -1,7 +1,5 @@
 import { useEffect, useMemo, useState } from "react"
 
-import { RotateCcw } from "lucide-react"
-
 import {
   Button,
   Dialog,
@@ -18,6 +16,8 @@ import {
   StatusBadge,
   Textarea,
 } from "@datadack/common-ui"
+import { RotateCcw } from "lucide-react"
+
 
 import { Field } from "./form-fields"
 import { useRefundPayment } from "../superadmin.hooks"
@@ -82,7 +82,7 @@ export function RefundPaymentDialog({ payment, onOpenChange }: Readonly<Props>) 
           ref_id: crypto.randomUUID(),
         },
       },
-      { onSuccess: () => onOpenChange(false) },
+      { onSuccess: () => { onOpenChange(false); } },
     )
   }
 
@@ -133,7 +133,7 @@ export function RefundPaymentDialog({ payment, onOpenChange }: Readonly<Props>) 
             min="0.01"
             step="0.01"
             value={amount}
-            onChange={(event) => setAmount(event.target.value)}
+            onChange={(event) => { setAmount(event.target.value); }}
             className="font-mono"
           />
         </Field>
@@ -142,7 +142,7 @@ export function RefundPaymentDialog({ payment, onOpenChange }: Readonly<Props>) 
           required
           hint="Optimum lets Razorpay choose the fastest available route."
         >
-          <Select value={speed} onValueChange={(value) => setSpeed(value as "normal" | "optimum")}>
+          <Select value={speed} onValueChange={(value) => { setSpeed(value as "normal" | "optimum"); }}>
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
@@ -157,7 +157,7 @@ export function RefundPaymentDialog({ payment, onOpenChange }: Readonly<Props>) 
             rows={3}
             maxLength={500}
             value={reason}
-            onChange={(event) => setReason(event.target.value)}
+            onChange={(event) => { setReason(event.target.value); }}
             placeholder="Why is this payment being refunded?"
           />
         </Field>
@@ -170,13 +170,13 @@ export function RefundPaymentDialog({ payment, onOpenChange }: Readonly<Props>) 
         >
           <Input
             value={confirmation}
-            onChange={(event) => setConfirmation(event.target.value)}
+            onChange={(event) => { setConfirmation(event.target.value); }}
             autoComplete="off"
           />
         </Field>
 
         <div className="flex justify-end gap-2">
-          <Button variant="ghost" disabled={refund.isPending} onClick={() => onOpenChange(false)}>
+          <Button variant="ghost" disabled={refund.isPending} onClick={() => { onOpenChange(false); }}>
             Cancel
           </Button>
           <Button

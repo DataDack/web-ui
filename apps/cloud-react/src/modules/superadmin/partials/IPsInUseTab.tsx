@@ -1,11 +1,5 @@
 import { useEffect, useMemo, useState } from "react"
 
-import type { ColumnDef } from "@tanstack/react-table"
-import { Globe, RefreshCw, Search, Unlink } from "lucide-react"
-import { useTranslation } from "react-i18next"
-
-import { ConfirmDialog } from "@/components/console"
-
 import {
   actionsColumn,
   Button,
@@ -17,6 +11,12 @@ import {
   Input,
   textColumn,
 } from "@datadack/common-ui"
+import type { ColumnDef } from "@tanstack/react-table"
+import { Globe, RefreshCw, Search, Unlink } from "lucide-react"
+import { useTranslation } from "react-i18next"
+
+import { ConfirmDialog } from "@/components/console"
+
 
 import { useAdminStaticIPAllocations, useReleaseStaticIPAllocation } from "../superadmin.hooks"
 import type { StaticIPAllocation } from "../superadmin.types"

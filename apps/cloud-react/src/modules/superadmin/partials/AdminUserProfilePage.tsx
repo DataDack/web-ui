@@ -1,5 +1,15 @@
 import { useMemo } from "react"
 
+import {
+  Badge,
+  Button,
+  DataTable,
+  EmptyState,
+  Skeleton,
+  StatusBadge,
+  dateColumn,
+  textColumn,
+} from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { ArrowLeft, Boxes, Crown, LifeBuoy, ShieldCheck, Star, UserRound } from "lucide-react"
 import { useTranslation } from "react-i18next"
@@ -11,26 +21,16 @@ import { useAllSupportTickets } from "@/modules/support-tickets/support-tickets.
 import type { SupportTicket } from "@/modules/support-tickets/support-tickets.types"
 import { useScreen } from "@/services/api/screen"
 
-import {
-  Badge,
-  Button,
-  DataTable,
-  EmptyState,
-  Skeleton,
-  StatusBadge,
-  dateColumn,
-  textColumn,
-} from "@datadack/common-ui"
 
 import { ActiveBadge } from "../components/ActiveBadge"
 import { KycActions, KycBadge } from "../components/KycCell"
+import { PaymentLedgerTable } from "../components/PaymentLedgerTable"
 import {
   useAdminPaymentLedger,
   useAdminPlatformOverview,
   useSetSuperAdmin,
 } from "../superadmin.hooks"
 import type { OverviewAccount, OverviewUser } from "../superadmin.types"
-import { PaymentLedgerTable } from "../components/PaymentLedgerTable"
 
 // The old /admin/organizations now redirects here.
 const TENANCY_PATH = "/admin/tenancy"

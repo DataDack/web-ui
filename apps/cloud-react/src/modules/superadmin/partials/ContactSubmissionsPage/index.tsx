@@ -19,9 +19,9 @@ import { useTranslation } from "react-i18next"
 import { ConfirmDialog, StatGrid, type StatCardProps } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
+import { CONTACT_STATUSES } from "./contact-constants"
 import { ContactDetailSheet } from "./ContactDetailSheet"
 import { ContactStatusPill } from "./ContactStatusPill"
-import { CONTACT_STATUSES } from "./contact-constants"
 import { CONTACT_SUBMISSIONS_PAGE_SIZE } from "../../superadmin.api"
 import {
   useAdminContactSubmissionCount,

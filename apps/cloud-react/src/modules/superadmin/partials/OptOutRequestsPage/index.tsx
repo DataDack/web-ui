@@ -19,10 +19,10 @@ import { useTranslation } from "react-i18next"
 import { StatGrid, type StatCardProps } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
+import { OPTOUT_STATUSES } from "./optout-constants"
 import { OptOutDetailSheet } from "./OptOutDetailSheet"
 import { OptOutStatusPill } from "./OptOutStatusPill"
 import { RightsBadges } from "./RightsBadges"
-import { OPTOUT_STATUSES } from "./optout-constants"
 import { OPTOUT_REQUESTS_PAGE_SIZE } from "../../superadmin.api"
 import {
   useAdminOptOutRequestCount,

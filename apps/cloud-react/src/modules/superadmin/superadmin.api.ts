@@ -11,6 +11,8 @@ import {
 import type {
   AddressPlan,
   CIDRDecision,
+  ClusterDetail,
+  FleetStatus,
   ClusterNetwork,
   EffectiveNetwork,
   PlatformDefaults,
@@ -537,6 +539,15 @@ export const superAdminApi = {
   // behaviour cannot drift.
   checkTenantCIDR: (cidr: string) =>
     apiPost<CIDRDecision>(`${NETWORKING_BASE}/check-cidr`, { cidr }),
+
+  /* ── Fleet + cluster detail ──────────────────────────────────────────── */
+
+  // One call, one probe per node. refresh re-probes instead of serving the
+  // 20-second snapshot.
+  getFleetStatus: (refresh = false) =>
+    apiGet<FleetStatus>(`${BASE}/fleet-status${refresh ? "?refresh=true" : ""}`),
+  getClusterDetail: (id: string) =>
+    apiGet<ClusterDetail>(`${BASE}/pve-clusters/${encodeURIComponent(id)}`),
 
   getEmailPolicy: (refresh = false) =>
     apiGet<EmailPolicy>(`${EMAIL_POLICY_BASE}${refresh ? "?refresh=true" : ""}`),

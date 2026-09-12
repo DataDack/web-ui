@@ -15,6 +15,7 @@ import {
   Switch,
   Textarea,
 } from "@datadack/common-ui"
+import { Tabs, TabsList, TabsTrigger } from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
   ArrowLeft,
@@ -42,7 +43,6 @@ import {
   StatusBadge,
   type WizardStep,
 } from "@/components/console"
-import { Tabs, TabsList, TabsTrigger } from "@datadack/common-ui"
 import { useQueryParamState } from "@/hooks/use-query-param-state"
 import { useScreen } from "@/services/api/screen"
 

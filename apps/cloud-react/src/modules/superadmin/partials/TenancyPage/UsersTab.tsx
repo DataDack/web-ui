@@ -1,10 +1,5 @@
 import { useMemo } from "react"
 
-import type { ColumnDef } from "@tanstack/react-table"
-import { Building2, UserRoundX } from "lucide-react"
-import { useTranslation } from "react-i18next"
-import { useNavigate } from "react-router-dom"
-
 import {
   DataTable,
   dateColumn,
@@ -18,6 +13,11 @@ import {
   textColumn,
   type DataTableColumnMeta,
 } from "@datadack/common-ui"
+import type { ColumnDef } from "@tanstack/react-table"
+import { Building2, UserRoundX } from "lucide-react"
+import { useTranslation } from "react-i18next"
+import { useNavigate } from "react-router-dom"
+
 
 import { AccessChips } from "./AccessChips"
 import type { TabProps, UserRow } from "./types"

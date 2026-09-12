@@ -1,8 +1,5 @@
 import { useMemo, useState } from "react"
 
-import type { ColumnDef } from "@tanstack/react-table"
-import { CreditCard, RotateCcw } from "lucide-react"
-
 import {
   Button,
   DataTable,
@@ -11,6 +8,9 @@ import {
   dateColumn,
   textColumn,
 } from "@datadack/common-ui"
+import type { ColumnDef } from "@tanstack/react-table"
+import { CreditCard, RotateCcw } from "lucide-react"
+
 
 import type { PaymentLedgerEntry } from "../superadmin.types"
 import { RefundPaymentDialog, refundableAmount } from "./RefundPaymentDialog"
@@ -89,7 +89,7 @@ export function PaymentLedgerTable({
         cell: ({ row }) => {
           const canRefund = row.original.status === "paid" && refundableAmount(row.original) > 0
           return canRefund ? (
-            <Button variant="outline" size="sm" onClick={() => setSelectedPayment(row.original)}>
+            <Button variant="outline" size="sm" onClick={() => { setSelectedPayment(row.original); }}>
               <RotateCcw className="size-3.5" />
               Refund
             </Button>
