@@ -115,8 +115,11 @@ export const iamApi = {
   },
   deleteAPIKey: (id: string) => apiDelete(`/auth/keys/${id}`),
 
-  /* permissions (reference data) */
-  listPermissions: () => apiGet<Permission[]>(`/auth/permissions${LIST_QUERY}`),
+  /* permissions (reference data) — the whole catalogue, not LIST_QUERY's first
+     100. There are 211 shipped entries plus whatever an operator has added, and
+     both readers need all of them: the catalogue page IS the list, and the
+     policy simulator's action picker cannot offer an action it never fetched. */
+  listPermissions: () => apiGet<Permission[]>("/auth/permissions?page=1&limit=1000"),
 
   /* members of the caller's default account (for the account-role column) */
   listCurrentAccountMembers: () => apiGet<AccountMember[]>("/org/accounts/current/members"),
