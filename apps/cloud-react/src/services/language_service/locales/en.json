@@ -1790,7 +1790,9 @@
     "saving": "Saving…",
     "edit": "Edit",
     "unavailable": "Unavailable",
-    "add": "Add"
+    "add": "Add",
+    "previous": "Previous",
+    "next": "Next"
   },
   "staticIps": {
     "title": "Static IPs",
@@ -4672,7 +4674,68 @@
       "noMembers": "No members discovered",
       "noMembersBody": "Run a sync, or check that the cluster endpoint is reachable.",
       "loadFailed": "Couldn't load that cluster",
-      "loadFailedSubtitle": "It may have been removed, or the platform service is unreachable."
+      "loadFailedSubtitle": "It may have been removed, or the platform service is unreachable.",
+      "tabs": {
+        "overview": "Overview",
+        "nodes": "Nodes",
+        "networking": "Networking",
+        "inventory": "Inventory",
+        "manager": "Proxmox manager"
+      },
+      "groups": {
+        "vm": "Virtual machines",
+        "lxc": "Containers",
+        "network": "Networks"
+      },
+      "scopes": {
+        "tenant": "Tenant",
+        "platform": "Platform",
+        "unknown": "Unclaimed"
+      },
+      "states": {
+        "ok": "OK",
+        "orphan": "Orphan",
+        "missing": "Missing"
+      },
+      "item": "Item",
+      "state": "State",
+      "scope": "Scope",
+      "owner": "Owner",
+      "onNode": "Node",
+      "size": "Size",
+      "total": "Total",
+      "orphans": "Orphans",
+      "orphansHint": "On the cluster, nothing claims them",
+      "missing": "Missing",
+      "missingHint": "In our records, not on the cluster",
+      "platformCount": "{{count}} platform-owned",
+      "searchPlaceholder": "Search name, id, owner or account",
+      "allNodes": "All nodes",
+      "nothingMatches": "Nothing matches those filters",
+      "nothingMatchesBody": "Clear a filter, or switch to another page.",
+      "pageOf": "Page {{page}} of {{pages}} · {{total}} rows",
+      "inventoryUnreachable": "Couldn't reach this cluster",
+      "template": "Template",
+      "unmanaged": "Unclaimed",
+      "platformOwned": "Platform",
+      "placeIt": "Place it",
+      "credentials": "Credentials",
+      "agent": "Agent",
+      "webhook": "Webhook",
+      "netNoZone": "No availability zone yet",
+      "netNoZoneBody": "Place this cluster's nodes into a zone first — the platform network is configured per zone.",
+      "netNotConfigured": "No platform network for {{az}}",
+      "netNotConfiguredBody": "Upload a cluster document for this zone, or check the common configuration.",
+      "netOpenDefaults": "Open networking",
+      "netEditCommon": "Edit common config",
+      "netRevisions": "Common revision {{defaults}} · cluster revision {{cluster}}",
+      "netNoNodes": "No nodes discovered yet",
+      "netNoNodesBody": "Sync the cluster first. Node names come from Proxmox, and nothing can be applied until they are known.",
+      "netRedundancyOk": "Redundancy is healthy",
+      "noGuests": "Nothing running here",
+      "noGuestsBody": "This cluster holds no guests yet.",
+      "noManagers": "No managers on this cluster yet",
+      "noManagersBody": "Sync the cluster and generate agent credentials for its nodes."
     },
     "networking": {
       "title": "Platform networking",

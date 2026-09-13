@@ -405,11 +405,11 @@ function ClustersTab() {
           <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
             <dt className="text-muted-foreground">{t("superAdmin.networking.exitNodes")}</dt>
             <dd className="font-mono">
-              {c.exit_nodes.length ? c.exit_nodes.join(", ") : t("superAdmin.networking.allNodes")}
+              {c.exit_nodes?.length ? c.exit_nodes.join(", ") : t("superAdmin.networking.allNodes")}
             </dd>
             <dt className="text-muted-foreground">{t("superAdmin.networking.routeReflectors")}</dt>
             <dd className="font-mono">
-              {c.route_reflectors.length
+              {c.route_reflectors?.length
                 ? c.route_reflectors.join(", ")
                 : t("superAdmin.networking.allNodes")}
             </dd>

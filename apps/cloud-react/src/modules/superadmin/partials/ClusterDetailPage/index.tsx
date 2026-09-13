@@ -4,13 +4,14 @@ import {
   Badge,
   Button,
   Card,
-  DataTable,
   EmptyState,
   Skeleton,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
   cn,
-  timeAgo,
 } from "@datadack/common-ui"
-import type { ColumnDef } from "@tanstack/react-table"
 import {
   AlertTriangle,
   ArrowLeft,
@@ -27,12 +28,19 @@ import { Link, useNavigate, useParams } from "react-router-dom"
 import { PageHeader } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
+
+import { ClusterInventoryTab } from "./ClusterInventoryTab"
+import { ClusterManagerTab } from "./ClusterManagerTab"
+import { ClusterNetworkingTab } from "./ClusterNetworkingTab"
+import { ClusterNodesTab } from "./ClusterNodesTab"
 import {
   useAdminAvailabilityZones,
   useClusterDetail,
   useSyncPVECluster,
 } from "../../superadmin.hooks"
-import type { PVENode } from "../../superadmin.types"
+
+const TABS = ["nodes", "networking", "inventory", "manager"] as const
+type Tab = (typeof TABS)[number]
 
 /**
  * One cluster, as an operator thinks about it.
@@ -61,59 +69,6 @@ export function ClusterDetailPage() {
     const byId = new Map((zones ?? []).map((z) => [z.id, z.code || z.name]))
     return (id?: string) => (id ? (byId.get(id) ?? id) : "")
   }, [zones])
-
-  const columns = useMemo<ColumnDef<PVENode>[]>(
-    () => [
-      {
-        accessorKey: "name",
-        header: t("superAdmin.pveFleet.node"),
-        cell: ({ row }) => (
-          <Link
-            to={`/admin/pve-nodes/${row.original.id}`}
-            className="font-medium hover:underline underline-offset-4"
-          >
-            {row.original.name}
-          </Link>
-        ),
-      },
-      { accessorKey: "ip_address", header: t("superAdmin.pveFleet.address") },
-      {
-        accessorKey: "status",
-        header: t("superAdmin.pveFleet.status"),
-        cell: ({ row }) => (
-          <Badge variant={row.original.status === "online" ? "success" : "secondary"}>
-            {row.original.status}
-          </Badge>
-        ),
-      },
-      {
-        // Placement is the column that decides whether this machine does any
-        // work at all, so it is not buried at the end.
-        id: "zone",
-        header: t("superAdmin.availabilityZones.title"),
-        cell: ({ row }) =>
-          row.original.availability_zone_id ? (
-            <span className="text-sm">{zoneName(row.original.availability_zone_id)}</span>
-          ) : (
-            <Badge variant="warning" className="gap-1">
-              <AlertTriangle className="size-3" />
-              {t("superAdmin.cluster.unplaced")}
-            </Badge>
-          ),
-      },
-      {
-        id: "capacity",
-        header: t("superAdmin.cluster.capacity"),
-        cell: ({ row }) => (
-          <span className="text-sm text-muted-foreground tabular-nums">
-            {row.original.cpu_total} vCPU · {Math.round(row.original.ram_total_mb / 1024)} GB ·{" "}
-            {row.original.storage_total_gb} GB
-          </span>
-        ),
-      },
-    ],
-    [t, zoneName],
-  )
 
   if (isLoading) {
     return (
@@ -238,30 +193,45 @@ export function ClusterDetailPage() {
         />
       </div>
 
-      <Card className="overflow-hidden">
-        <div className="flex items-center justify-between gap-3 border-b px-4 py-3">
-          <div>
-            <h2 className="font-medium">{t("superAdmin.cluster.members")}</h2>
-            <p className="text-sm text-muted-foreground">
-              {t("superAdmin.cluster.membersHint")}
-            </p>
-          </div>
-          {cluster.last_synced_at ? (
-            <span className="shrink-0 text-sm text-muted-foreground">
-              {t("superAdmin.cluster.syncedAgo", { ago: timeAgo(cluster.last_synced_at) })}
-            </span>
-          ) : null}
-        </div>
-        {nodes.length === 0 ? (
-          <EmptyState
-            icon={Server}
-            title={t("superAdmin.cluster.noMembers")}
-            description={t("superAdmin.cluster.noMembersBody")}
+      <Tabs value={tab} onValueChange={(v) => { setTab(v) }}>
+        {/* No "overview" tab: the stats and the alerts above ARE the overview,
+            and they stay visible whichever section is open — which is the point
+            of putting them there rather than behind a tab of their own. */}
+        <TabsList>
+          <TabsTrigger value="nodes">
+            {t("superAdmin.cluster.tabs.nodes")}
+            {unplaced > 0 ? (
+              <Badge variant="warning" className="ml-2">
+                {unplaced}
+              </Badge>
+            ) : null}
+          </TabsTrigger>
+          <TabsTrigger value="networking">{t("superAdmin.cluster.tabs.networking")}</TabsTrigger>
+          <TabsTrigger value="inventory">{t("superAdmin.cluster.tabs.inventory")}</TabsTrigger>
+          <TabsTrigger value="manager">{t("superAdmin.cluster.tabs.manager")}</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="nodes" className="pt-4">
+          <ClusterNodesTab clusterId={cluster.id} nodes={nodes} />
+        </TabsContent>
+        <TabsContent value="networking" className="pt-4">
+          {/* Keyed by availability zone, not cluster id: the platform network
+              document is per zone, and a cluster whose nodes span two zones has
+              two of them. */}
+          <ClusterNetworkingTab
+            availabilityZones={data.availability_zone_ids.map((z) => zoneName(z))}
           />
-        ) : (
-          <DataTable columns={columns} data={nodes} />
-        )}
-      </Card>
+        </TabsContent>
+        <TabsContent value="inventory" className="pt-4">
+          <ClusterInventoryTab clusterId={cluster.id} />
+        </TabsContent>
+        <TabsContent value="manager" className="pt-4">
+          {/* Scoped to this cluster. The same probe backs the fleet-wide page,
+              which stays in the sidebar because "is anything wrong anywhere" is
+              a different question from "is this cluster healthy". */}
+          <ClusterManagerTab clusterId={cluster.id} />
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }

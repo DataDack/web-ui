@@ -42,6 +42,7 @@ import type {
   AddBlockedDomainsRequest,
   AddressPlan,
   ClusterNetwork,
+  InventoryQuery,
   PlatformDefaults,
   EmailPolicy,
   EmailPolicyCheckRequest,
@@ -1490,6 +1491,25 @@ export function useClusterDetail(id: string | undefined) {
     queryFn: () => superAdminApi.getClusterDetail(id!),
     enabled: Boolean(id),
     staleTime: 0,
+  })
+}
+
+/**
+ * A cluster's inventory, as Proxmox reports it.
+ *
+ * The query is part of the cache key, so paging and filtering are separate
+ * cached results rather than one that thrashes — and going back a page is
+ * instant instead of another round trip to the hypervisor.
+ */
+export function useClusterInventory(id: string | undefined, query: InventoryQuery) {
+  return useQuery({
+    queryKey: SUPERADMIN_QUERY_KEYS.clusterInventory(id ?? "", query),
+    queryFn: () => superAdminApi.getClusterInventory(id!, query),
+    enabled: Boolean(id),
+    // Live hypervisor state: a cached answer is a claim about hardware that may
+    // have changed since, and this page exists to show what is true now.
+    staleTime: 0,
+    placeholderData: (prev) => prev,
   })
 }
 

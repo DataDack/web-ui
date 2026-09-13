@@ -16,6 +16,8 @@ export const SUPERADMIN_QUERY_KEYS = {
   emailPolicy: ["superadmin", "email-policy"] as const,
   fleetStatus: ["superadmin", "fleet-status"] as const,
   clusterDetail: (id: string) => ["superadmin", "pve-cluster", id] as const,
+  clusterInventory: (id: string, query: unknown) =>
+    ["superadmin", "pve-cluster", id, "inventory", query] as const,
   addressPlan: ["superadmin", "networking", "address-plan"] as const,
   platformDefaults: ["superadmin", "networking", "defaults"] as const,
   effectiveNetwork: (az: string) => ["superadmin", "networking", "effective", az] as const,

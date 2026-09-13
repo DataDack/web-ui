@@ -12,6 +12,8 @@ import type {
   AddressPlan,
   CIDRDecision,
   ClusterDetail,
+  ClusterInventory,
+  InventoryQuery,
   FleetStatus,
   ClusterNetwork,
   EffectiveNetwork,
@@ -555,6 +557,15 @@ export const superAdminApi = {
   // 20-second snapshot.
   getFleetStatus: (refresh = false) =>
     apiGet<FleetStatus>(`${BASE}/fleet-status${refresh ? "?refresh=true" : ""}`),
+  getClusterInventory: (id: string, query: InventoryQuery) => {
+    const params = new URLSearchParams()
+    for (const [key, value] of Object.entries(query)) {
+      if (value !== undefined && value !== "" && value !== null) params.set(key, String(value))
+    }
+    return apiGet<ClusterInventory>(
+      `${BASE}/pve-clusters/${encodeURIComponent(id)}/inventory?${params.toString()}`,
+    )
+  },
   getClusterDetail: (id: string) =>
     apiGet<ClusterDetail>(`${BASE}/pve-clusters/${encodeURIComponent(id)}`),
 

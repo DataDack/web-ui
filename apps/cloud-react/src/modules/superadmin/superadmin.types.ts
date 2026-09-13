@@ -1762,9 +1762,18 @@ export interface ClusterNetwork {
   enabled: boolean
   proxmox: { min_version: string; api_endpoint: string; insecure_tls: boolean }
   nodes: FabricNode[]
-  route_reflectors: string[]
-  exit_nodes: string[]
-  exit_node_primary: string
+  /**
+   * Optional on the wire, not in the model. These are `omitempty` in Go, and
+   * the shipped config sets them to `[]` to mean "every discovered node" — so
+   * the API omits the key entirely and a required type here is a lie that
+   * crashes on `.length`.
+   *
+   * Absent and empty mean the SAME thing: every discovered node. Treat them
+   * identically at every read site.
+   */
+  route_reflectors?: string[]
+  exit_nodes?: string[]
+  exit_node_primary?: string
   /**
    * An HA gap recorded in configuration rather than left to be discovered
    * during an outage. A one-node cluster CANNOT have two route reflectors —
@@ -1894,4 +1903,86 @@ export interface PlatformZoneApplyResult {
   applied: boolean
   revision?: string
   error?: string
+}
+
+/**
+ * One thing on a cluster, whatever kind it is — read from PROXMOX, with our
+ * records mapped on top.
+ *
+ * Our tables know what the platform PROVISIONED; the hypervisor knows what is
+ * THERE. The rows where those disagree are the point of the view.
+ */
+export interface InventoryItem {
+  kind: "qemu" | "lxc" | "zone" | "vnet"
+  /** Natural key for the kind: a VMID for a guest, a name for an SDN object. */
+  id: string
+  name: string
+  node?: string
+  /**
+   * ok — present and accounted for.
+   * orphan — on the cluster, nothing claims it.
+   * missing — in our records, absent from the cluster; the tenant sees a
+   *   network in their console that carries nothing.
+   */
+  state: "ok" | "orphan" | "missing"
+  /** Runtime state. Empty for network objects, which are not running or stopped. */
+  status?: string
+  /** Filtered within a page, never split into a separate table. */
+  scope: "tenant" | "platform" | "unknown"
+  /** The owner, resolved to something a human recognises. An account id alone is
+   *  not owner information — nobody knows who 3f2a91c4 is. */
+  account_id?: string
+  account_name?: string
+  account_number?: string
+  owner_kind?: string
+  owner_id?: string
+  owner_name?: string
+  vni?: number
+  zone?: string
+  cpus?: number
+  memory_mb?: number
+  disk_gb?: number
+  template?: boolean
+}
+
+export interface InventorySummary {
+  total: number
+  guests: number
+  zones: number
+  vnets: number
+  running: number
+  orphans: number
+  missing: number
+  tenant: number
+  platform: number
+}
+
+/** One page of a cluster's inventory, plus the whole picture. */
+export interface ClusterInventory {
+  items: InventoryItem[]
+  total: number
+  page: number
+  limit: number
+  pages: number
+  /** Counts the GROUP, not the visible page — tiles that changed as you paged
+   *  through would be useless. */
+  summary: InventorySummary
+  nodes: string[]
+  /** Set when Proxmox could not be reached. The listing is empty rather than
+   *  wrong — an unreachable cluster and an idle one look identical otherwise. */
+  error?: string
+}
+
+/** Which page of the inventory: different kinds are different jobs. */
+export type InventoryGroup = "network" | "vm" | "lxc"
+
+export interface InventoryQuery {
+  group: InventoryGroup
+  scope?: string
+  state?: string
+  node?: string
+  status?: string
+  q?: string
+  page?: number
+  limit?: number
 }
