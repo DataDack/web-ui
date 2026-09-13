@@ -1,7 +1,7 @@
-import { Badge, Button, Card, EmptyState, Skeleton, cn } from "@datadack/common-ui"
+import { Badge, Button, Card, EmptyState, Skeleton, TONE_CLASSES, cn } from "@datadack/common-ui"
 import { AlertTriangle, CheckCircle2, Network, Play } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 
 import { useApplyClusterNetwork, useEffectiveNetwork } from "../../superadmin.hooks"
 
@@ -45,6 +45,7 @@ export function ClusterNetworkingTab({
 
 function ZoneNetwork({ az }: Readonly<{ az: string }>) {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const { data, isLoading, isError } = useEffectiveNetwork(az)
   const apply = useApplyClusterNetwork()
 
@@ -55,11 +56,12 @@ function ZoneNetwork({ az }: Readonly<{ az: string }>) {
         icon={Network}
         title={t("superAdmin.cluster.netNotConfigured", { az })}
         description={t("superAdmin.cluster.netNotConfiguredBody")}
-        action={
-          <Button variant="outline" asChild>
-            <Link to="/admin/networking">{t("superAdmin.cluster.netOpenDefaults")}</Link>
-          </Button>
-        }
+        action={{
+          label: t("superAdmin.cluster.netOpenDefaults"),
+          onClick: () => {
+            void navigate("/admin/networking")
+          },
+        }}
       />
     )
   }
@@ -99,9 +101,9 @@ function ZoneNetwork({ az }: Readonly<{ az: string }>) {
       {/* Nothing can be applied to a cluster whose members are unknown, and the
           platform cannot guess them — a node's name comes from the cluster. */}
       {!data.nodes_discovered ? (
-        <Card className="border-warning/40 bg-warning/5 p-4">
+        <Card className="border-status-warning/25 bg-status-warning-bg p-4">
           <div className="flex items-start gap-3">
-            <AlertTriangle className="mt-0.5 size-5 shrink-0 text-warning" />
+            <AlertTriangle className="mt-0.5 size-5 shrink-0 text-status-warning" />
             <div>
               <p className="font-medium">{t("superAdmin.cluster.netNoNodes")}</p>
               <p className="text-sm text-muted-foreground">
@@ -145,7 +147,7 @@ function ZoneNetwork({ az }: Readonly<{ az: string }>) {
               <span className="font-mono text-sm text-muted-foreground">gw {v.gateway}</span>
               <span className="ml-auto">
                 {v.tenant_reachable && v.tenant_reachable !== "never" ? (
-                  <Badge variant="warning">{v.tenant_reachable}</Badge>
+                  <Badge variant="outline" className={TONE_CLASSES.warning}>{v.tenant_reachable}</Badge>
                 ) : (
                   <Badge variant="secondary">{t("superAdmin.networking.never")}</Badge>
                 )}
@@ -156,9 +158,9 @@ function ZoneNetwork({ az }: Readonly<{ az: string }>) {
       </Card>
 
       {data.evpn.redundancy && data.evpn.redundancy.status !== "ok" ? (
-        <Card className="border-warning/40 bg-warning/5 p-4">
+        <Card className="border-status-warning/25 bg-status-warning-bg p-4">
           <div className="flex items-start gap-3">
-            <AlertTriangle className="mt-0.5 size-5 shrink-0 text-warning" />
+            <AlertTriangle className="mt-0.5 size-5 shrink-0 text-status-warning" />
             <div>
               <p className="font-medium">
                 {t("superAdmin.networking.redundancy", { status: data.evpn.redundancy.status })}
@@ -170,7 +172,7 @@ function ZoneNetwork({ az }: Readonly<{ az: string }>) {
           </div>
         </Card>
       ) : (
-        <div className="flex items-center gap-2 text-sm text-success">
+        <div className="flex items-center gap-2 text-sm text-status-success">
           <CheckCircle2 className="size-4" />
           {t("superAdmin.cluster.netRedundancyOk")}
         </div>

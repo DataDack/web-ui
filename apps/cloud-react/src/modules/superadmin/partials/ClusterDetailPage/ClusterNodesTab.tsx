@@ -1,8 +1,8 @@
 import { useMemo } from "react"
 
-import { Badge, Button, DataTable, EmptyState, cn } from "@datadack/common-ui"
+import { Badge, DataTable, EmptyState, TONE_CLASSES, cn } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
-import { AlertTriangle, MapPinOff, RefreshCw, Server } from "lucide-react"
+import { AlertTriangle, MapPinOff, Server } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
@@ -51,7 +51,7 @@ export function ClusterNodesTab({
         accessorKey: "status",
         header: t("superAdmin.pveFleet.status"),
         cell: ({ row }) => (
-          <Badge variant={row.original.status === "online" ? "success" : "secondary"}>
+          <Badge variant="outline" className={row.original.status === "online" ? TONE_CLASSES.success : TONE_CLASSES.neutral}>
             {row.original.status}
           </Badge>
         ),
@@ -64,7 +64,7 @@ export function ClusterNodesTab({
             <span className="text-sm">{zoneName(row.original.availability_zone_id)}</span>
           ) : (
             <Link to={`/admin/pve-nodes/${row.original.id}`}>
-              <Badge variant="warning" className="gap-1">
+              <Badge variant="outline" className={cn("gap-1", TONE_CLASSES.warning)}>
                 <MapPinOff className="size-3" />
                 {t("superAdmin.cluster.placeIt")}
               </Badge>
@@ -86,10 +86,10 @@ export function ClusterNodesTab({
         header: t("superAdmin.cluster.credentials"),
         cell: ({ row }) => (
           <div className="flex gap-1">
-            <Badge variant={row.original.has_agent_secret ? "success" : "secondary"}>
+            <Badge variant="outline" className={row.original.has_agent_secret ? TONE_CLASSES.success : TONE_CLASSES.neutral}>
               {t("superAdmin.cluster.agent")}
             </Badge>
-            <Badge variant={row.original.has_webhook_secret ? "success" : "secondary"}>
+            <Badge variant="outline" className={row.original.has_webhook_secret ? TONE_CLASSES.success : TONE_CLASSES.neutral}>
               {t("superAdmin.cluster.webhook")}
             </Badge>
           </div>
@@ -105,18 +105,12 @@ export function ClusterNodesTab({
         icon={Server}
         title={t("superAdmin.cluster.noMembers")}
         description={t("superAdmin.cluster.noMembersBody")}
-        action={
-          <Button
-            variant="outline"
-            disabled={sync.isPending}
-            onClick={() => {
-              sync.mutate({ id: clusterId })
-            }}
-          >
-            <RefreshCw className={cn("size-4", sync.isPending && "animate-spin")} />
-            {t("superAdmin.pveFleet.sync")}
-          </Button>
-        }
+        action={{
+          label: t("superAdmin.pveFleet.sync"),
+          onClick: () => {
+            sync.mutate({ id: clusterId })
+          },
+        }}
       />
     )
   }
@@ -126,8 +120,8 @@ export function ClusterNodesTab({
   return (
     <div className="space-y-4">
       {unplaced > 0 ? (
-        <div className="flex items-start gap-3 rounded-md border border-warning/40 bg-warning/5 p-4">
-          <AlertTriangle className="mt-0.5 size-5 shrink-0 text-warning" />
+        <div className="flex items-start gap-3 rounded-md border border-status-warning/25 bg-status-warning-bg p-4">
+          <AlertTriangle className="mt-0.5 size-5 shrink-0 text-status-warning" />
           <div>
             <p className="font-medium">
               {t("superAdmin.cluster.unplacedTitle", { count: unplaced })}

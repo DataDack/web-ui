@@ -12,6 +12,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
+  TONE_CLASSES,
   cn,
 } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
@@ -84,7 +85,7 @@ export function PlatformNetworkingPage() {
           description={t("superAdmin.networking.notUploadedBody")}
         />
       ) : (
-        <Tabs value={tab} onValueChange={(v) => { setTab(v); }}>
+        <Tabs value={tab} onValueChange={(v) => { setTab(v as Tab); }}>
           <TabsList>
             <TabsTrigger value="common">{t("superAdmin.networking.tabs.common")}</TabsTrigger>
             <TabsTrigger value="address-plan">
@@ -146,7 +147,7 @@ function CommonTab() {
         header: t("superAdmin.networking.tenantReachable"),
         cell: ({ row }) =>
           row.original.tenant_reachable && row.original.tenant_reachable !== "never" ? (
-            <Badge variant="warning">{row.original.tenant_reachable}</Badge>
+            <Badge variant="outline" className={TONE_CLASSES.warning}>{row.original.tenant_reachable}</Badge>
           ) : (
             <Badge variant="secondary">{t("superAdmin.networking.never")}</Badge>
           ),
@@ -330,8 +331,8 @@ function AddressPlanTab() {
             className={cn(
               "mt-3 flex items-start gap-3 rounded-md border p-3",
               !decision.allowed && "border-destructive/40 bg-destructive/5",
-              decision.allowed && decision.severity === "warn" && "border-warning/40 bg-warning/5",
-              decision.allowed && !decision.severity && "border-success/40 bg-success/5",
+              decision.allowed && decision.severity === "warn" && "border-status-warning/25 bg-status-warning-bg",
+              decision.allowed && !decision.severity && "border-status-success/25 bg-status-success-bg",
             )}
           >
             <DecisionIcon decision={decision} />
@@ -367,7 +368,7 @@ function AddressPlanTab() {
         <ul className="divide-y">
           {data.tenant_rules.functional_conflicts.map((c) => (
             <li key={c.cidr} className="flex items-start gap-3 px-4 py-3">
-              <Badge variant={c.severity === "reject" ? "destructive" : "warning"}>
+              <Badge variant="outline" className={c.severity === "reject" ? TONE_CLASSES.danger : TONE_CLASSES.warning}>
                 {c.severity}
               </Badge>
               <div className="min-w-0">
@@ -412,7 +413,7 @@ function ClustersTab() {
               </p>
             </div>
             <div className="flex shrink-0 items-center gap-2">
-              <Badge variant={c.enabled ? "success" : "secondary"}>
+              <Badge variant="outline" className={c.enabled ? TONE_CLASSES.success : TONE_CLASSES.neutral}>
                 {c.enabled
                   ? t("superAdmin.networking.enabled")
                   : t("superAdmin.networking.disabled")}
@@ -450,8 +451,8 @@ function ClustersTab() {
           </dl>
 
           {c.redundancy && c.redundancy.status !== "ok" ? (
-            <div className="mt-3 flex items-start gap-2 rounded-md border border-warning/40 bg-warning/5 p-3">
-              <AlertTriangle className="mt-0.5 size-4 shrink-0 text-warning" />
+            <div className="mt-3 flex items-start gap-2 rounded-md border border-status-warning/25 bg-status-warning-bg p-3">
+              <AlertTriangle className="mt-0.5 size-4 shrink-0 text-status-warning" />
               <div>
                 <p className="text-sm font-medium">
                   {t("superAdmin.networking.redundancy", { status: c.redundancy.status })}
@@ -488,9 +489,9 @@ function DecisionIcon({ decision }: Readonly<{ decision: CIDRDecision }>) {
     return <ShieldAlert className="mt-0.5 size-5 shrink-0 text-destructive" />
   }
   if (decision.severity === "warn") {
-    return <AlertTriangle className="mt-0.5 size-5 shrink-0 text-warning" />
+    return <AlertTriangle className="mt-0.5 size-5 shrink-0 text-status-warning" />
   }
-  return <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-success" />
+  return <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-status-success" />
 }
 
 /** Three outcomes, and the middle one matters most: a tenant may have the range,

@@ -179,7 +179,7 @@ function ClusterCard({
               </span>
             ) : null}
             {unplaced > 0 ? (
-              <Badge variant="warning" className="gap-1 text-[11px]">
+              <Badge variant="outline" className={cn("gap-1 text-[11px]", TONE_CLASSES.warning)}>
                 <AlertTriangle className="size-3" />
                 {t("superAdmin.pveClusters.unplaced", { count: unplaced })}
               </Badge>

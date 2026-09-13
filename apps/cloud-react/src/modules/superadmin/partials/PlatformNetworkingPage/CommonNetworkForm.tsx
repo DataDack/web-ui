@@ -245,7 +245,7 @@ export function CommonNetworkForm({ value, onValidate, onSave, saving }: CommonN
         </Card>
       ) : null}
       {problems !== null && problems.length === 0 ? (
-        <div className="flex items-center gap-2 text-sm text-success">
+        <div className="flex items-center gap-2 text-sm text-status-success">
           <CheckCircle2 className="size-4" />
           {t("superAdmin.networking.validAgainstAll")}
         </div>

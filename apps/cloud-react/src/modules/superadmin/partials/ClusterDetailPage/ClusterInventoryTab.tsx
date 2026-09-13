@@ -16,6 +16,7 @@ import {
   Tabs,
   TabsList,
   TabsTrigger,
+  TONE_CLASSES,
   cn,
 } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
@@ -44,7 +45,7 @@ import type { InventoryGroup, InventoryItem } from "../../superadmin.types"
 const GROUPS = ["network", "vm", "lxc"] as const
 
 const TILE_TONE = {
-  warning: "text-warning",
+  warning: "text-status-warning",
   bad: "text-destructive",
   muted: "text-muted-foreground",
 } as const
@@ -359,7 +360,7 @@ function StateBadge({ item }: Readonly<{ item: InventoryItem }>) {
   const { t } = useTranslation()
   if (item.state === "orphan") {
     return (
-      <Badge variant="warning" className="gap-1">
+      <Badge variant="outline" className={cn("gap-1", TONE_CLASSES.warning)}>
         <GhostIcon className="size-3" />
         {t("superAdmin.cluster.states.orphan")}
       </Badge>
@@ -375,10 +376,10 @@ function StateBadge({ item }: Readonly<{ item: InventoryItem }>) {
   }
   if (item.status) {
     return (
-      <Badge variant={item.status === "running" ? "success" : "secondary"}>{item.status}</Badge>
+      <Badge variant="outline" className={item.status === "running" ? TONE_CLASSES.success : TONE_CLASSES.neutral}>{item.status}</Badge>
     )
   }
-  return <Badge variant="success">{t("superAdmin.cluster.states.ok")}</Badge>
+  return <Badge variant="outline" className={TONE_CLASSES.success}>{t("superAdmin.cluster.states.ok")}</Badge>
 }
 
 function Tile({

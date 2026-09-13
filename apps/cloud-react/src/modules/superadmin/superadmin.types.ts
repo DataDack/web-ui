@@ -1801,6 +1801,13 @@ export interface EffectiveNetwork
     redundancy?: { status: string; reason?: string; required_nodes_for_ha?: number }
   }
   platform_zone: PlatformDefaults["platform_zone"] & { nodes: string[] }
+  /**
+   * Whether the cluster's own members were known when this was resolved.
+   * False means the live PVE API has not answered yet, so the node lists above
+   * are empty and nothing here can be applied — a cluster's node names come
+   * from the cluster, never from the common document.
+   */
+  nodes_discovered: boolean
 }
 
 /** One thing wrong, named by the field it is wrong in. */

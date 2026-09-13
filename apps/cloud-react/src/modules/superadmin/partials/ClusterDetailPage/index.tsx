@@ -10,6 +10,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
+  TONE_CLASSES,
   cn,
 } from "@datadack/common-ui"
 import {
@@ -26,6 +27,7 @@ import { useTranslation } from "react-i18next"
 import { Link, useNavigate, useParams } from "react-router-dom"
 
 import { PageHeader } from "@/components/console"
+import { useQueryParamState } from "@/hooks/use-query-param-state"
 import { useScreen } from "@/services/api/screen"
 
 
@@ -60,6 +62,10 @@ export function ClusterDetailPage() {
   const { clusterId } = useParams<{ clusterId: string }>()
   const navigate = useNavigate()
   useScreen("superadmin.cluster-detail")
+  // In the query string, so an operator can link a colleague straight to the
+  // section they are talking about rather than "open the cluster, then click
+  // Networking".
+  const [tab, setTab] = useQueryParamState<Tab>("tab", TABS, "nodes")
 
   const { data, isLoading, isError } = useClusterDetail(clusterId)
   const { data: zones } = useAdminAvailabilityZones()
@@ -86,14 +92,12 @@ export function ClusterDetailPage() {
         icon={Server}
         title={t("superAdmin.cluster.loadFailed")}
         description={t("superAdmin.cluster.loadFailedSubtitle")}
-        action={
-          <Button variant="outline" onClick={() => {
-              void navigate("/admin/pve-clusters")
-            }}>
-            <ArrowLeft className="size-4" />
-            {t("superAdmin.cluster.backToFleet")}
-          </Button>
-        }
+        action={{
+          label: t("superAdmin.cluster.backToFleet"),
+          onClick: () => {
+            void navigate("/admin/pve-clusters")
+          },
+        }}
       />
     )
   }
@@ -139,9 +143,9 @@ export function ClusterDetailPage() {
           schedule onto — it is in the cluster and doing nothing, and no error
           anywhere says so. */}
       {unplaced > 0 ? (
-        <Card className="border-warning/40 bg-warning/5 p-4">
+        <Card className="border-status-warning/25 bg-status-warning-bg p-4">
           <div className="flex items-start gap-3">
-            <AlertTriangle className="mt-0.5 size-5 shrink-0 text-warning" />
+            <AlertTriangle className="mt-0.5 size-5 shrink-0 text-status-warning" />
             <div className="space-y-1">
               <p className="font-medium">
                 {t("superAdmin.cluster.unplacedTitle", { count: unplaced })}
@@ -193,7 +197,7 @@ export function ClusterDetailPage() {
         />
       </div>
 
-      <Tabs value={tab} onValueChange={(v) => { setTab(v) }}>
+      <Tabs value={tab} onValueChange={(v) => { setTab(v as Tab) }}>
         {/* No "overview" tab: the stats and the alerts above ARE the overview,
             and they stay visible whichever section is open — which is the point
             of putting them there rather than behind a tab of their own. */}
@@ -201,7 +205,7 @@ export function ClusterDetailPage() {
           <TabsTrigger value="nodes">
             {t("superAdmin.cluster.tabs.nodes")}
             {unplaced > 0 ? (
-              <Badge variant="warning" className="ml-2">
+              <Badge variant="outline" className={cn("ml-2", TONE_CLASSES.warning)}>
                 {unplaced}
               </Badge>
             ) : null}

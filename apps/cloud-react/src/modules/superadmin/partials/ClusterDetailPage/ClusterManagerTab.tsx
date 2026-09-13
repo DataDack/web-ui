@@ -1,6 +1,6 @@
 import { useMemo } from "react"
 
-import { Badge, Button, Card, DataTable, EmptyState, Skeleton, cn, timeAgo } from "@datadack/common-ui"
+import { Badge, Button, Card, DataTable, EmptyState, Skeleton, TONE_CLASSES, cn, timeAgo } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { AlertTriangle, ExternalLink, RefreshCw, ServerCog } from "lucide-react"
 import { useTranslation } from "react-i18next"
@@ -75,7 +75,7 @@ export function ClusterManagerTab({ clusterId }: ClusterManagerTabProps) {
           }
           return (
             <div className="flex items-baseline gap-2">
-              <Badge variant="success">{t("superAdmin.fleet.healthy")}</Badge>
+              <Badge variant="outline" className={TONE_CLASSES.success}>{t("superAdmin.fleet.healthy")}</Badge>
               <span className="text-xs tabular-nums text-muted-foreground">{n.latency_ms} ms</span>
               {n.manager_version ? (
                 <span className="font-mono text-xs text-muted-foreground">{n.manager_version}</span>
@@ -96,10 +96,10 @@ export function ClusterManagerTab({ clusterId }: ClusterManagerTabProps) {
             return <span className="text-sm text-muted-foreground">{t("superAdmin.fleet.unknown")}</span>
           }
           if (!n.templates_out_of_date) {
-            return <Badge variant="success">{t("superAdmin.fleet.current")}</Badge>
+            return <Badge variant="outline" className={TONE_CLASSES.success}>{t("superAdmin.fleet.current")}</Badge>
           }
           return (
-            <Badge variant="warning" className="gap-1">
+            <Badge variant="outline" className={cn("gap-1", TONE_CLASSES.warning)}>
               <AlertTriangle className="size-3" />
               {t("superAdmin.fleet.behindCount", {
                 missing: n.templates_missing,

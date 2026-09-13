@@ -7,6 +7,7 @@ import {
   DataTable,
   EmptyState,
   Skeleton,
+  TONE_CLASSES,
   cn,
   timeAgo,
 } from "@datadack/common-ui"
@@ -129,7 +130,7 @@ export function FleetStatusPage() {
           ) : (
             // Not a cosmetic warning: an unplaced node is matched by no region,
             // so it receives no workloads and nothing else reports that.
-            <Badge variant="warning" className="gap-1">
+            <Badge variant="outline" className={cn("gap-1", TONE_CLASSES.warning)}>
               <MapPinOff className="size-3" />
               {t("superAdmin.cluster.unplaced")}
             </Badge>
@@ -174,12 +175,12 @@ export function FleetStatusPage() {
         icon={ServerCog}
         title={t("superAdmin.fleet.loadFailed")}
         description={t("superAdmin.fleet.loadFailedSubtitle")}
-        action={
-          <Button variant="outline" onClick={() => { refresh.mutate(); }}>
-            <RefreshCw className="size-4" />
-            {t("common.retry")}
-          </Button>
-        }
+        action={{
+          label: t("common.retry"),
+          onClick: () => {
+            refresh.mutate()
+          },
+        }}
       />
     )
   }
@@ -267,11 +268,14 @@ export function FleetStatusPage() {
                 : t("superAdmin.fleet.nothingMatchesBody")
             }
             action={
-              filter === "all" ? undefined : (
-                <Button variant="outline" onClick={() => { setFilter("all"); }}>
-                  {t("superAdmin.fleet.showAll")}
-                </Button>
-              )
+              filter === "all"
+                ? undefined
+                : {
+                    label: t("superAdmin.fleet.showAll"),
+                    onClick: () => {
+                      setFilter("all")
+                    },
+                  }
             }
           />
         ) : (
@@ -307,7 +311,7 @@ function ManagerCell({ node }: Readonly<{ node: FleetNodeStatus }>) {
   }
   return (
     <div className="flex items-baseline gap-2">
-      <Badge variant="success">{t("superAdmin.fleet.healthy")}</Badge>
+      <Badge variant="outline" className={TONE_CLASSES.success}>{t("superAdmin.fleet.healthy")}</Badge>
       <span className="text-xs tabular-nums text-muted-foreground">{node.latency_ms} ms</span>
       {node.manager_version ? (
         <span className="font-mono text-xs text-muted-foreground">{node.manager_version}</span>
@@ -324,10 +328,10 @@ function TemplatesCell({ node }: Readonly<{ node: FleetNodeStatus }>) {
     return <span className="text-sm text-muted-foreground">{t("superAdmin.fleet.unknown")}</span>
   }
   if (!node.templates_out_of_date) {
-    return <Badge variant="success">{t("superAdmin.fleet.current")}</Badge>
+    return <Badge variant="outline" className={TONE_CLASSES.success}>{t("superAdmin.fleet.current")}</Badge>
   }
   return (
-    <Badge variant="warning" className="gap-1">
+    <Badge variant="outline" className={cn("gap-1", TONE_CLASSES.warning)}>
       <AlertTriangle className="size-3" />
       {t("superAdmin.fleet.behindCount", {
         missing: node.templates_missing,
@@ -355,8 +359,8 @@ function Tile({
   onClick: () => void
 }>) {
   const toneClass = {
-    good: "text-success",
-    warning: "text-warning",
+    good: "text-status-success",
+    warning: "text-status-warning",
     bad: "text-destructive",
     muted: "text-muted-foreground",
   }[tone]
