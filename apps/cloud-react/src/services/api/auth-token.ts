@@ -1,6 +1,7 @@
 import axios from "axios"
 
 import { idbDel, idbGet, idbSet } from "./active-scope"
+import { STORAGE_KEYS } from "./storage-keys"
 
 // Token storage:
 //   • Access token  — in memory for bearer clients and also set by the backend
@@ -12,7 +13,7 @@ import { idbDel, idbGet, idbSet } from "./active-scope"
 // steal it for long-lived access. The access cookie is HttpOnly and protected by
 // the backend's same-origin app-header guard.
 
-const REFRESH_KEY = "refresh-token"
+const REFRESH_KEY = STORAGE_KEYS.refreshToken
 
 interface RefreshTokenResponse {
   access_token?: string
@@ -37,6 +38,33 @@ export const refreshToken = {
   get: () => idbGet<string>(REFRESH_KEY),
   set: (t: string) => idbSet(REFRESH_KEY, t),
   clear: () => idbDel(REFRESH_KEY),
+}
+
+/**
+ * The bearer to send, minting one from the refresh token when memory is empty.
+ *
+ * Every API call goes through this, and that is the point. The access token
+ * lives in memory only, so a page reload leaves it null while the session is
+ * perfectly valid — the refresh token in IndexedDB and the access cookie both
+ * survive. Clients that merely read `authToken.get()` therefore sent NO
+ * Authorization header after a reload.
+ *
+ * That was survivable only for calls to cloud-be-go, which also accepted the
+ * `dd_access_token` cookie and so never noticed the missing header. Every
+ * other client — the serverless control plane, automations, the API gateway —
+ * authenticates by header alone, and those calls simply failed with 401 until
+ * something triggered the reactive refresh. Waiting for a 401 to discover a
+ * token we could have minted first is what made a reload look like a signed-out
+ * session.
+ *
+ * Single-flight: concurrent callers share the one in-flight refresh below, so a
+ * page that fires ten requests on mount mints one token, not ten.
+ *
+ * Returns null when there is genuinely no session; callers then send no header
+ * and let the 401 handling take over.
+ */
+export async function ensureAccessToken(): Promise<string | null> {
+  return accessToken ?? (await refreshAccessToken())
 }
 
 // ── Single-flight silent refresh ────────────────────────────────────────────

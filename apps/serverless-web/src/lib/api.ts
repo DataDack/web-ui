@@ -25,17 +25,13 @@ import {
   type WorkloadKind,
   type WorkloadList,
 } from "./schemas"
+import { STORAGE_KEYS } from "./storage-keys"
 
-const BASE_KEY = "faas.admin.apiBase"
-const TOKEN_KEY = "faas.admin.token"
-// Written by an earlier version, which kept the expiry beside the token instead
-// of deriving it. Two keys meant they could disagree: a stale timestamp from a
-// previous token outlived it and expired the next one the moment it was read,
-// so a freshly pasted token worked until the first reload and then vanished.
-// Removed on sight rather than read.
-const LEGACY_TOKEN_EXPIRY_KEY = "faas.admin.tokenExpiresAt"
-const ACCOUNT_KEY = "faas.admin.accountId"
-const RESOURCE_GROUP_KEY = "faas.admin.resourceGroupId"
+const BASE_KEY = STORAGE_KEYS.apiBase
+const TOKEN_KEY = STORAGE_KEYS.token
+const LEGACY_TOKEN_EXPIRY_KEY = STORAGE_KEYS.legacyTokenExpiry
+const ACCOUNT_KEY = STORAGE_KEYS.accountId
+const RESOURCE_GROUP_KEY = STORAGE_KEYS.resourceGroupId
 
 /**
  * Reads the `exp` claim out of a JWT, in milliseconds, or null when there is
@@ -169,6 +165,20 @@ export const connection = {
       return false
     }
   },
+  /** Stores a token without touching the configured base URL. */
+  setToken(token: string): void {
+    try {
+      if (!token) {
+        connection.clearToken()
+        return
+      }
+      localStorage.setItem(TOKEN_KEY, token)
+      localStorage.removeItem(LEGACY_TOKEN_EXPIRY_KEY)
+    } catch {
+      // Unwritable storage: the token still works for this page's lifetime
+      // through the in-memory cache below, it just will not survive a reload.
+    }
+  },
   /**
    * Forgets the stored operator token.
    *
@@ -178,6 +188,9 @@ export const connection = {
    * that is broken rather than one that is asking them to sign in.
    */
   clearToken() {
+    // The in-memory copy too, or a console whose storage write was refused
+    // keeps sending the token it was just told to forget.
+    memoryToken = ""
     try {
       localStorage.removeItem(TOKEN_KEY)
       localStorage.removeItem(LEGACY_TOKEN_EXPIRY_KEY)
@@ -205,15 +218,73 @@ export const connection = {
  * the weaker of the two paths — offered for driving a control plane from a
  * browser that has not signed into this host.
  */
-function authHeaders(): Record<string, string> {
+/**
+ * The bearer this console sends, obtained from the session when it has none.
+ *
+ * The control plane authenticates by Authorization header only — a cookie is
+ * attached by the browser to any same-site request, so authenticating on one
+ * cannot distinguish a deliberate API call from a navigation, and it is what
+ * makes CSRF possible at all. The session cookie is still how a signed-in
+ * operator survives a reload; it is just storage now, and POST /v1/auth/token
+ * is the single endpoint that reads it, handing back the token every other call
+ * must carry.
+ *
+ * Cached in memory as well as localStorage so a console in Safari private
+ * browsing — where the write throws — still works for the life of the page.
+ *
+ * Single-flight: a console that mounts eight panels at once exchanges once.
+ */
+let memoryToken = ""
+let exchangeInflight: Promise<string> | null = null
+
+export async function ensureBearer(): Promise<string> {
+  const stored = connection.token()
+  if (stored) return stored
+  if (memoryToken) return memoryToken
+  exchangeInflight ??= (async () => {
+    try {
+      const response = await axios.post<{ access_token?: string }>(
+        connection.base().replace(/\/$/, "") + "/v1/auth/token",
+        null,
+        { withCredentials: true, headers: { "X-Requested-With": "XMLHttpRequest" } },
+      )
+      const token = response.data.access_token ?? ""
+      if (token) {
+        memoryToken = token
+        connection.setToken(token)
+      }
+      return token
+    } catch {
+      // No session, or it has lapsed. Returning "" sends no header and lets the
+      // 401 path tell the operator to sign in.
+      return ""
+    } finally {
+      exchangeInflight = null
+    }
+  })()
+  return exchangeInflight
+}
+
+/** Drops the exchanged bearer, so the next call re-exchanges or signs in. */
+export function clearBearer(): void {
+  memoryToken = ""
+  connection.clearToken()
+}
+
+function authHeaders(token?: string): Record<string, string> {
   const headers: Record<string, string> = {
     // The custom header a browser cannot attach to a top-level navigation or a
     // simple cross-site form, matching the convention the rest of the platform
     // uses. Cheap, and it costs nothing to send.
     "X-Requested-With": "XMLHttpRequest",
   }
-  const token = connection.token()
-  if (token) headers.Authorization = `Bearer ${token}`
+  // Each source yields "" rather than null when it has nothing, and an empty
+  // string has to fall through to the next — so this is a first-non-empty pick,
+  // not a nullish one.
+  const bearer = [token, connection.token(), memoryToken].find(
+    (candidate) => candidate !== undefined && candidate.length > 0,
+  )
+  if (bearer) headers.Authorization = `Bearer ${bearer}`
   const accountId = connection.accountId()
   if (accountId) headers["X-Faas-Account-Id"] = accountId
   return headers
@@ -228,9 +299,12 @@ export const http: AxiosInstance = axios.create({
 
 // The base URL and bearer token are read per request rather than baked into the
 // instance, so changing them in Settings takes effect without a reload.
-http.interceptors.request.use((config) => {
+http.interceptors.request.use(async (config) => {
   config.baseURL = connection.base().replace(/\/$/, "")
-  Object.assign(config.headers, authHeaders())
+  // Awaited: with cookie authentication gone, a console that has just reloaded
+  // holds a valid session and no bearer. This mints one from it before the
+  // request goes out, rather than letting the call 401 and repairing it after.
+  Object.assign(config.headers, authHeaders(await ensureBearer()))
   return config
 })
 
@@ -346,7 +420,7 @@ export function streamLogs(query: LogQuery, handlers: LogStreamHandlers): () => 
   void (async () => {
     try {
       const response = await fetch(url, {
-        headers: { ...authHeaders(), Accept: "text/event-stream" },
+        headers: { ...authHeaders(await ensureBearer()), Accept: "text/event-stream" },
         // Same reason as the axios instance: the operator session is a cookie.
         credentials: "include",
         signal: controller.signal,

@@ -2,7 +2,8 @@ import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios"
 import i18n from "i18next"
 
 import { activeScope } from "./active-scope"
-import { authToken, refreshAccessToken } from "./auth-token"
+import { authToken, ensureAccessToken, refreshAccessToken } from "./auth-token"
+import { STORAGE_KEYS } from "./storage-keys"
 import { getDeviceId } from "./device"
 import { screenName } from "./screen"
 
@@ -49,8 +50,11 @@ export function openTopupTab(credits: number): void {
 //   X-Screen          — current UI screen name (traffic attribution)
 //   X-Device-Id       — stable per-browser id
 //   X-Language        — active language code
-api.interceptors.request.use((config) => {
-  const token = authToken.get()
+api.interceptors.request.use(async (config) => {
+  // Awaited, not read: after a reload the in-memory token is null while the
+  // session is still valid, and this mints one from the refresh token rather
+  // than sending an unauthenticated request and repairing it on the 401.
+  const token = await ensureAccessToken()
   if (token) config.headers.Authorization = `Bearer ${token}`
   const accountId = activeScope.getAccountId()
   if (accountId) config.headers["X-Account-Id"] = accountId
@@ -65,7 +69,7 @@ api.interceptors.request.use((config) => {
 // The backend's message when X-Account-Id names an account the caller is not a
 // member of. Kept in sync with middleware.MsgAccountNotSelectable (cloud-be-go).
 const ACCOUNT_NOT_SELECTABLE = "selected account is not available for this user"
-const SCOPE_RESET_KEY = "dd:scope-reset"
+const SCOPE_RESET_KEY = STORAGE_KEYS.scopeReset
 let accountScopeReset = false
 
 // Routes exempt from the 401 refresh-and-retry: a 401 here means the credentials

@@ -22,7 +22,7 @@ import type {
 import axios, { type AxiosError, type AxiosResponse, type InternalAxiosRequestConfig } from "axios"
 
 import { activeScope } from "@/services/api/active-scope"
-import { authToken, refreshAccessToken } from "@/services/api/auth-token"
+import { ensureAccessToken, refreshAccessToken } from "@/services/api/auth-token"
 
 
 // Direct browser → FaaS control-plane client. This is NOT the gateway client
@@ -111,8 +111,14 @@ export interface FaasTransportOptions {
   getBaseUrl: () => string
   /** Tenant selector; defaults to the console's active account scope. */
   getAccountId?: () => string | null
-  /** Bearer credential; defaults to the in-memory access token. */
-  getToken?: () => string | null
+  /**
+   * Bearer credential; defaults to minting one from the session.
+   *
+   * Async because the default has to be: the in-memory access token is empty
+   * after a page reload, and the value that replaces it comes from a refresh
+   * round trip.
+   */
+  getToken?: () => string | null | Promise<string | null>
 }
 
 /**
@@ -197,7 +203,7 @@ function toActivityEvent(event: AuditEvent): ActivityEvent {
  * than standing up a second client that would drift from this one.
  */
 export function createFaasHttp(opts: FaasTransportOptions) {
-  const getToken = opts.getToken ?? authToken.get
+  const getToken = opts.getToken ?? ensureAccessToken
   const getAccountId = opts.getAccountId ?? activeScope.getAccountId
 
   // Never cookies: the access cookie is SameSite=Lax + HttpOnly, and FaaS CORS
@@ -210,9 +216,13 @@ export function createFaasHttp(opts: FaasTransportOptions) {
   // allow-list and would fail the cross-origin preflight, so they are never
   // attached. The account header is omitted (not sent empty) when no account
   // is pinned, mirroring the gateway client's fail-closed rationale.
-  faas.interceptors.request.use((config) => {
+  faas.interceptors.request.use(async (config) => {
     config.baseURL = opts.getBaseUrl()
-    const token = getToken()
+    // Awaited: the in-memory token is null after a page reload, and this
+    // control plane accepts NO cookie — it reads the Authorization header or
+    // nothing. Reading the token synchronously is what made every serverless
+    // call 401 on the first load after a refresh.
+    const token = await getToken()
     if (token) config.headers.Authorization = `Bearer ${token}`
     const accountId = getAccountId()
     if (accountId) config.headers["X-Faas-Account-Id"] = accountId

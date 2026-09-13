@@ -1,5 +1,7 @@
 import { useSyncExternalStore } from "react"
 
+import { STORAGE_KEYS } from "./storage-keys"
+
 // Active-account scope (which account/organization the console is acting in).
 // The scope is CLIENT-HELD: kept in memory for the page's life, persisted to
 // IndexedDB so it survives a reload, and sent to the backend as the X-Account-Id
@@ -19,7 +21,7 @@ const EMPTY: ActiveScope = { accountId: null, organizationId: null }
 // ── IndexedDB key-value (single tiny store) ─────────────────────────────────
 const DB_NAME = "dd"
 const STORE = "kv"
-const SCOPE_KEY = "active-scope"
+const SCOPE_KEY = STORAGE_KEYS.activeScope
 
 function openDB(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {

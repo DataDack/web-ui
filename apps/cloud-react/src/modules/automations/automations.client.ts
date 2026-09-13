@@ -5,7 +5,7 @@ import axios, {
 } from "axios"
 
 import { activeScope } from "@/services/api/active-scope"
-import { authToken, refreshAccessToken } from "@/services/api/auth-token"
+import { ensureAccessToken, refreshAccessToken } from "@/services/api/auth-token"
 import { api, extractError } from "@/services/api/client"
 
 import type { AIAutomationsTransport } from "@datadack/workflows"
@@ -62,7 +62,12 @@ export interface AutomationsTransportOptions {
   /** Tenant selector; defaults to the console's active account scope. */
   getAccountId?: () => string | null
   /** Bearer credential; defaults to the in-memory access token. */
-  getToken?: () => string | null
+  /**
+   * Bearer credential; defaults to minting one from the session. Async because
+   * the default has to be: the in-memory access token is empty after a page
+   * reload and the value replacing it comes from a refresh round trip.
+   */
+  getToken?: () => string | null | Promise<string | null>
 }
 
 /** The prefix every route in this section sits under on the control plane. */
@@ -84,16 +89,18 @@ const INTEGRATIONS_PREFIX = "/integrations"
 export function createAutomationsTransport(
   opts: AutomationsTransportOptions,
 ): AIAutomationsTransport {
-  const getToken = opts.getToken ?? authToken.get
+  const getToken = opts.getToken ?? ensureAccessToken
   const getAccountId = opts.getAccountId ?? activeScope.getAccountId
 
   // Never cookies: the access cookie is SameSite=Lax + HttpOnly, and FaaS CORS
   // deliberately has no Allow-Credentials — this is a pure bearer path.
   const faas = axios.create({ withCredentials: false })
 
-  faas.interceptors.request.use((config) => {
+  faas.interceptors.request.use(async (config) => {
     config.baseURL = opts.getBaseUrl()
-    const token = getToken()
+    // Awaited: the in-memory token is empty after a page reload, and this
+    // control plane reads the Authorization header or nothing.
+    const token = await getToken()
     if (token) config.headers.Authorization = `Bearer ${token}`
     const accountId = getAccountId()
     if (accountId) config.headers["X-Faas-Account-Id"] = accountId

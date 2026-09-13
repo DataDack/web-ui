@@ -1,7 +1,7 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios"
 
 import { activeScope } from "@/services/api/active-scope"
-import { authToken, refreshAccessToken } from "@/services/api/auth-token"
+import { ensureAccessToken, refreshAccessToken } from "@/services/api/auth-token"
 import { SERVERLESS_ORIGIN } from "@/services/api/serverless-origin"
 
 import {
@@ -31,11 +31,13 @@ import {
 
 const faas = axios.create({ withCredentials: false })
 
-faas.interceptors.request.use((config) => {
+faas.interceptors.request.use(async (config) => {
   // REACHABLE_PREFIX, not the bare origin: see its definition for why /v2 alone
   // reaches datadack-cloud and comes back as the console's own HTML at 200.
   config.baseURL = SERVERLESS_ORIGIN + REACHABLE_PREFIX
-  const token = authToken.get()
+  // Awaited: the in-memory token is empty after a page reload, and this control
+  // plane reads the Authorization header or nothing.
+  const token = await ensureAccessToken()
   if (token) config.headers.Authorization = `Bearer ${token}`
   const accountId = activeScope.getAccountId()
   // Omitted, never sent empty: the control plane refuses a request naming no

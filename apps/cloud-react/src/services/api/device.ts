@@ -2,7 +2,9 @@
 // Not a secret and not tied to a user — it identifies this browser profile, so
 // it persists in localStorage (survives reloads and logouts) and is generated
 // once on first use.
-const DEVICE_KEY = "dd.deviceId"
+import { STORAGE_KEYS } from "./storage-keys"
+
+const DEVICE_KEY = STORAGE_KEYS.deviceId
 
 // Memoized after first use: the id never changes for the life of the tab, so the
 // per-request interceptor reads this cache instead of touching localStorage.
