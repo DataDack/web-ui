@@ -97,17 +97,20 @@ export function AddIPPoolDialog({ open, onOpenChange }: Readonly<Props>) {
   }, [open, reset])
 
   const onSubmit = (values: FormValues) => {
-    if (pairs.length === 0) {
-      setPairError("Enter at least one valid public and associated IPv4 pair")
+    const cidrPattern = /^(?:\d{1,3}\.){3}\d{1,3}\/(?:[89]|[12]\d|3[0-2])$/
+    const isCidr = cidrPattern.test(pairText.trim())
+
+    if (pairs.length === 0 && !isCidr) {
+      setPairError("Enter at least one valid IPv4 address/pair, or a valid CIDR pool block (e.g. 157.15.98.180/30)")
       return
     }
     const payload: CreateIPPoolRequest = {
-      pairs,
       availability_zone_id: values.availability_zone_id,
       gateway: optional(values.gateway),
       prefix_length: values.prefix_length === "" ? undefined : Number(values.prefix_length),
       name: optional(values.name),
       description: optional(values.description),
+      ...(isCidr ? { cidr: pairText.trim() } : { pairs }),
     }
     save(
       { payload },
@@ -137,7 +140,7 @@ export function AddIPPoolDialog({ open, onOpenChange }: Readonly<Props>) {
             onSubmit={(event) => void handleSubmit(onSubmit)(event)}
             className="flex flex-col gap-5 border-border-glass p-6 md:border-r"
           >
-            <Field label="Public and associated IP pairs" required error={pairError || undefined}>
+            <Field label="IP Addresses, CIDR Block, or Mappings" required error={pairError || undefined}>
               <Textarea
                 value={pairText}
                 onChange={(event) => {
@@ -146,12 +149,11 @@ export function AddIPPoolDialog({ open, onOpenChange }: Readonly<Props>) {
                 }}
                 rows={8}
                 className="font-mono"
-                placeholder={"103.228.151.132, 10.100.105.2\n103.228.151.134, 10.100.105.3"}
+                placeholder={"157.15.98.180/30\n\nOR one IP per line:\n185.67.20.52\n185.67.20.103\n\nOR public, associated pair per line:\n103.228.151.132, 10.100.105.2"}
                 aria-describedby="mapped-pairs-help"
               />
               <p id="mapped-pairs-help" className="text-xs text-muted-foreground">
-                One pair per line. The first address is shown to customers; the second is used
-                internally with Proxmox.
+                Enter a full CIDR block (e.g. 157.15.98.180/30), individual IP addresses, or public/associated pairs.
               </p>
             </Field>
 
@@ -249,7 +251,9 @@ function parsePairs(value: string): AddressPair[] {
     .map((line) => line.trim())
     .filter(Boolean)
     .map((line) => {
-      const [publicIP = "", associatedIP = ""] = line.split(/\s*(?:,|↔|--|\s+)\s*/)
+      const parts = line.split(/\s*(?:,|↔|--|\s+)\s*/)
+      const publicIP = parts[0] || ""
+      const associatedIP = parts[1] || publicIP
       return { public_ip: publicIP, associated_ip: associatedIP }
     })
     .filter((pair) => ipv4.test(pair.public_ip) && ipv4.test(pair.associated_ip))

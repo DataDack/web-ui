@@ -1008,7 +1008,8 @@ export interface CreateIPPoolRequest {
   // the backend refuses the pair half-given rather than storing it.
   gateway?: string
   prefix_length?: number
-  pairs: { public_ip: string; associated_ip: string }[]
+  cidr?: string
+  pairs?: { public_ip: string; associated_ip: string }[]
 }
 
 export interface UpdateIPPoolRequest {
