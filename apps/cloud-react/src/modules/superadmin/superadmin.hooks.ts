@@ -150,12 +150,12 @@ export function useDeletePVECluster() {
   const { t } = useTranslation()
   return useMutation({
     mutationFn: (vars: { id: string }) => superAdminApi.deletePVECluster(vars.id),
-    onSuccess: () => {
+    onSuccess: (_data, vars) => {
       void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.pveClusters })
       void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.pveNodes })
-      // The detail page shows this cluster's members; a sync is exactly when
-      // they change, so leaving it stale is showing the pre-sync fleet.
-      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.clusterDetail(res.cluster.id) })
+      // The deleted cluster's detail query is still cached — anyone holding that
+      // page open would keep seeing a cluster that no longer exists.
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.clusterDetail(vars.id) })
       void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.fleetStatus })
       toast.success(t("superAdmin.toasts.clusterDeleted"))
     },

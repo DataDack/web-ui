@@ -2,7 +2,7 @@ import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios"
 
 import { activeScope } from "@/services/api/active-scope"
 import { authToken, refreshAccessToken } from "@/services/api/auth-token"
-import { serverlessOrigin } from "@/services/api/serverless-origin"
+import { SERVERLESS_ORIGIN } from "@/services/api/serverless-origin"
 
 import {
   createApiGatewayTransport,
@@ -16,8 +16,7 @@ import {
  *
  * Every path, schema and error shape lives in @datadack/api-gateway, shared
  * with serverless-web. What differs here is only the credential: the console
- * holds a bearer token it silently refreshes, pins an account, and talks to a
- * per-region serverless origin rather than a single configured base.
+ * holds a bearer token it silently refreshes and pins an account.
  *
  * It replaced ~2,500 lines of module-local client, hooks and pages. Those spoke
  * /v1/apigateway, which no longer exists: the control plane now serves one
@@ -30,32 +29,12 @@ import {
  * allow-list and would fail the cross-origin preflight.
  */
 
-/**
- * Raised when no serverless origin has been resolved for the active region.
- *
- * Thrown rather than falling back to a relative URL: a relative path would go
- * to the console's own origin, return the SPA's index.html with a 200, and
- * surface as a JSON parse error that says nothing about the real problem.
- * RegionGate keeps this section unmounted in a region with no origin, so this
- * is the backstop rather than the usual path.
- */
-export class NoServerlessOriginError extends Error {
-  constructor() {
-    super("API Gateway is not available in this region yet.")
-    this.name = "NoServerlessOriginError"
-  }
-}
-
 const faas = axios.create({ withCredentials: false })
 
 faas.interceptors.request.use((config) => {
-  const base = serverlessOrigin.get()
-  if (base === null) throw new NoServerlessOriginError()
   // REACHABLE_PREFIX, not the bare origin: see its definition for why /v2 alone
-  // reaches datadack-cloud and comes back as the console's own HTML at 200. The
-  // origin is per-region and may carry a trailing slash, so it is trimmed before
-  // the prefix is joined on.
-  config.baseURL = base.replace(/\/+$/, "") + REACHABLE_PREFIX
+  // reaches datadack-cloud and comes back as the console's own HTML at 200.
+  config.baseURL = SERVERLESS_ORIGIN + REACHABLE_PREFIX
   const token = authToken.get()
   if (token) config.headers.Authorization = `Bearer ${token}`
   const accountId = activeScope.getAccountId()

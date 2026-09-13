@@ -5,14 +5,17 @@ import { useActiveScope } from "@/services/api/active-scope"
 import { ApiGatewayProvider } from "@datadack/api-gateway"
 
 import { apiGatewayTransport } from "./api-gateway.transport"
-import { RegionGate } from "./RegionGate"
 
 /**
  * Mounts the shared API Gateway console for this app.
  *
- * RegionGate stays outside the provider: a region with no serverless origin has
- * nothing to talk to, and rendering the console first would fire every list on
- * mount and fill the page with failures that all mean the same thing.
+ * There used to be a RegionGate here, because the control plane lived on a
+ * per-region serverless host and a region could legitimately have none — so the
+ * console had to render an "unavailable here" screen instead of firing every
+ * list on mount and filling the page with failures that all meant the same
+ * thing. The domains are merged now (see services/api/serverless-origin.ts):
+ * the control plane is on this origin, in every region, so there is nothing
+ * left to gate on.
  *
  * The account id is passed as the query scope so switching tenants evicts the
  * cache. Without it the previous account's APIs stay on screen until the
@@ -23,10 +26,8 @@ export function ApiGatewaySection({ children }: Readonly<{ children: ReactNode }
   const accountId = useActiveScope().accountId
 
   return (
-    <RegionGate>
-      <ApiGatewayProvider transport={apiGatewayTransport} scope={accountId ?? "none"}>
-        {children}
-      </ApiGatewayProvider>
-    </RegionGate>
+    <ApiGatewayProvider transport={apiGatewayTransport} scope={accountId ?? "none"}>
+      {children}
+    </ApiGatewayProvider>
   )
 }

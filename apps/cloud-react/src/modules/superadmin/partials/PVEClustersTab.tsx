@@ -18,6 +18,8 @@ import {
   DialogHeader,
   DialogTitle,
   Skeleton,
+  TONE_CLASSES,
+  cn,
 } from "@datadack/common-ui"
 import {
   AlertTriangle,
@@ -125,7 +127,6 @@ function ClusterCard({
   cluster,
   nodes,
   azLabel,
-  onOpenNode,
   onSync,
   syncing,
   onDelete,
@@ -133,7 +134,6 @@ function ClusterCard({
   cluster: PVECluster
   nodes: PVENode[]
   azLabel: (id: string) => string
-  onOpenNode: (n: PVENode) => void
   onSync: (c: PVECluster) => void
   syncing: boolean
   onDelete: (c: PVECluster) => void
@@ -384,7 +384,6 @@ export function PVEClustersTab({
               cluster={c}
               nodes={byCluster.get(c.id) ?? []}
               azLabel={azLabel}
-              onOpenNode={openNode}
               onSync={(cl) => {
                 sync.mutate({ id: cl.id })
               }}
