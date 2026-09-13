@@ -514,12 +514,19 @@ export const superAdminApi = {
 
   // The COMMON document. Editing it reaches every cluster at once, which is why
   // its validate endpoint checks it against all of them.
+  //
+  // The path is cluster-defaults, not defaults. These three called /defaults and
+  // got a 404 on every one, so the "Common (every cluster)" tab rendered empty
+  // with nothing on screen saying why — the page looked like a cluster with no
+  // configuration rather than a console calling a route that does not exist.
   getPlatformDefaults: (refresh = false) =>
-    apiGet<PlatformDefaults>(`${NETWORKING_BASE}/defaults${refresh ? "?refresh=true" : ""}`),
+    apiGet<PlatformDefaults>(
+      `${NETWORKING_BASE}/cluster-defaults${refresh ? "?refresh=true" : ""}`,
+    ),
   updatePlatformDefaults: (payload: PlatformDefaults & { reason?: string }) =>
-    apiPut<PlatformDefaults>(`${NETWORKING_BASE}/defaults`, payload),
+    apiPut<PlatformDefaults>(`${NETWORKING_BASE}/cluster-defaults`, payload),
   validatePlatformDefaults: (payload: PlatformDefaults) =>
-    apiPost<NetworkingValidation>(`${NETWORKING_BASE}/defaults/validate`, payload),
+    apiPost<NetworkingValidation>(`${NETWORKING_BASE}/cluster-defaults/validate`, payload),
 
   // What a cluster will ACTUALLY get. Neither stored document says this alone.
   getEffectiveNetwork: (az: string) =>

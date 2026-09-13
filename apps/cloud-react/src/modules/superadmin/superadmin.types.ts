@@ -223,23 +223,33 @@ export interface CreatePVENodeRequest {
   status?: PVENodeStatus
 }
 
+/**
+ * What an operator may change about a node. Deliberately small.
+ *
+ * It used to carry name, ip_address, username, password, token, webhook_secret
+ * and the cpu/ram/storage totals — every one of which the cluster sync rewrites
+ * from the live Proxmox API on its next run. The API accepted them, answered
+ * 200, and the background sweep reverted them a minute later with nothing in a
+ * log. The backend no longer accepts them; mirrored here so the console cannot
+ * offer an edit that will not stick.
+ *
+ * A node's identity, address, credentials and hardware are facts about a
+ * machine: discovered, or minted by their own endpoints. What is left is what
+ * only a person knows.
+ */
 export interface UpdatePVENodeRequest {
+  /** Where the machine physically is. Sync never touches it; a newly discovered
+   *  node stays UNPLACED (and out of placement) until someone says. */
   availability_zone_id?: string
-  name?: string
-  ip_address?: string
-  username?: string
-  password?: string
-  token?: string
-  webhook_secret?: string
+  /** The maintenance drain. Only `maintenance` survives a sync. */
   status?: PVENodeStatus
-  cpu_used?: number
-  ram_used_mb?: number
-  storage_used_gb?: number
-  cpu_total?: number
-  ram_total_mb?: number
-  storage_total_gb?: number
-  // 0 is a meaningful value here ("this node has no gateway template"), so the
-  // API distinguishes it from the field being omitted, which keeps the stored id.
+  /** Per-node deviations from the fleet-wide DEPLOY_FABRIC_* defaults, which no
+   *  discovery can infer. An empty string clears an override. */
+  fabric_bridge?: string
+  fabric_prefix?: number
+  fabric_gateway?: string
+  fabric_app_subnet?: string
+  fabric_gateway_ip?: string
 }
 
 /* ── Platform policy switches ──────────────────────────────────────────── */

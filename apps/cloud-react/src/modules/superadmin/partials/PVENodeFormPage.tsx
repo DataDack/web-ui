@@ -171,43 +171,29 @@ function PVENodeForm({
     return (azId: string) => byId.get(azId) ?? azId
   }, [azs])
 
-  const steps = useMemo<WizardStep<FormValues>[]>(
+  // Editing a node is ONE step; creating one is three.
+  //
+  // Everything the other two collect — address, credentials, capacity — is
+  // discovered from the cluster on every sync, so on an existing node they
+  // offered edits that could not stick. Registering a node by hand still needs
+  // them: there is nothing to discover from yet.
+  //
+  // What is left for an edit is what only a person knows: which rack the
+  // machine is in, and whether it has been drained.
+  const createOnlySteps = useMemo<WizardStep<FormValues>[]>(
     () => [
-      {
-        id: "placement",
-        title: t("superAdmin.pveNodes.wizard.placement"),
-        description: t("superAdmin.pveNodes.wizard.placementDesc"),
-        fields: ["availability_zone_id", "name"],
-        render: (f) => <PlacementStep form={f} azs={azs} />,
-        reviewItems: (v) => [
-          {
-            label: t("superAdmin.pveNodes.fields.availabilityZone"),
-            value: azCode(v.availability_zone_id),
-            mono: true,
-          },
-          { label: t("superAdmin.pveNodes.fields.name"), value: v.name, mono: true },
-        ],
-      },
       {
         id: "connection",
         title: t("superAdmin.pveNodes.wizard.connection"),
         description: t("superAdmin.pveNodes.wizard.connectionDesc"),
         fields: ["ip_address", "username", "password", "webhook_secret", "status"],
-        render: (f) => <ConnectionStep form={f} isEdit={isEdit} />,
+        render: (f) => <ConnectionStep form={f} isEdit={false} />,
         reviewItems: (v) => [
-          {
-            label: t("superAdmin.pveNodes.fields.ipAddress"),
-            value: v.ip_address,
-            mono: true,
-          },
-          {
-            label: t("superAdmin.pveNodes.fields.username"),
-            value: v.username,
-            mono: true,
-          },
+          { label: t("superAdmin.pveNodes.fields.ipAddress"), value: v.ip_address, mono: true },
+          { label: t("superAdmin.pveNodes.fields.username"), value: v.username, mono: true },
           {
             label: t("superAdmin.pveNodes.fields.password"),
-            value: secretReview(v.password, isEdit, t("superAdmin.pveNodes.fields.unchanged")),
+            value: secretReview(v.password, false, t("superAdmin.pveNodes.fields.unchanged")),
           },
           {
             label: t("superAdmin.pveNodes.fields.token"),
@@ -215,11 +201,7 @@ function PVENodeForm({
           },
           {
             label: t("superAdmin.pveNodes.fields.webhookSecret"),
-            value: secretReview(
-              v.webhook_secret,
-              isEdit,
-              t("superAdmin.pveNodes.fields.unchanged"),
-            ),
+            value: secretReview(v.webhook_secret, false, t("superAdmin.pveNodes.fields.unchanged")),
           },
           {
             label: t("superAdmin.pveNodes.fields.status"),
@@ -234,11 +216,7 @@ function PVENodeForm({
         fields: ["cpu_total", "ram_total_mb", "storage_total_gb"],
         render: (f) => <CapacityStep form={f} />,
         reviewItems: (v) => [
-          {
-            label: t("superAdmin.pveNodes.fields.cpuTotal"),
-            value: String(v.cpu_total),
-            mono: true,
-          },
+          { label: t("superAdmin.pveNodes.fields.cpuTotal"), value: String(v.cpu_total), mono: true },
           {
             label: t("superAdmin.pveNodes.fields.ramTotal"),
             value: `${String(v.ram_total_mb)} MB`,
@@ -251,33 +229,57 @@ function PVENodeForm({
           },
         ],
       },
-
     ],
-    [t, isEdit, azCode, azs],
+    [t],
+  )
+
+  const steps = useMemo<WizardStep<FormValues>[]>(
+    () => [
+      {
+        id: "placement",
+        title: t("superAdmin.pveNodes.wizard.placement"),
+        description: t("superAdmin.pveNodes.wizard.placementDesc"),
+        // `status` joins placement on an edit because the connection step that
+        // used to carry it is not shown. It is the maintenance drain — the one
+        // status change a sync will not overwrite.
+        fields: isEdit ? ["availability_zone_id", "status"] : ["availability_zone_id", "name"],
+        render: (f) => <PlacementStep form={f} azs={azs} isEdit={isEdit} />,
+        reviewItems: (v) => [
+          {
+            label: t("superAdmin.pveNodes.fields.availabilityZone"),
+            value: azCode(v.availability_zone_id),
+            mono: true,
+          },
+          { label: t("superAdmin.pveNodes.fields.name"), value: v.name, mono: true },
+          ...(isEdit
+            ? [
+                {
+                  label: t("superAdmin.pveNodes.fields.status"),
+                  value: t(`superAdmin.pveNodes.status.${v.status}`),
+                },
+              ]
+            : []),
+        ],
+      },
+      ...(isEdit ? [] : createOnlySteps),
+    ],
+    [t, isEdit, azCode, azs, createOnlySteps],
   )
 
   const onSubmit = (values: FormValues) => {
-    const password = values.password.length > 0 ? values.password : undefined
     const token = values.token.length > 0 ? values.token : undefined
     // Omitted (not "") when blank — the API encrypts whatever it is sent, so an
     // empty string would overwrite the stored secret with an encrypted "".
     const webhookSecret = values.webhook_secret.length > 0 ? values.webhook_secret : undefined
+    // An EDIT sends only what an operator owns. A node's name, address,
+    // credentials and hardware totals are rewritten from the live Proxmox API
+    // by every cluster sync, so sending them achieved nothing but a 200 that
+    // was quietly undone a minute later. The API no longer accepts them at
+    // all — see dto.UpdatePVENodeRequest.
     const body: CreatePVENodeRequest | UpdatePVENodeRequest = isEdit
       ? {
           availability_zone_id: values.availability_zone_id,
-          name: values.name,
-          ip_address: values.ip_address,
-          username: values.username,
-          password,
-          token,
-          webhook_secret: webhookSecret,
           status: values.status,
-          cpu_total: values.cpu_total,
-          ram_total_mb: values.ram_total_mb,
-          storage_total_gb: values.storage_total_gb,
-          // Always sent, including 0 — unlike the secrets above, 0 is a real
-          // value ("no gateway template on this node") and must be able to
-          // clear a previously set id, so it is never omitted.
         }
       : {
           availability_zone_id: values.availability_zone_id,
@@ -650,9 +652,11 @@ function FieldLabel({ children }: Readonly<{ children: React.ReactNode }>) {
 function PlacementStep({
   form,
   azs,
+  isEdit,
 }: Readonly<{
   form: UseFormReturn<FormValues>
   azs: AvailabilityZone[]
+  isEdit: boolean
 }>) {
   const { t } = useTranslation()
   const noAZs = azs.length === 0
@@ -704,11 +708,58 @@ function PlacementStep({
         <FieldError message={form.formState.errors.availability_zone_id?.message} />
       </div>
 
-      <div className="space-y-1.5">
-        <FieldLabel>{t("superAdmin.pveNodes.fields.name")} *</FieldLabel>
-        <Input {...form.register("name")} placeholder="pve-node-01" className="font-mono" />
-        <FieldError message={form.formState.errors.name?.message} />
-      </div>
+      {isEdit ? (
+        <>
+          {/*
+            The name is set once, when a node is registered by hand. On an
+            existing node it is whatever the cluster calls the machine, rewritten
+            by every sync — so it is shown as a fact rather than offered as a
+            field that would take a change and lose it.
+          */}
+          <div className="space-y-1.5">
+            <FieldLabel>{t("superAdmin.pveNodes.fields.name")}</FieldLabel>
+            <p className="font-mono text-sm text-muted-foreground">{form.getValues("name")}</p>
+          </div>
+
+          <div className="space-y-1.5">
+            <FieldLabel>{t("superAdmin.pveNodes.fields.status")}</FieldLabel>
+            <Controller
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger className="w-full">
+                    <span>{t(`superAdmin.pveNodes.status.${field.value}`)}</span>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {STATUSES.map((status) => (
+                      <SelectItem key={status} value={status}>
+                        {t(`superAdmin.pveNodes.status.${status}`)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            {/*
+              Only `maintenance` survives a sync: it is the operator's drain, and
+              a cluster reporting the node online is not consent to schedule onto
+              it again. online/offline are rewritten from the live cluster on the
+              next run, and are offered only so a node can come back OUT of
+              maintenance.
+            */}
+            <p className="text-[11px] text-muted-foreground">
+              {t("superAdmin.pveNodes.fields.statusSyncNote")}
+            </p>
+          </div>
+        </>
+      ) : (
+        <div className="space-y-1.5">
+          <FieldLabel>{t("superAdmin.pveNodes.fields.name")} *</FieldLabel>
+          <Input {...form.register("name")} placeholder="pve-node-01" className="font-mono" />
+          <FieldError message={form.formState.errors.name?.message} />
+        </div>
+      )}
     </div>
   )
 }

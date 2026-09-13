@@ -70,17 +70,30 @@ function renderForm() {
   )
 }
 
-// The AZ trigger is the first combobox on the Placement step.
+// The AZ trigger is the FIRST combobox on the Placement step.
+//
+// findAllByRole, not findByRole: editing a node now shows the maintenance-drain
+// status select on this step too, so there are two. The singular query throws on
+// more than one match, which would fail these tests for a reason that has
+// nothing to do with the ordering they exist to check.
 async function azTriggerText() {
-  const trigger = await screen.findByRole("combobox")
-  return trigger.textContent
+  const triggers = await screen.findAllByRole("combobox")
+  return triggers[0]?.textContent
+}
+
+// The node's name, which an edit shows as read-only text rather than an input:
+// it is rewritten from the live cluster by every sync, so it is a fact about the
+// machine and not a field. Rendering it at all is what proves the node payload
+// reached the form, which is the precondition both tests below depend on.
+async function nodeNameRendered() {
+  return screen.findByText(NODE.name)
 }
 
 test("AZ list resolves BEFORE the node", async () => {
   delay.azs = 0
   delay.node = 60
   renderForm()
-  expect(await screen.findByDisplayValue("pve1-a")).toBeInTheDocument()
+  expect(await nodeNameRendered()).toBeInTheDocument()
   await sleep(150)
   const text = await azTriggerText()
   expect(text).toContain("ap-south-3a")
@@ -90,7 +103,7 @@ test("node resolves BEFORE the AZ list", async () => {
   delay.azs = 60
   delay.node = 0
   renderForm()
-  expect(await screen.findByDisplayValue("pve1-a")).toBeInTheDocument()
+  expect(await nodeNameRendered()).toBeInTheDocument()
   await sleep(150) // let the AZ query land and any reset settle
   const text = await azTriggerText()
   expect(text).toContain("ap-south-3a")

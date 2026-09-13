@@ -3189,7 +3189,8 @@
         "vyosTemplateVmid": "VyOS gateway template (VMID)",
         "vyosTemplateVmidHint": "VMID of the VyOS LXC template on THIS node, cloned for every VPC gateway placed here. 0 means the node carries no gateway image.",
         "vyosTemplateNone": "None",
-        "vyosTemplateUnsetWarning": "With no template set, provisioning a VPC gateway on this node fails. Build the VyOS LXC template on the node, then enter its VMID here."
+        "vyosTemplateUnsetWarning": "With no template set, provisioning a VPC gateway on this node fails. Build the VyOS LXC template on the node, then enter its VMID here.",
+        "statusSyncNote": "Only maintenance survives a cluster sync; online and offline are rewritten from the live cluster."
       },
       "status": {
         "online": "Online",

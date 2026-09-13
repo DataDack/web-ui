@@ -2928,7 +2928,8 @@
         "vyosTemplateVmid": "VyOS गेटवे टेम्पलेट (VMID)",
         "vyosTemplateVmidHint": "इस नोड पर मौजूद VyOS LXC टेम्पलेट का VMID, जिससे यहाँ बनने वाला हर VPC गेटवे क्लोन होता है। 0 का अर्थ है कि इस नोड पर कोई गेटवे इमेज नहीं है।",
         "vyosTemplateNone": "कोई नहीं",
-        "vyosTemplateUnsetWarning": "टेम्पलेट सेट न होने पर इस नोड पर VPC गेटवे प्रोविज़निंग विफल हो जाएगी। नोड पर VyOS LXC टेम्पलेट बनाएँ, फिर उसका VMID यहाँ दर्ज करें।"
+        "vyosTemplateUnsetWarning": "टेम्पलेट सेट न होने पर इस नोड पर VPC गेटवे प्रोविज़निंग विफल हो जाएगी। नोड पर VyOS LXC टेम्पलेट बनाएँ, फिर उसका VMID यहाँ दर्ज करें।",
+        "statusSyncNote": "Only maintenance survives a cluster sync; online and offline are rewritten from the live cluster."
       },
       "status": {
         "online": "Online",
