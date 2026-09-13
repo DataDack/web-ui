@@ -21,6 +21,7 @@ import {
   Globe,
   Layers,
   Network,
+  Pencil,
   Play,
   Search,
   ShieldAlert,
@@ -31,12 +32,15 @@ import { PageHeader } from "@/components/console"
 import { useQueryParamState } from "@/hooks/use-query-param-state"
 import { useScreen } from "@/services/api/screen"
 
+import { CommonNetworkForm } from "./CommonNetworkForm"
 import {
   useAddressPlan,
   useApplyClusterNetwork,
   useCheckTenantCIDR,
   useClusterNetworks,
+  useNetworkingValidators,
   usePlatformDefaults,
+  useUpdatePlatformDefaults,
 } from "../../superadmin.hooks"
 import type { CIDRDecision, PlatformBlock, PlatformVNet } from "../../superadmin.types"
 
@@ -108,6 +112,9 @@ export function PlatformNetworkingPage() {
 function CommonTab() {
   const { t } = useTranslation()
   const { data, isLoading } = usePlatformDefaults()
+  const [editing, setEditing] = useState(false)
+  const update = useUpdatePlatformDefaults()
+  const { validateDefaults } = useNetworkingValidators()
 
   const columns = useMemo<ColumnDef<PlatformVNet>[]>(
     () => [
@@ -151,13 +158,38 @@ function CommonTab() {
   if (isLoading) return <Skeleton className="h-64 w-full" />
   if (!data) return null
 
+  if (editing) {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="font-medium">{t("superAdmin.networking.editingCommon")}</h2>
+          <Button variant="ghost" onClick={() => { setEditing(false) }}>
+            {t("superAdmin.networking.done")}
+          </Button>
+        </div>
+        <CommonNetworkForm
+          value={data}
+          saving={update.isPending}
+          onValidate={validateDefaults}
+          onSave={async (doc, reason) => update.mutateAsync({ ...doc, reason })}
+        />
+      </div>
+    )
+  }
+
   const { fabric, evpn, platform_zone: zone } = data
 
   return (
     <>
-      <Card className="border-primary/30 bg-primary/5 p-4">
-        <p className="text-sm">{t("superAdmin.networking.commonNotice")}</p>
-      </Card>
+      <div className="flex items-start justify-between gap-3">
+        <Card className="flex-1 border-primary/30 bg-primary/5 p-4">
+          <p className="text-sm">{t("superAdmin.networking.commonNotice")}</p>
+        </Card>
+        <Button onClick={() => { setEditing(true) }}>
+          <Pencil className="size-4" />
+          {t("superAdmin.networking.edit")}
+        </Button>
+      </div>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Fact label={t("superAdmin.networking.zone")} value={zone.zone} mono />

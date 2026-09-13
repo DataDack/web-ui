@@ -44,6 +44,7 @@ import type {
   ClusterNetwork,
   InventoryQuery,
   PlatformDefaults,
+  NetworkingProblem,
   EmailPolicy,
   EmailPolicyCheckRequest,
   UpdateBandwidthPriceRequest,
@@ -1634,6 +1635,49 @@ export function useApplyClusterNetwork() {
     },
     onError: (e) => toast.error(extractError(e, t("superAdmin.networking.applyFailed"))),
   })
+}
+
+/**
+ * Dry-run helpers the editor awaits directly.
+ *
+ * They return the validation body rather than throwing, because a refusal here
+ * is the EXPECTED outcome an operator is iterating toward — turning it into an
+ * error toast would hide the per-field problems that are the whole point.
+ */
+export function useNetworkingValidators() {
+  return {
+    validateDefaults: async (doc: PlatformDefaults) => {
+      try {
+        return await superAdminApi.validatePlatformDefaults(doc)
+      } catch (e) {
+        return extractValidation(e)
+      }
+    },
+    validatePlan: async (doc: AddressPlan) => {
+      try {
+        return await superAdminApi.validateAddressPlan(doc)
+      } catch (e) {
+        return extractValidation(e)
+      }
+    },
+    validateCluster: async (az: string, doc: ClusterNetwork) => {
+      try {
+        return await superAdminApi.validateClusterNetwork(az, doc)
+      } catch (e) {
+        return extractValidation(e)
+      }
+    },
+  }
+}
+
+/**
+ * A refused validation comes back as a 400 whose body IS the answer. Digging it
+ * out here keeps every caller from having to know that.
+ */
+function extractValidation(e: unknown): { valid: boolean; problems: NetworkingProblem[] } {
+  const data = (e as { response?: { data?: { data?: unknown } } }).response?.data?.data
+  const problems = (data as { problems?: NetworkingProblem[] } | undefined)?.problems
+  return { valid: false, problems: problems ?? [] }
 }
 
 /**

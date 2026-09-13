@@ -3,9 +3,6 @@ import { useMemo, useState } from "react"
 import {
   Badge,
   Button,
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
   EmptyState,
   Input,
   Label,
@@ -38,7 +35,7 @@ import {
   Unplug,
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 
 import { ConfirmDialog, StatusBadge } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
@@ -142,109 +139,120 @@ function ClusterCard({
   onDelete: (c: PVECluster) => void
 }>) {
   const { t } = useTranslation()
-  const [open, setOpen] = useState(true)
 
+  // Where its machines actually are, derived from the nodes. A cluster has no
+  // availability zone of its own — it spans racks — so summarising the column
+  // that used to be on the cluster would have told an operator every cluster
+  // sits in exactly one zone, which stopped being true the moment node
+  // placement became settable.
+  const unplaced = nodes.filter((n) => !n.availability_zone_id).length
+  const zoneSummary = [...new Set(nodes.map((n) => n.availability_zone_id).filter(Boolean))]
+    .map((id) => azLabel(id))
+    .join(", ")
+
+  // No accordion. A cluster is a PLACE you go into, not a row you unfold:
+  // everything about it — its nodes, its networking, its inventory, its manager
+  // health — lives on its own page, and expanding a row to see a node list was
+  // showing one section of that page while hiding the rest.
   return (
-    <div className="rounded-xl border border-border bg-card">
-      <Collapsible open={open} onOpenChange={setOpen}>
-        <div className="flex items-center gap-3 p-4">
-          <CollapsibleTrigger asChild>
-            <button
-              type="button"
-              className="flex items-center gap-3 min-w-0 flex-1 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md"
-              aria-expanded={open}
-            >
-              <ChevronRight
-                className={`size-4 shrink-0 text-muted-foreground transition-transform ${open ? "rotate-90" : ""}`}
-              />
-              <ServerCog className="size-5 shrink-0 text-muted-foreground" />
-              <div className="min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="font-semibold text-[15px] text-foreground truncate">
-                    {cluster.name}
-                  </span>
-                  <Badge variant="outline" className="font-mono text-[11px]">
-                    {t("superAdmin.pveClusters.nodeCount", { count: nodes.length })}
-                  </Badge>
-                  <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
-                    <Globe className="size-3" />
-                    {azLabel(cluster.availability_zone_id)}
-                  </span>
-                </div>
-                <div className="flex items-center gap-3 mt-0.5 flex-wrap">
-                  <span className="text-[11px] font-mono text-muted-foreground">
-                    {cluster.endpoint} · {cluster.username}
-                  </span>
-                  {cluster.last_sync_error ? (
-                    <span className="flex items-center gap-1 text-[11px] font-medium text-destructive">
-                      <AlertTriangle className="size-3" />
-                      {t("superAdmin.pveClusters.syncFailed")}
-                    </span>
-                  ) : (
-                    <span className="text-[11px] text-muted-foreground">
-                      {cluster.last_synced_at
-                        ? t("superAdmin.pveClusters.syncedAt", {
-                            when: new Date(cluster.last_synced_at).toLocaleString(),
-                          })
-                        : t("superAdmin.pveClusters.syncedNever")}
-                    </span>
-                  )}
-                </div>
-              </div>
-            </button>
-          </CollapsibleTrigger>
-          <div className="flex items-center gap-1.5 shrink-0">
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-1.5"
-              loading={syncing}
-              disabled={syncing}
-              onClick={() => {
-                onSync(cluster)
-              }}
-            >
-              <RefreshCw className={`size-3.5 ${syncing ? "animate-spin" : ""}`} />
-              {t("superAdmin.pveClusters.sync")}
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label={t("superAdmin.actions.delete")}
-              onClick={() => {
-                onDelete(cluster)
-              }}
-            >
-              <Trash2 className="size-4 text-destructive" />
-            </Button>
+    <Link
+      to={`/admin/pve-clusters/${cluster.id}`}
+      className="group block rounded-xl border border-border bg-card transition-colors hover:border-primary/50 hover:bg-accent/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+    >
+      <div className="flex items-center gap-3 p-4">
+        <ServerCog className="size-5 shrink-0 text-muted-foreground" />
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="truncate text-[15px] font-semibold text-foreground group-hover:underline underline-offset-4">
+              {cluster.name}
+            </span>
+            <Badge variant="outline" className="font-mono text-[11px]">
+              {t("superAdmin.pveClusters.nodeCount", { count: nodes.length })}
+            </Badge>
+            {/* Where its machines actually are. A cluster has no zone of its
+                own — it spans racks — so this is derived from the nodes, and an
+                unplaced one is the number that needs acting on. */}
+            {zoneSummary ? (
+              <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
+                <Globe className="size-3" />
+                {zoneSummary}
+              </span>
+            ) : null}
+            {unplaced > 0 ? (
+              <Badge variant="warning" className="gap-1 text-[11px]">
+                <AlertTriangle className="size-3" />
+                {t("superAdmin.pveClusters.unplaced", { count: unplaced })}
+              </Badge>
+            ) : null}
+          </div>
+          <div className="mt-0.5 flex flex-wrap items-center gap-3">
+            <span className="font-mono text-[11px] text-muted-foreground">
+              {cluster.endpoint} · {cluster.username}
+            </span>
+            {cluster.last_sync_error ? (
+              <span className="flex items-center gap-1 text-[11px] font-medium text-destructive">
+                <AlertTriangle className="size-3" />
+                {t("superAdmin.pveClusters.syncFailed")}
+              </span>
+            ) : (
+              <span className="text-[11px] text-muted-foreground">
+                {cluster.last_synced_at
+                  ? t("superAdmin.pveClusters.syncedAt", {
+                      when: new Date(cluster.last_synced_at).toLocaleString(),
+                    })
+                  : t("superAdmin.pveClusters.syncedNever")}
+              </span>
+            )}
           </div>
         </div>
 
-        {/* The failure text is the operator's only clue why a cluster stopped
-            updating, so it is shown verbatim rather than summarised away. */}
-        {cluster.last_sync_error ? (
-          <p className="mx-4 mb-3 rounded-md bg-destructive/10 px-3 py-2 text-[12px] font-mono text-destructive break-words">
-            {cluster.last_sync_error}
-          </p>
-        ) : null}
+        {/* Actions stop the click from reaching the card, so "Sync" does not
+            also navigate — a destructive-adjacent button that silently moves
+            you somewhere else is how the wrong cluster gets deleted. */}
+        <div
+          className="flex shrink-0 items-center gap-1.5"
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+          }}
+          role="presentation"
+        >
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1.5"
+            loading={syncing}
+            disabled={syncing}
+            onClick={() => {
+              onSync(cluster)
+            }}
+          >
+            <RefreshCw className={`size-3.5 ${syncing ? "animate-spin" : ""}`} />
+            {t("superAdmin.pveClusters.sync")}
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label={t("superAdmin.actions.delete")}
+            onClick={() => {
+              onDelete(cluster)
+            }}
+          >
+            <Trash2 className="size-4 text-destructive" />
+          </Button>
+        </div>
 
-        <CollapsibleContent>
-          <div className="border-t border-border p-2">
-            {nodes.length === 0 ? (
-              <p className="px-3 py-4 text-[13px] text-muted-foreground">
-                {t("superAdmin.pveClusters.noNodes")}
-              </p>
-            ) : (
-              <div className="space-y-0.5">
-                {nodes.map((n) => (
-                  <NodeRow key={n.id} node={n} onOpen={onOpenNode} />
-                ))}
-              </div>
-            )}
-          </div>
-        </CollapsibleContent>
-      </Collapsible>
-    </div>
+        <ChevronRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+      </div>
+
+      {/* The failure text is the operator's only clue why a cluster stopped
+          updating, so it is shown verbatim rather than summarised away. */}
+      {cluster.last_sync_error ? (
+        <p className="mx-4 mb-3 break-words rounded-md bg-destructive/10 px-3 py-2 font-mono text-[12px] text-destructive">
+          {cluster.last_sync_error}
+        </p>
+      ) : null}
+    </Link>
   )
 }
 

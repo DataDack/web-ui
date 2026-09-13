@@ -58,8 +58,9 @@ export const superadminRoutes: RouteObject[] = [
         },
       },
       {
-        // Is anything wrong, across every node, in one answer. The per-node
-        // probes still exist behind a node's detail page.
+        // Reachable, but no longer in the sidebar: a cluster's health is a tab
+        // inside that cluster. This stays because it is the one view that spans
+        // every cluster, which is useful before you know which one to open.
         path: "fleet-status",
         lazy: async () => {
           const { FleetStatusPage } = await import("./partials/FleetStatusPage")

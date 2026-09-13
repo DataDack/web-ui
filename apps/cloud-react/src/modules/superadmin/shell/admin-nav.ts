@@ -1,5 +1,4 @@
 import {
-  Activity,
   BadgeIndianRupee,
   Boxes,
   Building2,
@@ -91,45 +90,21 @@ export const ADMIN_NAV: AdminNavGroup[] = [
       },
       // THE CLUSTER IS THE CONTAINER.
       //
-      // Its nodes, its managers, its networking and its inventory are sections
-      // INSIDE a cluster, not sidebar entries beside it — they are meaningless
-      // without knowing which cluster is being asked about, and giving each one
-      // a top-level row meant every question started with picking a page and
-      // then picking a cluster inside it.
+      // Its nodes, its managers, its networking, its inventory and its health
+      // are sections INSIDE a cluster, not sidebar entries beside it. They are
+      // meaningless without knowing which cluster is being asked about, and
+      // giving each a top-level row meant every question started with picking a
+      // page and then picking a cluster inside it — twice the navigation to
+      // reach one answer.
       //
-      // What stays out here is what is genuinely common: the list of clusters,
-      // fleet-wide health, and the shared network configuration every cluster
-      // inherits.
+      // Nothing cluster-scoped is out here. What remains in this group is
+      // genuinely separate from any one cluster: where zones are defined, and
+      // the two products that sit on top of the fleet rather than inside it.
       {
         labelKey: "superAdmin.pveFleet.title",
         icon: ServerCog,
         path: "/admin/pve-clusters",
         match: "/admin/pve-",
-      },
-      // Fleet-wide, and deliberately not per cluster: "is anything wrong
-      // anywhere" is the question an operator opens the console to ask, before
-      // they know which cluster to look at.
-      {
-        labelKey: "superAdmin.fleet.title",
-        icon: Activity,
-        path: "/admin/fleet-status",
-      },
-      // The COMMON network configuration — the template every cluster inherits,
-      // plus the address policy. A single cluster's resolved network lives in
-      // that cluster, because editing this one reaches every site at once.
-      {
-        labelKey: "superAdmin.networking.title",
-        icon: Network,
-        path: "/admin/networking",
-      },
-      // Manager SETTINGS — the port every node's manager listens on, and the
-      // connection the platform uses to reach them. Fleet-wide configuration,
-      // so it stays out here; a single cluster's manager HEALTH is a tab inside
-      // that cluster, because it is a fact about those machines.
-      {
-        labelKey: "superAdmin.proxmoxManager.title",
-        icon: ServerCog,
-        path: "/admin/proxmox-manager",
       },
       { labelKey: "superAdmin.loadBalancers.title", icon: Scale, path: "/admin/load-balancers" },
       { labelKey: "superAdmin.staticIps.title", icon: Network, path: "/admin/static-ips" },

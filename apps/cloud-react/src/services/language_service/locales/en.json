@@ -4609,7 +4609,8 @@
         "name": "Cluster",
         "nodes": "Nodes",
         "lastSynced": "Last synced"
-      }
+      },
+      "unplaced": "{{count}} unplaced"
     },
     "pveFleet": {
       "title": "Proxmox Fleet",
@@ -4680,7 +4681,8 @@
         "nodes": "Nodes",
         "networking": "Networking",
         "inventory": "Inventory",
-        "manager": "Proxmox manager"
+        "manager": "Proxmox manager",
+        "health": "Health"
       },
       "groups": {
         "vm": "Virtual machines",
@@ -4804,7 +4806,34 @@
       "apply": "Apply to cluster",
       "applied": "Platform zone applied to {{count}} node(s)",
       "appliedPartial": "Applied to {{ok}} of {{total}} nodes. Failed: {{names}}",
-      "applyFailed": "Couldn't apply the platform zone"
+      "applyFailed": "Couldn't apply the platform zone",
+      "sections": {
+        "fabric": "Underlay fabric",
+        "fabricHint": "Plain IP transport between the machines that carry VXLAN tunnels.",
+        "evpn": "EVPN control plane",
+        "evpnHint": "Shared by the platform zone and every tenant zone on the cluster.",
+        "zone": "Platform zone",
+        "zoneHint": "One EVPN zone and VRF for all platform infrastructure."
+      },
+      "fabricName": "Fabric name",
+      "underlayInterface": "Underlay interface",
+      "underlayVlan": "Underlay VLAN",
+      "untaggedHint": "0 means untagged, directly on the bridge",
+      "underlayCidr": "Underlay CIDR",
+      "underlayMtu": "Underlay MTU",
+      "overlayMtu": "Overlay MTU",
+      "addVnet": "Add VNet",
+      "removeVnet": "Remove VNet",
+      "edit": "Edit",
+      "done": "Done",
+      "save": "Save",
+      "discard": "Discard",
+      "validate": "Validate",
+      "editingCommon": "Editing the common cluster configuration",
+      "problemsFound": "{{count}} problem(s) to fix",
+      "validAgainstAll": "Valid against every configured cluster",
+      "revisionWillBe": "Saves as revision {{next}}",
+      "reasonPlaceholder": "Why this change (recorded in the audit log)"
     }
   },
   "region": {

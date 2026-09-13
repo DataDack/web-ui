@@ -39,7 +39,7 @@ import {
   useSyncPVECluster,
 } from "../../superadmin.hooks"
 
-const TABS = ["nodes", "networking", "inventory", "manager"] as const
+const TABS = ["nodes", "networking", "inventory", "health"] as const
 type Tab = (typeof TABS)[number]
 
 /**
@@ -208,7 +208,7 @@ export function ClusterDetailPage() {
           </TabsTrigger>
           <TabsTrigger value="networking">{t("superAdmin.cluster.tabs.networking")}</TabsTrigger>
           <TabsTrigger value="inventory">{t("superAdmin.cluster.tabs.inventory")}</TabsTrigger>
-          <TabsTrigger value="manager">{t("superAdmin.cluster.tabs.manager")}</TabsTrigger>
+          <TabsTrigger value="health">{t("superAdmin.cluster.tabs.health")}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="nodes" className="pt-4">
@@ -225,10 +225,11 @@ export function ClusterDetailPage() {
         <TabsContent value="inventory" className="pt-4">
           <ClusterInventoryTab clusterId={cluster.id} />
         </TabsContent>
-        <TabsContent value="manager" className="pt-4">
-          {/* Scoped to this cluster. The same probe backs the fleet-wide page,
-              which stays in the sidebar because "is anything wrong anywhere" is
-              a different question from "is this cluster healthy". */}
+        <TabsContent value="health" className="pt-4">
+          {/* Manager reachability, version and template state for this
+              cluster's machines — the whole of "is this cluster OK" in one
+              place, rather than a sidebar page that first asks which cluster
+              you meant. */}
           <ClusterManagerTab clusterId={cluster.id} />
         </TabsContent>
       </Tabs>
