@@ -5,7 +5,7 @@ import { handleQuotaGateError } from "@/modules/governance/quota-gate"
 import { useActiveRegion } from "@/modules/region/region.context"
 import { extractError } from "@/services/api/client"
 
-import { serverlessApi } from "./serverless.api"
+import { createFunctionDirect, createFunctionFromSourceDirect } from "./serverless.direct"
 import type { CreateFunctionFromSourceRequest, CreateFunctionRequest } from "./serverless.types"
 
 // The active region is part of every query key: switching regions in the
@@ -26,8 +26,7 @@ export function useCreateFunction() {
   const queryClient = useQueryClient()
   const { activeRegionCode } = useActiveRegion()
   return useMutation({
-    mutationFn: (body: CreateFunctionRequest) =>
-      serverlessApi.createFunction(activeRegionCode, body),
+    mutationFn: (body: CreateFunctionRequest) => createFunctionDirect(body),
     onSuccess: async (_data, body) => {
       toast.success(`Function ${body.name} deployed`)
       await queryClient.invalidateQueries({
@@ -46,8 +45,7 @@ export function useCreateFunctionFromSource() {
   const queryClient = useQueryClient()
   const { activeRegionCode } = useActiveRegion()
   return useMutation({
-    mutationFn: (body: CreateFunctionFromSourceRequest) =>
-      serverlessApi.createFunctionFromSource(activeRegionCode, body),
+    mutationFn: (body: CreateFunctionFromSourceRequest) => createFunctionFromSourceDirect(body),
     onSuccess: async (_data, body) => {
       toast.success(`Function ${body.name} deployed`)
       await queryClient.invalidateQueries({

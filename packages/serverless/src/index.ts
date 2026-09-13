@@ -112,6 +112,10 @@ export {
 export { familySupportsBlank, templateForFamily } from "./data/templates"
 export { MAX_CODE_FILE_BYTES, MAX_INLINE_EDIT_BYTES } from "./data/types"
 export type {
+  // ActivityEvent and PublishLayerInput are exported because ServerlessTransport
+  // names them in its own signatures (activity, publishLayer). A host
+  // implementing the transport could not spell those members without them.
+  ActivityEvent,
   ArtifactRef,
   CodeArtifact,
   CodeNotEditableReason,
@@ -136,6 +140,7 @@ export type {
   MetricSeriesQuery,
   MetricTotals,
   PackageType,
+  PublishLayerInput,
   PutAliasInput,
   PutTriggerInput,
   StarterTemplate,

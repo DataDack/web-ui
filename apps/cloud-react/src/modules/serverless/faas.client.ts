@@ -1,9 +1,8 @@
-import axios, { type AxiosError, type AxiosResponse, type InternalAxiosRequestConfig } from "axios"
-
-import { activeScope } from "@/services/api/active-scope"
-import { authToken, refreshAccessToken } from "@/services/api/auth-token"
-
 import type {
+  ActivityEvent,
+  ArtifactRef,
+  CreateFromSourceInput,
+  CreatedFunction,
   FunctionAlias,
   FunctionCode,
   FunctionCodeFile,
@@ -13,12 +12,18 @@ import type {
   LayerVersionSummary,
   MetricSeries,
   MetricSeriesQuery,
+  PublishLayerInput,
   PutAliasInput,
   RuntimeInfo,
   ServerlessTransport,
   Trigger,
   UpdateFunctionConfigInput,
 } from "@datadack/serverless"
+import axios, { type AxiosError, type AxiosResponse, type InternalAxiosRequestConfig } from "axios"
+
+import { activeScope } from "@/services/api/active-scope"
+import { authToken, refreshAccessToken } from "@/services/api/auth-token"
+
 
 // Direct browser → FaaS control-plane client. This is NOT the gateway client
 // (services/api/client.ts): that one is pinned to /api/v1, cookie-oriented,
@@ -110,8 +115,19 @@ export interface FaasTransportOptions {
   getToken?: () => string | null
 }
 
-/** The direct-FaaS slice of the transport; create/upload stay on the gateway. */
-export type FaasDirectTransport = Required<
+/**
+ * The whole transport. Every serverless call the console makes goes straight to
+ * the control plane.
+ *
+ * It used to be a slice: creation, layer publishing, artifact presigning and
+ * the activity feed went through cloud-be-go's serverless gateway instead,
+ * because the KYC, naming-policy and object-quota gates only existed there.
+ * That gateway is gone. Those gates moved to where the objects actually live —
+ * KYC into the platform's auth callback, the naming convention and the object
+ * ceilings onto the per-account quota policy the control plane already
+ * fetches — so there is nothing left for a proxy hop to add.
+ */
+export type FaasTransport = Required<
   Pick<
     ServerlessTransport,
     | "listRuntimes"
@@ -143,10 +159,44 @@ export type FaasDirectTransport = Required<
     | "deleteFunctionCodeFile"
     | "discardFunctionCodeDraft"
     | "deployFunctionCodeDraft"
+    | "createFromSource"
+    | "publishLayer"
+    | "uploadArtifact"
+    | "activity"
   >
 >
 
-export function createFaasTransport(opts: FaasTransportOptions): FaasDirectTransport {
+/** One row of the control plane's audit trail (core.AuditEvent). */
+interface AuditEvent {
+  action?: string
+  resourceType?: string
+  resourceName?: string
+  occurredAt?: string
+  outcome?: string
+}
+
+/**
+ * An audit row as the activity feed shows it.
+ *
+ * `type` falls back to the resource type so a row whose action the trail could
+ * not name still reads as something rather than as a blank line.
+ */
+function toActivityEvent(event: AuditEvent): ActivityEvent {
+  return {
+    type: event.action || event.resourceType || "activity",
+    function: event.resourceName,
+    at: event.occurredAt,
+  }
+}
+
+/**
+ * The configured axios instance every direct-to-FaaS call shares.
+ *
+ * Exported so the console's own create forms (serverless.direct.ts) post
+ * through the same credential, account-header and token-refresh policy rather
+ * than standing up a second client that would drift from this one.
+ */
+export function createFaasHttp(opts: FaasTransportOptions) {
   const getToken = opts.getToken ?? authToken.get
   const getAccountId = opts.getAccountId ?? activeScope.getAccountId
 
@@ -188,6 +238,12 @@ export function createFaasTransport(opts: FaasTransportOptions): FaasDirectTrans
     }
     throw error
   })
+
+  return faas
+}
+
+export function createFaasTransport(opts: FaasTransportOptions): FaasTransport {
+  const faas = createFaasHttp(opts)
 
   /** Await the call; on failure re-throw the FaaS message as a plain Error. */
   const run = async <T>(work: Promise<T>, fallback: string): Promise<T> => {
@@ -492,6 +548,91 @@ export function createFaasTransport(opts: FaasTransportOptions): FaasDirectTrans
           )
           .then((res) => res.data),
         "Could not deploy the draft",
+      ),
+
+    // Create from inline source: the control plane zips `files` server-side.
+    //
+    // This was the last create path on the cloud gateway, kept there for the
+    // KYC, naming-policy and object-quota gates. All three now apply on this
+    // side — KYC in the platform's auth callback, the naming convention and
+    // the function ceiling from the account's quota policy — so the request
+    // goes where the function is actually made.
+    createFromSource: (input: CreateFromSourceInput) =>
+      run(
+        faas.post<{ name?: string }>("/v1/functions/source", input).then(
+          (res): CreatedFunction => ({ name: res.data.name ?? input.name }),
+        ),
+        "Could not create the function",
+      ),
+
+    // A new layer version, referencing an archive uploaded by uploadArtifact.
+    publishLayer: (input: PublishLayerInput) =>
+      run(
+        faas.post<unknown>("/v1/layers", input).then(() => undefined),
+        "Could not publish the layer",
+      ),
+
+    /**
+     * Upload an archive and return the {bucket, key} a create or publish names.
+     *
+     * Two requests: a presigned PUT slot from the control plane, then the file
+     * straight to object storage. The bytes never pass through an API — which
+     * is the point, since a function package can be tens of megabytes.
+     *
+     * No accountId or key is sent. The control plane derives the account from
+     * the credential and builds the key under that account's prefix; a
+     * client-supplied one is refused. That is deliberate — when the key was
+     * taken from the request body, anyone could presign a write over another
+     * tenant's package.
+     */
+    uploadArtifact: async (file: File, kind): Promise<ArtifactRef> => {
+      const slot = await run(
+        faas
+          .post<{ url: string; method?: string; bucket: string; key: string; headers?: Record<string, string> }>(
+            "/v1/buildd/artifacts/presign-put",
+            {
+              kind: kind ?? "functions",
+              filename: file.name,
+              contentType: file.type || "application/zip",
+            },
+          )
+          .then((res) => res.data),
+        "Could not start the upload",
+      )
+      // Plain fetch, not the axios instance: this goes to object storage, which
+      // must receive the signed URL and NOTHING else. Attaching the console's
+      // Authorization header would add a second credential to a request already
+      // authorised by the signature, and S3 rejects that outright.
+      const response = await fetch(slot.url, {
+        method: slot.method || "PUT",
+        headers: { "Content-Type": file.type || "application/zip", ...slot.headers },
+        body: file,
+      })
+      if (!response.ok) {
+        throw new Error(`The upload failed (${String(response.status)})`)
+      }
+      return { bucket: slot.bucket, key: slot.key }
+    },
+
+    /**
+     * Recent activity for the account.
+     *
+     * The control plane's own audit trail, which is where these events were
+     * always born. cloud-be-go used to hold a parallel copy — a capped Redis
+     * list fed by a signed webhook — and the console read that instead. The
+     * webhook turned out never to have been sent by anything, so the list was
+     * permanently empty; reading the trail directly is both simpler and the
+     * first version of this that shows anything.
+     *
+     * The read is pinned to the caller's account by the control plane, not by
+     * this query.
+     */
+    activity: () =>
+      run(
+        faas
+          .get<{ events?: AuditEvent[] }>("/v1/admin/audit", { params: { limit: 50 } })
+          .then((res) => (res.data.events ?? []).map(toActivityEvent)),
+        "Could not load recent activity",
       ),
 
     /**
