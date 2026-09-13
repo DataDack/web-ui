@@ -976,7 +976,11 @@ export interface IpPool {
   ip_version: string
   region: string
   availability_zone_id: string | null
+  // The gateway addresses in this block are reached through, and the block's
+  // prefix. Empty/0 for a block registered before gateways were recorded: those
+  // fall back to the gateway on the PVE node's public bridge.
   gateway: string
+  prefix_length?: number
   description: string
   total_count: number
   usable_count: number
@@ -1000,12 +1004,18 @@ export interface CreateIPPoolRequest {
   name?: string
   availability_zone_id: string
   description?: string
+  // Both or neither: a gateway without its prefix cannot configure a guest, and
+  // the backend refuses the pair half-given rather than storing it.
+  gateway?: string
+  prefix_length?: number
   pairs: { public_ip: string; associated_ip: string }[]
 }
 
 export interface UpdateIPPoolRequest {
   name?: string
   description?: string
+  gateway?: string
+  prefix_length?: number
   status?: IpPoolStatus
   is_active?: boolean
 }

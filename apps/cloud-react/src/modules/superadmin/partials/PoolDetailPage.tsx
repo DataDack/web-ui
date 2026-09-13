@@ -219,6 +219,7 @@ export function PoolDetailPage() {
         count={addresses.length}
         region={pool?.region ?? ""}
         az={azCode}
+        gateway={pool?.gateway ? `${pool.gateway}/${String(pool.prefix_length ?? 0)}` : ""}
         loading={isLoading}
       />
 
@@ -445,8 +446,15 @@ function InventoryFacts({
   count,
   region,
   az,
+  gateway,
   loading,
-}: Readonly<{ count: number; region: string; az: string; loading: boolean }>) {
+}: Readonly<{
+  count: number
+  region: string
+  az: string
+  gateway: string
+  loading: boolean
+}>) {
   const { t } = useTranslation()
 
   if (loading) {
@@ -464,6 +472,9 @@ function InventoryFacts({
       <Fact label="Mappings" value={String(count)} />
       <Fact label={t("superAdmin.staticIps.dialog.region")} value={region || "—"} />
       <Fact label={t("superAdmin.staticIps.dialog.az")} value={az || "—"} />
+      {/* "node bridge" rather than "—": the addresses do get a gateway either
+          way, and which one is the thing an operator is checking here. */}
+      <Fact label="Gateway" value={gateway || "node bridge"} />
     </div>
   )
 }

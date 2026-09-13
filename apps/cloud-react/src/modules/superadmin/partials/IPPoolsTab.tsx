@@ -164,7 +164,10 @@ export function IPPoolsTab({ addOpen, onAddOpenChange }: Readonly<Props>) {
       textColumn<IpPool>({
         id: "gateway",
         header: t("superAdmin.staticIps.pools.columns.gateway"),
-        accessor: (p) => p.gateway || "—",
+        // The prefix travels with the gateway — /24 vs /30 is the difference
+        // between a block reached through itself and one reached through the
+        // node's uplink, so showing the gateway alone hides half the fact.
+        accessor: (p) => (p.gateway ? `${p.gateway}/${String(p.prefix_length ?? 0)}` : "—"),
         mono: true,
         responsive: "xl",
       }),

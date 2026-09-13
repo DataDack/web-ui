@@ -25,11 +25,28 @@ import { Field } from "../components/form-fields"
 import { useAdminAvailabilityZones, useSaveIPPool } from "../superadmin.hooks"
 import type { CreateIPPoolRequest } from "../superadmin.types"
 
-const schema = z.object({
-  availability_zone_id: z.string().min(1, "Required"),
-  name: z.string().max(100),
-  description: z.string().max(255),
-})
+const IPV4 = /^(?:\d{1,3}\.){3}\d{1,3}$/
+
+const schema = z
+  .object({
+    availability_zone_id: z.string().min(1, "Required"),
+    // The gateway is what the guest gets as its default route. Optional only
+    // because blocks registered before it existed are reached through the PVE
+    // node's own uplink; for anything else, leaving it blank is how a VM comes
+    // up addressed and unroutable.
+    gateway: z.string().refine((v) => v === "" || IPV4.test(v), "Enter an IPv4 address"),
+    prefix_length: z.string(),
+    name: z.string().max(100),
+    description: z.string().max(255),
+  })
+  .refine((v) => (v.gateway === "") === (v.prefix_length === ""), {
+    message: "Enter both the gateway and its prefix, or neither",
+    path: ["prefix_length"],
+  })
+  .refine((v) => v.prefix_length === "" || /^(?:[89]|[12]\d|3[0-2])$/.test(v.prefix_length), {
+    message: "Prefix must be between 8 and 32",
+    path: ["prefix_length"],
+  })
 
 type FormValues = z.infer<typeof schema>
 interface AddressPair {
@@ -37,7 +54,13 @@ interface AddressPair {
   associated_ip: string
 }
 
-const EMPTY: FormValues = { availability_zone_id: "", name: "", description: "" }
+const EMPTY: FormValues = {
+  availability_zone_id: "",
+  gateway: "",
+  prefix_length: "",
+  name: "",
+  description: "",
+}
 
 function optional(value: string) {
   const trimmed = value.trim()
@@ -81,6 +104,8 @@ export function AddIPPoolDialog({ open, onOpenChange }: Readonly<Props>) {
     const payload: CreateIPPoolRequest = {
       pairs,
       availability_zone_id: values.availability_zone_id,
+      gateway: optional(values.gateway),
+      prefix_length: values.prefix_length === "" ? undefined : Number(values.prefix_length),
       name: optional(values.name),
       description: optional(values.description),
     }
@@ -157,6 +182,30 @@ export function AddIPPoolDialog({ open, onOpenChange }: Readonly<Props>) {
                 )}
               />
             </Field>
+
+            <div className="grid gap-4 sm:grid-cols-[2fr_1fr]">
+              <Field label="Gateway" error={errors.gateway?.message}>
+                <Input
+                  {...register("gateway")}
+                  // eslint-disable-next-line sonarjs/no-hardcoded-ip -- illustrative placeholder in an empty form field, never dialled
+                  placeholder="185.67.20.1"
+                  className="font-mono"
+                />
+              </Field>
+              <Field label="Prefix" error={errors.prefix_length?.message}>
+                <Input
+                  {...register("prefix_length")}
+                  inputMode="numeric"
+                  placeholder="24"
+                  className="font-mono"
+                />
+              </Field>
+            </div>
+            <p className="-mt-2 text-xs text-muted-foreground">
+              The default route these addresses are handed at boot. Leave both blank only if the
+              block is reached through the node&apos;s own uplink — otherwise guests come up
+              addressed but with no route off the machine.
+            </p>
 
             <Field label="Group name" error={errors.name?.message}>
               <Input {...register("name")} placeholder="Noida provider mappings" />

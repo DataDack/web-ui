@@ -21,12 +21,25 @@ import type { IpPool, UpdateIPPoolRequest } from "../superadmin.types"
 
 const STATUSES = ["active", "disabled", "depleted"] as const
 
-const schema = z.object({
-  name: z.string().max(100),
-  description: z.string().max(255),
-  status: z.enum(STATUSES),
-  is_active: z.boolean(),
-})
+const IPV4 = /^(?:\d{1,3}\.){3}\d{1,3}$/
+
+const schema = z
+  .object({
+    name: z.string().max(100),
+    description: z.string().max(255),
+    gateway: z.string().refine((v) => v === "" || IPV4.test(v), "Enter an IPv4 address"),
+    prefix_length: z.string(),
+    status: z.enum(STATUSES),
+    is_active: z.boolean(),
+  })
+  .refine((v) => (v.gateway === "") === (v.prefix_length === ""), {
+    message: "Enter both the gateway and its prefix, or neither",
+    path: ["prefix_length"],
+  })
+  .refine((v) => v.prefix_length === "" || /^(?:[89]|[12]\d|3[0-2])$/.test(v.prefix_length), {
+    message: "Prefix must be between 8 and 32",
+    path: ["prefix_length"],
+  })
 
 type FormValues = z.infer<typeof schema>
 
@@ -47,7 +60,14 @@ export function EditIPPoolDialog({ pool, onOpenChange }: Readonly<Props>) {
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { name: "", description: "", status: "active", is_active: true },
+    defaultValues: {
+      name: "",
+      description: "",
+      gateway: "",
+      prefix_length: "",
+      status: "active",
+      is_active: true,
+    },
   })
 
   useEffect(() => {
@@ -55,6 +75,8 @@ export function EditIPPoolDialog({ pool, onOpenChange }: Readonly<Props>) {
     reset({
       name: pool.name,
       description: pool.description,
+      gateway: pool.gateway,
+      prefix_length: pool.prefix_length ? String(pool.prefix_length) : "",
       status: pool.status,
       is_active: pool.is_active,
     })
@@ -65,6 +87,8 @@ export function EditIPPoolDialog({ pool, onOpenChange }: Readonly<Props>) {
     const payload: UpdateIPPoolRequest = {
       name: values.name.trim(),
       description: values.description,
+      gateway: values.gateway,
+      prefix_length: values.prefix_length === "" ? 0 : Number(values.prefix_length),
       status: values.status,
       is_active: values.is_active,
     }
@@ -98,6 +122,29 @@ export function EditIPPoolDialog({ pool, onOpenChange }: Readonly<Props>) {
       >
         <Textarea {...register("description")} rows={2} />
       </Field>
+
+      <div className="grid gap-4 sm:grid-cols-[2fr_1fr]">
+        <Field label="Gateway" error={errors.gateway?.message}>
+          <Input
+            {...register("gateway")}
+            // eslint-disable-next-line sonarjs/no-hardcoded-ip -- illustrative placeholder in an empty form field, never dialled
+            placeholder="185.67.20.1"
+            className="font-mono"
+          />
+        </Field>
+        <Field label="Prefix" error={errors.prefix_length?.message}>
+          <Input
+            {...register("prefix_length")}
+            inputMode="numeric"
+            placeholder="24"
+            className="font-mono"
+          />
+        </Field>
+      </div>
+      <p className="-mt-2 text-xs text-muted-foreground">
+        Applies to guests configured after this change, not to running ones. Blank means the
+        addresses are reached through the gateway on the node&apos;s public bridge.
+      </p>
 
       <Field label={t("superAdmin.staticIps.pools.columns.status")}>
         <Controller
