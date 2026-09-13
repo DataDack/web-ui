@@ -87,6 +87,14 @@ export interface PVECluster {
   last_sync_error: string
   /** Transient, filled by the list endpoint so cluster size needs no second call. */
   node_count: number
+  /**
+   * The client id every proxmox-manager in this cluster presents. Non-secret,
+   * and cluster-scoped: the config file the managers read it from is replicated
+   * cluster-wide, so one pair serves all of them. Empty until generated.
+   */
+  agent_client_id: string
+  /** Whether the cluster holds a manager secret. The secret itself is never returned. */
+  has_agent_secret: boolean
 }
 
 /** One row a hard delete would destroy, named so the operator sees real resources. */
@@ -201,9 +209,11 @@ export interface RegisterNodeWebhookRequest {
   rotate?: boolean
 }
 
-// The per-node lbagent credential pair, returned ONLY by
-// POST /pve-nodes/:id/agent-credentials (generate/regenerate). The secret is
-// shown once and never re-readable — persist/copy it at this moment.
+// The proxmox-manager credential pair, returned ONLY by
+// POST /pve-clusters/:id/agent-credentials (and the node-addressed alias, which
+// acts on the node's cluster). The secret is shown once and never re-readable —
+// persist/copy it at this moment. The pair belongs to the CLUSTER: re-issuing
+// it re-enrolls every manager on it.
 export interface AgentCredentials {
   client_id: string
   secret: string

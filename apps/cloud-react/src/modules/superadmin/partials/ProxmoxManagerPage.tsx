@@ -468,11 +468,17 @@ function ManagerStatusPill({ state }: Readonly<{ state: ManagerStatusState }>) {
 // One node row. Owns its own manager-status query (enabled on mount so the pill
 // populates); the "Health" button refetches it, and the parent's "Re-check all"
 // invalidates the shared manager-status key which refetches every mounted row.
+//
+// The credential shown here belongs to the node's CLUSTER, not to the node — one
+// pair serves every member, because the file the managers read it from is
+// replicated cluster-wide. So the button on this row rotates that shared pair and
+// re-enrolls every sibling node with it, which is why it asks twice.
 function NodeManagerRow({ node }: Readonly<{ node: PVENode }>) {
   const { t } = useTranslation()
   const status = useManagerStatus(node.id, true)
   const { mutate: generate, isPending: generating } = useGenerateAgentCredentials()
   const [issued, setIssued] = useState<AgentCredentials | null>(null)
+  const [confirmRotate, setConfirmRotate] = useState(false)
   const [syncOpen, setSyncOpen] = useState(false)
 
   const hasSecret = !!node.has_agent_secret
@@ -484,6 +490,7 @@ function NodeManagerRow({ node }: Readonly<{ node: PVENode }>) {
       {
         onSuccess: (creds) => {
           setIssued(creds)
+          setConfirmRotate(false)
         },
       },
     )
@@ -580,21 +587,41 @@ function NodeManagerRow({ node }: Readonly<{ node: PVENode }>) {
               type="button"
               variant={hasSecret ? "outline" : "default"}
               size="sm"
-              onClick={onGenerate}
+              onClick={() => {
+                // Rotating logs out every manager in this node's cluster, not
+                // just this one, so it asks twice. Minting a first pair breaks
+                // nothing and asks once.
+                if (!hasSecret || confirmRotate) onGenerate()
+                else setConfirmRotate(true)
+              }}
               disabled={generating}
+              title={
+                hasSecret ? t("superAdmin.proxmoxManager.creds.clusterScopeHint") : undefined
+              }
             >
               {generating ? (
                 <Loader2 className="size-4 animate-spin" />
               ) : (
                 <KeyRound className="size-4" />
               )}
-              {hasSecret
-                ? t("superAdmin.proxmoxManager.actions.regenerate")
-                : t("superAdmin.proxmoxManager.actions.generate")}
+              {(() => {
+                if (!hasSecret) return t("superAdmin.proxmoxManager.actions.generate")
+                return confirmRotate
+                  ? t("superAdmin.cluster.creds.confirmRotate")
+                  : t("superAdmin.proxmoxManager.actions.regenerate")
+              })()}
             </Button>
           </div>
         </TableCell>
       </TableRow>
+
+      {confirmRotate && hasSecret && !issued ? (
+        <TableRow className="hover:bg-transparent">
+          <TableCell colSpan={5} className="py-2 text-[12px] text-status-warning">
+            {t("superAdmin.proxmoxManager.creds.clusterScopeHint")}
+          </TableCell>
+        </TableRow>
+      ) : null}
 
       {issued && (
         <TableRow className="hover:bg-transparent">

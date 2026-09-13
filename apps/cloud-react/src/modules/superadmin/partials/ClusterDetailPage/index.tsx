@@ -234,7 +234,7 @@ export function ClusterDetailPage() {
               cluster's machines — the whole of "is this cluster OK" in one
               place, rather than a sidebar page that first asks which cluster
               you meant. */}
-          <ClusterManagerTab clusterId={cluster.id} />
+          <ClusterManagerTab cluster={cluster} />
         </TabsContent>
       </Tabs>
     </div>

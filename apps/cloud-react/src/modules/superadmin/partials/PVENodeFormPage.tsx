@@ -359,16 +359,21 @@ function PVENodeForm({
 
 /* ── Agent credentials ─────────────────────────────────────────────────── */
 
-// Per-node lbagent credential (client_id + secret). The secret is only ever
-// returned once, at generate/regenerate time, so this panel captures it into
-// local state and renders it in a copyable, warned callout; refetches never
-// re-expose it. Editing a node is the only place this makes sense (it needs the
-// node id), so the parent only mounts it in edit mode.
+// The proxmox-manager credential (client_id + secret) for this node's CLUSTER.
+// One pair serves every member — the config file the managers read it from is
+// replicated cluster-wide — so rotating from here re-enrolls all of them, which
+// is why the button asks twice.
+//
+// The secret is only ever returned once, at generate/rotate time, so this panel
+// captures it into local state and renders it in a copyable, warned callout;
+// refetches never re-expose it. Editing a node is the only place this makes
+// sense (it needs the node id), so the parent only mounts it in edit mode.
 function AgentCredentialsSection({ node }: Readonly<{ node: PVENode }>) {
   const { t } = useTranslation()
   const { mutate: generate, isPending } = useGenerateAgentCredentials()
   // The freshly-minted pair, shown once. Cleared on unmount / navigation.
   const [issued, setIssued] = useState<AgentCredentials | null>(null)
+  const [confirmRotate, setConfirmRotate] = useState(false)
 
   const hasSecret = !!node.has_agent_secret
   const clientId = issued?.client_id ?? node.agent_client_id
@@ -379,6 +384,7 @@ function AgentCredentialsSection({ node }: Readonly<{ node: PVENode }>) {
       {
         onSuccess: (creds) => {
           setIssued(creds)
+          setConfirmRotate(false)
         },
       },
     )
@@ -394,14 +400,22 @@ function AgentCredentialsSection({ node }: Readonly<{ node: PVENode }>) {
           type="button"
           variant={hasSecret ? "outline" : "default"}
           size="sm"
-          onClick={onGenerate}
+          onClick={() => {
+            // Rotating logs out every manager in the cluster, so it asks twice.
+            // Minting a first pair breaks nothing and asks once.
+            if (!hasSecret || confirmRotate) onGenerate()
+            else setConfirmRotate(true)
+          }}
           disabled={isPending}
           loading={isPending}
         >
           <KeyRound className="size-4" />
-          {hasSecret
-            ? t("superAdmin.pveNodes.agentCredentials.regenerate")
-            : t("superAdmin.pveNodes.agentCredentials.generate")}
+          {(() => {
+            if (!hasSecret) return t("superAdmin.pveNodes.agentCredentials.generate")
+            return confirmRotate
+              ? t("superAdmin.cluster.creds.confirmRotate")
+              : t("superAdmin.pveNodes.agentCredentials.regenerate")
+          })()}
         </Button>
       }
     >

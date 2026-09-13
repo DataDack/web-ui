@@ -409,7 +409,35 @@ export function useDeletePVENode() {
 }
 
 /**
- * Generate/regenerate a node's lbagent credential pair. The returned secret is
+ * Generate (or rotate) a CLUSTER's proxmox-manager credential pair.
+ *
+ * One pair serves every manager in the cluster, so rotating re-enrolls all of
+ * them — the caller warns before it presses this. The returned secret is shown
+ * once and never re-readable, so callers keep it from onSuccess; this hook only
+ * toasts and refreshes what the change is visible in: the cluster itself, the
+ * node list (agent_client_id / has_agent_secret are filled from the cluster) and
+ * the fleet probe, whose "Not enrolled" rows this is the fix for.
+ */
+export function useGenerateClusterAgentCredentials() {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (vars: { id: string }) => superAdminApi.generateClusterAgentCredentials(vars.id),
+    onSuccess: (_creds, vars) => {
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.clusterDetail(vars.id) })
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.pveClusters })
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.pveNodes })
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.fleetStatus })
+      toast.success(t("superAdmin.toasts.agentCredentialsGenerated"))
+    },
+    onError: (e) => toast.error(extractError(e, t("superAdmin.toasts.agentCredentialsFailed"))),
+  })
+}
+
+/**
+ * Generate/rotate the credential pair from a NODE row. It acts on the node's
+ * cluster — the pair is cluster-scoped — so every manager in that cluster is
+ * re-enrolled by this call. The returned secret is
  * shown once (never re-readable), so callers keep it from onSuccess — this hook
  * only surfaces the toast and refreshes the node caches (agent_client_id /
  * has_agent_secret change). Invalidates both the list and the single-node query.
@@ -424,6 +452,8 @@ export function useGenerateAgentCredentials() {
       void queryClient.invalidateQueries({
         queryKey: [...SUPERADMIN_QUERY_KEYS.pveNodes, vars.id],
       })
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.pveClusters })
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.fleetStatus })
       toast.success(t("superAdmin.toasts.agentCredentialsGenerated"))
     },
     onError: (e) => toast.error(extractError(e, t("superAdmin.toasts.agentCredentialsFailed"))),

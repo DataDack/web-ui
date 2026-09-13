@@ -272,7 +272,10 @@ export function ClusterInventoryTab({ clusterId }: ClusterInventoryTabProps) {
         ) : null}
       </div>
 
-      <Card className={cn("overflow-hidden", isFetching && "opacity-70 transition-opacity")}>
+      {/* DataTable draws its own bordered frame, so it is not wrapped in one —
+          a Card here put a box inside a box. The empty state draws none and is
+          left as it is, matching every other tab on this page. */}
+      <div className={cn(isFetching && "opacity-70 transition-opacity")}>
         {data.items.length === 0 ? (
           <EmptyState
             icon={group === "network" ? Network : Boxes}
@@ -282,7 +285,7 @@ export function ClusterInventoryTab({ clusterId }: ClusterInventoryTabProps) {
         ) : (
           <DataTable columns={columns} data={data.items} />
         )}
-      </Card>
+      </div>
 
       {data.pages > 1 ? (
         <div className="flex items-center justify-between gap-3">

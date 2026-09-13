@@ -3238,7 +3238,7 @@
       },
       "agentCredentials": {
         "title": "Agent credentials",
-        "subtitle": "The client ID and secret this node's load-balancer agents use to fetch config and authenticate refresh webhooks.",
+        "subtitle": "The client ID and secret the proxmox-manager on this node authenticates with. One pair serves the whole cluster — the config file it is read from is replicated to every member.",
         "clientId": "Client ID",
         "noClientId": "Not generated yet",
         "secretState": "Secret",
@@ -3247,8 +3247,8 @@
         "secret": "Secret",
         "generate": "Generate",
         "regenerate": "Regenerate",
-        "generateHint": "Generate a credential pair for this node. It's delivered to load-balancer containers on this node when they're provisioned.",
-        "regenerateHint": "Regenerating mints a new secret and invalidates the old one. Existing load-balancer containers on this node keep working until the control plane re-pushes the new secret (or they're reprovisioned).",
+        "generateHint": "Generate the credential pair for this node's cluster. It is delivered to load-balancer containers on its nodes when they are provisioned.",
+        "regenerateHint": "Rotating mints a new secret and invalidates the old one for EVERY manager in this node's cluster, not just this node. Each one stops answering until it is given the new pair.",
         "shownOnceTitle": "Copy the secret now — it won't be shown again",
         "shownOnceBody": "The secret is only displayed here, once. Store it securely. If you lose it, regenerate to mint a new pair."
       },
@@ -3358,7 +3358,8 @@
         "shownOnceTitle": "Copy the secret now — it won't be shown again",
         "shownOnceBody": "The secret is only displayed here, once. Store it securely. If you lose it, regenerate to mint a new pair.",
         "clientId": "Client ID",
-        "secret": "Secret"
+        "secret": "Secret",
+        "clusterScopeHint": "This credential belongs to the whole cluster — rotating it logs out every manager in it, not just this node. Each one stops answering until it is given the new pair."
       },
       "actions": {
         "save": "Save",
@@ -4616,6 +4617,9 @@
     "pveFleet": {
       "title": "Proxmox Fleet",
       "subtitle": "Registered clusters and every hypervisor node the control plane manages.",
+      "node": "Node",
+      "status": "Status",
+      "sync": "Sync",
       "tabs": {
         "clusters": "Clusters",
         "nodes": "Nodes"
@@ -4738,7 +4742,19 @@
       "noGuests": "Nothing running here",
       "noGuestsBody": "This cluster holds no guests yet.",
       "noManagers": "No managers on this cluster yet",
-      "noManagersBody": "Sync the cluster and generate agent credentials for its nodes."
+      "noManagersBody": "Sync the cluster and generate agent credentials for its nodes.",
+      "creds": {
+        "title": "Manager credentials",
+        "body": "One pair for the whole cluster: every proxmox-manager reads it from /etc/pve/datadack/proxmox-manager.conf, which Proxmox replicates to every member.",
+        "missingTitle": "This cluster's managers have no credentials",
+        "missingBody": "Until a pair exists, every node here reports \"Not enrolled\" — there is no manager the control plane can talk to, and nothing will be deployed onto them.",
+        "generate": "Generate credentials",
+        "rotate": "Rotate",
+        "confirmRotate": "Confirm rotate",
+        "rotateWarning": "Rotating logs out every manager in this cluster ({{count}} node(s)) at once. Each one stops answering until it is given the new pair.",
+        "installTitle": "Install on the cluster",
+        "installBody": "Paste both lines into /etc/pve/datadack/proxmox-manager.conf on any one node — Proxmox replicates it to the rest — then restart each manager."
+      }
     },
     "networking": {
       "title": "Platform networking",

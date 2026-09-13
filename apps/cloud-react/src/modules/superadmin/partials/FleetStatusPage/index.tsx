@@ -253,35 +253,36 @@ export function FleetStatusPage() {
         />
       </div>
 
-      <Card className="overflow-hidden">
-        {rows.length === 0 ? (
-          <EmptyState
-            icon={CheckCircle2}
-            title={
-              filter === "all"
-                ? t("superAdmin.fleet.noNodes")
-                : t("superAdmin.fleet.nothingMatches")
-            }
-            description={
-              filter === "all"
-                ? t("superAdmin.fleet.noNodesBody")
-                : t("superAdmin.fleet.nothingMatchesBody")
-            }
-            action={
-              filter === "all"
-                ? undefined
-                : {
-                    label: t("superAdmin.fleet.showAll"),
-                    onClick: () => {
-                      setFilter("all")
-                    },
-                  }
-            }
-          />
-        ) : (
-          <DataTable columns={columns} data={rows} />
-        )}
-      </Card>
+      {/* The frame belongs to whichever of these is showing. DataTable draws
+          its own, so a Card around it was a box inside a box; the empty state
+          draws none, so it still needs one. */}
+      {rows.length === 0 ? (
+        <EmptyState
+          icon={CheckCircle2}
+          title={
+            filter === "all"
+              ? t("superAdmin.fleet.noNodes")
+              : t("superAdmin.fleet.nothingMatches")
+          }
+          description={
+            filter === "all"
+              ? t("superAdmin.fleet.noNodesBody")
+              : t("superAdmin.fleet.nothingMatchesBody")
+          }
+          action={
+            filter === "all"
+              ? undefined
+              : {
+                  label: t("superAdmin.fleet.showAll"),
+                  onClick: () => {
+                    setFilter("all")
+                  },
+                }
+          }
+        />
+      ) : (
+        <DataTable columns={columns} data={rows} />
+      )}
     </div>
   )
 }

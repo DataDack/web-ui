@@ -201,9 +201,14 @@ export const superAdminApi = {
     apiPost<HardDeleteReport>(`${BASE}/pve-nodes/${id}/hard-delete`, {}),
   // Force an immediate live Proxmox poll and return the refreshed nodes.
   refreshPVENodes: () => apiPost<PVENode[]>(`${BASE}/pve-nodes/refresh`, {}),
-  // Generate/regenerate this node's lbagent credential pair. The secret is
-  // returned in plaintext ONLY here (never re-readable); regenerating invalidates
-  // the previous secret.
+  // Generate/rotate the proxmox-manager credential pair for a CLUSTER — one pair
+  // serves every manager on it. The secret is returned in plaintext ONLY here
+  // (never re-readable); rotating invalidates the previous secret for the whole
+  // cluster, so every manager has to be re-enrolled with the new one.
+  generateClusterAgentCredentials: (id: string) =>
+    apiPost<AgentCredentials>(`${BASE}/pve-clusters/${id}/agent-credentials`, {}),
+  // The node-addressed alias of the call above: it acts on the cluster the node
+  // belongs to. Kept because the console reaches it from a node row.
   generateAgentCredentials: (id: string) =>
     apiPost<AgentCredentials>(`${BASE}/pve-nodes/${id}/agent-credentials`, {}),
   // One-button setup of this node's outbound notifications: mints/reuses the
