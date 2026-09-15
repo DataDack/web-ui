@@ -23,6 +23,10 @@ A clean bare-`tsc` run reads as verification and proves nothing. It let `tab is 
 
 **Always `bun run typecheck`** (= `tsc -b --force`). And never send its stderr to `/dev/null` — `tsc -b --force --listFiles 2>/dev/null` hides the diagnostics and recreates the same false all-clear.
 
+## This is a submodule
+
+This repo is `github.com/DataDack/web-ui`, mounted into `cloud-be-go` at `web/`. Committing here is only half the change — the parent repo's pointer must be committed too, or `cloud-be-go` still builds the old commit and the change is invisible to anyone cloning it.
+
 ## Layout
 
 | Path | What |
