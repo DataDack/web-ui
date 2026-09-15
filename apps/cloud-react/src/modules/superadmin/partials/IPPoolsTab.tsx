@@ -34,6 +34,7 @@ import { useNavigate } from "react-router-dom"
 import { AnimatedNumber } from "@/components/console"
 
 import { ActiveBadge } from "../components/ActiveBadge"
+import { useNodeName } from "../components/host-nodes"
 import { cidrContains } from "../ip-utils"
 import { useAdminAvailabilityZones, useAdminIPPools } from "../superadmin.hooks"
 import type { IpPool } from "../superadmin.types"
@@ -134,6 +135,8 @@ export function IPPoolsTab({ addOpen, onAddOpenChange }: Readonly<Props>) {
     [pools],
   )
 
+  const nodeName = useNodeName()
+
   const columns = useMemo<ColumnDef<IpPool>[]>(
     () => [
       {
@@ -153,6 +156,15 @@ export function IPPoolsTab({ addOpen, onAddOpenChange }: Readonly<Props>) {
             region={row.original.region}
             az={azCode(row.original.availability_zone_id)}
           />
+        ),
+      },
+      {
+        id: "host",
+        accessorFn: (p) => nodeName(p.pve_node_id),
+        header: () => "Host node",
+        meta: { responsive: "md" },
+        cell: ({ row }) => (
+          <HostCell pool={row.original} name={nodeName(row.original.pve_node_id)} />
         ),
       },
       {
@@ -193,7 +205,7 @@ export function IPPoolsTab({ addOpen, onAddOpenChange }: Readonly<Props>) {
         ],
       }),
     ],
-    [t, azCode, openPool],
+    [t, azCode, nodeName, openPool],
   )
 
   return (
@@ -459,6 +471,24 @@ function PoolCell({ pool }: Readonly<{ pool: IpPool }>) {
         <ActiveBadge active={pool.is_active} />
       </div>
       <span className="font-mono text-[11px] tabular-nums text-muted-foreground">{source}</span>
+    </div>
+  )
+}
+
+/**
+ * The node carrying the block, and a warning when its addresses cannot be
+ * assigned — no node recorded, or the node or cluster is gone or offline. The
+ * backend's reason is on hover.
+ */
+function HostCell({ pool, name }: Readonly<{ pool: IpPool; name: string }>) {
+  return (
+    <div className="flex flex-col gap-1" title={pool.unassignable_reason}>
+      <span className="font-mono text-[13px] text-foreground">{name || "—"}</span>
+      {!pool.assignable && (
+        <span className="inline-flex w-fit items-center rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[11px] font-medium text-amber-600 dark:text-amber-400">
+          {pool.pve_node_id ? "Not assignable" : "No host node"}
+        </span>
+      )}
     </div>
   )
 }

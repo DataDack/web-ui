@@ -22,6 +22,8 @@ import { useTranslation } from "react-i18next"
 import { z } from "zod/v4"
 
 import { Field } from "../components/form-fields"
+import { useHostNodes } from "../components/host-nodes"
+import { HostNodeSelect } from "../components/HostNodeSelect"
 import { useAdminAvailabilityZones, useSaveIPPool } from "../superadmin.hooks"
 import type { CreateIPPoolRequest } from "../superadmin.types"
 
@@ -30,6 +32,9 @@ const IPV4 = /^(?:\d{1,3}\.){3}\d{1,3}$/
 const schema = z
   .object({
     availability_zone_id: z.string().min(1, "Required"),
+    // The node whose uplink carries the block. Nodes in one cluster may sit on
+    // different upstreams, so a block belongs to one node, not the whole cluster.
+    pve_node_id: z.string().min(1, "Required"),
     // The gateway is what the guest gets as its default route. Optional only
     // because blocks registered before it existed are reached through the PVE
     // node's own uplink; for anything else, leaving it blank is how a VM comes
@@ -56,6 +61,7 @@ interface AddressPair {
 
 const EMPTY: FormValues = {
   availability_zone_id: "",
+  pve_node_id: "",
   gateway: "",
   prefix_length: "",
   name: "",
@@ -85,8 +91,20 @@ export function AddIPPoolDialog({ open, onOpenChange }: Readonly<Props>) {
     handleSubmit,
     control,
     reset,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<FormValues>({ resolver: zodResolver(schema), defaultValues: EMPTY })
+  const azId = watch("availability_zone_id")
+  const nodeId = watch("pve_node_id")
+  const hostNodes = useHostNodes(azId)
+
+  // A node from another zone is not a valid host for this block.
+  useEffect(() => {
+    if (nodeId !== "" && !hostNodes.some((n) => n.id === nodeId)) {
+      setValue("pve_node_id", "")
+    }
+  }, [hostNodes, nodeId, setValue])
 
   useEffect(() => {
     if (open) {
@@ -101,11 +119,17 @@ export function AddIPPoolDialog({ open, onOpenChange }: Readonly<Props>) {
     const isCidr = cidrPattern.test(pairText.trim())
 
     if (pairs.length === 0 && !isCidr) {
-      setPairError("Enter at least one valid IPv4 address/pair, or a valid CIDR pool block (e.g. 157.15.98.180/30)")
+      setPairError(
+        "Enter at least one valid IPv4 address/pair, or a valid CIDR pool block (e.g. 157.15.98.180/30)",
+      )
       return
     }
+    const host = hostNodes.find((n) => n.id === values.pve_node_id)
+    if (!host?.cluster_id) return
     const payload: CreateIPPoolRequest = {
       availability_zone_id: values.availability_zone_id,
+      cluster_id: host.cluster_id,
+      pve_node_id: host.id,
       gateway: optional(values.gateway),
       prefix_length: values.prefix_length === "" ? undefined : Number(values.prefix_length),
       name: optional(values.name),
@@ -140,7 +164,11 @@ export function AddIPPoolDialog({ open, onOpenChange }: Readonly<Props>) {
             onSubmit={(event) => void handleSubmit(onSubmit)(event)}
             className="flex flex-col gap-5 border-border-glass p-6 md:border-r"
           >
-            <Field label="IP Addresses, CIDR Block, or Mappings" required error={pairError || undefined}>
+            <Field
+              label="IP Addresses, CIDR Block, or Mappings"
+              required
+              error={pairError || undefined}
+            >
               <Textarea
                 value={pairText}
                 onChange={(event) => {
@@ -149,11 +177,14 @@ export function AddIPPoolDialog({ open, onOpenChange }: Readonly<Props>) {
                 }}
                 rows={8}
                 className="font-mono"
-                placeholder={"157.15.98.180/30\n\nOR one IP per line:\n185.67.20.52\n185.67.20.103\n\nOR public, associated pair per line:\n103.228.151.132, 10.100.105.2"}
+                placeholder={
+                  "157.15.98.180/30\n\nOR one IP per line:\n185.67.20.52\n185.67.20.103\n\nOR public, associated pair per line:\n103.228.151.132, 10.100.105.2"
+                }
                 aria-describedby="mapped-pairs-help"
               />
               <p id="mapped-pairs-help" className="text-xs text-muted-foreground">
-                Enter a full CIDR block (e.g. 157.15.98.180/30), individual IP addresses, or public/associated pairs.
+                Enter a full CIDR block (e.g. 157.15.98.180/30), individual IP addresses, or
+                public/associated pairs.
               </p>
             </Field>
 
@@ -181,6 +212,26 @@ export function AddIPPoolDialog({ open, onOpenChange }: Readonly<Props>) {
                       ))}
                     </SelectContent>
                   </Select>
+                )}
+              />
+            </Field>
+
+            <Field
+              label="Host node"
+              required
+              error={errors.pve_node_id?.message}
+              hint="Only guests on this node get these addresses."
+            >
+              <Controller
+                control={control}
+                name="pve_node_id"
+                render={({ field }) => (
+                  <HostNodeSelect
+                    value={field.value}
+                    onChange={field.onChange}
+                    availabilityZoneId={azId}
+                    placeholder={azId === "" ? "Choose an availability zone first" : undefined}
+                  />
                 )}
               />
             </Field>

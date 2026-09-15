@@ -16,6 +16,8 @@ import { useTranslation } from "react-i18next"
 import { z } from "zod/v4"
 
 import { Field, FormSheet } from "../components/form-fields"
+import { useHostNodes } from "../components/host-nodes"
+import { HostNodeSelect } from "../components/HostNodeSelect"
 import { useSaveIPPool } from "../superadmin.hooks"
 import type { IpPool, UpdateIPPoolRequest } from "../superadmin.types"
 
@@ -31,6 +33,7 @@ const schema = z
     prefix_length: z.string(),
     status: z.enum(STATUSES),
     is_active: z.boolean(),
+    pve_node_id: z.string(),
   })
   .refine((v) => (v.gateway === "") === (v.prefix_length === ""), {
     message: "Enter both the gateway and its prefix, or neither",
@@ -67,8 +70,10 @@ export function EditIPPoolDialog({ pool, onOpenChange }: Readonly<Props>) {
       prefix_length: "",
       status: "active",
       is_active: true,
+      pve_node_id: "",
     },
   })
+  const hostNodes = useHostNodes(pool?.availability_zone_id)
 
   useEffect(() => {
     if (!pool) return
@@ -79,6 +84,7 @@ export function EditIPPoolDialog({ pool, onOpenChange }: Readonly<Props>) {
       prefix_length: pool.prefix_length ? String(pool.prefix_length) : "",
       status: pool.status,
       is_active: pool.is_active,
+      pve_node_id: pool.pve_node_id ?? "",
     })
   }, [pool, reset])
 
@@ -91,6 +97,12 @@ export function EditIPPoolDialog({ pool, onOpenChange }: Readonly<Props>) {
       prefix_length: values.prefix_length === "" ? 0 : Number(values.prefix_length),
       status: values.status,
       is_active: values.is_active,
+    }
+    // Placement is only sent when it changes; both ids travel together.
+    const host = hostNodes.find((n) => n.id === values.pve_node_id)
+    if (host?.cluster_id && values.pve_node_id !== (pool.pve_node_id ?? "")) {
+      payload.cluster_id = host.cluster_id
+      payload.pve_node_id = host.id
     }
     save(
       { id: pool.id, payload },
@@ -145,6 +157,27 @@ export function EditIPPoolDialog({ pool, onOpenChange }: Readonly<Props>) {
         Applies to guests configured after this change, not to running ones. Blank means the
         addresses are reached through the gateway on the node&apos;s public bridge.
       </p>
+
+      <Field
+        label="Host node"
+        hint={
+          pool?.pve_node_id
+            ? "Only guests on this node get these addresses. A pool with addresses in use cannot be moved."
+            : "This pool has no host node, so none of its addresses can be assigned until one is set."
+        }
+      >
+        <Controller
+          control={control}
+          name="pve_node_id"
+          render={({ field }) => (
+            <HostNodeSelect
+              value={field.value}
+              onChange={field.onChange}
+              availabilityZoneId={pool?.availability_zone_id}
+            />
+          )}
+        />
+      </Field>
 
       <Field label={t("superAdmin.staticIps.pools.columns.status")}>
         <Controller

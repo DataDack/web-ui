@@ -17,7 +17,6 @@ import { useTranslation } from "react-i18next"
 
 import { ConfirmDialog } from "@/components/console"
 
-
 import { useAdminStaticIPAllocations, useReleaseStaticIPAllocation } from "../superadmin.hooks"
 import type { StaticIPAllocation } from "../superadmin.types"
 
@@ -54,6 +53,12 @@ function AttachedTo({ allocation }: Readonly<{ allocation: StaticIPAllocation }>
           <span className="text-destructive">
             {" · "}
             {t("superAdmin.staticIps.inUse.ownerGone")}
+          </span>
+        )}
+        {allocation.host_available === false && (
+          <span className="text-amber-600 dark:text-amber-400">
+            {" · "}
+            {allocation.pve_node_id ? "host unavailable" : "no host node"}
           </span>
         )}
       </span>

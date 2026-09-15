@@ -996,6 +996,15 @@ export interface IpPool {
   blocked: number
   available: number
   entry_method: "mapped"
+  // The node whose uplink carries this block, and its cluster. Both are needed
+  // for the block's addresses to be handed out; null for a block registered
+  // before placement was recorded.
+  cluster_id: string | null
+  pve_node_id: string | null
+  // False when the pool has no placement, or its node or cluster is gone or
+  // offline: its addresses are then not assigned to anything.
+  assignable: boolean
+  unassignable_reason?: string
 }
 
 // A pool is tied to an availability zone; the backend derives its region from
@@ -1010,6 +1019,8 @@ export interface CreateIPPoolRequest {
   prefix_length?: number
   cidr?: string
   pairs?: { public_ip: string; associated_ip: string }[]
+  cluster_id: string
+  pve_node_id: string
 }
 
 export interface UpdateIPPoolRequest {
@@ -1019,6 +1030,9 @@ export interface UpdateIPPoolRequest {
   prefix_length?: number
   status?: IpPoolStatus
   is_active?: boolean
+  // Both or neither. A pool with addresses in use cannot be moved to another node.
+  cluster_id?: string
+  pve_node_id?: string
 }
 
 // A single address within a block. `free` = unallocated; `available` = reserved
@@ -1061,6 +1075,12 @@ export interface ReserveAddressesRequest {
 export interface StaticIPAllocation {
   id: string
   ip_address: string
+  // Where the address is carried. host_available is false when that node or
+  // its cluster is gone or offline (or no node is recorded): whatever holds the
+  // address is then affected, because no other node routes it.
+  cluster_id?: string | null
+  pve_node_id?: string | null
+  host_available?: boolean
   name: string
   status: string // "available" (reserved) | "associated" (in use)
   region: string
@@ -1821,8 +1841,10 @@ export interface ClusterNetwork {
  * cluster's own machines. Never stored — computed, validated as a unit, and
  * applied. Neither stored file says this on its own.
  */
-export interface EffectiveNetwork
-  extends Omit<ClusterNetwork, "nodes" | "route_reflectors" | "exit_nodes" | "exit_node_primary"> {
+export interface EffectiveNetwork extends Omit<
+  ClusterNetwork,
+  "nodes" | "route_reflectors" | "exit_nodes" | "exit_node_primary"
+> {
   defaults_revision: number
   fabric: PlatformDefaults["fabric"] & { nodes: FabricNode[] }
   evpn: PlatformDefaults["evpn"] & {

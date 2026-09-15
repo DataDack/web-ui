@@ -29,6 +29,7 @@ import { useParams } from "react-router-dom"
 import { AnimatedNumber, PageHeader } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
+import { useNodeName } from "../components/host-nodes"
 import {
   useAdminAvailabilityZones,
   useAdminIPPoolAddresses,
@@ -85,6 +86,7 @@ export function PoolDetailPage() {
 
   const { data, isLoading, isError, refetch, isFetching } = useAdminIPPoolAddresses(poolId)
   const { data: azs = [] } = useAdminAvailabilityZones()
+  const nodeName = useNodeName()
   const reserve = useReservePoolAddresses(poolId)
   const release = useReleasePoolAddress(poolId)
 
@@ -220,8 +222,21 @@ export function PoolDetailPage() {
         region={pool?.region ?? ""}
         az={azCode}
         gateway={pool?.gateway ? `${pool.gateway}/${String(pool.prefix_length ?? 0)}` : ""}
+        host={nodeName(pool?.pve_node_id)}
         loading={isLoading}
       />
+      {pool && !pool.assignable && (
+        <div className="glass-1 border-amber-500/30 px-4 py-3 text-sm text-amber-600 dark:text-amber-400">
+          {pool.pve_node_id
+            ? "These addresses cannot be assigned: the host node or its cluster is unavailable."
+            : "These addresses cannot be assigned until the pool has a host node. Set one from Edit on the pools list."}
+          {pool.unassignable_reason && (
+            <span className="mt-1 block font-mono text-[11px] text-muted-foreground">
+              {pool.unassignable_reason}
+            </span>
+          )}
+        </div>
+      )}
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Metric
@@ -447,12 +462,14 @@ function InventoryFacts({
   region,
   az,
   gateway,
+  host,
   loading,
 }: Readonly<{
   count: number
   region: string
   az: string
   gateway: string
+  host: string
   loading: boolean
 }>) {
   const { t } = useTranslation()
@@ -475,6 +492,7 @@ function InventoryFacts({
       {/* "node bridge" rather than "—": the addresses do get a gateway either
           way, and which one is the thing an operator is checking here. */}
       <Fact label="Gateway" value={gateway || "node bridge"} />
+      <Fact label="Host node" value={host || "—"} />
     </div>
   )
 }
