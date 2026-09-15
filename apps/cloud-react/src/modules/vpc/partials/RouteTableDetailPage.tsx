@@ -1,6 +1,7 @@
-import { useState } from "react"
+import { useMemo, useState } from "react"
 
 import {
+  actionsColumn,
   Badge,
   Button,
   CopyButton,
@@ -12,51 +13,85 @@ import {
   TabsList,
   TabsTrigger,
   TabsContent,
+  type RowAction,
 } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
-import { AlertTriangle, GitBranch, Info, Route, Trash2 } from "lucide-react"
+import { AlertTriangle, GitBranch, Info, Pencil, Plus, Route, Trash2 } from "lucide-react"
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom"
 
 import { ConfirmDialog, PageHeader, StatusBadge } from "@/components/console"
 import { useScreen } from "@/services/api/screen"
 
-import { useRouteTable, useRouteTableActions, type NetworkRoute } from "../route-tables"
+import {
+  ROUTE_TARGET_LABELS,
+  useRouteTable,
+  useRouteTableActions,
+  type NetworkRoute,
+} from "../route-tables"
 import { VPC_ROUTES } from "../vpc.constants"
+import { routeTargetLabel, useRouteTargets, type RouteTargets } from "./route-tables/route-targets"
+import { RouteDialog } from "./route-tables/RouteDialog"
 import { SubnetAssociations } from "./route-tables/SubnetAssociations"
 
-const routeColumns: ColumnDef<NetworkRoute>[] = [
-  textColumn<NetworkRoute>({
-    id: "destination",
-    header: "Destination",
-    accessor: (route) => route.destination_cidr,
-    mono: true,
-  }),
-  {
-    id: "target",
-    header: "Target",
-    cell: ({ row }) => (
-      <span className="font-mono text-sm">
-        {row.original.target_type === "local"
-          ? "local"
-          : (row.original.target_id ?? row.original.target_type)}
-      </span>
-    ),
-  },
-  {
-    id: "status",
-    header: "Status",
-    cell: ({ row }) => <StatusBadge status={row.original.status} />,
-  },
-  {
-    id: "origin",
-    header: "Origin",
-    cell: ({ row }) => (
-      <span className="text-muted-foreground">
-        {row.original.target_type === "local" ? "VPC local route" : "Static route"}
-      </span>
-    ),
-  },
-]
+function routeColumns({
+  targets,
+  editable,
+  onEdit,
+  onDelete,
+}: {
+  targets: RouteTargets
+  editable: boolean
+  onEdit: (route: NetworkRoute) => void
+  onDelete: (route: NetworkRoute) => void
+}): ColumnDef<NetworkRoute>[] {
+  return [
+    textColumn<NetworkRoute>({
+      id: "destination",
+      header: "Destination",
+      accessor: (route) => route.destination_cidr,
+      mono: true,
+    }),
+    {
+      id: "target",
+      header: "Target",
+      cell: ({ row }) => (
+        <span className="min-w-0">
+          <span className="block truncate text-sm">{routeTargetLabel(targets, row.original)}</span>
+          <span className="block text-xs text-muted-foreground">
+            {ROUTE_TARGET_LABELS[row.original.target_type] ?? row.original.target_type}
+          </span>
+        </span>
+      ),
+    },
+    {
+      id: "status",
+      header: "Status",
+      cell: ({ row }) => <StatusBadge status={row.original.status} />,
+    },
+    {
+      id: "origin",
+      header: "Origin",
+      cell: ({ row }) => (
+        <span className="text-muted-foreground">
+          {row.original.target_type === "local" ? "VPC local route" : "Static route"}
+        </span>
+      ),
+    },
+    actionsColumn<NetworkRoute>({
+      ariaLabel: "Route actions",
+      // The local route is derived from the VPC's CIDR rather than stored as an
+      // editable row, and the API refuses both edits and deletes of it — so it
+      // gets no menu at all rather than one that fails on click.
+      actions: (route) =>
+        route.target_type === "local" || !editable
+          ? []
+          : ([
+              { label: "Edit route", icon: Pencil, onAction: onEdit },
+              { label: "Delete route", icon: Trash2, destructive: true, onAction: onDelete },
+            ] satisfies RowAction<NetworkRoute>[]),
+    }),
+  ]
+}
 
 export function RouteTableDetailPage() {
   useScreen("vpc.routers")
@@ -64,10 +99,29 @@ export function RouteTableDetailPage() {
   const [params, setParams] = useSearchParams()
   const tab = params.get("tab") === "subnets" ? "subnets" : "routes"
   const query = useRouteTable(id)
-  const { remove } = useRouteTableActions()
+  const { remove, deleteRoute } = useRouteTableActions()
   const navigate = useNavigate()
   const [deleting, setDeleting] = useState(false)
+  // null while closed; { route: undefined } is the add form, a route the edit form.
+  const [routeForm, setRouteForm] = useState<{ route?: NetworkRoute } | null>(null)
+  const [routeToDelete, setRouteToDelete] = useState<NetworkRoute | null>(null)
   const table = query.data
+  const targets = useRouteTargets(table?.vpc_id ?? "")
+  // The API refuses every route write while the VPC is tearing down, so the
+  // affordances come off rather than failing on click.
+  const routesEditable = table?.network_status !== "deleting"
+  const columns = useMemo(
+    () =>
+      routeColumns({
+        targets,
+        editable: routesEditable,
+        onEdit: (route) => {
+          setRouteForm({ route })
+        },
+        onDelete: setRouteToDelete,
+      }),
+    [targets, routesEditable],
+  )
   if (query.isLoading)
     return (
       <div aria-label="Loading route table" aria-busy="true" className="space-y-5">
@@ -148,29 +202,54 @@ export function RouteTableDetailPage() {
         </div>
       )}
       <section className="space-y-3">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-base font-semibold">
             Routes <span className="text-muted-foreground">({table.routes.length})</span>
           </h2>
-          <Badge variant="outline">IPv4</Badge>
+          <div className="flex items-center gap-3">
+            <Badge variant="outline">IPv4</Badge>
+            <Button
+              variant="outline"
+              disabled={!routesEditable}
+              title={routesEditable ? undefined : "This VPC is being deleted"}
+              onClick={() => {
+                setRouteForm({})
+              }}
+            >
+              <Plus className="mr-2 size-4" />
+              Add route
+            </Button>
+          </div>
         </div>
         <DataTable<NetworkRoute>
-          columns={routeColumns}
+          columns={columns}
           data={table.routes}
           getRowId={(route) => route.id}
           empty={
             <EmptyState
               icon={Route}
               title="No routes"
-              description="This route table has no recorded routes."
+              description="Add a route to send traffic outside this VPC to a gateway or peering."
+              action={
+                routesEditable
+                  ? {
+                      label: "Add route",
+                      onClick: () => {
+                        setRouteForm({})
+                      },
+                    }
+                  : undefined
+              }
             />
           }
         />
         <div className="flex items-start gap-2 text-xs text-muted-foreground">
           <Info className="mt-0.5 size-3.5 shrink-0" />
           <p>
-            The local route connects addresses within this VPC and cannot be edited. Custom next-hop
-            routes, edge associations, and route propagation are not supported yet.
+            The local route connects addresses within this VPC and cannot be edited. Other routes
+            may target an internet gateway, a NAT gateway, or a peering in this VPC; instance and
+            VPN next hops are not supported by the fabric. Peering routes are added to the main
+            table for you when a peering is accepted.
           </p>
         </div>
       </section>
@@ -245,6 +324,44 @@ export function RouteTableDetailPage() {
               void navigate("/networking/route-tables")
             },
           })
+        }}
+      />
+      {routeForm && (
+        // Keyed so the add form and each edited row start from their own values
+        // instead of whatever the previous opening left behind.
+        <RouteDialog
+          key={routeForm.route?.id ?? "new-route"}
+          table={table}
+          route={routeForm.route}
+          open
+          onOpenChange={(next) => {
+            if (!next) setRouteForm(null)
+          }}
+        />
+      )}
+      <ConfirmDialog
+        open={routeToDelete !== null}
+        onOpenChange={(next) => {
+          if (!next) setRouteToDelete(null)
+        }}
+        title="Delete route?"
+        description={
+          routeToDelete
+            ? `Traffic for ${routeToDelete.destination_cidr} will follow the rest of this table instead.`
+            : ""
+        }
+        confirmLabel="Delete route"
+        loading={deleteRoute.isPending}
+        onConfirm={() => {
+          if (!routeToDelete) return
+          deleteRoute.mutate(
+            { tableID: table.id, routeID: routeToDelete.id },
+            {
+              onSuccess: () => {
+                setRouteToDelete(null)
+              },
+            },
+          )
         }}
       />
     </>

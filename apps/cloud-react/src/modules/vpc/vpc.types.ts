@@ -190,7 +190,7 @@ export interface NATGateway {
   created_at: string
   updated_at: string
   name: string
-  /** Backend has no VPC linkage on NAT gateways; always empty here. */
+  /** Denormalized from the gateway's subnet; empty for rows created before that column. */
   network_id: string
   subnet_id: string
   /** Backend exposes no public IP field on NAT gateways. */

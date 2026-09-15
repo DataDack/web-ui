@@ -63,23 +63,26 @@ interface RawNATGateway {
   updated_at: string
   name: string
   subnet_id: string
+  /** Denormalized from the gateway's subnet; omitted on rows created before it existed. */
+  vpc_id?: string | null
   static_ip_id: string
   connectivity: string
   status: string
   user_id: string
 }
 
-// Backend NAT gateways carry no VPC linkage or public IP, so they cannot be
-// attributed to a network in the detail view. Map those FE-only fields to
-// empty strings; the per-network NAT section then renders its empty state.
-// The EIP itself is resolvable from `static_ip_id` via the static IPs list.
+// Backend NAT gateways expose no public IP, so that FE-only field maps to an
+// empty string; the EIP itself is resolvable from `static_ip_id` via the static
+// IPs list. `vpc_id` is denormalized from the gateway's subnet at creation, so
+// gateways predating that column still have no network and fall back to "",
+// which renders as the per-network empty state.
 function toNATGateway(raw: RawNATGateway): NATGateway {
   return {
     id: raw.id,
     created_at: raw.created_at,
     updated_at: raw.updated_at,
     name: raw.name,
-    network_id: "",
+    network_id: raw.vpc_id && raw.vpc_id !== ZERO_UUID ? raw.vpc_id : "",
     subnet_id: raw.subnet_id,
     public_ip: "",
     static_ip_id: raw.static_ip_id && raw.static_ip_id !== ZERO_UUID ? raw.static_ip_id : undefined,

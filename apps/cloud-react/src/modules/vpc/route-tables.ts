@@ -27,6 +27,30 @@ export interface RouteTable {
   routes: NetworkRoute[]
   associations: { subnet_id: string; route_table_id: string }[]
 }
+/**
+ * Target types a tenant may write. The API refuses everything else, and says so:
+ * `local` is derived from the VPC's own CIDR, while `instance` and `vpn_gateway`
+ * have no next-hop knob in the SDN fabric to install them into — Proxmox routes a
+ * tenant VRF by route-target import (peering) and exit nodes (egress) only.
+ */
+export const ROUTE_TARGET_TYPES = ["internet_gateway", "nat_gateway", "vpc_peering"] as const
+export type RouteTargetType = (typeof ROUTE_TARGET_TYPES)[number]
+
+export const ROUTE_TARGET_LABELS: Record<string, string> = {
+  local: "Local",
+  internet_gateway: "Internet gateway",
+  nat_gateway: "NAT gateway",
+  vpc_peering: "VPC peering",
+  instance: "Instance",
+  vpn_gateway: "VPN gateway",
+}
+
+export interface RouteInput {
+  destination_cidr: string
+  target_type: RouteTargetType
+  target_id: string
+}
+
 const base = "/vpc/routers/tables"
 const key = ["vpc", "route-tables"] as const
 export const routeTablePath = (id: string) => `/networking/route-tables/${id}`
@@ -77,5 +101,42 @@ export function useRouteTableActions() {
     },
     onError,
   })
-  return { create, remove, associate }
+  // Every refusal the route API returns names what to change: an unrealizable
+  // target type, a destination that overlaps the VPC CIDR, a prefix the table
+  // already routes. A generic message would throw all of that away.
+  const routeError = (fallback: string) => (error: unknown) => {
+    toast.error(extractError(error, fallback))
+  }
+  const createRoute = useMutation({
+    mutationFn: ({ tableID, ...body }: RouteInput & { tableID: string }) =>
+      apiPost<NetworkRoute>(`${base}/${tableID}/routes`, body),
+    onSuccess: () => {
+      refresh()
+      toast.success("Route added")
+    },
+    onError: routeError("The route could not be added."),
+  })
+  const updateRoute = useMutation({
+    mutationFn: ({
+      tableID,
+      routeID,
+      ...body
+    }: RouteInput & { tableID: string; routeID: string }) =>
+      apiPut<NetworkRoute>(`${base}/${tableID}/routes/${routeID}`, body),
+    onSuccess: () => {
+      refresh()
+      toast.success("Route updated")
+    },
+    onError: routeError("The route could not be updated."),
+  })
+  const deleteRoute = useMutation({
+    mutationFn: ({ tableID, routeID }: { tableID: string; routeID: string }) =>
+      apiDelete(`${base}/${tableID}/routes/${routeID}`),
+    onSuccess: () => {
+      refresh()
+      toast.success("Route deleted")
+    },
+    onError: routeError("The route could not be deleted."),
+  })
+  return { create, remove, associate, createRoute, updateRoute, deleteRoute }
 }
