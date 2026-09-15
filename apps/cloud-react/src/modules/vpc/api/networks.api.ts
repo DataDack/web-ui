@@ -115,6 +115,11 @@ export const subnetsApi = {
     return toSubnet(raw)
   },
 
+  // Only the name is editable: the CIDR and zone are carved into the SDN, so
+  // the backend accepts nothing else on update.
+  update: async (id: string, name: string): Promise<Subnet> =>
+    toSubnet(await apiPut<RawSubnet>(`${SUBNETS_BASE}/${id}`, { name })),
+
   delete: (id: string): Promise<void> => apiDelete(`${SUBNETS_BASE}/${id}`),
 }
 

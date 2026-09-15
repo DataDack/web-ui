@@ -1571,7 +1571,8 @@
     "actions": {
       "delete": "Delete",
       "attach": "Attach",
-      "detach": "Detach"
+      "detach": "Detach",
+      "rename": "Rename"
     },
     "deleteConfirm": {
       "title": "Delete VPC network?",
@@ -1696,7 +1697,9 @@
       "sgAttached": "Security group attached",
       "sgAttachFailed": "Failed to attach security group",
       "sgDetached": "Security group detached",
-      "sgDetachFailed": "Failed to detach security group"
+      "sgDetachFailed": "Failed to detach security group",
+      "subnetRenamed": "Subnet renamed to \"{{name}}\"",
+      "subnetRenameFailed": "Failed to rename subnet"
     },
     "subnets": {
       "title": "Subnets",
@@ -1735,6 +1738,13 @@
         "private": "Must be a private RFC1918 range (10.x, 172.16–31.x, 192.168.x)",
         "prefix": "Prefix must be between /16 and /24"
       }
+    },
+    "subnetRename": {
+      "title": "Rename subnet",
+      "description": "Only the name can change. The CIDR range and zone are fixed once a subnet is created.",
+      "name": "Name",
+      "save": "Save",
+      "saving": "Saving…"
     }
   },
   "common": {

@@ -9,16 +9,19 @@ import {
   dateColumn,
   EmptyState,
   nameColumn,
+  statusColumn,
   textColumn,
 } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
-import { GitBranch, Plus, Trash2 } from "lucide-react"
+import { GitBranch, Pencil, Plus, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { ConfirmDialog } from "@/components/console"
 import { useAvailabilityZoneMap } from "@/modules/catalog/catalog.hooks"
 
 import { AddSubnetSheet } from "./AddSubnetSheet"
+import { RenameSubnetDialog } from "./RenameSubnetDialog"
+import { isVpcGatewayTransitional } from "../../vpc.constants"
 import { useDeleteSubnet, useVPCSubnets } from "../../vpc.hooks"
 import type { Subnet, VPCNetwork } from "../../vpc.types"
 
@@ -46,10 +49,18 @@ export function SubnetsTab({ network }: Readonly<{ network: VPCNetwork }>) {
 
   const [sheetOpen, setSheetOpen] = useState(false)
   const [toDelete, setToDelete] = useState<Subnet | null>(null)
+  const [toRename, setToRename] = useState<Subnet | null>(null)
 
   const columns = useMemo<ColumnDef<Subnet>[]>(
     () => [
       nameColumn<Subnet>({ header: t("vpc.columns.name"), accessor: (s) => s.name }),
+      // A subnet added after the VPC starts "pending" while it is carved onto
+      // the network; without this it looked usable the moment it was created.
+      statusColumn<Subnet>({
+        header: t("vpc.columns.status"),
+        accessor: (s) => s.status ?? "available",
+        pulse: (s) => isVpcGatewayTransitional(s.status),
+      }),
       copyColumn<Subnet>({
         id: "cidr",
         header: t("vpc.columns.cidr"),
@@ -77,6 +88,13 @@ export function SubnetsTab({ network }: Readonly<{ network: VPCNetwork }>) {
       actionsColumn<Subnet>({
         ariaLabel: t("console.table.actions"),
         actions: () => [
+          {
+            label: t("vpc.actions.rename"),
+            icon: Pencil,
+            onAction: (s: Subnet) => {
+              setToRename(s)
+            },
+          },
           {
             label: t("vpc.actions.delete"),
             icon: Trash2,
@@ -132,6 +150,13 @@ export function SubnetsTab({ network }: Readonly<{ network: VPCNetwork }>) {
       />
 
       <AddSubnetSheet network={network} open={sheetOpen} onOpenChange={setSheetOpen} />
+
+      <RenameSubnetDialog
+        subnet={toRename}
+        onClose={() => {
+          setToRename(null)
+        }}
+      />
 
       <ConfirmDialog
         open={toDelete !== null}

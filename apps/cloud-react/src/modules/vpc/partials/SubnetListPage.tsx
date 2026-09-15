@@ -14,7 +14,7 @@ import {
   textColumn,
 } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
-import { GitBranch, RefreshCw, Search, Trash2 } from "lucide-react"
+import { GitBranch, Pencil, RefreshCw, Search, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
@@ -26,6 +26,7 @@ import { VPC_ROUTES } from "../vpc.constants"
 import { useAllSubnets, useDeleteSubnet, useVPCs } from "../vpc.hooks"
 import type { Subnet } from "../vpc.types"
 import { formatAvailableIps } from "../vpc.utils"
+import { RenameSubnetDialog } from "./detail/RenameSubnetDialog"
 
 function VisibilityChip({ isPublic }: Readonly<{ isPublic: boolean }>) {
   const { t } = useTranslation()
@@ -54,6 +55,7 @@ export function SubnetListPage() {
 
   const [query, setQuery] = useState("")
   const [toDelete, setToDelete] = useState<Subnet | null>(null)
+  const [toRename, setToRename] = useState<Subnet | null>(null)
 
   // Resolve a subnet's parent VPC name for display; fall back to the raw id.
   const vpcNames = useMemo(() => {
@@ -172,6 +174,13 @@ export function SubnetListPage() {
         ariaLabel: t("console.table.actions"),
         actions: () => [
           {
+            label: t("vpc.actions.rename"),
+            icon: Pencil,
+            onAction: (s: Subnet) => {
+              setToRename(s)
+            },
+          },
+          {
             label: t("vpc.actions.delete"),
             icon: Trash2,
             destructive: true,
@@ -240,6 +249,13 @@ export function SubnetListPage() {
             description={t("vpc.subnets.empty")}
           />
         }
+      />
+
+      <RenameSubnetDialog
+        subnet={toRename}
+        onClose={() => {
+          setToRename(null)
+        }}
       />
 
       <ConfirmDialog

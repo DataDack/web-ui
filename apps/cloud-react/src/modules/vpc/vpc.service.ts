@@ -38,6 +38,7 @@ export const vpcService = {
   fetchAllSubnets: () => subnetsApi.listAll(),
   fetchSubnets: (networkId: string) => subnetsApi.list(networkId),
   createSubnet: (payload: CreateSubnetRequest) => subnetsApi.create(payload),
+  renameSubnet: (id: string, name: string) => subnetsApi.update(id, name),
   removeSubnet: (id: string) => subnetsApi.delete(id),
 
   // Security groups

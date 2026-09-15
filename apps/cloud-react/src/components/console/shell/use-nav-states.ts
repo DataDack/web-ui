@@ -2,7 +2,13 @@ import { useMemo } from "react"
 
 import { useCatalogModules } from "@/modules/services/catalog.hooks"
 
-import { type NavModuleState, type NavStateMap, navStateKey } from "./sidebar-nav"
+import {
+  type NavModuleState,
+  type NavStateMap,
+  navItemStateForPath,
+  navStateKey,
+  type SidebarNavItem,
+} from "./sidebar-nav"
 
 /**
  * Admin-controlled nav-item states, as a lookup the sidebar can overlay onto its
@@ -20,4 +26,25 @@ export function useNavModuleStates(): NavStateMap {
     for (const m of data ?? []) map.set(navStateKey(m.service_key, m.key), m.state)
     return map
   }, [data])
+}
+
+/**
+ * Page-level counterpart of the sidebar badge: whether the admin has closed the
+ * nav item that owns `pathname`.
+ *
+ * `pending` mirrors `useServiceGate` — true only while the module list is in
+ * flight, so the shell shows a skeleton instead of flashing a page it is about
+ * to replace. A failed fetch resolves to "open": an unreachable catalog must not
+ * close pages.
+ */
+export function useNavModuleGate(
+  pathname: string,
+  search: string,
+): { pending: boolean; closed?: { item: SidebarNavItem; state: "coming_soon" | "disabled" } } {
+  const { isLoading } = useCatalogModules()
+  const states = useNavModuleStates()
+  if (isLoading) return { pending: true }
+  const match = navItemStateForPath(pathname, states, search)
+  if (!match || match.state === "enabled") return { pending: false }
+  return { pending: false, closed: { item: match.item, state: match.state } }
 }

@@ -98,7 +98,9 @@ export function useDeleteVPC() {
       void queryClient.invalidateQueries({ queryKey: ["vpc", "subnets"] })
       toast.success(t("vpc.toasts.deleted"))
     },
-    onError: () => toast.error(t("vpc.toasts.deleteFailed")),
+    // Surfaces the backend message — notably the 409 while instances, load
+    // balancers or managed apps are still on the VPC.
+    onError: (e) => toast.error(extractError(e, t("vpc.toasts.deleteFailed"))),
   })
 }
 
@@ -109,6 +111,10 @@ export function useVPCSubnets(networkId: string) {
     queryKey: VPC_QUERY_KEYS.subnets(networkId),
     queryFn: () => vpcService.fetchSubnets(networkId),
     enabled: !!networkId,
+    // A subnet added to an existing VPC is realized asynchronously; poll until
+    // it settles so "pending" does not sit on screen until a manual refresh.
+    refetchInterval: (query) =>
+      query.state.data?.some((s) => isVpcGatewayTransitional(s.status)) ? 4000 : false,
   })
 }
 
@@ -116,6 +122,8 @@ export function useAllSubnets() {
   return useQuery({
     queryKey: VPC_QUERY_KEYS.subnets("all"),
     queryFn: vpcService.fetchAllSubnets,
+    refetchInterval: (query) =>
+      query.state.data?.some((s) => isVpcGatewayTransitional(s.status)) ? 4000 : false,
   })
 }
 
@@ -128,9 +136,24 @@ export function useCreateSubnet() {
       void queryClient.invalidateQueries({ queryKey: ["vpc", "subnets"] })
       toast.success(t("vpc.toasts.subnetCreated", { name: subnet.name }))
     },
+    // Surfaces the backend message: a CIDR outside the VPC or overlapping a
+    // sibling, a zone in another region, a VPC that is being deleted.
     onError: (e) => {
-      if (!handleQuotaGateError(e)) toast.error(t("vpc.toasts.subnetCreateFailed"))
+      if (!handleQuotaGateError(e)) toast.error(extractError(e, t("vpc.toasts.subnetCreateFailed")))
     },
+  })
+}
+
+export function useRenameSubnet() {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: ({ id, name }: { id: string; name: string }) => vpcService.renameSubnet(id, name),
+    onSuccess: (_subnet, { name }) => {
+      void queryClient.invalidateQueries({ queryKey: ["vpc", "subnets"] })
+      toast.success(t("vpc.toasts.subnetRenamed", { name }))
+    },
+    onError: (e) => toast.error(extractError(e, t("vpc.toasts.subnetRenameFailed"))),
   })
 }
 
@@ -143,7 +166,9 @@ export function useDeleteSubnet() {
       void queryClient.invalidateQueries({ queryKey: ["vpc", "subnets"] })
       toast.success(t("vpc.toasts.subnetDeleted"))
     },
-    onError: () => toast.error(t("vpc.toasts.subnetDeleteFailed")),
+    // Surfaces the backend message — notably the refusal while instances or
+    // network interfaces are still on the subnet.
+    onError: (e) => toast.error(extractError(e, t("vpc.toasts.subnetDeleteFailed"))),
   })
 }
 

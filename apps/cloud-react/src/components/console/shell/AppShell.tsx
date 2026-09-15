@@ -14,6 +14,8 @@ import { useConsoleBroadcastSync } from "@/services/broadcast"
 
 import { Sidebar } from "./Sidebar"
 import { Topbar } from "./Topbar"
+import { useNavModuleGate } from "./use-nav-states"
+import { ComingSoon } from "../ComingSoon"
 import { MotionProvider } from "../motion/MotionProvider"
 import {
   ChakraWatermark,
@@ -88,10 +90,20 @@ export function AppShell() {
   // so closing Compute for maintenance is a state change there, not a build.
   // The home page is never gated — it is where the catalog itself is reported.
   const gate = useServiceGate(location.pathname)
+  // The same decision one level down: a nav item the admin marked coming_soon
+  // (super admin → Services → modules) renders the coming-soon page instead of
+  // the route, and a disabled one the maintenance notice — so closing a single
+  // page such as VPN is a state change there, not a router edit and a build.
+  const moduleGate = useNavModuleGate(location.pathname, location.search)
   let routeContent = outlet
   if (!isHome) {
-    if (gate.pending) routeContent = <RouteSkeleton />
+    if (gate.pending || moduleGate.pending) routeContent = <RouteSkeleton />
     else if (gate.blocked) routeContent = <ServiceMaintenancePage />
+    else if (moduleGate.closed?.state === "coming_soon")
+      routeContent = (
+        <ComingSoon icon={moduleGate.closed.item.icon} title={t(moduleGate.closed.item.labelKey)} />
+      )
+    else if (moduleGate.closed) routeContent = <ServiceMaintenancePage />
   }
 
   // Routes can opt out of the service sidebar (e.g. full-bleed create

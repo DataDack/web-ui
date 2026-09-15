@@ -488,6 +488,32 @@ export function applyNavStates(service: ConsoleService, states: NavStateMap): Co
 }
 
 /**
+ * The nav item that owns `pathname`, with the admin state it is in — or
+ * undefined when no item claims the path or the admin has no row for it.
+ *
+ * Uses the same specificity rule as the sidebar highlight, so /networking/vpn
+ * resolves to VPN rather than to its parent VPCs item, and a closed parent
+ * (/domains) does not swallow an open sibling (/domains/hostnames). The shell
+ * uses this to close a page whose item is not `enabled`: a badge alone leaves
+ * the page one click away.
+ */
+export function navItemStateForPath(
+  pathname: string,
+  states: NavStateMap,
+  search = "",
+): { item: SidebarNavItem; state: NavModuleState } | undefined {
+  if (states.size === 0) return undefined
+  const service = findServiceByPath(pathname)
+  if (!service) return undefined
+  const item = service.items.find((candidate) =>
+    isItemActiveAmong(pathname, candidate, service.items, search),
+  )
+  if (!item) return undefined
+  const state = states.get(navStateKey(service.key, navItemKey(item)))
+  return state ? { item, state } : undefined
+}
+
+/**
  * The global drawer's groups with admin states applied. Coming-soon items are
  * filtered out here exactly as ALL_NAV_GROUPS does statically — the drawer is a
  * jump list, so an entry that only leads to a placeholder is noise.
