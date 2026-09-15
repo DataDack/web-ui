@@ -72,9 +72,14 @@ export const securityGroupsApi = {
     return rows.map(toSecurityGroup)
   },
 
+  /** Groups in one VPC, filtered by the server. Filtering the first page on the
+   *  client instead dropped a VPC's groups whenever the account had more than
+   *  one page of them. */
   list: async (networkId: string): Promise<SecurityGroup[]> => {
-    const rows = await apiGet<RawSecurityGroup[]>(SG_BASE + LIST_QUERY)
-    return rows.map(toSecurityGroup).filter((g) => g.network_id === networkId)
+    const rows = await apiGet<RawSecurityGroup[]>(
+      `${SG_BASE}${LIST_QUERY}&vpc_id=${encodeURIComponent(networkId)}`,
+    )
+    return rows.map(toSecurityGroup)
   },
 
   get: async (id: string): Promise<SecurityGroup> => {
