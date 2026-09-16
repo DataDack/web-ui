@@ -442,7 +442,9 @@ export function useCreateNetworkInterface() {
       toast.success(t("networkInterfaces.toasts.created", { name: nic.name }))
     },
     onError: (e) => {
-      if (!handleQuotaGateError(e)) toast.error(t("networkInterfaces.toasts.createFailed"))
+      if (!handleQuotaGateError(e)) {
+        toast.error(extractError(e, t("networkInterfaces.toasts.createFailed")))
+      }
     },
   })
 }
@@ -456,7 +458,8 @@ export function useDeleteNetworkInterface() {
       void queryClient.invalidateQueries({ queryKey: VPC_QUERY_KEYS.networkInterfaces })
       toast.success(t("networkInterfaces.toasts.deleted"))
     },
-    onError: () => toast.error(t("networkInterfaces.toasts.deleteFailed")),
+    // The backend's refusals say what to do ("detach it first"); show them.
+    onError: (e) => toast.error(extractError(e, t("networkInterfaces.toasts.deleteFailed"))),
   })
 }
 
@@ -470,7 +473,7 @@ export function useAttachNetworkInterface() {
       void queryClient.invalidateQueries({ queryKey: VPC_QUERY_KEYS.networkInterfaces })
       toast.success(t("networkInterfaces.toasts.attached", { name: nic.name }))
     },
-    onError: () => toast.error(t("networkInterfaces.toasts.attachFailed")),
+    onError: (e) => toast.error(extractError(e, t("networkInterfaces.toasts.attachFailed"))),
   })
 }
 
@@ -483,7 +486,7 @@ export function useDetachNetworkInterface() {
       void queryClient.invalidateQueries({ queryKey: VPC_QUERY_KEYS.networkInterfaces })
       toast.success(t("networkInterfaces.toasts.detached", { name: nic.name }))
     },
-    onError: () => toast.error(t("networkInterfaces.toasts.detachFailed")),
+    onError: (e) => toast.error(extractError(e, t("networkInterfaces.toasts.detachFailed"))),
   })
 }
 

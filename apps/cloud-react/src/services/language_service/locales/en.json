@@ -2125,8 +2125,10 @@
       "zone": "Availability Zone",
       "securityGroups": "Security groups",
       "privateIp": "Private IP",
+      "device": "Guest NIC",
       "instance": "Attached instance"
     },
+    "provisionError": "Last error",
     "actions": {
       "attach": "Attach",
       "detach": "Detach",
@@ -6997,7 +6999,7 @@
   },
   "reachability": {
     "title": "Reachability analyzer",
-    "description": "Check whether one private address can reach another, and see exactly which rule — or which missing piece — decides it.",
+    "description": "Check whether one address can reach another — between guests in your VPCs, across a peering, or from the internet to a public address — and see exactly which layer decides it.",
     "form": {
       "title": "Flow to check",
       "submit": "Analyze"
@@ -7014,8 +7016,24 @@
       "title": "Result",
       "allowed": "Traffic is allowed",
       "blocked": "Traffic is blocked",
+      "unknown": "Could not be confirmed",
       "decidingRule": "Deciding rule",
-      "howToFix": "How to fix it"
+      "howToFix": "How to fix it",
+      "path": "Path checked"
+    },
+    "stages": {
+      "input": "Input",
+      "endpoint": "Endpoint",
+      "routing": "Guest routing",
+      "fabric": "VPC routing",
+      "security-group": "Security group",
+      "vnet-firewall": "Subnet firewall",
+      "network-acl": "Network ACL"
+    },
+    "checkStatus": {
+      "pass": "Passed",
+      "fail": "Failed",
+      "unknown": "Not confirmed"
     },
     "toasts": {
       "failed": "Could not analyze reachability"

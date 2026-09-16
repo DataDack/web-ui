@@ -29,6 +29,10 @@ interface RawNetworkInterface {
   interface_type: string
   tags: string
   user_id: number | string
+  // Omitted by older backends and, for the last two, when empty.
+  attach_state?: string
+  device_index?: number
+  provision_error?: string
 }
 
 function toNetworkInterface(raw: RawNetworkInterface): NetworkInterface {
@@ -48,6 +52,9 @@ function toNetworkInterface(raw: RawNetworkInterface): NetworkInterface {
     security_group_ids: raw.security_group_ids ?? [],
     instance_id: raw.instance_id ?? "",
     status: raw.status as NetworkInterface["status"],
+    attach_state: raw.attach_state ?? "detached",
+    device_index: raw.device_index ?? 0,
+    provision_error: raw.provision_error ?? "",
     user_id: String(raw.user_id),
   }
 }

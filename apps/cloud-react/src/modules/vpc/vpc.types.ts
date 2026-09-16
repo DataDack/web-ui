@@ -159,6 +159,12 @@ export interface NetworkInterface {
   /** Normalized from backend `instance_id`; empty string when detached. */
   instance_id: string
   status: NetworkInterfaceStatus
+  /** Whether the NIC is really on a guest: detached | attaching | attached | detaching. */
+  attach_state: string
+  /** Guest NIC slot (`net2` = 2); 0 when not attached. */
+  device_index: number
+  /** Why the last attach or detach failed, tenant-safe; "" when it succeeded. */
+  provision_error: string
   user_id: string
 }
 
@@ -409,13 +415,33 @@ export interface ReachabilityRule {
  * look identical from inside the guest — a connection that hangs — and each has
  * a different fix.
  */
+/** "unknown" when a layer that could decide the flow could not be read. */
+export type ReachabilityOutcome = "reachable" | "blocked" | "unknown"
+
+export type ReachabilityCheckStatus = "pass" | "fail" | "unknown"
+
+/** What one layer on the path decided. */
+export interface ReachabilityCheck {
+  stage: string
+  status: ReachabilityCheckStatus
+  summary: string
+  matched_rule?: ReachabilityRule
+}
+
 export interface ReachabilityVerdict {
   allowed: boolean
+  /** Absent from older backends; derive it from `allowed` there. */
+  outcome?: ReachabilityOutcome
   reason: string
-  /** Which layer decided: "routing", "security-group" or "input". */
+  /**
+   * Which layer decided: "input", "endpoint", "routing", "fabric",
+   * "security-group", "vnet-firewall" or "network-acl".
+   */
   stage: string
   matched_rule?: ReachabilityRule
   hints?: string[]
+  /** Every layer evaluated, in path order; stops at the first failure. */
+  checks?: ReachabilityCheck[]
 }
 
 export interface ReachabilityQuery {

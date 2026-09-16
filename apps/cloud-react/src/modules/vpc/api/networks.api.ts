@@ -98,9 +98,15 @@ export const subnetsApi = {
     return rows.map(toSubnet)
   },
 
+  // Filtered server-side by `vpc_id`. This used to fetch the account-wide first
+  // page and filter by `network_id` here, which silently dropped subnets once
+  // the ACCOUNT (not the VPC) held more than LIST_QUERY's page of them — the
+  // VPC detail page then showed a subset of its subnets, or none, with no error.
   list: async (networkId: string): Promise<Subnet[]> => {
-    const rows = await apiGet<RawSubnet[]>(SUBNETS_BASE + LIST_QUERY)
-    return rows.map(toSubnet).filter((s) => s.network_id === networkId)
+    const rows = await apiGet<RawSubnet[]>(
+      `${SUBNETS_BASE}${LIST_QUERY}&vpc_id=${encodeURIComponent(networkId)}`,
+    )
+    return rows.map(toSubnet)
   },
 
   create: async (payload: CreateSubnetRequest): Promise<Subnet> => {
