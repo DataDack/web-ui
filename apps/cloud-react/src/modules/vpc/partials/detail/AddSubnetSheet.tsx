@@ -28,17 +28,24 @@ import { useNamingRule } from "@/modules/governance/governance.hooks"
 import type { NamingRule } from "@/modules/governance/governance.types"
 import { namingNameSchema } from "@/modules/governance/governance.validation"
 
-import { CIDR_REGEX } from "../../vpc.constants"
-import { useCreateSubnet } from "../../vpc.hooks"
+import { useCreateSubnet, useVPCSubnets } from "../../vpc.hooks"
 import type { VPCNetwork } from "../../vpc.types"
+import {
+  nextFreeSubnetCidr,
+  subnetCidrIssue,
+  SUBNET_CIDR_MESSAGES,
+  SUBNET_PREFIX_OPTIONS,
+} from "../../vpc.utils"
 
-// eslint-disable-next-line sonarjs/no-hardcoded-ip -- sensible starting block
-const SUBNET_CIDR_DEFAULT = "10.0.1.0/24"
-
+// The CIDR is held as a nullable *override* rather than a value: null means
+// "the suggestion still applies", which keeps the suggested block live while
+// the sibling subnets load. It is also why the CIDR is not in the schema —
+// whether a block is usable depends on the VPC and its existing subnets, which
+// are server state, not form state, so it is checked with subnetCidrIssue below.
 const makeSchema = (rule: NamingRule) =>
   z.object({
     name: namingNameSchema(rule),
-    cidr: z.string().regex(CIDR_REGEX, "Must be CIDR notation, e.g. 10.0.4.0/24"),
+    cidrOverride: z.string().nullable(),
     zone: z.string().min(1, "Required"),
     is_public: z.boolean(),
   })
@@ -62,6 +69,7 @@ interface Props {
 export function AddSubnetSheet({ network, open, onOpenChange }: Readonly<Props>) {
   const { t } = useTranslation()
   const { mutate: create, isPending } = useCreateSubnet()
+  const { data: siblingSubnets = [] } = useVPCSubnets(network.id)
   const { data: regions = [] } = useRegionCatalog()
   const activeRegion = regions.find((r) => r.code === network.region)
   const zones = activeRegion ? activeRegion.availability_zones : []
@@ -74,16 +82,37 @@ export function AddSubnetSheet({ network, open, onOpenChange }: Readonly<Props>)
     handleSubmit,
     control,
     reset,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
       name: "",
-      cidr: SUBNET_CIDR_DEFAULT,
+      cidrOverride: null,
       zone: "", // Default to empty string so user must select
       is_public: false,
     },
   })
+
+  const siblings = useMemo(() => siblingSubnets.map((s) => s.cidr), [siblingSubnets])
+
+  // The suggested block comes from this VPC's own range and the subnets already
+  // carved out of it, so it is in-range and non-overlapping by construction. A
+  // fixed default would collide the moment a VPC used a different range — which
+  // it did, since every VPC but a 10.0.0.0/x one rejected the prefilled value.
+  // A /24 is the conventional first carve; the unprefixed call is the fallback
+  // for a VPC too small to hold one (it picks the largest block that fits).
+  const suggested = useMemo(
+    () =>
+      nextFreeSubnetCidr(network.cidr, siblings, 24) ??
+      nextFreeSubnetCidr(network.cidr, siblings) ??
+      "",
+    [network.cidr, siblings],
+  )
+  const cidrOverride = watch("cidrOverride")
+  const cidr = cidrOverride ?? suggested
+  const cidrIssue = cidr ? subnetCidrIssue(network.cidr, cidr, siblings) : "format"
 
   const close = () => {
     reset()
@@ -91,7 +120,18 @@ export function AddSubnetSheet({ network, open, onOpenChange }: Readonly<Props>)
   }
 
   const onSubmit = (values: FormValues) => {
-    create({ ...values, network_id: network.id, region: network.region }, { onSuccess: close })
+    if (cidrIssue) return
+    create(
+      {
+        name: values.name,
+        cidr,
+        zone: values.zone,
+        is_public: values.is_public,
+        network_id: network.id,
+        region: network.region,
+      },
+      { onSuccess: close },
+    )
   }
 
   return (
@@ -125,23 +165,22 @@ export function AddSubnetSheet({ network, open, onOpenChange }: Readonly<Props>)
                 {t("vpc.subnetForm.cidr")}
                 <span className="text-destructive ml-0.5">*</span>
               </FieldLabel>
-              <Controller
-                control={control}
-                name="cidr"
-                render={({ field }) => (
-                  <CidrInput
-                    value={field.value}
-                    onChange={field.onChange}
-                    prefixOptions={[16, 20, 24, 26, 28]}
-                    aria-label={t("vpc.subnetForm.cidr")}
-                    aria-invalid={!!errors.cidr}
-                  />
-                )}
+              <CidrInput
+                value={cidr}
+                onChange={(value) => {
+                  setValue("cidrOverride", value, { shouldValidate: true })
+                }}
+                prefixOptions={SUBNET_PREFIX_OPTIONS}
+                aria-label={t("vpc.subnetForm.cidr")}
+                aria-invalid={!!cidrIssue}
               />
-              {errors.cidr && <p className="text-[11px] text-destructive">{errors.cidr.message}</p>}
-              <p className="text-[11px] text-muted-foreground">
-                {t("vpc.subnetForm.cidrHint", { cidr: network.cidr })}
-              </p>
+              {cidrIssue ? (
+                <p className="text-[11px] text-destructive">{SUBNET_CIDR_MESSAGES[cidrIssue]}</p>
+              ) : (
+                <p className="text-[11px] text-muted-foreground">
+                  {t("vpc.subnetForm.cidrHint", { cidr: network.cidr })}
+                </p>
+              )}
             </div>
 
             <div className="space-y-1.5">
@@ -203,7 +242,12 @@ export function AddSubnetSheet({ network, open, onOpenChange }: Readonly<Props>)
             <Button type="button" variant="ghost" onClick={close}>
               {t("console.wizard.cancel")}
             </Button>
-            <Button type="submit" variant="gold" disabled={isPending} loading={isPending}>
+            <Button
+              type="submit"
+              variant="gold"
+              disabled={isPending || !!cidrIssue}
+              loading={isPending}
+            >
               {isPending ? t("vpc.subnetForm.adding") : t("vpc.subnetForm.add")}
             </Button>
           </div>

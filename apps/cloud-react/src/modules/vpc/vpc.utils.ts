@@ -192,6 +192,26 @@ export function subnetCidrIssue(
   return null
 }
 
+/**
+ * Why a CIDR was rejected, worded once so a bad block reads identically
+ * wherever it is entered — the create wizard, the VPC detail page, or the
+ * inline sheets in the load-balancer wizard. Flat lookups keyed by what
+ * `vpcCidrIssue` / `subnetCidrIssue` return, rather than a nested ternary at
+ * each call site.
+ */
+export const VPC_CIDR_MESSAGES: Record<VpcCidrIssue, string> = {
+  format: "Must be CIDR notation, e.g. 10.0.0.0/16",
+  private: "Must be a private RFC1918 range (10.x, 172.16–31.x, 192.168.x)",
+  prefix: "Prefix must be between /16 and /24",
+}
+
+export const SUBNET_CIDR_MESSAGES: Record<SubnetCidrIssue, string> = {
+  format: "Must be CIDR notation, e.g. 10.0.1.0/24",
+  prefix: "Prefix must be between /20 and /28",
+  outside: "Must sit inside the VPC's range",
+  overlap: "Overlaps another subnet in this VPC",
+}
+
 /** A sensible default subnet prefix for a VPC: four bits smaller, clamped to the
  *  allowed /20–/28 band (and never wider than the VPC itself). */
 function defaultSubnetPrefix(vpcPrefix: number): number {
