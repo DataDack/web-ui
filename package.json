@@ -91,7 +91,7 @@
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
-    "@types/node": "^22.20.1",
+    "@types/node": "^26.1.2",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
     "@vitejs/plugin-react": "^4.7.0",
@@ -122,7 +122,7 @@
     "eslint-plugin-react@7.37.5": "patches/eslint-plugin-react@7.37.5.patch"
   },
   "overrides": {
-    "@types/node": "^22.20.1",
+    "@types/node": "^26.1.2",
     "typescript": "^5.9.3",
     "zod-validation-error": "^4.0.2"
   }
