@@ -156,6 +156,11 @@ export function OSStep({
                                     <div className="size-1.5 rounded-full bg-background" />
                                   )}
                                 </div>
+                                <OSIcon
+                                  osFamily={openFamily.name}
+                                  iconUrl={version.icon_url || openFamily.icon_url}
+                                  className="size-5 shrink-0"
+                                />
                                 <div>
                                   <span className="block text-[13px] font-medium text-foreground">
                                     {version.name || version.os_version}

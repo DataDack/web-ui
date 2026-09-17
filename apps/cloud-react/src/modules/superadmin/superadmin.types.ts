@@ -512,6 +512,8 @@ export interface ImageVersion {
   name: string
   description?: string
   os_version?: string
+  /** Overrides the family icon for this version; absent = family icon. */
+  icon_url?: string
   architecture: string
   ami_file?: string
   image_url?: string
@@ -554,6 +556,8 @@ export interface AddImageVersionRequest {
   name: string
   description?: string
   os_version?: string
+  /** Empty string on update clears the override. */
+  icon_url?: string
   architecture?: string
   ami_file?: string
   image_url?: string

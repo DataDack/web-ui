@@ -64,6 +64,7 @@ const schema = z.object({
   name: z.string().min(2, "Min 2 characters").max(128),
   description: z.string().max(512),
   os_version: z.string().max(64),
+  icon_url: z.union([z.literal(""), z.url("Enter a valid URL").max(512)]),
   architecture: z.enum(ARCHITECTURES),
   ami_file: z.string().max(512),
   image_url: z.union([z.literal(""), z.url("Enter a valid URL").max(2048)]),
@@ -90,6 +91,7 @@ const EMPTY: FormValues = {
   name: "",
   description: "",
   os_version: "",
+  icon_url: "",
   architecture: "x86_64",
   ami_file: "",
   image_url: "",
@@ -106,6 +108,7 @@ function valuesFromVersion(version: ImageVersion): FormValues {
     name: version.name,
     description: version.description ?? "",
     os_version: version.os_version ?? "",
+    icon_url: version.icon_url ?? "",
     architecture: ARCHITECTURES.includes(version.architecture as (typeof ARCHITECTURES)[number])
       ? (version.architecture as (typeof ARCHITECTURES)[number])
       : "x86_64",
@@ -480,6 +483,9 @@ function VersionCard({
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
+            {version.icon_url && (
+              <img src={version.icon_url} alt="" className="size-4 shrink-0 object-contain" />
+            )}
             <h3 className="truncate text-sm font-semibold text-foreground">{version.name}</h3>
             {version.is_default && (
               <Badge
@@ -610,7 +616,7 @@ function VersionWizard({
         id: "identity",
         title: t("superAdmin.images.versions.wizard.identity"),
         description: t("superAdmin.images.versions.wizard.identityDesc"),
-        fields: ["name", "description", "os_version", "architecture"],
+        fields: ["name", "description", "os_version", "icon_url", "architecture"],
         render: (f) => <IdentityStep form={f} />,
         reviewItems: (values) => [
           {
@@ -624,6 +630,14 @@ function VersionWizard({
           {
             label: t("superAdmin.images.versions.fields.osVersion"),
             value: textOrDash(values.os_version),
+            mono: true,
+          },
+          {
+            label: t("superAdmin.images.versions.fields.iconUrl"),
+            value:
+              values.icon_url.length > 0
+                ? values.icon_url
+                : t("superAdmin.images.versions.fields.iconUrlInherited"),
             mono: true,
           },
           {
@@ -708,6 +722,9 @@ function VersionWizard({
       name: values.name,
       description: optional(values.description),
       os_version: optional(values.os_version),
+      // On edit an empty string is sent so clearing the field drops the
+      // override; omitting it would leave the old icon in place.
+      icon_url: editing ? values.icon_url.trim() : optional(values.icon_url),
       architecture: values.architecture,
       ami_file: optional(values.ami_file),
       image_url: optional(values.image_url),
@@ -816,6 +833,21 @@ function IdentityStep({ form }: Readonly<{ form: UseFormReturn<FormValues> }>) {
           <Input {...form.register("os_version")} placeholder="22.04" />
           <FieldError message={form.formState.errors.os_version?.message} />
         </div>
+      </div>
+
+      <div className="space-y-1.5">
+        <FieldLabel>{t("superAdmin.images.versions.fields.iconUrl")}</FieldLabel>
+        <Input
+          {...form.register("icon_url")}
+          type="url"
+          inputMode="url"
+          className="font-mono"
+          placeholder="https://cdn.example.com/os/windows-server-2025.svg"
+        />
+        <p className="text-[11px] text-muted-foreground">
+          {t("superAdmin.images.versions.fields.iconUrlHint")}
+        </p>
+        <FieldError message={form.formState.errors.icon_url?.message} />
       </div>
 
       <div className="space-y-1.5">

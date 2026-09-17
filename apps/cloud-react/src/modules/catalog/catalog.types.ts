@@ -30,6 +30,8 @@ export interface ImageVersion {
   id: string
   name: string
   os_version: string
+  /** Set only when this version overrides the family icon (e.g. Windows Server 2016 vs 2025). */
+  icon_url?: string
   architecture: string
   min_disk_gb: number
   is_default: boolean

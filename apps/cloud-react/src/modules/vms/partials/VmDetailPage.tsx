@@ -31,7 +31,6 @@ import {
   Play,
   Radio,
   RotateCw,
-  Server,
   Square,
   Terminal as TerminalIcon,
   Trash2,
@@ -52,6 +51,7 @@ import {
   StatusBadge,
   type KeyValueItem,
 } from "@/components/console"
+import { OSIcon } from "@/modules/catalog/os-icons"
 import { useDetachDisk, useDisks } from "@/modules/disks/disks.hooks"
 import type { Disk } from "@/modules/disks/disks.types"
 import { useSSHKeys } from "@/modules/ssh-keys/ssh-keys.hooks"
@@ -103,7 +103,15 @@ export function VmDetailPage() {
       <DetailPage
         backTo={VMS_ROUTES.ROOT}
         backLabel={t("vms.title")}
-        icon={Server}
+        iconNode={
+          <div className="flex items-center justify-center rounded-xl glass-1">
+            <OSIcon
+              osFamily={instance.os_family}
+              iconUrl={instance.os_icon_url}
+              className="size-[55%]"
+            />
+          </div>
+        }
         title={instance.name}
         status={vmDisplayStatus(instance.status)}
         id={`VM-${instance.tenant_serial}`}
@@ -316,7 +324,20 @@ function OverviewTab({ instance }: Readonly<{ instance: Instance }>) {
               value: `${String(instance.memory_gb)} GB`,
               mono: true,
             },
-            { label: t("vms.detail.os"), value: instance.os, mono: true },
+            {
+              label: t("vms.detail.os"),
+              value: (
+                <span className="flex items-center gap-2">
+                  <OSIcon
+                    osFamily={instance.os_family}
+                    iconUrl={instance.os_icon_url}
+                    className="size-4 shrink-0"
+                  />
+                  {instance.os}
+                </span>
+              ),
+              mono: true,
+            },
             {
               label: t("vms.detail.sshKey"),
               value: sshKey ? (

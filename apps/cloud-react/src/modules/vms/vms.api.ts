@@ -71,7 +71,8 @@ async function fetchCatalog(): Promise<{
 // come from the family that owns that version. Resolving them together keeps the
 // icon in step with the label: when the image is missing from the catalog we
 // fall back to the raw id and hand back no icon, rather than showing artwork for
-// the wrong OS.
+// the wrong OS. A version's own icon wins over the family's, since some families
+// rebrand between releases (Windows Server 2016 and 2025 carry different marks).
 function resolveOS(
   families: ImageCatalogFamily[],
   imageId: string,
@@ -82,7 +83,7 @@ function resolveOS(
       return {
         os: `${family.display_name} ${version.os_version}`,
         os_family: family.name,
-        os_icon_url: family.icon_url || undefined,
+        os_icon_url: version.icon_url || family.icon_url || undefined,
       }
     }
   }
