@@ -17,6 +17,7 @@ import { useTranslation } from "react-i18next"
 
 import { ConfirmDialog } from "@/components/console"
 
+import { useNodeClusterId } from "../components/host-nodes"
 import { useAdminStaticIPAllocations, useReleaseStaticIPAllocation } from "../superadmin.hooks"
 import type { StaticIPAllocation } from "../superadmin.types"
 
@@ -96,7 +97,15 @@ function AllocationStatus({ status }: Readonly<{ status: string }>) {
   )
 }
 
-export function IPsInUseTab() {
+interface Props {
+  /**
+   * Show only the addresses carried by one cluster's nodes. Set when this table
+   * is embedded in a cluster page; left unset on the fleet-wide Static IPs page.
+   */
+  clusterId?: string
+}
+
+export function IPsInUseTab({ clusterId }: Readonly<Props>) {
   const { t } = useTranslation()
   const [query, setQuery] = useState("")
   const [debounced, setDebounced] = useState("")
@@ -112,12 +121,26 @@ export function IPsInUseTab() {
   }, [query])
 
   const {
-    data: allocations = [],
+    data: allAllocations = [],
     isLoading,
     isError,
     refetch,
     isFetching,
   } = useAdminStaticIPAllocations(debounced)
+
+  const nodeClusterId = useNodeClusterId()
+
+  // The search runs server-side over the whole platform; the cluster scope is
+  // applied here so an embedded table never shows another cluster's addresses.
+  const allocations = useMemo(
+    () =>
+      clusterId
+        ? allAllocations.filter(
+            (a) => a.cluster_id === clusterId || nodeClusterId(a.pve_node_id) === clusterId,
+          )
+        : allAllocations,
+    [allAllocations, clusterId, nodeClusterId],
+  )
 
   const columns = useMemo<ColumnDef<StaticIPAllocation>[]>(
     () => [

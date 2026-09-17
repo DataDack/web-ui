@@ -1965,6 +1965,8 @@
       "source": "स्रोत",
       "type": "प्रकार",
       "attachedTo": "संलग्न है",
+      "account": "खाता",
+      "platformAccount": "प्लेटफ़ॉर्म",
       "region": "क्षेत्र",
       "status": "स्थिति"
     },
@@ -2369,7 +2371,12 @@
       "vpcsEmpty": "इस क्षेत्र में अभी कोई VPC नहीं मिला। पहले एक VPC बनाएँ, फिर उसे यहाँ जोड़ें।",
       "vpcsError": "आपके VPC लोड नहीं हो सके। कनेक्शन जाँचें और दोबारा प्रयास के लिए रिफ़्रेश करें।",
       "vpcsHint": "लोड बैलेंसर को एक या अधिक VPC से जोड़ें। आप जो सबनेट चुनेंगे, उनमें से प्रत्येक में उसे एक प्राइवेट IP मिलेगा, जिससे वह अलग-अलग VPC के टारगेट तक पहुँच सकेगा।",
-      "vpcsLoading": "VPC लोड हो रहे हैं…"
+      "vpcsLoading": "VPC लोड हो रहे हैं…",
+      "pricingNeedsSubnet": "उसके ज़ोन का मूल्य देखने के लिए एक VPC चुनें।",
+      "pricingLoading": "मूल्य लोड हो रहा है…",
+      "pricingUnavailable": "इस प्रकार के लोड बैलेंसर अभी इस ज़ोन में उपलब्ध नहीं हैं। सहायता से संपर्क करें।",
+      "discount": "छूट ({{pct}}%)",
+      "gst": "GST ({{rate}}%)"
     },
     "listeners": {
       "toasts": {
@@ -3252,6 +3259,68 @@
         "currency": "मुद्रा"
       }
     },
+    "lbPrices": {
+      "title": "लोड बैलेंसर मूल्य",
+      "add": "लोड बैलेंसर मूल्य जोड़ें",
+      "createTitle": "लोड बैलेंसर मूल्य जोड़ें",
+      "editTitle": "लोड बैलेंसर मूल्य संपादित करें",
+      "formSubtitle": "प्रति उपलब्धता क्षेत्र लोड बैलेंसर दर सूची: प्रति बैलेंसर प्रति घंटा शुल्क और क्षमता इकाइयों में उपयोग।",
+      "empty": "अभी तक कोई लोड बैलेंसर मूल्य नहीं",
+      "emptySubtitle": "किसी उपलब्धता क्षेत्र के लिए लोड बैलेंसर दर सूची जोड़ें।",
+      "sections": {
+        "identity": "पहचान",
+        "capacityUnit": "क्षमता इकाई",
+        "capacityUnitHint": "एक इकाई एक घंटे में इन आयामों में से सबसे अधिक होती है। प्रकार चुनने पर उसके मानक स्तर भर जाते हैं।",
+        "pricing": "मूल्य निर्धारण",
+        "allowances": "छूट और सीमाएँ",
+        "allowancesHint": "शून्य का अर्थ है कोई मुफ़्त छूट नहीं, और कोई सीमा नहीं।",
+        "features": "विशेषताएँ",
+        "catalog": "कैटलॉग"
+      },
+      "fields": {
+        "name": "नाम / SKU",
+        "availabilityZone": "उपलब्धता क्षेत्र",
+        "availabilityZonePlaceholder": "एक उपलब्धता क्षेत्र चुनें",
+        "lbType": "प्रकार",
+        "scheme": "स्कीम",
+        "ipVersion": "IP संस्करण",
+        "engine": "इंजन",
+        "capacityUnit": "क्षमता इकाई",
+        "capacityUnitName": "क्षमता इकाई का नाम",
+        "newConnectionsPerSec": "नए कनेक्शन / सेकंड",
+        "activeConnectionsPerMin": "सक्रिय कनेक्शन / मिनट",
+        "processedGbPerHour": "संसाधित GB / घंटा",
+        "ruleEvaluationsPerSec": "नियम मूल्यांकन / सेकंड",
+        "ruleEvaluationsHint": "केवल लेयर 7। नेटवर्क बैलेंसर के लिए 0 रहने दें।",
+        "priceHourly": "प्रति घंटा",
+        "priceMonthly": "मासिक",
+        "pricePerCapacityUnit": "मूल्य / क्षमता इकाई-घंटा",
+        "pricePerGbProcessed": "मूल्य / संसाधित GB",
+        "pricePerGbProcessedHint": "क्लासिक शैली का सपाट डेटा प्रोसेसिंग शुल्क। जब बाइट्स क्षमता इकाई में मापे जाते हैं तो 0 रहने दें।",
+        "priceTlsHourly": "TLS समाप्ति / घंटा",
+        "setupFee": "सेटअप शुल्क",
+        "currency": "मुद्रा",
+        "billingUnit": "बिलिंग इकाई",
+        "billingIncrement": "बिलिंग वृद्धि (सेकंड)",
+        "includedCapacityUnitHours": "शामिल क्षमता इकाई-घंटे",
+        "includedProcessedGb": "शामिल संसाधित GB",
+        "includedListeners": "शामिल लिसनर",
+        "includedRules": "शामिल नियम",
+        "includedCertificates": "शामिल प्रमाणपत्र",
+        "maxTargets": "अधिकतम लक्ष्य",
+        "maxTargetGroups": "अधिकतम लक्ष्य समूह",
+        "tlsTermination": "TLS समाप्ति",
+        "stickySessions": "स्टिकी सत्र",
+        "http2": "HTTP/2",
+        "websockets": "WebSockets",
+        "healthChecks": "स्वास्थ्य जाँच",
+        "accessLogs": "एक्सेस लॉग",
+        "crossZone": "क्रॉस-ज़ोन बैलेंसिंग",
+        "sortOrder": "क्रम",
+        "taxInclusive": "कर सहित",
+        "featuresJson": "विशेषताएँ JSON"
+      }
+    },
     "platformSettings": {
       "title": "प्लेटफ़ॉर्म नीति",
       "subtitle": "हर टेनेंट को रिसोर्स बनाने से पहले इन दो गेट से गुज़रना होता है। बदलाव रनटाइम पर लागू होते हैं — रीडिप्लॉय की ज़रूरत नहीं।",
@@ -3504,7 +3573,10 @@
       "clusterDeleted": "क्लस्टर रजिस्ट्रेशन हटाया गया",
       "clusterDeleteFailed": "क्लस्टर रजिस्ट्रेशन नहीं हटाया जा सका",
       "pveNodeHardDeleted": "{{name}} और {{count}} संबंधित संसाधन हार्ड डिलीट किए गए",
-      "pveNodeHardDeleteFailed": "नोड हार्ड डिलीट नहीं हो सका"
+      "pveNodeHardDeleteFailed": "नोड हार्ड डिलीट नहीं हो सका",
+      "lbPriceCreated": "लोड बैलेंसर मूल्य बनाया गया",
+      "lbPriceUpdated": "लोड बैलेंसर मूल्य अपडेट किया गया",
+      "lbPriceFailed": "लोड बैलेंसर मूल्य सहेजा नहीं जा सका"
     },
     "shell": {
       "console": "Console",
@@ -3907,6 +3979,13 @@
         "saved": "टोकन सहेजा गया।",
         "cleared": "टोकन हटा दिया गया।",
         "saveError": "टोकन सहेजा नहीं जा सका।"
+      }
+    },
+    "domains": {
+      "title": "डोमेन प्रबंधन",
+      "tabs": {
+        "custom": "कस्टम डोमेन",
+        "system": "सिस्टम डोमेन"
       }
     },
     "staticIps": {
@@ -4534,6 +4613,7 @@
         "overview": "Overview",
         "nodes": "Nodes",
         "networking": "Networking",
+        "staticIps": "स्टेटिक IP",
         "inventory": "Inventory",
         "manager": "Proxmox manager",
         "health": "Health"

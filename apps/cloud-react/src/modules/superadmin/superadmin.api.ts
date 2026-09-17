@@ -43,10 +43,12 @@ import type {
   ApproveQuotaRequestInput,
   AvailabilityZone,
   BandwidthPrice,
+  LoadBalancerPrice,
   CatalogModuleAdmin,
   CatalogServiceAdmin,
   CreateAvailabilityZoneRequest,
   CreateBandwidthPriceRequest,
+  CreateLoadBalancerPriceRequest,
   CreateImageRequest,
   CreatePVENodeRequest,
   CreateServiceRequest,
@@ -95,6 +97,7 @@ import type {
   StoragePrice,
   UpdateAvailabilityZoneRequest,
   UpdateBandwidthPriceRequest,
+  UpdateLoadBalancerPriceRequest,
   UpdateImageRequest,
   UpdateImageVersionRequest,
   UpdateIPPoolRequest,
@@ -288,6 +291,13 @@ export const superAdminApi = {
     apiPost<BandwidthPrice>(`${BASE}/bandwidth-prices`, payload),
   updateBandwidthPrice: (id: string, payload: UpdateBandwidthPriceRequest) =>
     apiPut<BandwidthPrice>(`${BASE}/bandwidth-prices/${id}`, payload),
+
+  /* load balancer prices — the admin table lists inactive rows too */
+  listLoadBalancerPrices: () => apiGet<LoadBalancerPrice[]>(`${BASE}/lb-prices/all`),
+  createLoadBalancerPrice: (payload: CreateLoadBalancerPriceRequest) =>
+    apiPost<LoadBalancerPrice>(`${BASE}/lb-prices`, payload),
+  updateLoadBalancerPrice: (id: string, payload: UpdateLoadBalancerPriceRequest) =>
+    apiPut<LoadBalancerPrice>(`${BASE}/lb-prices/${id}`, payload),
 
   /* ip pools (static IP inventory) */
   listIPPools: () => apiGet<IpPool[]>(IPPOOL_BASE),

@@ -35,6 +35,13 @@ export const apiSchema = z.object({
   apiKeySelectionExpression: z.string().default(""),
   disableExecuteApiEndpoint: z.boolean().default(false),
   corsConfiguration: corsConfigurationSchema.nullish(),
+  /**
+   * Platform fields, not apigatewayv2 ones — AWS infers all three from the
+   * endpoint. Reported back because the create wizard asks for them.
+   */
+  endpointType: z.string().default(""),
+  ipAddressType: z.string().default(""),
+  securityPolicy: z.string().default(""),
   createdDate: z.string().default(""),
   tags: z.record(z.string(), z.string()).default({}),
 })
@@ -206,6 +213,15 @@ export const usagePlanApiSchema = z.object({
   stage: z.string().default(""),
 })
 
+/** What an OpenAPI import answers: the API, plus what it could not map. */
+export const importApiResultSchema = z.object({
+  api: z.lazy(() => apiSchema),
+  warnings: z
+    .array(z.string())
+    .nullish()
+    .transform((w) => w ?? []),
+})
+
 export const modelSchema = z.object({
   modelId: z.string(),
   name: z.string().default(""),
@@ -253,3 +269,4 @@ export type UsagePlan = z.infer<typeof usagePlanSchema>
 export type UsagePlanKey = z.infer<typeof usagePlanKeySchema>
 export type UsagePlanApi = z.infer<typeof usagePlanApiSchema>
 export type Model = z.infer<typeof modelSchema>
+export type ImportApiResult = z.infer<typeof importApiResultSchema>

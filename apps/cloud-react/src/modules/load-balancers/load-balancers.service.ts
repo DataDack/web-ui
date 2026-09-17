@@ -2,6 +2,7 @@ import { lbApi } from "./load-balancers.api"
 import type {
   CreateListenerRequest,
   CreateLoadBalancerRequest,
+  LBEstimateRequest,
   UpdateListenerRequest,
   UpdateLoadBalancerRequest,
 } from "./load-balancers.types"
@@ -9,6 +10,7 @@ import type {
 export const lbService = {
   fetchAll: () => lbApi.list(),
   fetchById: (id: string) => lbApi.get(id),
+  estimate: (req: LBEstimateRequest) => lbApi.estimate(req),
   create: (payload: CreateLoadBalancerRequest) => lbApi.create(payload),
   update: (id: string, payload: UpdateLoadBalancerRequest) => lbApi.update(id, payload),
   remove: (id: string) => lbApi.delete(id),

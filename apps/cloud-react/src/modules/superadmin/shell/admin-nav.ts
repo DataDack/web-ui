@@ -4,6 +4,7 @@ import {
   Building2,
   Disc3,
   Flame,
+  Globe,
   Inbox,
   LayoutDashboard,
   LayoutGrid,
@@ -108,6 +109,7 @@ export const ADMIN_NAV: AdminNavGroup[] = [
       },
       { labelKey: "superAdmin.loadBalancers.title", icon: Scale, path: "/admin/load-balancers" },
       { labelKey: "superAdmin.staticIps.title", icon: Network, path: "/admin/static-ips" },
+      { labelKey: "superAdmin.domains.title", icon: Globe, path: "/admin/domains" },
     ],
   },
   {

@@ -3,6 +3,8 @@ import { apiDelete, apiGet, apiPost, apiPut, LIST_QUERY } from "@/services/api/c
 import type {
   CreateListenerRequest,
   CreateLoadBalancerRequest,
+  LBEstimate,
+  LBEstimateRequest,
   LBListener,
   LBSubnet,
   LoadBalancer,
@@ -12,6 +14,7 @@ import type {
 
 // cloud-be-go: app "compute", module "loadbalancer" -> base /compute/loadbalancer.
 // Load balancer:  GET / · POST / · GET /:id · PUT /:id · DELETE /:id
+// Pricing:        GET /estimate?type=&vpc_id=&subnet_id=&billing_cycle=
 // Listeners:      GET /:id/listeners · POST /:id/listeners
 //                 PUT /:id/listeners/:listenerId · DELETE /:id/listeners/:listenerId
 // Subnets:        GET /:id/subnets  (vm_lb_subnets rows — one per attached subnet)
@@ -24,6 +27,15 @@ export const lbApi = {
   list: (): Promise<LoadBalancer[]> => apiGet<LoadBalancer[]>(`${BASE}${LIST_QUERY}`),
 
   get: (id: string): Promise<LoadBalancer> => apiGet<LoadBalancer>(`${BASE}/${id}`),
+  estimate: (req: LBEstimateRequest): Promise<LBEstimate> => {
+    const q = new URLSearchParams({
+      type: req.type,
+      vpc_id: req.vpc_id,
+      billing_cycle: req.billing_cycle,
+    })
+    if (req.subnet_id) q.set("subnet_id", req.subnet_id)
+    return apiGet<LBEstimate>(`${BASE}/estimate?${q.toString()}`)
+  },
 
   create: (payload: CreateLoadBalancerRequest): Promise<LoadBalancer> =>
     apiPost<LoadBalancer>(BASE, payload),

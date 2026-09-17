@@ -1975,6 +1975,8 @@
       "source": "Source",
       "type": "Type",
       "attachedTo": "Attached to",
+      "account": "Account",
+      "platformAccount": "Platform",
       "region": "Region",
       "status": "Status"
     },
@@ -2657,7 +2659,12 @@
       "vpcsEmpty": "No VPCs found in this region yet. Create a VPC first, then attach it here.",
       "vpcsError": "Couldn't load your VPCs. Check your connection and refresh to try again.",
       "vpcsHint": "Attach the load balancer to one or more VPCs. It gets a private IP in each subnet you pick, letting it reach targets across VPCs.",
-      "vpcsLoading": "Loading VPCs…"
+      "vpcsLoading": "Loading VPCs…",
+      "pricingNeedsSubnet": "Choose a VPC to see the price for its zone.",
+      "pricingLoading": "Loading price…",
+      "pricingUnavailable": "Load balancers of this type aren't available in this zone yet. Contact support.",
+      "discount": "Discount ({{pct}}%)",
+      "gst": "GST ({{rate}}%)"
     },
     "listeners": {
       "description": "Ports this load balancer accepts traffic on, and where each one forwards.",
@@ -3627,6 +3634,13 @@
         "currency": "Currency"
       }
     },
+    "domains": {
+      "title": "Domain management",
+      "tabs": {
+        "custom": "Custom domains",
+        "system": "System domains"
+      }
+    },
     "staticIps": {
       "title": "Static IPs",
       "subtitle": "Manage the platform's static IP inventory and live allocations.",
@@ -3784,6 +3798,68 @@
         "includedGb": "Included GB",
         "pricePerGb": "Price / GB",
         "currency": "Currency"
+      }
+    },
+    "lbPrices": {
+      "title": "Load balancer prices",
+      "add": "Add load balancer price",
+      "createTitle": "Add load balancer price",
+      "editTitle": "Edit load balancer price",
+      "formSubtitle": "Load balancer rate cards per availability zone: an hourly charge per balancer plus usage in capacity units.",
+      "empty": "No load balancer prices yet",
+      "emptySubtitle": "Add a load balancer rate card for an availability zone.",
+      "sections": {
+        "identity": "Identity",
+        "capacityUnit": "Capacity unit",
+        "capacityUnitHint": "One unit is the highest of these dimensions in an hour. Picking a type fills the standard thresholds for it.",
+        "pricing": "Pricing",
+        "allowances": "Allowances and caps",
+        "allowancesHint": "Zero means no free allowance, and no cap.",
+        "features": "Features",
+        "catalog": "Catalog"
+      },
+      "fields": {
+        "name": "Name / SKU",
+        "availabilityZone": "Availability zone",
+        "availabilityZonePlaceholder": "Select an availability zone",
+        "lbType": "Type",
+        "scheme": "Scheme",
+        "ipVersion": "IP version",
+        "engine": "Engine",
+        "capacityUnit": "Capacity unit",
+        "capacityUnitName": "Capacity unit name",
+        "newConnectionsPerSec": "New connections / sec",
+        "activeConnectionsPerMin": "Active connections / min",
+        "processedGbPerHour": "Processed GB / hour",
+        "ruleEvaluationsPerSec": "Rule evaluations / sec",
+        "ruleEvaluationsHint": "Layer 7 only. Leave at 0 for a network balancer.",
+        "priceHourly": "Hourly",
+        "priceMonthly": "Monthly",
+        "pricePerCapacityUnit": "Price / capacity unit-hour",
+        "pricePerGbProcessed": "Price / GB processed",
+        "pricePerGbProcessedHint": "Classic-style flat data processing. Leave at 0 when bytes are metered inside the capacity unit.",
+        "priceTlsHourly": "TLS termination / hour",
+        "setupFee": "Setup fee",
+        "currency": "Currency",
+        "billingUnit": "Billing unit",
+        "billingIncrement": "Billing increment (seconds)",
+        "includedCapacityUnitHours": "Included capacity unit-hours",
+        "includedProcessedGb": "Included processed GB",
+        "includedListeners": "Included listeners",
+        "includedRules": "Included rules",
+        "includedCertificates": "Included certificates",
+        "maxTargets": "Max targets",
+        "maxTargetGroups": "Max target groups",
+        "tlsTermination": "TLS termination",
+        "stickySessions": "Sticky sessions",
+        "http2": "HTTP/2",
+        "websockets": "WebSockets",
+        "healthChecks": "Health checks",
+        "accessLogs": "Access logs",
+        "crossZone": "Cross-zone balancing",
+        "sortOrder": "Sort order",
+        "taxInclusive": "Tax inclusive",
+        "featuresJson": "Features JSON"
       }
     },
     "platformSettings": {
@@ -4038,7 +4114,10 @@
       "clusterDeleted": "Cluster registration removed",
       "clusterDeleteFailed": "Could not remove the cluster registration",
       "pveNodeHardDeleted": "Hard deleted {{name}} and {{count}} associated resource(s)",
-      "pveNodeHardDeleteFailed": "Could not hard delete the node"
+      "pveNodeHardDeleteFailed": "Could not hard delete the node",
+      "lbPriceCreated": "Load balancer price created",
+      "lbPriceUpdated": "Load balancer price updated",
+      "lbPriceFailed": "Couldn’t save the load balancer price"
     },
     "shell": {
       "console": "Console",
@@ -4752,6 +4831,7 @@
         "overview": "Overview",
         "nodes": "Nodes",
         "networking": "Networking",
+        "staticIps": "Static IPs",
         "inventory": "Inventory",
         "manager": "Proxmox manager",
         "health": "Health"

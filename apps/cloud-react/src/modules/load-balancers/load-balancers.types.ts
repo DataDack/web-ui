@@ -205,3 +205,40 @@ export interface UpdateLoadBalancerRequest {
   tags?: Record<string, string>
   resource_group_id?: string
 }
+
+/** What decides a load balancer's price: its type, and the first subnet —
+ *  which fixes the availability zone, exactly as the create places it. */
+export interface LBEstimateRequest {
+  type: "application" | "network"
+  vpc_id: string
+  subnet_id?: string
+  billing_cycle: "hourly" | "monthly"
+}
+
+/** The discounted, taxed amount the wallet would be charged per cycle. */
+export interface LBCostBreakdown {
+  cycle: "hourly" | "monthly"
+  currency: string
+  list_price: number
+  discount_pct: number
+  discount_reason?: string
+  base: number
+  gst_rate: number
+  gst: number
+  total: number
+}
+
+/** The rate card a load balancer would be billed at, from the admin price
+ *  catalog. `billing` is absent when billing is not wired on the server. */
+export interface LBEstimate {
+  sku: string
+  name: string
+  lb_type: string
+  availability_zone_id: string
+  currency: string
+  price_hourly: number
+  price_monthly: number
+  capacity_unit_name: string
+  price_per_capacity_unit_hour: number
+  billing?: LBCostBreakdown
+}

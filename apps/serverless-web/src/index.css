@@ -25,6 +25,10 @@
    which styles itself with emotion and needs no scan. */
 @source "../../../packages/workflows/src";
 @source "../../../packages/integration/src";
+/* @datadack/api-gateway's pages style with Tailwind utilities too (its
+   primitives come from common-ui). Unscanned, only the utilities this app
+   happens to use itself exist — the create wizard's grid and step rail did not. */
+@source "../../../packages/api-gateway/src";
 
 @import "@fontsource-variable/geist";
 @import "@fontsource/jetbrains-mono";

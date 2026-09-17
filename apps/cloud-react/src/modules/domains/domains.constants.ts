@@ -1,4 +1,4 @@
-import type { DomainListParams } from "./domains.types"
+import type { DomainAdminListParams, DomainListParams } from "./domains.types"
 
 /** Server page size for the registry table. */
 export const DOMAINS_PAGE_SIZE = 25
@@ -19,6 +19,9 @@ export const DOMAINS_QUERY_KEYS = {
   /** Root of every domains query — the invalidation target after any write. */
   all: ["domains"] as const,
   list: (params: DomainListParams) => ["domains", "list", serializeParams(params)] as const,
+  /** Under the same root, so a tenant-side write also refreshes the operator view. */
+  adminList: (params: DomainAdminListParams) =>
+    ["domains", "admin-list", serializeParams(params)] as const,
   /** One row, keyed by hostname — the registry's own identifier. */
   detail: (hostname: string) => ["domains", "detail", hostname] as const,
 }

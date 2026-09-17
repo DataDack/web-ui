@@ -3,6 +3,7 @@ import { api, apiDelete, apiGet, apiPost, apiPut, type ApiMeta } from "@/service
 import type {
   CreateDomainRequest,
   Domain,
+  DomainAdminListParams,
   DomainList,
   DomainListParams,
   SetDomainRedirectRequest,
@@ -10,14 +11,8 @@ import type {
 
 // cloud-be-go: app "domains", module "registry" -> base /domains/registry.
 //
-// These routes are a PROXY now. The rows live in serverless_faas — every hostname the
-// platform hands out moved there with the registry — and cloud-be-go forwards each call
-// under its own service credential, naming the tenant the request was authenticated as.
-// The paths, bodies and envelopes are unchanged, which is why this file did not have to
-// move with the data.
-//
-// There is no admin list here any more: the operator's cross-tenant view lives in the
-// serverless console, beside the service that owns the rows.
+// The registry lives in cloud-be-go (apps/domains/registry) and owns platform_domains:
+// every hostname the platform answers for, system-minted or customer-brought.
 const BASE = "/domains/registry"
 
 // utils.SendList envelope meta: the base ApiMeta plus the pagination block.
@@ -50,6 +45,14 @@ async function fetchList(url: string): Promise<DomainList> {
 export const domainsApi = {
   list: (params: DomainListParams): Promise<DomainList> =>
     fetchList(`${BASE}/?${buildQuery(params)}`),
+
+  /**
+   * Every account's hostnames — GET /domains/registry/admin, super-admin only.
+   * Rows carry account_id but no account name: accounts live in another
+   * database, so the console resolves the name itself.
+   */
+  listForAdmin: (params: DomainAdminListParams): Promise<DomainList> =>
+    fetchList(`${BASE}/admin?${buildQuery(params)}`),
 
   /** One enriched row, keyed by hostname (the registry's own identifier). */
   get: (hostname: string): Promise<Domain> =>

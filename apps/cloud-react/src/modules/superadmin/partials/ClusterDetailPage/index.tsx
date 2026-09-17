@@ -35,13 +35,14 @@ import { ClusterInventoryTab } from "./ClusterInventoryTab"
 import { ClusterManagerTab } from "./ClusterManagerTab"
 import { ClusterNetworkingTab } from "./ClusterNetworkingTab"
 import { ClusterNodesTab } from "./ClusterNodesTab"
+import { ClusterStaticIPsTab } from "./ClusterStaticIPsTab"
 import {
   useAdminAvailabilityZones,
   useClusterDetail,
   useSyncPVECluster,
 } from "../../superadmin.hooks"
 
-const TABS = ["nodes", "networking", "inventory", "health"] as const
+const TABS = ["nodes", "networking", "static-ips", "inventory", "health"] as const
 type Tab = (typeof TABS)[number]
 
 /**
@@ -211,6 +212,7 @@ export function ClusterDetailPage() {
             ) : null}
           </TabsTrigger>
           <TabsTrigger value="networking">{t("superAdmin.cluster.tabs.networking")}</TabsTrigger>
+          <TabsTrigger value="static-ips">{t("superAdmin.cluster.tabs.staticIps")}</TabsTrigger>
           <TabsTrigger value="inventory">{t("superAdmin.cluster.tabs.inventory")}</TabsTrigger>
           <TabsTrigger value="health">{t("superAdmin.cluster.tabs.health")}</TabsTrigger>
         </TabsList>
@@ -225,6 +227,12 @@ export function ClusterDetailPage() {
           <ClusterNetworkingTab
             availabilityZones={data.availability_zone_ids.map((z) => zoneName(z))}
           />
+        </TabsContent>
+        <TabsContent value="static-ips" className="pt-4">
+          {/* Public addresses are placed on a node, so a cluster's stock is a
+              property of the cluster — the same tables as the sidebar page,
+              filtered to the blocks these machines carry. */}
+          <ClusterStaticIPsTab clusterId={cluster.id} />
         </TabsContent>
         <TabsContent value="inventory" className="pt-4">
           <ClusterInventoryTab clusterId={cluster.id} />

@@ -8,6 +8,7 @@ import {
   type CreateApiInput,
   type DeploymentInput,
   type DomainNameInput,
+  type ImportApiInput,
   type IntegrationInput,
   type ModelInput,
   type RouteInput,
@@ -156,6 +157,14 @@ export function useCreateApi() {
   const { transport, scope } = useApiGatewayContext()
   return useApigwMutation(
     (input: CreateApiInput) => transport.createApi(input),
+    (qc) => void qc.invalidateQueries({ queryKey: apigwKeys.apis(scope) }),
+  )
+}
+
+export function useImportApi() {
+  const { transport, scope } = useApiGatewayContext()
+  return useApigwMutation(
+    (input: ImportApiInput) => transport.importApi(input),
     (qc) => void qc.invalidateQueries({ queryKey: apigwKeys.apis(scope) }),
   )
 }

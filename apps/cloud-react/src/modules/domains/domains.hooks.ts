@@ -9,6 +9,7 @@ import { domainsApi } from "./domains.api"
 import { DOMAINS_QUERY_KEYS, isDomainTransitional } from "./domains.constants"
 import type {
   CreateDomainRequest,
+  DomainAdminListParams,
   DomainList,
   DomainListParams,
   SetDomainRedirectRequest,
@@ -28,6 +29,21 @@ export function useDomains(params: DomainListParams) {
   return useQuery({
     queryKey: DOMAINS_QUERY_KEYS.list(params),
     queryFn: () => domainsApi.list(params),
+    placeholderData: keepPreviousData,
+    refetchInterval: (query) => refetchInterval(query.state.data),
+  })
+}
+
+/**
+ * Every account's hostnames, for the super-admin console. Same cache and poll
+ * behaviour as the tenant list; `enabled` lets a page hold back a query whose
+ * params are not valid yet (a half-typed account id would be a 400).
+ */
+export function useAdminDomains(params: DomainAdminListParams, enabled = true) {
+  return useQuery({
+    queryKey: DOMAINS_QUERY_KEYS.adminList(params),
+    queryFn: () => domainsApi.listForAdmin(params),
+    enabled,
     placeholderData: keepPreviousData,
     refetchInterval: (query) => refetchInterval(query.state.data),
   })

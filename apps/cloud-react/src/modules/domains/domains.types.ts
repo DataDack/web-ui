@@ -169,6 +169,15 @@ export interface DomainListParams {
   q?: string
 }
 
+/**
+ * Query params for the super-admin list — the tenant filters plus the owning
+ * account, which a tenant never chooses. Absent means every account; the
+ * all-zeroes UUID is a real value (the platform's own rows).
+ */
+export interface DomainAdminListParams extends DomainListParams {
+  account_id?: string
+}
+
 /** A page of rows plus the platform/account-wide total off the list meta. */
 export interface DomainList {
   rows: Domain[]

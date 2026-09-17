@@ -9,6 +9,7 @@ import {
   deploymentListSchema,
   domainNameListSchema,
   domainNameSchema,
+  importApiResultSchema,
   integrationListSchema,
   modelListSchema,
   routeListSchema,
@@ -81,6 +82,20 @@ export function createApiGatewayTransport(http: ApiGatewayHttp): ApiGatewayTrans
     getApi: async (apiId) => apiSchema.parse(await get(apiPath(apiId))),
     createApi: async (input) =>
       apiSchema.parse(await post("/v2/apis", { protocolType: "HTTP", ...input })),
+    // Not through `send`: a refused import carries the operations it could not
+    // map beside the message, and the operator needs those to fix the document.
+    importApi: async (input) => {
+      const response = await http({ method: "POST", path: "/v2/apis/import", body: input })
+      if (response.status < 200 || response.status >= 300) {
+        const error = failure(response.status, response.data, response.headers)
+        const warnings = (response.data as { warnings?: unknown } | undefined)?.warnings
+        if (Array.isArray(warnings) && warnings.length > 0) {
+          error.message = `${error.message}: ${warnings.map(String).join("; ")}`
+        }
+        throw error
+      }
+      return importApiResultSchema.parse(response.data)
+    },
     updateApi: async (apiId, input) => apiSchema.parse(await patch(apiPath(apiId), input)),
     deleteApi: (apiId) => remove(apiPath(apiId)),
 

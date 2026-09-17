@@ -2,11 +2,12 @@ import { Tabs, TabsList, TabsTrigger } from "@datadack/common-ui"
 import { useSearchParams } from "react-router-dom"
 
 import { BandwidthPricesPage } from "./BandwidthPricesPage"
+import { LoadBalancerPricesPage } from "./LoadBalancerPricesPage"
 import { StaticIPPricesPage } from "./StaticIPPricesPage"
 import { StoragePricesPage } from "./StoragePricesPage"
 import { VMPricesPage } from "./VMPricesPage"
 
-const PRICE_TABS = ["compute", "storage", "static-ips", "bandwidth"] as const
+const PRICE_TABS = ["compute", "storage", "static-ips", "bandwidth", "load-balancers"] as const
 type PriceTab = (typeof PRICE_TABS)[number]
 
 function isPriceTab(value: string | null): value is PriceTab {
@@ -32,6 +33,7 @@ export function PricingPage() {
           <TabsTrigger value="storage">Storage</TabsTrigger>
           <TabsTrigger value="static-ips">Static IPs</TabsTrigger>
           <TabsTrigger value="bandwidth">Bandwidth</TabsTrigger>
+          <TabsTrigger value="load-balancers">Load balancers</TabsTrigger>
         </TabsList>
       </Tabs>
 
@@ -39,6 +41,7 @@ export function PricingPage() {
       {tab === "storage" && <StoragePricesPage />}
       {tab === "static-ips" && <StaticIPPricesPage />}
       {tab === "bandwidth" && <BandwidthPricesPage />}
+      {tab === "load-balancers" && <LoadBalancerPricesPage />}
     </div>
   )
 }

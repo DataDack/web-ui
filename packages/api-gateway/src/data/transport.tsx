@@ -9,6 +9,7 @@ import type {
   CorsConfiguration,
   Deployment,
   DomainName,
+  ImportApiResult,
   Integration,
   Model,
   Stage,
@@ -33,6 +34,8 @@ export interface ApiGatewayTransport {
   listApis: () => Promise<Api[]>
   getApi: (apiId: string) => Promise<Api>
   createApi: (input: CreateApiInput) => Promise<Api>
+  /** Builds a whole API from an OpenAPI 3 document. */
+  importApi: (input: ImportApiInput) => Promise<ImportApiResult>
   updateApi: (apiId: string, input: UpdateApiInput) => Promise<Api>
   deleteApi: (apiId: string) => Promise<void>
 
@@ -124,14 +127,63 @@ export interface ModelInput {
   schema: string
 }
 
+export type ProtocolType = "HTTP" | "WEBSOCKET" | "REST"
+export type EndpointType = "REGIONAL" | "EDGE" | "PRIVATE"
+export type IpAddressType = "ipv4" | "dualstack"
+export type SecurityPolicy = "TLS_1_0" | "TLS_1_2"
+
+/** One route of the create wizard. Created with the API, in the same transaction. */
+export interface WizardRouteInput {
+  /** The whole key. Required for a WebSocket reserved key ($connect), which has no method or path. */
+  routeKey?: string
+  method?: string
+  path?: string
+  /** A backend URL. When set, an integration is created and attached. */
+  target?: string
+  integrationType?: string
+}
+
+export interface WizardStageInput {
+  stageName: string
+  autoDeploy: boolean
+}
+
 export interface CreateApiInput {
   name: string
   description?: string
-  protocolType?: string
+  protocolType?: ProtocolType
   version?: string
   /** Quick-create: the control plane builds a route and integration with it. */
   target?: string
   routeKey?: string
+  routeSelectionExpression?: string
+  apiKeySelectionExpression?: string
+  disableExecuteApiEndpoint?: boolean
+  corsConfiguration?: CorsConfiguration
+  endpointType?: EndpointType
+  ipAddressType?: IpAddressType
+  securityPolicy?: SecurityPolicy
+  /**
+   * Everything the wizard collected, created atomically with the API. Given no
+   * stages the control plane creates an auto-deploying $default one.
+   */
+  routes?: WizardRouteInput[]
+  stages?: WizardStageInput[]
+}
+
+export interface ImportApiInput {
+  /** The OpenAPI 3 document, as JSON text. */
+  body: string
+  /** Overrides the document's info.title. */
+  name?: string
+  /** Refuse the import if any operation could not be mapped onto a route. */
+  failOnWarnings?: boolean
+  /** A document cannot say; without this the API is created as HTTP. */
+  protocolType?: "HTTP" | "REST"
+  description?: string
+  endpointType?: EndpointType
+  ipAddressType?: IpAddressType
+  securityPolicy?: SecurityPolicy
 }
 
 export interface UpdateApiInput {
@@ -140,6 +192,9 @@ export interface UpdateApiInput {
   version?: string
   disableExecuteApiEndpoint?: boolean
   corsConfiguration?: CorsConfiguration
+  endpointType?: EndpointType
+  ipAddressType?: IpAddressType
+  securityPolicy?: SecurityPolicy
 }
 
 export interface RouteInput {

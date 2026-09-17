@@ -5,14 +5,13 @@ import { Section } from "@/components/console"
 import { useVPCs } from "@/modules/vpc/vpc.hooks"
 
 import { splitCIDRs, type FormValues } from "./schema"
+import { useLBEstimate } from "../../load-balancers.hooks"
 
-/**
- * The flat monthly price of a load balancer. Mirrors lbMonthlyAmount in
- * apps/compute/loadbalancer/service/lb_service.go — there is no price catalog
- * for load balancers, so a single figure governs billing on both sides.
- */
-const LB_MONTHLY_INR = 750
 const HOURS_PER_MONTH = 730
+
+function inr(amount: number, digits = 2) {
+  return `₹${amount.toLocaleString("en-IN", { minimumFractionDigits: digits, maximumFractionDigits: digits })}`
+}
 
 /**
  * The traffic path as it stands, built from the live form.
@@ -29,7 +28,6 @@ export function TopologyAside({ form }: Readonly<{ form: UseFormReturn<FormValue
 
   const nameFor = (vpcId: string) => vpcs.find((v) => v.id === vpcId)?.name ?? vpcId
   const subnetCount = values.vpcs.reduce((n, g) => n + g.subnet_ids.length, 0)
-  const cycle = values.billing_cycle
 
   return (
     <div className="space-y-4">
@@ -97,29 +95,87 @@ export function TopologyAside({ form }: Readonly<{ form: UseFormReturn<FormValue
       </Section>
 
       <Section variant="panel" title={t("loadBalancers.wizard.estimatedCost")}>
-        <div className="space-y-1.5 text-[12px]">
-          <Row
-            label={t("loadBalancers.wizard.loadBalancer")}
-            value={`₹${LB_MONTHLY_INR.toLocaleString("en-IN")}/mo`}
-          />
-          {cycle === "hourly" && (
-            <Row
-              label={t("loadBalancers.wizard.hourlyRate")}
-              value={`₹${(LB_MONTHLY_INR / HOURS_PER_MONTH).toFixed(3)}`}
-            />
-          )}
-          {/* Target groups and listeners are not separately billed — the
-                        load balancer's own subscription covers them. */}
-          <Row
-            label={t("loadBalancers.wizard.targetGroups")}
-            value={t("loadBalancers.wizard.free")}
-          />
-          <div className="mt-2 flex justify-between border-t border-border-glass pt-2 text-[13px] font-semibold">
-            <span>{t("loadBalancers.wizard.estMonthly")}</span>
-            <span className="tabular-nums">₹{LB_MONTHLY_INR.toLocaleString("en-IN")}</span>
-          </div>
-        </div>
+        <CostEstimate values={values} />
       </Section>
+    </div>
+  )
+}
+
+/**
+ * The price the server would charge, for the zone of the first subnet — the same
+ * lookup the create charges with, so the quote cannot drift from the bill.
+ */
+function CostEstimate({ values }: Readonly<{ values: FormValues }>) {
+  const { t } = useTranslation()
+  const cycle = values.billing_cycle
+  const first = values.vpcs.find((g) => g.vpc_id)
+  const estimate = useLBEstimate(
+    first
+      ? {
+          type: values.type,
+          vpc_id: first.vpc_id,
+          subnet_id: first.subnet_ids[0],
+          billing_cycle: cycle,
+        }
+      : null,
+  )
+
+  if (!first) {
+    return (
+      <p className="text-[12px] text-muted-foreground">
+        {t("loadBalancers.wizard.pricingNeedsSubnet")}
+      </p>
+    )
+  }
+  if (estimate.isLoading) {
+    return (
+      <p className="text-[12px] text-muted-foreground">
+        {t("loadBalancers.wizard.pricingLoading")}
+      </p>
+    )
+  }
+  const quote = estimate.data
+  if (estimate.isError || !quote) {
+    return (
+      <p className="text-[12px] text-status-warning">
+        {t("loadBalancers.wizard.pricingUnavailable")}
+      </p>
+    )
+  }
+
+  // Billing amounts are per cycle — per hour on hourly — so scale to a month.
+  const perMonth = cycle === "hourly" ? HOURS_PER_MONTH : 1
+  const billing = quote.billing
+  const monthlyTotal = billing ? billing.total * perMonth : quote.price_monthly
+
+  return (
+    <div className="space-y-1.5 text-[12px]">
+      <Row
+        label={t("loadBalancers.wizard.loadBalancer")}
+        value={`${inr(quote.price_monthly)}/mo`}
+      />
+      {cycle === "hourly" && (
+        <Row label={t("loadBalancers.wizard.hourlyRate")} value={inr(quote.price_hourly, 4)} />
+      )}
+      {/* Target groups and listeners are not separately billed — the load
+          balancer's own charge covers them. */}
+      <Row label={t("loadBalancers.wizard.targetGroups")} value={t("loadBalancers.wizard.free")} />
+      {billing && billing.discount_pct > 0 && (
+        <Row
+          label={t("loadBalancers.wizard.discount", { pct: billing.discount_pct })}
+          value={`−${inr((billing.list_price - billing.base) * perMonth)}`}
+        />
+      )}
+      {billing && billing.gst_rate > 0 && (
+        <Row
+          label={t("loadBalancers.wizard.gst", { rate: billing.gst_rate })}
+          value={inr(billing.gst * perMonth)}
+        />
+      )}
+      <div className="mt-2 flex justify-between border-t border-border-glass pt-2 text-[13px] font-semibold">
+        <span>{t("loadBalancers.wizard.estMonthly")}</span>
+        <span className="tabular-nums">{inr(monthlyTotal)}</span>
+      </div>
     </div>
   )
 }

@@ -9,6 +9,10 @@
 
 export { ApiGatewayRoutes } from "./console/ApiGatewayRoutes"
 export { ApiGatewayPage } from "./console/ApiGatewayPage"
+export { ChooseApiTypePage } from "./console/create/ChooseApiTypePage"
+export { CreateApiWizard } from "./console/create/CreateApiWizard"
+export { CreateRestApiPage } from "./console/create/CreateRestApiPage"
+export { ImportApiPage } from "./console/create/ImportApiPage"
 export { ApiDetailPage } from "./console/ApiDetailPage"
 export { CustomDomainsPage } from "./console/CustomDomainsPage"
 export { ApiKeysPage } from "./console/ApiKeysPage"
@@ -29,7 +33,14 @@ export {
   type CreateApiInput,
   type DeploymentInput,
   type DomainNameInput,
+  type EndpointType,
+  type ImportApiInput,
   type IntegrationInput,
+  type IpAddressType,
+  type ProtocolType,
+  type SecurityPolicy,
+  type WizardRouteInput,
+  type WizardStageInput,
   type ModelInput,
   type RouteInput,
   type StageInput,
@@ -45,6 +56,7 @@ export {
   useApis,
   useAuthorizers,
   useCreateApi,
+  useImportApi,
   useCreateApiMapping,
   useCreateAuthorizer,
   useCreateDeployment,
@@ -104,6 +116,7 @@ export {
   deploymentListSchema,
   domainNameListSchema,
   domainNameSchema,
+  importApiResultSchema,
   apiKeyListSchema,
   apiKeySchema,
   integrationListSchema,
@@ -121,6 +134,7 @@ export {
   type CorsConfiguration,
   type Deployment,
   type DomainName,
+  type ImportApiResult,
   type ApiKey,
   type Integration,
   type Model,

@@ -76,6 +76,43 @@ function AttachedToCell({
   return <span className="text-muted-foreground">—</span>
 }
 
+/** How an owning account reads in the super-admin table. */
+export interface DomainAccountLabel {
+  name: string
+  number: string
+}
+
+/** The all-zeroes account id is the platform's own rows, not a tenant. */
+const PLATFORM_ACCOUNT_ID = "00000000-0000-0000-0000-000000000000"
+
+function AccountCell({
+  accountId,
+  accounts,
+}: Readonly<{ accountId: string; accounts: ReadonlyMap<string, DomainAccountLabel> }>) {
+  const { t } = useTranslation()
+  if (!accountId || accountId === PLATFORM_ACCOUNT_ID) {
+    return <span className="text-muted-foreground">{t("domains.columns.platformAccount")}</span>
+  }
+  const account = accounts.get(accountId)
+  // An account the lookup did not return still gets its id, copyable — never a
+  // blank cell that reads as "no owner".
+  if (!account) {
+    return <CopyButton value={accountId} copiedLabel={t("console.copy.copied")} />
+  }
+  return (
+    <Link
+      to={`/admin/accounts/${accountId}/resources`}
+      onClick={(e) => {
+        e.stopPropagation()
+      }}
+      className="flex min-w-0 flex-col gap-0.5 hover:text-brand-gold"
+    >
+      <span className="truncate text-[13px] text-foreground hover:underline">{account.name}</span>
+      <span className="font-mono text-[11px] text-muted-foreground">{account.number}</span>
+    </Link>
+  )
+}
+
 /**
  * The one column set both domain registry tables render. The superadmin table
  * asks for the extra Account column; everything else is identical, so the
@@ -87,6 +124,8 @@ export function buildDomainColumns(
     linkResources?: boolean
     forResource?: boolean
     resourceNames?: ReadonlyMap<string, string>
+    /** Super-admin only: adds an owning-account column, resolved through this map. */
+    accounts?: ReadonlyMap<string, DomainAccountLabel>
   } = {},
 ): ColumnDef<Domain>[] {
   // The tenant table links each attachment to its detail page. The superadmin
@@ -202,9 +241,21 @@ export function buildDomainColumns(
     return columns.filter((c) => c.id !== "attachedTo" && c.id !== "type" && c.id !== "region")
   }
 
-  // There is no owning-account column. This table is tenant-scoped: every row on
-  // it belongs to the account reading it. The cross-tenant view, which is the only
-  // place that question is worth asking, moved to the serverless console.
+  // The owning account is only a question on the cross-tenant view — a tenant's
+  // own table would repeat the account reading it on every row.
+  const accounts = options.accounts
+  if (accounts) {
+    const account: ColumnDef<Domain> = {
+      id: "account",
+      accessorFn: (d) => accounts.get(d.account_id)?.name ?? d.account_id,
+      header: () => t("domains.columns.account"),
+      enableSorting: false,
+      meta: { interactive: true, responsive: "md" } satisfies ColumnMeta,
+      cell: ({ row }) => <AccountCell accountId={row.original.account_id} accounts={accounts} />,
+    }
+    const at = columns.findIndex((c) => c.id === "attachedTo")
+    columns.splice(at + 1, 0, account)
+  }
 
   return columns
 }

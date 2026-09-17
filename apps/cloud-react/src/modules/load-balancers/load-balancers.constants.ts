@@ -10,6 +10,8 @@ export const LB_QUERY_KEYS = {
   detail: (id: string) => ["load-balancers", "detail", id] as const,
   listeners: (id: string) => ["load-balancers", "listeners", id] as const,
   subnets: (id: string) => ["load-balancers", "subnets", id] as const,
+  estimate: (type: string, vpcId: string, subnetId: string, cycle: string) =>
+    ["load-balancers", "estimate", type, vpcId, subnetId, cycle] as const,
 }
 
 /**

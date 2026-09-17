@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 
 import type { ColumnDef } from "@tanstack/react-table"
 import { Globe2, Network, Plus, Router, ShieldCheck } from "lucide-react"
@@ -9,15 +9,7 @@ import {
   Button,
   CopyButton,
   DataTable,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
   EmptyState,
-  Input,
-  Label,
   PageHeader,
   StatCard,
   StatGrid,
@@ -27,7 +19,7 @@ import {
 } from "@datadack/common-ui"
 
 import { errorMessage } from "./errorMessage"
-import { useApis, useCreateApi } from "../data/queries"
+import { useApis } from "../data/queries"
 import type { Api } from "../data/schemas"
 
 /**
@@ -47,7 +39,6 @@ import type { Api } from "../data/schemas"
 export function ApiGatewayPage() {
   const navigate = useNavigate()
   const { data, error, isFetching, isLoading, refetch } = useApis()
-  const [creating, setCreating] = useState(false)
 
   const apis = data ?? []
   const withCors = apis.filter((api) => api.corsConfiguration).length
@@ -60,7 +51,7 @@ export function ApiGatewayPage() {
         header: "Name",
         cell: ({ row }) => (
           <Link
-            to={`/apigateway/${encodeURIComponent(row.original.apiId)}`}
+            to={encodeURIComponent(row.original.apiId)}
             className="text-foreground hover:text-brand-gold font-mono text-[13px] font-medium underline-offset-4 hover:underline"
           >
             {row.original.name || row.original.apiId}
@@ -127,7 +118,9 @@ export function ApiGatewayPage() {
           <Button
             variant="gold"
             onClick={() => {
-              setCreating(true)
+              // Relative: this console is mounted at /apigateway in one app and
+              // at .../api-gateway in the other.
+              void navigate("create")
             }}
           >
             <Plus /> Create API
@@ -152,6 +145,12 @@ export function ApiGatewayPage() {
             icon={Router}
             title="No APIs configured"
             description="Create one here, or with `aws apigatewayv2 create-api` pointed at this control plane."
+            action={{
+              label: "Create API",
+              onClick: () => {
+                void navigate("create")
+              },
+            }}
           />
         }
         onRefresh={() => void refetch()}
@@ -159,105 +158,6 @@ export function ApiGatewayPage() {
         error={error ? errorMessage(error, "Could not load") : undefined}
         onRetry={() => void refetch()}
       />
-
-      <CreateApiDialog
-        open={creating}
-        onOpenChange={setCreating}
-        onCreated={(apiId) => {
-          setCreating(false)
-          void navigate(`/apigateway/${encodeURIComponent(apiId)}`)
-        }}
-      />
     </>
-  )
-}
-
-/**
- * Create, with the quick-create backend inline.
- *
- * A target URL is optional and does a lot when given: the control plane builds
- * the API, a $default route and an integration pointing at it in one call, so a
- * new API can serve something immediately instead of being an empty shell the
- * operator then has to furnish. That is the same behaviour as
- * `create-api --target`, which is why it is one field rather than a wizard.
- */
-function CreateApiDialog({
-  open,
-  onOpenChange,
-  onCreated,
-}: Readonly<{
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onCreated: (apiId: string) => void
-}>) {
-  const [name, setName] = useState("")
-  const [target, setTarget] = useState("")
-  const create = useCreateApi()
-
-  const submit = () => {
-    create.mutate(
-      { name, target: target.trim() || undefined },
-      {
-        onSuccess: (api) => {
-          onCreated(api.apiId)
-        },
-      },
-    )
-  }
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Create HTTP API</DialogTitle>
-          <DialogDescription>
-            A backend URL is optional. Give one and the API is created with a $default route already
-            pointing at it.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="flex flex-col gap-3">
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="api-name">Name</Label>
-            <Input
-              id="api-name"
-              value={name}
-              placeholder="checkout-api"
-              onChange={(event) => {
-                setName(event.target.value)
-              }}
-            />
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="api-target">Backend URL (optional)</Label>
-            <Input
-              id="api-target"
-              value={target}
-              placeholder="https://backend.internal"
-              onChange={(event) => {
-                setTarget(event.target.value)
-              }}
-            />
-          </div>
-          {create.error ? (
-            <p className="text-status-danger text-xs">
-              {errorMessage(create.error, "Could not create")}
-            </p>
-          ) : null}
-        </div>
-        <DialogFooter>
-          <Button
-            variant="ghost"
-            onClick={() => {
-              onOpenChange(false)
-            }}
-          >
-            Cancel
-          </Button>
-          <Button variant="gold" disabled={!name.trim() || create.isPending} onClick={submit}>
-            Create
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
   )
 }

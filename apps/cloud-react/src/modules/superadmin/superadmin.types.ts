@@ -823,6 +823,107 @@ export interface UpdateBandwidthPriceRequest {
   is_active?: boolean
 }
 
+/* ── Load balancer price ───────────────────────────────────────────────── */
+
+/** Balancer types the rate card can price. Only application and network are
+ *  realizable today; gateway/classic exist so the catalog can carry them. */
+export type LBPriceType = "application" | "network" | "gateway" | "classic"
+export type LBPriceScheme = "internet_facing" | "internal" | "any"
+export type LBPriceIPVersion = "ipv4" | "dualstack"
+
+export interface LoadBalancerPrice {
+  id: string
+  availability_zone_id: string
+  sku: string
+  name: string
+  description: string
+  lb_type: LBPriceType
+  scheme: LBPriceScheme
+  ip_version: LBPriceIPVersion
+  engine: string
+  /** What one usage unit is called on the invoice: LCU, NLCU, GLCU, GB. */
+  capacity_unit_name: string
+  lcu_new_connections_per_sec: number
+  lcu_active_connections_per_min: number
+  lcu_processed_gb_per_hour: number
+  lcu_rule_evaluations_per_sec: number
+  included_lcu_hours: number
+  included_processed_gb: number
+  included_listeners: number
+  included_rules: number
+  included_certificates: number
+  max_targets: number
+  max_target_groups: number
+  tls_termination: boolean
+  sticky_sessions: boolean
+  http2_support: boolean
+  websocket_support: boolean
+  health_checks: boolean
+  access_logs: boolean
+  cross_zone: boolean
+  price_hourly: number
+  price_monthly: number
+  price_per_lcu_hour: number
+  price_per_gb_processed: number
+  price_tls_termination_hourly: number
+  setup_fee: number
+  currency: string
+  billing_unit: BillingUnit
+  billing_increment_seconds: number
+  tax_inclusive: boolean
+  sort_order: number
+  features: string
+  effective_from: string
+  effective_to: string
+  is_active: boolean
+}
+
+export interface CreateLoadBalancerPriceRequest {
+  availability_zone_id: string
+  sku?: string
+  name?: string
+  description?: string
+  lb_type: LBPriceType
+  scheme?: LBPriceScheme
+  ip_version?: LBPriceIPVersion
+  engine?: string
+  capacity_unit_name?: string
+  lcu_new_connections_per_sec?: number
+  lcu_active_connections_per_min?: number
+  lcu_processed_gb_per_hour?: number
+  lcu_rule_evaluations_per_sec?: number
+  included_lcu_hours?: number
+  included_processed_gb?: number
+  included_listeners?: number
+  included_rules?: number
+  included_certificates?: number
+  max_targets?: number
+  max_target_groups?: number
+  tls_termination?: boolean
+  sticky_sessions?: boolean
+  http2_support?: boolean
+  websocket_support?: boolean
+  health_checks?: boolean
+  access_logs?: boolean
+  cross_zone?: boolean
+  price_hourly: number
+  price_monthly?: number
+  price_per_lcu_hour?: number
+  price_per_gb_processed?: number
+  price_tls_termination_hourly?: number
+  setup_fee?: number
+  currency?: string
+  billing_unit?: BillingUnit
+  billing_increment_seconds?: number
+  tax_inclusive?: boolean
+  sort_order?: number
+  features?: string
+}
+
+export type UpdateLoadBalancerPriceRequest = Partial<CreateLoadBalancerPriceRequest> & {
+  is_active?: boolean
+}
+
 /* ── Storage price ─────────────────────────────────────────────────────── */
 
 export type StorageType = "ssd" | "hdd" | "nvme"

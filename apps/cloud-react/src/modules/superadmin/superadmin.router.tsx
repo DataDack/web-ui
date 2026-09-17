@@ -234,6 +234,15 @@ export const superadminRoutes: RouteObject[] = [
         },
       },
       {
+        // Every hostname across every account: customer-brought and
+        // platform-minted, one tab each.
+        path: "domains",
+        lazy: async () => {
+          const { DomainsAdminPage } = await import("./partials/DomainsAdminPage")
+          return { Component: DomainsAdminPage }
+        },
+      },
+      {
         // Pricing, not inventory: the rate an allocation is billed at sits with
         // the other price tables rather than on the Static IPs hub.
         path: "static-ip-prices",
@@ -252,6 +261,10 @@ export const superadminRoutes: RouteObject[] = [
       {
         path: "bandwidth-prices",
         element: <Navigate to="/admin/pricing?tab=bandwidth" replace />,
+      },
+      {
+        path: "lb-prices",
+        element: <Navigate to="/admin/pricing?tab=load-balancers" replace />,
       },
       {
         path: "cache",

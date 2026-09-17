@@ -24,3 +24,19 @@ export function useNodeName(): (id?: string | null) => string {
     return (id?: string | null) => (id ? (byId.get(id) ?? id.slice(0, 8)) : "")
   }, [nodes])
 }
+
+/**
+ * The cluster a node belongs to.
+ *
+ * Rows that carry a placement (an IP pool, an allocation) record both the node
+ * and its cluster, and the cluster half is the one that goes missing — it was
+ * added later, and nothing backfills a row placed before that. Resolving it
+ * through the node keeps such a row visible in its cluster rather than nowhere.
+ */
+export function useNodeClusterId(): (id?: string | null) => string | null {
+  const { data: nodes = [] } = useAdminPVENodes()
+  return useMemo(() => {
+    const byId = new Map(nodes.map((n) => [n.id, n.cluster_id ?? null]))
+    return (id?: string | null) => (id ? (byId.get(id) ?? null) : null)
+  }, [nodes])
+}

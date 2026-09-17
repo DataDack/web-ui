@@ -23,6 +23,7 @@ import type {
   UpdateOptOutRequestInput,
   CreateAvailabilityZoneRequest,
   CreateBandwidthPriceRequest,
+  CreateLoadBalancerPriceRequest,
   CreateImageRequest,
   CreateIPPoolRequest,
   CreatePVENodeRequest,
@@ -48,6 +49,7 @@ import type {
   EmailPolicy,
   EmailPolicyCheckRequest,
   UpdateBandwidthPriceRequest,
+  UpdateLoadBalancerPriceRequest,
   UpdateEmailPolicy,
   UpdateImageRequest,
   UpdateImageVersionRequest,
@@ -324,6 +326,13 @@ export function useAdminBandwidthPrices() {
   return useQuery({
     queryKey: SUPERADMIN_QUERY_KEYS.bandwidthPrices,
     queryFn: superAdminApi.listBandwidthPrices,
+  })
+}
+
+export function useAdminLoadBalancerPrices() {
+  return useQuery({
+    queryKey: SUPERADMIN_QUERY_KEYS.lbPrices,
+    queryFn: superAdminApi.listLoadBalancerPrices,
   })
 }
 
@@ -948,6 +957,32 @@ export function useSaveBandwidthPrice() {
       )
     },
     onError: (e) => toast.error(extractError(e, t("superAdmin.toasts.bandwidthPriceFailed"))),
+  })
+}
+
+/* ── Load balancer prices ──────────────────────────────────────────────── */
+
+export function useSaveLoadBalancerPrice() {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (vars: {
+      id?: string
+      payload: CreateLoadBalancerPriceRequest | UpdateLoadBalancerPriceRequest
+    }) =>
+      vars.id
+        ? superAdminApi.updateLoadBalancerPrice(
+            vars.id,
+            vars.payload as UpdateLoadBalancerPriceRequest,
+          )
+        : superAdminApi.createLoadBalancerPrice(vars.payload as CreateLoadBalancerPriceRequest),
+    onSuccess: (_price, vars) => {
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.lbPrices })
+      toast.success(
+        vars.id ? t("superAdmin.toasts.lbPriceUpdated") : t("superAdmin.toasts.lbPriceCreated"),
+      )
+    },
+    onError: (e) => toast.error(extractError(e, t("superAdmin.toasts.lbPriceFailed"))),
   })
 }
 

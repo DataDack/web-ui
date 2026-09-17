@@ -96,7 +96,9 @@ export function ApiDetailPage() {
       <PageHeader
         title={orElse(api?.name, apiId)}
         icon={Network}
-        breadcrumbs={[{ label: "API Gateway", to: "/apigateway" }, { label: api?.name ?? apiId }]}
+        // ".." rather than a literal: the console is mounted at /apigateway in
+        // serverless-web and at .../api-gateway in cloud-react.
+        breadcrumbs={[{ label: "API Gateway", to: ".." }, { label: api?.name ?? apiId }]}
         description={orElse(api?.description, "HTTP API configuration.")}
         // common-ui is instantiated twice in this app, so a router context
         // mounted through one instance is invisible to a component resolved
@@ -115,6 +117,21 @@ export function ApiDetailPage() {
         {api?.corsConfiguration ? (
           <Badge variant="secondary" className="font-mono text-[11px]">
             CORS: {orElse(api.corsConfiguration.allowOrigins.join(", "), "no origins")}
+          </Badge>
+        ) : null}
+        {api?.endpointType ? (
+          <Badge variant="outline" className="text-[11px]">
+            {api.endpointType === "REGIONAL" ? "Regional" : api.endpointType}
+          </Badge>
+        ) : null}
+        {api?.ipAddressType ? (
+          <Badge variant="outline" className="text-[11px]">
+            {api.ipAddressType === "dualstack" ? "Dualstack" : "IPv4"}
+          </Badge>
+        ) : null}
+        {api?.securityPolicy ? (
+          <Badge variant="outline" className="font-mono text-[11px]">
+            {api.securityPolicy.replace("TLS_1_", "TLS 1.")}
           </Badge>
         ) : null}
         {api?.apiEndpoint ? (

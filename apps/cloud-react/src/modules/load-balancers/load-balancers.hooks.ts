@@ -11,6 +11,7 @@ import { lbService } from "./load-balancers.service"
 import type {
   CreateListenerRequest,
   CreateLoadBalancerRequest,
+  LBEstimateRequest,
   UpdateListenerRequest,
   UpdateLoadBalancerRequest,
 } from "./load-balancers.types"
@@ -24,6 +25,30 @@ export function useLoadBalancers() {
     // the row settles on its own once the backend finishes.
     refetchInterval: (query) =>
       query.state.data?.some((lb) => isLbTransitional(lb.status)) ? 4000 : false,
+  })
+}
+
+/**
+ * The price the server would charge for this load balancer. Disabled until a
+ * VPC is chosen, because the zone — and so the rate card — comes from the first
+ * subnet. A 503 means no price is configured for that zone and type; it is not
+ * retried, since retrying cannot make an operator add one.
+ */
+export function useLBEstimate(req: LBEstimateRequest | null) {
+  return useQuery({
+    queryKey: LB_QUERY_KEYS.estimate(
+      req?.type ?? "",
+      req?.vpc_id ?? "",
+      req?.subnet_id ?? "",
+      req?.billing_cycle ?? "",
+    ),
+    queryFn: () => {
+      if (!req) throw new Error("no estimate request")
+      return lbService.estimate(req)
+    },
+    enabled: !!req,
+    retry: false,
+    staleTime: 60_000,
   })
 }
 

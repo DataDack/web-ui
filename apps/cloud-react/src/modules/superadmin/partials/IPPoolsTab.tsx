@@ -34,7 +34,7 @@ import { useNavigate } from "react-router-dom"
 import { AnimatedNumber } from "@/components/console"
 
 import { ActiveBadge } from "../components/ActiveBadge"
-import { useNodeName } from "../components/host-nodes"
+import { useNodeClusterId, useNodeName } from "../components/host-nodes"
 import { cidrContains } from "../ip-utils"
 import { useAdminAvailabilityZones, useAdminIPPools } from "../superadmin.hooks"
 import type { IpPool } from "../superadmin.types"
@@ -70,13 +70,34 @@ interface Props {
   /** Lifted to the page so the header's primary action can open it. */
   addOpen: boolean
   onAddOpenChange: (open: boolean) => void
+  /**
+   * Show only the blocks carried by one cluster's nodes. Set when this table is
+   * embedded in a cluster page, where the platform-wide list would answer a
+   * question nobody asked; left unset on the fleet-wide Static IPs page.
+   */
+  clusterId?: string
 }
 
-export function IPPoolsTab({ addOpen, onAddOpenChange }: Readonly<Props>) {
+export function IPPoolsTab({ addOpen, onAddOpenChange, clusterId }: Readonly<Props>) {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const { data: pools = [], isLoading, isError, refetch, isFetching } = useAdminIPPools()
+  const { data: allPools = [], isLoading, isError, refetch, isFetching } = useAdminIPPools()
   const { data: azs = [] } = useAdminAvailabilityZones()
+
+  const nodeClusterId = useNodeClusterId()
+
+  // Scoped before anything else reads it, so the filter options, the headline
+  // figures and the table all describe the same set of pools. A block placed
+  // before the cluster was recorded on the row is matched through its node.
+  const pools = useMemo(
+    () =>
+      clusterId
+        ? allPools.filter(
+            (p) => p.cluster_id === clusterId || nodeClusterId(p.pve_node_id) === clusterId,
+          )
+        : allPools,
+    [allPools, clusterId, nodeClusterId],
+  )
 
   const [query, setQuery] = useState("")
   const [region, setRegion] = useState(ALL)

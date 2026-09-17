@@ -34,6 +34,7 @@ export const SUPERADMIN_QUERY_KEYS = {
   staticIpAllocations: ["superadmin", "static-ip-allocations"] as const,
   bandwidthPrices: ["superadmin", "bandwidth-prices"] as const,
   storagePrices: ["superadmin", "storage-prices"] as const,
+  lbPrices: ["superadmin", "lb-prices"] as const,
   services: ["superadmin", "services"] as const,
   serviceModules: ["superadmin", "service-modules"] as const,
   serviceMetricSources: ["superadmin", "service-metric-sources"] as const,
