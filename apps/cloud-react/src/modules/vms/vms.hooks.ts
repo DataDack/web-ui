@@ -141,3 +141,23 @@ export function useDeleteInstance() {
     onError: (e) => toast.error(extractError(e, t("vms.toasts.terminateFailed"))),
   })
 }
+
+/** Set a new Administrator password on a Windows instance. */
+export function useResetInstancePassword(id: string) {
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (password: string) => vmsService.resetPassword(id, password),
+    onSuccess: ({ applied }) => {
+      toast.success(
+        applied === "live"
+          ? t("vms.windows.reset.appliedLive", "Password changed.")
+          : t(
+              "vms.windows.reset.appliedNextBoot",
+              "Password saved — it applies when the instance next starts.",
+            ),
+      )
+    },
+    onError: (e) =>
+      toast.error(extractError(e, t("vms.windows.reset.failed", "Could not change the password"))),
+  })
+}

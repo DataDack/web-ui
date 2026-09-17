@@ -70,6 +70,10 @@ export default defineConfig({
     // cssCodeSplit stays off: a single stylesheet avoids per-chunk CSS
     // flashes and keeps Tailwind's layer ordering intact.
     cssCodeSplit: false,
+    // noVNC (the VM graphical console) uses top-level await, which Vite's
+    // default target — Chrome 87 / Safari 14 — predates, so the build refuses
+    // it. These are the first releases of each engine that support it (2021).
+    target: ["es2022", "chrome89", "edge89", "firefox89", "safari15"],
   },
   // @datadack/common-ui and @datadack/serverless are linked workspace packages,
   // so Vite treats them as source and does NOT pre-bundle them at cold start —
@@ -115,7 +119,12 @@ export default defineConfig({
       "react-icons/si",
       "sonner",
       "tailwind-merge",
+      // The VM console page's display client, lazily reached like the editor.
+      "@novnc/novnc",
     ],
+    // Pre-bundling runs esbuild too, and noVNC's top-level await needs the same
+    // target the build uses.
+    esbuildOptions: { target: "es2022" },
   },
   resolve: {
     // Symlinked workspace packages can otherwise resolve their own React

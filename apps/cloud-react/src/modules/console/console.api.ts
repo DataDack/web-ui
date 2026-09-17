@@ -2,8 +2,9 @@ import { apiPost } from "@/services/api/client"
 
 import type { SessionTicket } from "./console.types"
 
-// The "Connect to VM" console is a Linux-only, SSH-in-browser feature: it opens
-// a terminal into a specific instance over a WebSocket bridged to an SSH PTY.
+// The "Connect to VM" console opens a session into a specific instance over a
+// WebSocket: a terminal (SSH PTY or serial console) for Linux guests, or the
+// guest's graphical display (VNC, rendered with noVNC) for Windows guests.
 
 /** An instance is Linux unless its resolved OS label is Windows. The SSH/PTY
  *  console only applies to Linux guests (Windows would use RDP). */
@@ -15,8 +16,11 @@ export function isLinuxOS(os: string | undefined): boolean {
  *   - "ssh"   — GCE-style browser SSH: a throwaway key is generated and injected,
  *               and you land in a shell with no password (the default "Connect").
  *   - "guest" — the VM's own Proxmox serial console (shows a login prompt).
- *   - "host"  — the Proxmox hypervisor node shell (admin). */
-export type ConsoleTarget = "ssh" | "guest" | "host"
+ *   - "host"  — the Proxmox hypervisor node shell (admin).
+ *   - "vnc"   — the VM's graphical display. The socket carries raw RFB with no
+ *               VNC password (the server authenticated); a console that cannot
+ *               open closes the socket with code 4001 and a reason. */
+export type ConsoleTarget = "ssh" | "guest" | "host" | "vnc"
 
 export const consoleApi = {
   /** Mint a single-use console ticket for an instance (authenticated REST).

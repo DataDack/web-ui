@@ -4,6 +4,16 @@ import { isIPv4, isIpInCidr } from "@/lib/net"
 import type { NamingRule } from "@/modules/governance/governance.types"
 import { namingNameSchema } from "@/modules/governance/governance.validation"
 
+import { checkWindowsPassword } from "../../windows"
+
+// One message per rule, in the order checkWindowsPassword reports them.
+const WINDOWS_PASSWORD_MESSAGES = {
+  length: "Use 12–72 characters",
+  ascii: "Use printable ASCII characters only, with no spaces",
+  classes: "Use at least three of: lowercase, uppercase, digits, symbols",
+  username: "The password must not contain “Administrator”",
+} as const
+
 export const makeSchema = (rule: NamingRule) =>
   z
     .object({
@@ -23,6 +33,12 @@ export const makeSchema = (rule: NamingRule) =>
       security_group_ids: z.array(z.string()),
       // Optional — a VM can be created without an SSH key.
       ssh_key_id: z.string(),
+      // Windows images log in with an Administrator password instead of a key.
+      // _is_windows is derived from the chosen image and kept in sync by the
+      // wizard; the password fields are only validated while it is true.
+      admin_password: z.string(),
+      admin_password_confirm: z.string(),
+      _is_windows: z.boolean(),
       disk_size_gb: z
         .number({ message: "Enter a size in GB" })
         .int("Whole GB only")
@@ -38,6 +54,22 @@ export const makeSchema = (rule: NamingRule) =>
       public_ip_type: z.enum(["none", "ephemeral", "static"]),
     })
     .superRefine((val, ctx) => {
+      if (val._is_windows) {
+        const failed = checkWindowsPassword(val.admin_password).find((c) => !c.ok)
+        if (failed) {
+          ctx.addIssue({
+            code: "custom",
+            path: ["admin_password"],
+            message: WINDOWS_PASSWORD_MESSAGES[failed.rule],
+          })
+        } else if (val.admin_password !== val.admin_password_confirm) {
+          ctx.addIssue({
+            code: "custom",
+            path: ["admin_password_confirm"],
+            message: "The passwords do not match",
+          })
+        }
+      }
       if (!val.skip_vpc) {
         if (!val.vpc_id) {
           ctx.addIssue({ code: "custom", path: ["vpc_id"], message: "Select a VPC" })

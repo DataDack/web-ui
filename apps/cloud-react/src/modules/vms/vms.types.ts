@@ -79,6 +79,11 @@ export interface Instance extends RawInstance {
   os_icon_url?: string
 }
 
+/** Where a new Windows Administrator password took effect. */
+export interface ResetPasswordResult {
+  applied: "live" | "next_boot"
+}
+
 export interface CreateInstanceRequest {
   name: string
   /** Resource group the instance is created into (required). */
@@ -92,6 +97,8 @@ export interface CreateInstanceRequest {
   /** Security groups to attach at creation; omit for none. */
   security_group_ids?: string[]
   ssh_key_id: string
+  /** Windows images only (required there): the Administrator password. */
+  admin_password?: string
   /** Optional static private IP within the chosen subnet; omit to auto-assign. */
   private_ip?: string
   /** Whether the instance is charged per hour or at a flat monthly rate. */

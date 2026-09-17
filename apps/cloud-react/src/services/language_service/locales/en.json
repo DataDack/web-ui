@@ -817,6 +817,57 @@
     },
     "sshStep": {
       "sshEd25519Aaaa": "ssh-ed25519 AAAA..."
+    },
+    "windows": {
+      "address": "Address",
+      "confirm": "Confirm password",
+      "connectDescription": "Connect to your Windows instance with a Remote Desktop client, or open its screen in the browser.",
+      "console": {
+        "clipboardDenied": "The browser did not allow clipboard access",
+        "closed": "Session ended",
+        "connected": "Connected",
+        "connecting": "Connecting…",
+        "ctrlAltDel": "Ctrl+Alt+Del",
+        "error": "Connection failed",
+        "exitFullscreen": "Exit full screen",
+        "failed": "The console could not be opened",
+        "fullscreen": "Full screen",
+        "paste": "Paste as keystrokes"
+      },
+      "consoleNote": "Shows the instance's screen in a new browser tab, straight from the hypervisor — it works even when Remote Desktop is blocked or the network inside the instance is down. Use Ctrl+Alt+Del in the console toolbar to reach the sign-in screen, and “Paste as keystrokes” to enter your password.",
+      "downloadRdp": "Download RDP file",
+      "firstBootNote": "A new Windows instance takes about 5 minutes to finish setup before Remote Desktop answers. Inbound TCP 3389 must be allowed by the instance's security groups.",
+      "generate": "Generate",
+      "hide": "Hide password",
+      "mismatch": "The passwords do not match",
+      "noAddress": "This instance has no address of that kind.",
+      "password": "Administrator password",
+      "port": "Port",
+      "privateIpDesc": "From another machine inside the VPC, or over a VPN into it",
+      "rdpNote": "Open the file with Remote Desktop Connection (Windows), Windows App (macOS) or Remmina (Linux) and sign in as Administrator with the password you set. The file never contains the password.",
+      "reset": {
+        "appliedLive": "Password changed.",
+        "appliedNextBoot": "Password saved — it applies when the instance next starts.",
+        "description": "A running instance takes the new password immediately; a stopped one applies it when it next starts. Signed-in RDP sessions stay open.",
+        "failed": "Could not change the password",
+        "open": "Reset password",
+        "submit": "Set password",
+        "title": "Reset Administrator password"
+      },
+      "rules": {
+        "ascii": "Printable ASCII only, no spaces",
+        "classes": "At least three of: lowercase, uppercase, digits, symbols",
+        "length": "12–72 characters",
+        "username": "Does not contain “Administrator”"
+      },
+      "saveNotice": "Save this password now — it is never shown again. You can set a new one later from the instance's Connect page.",
+      "show": "Show password",
+      "tabs": {
+        "console": "Browser console",
+        "rdp": "RDP client"
+      },
+      "username": "Username",
+      "wizardDescription": "Set the Windows Administrator password"
     }
   },
   "sshKeys": {

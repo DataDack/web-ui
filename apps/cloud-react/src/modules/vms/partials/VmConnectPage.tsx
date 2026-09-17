@@ -1,18 +1,38 @@
 import { useState } from "react"
 
-import { Button, cn, CopyButton, Input, Label, Skeleton } from "@datadack/common-ui"
-import { Info, MonitorDot, Terminal as TerminalIcon, KeyRound } from "lucide-react"
+import {
+  Button,
+  cn,
+  CopyButton,
+  Input,
+  Label,
+  Skeleton,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@datadack/common-ui"
+import {
+  Download,
+  Info,
+  KeyRound,
+  MonitorDot,
+  MonitorSmartphone,
+  RotateCcwKey,
+  Terminal as TerminalIcon,
+} from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
 
 import { PageHeader, Section } from "@/components/console"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@datadack/common-ui"
 import { useSSHKeys } from "@/modules/ssh-keys/ssh-keys.hooks"
 import { useScreen } from "@/services/api/screen"
 
-import { VMS_ROUTES } from "../vms.constants"
+import { isVmTransitional, VMS_ROUTES } from "../vms.constants"
 import { useInstance } from "../vms.hooks"
 import type { Instance } from "../vms.types"
+import { downloadRdpFile, isWindowsInstance, RDP_PORT, WINDOWS_ADMIN_USER } from "../windows"
+import { ResetWindowsPasswordDialog } from "./ResetWindowsPasswordDialog"
 
 /** Best-guess default login account from the resolved OS label — mirrors the
  *  backend, which uses the image's cloud-init user (the image name). */
@@ -45,14 +65,23 @@ export function VmConnectPage() {
     )
   }
 
+  const windows = isWindowsInstance(instance)
+
   return (
     <div>
       <PageHeader
         title={t("vms.connect.title", "Connect to instance")}
-        description={t(
-          "vms.connect.description",
-          "Connect to your instance using the browser-based client, your own SSH client, or the serial console.",
-        )}
+        description={
+          windows
+            ? t(
+                "vms.windows.connectDescription",
+                "Connect to your Windows instance with a Remote Desktop client, or open its screen in the browser.",
+              )
+            : t(
+                "vms.connect.description",
+                "Connect to your instance using the browser-based client, your own SSH client, or the serial console.",
+              )
+        }
         breadcrumbs={[
           { label: t("vms.title", "Instances"), to: VMS_ROUTES.ROOT },
           { label: instance.name, to: VMS_ROUTES.detail(instance.id) },
@@ -85,32 +114,53 @@ export function VmConnectPage() {
         </div>
       </Section>
 
-      <Tabs defaultValue="instance-connect" className="gap-0">
-        <TabsList className="mb-0">
-          <TabsTrigger value="instance-connect" className="gap-1.5">
-            <TerminalIcon className="size-3.5" />
-            {t("vms.connect.tabs.instanceConnect", "Instance Connect")}
-          </TabsTrigger>
-          <TabsTrigger value="ssh-client" className="gap-1.5">
-            <KeyRound className="size-3.5" />
-            {t("vms.connect.tabs.sshClient", "SSH client")}
-          </TabsTrigger>
-          <TabsTrigger value="serial-console" className="gap-1.5">
-            <MonitorDot className="size-3.5" />
-            {t("vms.connect.tabs.serialConsole", "Serial console")}
-          </TabsTrigger>
-        </TabsList>
+      {windows ? (
+        <Tabs defaultValue="rdp" className="gap-0">
+          <TabsList className="mb-0">
+            <TabsTrigger value="rdp" className="gap-1.5">
+              <MonitorSmartphone className="size-3.5" />
+              {t("vms.windows.tabs.rdp", "RDP client")}
+            </TabsTrigger>
+            <TabsTrigger value="browser-console" className="gap-1.5">
+              <MonitorDot className="size-3.5" />
+              {t("vms.windows.tabs.console", "Browser console")}
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="rdp" className="mt-3">
+            <RdpClientTab instance={instance} />
+          </TabsContent>
+          <TabsContent value="browser-console" className="mt-3">
+            <BrowserConsoleTab instance={instance} />
+          </TabsContent>
+        </Tabs>
+      ) : (
+        <Tabs defaultValue="instance-connect" className="gap-0">
+          <TabsList className="mb-0">
+            <TabsTrigger value="instance-connect" className="gap-1.5">
+              <TerminalIcon className="size-3.5" />
+              {t("vms.connect.tabs.instanceConnect", "Instance Connect")}
+            </TabsTrigger>
+            <TabsTrigger value="ssh-client" className="gap-1.5">
+              <KeyRound className="size-3.5" />
+              {t("vms.connect.tabs.sshClient", "SSH client")}
+            </TabsTrigger>
+            <TabsTrigger value="serial-console" className="gap-1.5">
+              <MonitorDot className="size-3.5" />
+              {t("vms.connect.tabs.serialConsole", "Serial console")}
+            </TabsTrigger>
+          </TabsList>
 
-        <TabsContent value="instance-connect" className="mt-3">
-          <InstanceConnectTab instance={instance} />
-        </TabsContent>
-        <TabsContent value="ssh-client" className="mt-3">
-          <SshClientTab instance={instance} />
-        </TabsContent>
-        <TabsContent value="serial-console" className="mt-3">
-          <SerialConsoleTab instance={instance} />
-        </TabsContent>
-      </Tabs>
+          <TabsContent value="instance-connect" className="mt-3">
+            <InstanceConnectTab instance={instance} />
+          </TabsContent>
+          <TabsContent value="ssh-client" className="mt-3">
+            <SshClientTab instance={instance} />
+          </TabsContent>
+          <TabsContent value="serial-console" className="mt-3">
+            <SerialConsoleTab instance={instance} />
+          </TabsContent>
+        </Tabs>
+      )}
     </div>
   )
 }
@@ -361,6 +411,147 @@ function SerialConsoleTab({ instance }: Readonly<{ instance: Instance }>) {
         }
         onConnect={() => {
           window.open(VMS_ROUTES.console(instance.id, "guest"), "_blank", "noopener,noreferrer")
+        }}
+      />
+    </Section>
+  )
+}
+
+/* ── Windows: RDP client ───────────────────────────────────────────────── */
+
+function RdpClientTab({ instance }: Readonly<{ instance: Instance }>) {
+  const { t } = useTranslation()
+  const [ipKind, setIpKind] = useState<"public" | "private">(
+    instance.public_ip ? "public" : "private",
+  )
+  const [resetOpen, setResetOpen] = useState(false)
+  const address = ipKind === "public" ? instance.public_ip : instance.private_ip
+  const busy = isVmTransitional(instance.status)
+
+  return (
+    <Section variant="panel" className="p-4">
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <Label>{t("vms.connect.connectionType", "Connection type")}</Label>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <ChoiceCard
+              selected={ipKind === "public"}
+              disabled={!instance.public_ip}
+              title={t("vms.connect.publicIpOption", "Connect using a Public IP")}
+              description={t(
+                "vms.connect.publicIpOptionDesc",
+                "Connect using the instance's public IPv4 address",
+              )}
+              onSelect={() => {
+                setIpKind("public")
+              }}
+            />
+            <ChoiceCard
+              selected={ipKind === "private"}
+              disabled={!instance.private_ip}
+              title={t("vms.connect.privateIpOption", "Connect using a Private IP")}
+              description={t(
+                "vms.windows.privateIpDesc",
+                "From another machine inside the VPC, or over a VPN into it",
+              )}
+              onSelect={() => {
+                setIpKind("private")
+              }}
+            />
+          </div>
+        </div>
+
+        <div className="grid gap-x-6 gap-y-4 sm:grid-cols-3">
+          <Field label={t("vms.windows.address", "Address")}>
+            {address ? <CopyButton value={address} /> : "—"}
+          </Field>
+          <Field label={t("vms.windows.port", "Port")}>
+            <CopyButton value={String(RDP_PORT)} />
+          </Field>
+          <Field label={t("vms.windows.username", "Username")}>
+            <CopyButton value={WINDOWS_ADMIN_USER} />
+          </Field>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            size="sm"
+            className="gap-2"
+            disabled={!address}
+            onClick={() => {
+              if (address) downloadRdpFile(instance.name, address)
+            }}
+          >
+            <Download className="size-3.5" />
+            {t("vms.windows.downloadRdp", "Download RDP file")}
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            className="gap-2"
+            disabled={busy}
+            onClick={() => {
+              setResetOpen(true)
+            }}
+          >
+            <RotateCcwKey className="size-3.5" />
+            {t("vms.windows.reset.open", "Reset password")}
+          </Button>
+          {!address && (
+            <span className="text-[13px] text-muted-foreground">
+              {t("vms.windows.noAddress", "This instance has no address of that kind.")}
+            </span>
+          )}
+        </div>
+
+        <NoteBox>
+          {t(
+            "vms.windows.rdpNote",
+            "Open the file with Remote Desktop Connection (Windows), Windows App (macOS) or Remmina (Linux) and sign in as Administrator with the password you set. The file never contains the password.",
+          )}
+        </NoteBox>
+        <NoteBox>
+          {t(
+            "vms.windows.firstBootNote",
+            "A new Windows instance takes about 5 minutes to finish setup before Remote Desktop answers. Inbound TCP 3389 must be allowed by the instance's security groups.",
+          )}
+        </NoteBox>
+      </div>
+
+      <ConnectFooter />
+      <ResetWindowsPasswordDialog
+        instanceId={instance.id}
+        open={resetOpen}
+        onOpenChange={setResetOpen}
+      />
+    </Section>
+  )
+}
+
+/* ── Windows: graphical console in the browser ─────────────────────────── */
+
+function BrowserConsoleTab({ instance }: Readonly<{ instance: Instance }>) {
+  const { t } = useTranslation()
+  const notRunning = instance.status !== "running"
+
+  return (
+    <Section variant="panel" className="p-4">
+      <NoteBox>
+        {t(
+          "vms.windows.consoleNote",
+          "Shows the instance's screen in a new browser tab, straight from the hypervisor — it works even when Remote Desktop is blocked or the network inside the instance is down. Use Ctrl+Alt+Del in the console toolbar to reach the sign-in screen, and “Paste as keystrokes” to enter your password.",
+        )}
+      </NoteBox>
+
+      <ConnectFooter
+        disabled={notRunning}
+        disabledReason={
+          notRunning
+            ? t("vms.connect.notRunning", "The instance must be running to connect.")
+            : undefined
+        }
+        onConnect={() => {
+          window.open(VMS_ROUTES.console(instance.id, "vnc"), "_blank", "noopener,noreferrer")
         }}
       />
     </Section>

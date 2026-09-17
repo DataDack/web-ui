@@ -9,6 +9,7 @@ import type {
   InstanceEvent,
   InstanceMetrics,
   RawInstance,
+  ResetPasswordResult,
   UpdateInstanceRequest,
 } from "./vms.types"
 
@@ -161,6 +162,11 @@ export const vmsApi = {
   },
 
   delete: (id: string): Promise<void> => apiDelete(`/compute/instances/${id}?force=true`),
+
+  // Windows only. "live" = the running guest took it; "next_boot" = stored on the
+  // guest's config drive and applied the next time the instance starts.
+  resetPassword: (id: string, password: string): Promise<ResetPasswordResult> =>
+    apiPost<ResetPasswordResult>(`/compute/instances/${id}/password`, { password }),
 
   // Live resource time series over a window (hour/day/week/month/year);
   // Proxmox-backed when available, else simulated.

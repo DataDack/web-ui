@@ -11,4 +11,5 @@ export const vmsService = {
   runAction: (id: string, action: InstanceAction) => vmsApi.action(id, action),
   remove: (id: string) => vmsApi.delete(id),
   fetchMetrics: (id: string, range: string) => vmsApi.metrics(id, range),
+  resetPassword: (id: string, password: string) => vmsApi.resetPassword(id, password),
 }

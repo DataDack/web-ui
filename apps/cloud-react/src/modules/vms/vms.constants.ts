@@ -48,9 +48,10 @@ export const VMS_ROUTES = {
   CONNECT: "/compute/instances/:id/connect",
   connect: (id: string) => `/compute/instances/${id}/connect`,
   /** Full-page browser console; default "ssh" = GCE-style keyless SSH login.
-   *  "guest" opens the Proxmox serial console; "host" an (admin) node shell.
+   *  "guest" opens the Proxmox serial console; "host" an (admin) node shell;
+   *  "vnc" the guest's graphical display (the Windows console).
    *  `user` overrides the guest account an "ssh" session logs in as. */
-  console: (id: string, target: "ssh" | "host" | "guest" = "ssh", user?: string) => {
+  console: (id: string, target: "ssh" | "host" | "guest" | "vnc" = "ssh", user?: string) => {
     const userParam = user ? `&user=${encodeURIComponent(user)}` : ""
     return `/compute/instances/${id}/console?target=${target}${userParam}`
   },
@@ -73,11 +74,3 @@ export const MACHINE_TYPES: MachineType[] = [
   { name: "m3-highmem-16", cpu_count: 16, memory_gb: 64, series: "M3 · memory optimised" },
   { name: "c3-standard-32", cpu_count: 32, memory_gb: 128, series: "C3 · compute heavy" },
 ]
-
-export const OS_IMAGES = [
-  "ubuntu-24.04-lts",
-  "ubuntu-22.04-lts",
-  "debian-12",
-  "rocky-linux-9",
-  "windows-server-2022",
-] as const

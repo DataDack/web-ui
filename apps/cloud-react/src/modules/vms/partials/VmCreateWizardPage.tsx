@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
 
+import { Button, type TagRow, tagRowsToRecord } from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
   Box,
@@ -7,6 +8,7 @@ import {
   CreditCard,
   Globe,
   HardDrive,
+  KeyRound,
   Lock,
   Server,
   Settings,
@@ -42,16 +44,16 @@ import { SUPPORT_ROUTES } from "@/modules/support-tickets/support-tickets.consta
 import { useVPCs } from "@/modules/vpc/vpc.hooks"
 import { useScreen } from "@/services/api/screen"
 
-import { Button, type TagRow, tagRowsToRecord } from "@datadack/common-ui"
-
 import { VMS_ROUTES } from "../vms.constants"
 import { useCreateInstance } from "../vms.hooks"
+import { isWindowsImage } from "../windows"
 import { BasicsStep } from "./wizard/BasicsStep"
 import { BillingStep } from "./wizard/BillingStep"
 import { DiskStep } from "./wizard/DiskStep"
 import { LocationAndNetworkStep } from "./wizard/LocationAndNetworkStep"
 import { MachinePlanStep } from "./wizard/MachinePlanStep"
 import { OSStep } from "./wizard/OSStep"
+import { PasswordStep } from "./wizard/PasswordStep"
 import { SshStep } from "./wizard/SshStep"
 import { formatPrice } from "./wizard/wizard.format"
 import { makeSchema, type FormValues } from "./wizard/wizard.types"
@@ -190,6 +192,9 @@ export function VmCreateWizardPage() {
       // start with a free ephemeral public IP to match.
       public_ip_type: "ephemeral",
       ssh_key_id: "",
+      admin_password: "",
+      admin_password_confirm: "",
+      _is_windows: false,
       disk_size_gb: 50,
       disk_type: "ssd",
       private_ip: "",
@@ -213,6 +218,23 @@ export function VmCreateWizardPage() {
     form.setValue("zone", region.availability_zones.at(0)?.code ?? "")
     form.setValue("machine_type_id", "")
   }, [regions, activeRegionCode, form])
+
+  // Keep the hidden _is_windows flag in step with the chosen image. Switching
+  // between key-based and password-based images clears the other method's
+  // input, so a Windows launch never carries a stale SSH key and a Linux launch
+  // never carries a password the backend would refuse.
+  const imageId = useWatch({ control: form.control, name: "image_id" })
+  const isWindows = isWindowsImage(families, imageId)
+  useEffect(() => {
+    if (form.getValues("_is_windows") === isWindows) return
+    form.setValue("_is_windows", isWindows, { shouldValidate: true })
+    if (isWindows) {
+      form.setValue("ssh_key_id", "")
+    } else {
+      form.setValue("admin_password", "")
+      form.setValue("admin_password_confirm", "", { shouldValidate: true })
+    }
+  }, [isWindows, form])
 
   // A monthly instance is committed for the whole billing month and can't be
   // terminated until it ends (early termination goes through support), so we
@@ -260,7 +282,10 @@ export function VmCreateWizardPage() {
         subnet_id: values.skip_vpc ? "" : values.subnet_id,
         security_group_ids:
           values.security_group_ids.length > 0 ? values.security_group_ids : undefined,
-        ssh_key_id: values.ssh_key_id,
+        // A Windows image authenticates with the Administrator password and
+        // refuses an SSH key; every other image is the reverse.
+        ssh_key_id: values._is_windows ? "" : values.ssh_key_id,
+        ...(values._is_windows ? { admin_password: values.admin_password } : {}),
         private_ip: values.skip_vpc ? undefined : values.private_ip || undefined,
         public_ip_type: values.public_ip_type,
         tags: JSON.stringify(tagRowsToRecord(tagRows)),
@@ -309,7 +334,7 @@ export function VmCreateWizardPage() {
   const onSubmit = (values: FormValues) => {
     // Warn before deploying with no SSH key selected; the rest of the deploy
     // flow resumes from runGuards once the user confirms.
-    if (!values.ssh_key_id) {
+    if (!values._is_windows && !values.ssh_key_id) {
       setConfirmNoSshKey(values)
       return
     }
@@ -430,13 +455,26 @@ export function VmCreateWizardPage() {
             <DiskStep form={form} storageOptions={storageOptions} />
           </SectionCard>
 
-          <SectionCard
-            title={t("vms.vmCreateWizardPage.authConfiguration")}
-            icon={Lock}
-            description={t("vms.vmCreateWizardPage.setupSshAccess")}
-          >
-            <SshStep form={form} />
-          </SectionCard>
+          {isWindows ? (
+            <SectionCard
+              title={t("vms.vmCreateWizardPage.authConfiguration")}
+              icon={KeyRound}
+              description={t(
+                "vms.windows.wizardDescription",
+                "Set the Windows Administrator password",
+              )}
+            >
+              <PasswordStep form={form} />
+            </SectionCard>
+          ) : (
+            <SectionCard
+              title={t("vms.vmCreateWizardPage.authConfiguration")}
+              icon={Lock}
+              description={t("vms.vmCreateWizardPage.setupSshAccess")}
+            >
+              <SshStep form={form} />
+            </SectionCard>
+          )}
         </div>
 
         {/* Right Column: Cost Summary */}
