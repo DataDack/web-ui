@@ -59,22 +59,55 @@ export function spendSeries(ledger: LedgerEntry[], days = 30, now = Date.now()):
 }
 
 /**
+ * UTC midnight (epoch ms) of each day in the trailing `days` window, oldest →
+ * newest — the x-positions that line up with `spendSeries`.
+ */
+export function trailingDayStarts(days = 30, now = Date.now()): number[] {
+  const starts: number[] = []
+  for (let i = days - 1; i >= 0; i--) {
+    starts.push(Date.parse(new Date(now - i * DAY_MS).toISOString().slice(0, 10)))
+  }
+  return starts
+}
+
+/** Short UTC calendar-day label ("Sep 17") for day-bucketed billing charts. */
+export function formatUtcDay(epochMs: number): string {
+  return new Date(epochMs).toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+    timeZone: "UTC",
+  })
+}
+
+export interface BalancePoint {
+  /** Epoch ms of the ledger entry. */
+  t: number
+  balance: number
+}
+
+/**
  * Running wallet balance over the trailing window, oldest → newest, sampled from
- * ledger `balance_after`. Falls back to the current balance when the window has
- * no entries so the sparkline still renders a flat line.
+ * ledger `balance_after`. Falls back to the current balance at both edges of the
+ * window when it has no entries, so the sparkline still renders a flat line.
  */
 export function balanceSeries(
   ledger: LedgerEntry[],
   current: number,
   days = 30,
   now = Date.now(),
-): number[] {
+): BalancePoint[] {
   const cutoff = now - days * DAY_MS
-  const recent = [...ledger]
-    .filter((e) => new Date(e.created_at).getTime() >= cutoff)
-    .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
-  if (recent.length === 0) return [current, current]
-  return recent.map((e) => e.balance)
+  const recent = ledger
+    .map((e) => ({ t: new Date(e.created_at).getTime(), balance: e.balance }))
+    .filter((p) => p.t >= cutoff)
+    .sort((a, b) => a.t - b.t)
+  if (recent.length === 0) {
+    return [
+      { t: cutoff, balance: current },
+      { t: now, balance: current },
+    ]
+  }
+  return recent
 }
 
 export interface BurnSummary {

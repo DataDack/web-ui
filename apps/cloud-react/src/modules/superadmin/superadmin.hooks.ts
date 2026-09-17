@@ -109,7 +109,9 @@ export function useRegisterPVECluster() {
       void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.pveNodes })
       // The detail page shows this cluster's members; a sync is exactly when
       // they change, so leaving it stale is showing the pre-sync fleet.
-      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.clusterDetail(res.cluster.id) })
+      void queryClient.invalidateQueries({
+        queryKey: SUPERADMIN_QUERY_KEYS.clusterDetail(res.cluster.id),
+      })
       void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.fleetStatus })
       toast.success(
         t("superAdmin.toasts.clusterRegistered", {
@@ -132,7 +134,9 @@ export function useSyncPVECluster() {
       void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.pveNodes })
       // The detail page shows this cluster's members; a sync is exactly when
       // they change, so leaving it stale is showing the pre-sync fleet.
-      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.clusterDetail(res.cluster.id) })
+      void queryClient.invalidateQueries({
+        queryKey: SUPERADMIN_QUERY_KEYS.clusterDetail(res.cluster.id),
+      })
       void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.fleetStatus })
       toast.success(
         t("superAdmin.toasts.clusterSynced", {
@@ -233,6 +237,57 @@ export function useAdminIPPoolAddresses(poolId: string | undefined) {
     queryKey: [...SUPERADMIN_QUERY_KEYS.ipPoolAddresses, poolId ?? ""] as const,
     queryFn: () => superAdminApi.poolAddresses(poolId ?? ""),
     enabled: !!poolId,
+  })
+}
+
+// Reachability across every pool, plus recent unusual activity. Refreshed every
+// minute while open: a manual ping elsewhere, or the hourly sweep, lands here.
+export function useIPReachability() {
+  return useQuery({
+    queryKey: SUPERADMIN_QUERY_KEYS.ipReachability,
+    queryFn: () => superAdminApi.ipReachability(),
+    refetchInterval: 60_000,
+  })
+}
+
+export function useAddressProbeHistory(poolId: string | undefined, ip: string | undefined) {
+  return useQuery({
+    queryKey: [...SUPERADMIN_QUERY_KEYS.ipProbeHistory, poolId ?? "", ip ?? ""] as const,
+    queryFn: () => superAdminApi.addressProbeHistory(poolId ?? "", ip ?? ""),
+    enabled: !!poolId && !!ip,
+  })
+}
+
+/**
+ * Ping a pool — or some of its addresses — right now, from its host node.
+ *
+ * The request waits for the ping itself (a few seconds per silent address, 32 in
+ * parallel), so the result toast is the real answer rather than "queued".
+ */
+export function useProbeIPPool() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ poolId, ipAddresses }: { poolId: string; ipAddresses?: string[] }) =>
+      superAdminApi.probeIPPool(poolId, ipAddresses),
+    onSuccess: (res, { ipAddresses }) => {
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.ipPoolAddresses })
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.ipReachability })
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.ipProbeHistory })
+      const { recorded, reachable, anomalies } = res.summary
+      if (ipAddresses?.length === 1) {
+        const [ip] = ipAddresses
+        if (reachable > 0) toast.success(`${ip} answered ping`)
+        else toast.warning(`${ip} did not answer ping`)
+      } else {
+        toast.success(`Pinged ${String(recorded)} addresses: ${String(reachable)} answered`)
+      }
+      if (anomalies > 0) {
+        toast.warning(
+          `${String(anomalies)} new unusual ${anomalies === 1 ? "finding" : "findings"} — mailed to the ops group`,
+        )
+      }
+    },
+    onError: (e) => toast.error(extractError(e, "Ping failed")),
   })
 }
 

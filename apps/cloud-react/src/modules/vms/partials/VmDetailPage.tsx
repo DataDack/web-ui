@@ -768,13 +768,12 @@ function ActivityTab({ instanceId }: Readonly<{ instanceId: string }>) {
   )
 }
 
-// Selectable monitoring windows. `value` is the API/Proxmox timeframe; `ago`
-// labels the left edge of each chart's time axis.
+// Selectable monitoring windows. `value` is the API/Proxmox timeframe.
 const METRIC_RANGES = [
-  { value: "hour", label: "1h", ago: "1h ago" },
-  { value: "day", label: "24h", ago: "24h ago" },
-  { value: "week", label: "7d", ago: "7d ago" },
-  { value: "month", label: "30d", ago: "30d ago" },
+  { value: "hour", label: "1h" },
+  { value: "day", label: "24h" },
+  { value: "week", label: "7d" },
+  { value: "month", label: "30d" },
 ] as const
 
 function MonitoringTab({
@@ -801,8 +800,8 @@ function MonitoringTab({
   const ioPsiFull = points.map((p) => p.io_psi_full)
   const memPsiSome = points.map((p) => p.mem_psi_some)
   const memPsiFull = points.map((p) => p.mem_psi_full)
+  const times = points.map((p) => p.t)
   const ready = !isLoading && points.length >= 2
-  const agoLabel = METRIC_RANGES.find((r) => r.value === range)?.ago ?? "24h ago"
 
   return (
     <FadeIn>
@@ -858,7 +857,7 @@ function MonitoringTab({
           color="rgb(34,197,94)"
           ready={ready}
           provisioning={provisioning}
-          agoLabel={agoLabel}
+          timestamps={times}
         />
         <MetricPanel
           title={t("vms.monitoring.memory", "Memory Usage (%)")}
@@ -866,7 +865,7 @@ function MonitoringTab({
           color="rgb(99,102,241)"
           ready={ready}
           provisioning={provisioning}
-          agoLabel={agoLabel}
+          timestamps={times}
         />
         <MetricPanel
           title={t("vms.monitoring.disk", "Disk Usage (%)")}
@@ -874,7 +873,7 @@ function MonitoringTab({
           color="rgb(234,179,8)"
           ready={ready}
           provisioning={provisioning}
-          agoLabel={agoLabel}
+          timestamps={times}
         />
         <MetricPanel
           title={t("vms.monitoring.io", "Disk I/O (MB/s)")}
@@ -883,7 +882,7 @@ function MonitoringTab({
           unit=" MB/s"
           ready={ready}
           provisioning={provisioning}
-          agoLabel={agoLabel}
+          timestamps={times}
         />
         <MetricPanel
           title={t("vms.monitoring.network", "Network (MB/s)")}
@@ -892,7 +891,7 @@ function MonitoringTab({
           unit=" MB/s"
           ready={ready}
           provisioning={provisioning}
-          agoLabel={agoLabel}
+          timestamps={times}
         />
         <PressurePanel
           title={t("vms.monitoring.cpuPressure", "CPU Pressure Stall (%)")}
@@ -900,7 +899,7 @@ function MonitoringTab({
           full={cpuPsiFull}
           ready={ready}
           provisioning={provisioning}
-          agoLabel={agoLabel}
+          timestamps={times}
         />
         <PressurePanel
           title={t("vms.monitoring.ioPressure", "IO Pressure Stall (%)")}
@@ -908,7 +907,7 @@ function MonitoringTab({
           full={ioPsiFull}
           ready={ready}
           provisioning={provisioning}
-          agoLabel={agoLabel}
+          timestamps={times}
         />
         <PressurePanel
           title={t("vms.monitoring.memoryPressure", "Memory Pressure Stall (%)")}
@@ -916,7 +915,7 @@ function MonitoringTab({
           full={memPsiFull}
           ready={ready}
           provisioning={provisioning}
-          agoLabel={agoLabel}
+          timestamps={times}
         />
       </div>
     </FadeIn>
@@ -961,7 +960,7 @@ function MetricPanel({
   ready,
   provisioning = false,
   unit = "%",
-  agoLabel = "24h ago",
+  timestamps,
 }: Readonly<{
   title: string
   data: number[]
@@ -971,8 +970,8 @@ function MetricPanel({
   provisioning?: boolean
   /** Value suffix and axis mode. "%" locks the 0..100 domain; anything else auto-scales. */
   unit?: string
-  /** Label for the left (oldest) edge of the time axis. */
-  agoLabel?: string
+  /** Sample times (unix seconds), one per value — drives the time axis + tooltip. */
+  timestamps: number[]
 }>) {
   const { t } = useTranslation()
   const current = data.length > 0 ? data[data.length - 1] : 0
@@ -1015,22 +1014,20 @@ function MetricPanel({
           <div className="mt-3">
             <MetricChart
               data={data}
+              timestamps={timestamps}
+              label={title.split(" (")[0]}
               color={color}
-              unit={isPercent ? "%" : ""}
+              unit={unit}
               min={isPercent ? 0 : undefined}
               max={isPercent ? 100 : undefined}
-              height={160}
+              height={180}
             />
-          </div>
-          <div className="flex justify-between text-[11px] text-muted-foreground mt-2 border-t border-border-glass pt-2">
-            <span>{agoLabel}</span>
-            <span>Now</span>
           </div>
         </>
       ) : (
         <div className="space-y-3">
           <Skeleton className="h-9 w-24" />
-          <Skeleton className="h-40 rounded-lg" />
+          <Skeleton className="h-[180px] rounded-lg" />
         </div>
       )}
     </Section>
@@ -1051,7 +1048,7 @@ function PressurePanel({
   full,
   ready,
   provisioning = false,
-  agoLabel = "24h ago",
+  timestamps,
 }: Readonly<{
   title: string
   some: number[]
@@ -1059,7 +1056,8 @@ function PressurePanel({
   ready: boolean
   /** While true the chart is replaced by a disabled placeholder (VM provisioning). */
   provisioning?: boolean
-  agoLabel?: string
+  /** Sample times (unix seconds), one per value. */
+  timestamps: number[]
 }>) {
   const { t } = useTranslation()
   const current = some.length > 0 ? some[some.length - 1] : 0
@@ -1107,22 +1105,20 @@ function PressurePanel({
           <div className="mt-3">
             <MetricChart
               data={some}
+              timestamps={timestamps}
+              label="Some"
               color={PSI_SOME_COLOR}
               unit="%"
               min={0}
-              overlay={{ data: full, color: PSI_FULL_COLOR }}
-              height={160}
+              overlay={{ data: full, color: PSI_FULL_COLOR, label: "Full" }}
+              height={180}
             />
-          </div>
-          <div className="flex justify-between text-[11px] text-muted-foreground mt-2 border-t border-border-glass pt-2">
-            <span>{agoLabel}</span>
-            <span>Now</span>
           </div>
         </>
       ) : (
         <div className="space-y-3">
           <Skeleton className="h-9 w-24" />
-          <Skeleton className="h-40 rounded-lg" />
+          <Skeleton className="h-[180px] rounded-lg" />
         </div>
       )}
     </Section>

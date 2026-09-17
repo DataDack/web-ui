@@ -9,10 +9,10 @@ import { useProjectMetrics } from "../../managed-apps.hooks"
 import type { Project } from "../../managed-apps.types"
 
 const METRIC_RANGES = [
-  { value: "hour", label: "1h", ago: "1h ago" },
-  { value: "day", label: "24h", ago: "24h ago" },
-  { value: "week", label: "7d", ago: "7d ago" },
-  { value: "month", label: "30d", ago: "30d ago" },
+  { value: "hour", label: "1h" },
+  { value: "day", label: "24h" },
+  { value: "week", label: "7d" },
+  { value: "month", label: "30d" },
 ] as const
 
 /**
@@ -33,7 +33,7 @@ export function ProjectResourcesSection({ project }: Readonly<{ project: Project
   // "there should be data here and there is not".
   const serverless = !isLoading && data?.source === "serverless"
   const unavailable = !isLoading && !serverless && data?.source !== "proxmox"
-  const agoLabel = METRIC_RANGES.find((r) => r.value === range)?.ago ?? "24h ago"
+  const times = points.map((p) => p.t)
 
   if (serverless) {
     return (
@@ -111,21 +111,21 @@ export function ProjectResourcesSection({ project }: Readonly<{ project: Project
         data={points.map((p) => p.cpu)}
         color="rgb(34,197,94)"
         ready={ready}
-        agoLabel={agoLabel}
+        timestamps={times}
       />
       <MetricPanel
         title="Memory usage (%)"
         data={points.map((p) => p.mem)}
         color="rgb(99,102,241)"
         ready={ready}
-        agoLabel={agoLabel}
+        timestamps={times}
       />
       <MetricPanel
         title="Disk usage (%)"
         data={points.map((p) => p.disk)}
         color="rgb(245,158,11)"
         ready={ready}
-        agoLabel={agoLabel}
+        timestamps={times}
       />
       <MetricPanel
         title="Network throughput (MB/s)"
@@ -133,7 +133,7 @@ export function ProjectResourcesSection({ project }: Readonly<{ project: Project
         color="rgb(14,165,233)"
         ready={ready}
         unit=" MB/s"
-        agoLabel={agoLabel}
+        timestamps={times}
       />
       <MetricPanel
         title="Disk I/O (MB/s)"
@@ -141,7 +141,7 @@ export function ProjectResourcesSection({ project }: Readonly<{ project: Project
         color="rgb(217,70,239)"
         ready={ready}
         unit=" MB/s"
-        agoLabel={agoLabel}
+        timestamps={times}
       />
     </div>
   )
@@ -157,14 +157,15 @@ function MetricPanel({
   color,
   ready,
   unit = "%",
-  agoLabel,
+  timestamps,
 }: Readonly<{
   title: string
   data: number[]
   color: string
   ready: boolean
   unit?: string
-  agoLabel: string
+  /** Sample times (unix seconds), one per value. */
+  timestamps: number[]
 }>) {
   const current = data.length > 0 ? data[data.length - 1] : 0
   const peak = data.length > 0 ? Math.max(...data) : 0
@@ -189,16 +190,14 @@ function MetricPanel({
           </div>
           <MetricChart
             data={data}
+            timestamps={timestamps}
+            label={title.split(" (")[0]}
             color={color}
             unit={unit}
-            height={140}
+            height={170}
             min={isPercent ? 0 : undefined}
             max={isPercent ? 100 : undefined}
           />
-          <div className="flex justify-between font-mono text-[10px] text-muted-foreground/70">
-            <span>{agoLabel}</span>
-            <span>now</span>
-          </div>
         </div>
       ) : (
         <Skeleton className="h-[190px] w-full rounded-lg" />

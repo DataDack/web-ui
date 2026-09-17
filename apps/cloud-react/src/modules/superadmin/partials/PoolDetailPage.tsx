@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 
 import {
   actionsColumn,
@@ -20,9 +20,22 @@ import {
   SelectTrigger,
   SelectValue,
   Skeleton,
+  timeAgo,
 } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
-import { Ban, CircleCheck, Lock, Network, SearchX, Undo2, Waypoints } from "lucide-react"
+import {
+  Ban,
+  CircleCheck,
+  History,
+  Loader2,
+  Lock,
+  Network,
+  Radar,
+  SearchX,
+  TriangleAlert,
+  Undo2,
+  Waypoints,
+} from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useParams } from "react-router-dom"
 
@@ -33,10 +46,13 @@ import { useNodeName } from "../components/host-nodes"
 import {
   useAdminAvailabilityZones,
   useAdminIPPoolAddresses,
+  useProbeIPPool,
   useReleasePoolAddress,
   useReservePoolAddresses,
 } from "../superadmin.hooks"
 import type { PoolAddress, PoolAddressStatus } from "../superadmin.types"
+import { LastAnswerCell, PingButton, ProbeHistoryDialog, ProbePill } from "./reachability"
+import { formatDateTime } from "./reachability.utils"
 
 const LIST_PATH = "/admin/static-ips"
 const ALL = "all"
@@ -89,6 +105,28 @@ export function PoolDetailPage() {
   const nodeName = useNodeName()
   const reserve = useReservePoolAddresses(poolId)
   const release = useReleasePoolAddress(poolId)
+  const probe = useProbeIPPool()
+  // Which address a single-address ping is running for, so only that row spins.
+  // null while the whole pool is being pinged.
+  const [pinging, setPinging] = useState<string | null>(null)
+  const [historyIp, setHistoryIp] = useState<string | undefined>()
+
+  const { mutate: runProbe } = probe
+  const ping = useCallback(
+    (ip?: string) => {
+      if (!poolId) return
+      setPinging(ip ?? null)
+      runProbe(
+        { poolId, ipAddresses: ip ? [ip] : undefined },
+        {
+          onSettled: () => {
+            setPinging(null)
+          },
+        },
+      )
+    },
+    [poolId, runProbe],
+  )
 
   const pool = data?.pool
   const addresses = useMemo(() => data?.addresses ?? [], [data])
@@ -98,6 +136,33 @@ export function PoolDetailPage() {
   // reason is asked for once, for the batch, which is also how the API takes it.
   const [pendingBlock, setPendingBlock] = useState<string[]>([])
   const [reason, setReason] = useState("")
+
+  const reach = useMemo(
+    () =>
+      addresses.reduce(
+        (acc, a) => {
+          const state = a.probe?.state ?? "never_checked"
+          acc[state] += 1
+          if ((a.probe?.open_anomalies?.length ?? 0) > 0) acc.unusual += 1
+          const checked = a.probe?.last_checked_at
+          if (checked && Date.parse(checked) > acc.lastCheckedMs) {
+            acc.lastCheckedMs = Date.parse(checked)
+            acc.lastChecked = checked
+          }
+          return acc
+        },
+        {
+          responding: 0,
+          silent: 0,
+          never_checked: 0,
+          probe_error: 0,
+          unusual: 0,
+          lastChecked: "",
+          lastCheckedMs: 0,
+        },
+      ),
+    [addresses],
+  )
 
   const counts = useMemo(
     () =>
@@ -163,6 +228,33 @@ export function PoolDetailPage() {
         cell: ({ row }) => <StatusPill status={row.original.status} />,
       },
       {
+        id: "ping",
+        accessorFn: (a) => a.probe?.state ?? "never_checked",
+        header: () => "Ping",
+        meta: { interactive: true },
+        cell: ({ row }) => {
+          const a = row.original
+          return (
+            <div className="flex items-center gap-2">
+              <PingButton
+                onPing={() => {
+                  ping(a.ip_address)
+                }}
+                pending={probe.isPending && (pinging === a.ip_address || pinging === null)}
+                disabled={probe.isPending || !pool?.pve_node_id}
+              />
+              <ProbePill probe={a.probe} />
+            </div>
+          )
+        },
+      },
+      {
+        id: "last_answer",
+        accessorFn: (a) => a.probe?.last_reachable_at ?? "",
+        header: () => "Last answer",
+        cell: ({ row }) => <LastAnswerCell probe={row.original.probe} />,
+      },
+      {
         id: "holder",
         // A blocked address has no tenant, so its note stands in as the answer
         // to the same question: what is holding this address open?
@@ -173,8 +265,16 @@ export function PoolDetailPage() {
       actionsColumn<PoolAddress>({
         ariaLabel: t("console.table.actions"),
         actions: (address) => {
+          const historyAction = {
+            label: "Ping history",
+            icon: History,
+            onAction: (a: PoolAddress) => {
+              setHistoryIp(a.ip_address)
+            },
+          }
           if (address.status === "blocked") {
             return [
+              historyAction,
               {
                 label: t("superAdmin.staticIps.addresses.unblock"),
                 icon: Undo2,
@@ -186,6 +286,7 @@ export function PoolDetailPage() {
           }
           if (address.status === "free") {
             return [
+              historyAction,
               {
                 label: t("superAdmin.staticIps.addresses.block"),
                 icon: Ban,
@@ -197,11 +298,11 @@ export function PoolDetailPage() {
           }
           // An allocated address belongs to a tenant: taking it back is a
           // tenant-visible act and is not offered here.
-          return []
+          return [historyAction]
         },
       }),
     ],
-    [t, release],
+    [t, release, probe.isPending, pinging, pool?.pve_node_id, ping],
   )
 
   return (
@@ -215,6 +316,23 @@ export function PoolDetailPage() {
         ]}
         title={pool?.name ?? t("superAdmin.staticIps.addresses.title")}
         description="Public addresses and their provider-associated internal addresses."
+        actions={
+          <Button
+            className="gap-2"
+            variant="outline"
+            disabled={probe.isPending || !pool?.pve_node_id || addresses.length === 0}
+            onClick={() => {
+              ping()
+            }}
+          >
+            {probe.isPending && pinging === null ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <Radar className="size-4" />
+            )}
+            {probe.isPending && pinging === null ? "Pinging…" : "Ping all now"}
+          </Button>
+        }
       />
 
       <InventoryFacts
@@ -236,6 +354,18 @@ export function PoolDetailPage() {
             </span>
           )}
         </div>
+      )}
+
+      {!isLoading && pool && (
+        <ReachabilityStrip
+          answering={reach.responding}
+          silent={reach.silent}
+          neverChecked={reach.never_checked}
+          errors={reach.probe_error}
+          unusual={reach.unusual}
+          lastChecked={reach.lastChecked}
+          placed={!!pool.pve_node_id}
+        />
       )}
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -333,6 +463,14 @@ export function PoolDetailPage() {
         onRefresh={() => void refetch()}
         refreshLabel={t("console.table.refresh")}
         refreshing={isFetching}
+      />
+
+      <ProbeHistoryDialog
+        poolId={poolId}
+        ip={historyIp}
+        onOpenChange={(open) => {
+          if (!open) setHistoryIp(undefined)
+        }}
       />
 
       <BlockDialog
@@ -450,6 +588,24 @@ function HolderCell({ address }: Readonly<{ address: PoolAddress }>) {
       </span>
     )
   }
+  if (address.holder_type) {
+    return (
+      <div className="flex min-w-0 flex-col gap-0.5 leading-tight">
+        <span
+          className={cn(
+            "truncate text-[12px] text-foreground",
+            address.holder_deleted && "text-muted-foreground line-through",
+          )}
+        >
+          {[address.holder_name, address.name].find(Boolean) ?? "—"}
+        </span>
+        <span className="text-[11px] text-muted-foreground">
+          {address.holder_type}
+          {address.holder_deleted && <span className="text-destructive"> · deleted</span>}
+        </span>
+      </div>
+    )
+  }
   if (address.name) {
     return <span className="truncate text-[12px] text-foreground">{address.name}</span>
   }
@@ -493,6 +649,75 @@ function InventoryFacts({
           way, and which one is the thing an operator is checking here. */}
       <Fact label="Gateway" value={gateway || "node bridge"} />
       <Fact label="Host node" value={host || "—"} />
+    </div>
+  )
+}
+
+/**
+ * The pool's reachability at a glance. The hourly sweep runs in the host node's
+ * proxmox-manager; a pool without a host node is pinged by nothing, and that is
+ * said rather than left as a column of "Not checked".
+ */
+function ReachabilityStrip({
+  answering,
+  silent,
+  neverChecked,
+  errors,
+  unusual,
+  lastChecked,
+  placed,
+}: Readonly<{
+  answering: number
+  silent: number
+  neverChecked: number
+  errors: number
+  unusual: number
+  lastChecked: string
+  placed: boolean
+}>) {
+  const stale =
+    placed && (!lastChecked || Date.now() - new Date(lastChecked).getTime() > 135 * 60 * 1000)
+  return (
+    <div className="glass-1 flex flex-wrap items-center gap-x-5 gap-y-2 px-4 py-2.5 text-[12px]">
+      <span className="flex items-center gap-1.5 font-medium text-foreground">
+        <Radar className="size-3.5 text-muted-foreground" />
+        Reachability
+      </span>
+      <span className="text-emerald-600 dark:text-emerald-400">
+        <b className="tabular-nums">{answering}</b> answering
+      </span>
+      <span className="text-muted-foreground">
+        <b className="tabular-nums">{silent}</b> no reply
+      </span>
+      <span className="text-muted-foreground">
+        <b className="tabular-nums">{neverChecked}</b> not checked
+      </span>
+      {errors > 0 && (
+        <span className="text-amber-600 dark:text-amber-400">
+          <b className="tabular-nums">{errors}</b> probe errors
+        </span>
+      )}
+      {unusual > 0 && (
+        <span className="flex items-center gap-1 text-red-600 dark:text-red-400">
+          <TriangleAlert className="size-3.5" />
+          <b className="tabular-nums">{unusual}</b> unusual
+        </span>
+      )}
+      <span className="ml-auto text-muted-foreground" title={formatDateTime(lastChecked)}>
+        {lastChecked ? `last check ${timeAgo(lastChecked)}` : "never checked"} · hourly from the
+        host node
+      </span>
+      {!placed && (
+        <span className="w-full text-amber-600 dark:text-amber-400">
+          No host node: nothing pings these addresses until one is set.
+        </span>
+      )}
+      {stale && (
+        <span className="w-full text-amber-600 dark:text-amber-400">
+          No check in over two hours — the host node&apos;s proxmox-manager may not be running the
+          sweep.
+        </span>
+      )}
     </div>
   )
 }

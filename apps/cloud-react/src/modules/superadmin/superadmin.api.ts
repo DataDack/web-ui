@@ -9,6 +9,9 @@ import {
 } from "@/services/api/client"
 
 import type {
+  ProbeCheck,
+  ProbePoolResponse,
+  ReachabilityOverview,
   AddressPlan,
   CIDRDecision,
   ClusterDetail,
@@ -313,6 +316,17 @@ export const superAdminApi = {
   // single-address form of a forced pool delete, and just as destructive: the
   // resource is not reconfigured, it simply stops owning the address.
   releaseStaticIPAllocation: (id: string) => apiDelete(`${IPPOOL_BASE}/allocations/${id}`),
+  // Reachability: proxmox-manager pings every pool address hourly from the host
+  // node. The overview is per pool plus recent unusual activity.
+  ipReachability: () => apiGet<ReachabilityOverview>(`${IPPOOL_BASE}/monitor`),
+  // Ping now, from the pool's host node. Omit addresses to ping the whole pool.
+  probeIPPool: (id: string, ipAddresses?: string[]) =>
+    apiPost<ProbePoolResponse>(
+      `${IPPOOL_BASE}/${id}/probe`,
+      ipAddresses?.length ? { ip_addresses: ipAddresses } : {},
+    ),
+  addressProbeHistory: (id: string, ip: string) =>
+    apiGet<ProbeCheck[]>(`${IPPOOL_BASE}/${id}/addresses/${ip}/probes`),
 
   /* storage prices */
   listStoragePrices: () => apiGet<StoragePrice[]>(`${BASE}/storage-prices/all`),

@@ -9,9 +9,9 @@ import { useProjectAnalytics } from "../../managed-apps.hooks"
 import type { Project } from "../../managed-apps.types"
 
 const ANALYTICS_RANGES = [
-  { value: "24h", label: "24h", ago: "24h ago" },
-  { value: "7d", label: "7d", ago: "7d ago" },
-  { value: "30d", label: "30d", ago: "30d ago" },
+  { value: "24h", label: "24h" },
+  { value: "7d", label: "7d" },
+  { value: "30d", label: "30d" },
 ] as const
 
 /**
@@ -30,7 +30,7 @@ export function ProjectAnalyticsTab({ project }: Readonly<{ project: Project }>)
   const points = data?.points ?? []
   const totals = data?.totals
   const ready = !isLoading && data != null
-  const agoLabel = ANALYTICS_RANGES.find((r) => r.value === range)?.ago ?? "7d ago"
+  const times = points.map((p) => p.t)
 
   const errorRate =
     totals && totals.requests > 0
@@ -132,9 +132,10 @@ export function ProjectAnalyticsTab({ project }: Readonly<{ project: Project }>)
               color: "rgb(239,68,68)",
             }}
             overlayLabel="5xx"
+            label="Requests"
             color="rgb(34,197,94)"
             ready={ready}
-            agoLabel={agoLabel}
+            timestamps={times}
           />
           {servesStatic ? (
             <TrafficPanel
@@ -148,18 +149,20 @@ export function ProjectAnalyticsTab({ project }: Readonly<{ project: Project }>)
                 color: "rgb(45,212,191)",
               }}
               overlayLabel="from edge"
+              label="Compute"
               color="rgb(234,179,8)"
               ready={ready}
-              agoLabel={agoLabel}
+              timestamps={times}
             />
           ) : null}
           <TrafficPanel
             title={`Bandwidth per ${data?.interval ?? "hour"}`}
             data={points.map((p) => p.bytes_out / (1024 * 1024))}
+            label="Bandwidth"
             color="rgb(14,165,233)"
             unit=" MB"
             ready={ready}
-            agoLabel={agoLabel}
+            timestamps={times}
           />
         </>
       )}
@@ -175,7 +178,8 @@ function TrafficPanel({
   unit = "",
   overlay,
   overlayLabel,
-  agoLabel,
+  label,
+  timestamps,
 }: Readonly<{
   title: string
   data: number[]
@@ -184,7 +188,10 @@ function TrafficPanel({
   unit?: string
   overlay?: { data: number[]; color: string }
   overlayLabel?: string
-  agoLabel: string
+  /** Name of the primary series in the chart tooltip. */
+  label: string
+  /** Bucket start times (unix seconds), one per value. */
+  timestamps: number[]
 }>) {
   const total = data.reduce((a, b) => a + b, 0)
 
@@ -205,14 +212,15 @@ function TrafficPanel({
         <div className="space-y-3">
           <MetricChart
             data={data}
+            timestamps={timestamps}
+            label={label}
             color={color}
             unit={unit}
-            height={140}
+            height={170}
             min={0}
-            overlay={overlay}
+            overlay={overlay ? { ...overlay, label: overlayLabel } : undefined}
           />
-          <div className="flex justify-between font-mono text-[10px] text-muted-foreground/70">
-            <span>{agoLabel}</span>
+          <div className="flex justify-end font-mono text-[10px] text-muted-foreground/70">
             <span>
               total {unit === " MB" ? total.toFixed(1) : Math.round(total).toLocaleString()}
               {unit}

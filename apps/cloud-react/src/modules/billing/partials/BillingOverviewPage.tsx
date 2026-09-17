@@ -18,7 +18,9 @@ import {
   costByService,
   credits,
   creditSourceLabel,
+  formatUtcDay,
   spendSeries,
+  trailingDayStarts,
 } from "../billing.utils"
 import { BillingHero } from "./BillingHero"
 
@@ -35,6 +37,7 @@ export function BillingOverviewPage() {
   const { data: split } = useWalletSplit()
 
   const spend = useMemo(() => spendSeries(ledger), [ledger])
+  const spendDays = useMemo(() => trailingDayStarts(spend.length), [spend.length])
   const spendTotal = useMemo(() => spend.reduce((a, b) => a + b, 0), [spend])
   const services = useMemo(() => costByService(usage), [usage])
   const recent = useMemo(
@@ -112,7 +115,17 @@ export function BillingOverviewPage() {
           }
         >
           {spendTotal > 0 ? (
-            <MetricChart data={spend} unit="" height={180} color="var(--brand-gold)" />
+            <MetricChart
+              data={spend}
+              timestamps={spendDays}
+              formatTime={formatUtcDay}
+              formatValue={credits}
+              label={t("billing.overview.spendTitle")}
+              unit=""
+              min={0}
+              height={200}
+              color="var(--brand-gold)"
+            />
           ) : (
             <EmptyState icon={Activity} title={t("billing.overview.spendEmpty")} />
           )}

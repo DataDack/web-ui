@@ -43,6 +43,8 @@ export function BillingHero({
   const balanceValue = balance?.balance ?? 0
 
   const series = useMemo(() => balanceSeries(ledger, balanceValue), [ledger, balanceValue])
+  const seriesValues = useMemo(() => series.map((p) => p.balance), [series])
+  const seriesTimes = useMemo(() => series.map((p) => p.t), [series])
   const burn = useMemo(() => burnSummary(usage, balanceValue, GST_RATE), [usage, balanceValue])
   const totalPurchased = useMemo(
     () => purchases.filter((p) => p.status === "paid").reduce((sum, p) => sum + p.credits, 0),
@@ -83,7 +85,10 @@ export function BillingHero({
 
           <div className="mt-4 h-10 w-full max-w-md text-brand-gold">
             <Sparkline
-              data={series}
+              data={seriesValues}
+              timestamps={seriesTimes}
+              interactive
+              formatValue={credits}
               area
               glow
               color="var(--brand-gold)"

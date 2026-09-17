@@ -349,6 +349,7 @@ function ChartStats({
 function OverviewTab({
   alarm,
   values,
+  timestamps,
   bucketCount,
   isLoading,
   isError,
@@ -357,6 +358,8 @@ function OverviewTab({
 }: Readonly<{
   alarm: Alarm
   values: number[]
+  /** Bucket start (ISO), one per entry in `values`. */
+  timestamps: string[]
   bucketCount: number
   isLoading: boolean
   isError: boolean
@@ -378,8 +381,10 @@ function OverviewTab({
         <>
           <MetricChart
             data={values}
+            timestamps={timestamps}
+            label={alarm.statistic}
             color={alarm.state === "ALARM" ? SERIES_COLOR_ALARM : SERIES_COLOR_OK}
-            unit={unit}
+            unit={unitSuffix(unit)}
             // Percentages deserve a true zero baseline; other units
             // auto-scale so the threshold crossing stays legible.
             min={unit === PERCENT ? 0 : undefined}
@@ -387,6 +392,8 @@ function OverviewTab({
             overlay={{
               data: values.map(() => alarm.threshold),
               color: THRESHOLD_COLOR,
+              label: "Threshold",
+              dashed: true,
             }}
           />
           <ChartStats
@@ -784,13 +791,15 @@ export function AlarmDetailPage() {
 
   // Null buckets are real gaps: they are dropped, never coerced to 0, and the
   // count of dropped buckets is reported next to the chart.
-  const values = useMemo(
+  const samples = useMemo(
     () =>
-      (metrics.data?.buckets ?? [])
-        .map((bucket) => bucket.value)
-        .filter((value): value is number => value !== null),
+      (metrics.data?.buckets ?? []).filter(
+        (bucket): bucket is { ts: string; value: number } => bucket.value !== null,
+      ),
     [metrics.data],
   )
+  const values = useMemo(() => samples.map((bucket) => bucket.value), [samples])
+  const timestamps = useMemo(() => samples.map((bucket) => bucket.ts), [samples])
 
   const resourceNames = useMemo(() => {
     const names = new Map<string, string>()
@@ -948,6 +957,7 @@ export function AlarmDetailPage() {
         <OverviewTab
           alarm={alarm}
           values={values}
+          timestamps={timestamps}
           bucketCount={metrics.data?.buckets.length ?? 0}
           isLoading={metrics.isLoading}
           isError={metrics.isError}

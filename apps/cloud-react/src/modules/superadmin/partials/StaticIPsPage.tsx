@@ -10,9 +10,10 @@ import { useScreen } from "@/services/api/screen"
 
 import { IPPoolsTab } from "./IPPoolsTab"
 import { IPsInUseTab } from "./IPsInUseTab"
+import { ReachabilityTab } from "./ReachabilityTab"
 
 // Tab state lives in ?tab= so an operator can link straight to the in-use list.
-const TABS = ["pools", "in-use"] as const
+const TABS = ["pools", "in-use", "reachability"] as const
 type StaticIPsTab = (typeof TABS)[number]
 
 /**
@@ -62,12 +63,18 @@ export function StaticIPsPage() {
         <TabsList>
           <TabsTrigger value="pools">{t("superAdmin.staticIps.tabs.pools")}</TabsTrigger>
           <TabsTrigger value="in-use">{t("superAdmin.staticIps.tabs.inUse")}</TabsTrigger>
+          <TabsTrigger value="reachability">
+            {t("superAdmin.staticIps.tabs.reachability")}
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="pools">
           <IPPoolsTab addOpen={addPoolOpen} onAddOpenChange={setAddPoolOpen} />
         </TabsContent>
         <TabsContent value="in-use">
           <IPsInUseTab />
+        </TabsContent>
+        <TabsContent value="reachability">
+          <ReachabilityTab />
         </TabsContent>
       </Tabs>
     </div>

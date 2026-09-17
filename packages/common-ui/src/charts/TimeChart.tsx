@@ -77,6 +77,16 @@ const legendLabel = css`
 
 const plotArea = css`
   position: relative;
+  cursor: crosshair;
+  user-select: none;
+  /* Horizontal drags scrub the chart; vertical ones still scroll the page. */
+  touch-action: pan-y;
+  border-radius: 6px;
+  outline: none;
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px var(--ring);
+  }
 `
 
 const axisText = css`
@@ -177,13 +187,30 @@ export function formatTick(value: number): string {
   if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`
   if (value >= 1000) return `${(value / 1000).toFixed(value >= 10_000 ? 0 : 1)}k`
   if (value >= 10 || Number.isInteger(value)) return String(Math.round(value))
-  return value.toFixed(1)
+  if (value >= 1) return value.toFixed(1)
+  // Sub-unit readings (0.004 s, 0.25 ms) keep two significant digits rather
+  // than collapsing to "0.0".
+  return String(Number(value.toPrecision(2)))
 }
 
-function formatClock(iso: string): string {
+const DAY_MS = 86_400_000
+
+function formatClock(iso: string, spanMs = 0): string {
   const date = new Date(iso)
   if (Number.isNaN(date.getTime())) return ""
+  if (spanMs > 2 * DAY_MS) {
+    return date.toLocaleDateString(undefined, { month: "short", day: "numeric" })
+  }
   return date.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })
+}
+
+/** Tooltip time: adds the date once the window spans more than a day. */
+function formatMoment(iso: string, spanMs: number): string {
+  const date = new Date(iso)
+  if (Number.isNaN(date.getTime())) return ""
+  const clock = date.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })
+  if (spanMs <= 20 * 3_600_000) return clock
+  return `${date.toLocaleDateString(undefined, { month: "short", day: "numeric" })}, ${clock}`
 }
 
 interface ChartFrameProps {
@@ -241,8 +268,57 @@ function ChartFrame({
     const bounds = event.currentTarget.getBoundingClientRect()
     const offset = event.clientX - bounds.left - PADDING.left
     const index = Math.floor(offset / band)
-    setHovered(index >= 0 && index < points.length ? index : null)
+    // Snap to the nearest edge bucket so the tooltip never drops out while the
+    // pointer sweeps across the axis gutters.
+    setHovered(points.length > 0 ? Math.min(Math.max(index, 0), points.length - 1) : null)
   }
+
+  const handleDown = (event: React.PointerEvent<SVGSVGElement>) => {
+    // Capture so a finger (or a held mouse button) keeps scrubbing even when it
+    // strays outside the plot.
+    event.currentTarget.setPointerCapture(event.pointerId)
+    handleMove(event)
+  }
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (points.length === 0) return
+    const last = points.length - 1
+    const step = event.shiftKey ? Math.max(1, Math.round(points.length / 10)) : 1
+    let next: number | null
+    switch (event.key) {
+      case "ArrowLeft":
+        next = hovered === null ? last : Math.max(0, hovered - step)
+        break
+      case "ArrowRight":
+        next = hovered === null ? last : Math.min(last, hovered + step)
+        break
+      case "Home":
+        next = 0
+        break
+      case "End":
+        next = last
+        break
+      case "Escape":
+        next = null
+        break
+      default:
+        return
+    }
+    event.preventDefault()
+    setHovered(next)
+  }
+
+  const chartName = unit ? `${titleText} in ${unit}` : titleText
+  const describePoint = (index: number) => {
+    const readings = (points[index]?.values ?? [])
+      .map((value, i) => `${series[i]?.label ?? ""} ${formatTick(value)}`)
+      .join(", ")
+    return formatMoment(points[index]?.timestamp ?? "", spanMs) + ": " + readings
+  }
+
+  const firstStamp = points[0] ? new Date(points[0].timestamp).getTime() : 0
+  const lastStamp = points.at(-1) ? new Date(points.at(-1)?.timestamp ?? "").getTime() : 0
+  const spanMs = Number.isFinite(lastStamp - firstStamp) ? lastStamp - firstStamp : 0
 
   const ticks = [0, 0.5, 1].map((fraction) => max * fraction)
   const isEmpty = maxValue <= 0
@@ -265,15 +341,35 @@ function ChartFrame({
         )}
       </div>
 
-      <div ref={ref} className={plotArea}>
+      <div
+        ref={ref}
+        className={plotArea}
+        // Scrubbed like a slider: pointer, touch and arrow keys move the readout.
+        role="slider"
+        tabIndex={0}
+        aria-label={`${chartName}. Use arrow keys to inspect values.`}
+        aria-valuemin={0}
+        aria-valuemax={Math.max(points.length - 1, 0)}
+        aria-valuenow={hovered ?? Math.max(points.length - 1, 0)}
+        aria-valuetext={hovered === null ? chartName : describePoint(hovered)}
+        onKeyDown={handleKeyDown}
+        onBlur={() => {
+          setHovered(null)
+        }}
+      >
         {width > 0 && (
           <svg
             width={width}
             height={height}
             role="img"
-            aria-label={unit ? `${titleText} in ${unit}` : titleText}
+            aria-label={chartName}
+            onPointerDown={handleDown}
             onPointerMove={handleMove}
-            onPointerLeave={() => {
+            onPointerLeave={(event) => {
+              // A lifted finger keeps its readout; blur clears it.
+              if (event.pointerType === "mouse") setHovered(null)
+            }}
+            onPointerCancel={() => {
               setHovered(null)
             }}
           >
@@ -307,7 +403,7 @@ function ChartFrame({
                   textAnchor="middle"
                   className={axisText}
                 >
-                  {formatClock(point.timestamp)}
+                  {formatClock(point.timestamp, spanMs)}
                 </text>
               )
             })}
@@ -342,7 +438,9 @@ function ChartFrame({
               right: x(hovered) >= width / 2 ? width - x(hovered) + 10 : undefined,
             }}
           >
-            <div className={tooltipTime}>{formatClock(points[hovered]?.timestamp ?? "")}</div>
+            <div className={tooltipTime}>
+              {formatMoment(points[hovered]?.timestamp ?? "", spanMs)}
+            </div>
             {tooltip(hovered)}
           </div>
         )}

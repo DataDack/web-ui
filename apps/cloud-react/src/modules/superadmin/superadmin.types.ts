@@ -1053,6 +1053,101 @@ export interface PoolAddress {
   /** Blocked addresses only: the operator's note and when it was held back. */
   reason?: string
   reserved_at?: string
+  /** What holds the address, when anything does. */
+  holder_type?: string
+  holder_name?: string
+  holder_deleted?: boolean
+  /** Reachability from the pool's host node (proxmox-manager pings hourly). */
+  probe?: AddressProbe
+}
+
+/* ── Static IP reachability ────────────────────────────────────────────── */
+
+export type ProbeState = "responding" | "silent" | "never_checked" | "probe_error"
+
+export type AnomalyKind = "recovered_after_outage" | "unattached_responding"
+
+export interface AddressProbe {
+  state: ProbeState
+  reachable: boolean
+  last_checked_at?: string
+  last_reachable_at?: string
+  /** Whole days since the last answer; null when it has never answered. */
+  days_since_last_reachable: number | null
+  reachable_since?: string
+  unreachable_since?: string
+  last_rtt_ms?: number
+  last_error?: string
+  last_trigger?: "scheduled" | "manual"
+  checks_total: number
+  /** Who held the address the last time it answered. */
+  last_holder_type?: string
+  last_holder_name?: string
+  open_anomalies?: AnomalyKind[]
+}
+
+export interface PoolReachability {
+  pool_id: string
+  name: string
+  region: string
+  pve_node_id?: string
+  node_name?: string
+  monitored: boolean
+  unmonitored_reason?: string
+  /** Monitored, but nothing checked in over two hourly sweeps. */
+  stale: boolean
+  total: number
+  responding: number
+  silent: number
+  never_checked: number
+  probe_errors: number
+  open_anomalies: number
+  last_checked_at?: string
+}
+
+export interface IpAnomaly {
+  id: string
+  static_ip_id: string
+  inventory_group_id?: string
+  pool_name?: string
+  address: string
+  kind: AnomalyKind
+  detail: string
+  unreachable_since?: string
+  silent_seconds: number
+  address_status: string
+  holder_type?: string
+  holder_name?: string
+  previous_holder_type?: string
+  previous_holder_name?: string
+  detected_at: string
+  resolved_at?: string
+  notified_at?: string
+}
+
+export interface ReachabilityOverview {
+  pools: PoolReachability[]
+  anomalies: IpAnomaly[]
+}
+
+export interface ProbeCheck {
+  id: string
+  address: string
+  reachable: boolean
+  sent: number
+  received: number
+  rtt_ms: number
+  error?: string
+  trigger: "scheduled" | "manual"
+  address_status: string
+  holder_type?: string
+  holder_name?: string
+  checked_at: string
+}
+
+export interface ProbePoolResponse {
+  pool: PoolReachability
+  summary: { recorded: number; ignored: number; reachable: number; anomalies: number }
 }
 
 export interface PoolExpansion {

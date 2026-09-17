@@ -26,15 +26,14 @@ import {
 } from "../superadmin.hooks"
 import type { PVENodeMetricCF, PVENodeMetricPoint, PVENodeMetricRange } from "../superadmin.types"
 
-// The rrd windows Proxmox keeps, with the label for the left (oldest) edge of
-// each chart's time axis. Same set and order as the hypervisor's own summary
+// The rrd windows Proxmox keeps. Same set and order as the hypervisor's own summary
 // page, so an operator reads the two the same way.
-const RANGES: readonly { value: PVENodeMetricRange; label: string; ago: string }[] = [
-  { value: "hour", label: "Hour", ago: "1h ago" },
-  { value: "day", label: "Day", ago: "24h ago" },
-  { value: "week", label: "Week", ago: "7d ago" },
-  { value: "month", label: "Month", ago: "30d ago" },
-  { value: "year", label: "Year", ago: "1y ago" },
+const RANGES: readonly { value: PVENodeMetricRange; label: string }[] = [
+  { value: "hour", label: "Hour" },
+  { value: "day", label: "Day" },
+  { value: "week", label: "Week" },
+  { value: "month", label: "Month" },
+  { value: "year", label: "Year" },
 ]
 
 // Consolidation function. AVERAGE smooths each bucket; MAX keeps the worst
@@ -93,8 +92,7 @@ const PRESSURE_PANELS: readonly {
 ]
 
 /** "7.3 GB / 48 GB", from the live series' byte counts. */
-const usedOfTotal = (used: number, total: number) =>
-  `${formatBytes(used)} / ${formatBytes(total)}`
+const usedOfTotal = (used: number, total: number) => `${formatBytes(used)} / ${formatBytes(total)}`
 
 /**
  * The same reading from the node row rather than the series — used until the
@@ -129,7 +127,7 @@ export function PVENodeDetailPage() {
   // One point cannot be drawn as a line, and the rrd's newest bucket is still
   // filling, so a series is only "ready" once it has a shape to show.
   const ready = points.length >= 2
-  const agoLabel = RANGES.find((r) => r.value === range)?.ago ?? "1h ago"
+  const times = points.map((p) => p.t)
   const series = (pick: (p: PVENodeMetricPoint) => number) => points.map(pick)
 
   // A window the node has no samples for is its own state: not an error, and
@@ -204,7 +202,10 @@ export function PVENodeDetailPage() {
                 label: t("superAdmin.pveNodes.fields.ram"),
                 value: latest
                   ? usedOfTotal(latest.mem_used_bytes, latest.mem_total_bytes)
-                  : gbUsedOfTotal((node?.ram_used_mb ?? 0) / 1024, (node?.ram_total_mb ?? 0) / 1024),
+                  : gbUsedOfTotal(
+                      (node?.ram_used_mb ?? 0) / 1024,
+                      (node?.ram_total_mb ?? 0) / 1024,
+                    ),
               },
               {
                 label: t("superAdmin.pveNodes.graphs.rootDisk", "Root disk"),
@@ -327,7 +328,7 @@ export function PVENodeDetailPage() {
               unit="%"
               percent
               ready={ready}
-              agoLabel={agoLabel}
+              timestamps={times}
             />
 
             <ChartPanel
@@ -340,7 +341,7 @@ export function PVENodeDetailPage() {
               }}
               unit=""
               ready={ready}
-              agoLabel={agoLabel}
+              timestamps={times}
               footnote={
                 metrics?.cpu_count
                   ? t("superAdmin.pveNodes.graphs.loadHint", {
@@ -362,7 +363,7 @@ export function PVENodeDetailPage() {
               unit="%"
               percent
               ready={ready}
-              agoLabel={agoLabel}
+              timestamps={times}
               footnote={
                 latest
                   ? `${formatBytes(latest.mem_used_bytes)} / ${formatBytes(latest.mem_total_bytes)}`
@@ -385,7 +386,7 @@ export function PVENodeDetailPage() {
               }}
               unit=" MB/s"
               ready={ready}
-              agoLabel={agoLabel}
+              timestamps={times}
             />
 
             <ChartPanel
@@ -399,7 +400,7 @@ export function PVENodeDetailPage() {
               unit="%"
               percent
               ready={ready}
-              agoLabel={agoLabel}
+              timestamps={times}
               footnote={
                 latest
                   ? `${formatBytes(latest.root_used_bytes)} / ${formatBytes(latest.root_total_bytes)}`
@@ -419,7 +420,7 @@ export function PVENodeDetailPage() {
                 unit="%"
                 percent
                 ready={ready}
-                agoLabel={agoLabel}
+                timestamps={times}
                 footnote={
                   latest
                     ? `${formatBytes(latest.swap_used_bytes)} / ${formatBytes(latest.swap_total_bytes)}`
@@ -446,7 +447,7 @@ export function PVENodeDetailPage() {
                   }}
                   unit="%"
                   ready={ready}
-                  agoLabel={agoLabel}
+                  timestamps={times}
                 />
               ))}
           </div>
@@ -464,8 +465,8 @@ interface ChartSeries {
 
 /**
  * One graph: a headline reading of the primary series, an optional second line
- * on the same Y-domain (CPU + IO delay, net in + out, PSI some + full), and the
- * window's edges labelled underneath.
+ * on the same Y-domain (CPU + IO delay, net in + out, PSI some + full), and a
+ * time axis; hover, drag or arrow-key through it to read exact samples.
  *
  * `percent` locks the domain to 0..100 — without it a memory graph pinned near
  * 40% would auto-scale into a dramatic-looking wave. Series that have no natural
@@ -479,7 +480,7 @@ function ChartPanel({
   unit,
   percent = false,
   ready,
-  agoLabel,
+  timestamps,
   footnote,
 }: Readonly<{
   title: string
@@ -489,7 +490,8 @@ function ChartPanel({
   unit: string
   percent?: boolean
   ready: boolean
-  agoLabel: string
+  /** Sample times (unix seconds), one per value — drives the time axis + tooltip. */
+  timestamps: number[]
   footnote?: string
 }>) {
   const { data } = primary
@@ -518,10 +520,7 @@ function ChartPanel({
             <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
               <Icon className="size-3.5" />
               <span className="flex items-center gap-1.5">
-                <span
-                  className="size-2 rounded-full"
-                  style={{ backgroundColor: primary.color }}
-                />
+                <span className="size-2 rounded-full" style={{ backgroundColor: primary.color }} />
                 {primary.label}
               </span>
               {overlay && (
@@ -538,23 +537,25 @@ function ChartPanel({
           <div className="mt-3">
             <MetricChart
               data={data}
+              timestamps={timestamps}
+              label={primary.label}
               color={primary.color}
-              unit={percent ? "%" : ""}
+              unit={unit}
               min={0}
               max={percent ? 100 : undefined}
-              overlay={overlay ? { data: overlay.data, color: overlay.color } : undefined}
-              height={180}
+              overlay={
+                overlay
+                  ? { data: overlay.data, color: overlay.color, label: overlay.label }
+                  : undefined
+              }
+              height={200}
             />
-          </div>
-          <div className="mt-2 flex justify-between border-t border-border-glass pt-2 text-[11px] text-muted-foreground">
-            <span>{agoLabel}</span>
-            <span>Now</span>
           </div>
         </>
       ) : (
         <div className="space-y-3">
           <Skeleton className="h-9 w-24" />
-          <Skeleton className="h-44 rounded-lg" />
+          <Skeleton className="h-[200px] rounded-lg" />
         </div>
       )}
     </Section>

@@ -150,6 +150,10 @@ export function ConditionSection({
     () => buckets.filter((value): value is number => value !== null),
     [buckets],
   )
+  const seriesTimes = useMemo(
+    () => (metrics.data?.buckets ?? []).filter((bucket) => bucket.value !== null).map((b) => b.ts),
+    [metrics.data],
+  )
 
   const backtest = useMemo(
     () =>
@@ -300,13 +304,21 @@ export function ConditionSection({
           ) : (
             <MetricChart
               data={series}
+              timestamps={seriesTimes}
+              label={statistic}
               color={chartColor}
-              unit={unit}
-              height={180}
-              overlay={{
-                data: series.map(() => thresholdValue ?? 0),
-                color: THRESHOLD_COLOR,
-              }}
+              unit={!unit || unit === "%" ? unit : ` ${unit}`}
+              height={200}
+              overlay={
+                thresholdValue === null
+                  ? undefined
+                  : {
+                      data: series.map(() => thresholdValue),
+                      color: THRESHOLD_COLOR,
+                      label: "Threshold",
+                      dashed: true,
+                    }
+              }
             />
           )}
 

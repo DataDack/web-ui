@@ -29,6 +29,8 @@ export const SUPERADMIN_QUERY_KEYS = {
   staticIpPrices: ["superadmin", "static-ip-prices"] as const,
   ipPools: ["superadmin", "ip-pools"] as const,
   ipPoolAddresses: ["superadmin", "ip-pool-addresses"] as const,
+  ipReachability: ["superadmin", "ip-reachability"] as const,
+  ipProbeHistory: ["superadmin", "ip-probe-history"] as const,
   staticIpAllocations: ["superadmin", "static-ip-allocations"] as const,
   bandwidthPrices: ["superadmin", "bandwidth-prices"] as const,
   storagePrices: ["superadmin", "storage-prices"] as const,

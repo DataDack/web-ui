@@ -53,13 +53,15 @@ export function MetricCard({
 
   const metrics = useMetricsQuery(query)
 
-  const series = useMemo(
+  const samples = useMemo(
     () =>
-      (metrics.data?.buckets ?? [])
-        .map((bucket) => bucket.value)
-        .filter((value): value is number => value !== null),
+      (metrics.data?.buckets ?? []).filter(
+        (bucket): bucket is { ts: string; value: number } => bucket.value !== null,
+      ),
     [metrics.data],
   )
+  const series = useMemo(() => samples.map((bucket) => bucket.value), [samples])
+  const seriesTimes = useMemo(() => samples.map((bucket) => bucket.ts), [samples])
 
   const latest = series.length > 0 ? series[series.length - 1] : null
 
@@ -95,6 +97,9 @@ export function MetricCard({
         {series.length >= 2 ? (
           <Sparkline
             data={series}
+            timestamps={seriesTimes}
+            interactive
+            formatValue={(value) => `${formatValue(value)}${descriptor.unit}`}
             color={SERIES_COLOR_OK}
             area
             glow

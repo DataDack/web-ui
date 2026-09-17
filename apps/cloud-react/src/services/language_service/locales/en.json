@@ -3632,7 +3632,8 @@
       "subtitle": "Manage the platform's static IP inventory and live allocations.",
       "tabs": {
         "pools": "IP Pools",
-        "inUse": "IPs in use"
+        "inUse": "IPs in use",
+        "reachability": "Reachability"
       },
       "stats": {
         "total": "Total IPs",
