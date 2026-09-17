@@ -18,8 +18,15 @@ export const domainsRoutes: RouteObject[] = [
   {
     path: "domains/certificates",
     lazy: async () => {
-      const { CertificatesComingSoon } = await import("./partials/DomainComingSoon")
-      return { Component: CertificatesComingSoon }
+      const { CertificatesListPage } = await import("./partials/CertificatesListPage")
+      return { Component: CertificatesListPage }
+    },
+  },
+  {
+    path: "domains/certificates/:id",
+    lazy: async () => {
+      const { CertificateDetailPage } = await import("./partials/CertificateDetailPage")
+      return { Component: CertificateDetailPage }
     },
   },
   {

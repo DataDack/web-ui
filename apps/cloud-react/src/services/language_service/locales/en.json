@@ -1932,7 +1932,6 @@
     "subtitle": "External domains connected to your resources.",
     "comingSoon": {
       "registration": "Buy and register a domain directly from DataDack. Coming soon.",
-      "certificates": "Manage TLS certificates for your domains. Coming soon.",
       "dns": "Manage DNS records for your domains. Coming soon."
     },
     "adminSubtitle": "Every hostname the platform answers for, across all accounts.",
@@ -2154,6 +2153,143 @@
         "nextStep": "To point a name at us, add one of these",
         "cname": "CNAME",
         "apex": "A"
+      }
+    },
+    "certificates": {
+      "subtitle": "TLS certificates that secure your own domains — obtained and renewed by DataDack, or imported by you.",
+      "add": "Add certificate",
+      "searchPlaceholder": "Search domain names…",
+      "empty": "No certificates yet",
+      "emptySubtitle": "Request a free certificate for a domain you've connected, or import one you already have.",
+      "platformCovered": "Hostnames under {{zones}} are already secured by DataDack's own certificate and don't appear here.",
+      "issuerOff": "Automatic certificate issuance isn't enabled in this region yet. Existing certificates keep working, and you can still import your own.",
+      "refreshFailed": "Could not refresh certificates",
+      "moreNames_one": "+{{count}} name",
+      "moreNames_other": "+{{count}} names",
+      "daysLeft_one": "{{count}} day left",
+      "daysLeft_other": "{{count}} days left",
+      "expiredAgo_one": "Expired {{count}} day ago",
+      "expiredAgo_other": "Expired {{count}} days ago",
+      "autoRenew": "Automatic",
+      "manualRenew": "Manual",
+      "autoRenewLong": "Renewed automatically by DataDack before it expires",
+      "manualRenewLong": "Not renewed — import a replacement before it expires",
+      "chainMissing": "Leaf only — intermediate certificates are missing",
+      "chainCount_one": "{{count}} certificate",
+      "chainCount_other": "{{count}} certificates",
+      "pendingHelp": "The certificate authority is validating this domain. This usually takes under a minute once the domain's DNS points at DataDack.",
+      "importExpiringHelp": "This is an imported certificate and nothing renews it. Import a replacement, or remove it to let DataDack issue a free certificate instead.",
+      "notFound": "Certificate not found",
+      "notFoundSubtitle": "It may have been removed, or it belongs to a different account.",
+      "back": "Back to certificates",
+      "notInUse": "Not serving any hostnames",
+      "notInUseSubtitle": "No hostname connected to this account matches the names on this certificate.",
+      "openResource": "Open resource",
+      "status": {
+        "issued": "Issued",
+        "pending_validation": "Pending validation",
+        "expiring": "Expiring",
+        "renewing": "Renewal due",
+        "expired": "Expired",
+        "failed": "Failed"
+      },
+      "source": {
+        "platform": "DataDack wildcard",
+        "managed": "DataDack managed",
+        "imported": "Imported"
+      },
+      "filters": {
+        "allTypes": "All types",
+        "status": {
+          "issued": "Issued",
+          "expiring_soon": "Expiring or expired",
+          "pending_validation": "Pending validation",
+          "failed": "Failed"
+        }
+      },
+      "columns": {
+        "domain": "Domain name",
+        "status": "Status",
+        "type": "Type",
+        "renewal": "Renewal",
+        "expires": "Expires",
+        "issued": "Issued"
+      },
+      "stats": {
+        "total": "Certificates",
+        "issued": "Issued",
+        "attention": "Expiring or expired",
+        "imported": "Imported"
+      },
+      "tabs": {
+        "overview": "Overview",
+        "inUse": "In use ({{count}})"
+      },
+      "sections": {
+        "status": "Status",
+        "names": "Domain names",
+        "details": "Certificate details"
+      },
+      "fields": {
+        "type": "Type",
+        "renewal": "Renewal",
+        "expires": "Time left",
+        "notAfter": "Valid until",
+        "notBefore": "Valid from",
+        "issuedAt": "Issued",
+        "issuer": "Issuer",
+        "keyAlgorithm": "Key algorithm",
+        "signatureAlgorithm": "Signature algorithm",
+        "chain": "Chain",
+        "serial": "Serial number",
+        "fingerprint": "SHA-256 fingerprint"
+      },
+      "actions": {
+        "download": "Download chain",
+        "renew": "Renew now",
+        "remove": "Remove",
+        "renewStarted": "Renewal started for {{subject}}",
+        "renewFailed": "Could not start the renewal",
+        "removed": "{{subject}} removed",
+        "removeFailed": "Could not remove the certificate",
+        "downloadFailed": "Could not download the certificate chain",
+        "removeConfirmTitle": "Remove the certificate for {{subject}}?",
+        "removeConfirmBody": "Its hostnames won't lose HTTPS: DataDack issues its own free certificate for them within a minute or two."
+      },
+      "request": {
+        "menu": "Request a certificate",
+        "menuHint": "Free, issued and renewed automatically by DataDack",
+        "title": "Request a certificate",
+        "help": "Pick a verified domain connected to this account. DataDack obtains a certificate from Let's Encrypt and renews it automatically.",
+        "pick": "Domain",
+        "noDomains": "You have no verified custom domains yet. Connect and verify one first.",
+        "connectDomain": "Go to Domain Connections",
+        "submit": "Request certificate",
+        "failed": "Could not request the certificate"
+      },
+      "import": {
+        "menu": "Import a certificate",
+        "menuHint": "Bring a certificate you already have from another CA",
+        "title": "Import a certificate",
+        "help": "Paste the PEM-encoded certificate, its intermediate chain and its unencrypted private key. Every name on it must be a domain connected to this account.",
+        "doneTitle": "Certificate imported",
+        "doneHelp": "It's now served for these hostnames.",
+        "servedOn_one": "Serving {{count}} hostname:",
+        "servedOn_other": "Serving {{count}} hostnames:",
+        "noRenewal": "Imported certificates aren't renewed automatically. Import a replacement before it expires.",
+        "certificate": "Certificate body",
+        "certificateHint": "Starts with -----BEGIN CERTIFICATE-----",
+        "chain": "Certificate chain",
+        "chainHint": "The intermediate certificates from your CA. Leaving them out breaks HTTPS on many clients.",
+        "optional": "Optional",
+        "privateKey": "Private key",
+        "privateKeyHint": "Unencrypted PEM. It goes only to DataDack's private certificate store and is never shown or downloadable again.",
+        "notPem": "This doesn't look like a PEM certificate.",
+        "notKey": "This doesn't look like a PEM private key.",
+        "keyInCertBox": "This box contains a private key — paste it in the Private key box below.",
+        "submit": "Import",
+        "failed": "Could not import the certificate",
+        "view": "View certificate"
       }
     }
   },

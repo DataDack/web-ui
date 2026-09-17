@@ -1,4 +1,4 @@
-import { Globe, Network, ShieldCheck } from "lucide-react"
+import { Globe, Network } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { ComingSoon } from "@/components/console"
@@ -10,17 +10,6 @@ export function RegisterDomainComingSoon() {
       icon={Globe}
       title={t("console.nav.items.registeredDomains")}
       description={t("domains.comingSoon.registration")}
-    />
-  )
-}
-
-export function CertificatesComingSoon() {
-  const { t } = useTranslation()
-  return (
-    <ComingSoon
-      icon={ShieldCheck}
-      title={t("console.nav.items.certsManager")}
-      description={t("domains.comingSoon.certificates")}
     />
   )
 }

@@ -165,7 +165,6 @@ export const CONSOLE_SERVICES: ConsoleService[] = [
         labelKey: "console.nav.items.certsManager",
         icon: ShieldCheck,
         path: "/domains/certificates",
-        comingSoon: true,
       },
       {
         labelKey: "console.nav.items.domainDns",
