@@ -1887,7 +1887,8 @@
     "actions": {
       "assign": "Assign",
       "unassign": "Unassign",
-      "release": "Release"
+      "release": "Release",
+      "reassign": "Reassign to another instance"
     },
     "reserveForm": {
       "title": "Reserve Static IP",
@@ -1905,7 +1906,8 @@
       "instancePlaceholder": "Select an instance",
       "noInstances": "No running instances available",
       "submit": "Assign",
-      "submitting": "Assigning…"
+      "submitting": "Assigning…",
+      "moveWarning": "This address is in use. Assigning it moves it — it is removed from the instance holding it now, and only after the new target passes every check."
     },
     "unassignConfirm": {
       "title": "Unassign static IP?",

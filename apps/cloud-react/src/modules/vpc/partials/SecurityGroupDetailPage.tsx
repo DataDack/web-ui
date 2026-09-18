@@ -49,8 +49,17 @@ import {
   useSGRules,
   useUpdateSGRule,
   useVPCs,
+  useAllSecurityGroups,
+  useIPSets,
 } from "../vpc.hooks"
-import type { SecurityGroup, SGDirection, SGProtocol, SGRule, SGRuleAction } from "../vpc.types"
+import type {
+  SecurityGroup,
+  SGDirection,
+  SGProtocol,
+  SGRule,
+  SGRuleAction,
+  SGSourceType,
+} from "../vpc.types"
 
 function RuleActionBadge({ action }: Readonly<{ action: SGRuleAction }>) {
   const { t } = useTranslation()
@@ -84,7 +93,10 @@ const ruleSchema = z
     protocol: z.enum(SG_PROTOCOLS),
     action: z.enum(SG_RULE_ACTIONS),
     port_range: z.string(),
-    source: z.string().trim().min(1, "A source is required"),
+    source_type: z.enum(["cidr", "security_group", "ip_set"]),
+    source: z.string(),
+    source_sg_id: z.string(),
+    source_ip_set_id: z.string(),
     description: z.string(),
   })
   .superRefine((draft, ctx) => {
@@ -95,6 +107,18 @@ const ruleSchema = z
         message: "A port range is required for this protocol",
       })
     }
+    // Exactly one source, matching the type chosen. The backend enforces the
+    // same rule; checking here keeps the error next to the field rather than
+    // arriving as a 400 after the row is submitted.
+    if (draft.source_type === "cidr" && draft.source.trim() === "") {
+      ctx.addIssue({ code: "custom", path: ["source"], message: "A source is required" })
+    }
+    if (draft.source_type === "security_group" && !draft.source_sg_id) {
+      ctx.addIssue({ code: "custom", path: ["source_sg_id"], message: "Select a security group" })
+    }
+    if (draft.source_type === "ip_set" && !draft.source_ip_set_id) {
+      ctx.addIssue({ code: "custom", path: ["source_ip_set_id"], message: "Select an IP set" })
+    }
   })
 
 type RuleDraft = z.infer<typeof ruleSchema>
@@ -103,7 +127,10 @@ const EMPTY_DRAFT: RuleDraft = {
   protocol: "tcp",
   action: "allow",
   port_range: "",
+  source_type: "cidr",
   source: "",
+  source_sg_id: "",
+  source_ip_set_id: "",
   description: "",
 }
 
@@ -128,7 +155,10 @@ function RuleFormRow({
   })
 
   const protocol = form.watch("protocol")
+  const sourceType = form.watch("source_type")
   const usesPorts = sgProtocolUsesPorts(protocol)
+  const { data: ipSets = [] } = useIPSets()
+  const { data: allGroups = [] } = useAllSecurityGroups()
   const isEdit = initial !== undefined
 
   // The port range is cleared, not just disabled, when the protocol has no
@@ -181,13 +211,98 @@ function RuleFormRow({
         />
       </TableCell>
       <TableCell className="px-3 py-2">
-        <Input
-          {...form.register("source")}
-          placeholder={t("vpc.rules.sourcePlaceholder")}
-          className="h-8 font-mono text-[12px]"
-          aria-invalid={!!form.formState.errors.source}
-          aria-label={t("vpc.rules.source")}
-        />
+        <div className="flex gap-1.5">
+          <Select
+            value={sourceType}
+            onValueChange={(value) => {
+              const next = value as SGSourceType
+              form.setValue("source_type", next, { shouldValidate: true })
+              // Clear the other two, so a CIDR typed before switching to "IP
+              // set" cannot be submitted alongside the set it now points at.
+              if (next !== "cidr") form.setValue("source", "", { shouldValidate: true })
+              if (next !== "security_group") form.setValue("source_sg_id", "")
+              if (next !== "ip_set") form.setValue("source_ip_set_id", "")
+            }}
+          >
+            <SelectTrigger
+              size="sm"
+              className="w-[108px] shrink-0 text-[12px]"
+              aria-label={t("vpc.rules.type")}
+            >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="cidr" className="text-[12px]">
+                {t("vpc.rules.cidr")}
+              </SelectItem>
+              <SelectItem value="security_group" className="text-[12px]">
+                {t("vpc.rules.securityGroup")}
+              </SelectItem>
+              <SelectItem value="ip_set" className="text-[12px]">
+                {t("vpc.rules.ipSet")}
+              </SelectItem>
+            </SelectContent>
+          </Select>
+
+          {sourceType === "cidr" ? (
+            <Input
+              {...form.register("source")}
+              placeholder={t("vpc.rules.sourcePlaceholder")}
+              className="h-8 font-mono text-[12px]"
+              aria-invalid={!!form.formState.errors.source}
+              aria-label={t("vpc.rules.source")}
+            />
+          ) : null}
+
+          {sourceType === "security_group" ? (
+            <Select
+              value={form.watch("source_sg_id")}
+              onValueChange={(value) => {
+                form.setValue("source_sg_id", value, { shouldValidate: true })
+              }}
+            >
+              <SelectTrigger
+                size="sm"
+                className="w-full text-[12px]"
+                aria-label={t("vpc.rules.selectSG")}
+              >
+                <SelectValue placeholder={t("vpc.rules.selectSG")} />
+              </SelectTrigger>
+              <SelectContent>
+                {allGroups.map((g) => (
+                  <SelectItem key={g.id} value={g.id} className="text-[12px]">
+                    {g.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          ) : null}
+
+          {sourceType === "ip_set" ? (
+            <Select
+              value={form.watch("source_ip_set_id")}
+              onValueChange={(value) => {
+                form.setValue("source_ip_set_id", value, { shouldValidate: true })
+              }}
+            >
+              <SelectTrigger
+                size="sm"
+                className="w-full text-[12px]"
+                aria-label={t("vpc.rules.selectIPSet")}
+              >
+                <SelectValue placeholder={t("vpc.rules.selectIPSet")} />
+              </SelectTrigger>
+              <SelectContent>
+                {ipSets.map((set) => (
+                  <SelectItem key={set.id} value={set.id} className="text-[12px]">
+                    {set.name}
+                    {(set.entry_count ?? 0) === 0 ? " · 0" : ""}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          ) : null}
+        </div>
       </TableCell>
       <TableCell className="px-3 py-2">
         <Select
@@ -274,6 +389,16 @@ function RulesPanel({
     isError: rulesError,
     refetch: refetchRules,
   } = useSGRules(group.id)
+  const { data: allGroupsForNames = [] } = useAllSecurityGroups()
+  const { data: ipSetsForNames = [] } = useIPSets()
+  const groupNames = useMemo(
+    () => new Map(allGroupsForNames.map((g) => [g.id, g.name])),
+    [allGroupsForNames],
+  )
+  const ipSetNames = useMemo(
+    () => new Map(ipSetsForNames.map((set) => [set.id, set.name])),
+    [ipSetsForNames],
+  )
   const { mutate: addRule, isPending: isAdding } = useAddSGRule()
   const { mutate: updateRule, isPending: isUpdating } = useUpdateSGRule()
   const { mutate: removeRule, isPending: isRemoving } = useRemoveSGRule()
@@ -290,7 +415,10 @@ function RulesPanel({
           protocol: draft.protocol,
           action: draft.action,
           port_range: draft.port_range.trim(),
+          source_type: draft.source_type,
           source: draft.source.trim(),
+          source_sg_id: draft.source_sg_id || undefined,
+          source_ip_set_id: draft.source_ip_set_id || undefined,
           description: draft.description.trim(),
         },
       },
@@ -308,7 +436,10 @@ function RulesPanel({
           protocol: draft.protocol,
           action: draft.action,
           port_range: draft.port_range.trim(),
+          source_type: draft.source_type,
           source: draft.source.trim(),
+          source_sg_id: draft.source_sg_id || undefined,
+          source_ip_set_id: draft.source_ip_set_id || undefined,
           description: draft.description.trim(),
         },
       },
@@ -339,7 +470,22 @@ function RulesPanel({
       textColumn({
         id: "source",
         header: t("vpc.rules.source"),
-        accessor: (rule) => rule.source,
+        // A rule sourced from a security group or an IP set carries no CIDR, so
+        // showing `source` alone left the cell blank — the one column that says
+        // what the rule matches. Resolve the reference to its name, and fall
+        // back to the id when the referenced object is not in the account's
+        // list (deleted, or another page).
+        accessor: (rule) => {
+          if (rule.source_type === "security_group") {
+            const id = rule.source_sg_id ?? ""
+            return groupNames.get(id) ?? id
+          }
+          if (rule.source_type === "ip_set") {
+            const id = rule.source_ip_set_id ?? ""
+            return ipSetNames.get(id) ?? id
+          }
+          return rule.source
+        },
         mono: true,
       }),
       {
@@ -419,7 +565,10 @@ function RulesPanel({
                   protocol: rule.protocol,
                   action: rule.action,
                   port_range: rule.port_range,
+                  source_type: rule.source_type,
                   source: rule.source,
+                  source_sg_id: rule.source_sg_id ?? "",
+                  source_ip_set_id: rule.source_ip_set_id ?? "",
                   description: rule.description,
                 }}
                 pending={isUpdating}

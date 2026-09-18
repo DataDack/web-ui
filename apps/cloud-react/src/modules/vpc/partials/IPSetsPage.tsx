@@ -24,13 +24,13 @@ import {
 } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { List, Plus, RefreshCw, Search, Trash2 } from "lucide-react"
-import { useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
+import { useNavigate } from "react-router-dom"
 
 import { ConfirmDialog, PageHeader } from "@/components/console"
 
 import { useCreateIPSet, useDeleteIPSet, useIPSets } from "../vpc.hooks"
-import type { IPSet, IPSetIPVersion } from "../vpc.types"
+import type { IpSet, IpSetIpVersion } from "../vpc.types"
 
 export function IPSetsPage() {
   const { t } = useTranslation()
@@ -41,10 +41,10 @@ export function IPSetsPage() {
 
   const [query, setQuery] = useState("")
   const [createOpen, setCreateOpen] = useState(false)
-  const [toDelete, setToDelete] = useState<IPSet | null>(null)
+  const [toDelete, setToDelete] = useState<IpSet | null>(null)
   const [name, setName] = useState("")
   const [description, setDescription] = useState("")
-  const [ipVersion, setIpVersion] = useState<IPSetIPVersion>("ipv4")
+  const [ipVersion, setIpVersion] = useState<IpSetIpVersion>("ipv4")
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -54,12 +54,12 @@ export function IPSetsPage() {
     )
   }, [sets, query])
 
-  const columns = useMemo<ColumnDef<IPSet>[]>(
+  const columns = useMemo<ColumnDef<IpSet>[]>(
     () => [
-      nameColumn<IPSet>({ header: t("ipSets.columns.name"), accessor: (s) => s.name }),
+      nameColumn<IpSet>({ header: t("ipSets.columns.name"), accessor: (s) => s.name }),
       {
         id: "ipVersion",
-        accessorFn: (s: IPSet) => s.ip_version,
+        accessorFn: (s: IpSet) => s.ip_version,
         header: () => t("ipSets.columns.ipVersion"),
         meta: { responsive: "md" },
         cell: ({ row }) => (
@@ -70,7 +70,7 @@ export function IPSetsPage() {
       },
       {
         id: "entries",
-        accessorFn: (s: IPSet) => s.entry_count ?? 0,
+        accessorFn: (s: IpSet) => s.entry_count ?? 0,
         header: () => t("ipSets.columns.entries"),
         // An empty set is not a neutral state — a rule pointing at it matches
         // nothing — so it reads as muted rather than as a plain zero.
@@ -88,19 +88,19 @@ export function IPSetsPage() {
       },
       {
         id: "description",
-        accessorFn: (s: IPSet) => s.description,
+        accessorFn: (s: IpSet) => s.description,
         header: () => t("ipSets.columns.description"),
         meta: { responsive: "lg" },
         cell: ({ row }) => (
           <span className="text-[13px] text-muted-foreground">{row.original.description}</span>
         ),
       },
-      dateColumn<IPSet>({
+      dateColumn<IpSet>({
         header: t("common.created"),
         accessor: (s) => s.created_at,
         responsive: "lg",
       }),
-      actionsColumn<IPSet>({
+      actionsColumn<IpSet>({
         ariaLabel: t("console.table.actions"),
         actions: () => [
           {
@@ -174,7 +174,7 @@ export function IPSetsPage() {
           }}
         />
       ) : (
-        <DataTable<IPSet>
+        <DataTable<IpSet>
           data={filtered}
           columns={columns}
           loading={isLoading}
@@ -216,7 +216,7 @@ export function IPSetsPage() {
               <Select
                 value={ipVersion}
                 onValueChange={(v) => {
-                  setIpVersion(v as IPSetIPVersion)
+                  setIpVersion(v as IpSetIpVersion)
                 }}
               >
                 <SelectTrigger id="ipset-version">

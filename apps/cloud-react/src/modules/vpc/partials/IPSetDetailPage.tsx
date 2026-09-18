@@ -13,13 +13,13 @@ import {
 } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
 import { List, Plus, Trash2 } from "lucide-react"
-import { useParams } from "react-router-dom"
 import { useTranslation } from "react-i18next"
+import { useParams } from "react-router-dom"
 
 import { PageHeader } from "@/components/console"
 
 import { useAddIPSetEntries, useIPSet, useRemoveIPSetEntry } from "../vpc.hooks"
-import type { IPSetEntry } from "../vpc.types"
+import type { IpSetEntry } from "../vpc.types"
 
 /** One CIDR per line, with an optional trailing comment after whitespace.
  *  Parsing here rather than server-side keeps the paste box forgiving: blank
@@ -46,29 +46,29 @@ export function IPSetDetailPage() {
 
   const entries = set?.entries ?? []
 
-  const columns = useMemo<ColumnDef<IPSetEntry>[]>(
+  const columns = useMemo<ColumnDef<IpSetEntry>[]>(
     () => [
       {
         id: "cidr",
-        accessorFn: (e: IPSetEntry) => e.cidr,
+        accessorFn: (e: IpSetEntry) => e.cidr,
         header: () => t("ipSets.detail.cidr"),
         cell: ({ row }) => <span className="font-mono text-[13px]">{row.original.cidr}</span>,
       },
       {
         id: "comment",
-        accessorFn: (e: IPSetEntry) => e.comment,
+        accessorFn: (e: IpSetEntry) => e.comment,
         header: () => t("ipSets.detail.comment"),
         meta: { responsive: "md" },
         cell: ({ row }) => (
           <span className="text-[13px] text-muted-foreground">{row.original.comment}</span>
         ),
       },
-      dateColumn<IPSetEntry>({
+      dateColumn<IpSetEntry>({
         header: t("common.created"),
         accessor: (e) => e.created_at,
         responsive: "lg",
       }),
-      actionsColumn<IPSetEntry>({
+      actionsColumn<IpSetEntry>({
         ariaLabel: t("console.table.actions"),
         actions: () => [
           {
@@ -143,7 +143,7 @@ export function IPSetDetailPage() {
           description={t("ipSets.detail.entriesEmpty")}
         />
       ) : (
-        <DataTable<IPSetEntry> data={entries} columns={columns} loading={isLoading} />
+        <DataTable<IpSetEntry> data={entries} columns={columns} loading={isLoading} />
       )}
     </div>
   )

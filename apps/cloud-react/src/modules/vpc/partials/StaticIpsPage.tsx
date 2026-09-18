@@ -195,6 +195,11 @@ function AssignIpDialog({
           <DialogTitle>{t("staticIps.assignForm.title")}</DialogTitle>
           <DialogDescription>
             {t("staticIps.assignForm.description", { ip: ip?.ip_address ?? "" })}
+            {ip?.status === "assigned" ? (
+              <span className="mt-2 block text-[12px] text-amber-600 dark:text-amber-500">
+                {t("staticIps.assignForm.moveWarning")}
+              </span>
+            ) : null}
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-1.5">
@@ -456,6 +461,18 @@ export function StaticIpsPage() {
               },
             })
           } else if (ip.status !== "provisioning") {
+            // Moving a held address to another instance is one operation: the
+            // server releases it from the current holder only after every check
+            // on the new target passes. Offering only "unassign" forced a
+            // detach-then-attach, which leaves the address on nothing in
+            // between and fails differently halfway through.
+            attachmentActions.push({
+              label: t("staticIps.actions.reassign"),
+              icon: Link2,
+              onAction: (row: StaticIP) => {
+                setToAssign(row)
+              },
+            })
             attachmentActions.push({
               label: t("staticIps.actions.unassign"),
               icon: Unlink,

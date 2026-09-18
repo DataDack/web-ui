@@ -12,10 +12,10 @@ import { vpcService } from "./vpc.service"
 import type {
   AddSGRuleRequest,
   CreateInternetGatewayRequest,
-  AddIPSetEntriesRequest,
-  CreateIPSetRequest,
+  AddIpSetEntriesRequest,
+  CreateIpSetRequest,
   CreateNATGatewayRequest,
-  UpdateIPSetRequest,
+  UpdateIpSetRequest,
   UpdateNATGatewayRequest,
   CreateNetworkInterfaceRequest,
   CreateRouterRequest,
@@ -611,7 +611,7 @@ export function useCreateIPSet() {
   const queryClient = useQueryClient()
   const { t } = useTranslation()
   return useMutation({
-    mutationFn: (payload: CreateIPSetRequest) => vpcService.createIPSet(payload),
+    mutationFn: (payload: CreateIpSetRequest) => vpcService.createIPSet(payload),
     onSuccess: (set) => {
       void queryClient.invalidateQueries({ queryKey: VPC_QUERY_KEYS.ipSets })
       toast.success(t("ipSets.toasts.created", { name: set.name }))
@@ -626,7 +626,7 @@ export function useUpdateIPSet() {
   const queryClient = useQueryClient()
   const { t } = useTranslation()
   return useMutation({
-    mutationFn: ({ id, ...payload }: UpdateIPSetRequest & { id: string }) =>
+    mutationFn: ({ id, ...payload }: UpdateIpSetRequest & { id: string }) =>
       vpcService.updateIPSet(id, payload),
     onSuccess: (set) => {
       void queryClient.invalidateQueries({ queryKey: VPC_QUERY_KEYS.ipSets })
@@ -660,7 +660,7 @@ export function useAddIPSetEntries() {
   const queryClient = useQueryClient()
   const { t } = useTranslation()
   return useMutation({
-    mutationFn: ({ id, entries }: AddIPSetEntriesRequest & { id: string }) =>
+    mutationFn: ({ id, entries }: AddIpSetEntriesRequest & { id: string }) =>
       vpcService.addIPSetEntries(id, { entries }),
     onSuccess: (result, { id }) => {
       void queryClient.invalidateQueries({ queryKey: VPC_QUERY_KEYS.ipSetDetail(id) })

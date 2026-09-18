@@ -359,9 +359,9 @@ export interface UpdateNATGatewayRequest {
 
 /* ── IP sets (named CIDR lists, AWS prefix lists) ───────────────────────── */
 
-export type IPSetIPVersion = "ipv4" | "ipv6"
+export type IpSetIpVersion = "ipv4" | "ipv6"
 
-export interface IPSetEntry {
+export interface IpSetEntry {
   id: string
   ip_set_id: string
   cidr: string
@@ -369,39 +369,39 @@ export interface IPSetEntry {
   created_at: string
 }
 
-export interface IPSet {
+export interface IpSet {
   id: string
   created_at: string
   updated_at: string
   name: string
   description: string
-  ip_version: IPSetIPVersion
+  ip_version: IpSetIpVersion
   /** Present on the detail read; the list endpoint does not expand entries. */
-  entries?: IPSetEntry[]
+  entries?: IpSetEntry[]
   entry_count?: number
 }
 
-export interface CreateIPSetRequest {
+export interface CreateIpSetRequest {
   name: string
   description?: string
-  ip_version: IPSetIPVersion
+  ip_version: IpSetIpVersion
 }
 
 /** The IP version is absent on purpose: it cannot change while the set has
  *  entries, and an empty set is cheaper to delete and recreate. */
-export interface UpdateIPSetRequest {
+export interface UpdateIpSetRequest {
   name?: string
   description?: string
 }
 
-export interface AddIPSetEntriesRequest {
+export interface AddIpSetEntriesRequest {
   entries: { cidr: string; comment?: string }[]
 }
 
 /** What a bulk add actually did. Duplicates are skipped rather than rejected —
  *  pasting a list that overlaps what is already there is how these are
  *  maintained, so failing the whole call over it would make the form unusable. */
-export interface AddIPSetEntriesResult {
+export interface AddIpSetEntriesResult {
   added: number
   skipped: number
   invalid?: string[]

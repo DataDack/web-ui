@@ -16,10 +16,10 @@ import {
 import type {
   AddSGRuleRequest,
   CreateInternetGatewayRequest,
-  AddIPSetEntriesRequest,
-  CreateIPSetRequest,
+  AddIpSetEntriesRequest,
+  CreateIpSetRequest,
   CreateNATGatewayRequest,
-  UpdateIPSetRequest,
+  UpdateIpSetRequest,
   UpdateNATGatewayRequest,
   CreateNetworkInterfaceRequest,
   CreateRouterRequest,
@@ -95,10 +95,10 @@ export const vpcService = {
 
   fetchIPSets: () => ipSetsApi.list(),
   fetchIPSet: (id: string) => ipSetsApi.get(id),
-  createIPSet: (payload: CreateIPSetRequest) => ipSetsApi.create(payload),
-  updateIPSet: (id: string, payload: UpdateIPSetRequest) => ipSetsApi.update(id, payload),
+  createIPSet: (payload: CreateIpSetRequest) => ipSetsApi.create(payload),
+  updateIPSet: (id: string, payload: UpdateIpSetRequest) => ipSetsApi.update(id, payload),
   removeIPSet: (id: string) => ipSetsApi.delete(id),
-  addIPSetEntries: (id: string, payload: AddIPSetEntriesRequest) =>
+  addIPSetEntries: (id: string, payload: AddIpSetEntriesRequest) =>
     ipSetsApi.addEntries(id, payload),
   removeIPSetEntry: (id: string, entryId: string) => ipSetsApi.removeEntry(id, entryId),
   fetchInternetGateways: () => internetGatewaysApi.list(),
