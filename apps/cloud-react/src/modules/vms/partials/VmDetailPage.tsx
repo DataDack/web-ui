@@ -802,6 +802,31 @@ function MonitoringTab({
   const memPsiFull = points.map((p) => p.mem_psi_full)
   const times = points.map((p) => p.t)
   const ready = !isLoading && points.length >= 2
+  // The API answers "unavailable" when the VM has no realized guest yet, or the
+  // cluster could not be read. That is a different state from "still loading",
+  // and it has to be said — otherwise the tab sits on skeletons forever.
+  const unavailable = !provisioning && !isLoading && data?.source !== "proxmox"
+
+  if (unavailable) {
+    return (
+      <FadeIn>
+        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border/60 glass-1-bg px-6 py-14 text-center">
+          <div className="mb-4 flex size-12 items-center justify-center rounded-2xl glass-1-bg-raised">
+            <Activity className="size-6 text-muted-foreground" />
+          </div>
+          <h2 className="text-lg font-semibold text-foreground">
+            {t("vms.monitoring.unavailableTitle", "No metrics yet")}
+          </h2>
+          <p className="mt-1.5 max-w-md text-[13px] text-muted-foreground">
+            {t(
+              "vms.monitoring.unavailableBody",
+              "Metrics chart this machine's real resource usage and begin once it is running. If it is already running, the hypervisor couldn't be read just now — this view retries on its own.",
+            )}
+          </p>
+        </div>
+      </FadeIn>
+    )
+  }
 
   return (
     <FadeIn>
@@ -821,13 +846,8 @@ function MonitoringTab({
                 <span className="absolute inline-flex size-full animate-ping rounded-full bg-status-success/70" />
                 <span className="relative inline-flex size-2 rounded-full bg-status-success" />
               </span>
+              {/* Only ever the guest's own series now, so it needs no qualifier. */}
               <span className="text-foreground">{t("vms.monitoring.live", "Live")}</span>
-              <span className="text-muted-foreground">·</span>
-              <span className="font-mono text-[11px] text-muted-foreground">
-                {data?.source === "proxmox"
-                  ? t("vms.monitoring.sourceProxmox", "Proxmox")
-                  : t("vms.monitoring.sourceSimulated", "Simulated")}
-              </span>
             </div>
           )}
           <div className="flex items-center gap-0.5 rounded-lg border border-border-glass p-0.5">
@@ -851,72 +871,75 @@ function MonitoringTab({
           </div>
         </div>
 
-        <MetricPanel
-          title={t("vms.monitoring.cpu", "CPU Utilization (%)")}
-          data={cpu}
-          color="rgb(34,197,94)"
-          ready={ready}
-          provisioning={provisioning}
-          timestamps={times}
-        />
-        <MetricPanel
-          title={t("vms.monitoring.memory", "Memory Usage (%)")}
-          data={mem}
-          color="rgb(99,102,241)"
-          ready={ready}
-          provisioning={provisioning}
-          timestamps={times}
-        />
-        <MetricPanel
-          title={t("vms.monitoring.disk", "Disk Usage (%)")}
-          data={disk}
-          color="rgb(234,179,8)"
-          ready={ready}
-          provisioning={provisioning}
-          timestamps={times}
-        />
-        <MetricPanel
-          title={t("vms.monitoring.io", "Disk I/O (MB/s)")}
-          data={io}
-          color="rgb(244,114,182)"
-          unit=" MB/s"
-          ready={ready}
-          provisioning={provisioning}
-          timestamps={times}
-        />
-        <MetricPanel
-          title={t("vms.monitoring.network", "Network (MB/s)")}
-          data={net}
-          color="rgb(56,189,248)"
-          unit=" MB/s"
-          ready={ready}
-          provisioning={provisioning}
-          timestamps={times}
-        />
-        <PressurePanel
-          title={t("vms.monitoring.cpuPressure", "CPU Pressure Stall (%)")}
-          some={cpuPsiSome}
-          full={cpuPsiFull}
-          ready={ready}
-          provisioning={provisioning}
-          timestamps={times}
-        />
-        <PressurePanel
-          title={t("vms.monitoring.ioPressure", "IO Pressure Stall (%)")}
-          some={ioPsiSome}
-          full={ioPsiFull}
-          ready={ready}
-          provisioning={provisioning}
-          timestamps={times}
-        />
-        <PressurePanel
-          title={t("vms.monitoring.memoryPressure", "Memory Pressure Stall (%)")}
-          some={memPsiSome}
-          full={memPsiFull}
-          ready={ready}
-          provisioning={provisioning}
-          timestamps={times}
-        />
+        {/* Two-up so a pair of charts reads as one row instead of a tall stack. */}
+        <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+          <MetricPanel
+            title={t("vms.monitoring.cpu", "CPU Utilization (%)")}
+            data={cpu}
+            color="rgb(34,197,94)"
+            ready={ready}
+            provisioning={provisioning}
+            timestamps={times}
+          />
+          <MetricPanel
+            title={t("vms.monitoring.memory", "Memory Usage (%)")}
+            data={mem}
+            color="rgb(99,102,241)"
+            ready={ready}
+            provisioning={provisioning}
+            timestamps={times}
+          />
+          <MetricPanel
+            title={t("vms.monitoring.disk", "Disk Usage (%)")}
+            data={disk}
+            color="rgb(234,179,8)"
+            ready={ready}
+            provisioning={provisioning}
+            timestamps={times}
+          />
+          <MetricPanel
+            title={t("vms.monitoring.io", "Disk I/O (MB/s)")}
+            data={io}
+            color="rgb(244,114,182)"
+            unit=" MB/s"
+            ready={ready}
+            provisioning={provisioning}
+            timestamps={times}
+          />
+          <MetricPanel
+            title={t("vms.monitoring.network", "Network (MB/s)")}
+            data={net}
+            color="rgb(56,189,248)"
+            unit=" MB/s"
+            ready={ready}
+            provisioning={provisioning}
+            timestamps={times}
+          />
+          <PressurePanel
+            title={t("vms.monitoring.cpuPressure", "CPU Pressure Stall (%)")}
+            some={cpuPsiSome}
+            full={cpuPsiFull}
+            ready={ready}
+            provisioning={provisioning}
+            timestamps={times}
+          />
+          <PressurePanel
+            title={t("vms.monitoring.ioPressure", "IO Pressure Stall (%)")}
+            some={ioPsiSome}
+            full={ioPsiFull}
+            ready={ready}
+            provisioning={provisioning}
+            timestamps={times}
+          />
+          <PressurePanel
+            title={t("vms.monitoring.memoryPressure", "Memory Pressure Stall (%)")}
+            some={memPsiSome}
+            full={memPsiFull}
+            ready={ready}
+            provisioning={provisioning}
+            timestamps={times}
+          />
+        </div>
       </div>
     </FadeIn>
   )

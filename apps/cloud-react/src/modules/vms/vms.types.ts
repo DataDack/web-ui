@@ -227,8 +227,14 @@ export interface MetricPoint {
 }
 
 /** Historical CPU/memory series for an instance (Proxmox-backed or simulated). */
+/**
+ * GET /compute/instances/:id/metrics. "proxmox" is the guest's own rrddata;
+ * "unavailable" means there is no realized guest yet, or the cluster could not
+ * be read — `points` is empty and the tab says so. There is no synthesized or
+ * host-node stand-in source: the series is the VM's real measurements or none.
+ */
 export interface InstanceMetrics {
-  source: "proxmox" | "simulated"
+  source: "proxmox" | "unavailable"
   node: string
   points: MetricPoint[]
 }

@@ -3,7 +3,6 @@ import { apiDelete, apiGet, apiPost, apiPut, LIST_QUERY } from "@/services/api/c
 import type {
   CreateInternetGatewayRequest,
   CreateNATGatewayRequest,
-  CreateRouterRequest,
   InternetGateway,
   InternetGatewayStatus,
   NATGateway,
@@ -38,17 +37,6 @@ export const routersApi = {
   list: async (): Promise<Router[]> => {
     const rows = await apiGet<RawRouter[]>(ROUTERS_BASE + LIST_QUERY)
     return rows.map(toRouter)
-  },
-
-  create: async (payload: CreateRouterRequest): Promise<Router> => {
-    const body: Record<string, unknown> = {
-      name: payload.name,
-      region: payload.region,
-      enable_snat: payload.enable_snat,
-    }
-    if (payload.network_id) body.vpc_id = payload.network_id
-    const raw = await apiPost<RawRouter>(ROUTERS_BASE, body)
-    return toRouter(raw)
   },
 
   update: async (id: string, enable_snat: boolean): Promise<Router> =>

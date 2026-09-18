@@ -1,4 +1,4 @@
-import { Activity, ArrowRightLeft, BellRing, Building2, Cable, CreditCard, Disc, EthernetPort, FileText, FolderKanban, FunctionSquare, Gauge, GitBranch, Globe, HardDrive, KeyRound, Layers, LayoutDashboard, LifeBuoy, ListTree, Lock, Network, Receipt, Rocket, Router, ScrollText, Search, Server, Share2, ShieldCheck, Ship, Sparkles, type LucideIcon, UserCog, Users, Waypoints, Webhook, Zap } from "lucide-react"
+import { Activity, ArrowRightLeft, BellRing, Building2, Cable, CreditCard, Disc, EthernetPort, FileText, FolderKanban, FunctionSquare, Gauge, GitBranch, Globe, HardDrive, KeyRound, Layers, LayoutDashboard, LifeBuoy, ListTree, Lock, Network, Receipt, Rocket, Route, ScrollText, Search, Server, Share2, ShieldCheck, Ship, Sparkles, type LucideIcon, UserCog, Users, Waypoints, Webhook, Zap } from "lucide-react"
 
 export interface SidebarNavItem {
   labelKey: string
@@ -86,14 +86,9 @@ export const CONSOLE_SERVICES: ConsoleService[] = [
         path: "/networking/security-groups",
       },
       {
-        labelKey: "console.nav.items.routeTables",
-        icon: GitBranch,
-        path: "/networking/route-tables",
-      },
-      {
-        labelKey: "console.nav.items.routers",
-        icon: Router,
-        path: "/networking/routers",
+        labelKey: "console.nav.items.routing",
+        icon: Route,
+        path: "/networking/routing",
       },
       {
         labelKey: "console.nav.items.peerings",

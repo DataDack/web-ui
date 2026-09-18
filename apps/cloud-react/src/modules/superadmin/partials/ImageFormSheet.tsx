@@ -162,7 +162,11 @@ export function ImageFormSheet({ open, onOpenChange, image }: Readonly<Props>) {
       <Field label={t("superAdmin.images.fields.description")} error={errors.description?.message}>
         <Textarea {...register("description")} rows={3} />
       </Field>
-      <Field label={t("superAdmin.images.fields.sortOrder")} error={errors.sort_order?.message}>
+      <Field
+        label={t("superAdmin.images.fields.sortOrder")}
+        hint={t("superAdmin.images.fields.sortOrderHint")}
+        error={errors.sort_order?.message}
+      >
         <Input type="number" min={0} {...register("sort_order")} />
       </Field>
       <Field

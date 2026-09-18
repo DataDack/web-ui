@@ -98,6 +98,7 @@ import type {
   UpdateAvailabilityZoneRequest,
   UpdateBandwidthPriceRequest,
   UpdateLoadBalancerPriceRequest,
+  ReorderImagesRequest,
   UpdateImageRequest,
   UpdateImageVersionRequest,
   UpdateIPPoolRequest,
@@ -255,6 +256,8 @@ export const superAdminApi = {
   updateImage: (id: string, payload: UpdateImageRequest) =>
     apiPut<Image>(`${BASE}/images/${id}`, payload),
   deleteImage: (id: string) => apiDelete(`${BASE}/images/${id}`),
+  reorderImages: (payload: ReorderImagesRequest) =>
+    apiPatch<{ count: number }>(`${BASE}/images/reorder`, payload),
   uploadImageIcon: async (id: string, file: File) => {
     const form = new FormData()
     form.append("file", file)

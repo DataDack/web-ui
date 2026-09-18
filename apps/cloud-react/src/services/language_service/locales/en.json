@@ -57,7 +57,7 @@
         "iamSimulator": "Simulator",
         "iamAudit": "Audit Log",
         "securityGroups": "Security Groups",
-        "routers": "Routers",
+        "routing": "Routing",
         "routeTables": "Route tables",
         "peerings": "VPC Peering",
         "internetGateways": "Internet Gateways",
@@ -391,7 +391,6 @@
   "resourceGroups": {
     "title": "Resource Groups",
     "subtitle": "Logically organize and manage your cloud resources.",
-    "create": "Create Resource Group",
     "empty": "No resource groups yet",
     "emptySubtitle": "Create your first resource group to start organizing resources.",
     "active": "Active",
@@ -520,7 +519,6 @@
   "vms": {
     "title": "Virtual Machines",
     "subtitle": "Manage your virtual machine instances.",
-    "create": "Create VM",
     "empty": "No instances yet",
     "emptySubtitle": "Create your first virtual machine to get started.",
     "searchPlaceholder": "Filter by name, IP, zone…",
@@ -1000,15 +998,8 @@
       "title": "Roles",
       "pageTitle": "IAM Roles",
       "subtitle": "Bundles of policies that can be assigned to users.",
-      "create": "Create Role",
       "empty": "No roles",
       "emptySubtitle": "Create a role to group permissions.",
-      "createForm": {
-        "title": "Create Role",
-        "subtitle": "Attach policies to the role after creating it.",
-        "descriptionPlaceholder": "Operators who can deploy but not delete…",
-        "creating": "Creating…"
-      },
       "deleteConfirm": {
         "title": "Delete role?",
         "description": "Users assigned \"{{name}}\" will lose its permissions."
@@ -1017,17 +1008,8 @@
     "policies": {
       "title": "Policies",
       "subtitle": "JSON documents that allow or deny actions on resources.",
-      "create": "Create Policy",
       "empty": "No policies",
       "emptySubtitle": "Create a policy to define permissions.",
-      "createForm": {
-        "title": "Create Policy",
-        "subtitle": "Write the policy document in JSON.",
-        "descriptionPlaceholder": "What this policy allows or denies",
-        "document": "Policy document",
-        "documentHint": "Actions use service:verb form, e.g. vm:delete. Resources accept * wildcards.",
-        "creating": "Creating…"
-      },
       "deleteConfirm": {
         "title": "Delete policy?",
         "description": "Roles using \"{{name}}\" will lose these permissions."
@@ -1064,7 +1046,6 @@
     "apiKeys": {
       "title": "API Keys",
       "subtitle": "Programmatic access tokens for the platform API.",
-      "create": "Create API Key",
       "empty": "No API keys",
       "emptySubtitle": "Create a key to call the platform API programmatically.",
       "never": "Never",
@@ -1139,15 +1120,8 @@
     "groups": {
       "title": "Groups",
       "subtitle": "Containers that grant their attached policies to every member.",
-      "create": "Create Group",
       "empty": "No groups",
       "emptySubtitle": "Create a group to manage permissions for a set of users.",
-      "createForm": {
-        "title": "Create Group",
-        "subtitle": "Add members and attach policies after creating the group.",
-        "descriptionPlaceholder": "Platform administrators with full access…",
-        "creating": "Creating…"
-      },
       "deleteConfirm": {
         "title": "Delete group?",
         "description": "This removes the group \"{{name}}\" and its memberships. This cannot be undone."
@@ -1509,7 +1483,6 @@
   "vpc": {
     "title": "VPC Networks",
     "subtitle": "Manage virtual private clouds and subnets.",
-    "create": "Create VPC",
     "empty": "No VPC networks yet",
     "emptySubtitle": "Create your first VPC network to isolate your workloads.",
     "searchPlaceholder": "Filter by name, CIDR, region…",
@@ -2307,7 +2280,6 @@
   "networkInterfaces": {
     "title": "Network Interfaces",
     "subtitle": "Elastic network interfaces (ENI) for your instances.",
-    "create": "Create network interface",
     "empty": "No network interfaces",
     "emptySubtitle": "Create a network interface to attach a virtual NIC to an instance.",
     "searchPlaceholder": "Filter by name, ID, IP, subnet…",
@@ -2383,10 +2355,9 @@
   },
   "routers": {
     "title": "Routers",
-    "subtitle": "Manage subnet gateways and outbound internet access for your VPCs.",
-    "create": "Create router",
+    "subtitle": "One router is created with each VPC. Toggle outbound NAT and watch it converge.",
     "empty": "No routers",
-    "emptySubtitle": "Create a router to route traffic for a VPC network.",
+    "emptySubtitle": "Every VPC gets a router when it is created. Create a VPC and its router appears here.",
     "searchPlaceholder": "Filter by name, region…",
     "stats": {
       "total": "Total",
@@ -2403,18 +2374,6 @@
     },
     "actions": {
       "delete": "Delete"
-    },
-    "createForm": {
-      "title": "Create router",
-      "description": "Connect the subnets in an EVPN VPC using native network routing.",
-      "name": "Name",
-      "region": "Region",
-      "regionPlaceholder": "Select a region",
-      "vpc": "VPC",
-      "vpcPlaceholder": "Select an EVPN VPC",
-      "vpcNone": "None — unattached",
-      "submit": "Create router",
-      "submitting": "Creating…"
     },
     "deleteConfirm": {
       "title": "Delete router?",
@@ -2437,7 +2396,6 @@
   "internetGateways": {
     "title": "Internet Gateways",
     "subtitle": "Attach a gateway to give a VPC network a route to the internet.",
-    "create": "Create internet gateway",
     "empty": "No internet gateways",
     "emptySubtitle": "Create an internet gateway, then attach it to a VPC network.",
     "searchPlaceholder": "Filter by name…",
@@ -2488,7 +2446,6 @@
   "natGateways": {
     "title": "NAT Gateways",
     "subtitle": "Outbound internet access for private subnets.",
-    "create": "Create NAT gateway",
     "empty": "No NAT gateways",
     "emptySubtitle": "Create a NAT gateway to give a private subnet outbound internet access.",
     "searchPlaceholder": "Filter by name, subnet…",
@@ -2515,23 +2472,6 @@
       "delete": "Delete",
       "enable": "Enable translation",
       "disable": "Disable translation"
-    },
-    "createForm": {
-      "title": "Create NAT gateway",
-      "description": "Provisions a NAT gateway in the selected subnet.",
-      "name": "Name",
-      "vpc": "VPC",
-      "vpcPlaceholder": "Select a VPC",
-      "selectVpcFirst": "Select a VPC first",
-      "subnet": "Subnet",
-      "subnetPlaceholder": "Select a subnet",
-      "subnetEmpty": "No subnets in this VPC",
-      "connectivity": "Connectivity",
-      "staticIp": "Elastic IP",
-      "staticIpPlaceholder": "Auto (no elastic IP)",
-      "staticIpEmpty": "No available static IPs",
-      "submit": "Create",
-      "submitting": "Creating…"
     },
     "deleteConfirm": {
       "title": "Delete NAT gateway?",
@@ -2578,7 +2518,6 @@
   "loadBalancers": {
     "title": "Load Balancers",
     "subtitle": "Distribute traffic across your instances.",
-    "create": "Create Load Balancer",
     "empty": "No load balancers",
     "emptySubtitle": "Create a load balancer to spread traffic across instances.",
     "stats": {
@@ -2840,8 +2779,6 @@
         "description": "The load balancer will stop accepting traffic on port {{port}}."
       },
       "toasts": {
-        "created": "Listener added",
-        "createFailed": "Could not add the listener",
         "deleted": "Listener removed",
         "deleteFailed": "Could not remove the listener",
         "updated": "Listener updated",
@@ -2855,7 +2792,6 @@
   "autoscaling": {
     "title": "Auto Scaling",
     "subtitle": "Scale instance groups automatically with demand.",
-    "create": "Create Group",
     "empty": "No auto scaling groups",
     "emptySubtitle": "Create a group to scale instances with demand.",
     "stats": {
@@ -2922,7 +2858,6 @@
   "disks": {
     "title": "Disks",
     "subtitle": "Block storage volumes for your instances.",
-    "create": "Create Disk",
     "empty": "No disks",
     "emptySubtitle": "Create a disk to add block storage to your instances.",
     "stats": {
@@ -3627,6 +3562,7 @@
         "displayName": "Display name",
         "description": "Description",
         "sortOrder": "Sort order",
+        "sortOrderHint": "Its position in the list. Saving renumbers the other images around it, so positions stay 1…n.",
         "versions": "Versions",
         "icon": "Icon",
         "iconHint": "Upload a PNG or SVG logo, or link to one already hosted.",
@@ -3637,6 +3573,18 @@
         "iconUrl": "Icon URL",
         "iconUrlHint": "Direct link to a PNG or SVG (e.g. a CDN URL)."
       },
+      "reorderRow": "Reorder image",
+      "reorderBlocked": "Clear the sort and search to reorder images.",
+      "kinds": {
+        "vm": "VM Images",
+        "loadBalancer": "Load Balancer",
+        "vpnGateway": "VPN Gateway",
+        "firewall": "Firewall",
+        "database": "Database",
+        "k8sControlPlane": "K8s Control Plane",
+        "k8sWorker": "K8s Worker"
+      },
+      "kindComingSoon": "Nothing here yet. This tab is reserved for appliance images, which are not catalogued yet.",
       "versions": {
         "title": "Versions",
         "manage": "Manage versions",
@@ -4224,6 +4172,8 @@
       "imageCreated": "Image created",
       "imageUpdated": "Image updated",
       "imageDeleted": "Image deleted",
+      "imageOrderSaved": "Image order updated",
+      "imageOrderFailed": "Could not save the new image order",
       "imageFailed": "Couldn’t save the image",
       "imageDeleteFailed": "Couldn’t delete the image",
       "vmPriceCreated": "VM price created",
@@ -5492,7 +5442,6 @@
   "supportTickets": {
     "title": "Support Tickets",
     "subtitle": "Raise and track support requests for your account.",
-    "create": "Create Ticket",
     "empty": "No support tickets yet",
     "emptySubtitle": "Open a ticket and our team will pick it up by priority.",
     "stats": {
@@ -7332,7 +7281,6 @@
   "ipSets": {
     "title": "IP sets",
     "subtitle": "Named lists of CIDRs you can reuse as the source of a security group rule.",
-    "create": "Create IP set",
     "empty": "No IP sets yet",
     "emptySubtitle": "An IP set is a named list of CIDRs — an office range, a partner's addresses — that security group rules can point at instead of repeating the list in every rule.",
     "searchPlaceholder": "Search IP sets",

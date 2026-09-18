@@ -1070,6 +1070,16 @@ export interface ReorderServicesRequest {
   ids: string[]
 }
 
+/**
+ * Every OS image family in its new order, first shown first — what dragging a
+ * row in the admin Images table sends. Whole list, not the moved row: the
+ * server refuses anything that does not name every family exactly once, so a
+ * table loaded before somebody else added one cannot scramble the order.
+ */
+export interface ReorderImagesRequest {
+  ids: string[]
+}
+
 /* ── Static IP mapping inventory ────────────────────────────────────────── */
 
 export type IpPoolStatus = "active" | "disabled" | "depleted"

@@ -1,17 +1,7 @@
 import { useCallback, useMemo, useState } from "react"
 
-import {
-  actionsColumn,
-  Button,
-  DataTable,
-  EmptyState,
-  nameColumn,
-  type RowAction,
-  textColumn,
-} from "@datadack/common-ui"
-import { Tabs, TabsList, TabsTrigger } from "@datadack/common-ui"
 import type { ColumnDef } from "@tanstack/react-table"
-import { Disc3, Layers, Pencil, Plus, RefreshCw, Trash2 } from "lucide-react"
+import { Construction, Disc3, Layers, Pencil, Plus, RefreshCw, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
@@ -19,8 +9,21 @@ import { ConfirmDialog, PageHeader } from "@/components/console"
 import { useQueryParamState } from "@/hooks/use-query-param-state"
 import { useScreen } from "@/services/api/screen"
 
+import {
+  actionsColumn,
+  Button,
+  DataTable,
+  EmptyState,
+  nameColumn,
+  type RowAction,
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  textColumn,
+} from "@datadack/common-ui"
+
 import { ActiveBadge } from "../components/ActiveBadge"
-import { useAdminImages, useDeleteImage } from "../superadmin.hooks"
+import { useAdminImages, useDeleteImage, useReorderImages } from "../superadmin.hooks"
 import type { Image } from "../superadmin.types"
 import { ImageFormSheet } from "./ImageFormSheet"
 
@@ -28,6 +31,35 @@ import { ImageFormSheet } from "./ImageFormSheet"
 // operator can share or come back to.
 const ACTIVE_FILTERS = ["all", "active", "inactive"] as const
 type ActiveFilter = (typeof ACTIVE_FILTERS)[number]
+
+/**
+ * What an image is FOR. Only "vm" is backed by anything today — the appliance
+ * kinds are tabs over an empty shelf, put here so the shape of the page is
+ * settled before the images behind them exist. Each one needs a catalog of its
+ * own (an image carries no kind yet), so they stay deliberately inert rather
+ * than filtering the VM list down to nothing and reading as a bug.
+ */
+const IMAGE_KINDS = [
+  "vm",
+  "load-balancer",
+  "vpn-gateway",
+  "firewall",
+  "database",
+  "k8s-control-plane",
+  "k8s-worker",
+] as const
+type ImageKind = (typeof IMAGE_KINDS)[number]
+
+// Tab label per kind. Kept beside the list so adding a kind is one edit.
+const KIND_LABEL_KEYS: Record<ImageKind, string> = {
+  vm: "superAdmin.images.kinds.vm",
+  "load-balancer": "superAdmin.images.kinds.loadBalancer",
+  "vpn-gateway": "superAdmin.images.kinds.vpnGateway",
+  firewall: "superAdmin.images.kinds.firewall",
+  database: "superAdmin.images.kinds.database",
+  "k8s-control-plane": "superAdmin.images.kinds.k8sControlPlane",
+  "k8s-worker": "superAdmin.images.kinds.k8sWorker",
+}
 
 interface ImageActionHelpers {
   t: (key: string) => string
@@ -59,6 +91,7 @@ export function ImagesPage() {
   const navigate = useNavigate()
   const { data: images = [], isLoading, isError, refetch, isFetching } = useAdminImages()
   const { mutate: removeImage, isPending: isDeleting } = useDeleteImage()
+  const { mutate: reorderImages, isPending: isReordering } = useReorderImages()
 
   const [formOpen, setFormOpen] = useState(false)
   const [editing, setEditing] = useState<Image | null>(null)
@@ -68,6 +101,8 @@ export function ImagesPage() {
     ACTIVE_FILTERS,
     "all",
   )
+  const [kind, setKind] = useQueryParamState<ImageKind>("kind", IMAGE_KINDS, "vm")
+  const isVMKind = kind === "vm"
 
   const counts = useMemo(
     () => ({
@@ -82,6 +117,25 @@ export function ImagesPage() {
     if (activeFilter === "inactive") return images.filter((i) => !i.is_active)
     return images
   }, [images, activeFilter])
+
+  // A drag under the Active/Inactive tabs reorders only the rows on screen, so
+  // the hidden families keep the slots they already held and the visible ones
+  // are dealt back into the slots they occupied. Sending just the visible subset
+  // would be refused — the server wants every family exactly once.
+  const handleReorder = useCallback(
+    (rows: Image[]) => {
+      if (activeFilter === "all") {
+        reorderImages({ ordered: rows })
+        return
+      }
+      const moved = [...rows]
+      const merged = images.map((image) =>
+        rows.some((r) => r.id === image.id) ? (moved.shift() ?? image) : image,
+      )
+      reorderImages({ ordered: merged })
+    },
+    [activeFilter, images, reorderImages],
+  )
 
   const openCreate = () => {
     setEditing(null)
@@ -188,51 +242,84 @@ export function ImagesPage() {
             >
               <RefreshCw className={`w-4 h-4 ${isFetching ? "animate-spin" : ""}`} />
             </Button>
-            <Button className="gap-2" onClick={openCreate}>
-              <Plus className="w-4 h-4" />
-              {t("superAdmin.images.add")}
-            </Button>
+            {isVMKind && (
+              <Button className="gap-2" onClick={openCreate}>
+                <Plus className="w-4 h-4" />
+                {t("superAdmin.images.add")}
+              </Button>
+            )}
           </>
         }
       />
 
       <Tabs
-        value={activeFilter}
+        value={kind}
         onValueChange={(value) => {
-          setActiveFilter(value as ActiveFilter)
+          setKind(value as ImageKind)
         }}
       >
         <TabsList>
-          <TabsTrigger value="all">
-            {t("superAdmin.images.filters.all")} ({counts.all})
-          </TabsTrigger>
-          <TabsTrigger value="active">
-            {t("superAdmin.images.filters.active")} ({counts.active})
-          </TabsTrigger>
-          <TabsTrigger value="inactive">
-            {t("superAdmin.images.filters.inactive")} ({counts.inactive})
-          </TabsTrigger>
+          {IMAGE_KINDS.map((k) => (
+            <TabsTrigger key={k} value={k}>
+              {t(KIND_LABEL_KEYS[k])}
+            </TabsTrigger>
+          ))}
         </TabsList>
       </Tabs>
 
-      <DataTable<Image>
-        data={visibleImages}
-        columns={columns}
-        loading={isLoading}
-        error={isError ? t("console.table.error") : undefined}
-        onRetry={() => void refetch()}
-        retryLabel={t("console.table.retry")}
-        getRowId={(i) => i.id}
-        onRowClick={openVersions}
-        empty={
-          <EmptyState
-            icon={Disc3}
-            title={t("superAdmin.images.empty")}
-            description={t("superAdmin.images.emptySubtitle")}
-            action={{ label: t("superAdmin.images.add"), onClick: openCreate }}
+      {isVMKind ? (
+        <>
+          <Tabs
+            value={activeFilter}
+            onValueChange={(value) => {
+              setActiveFilter(value as ActiveFilter)
+            }}
+          >
+            <TabsList>
+              <TabsTrigger value="all">
+                {t("superAdmin.images.filters.all")} ({counts.all})
+              </TabsTrigger>
+              <TabsTrigger value="active">
+                {t("superAdmin.images.filters.active")} ({counts.active})
+              </TabsTrigger>
+              <TabsTrigger value="inactive">
+                {t("superAdmin.images.filters.inactive")} ({counts.inactive})
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+
+          <DataTable<Image>
+            data={visibleImages}
+            columns={columns}
+            loading={isLoading}
+            error={isError ? t("console.table.error") : undefined}
+            onRetry={() => void refetch()}
+            retryLabel={t("console.table.retry")}
+            getRowId={(i) => i.id}
+            onRowClick={openVersions}
+            reorder={{
+              onReorder: handleReorder,
+              disabled: isReordering,
+              label: t("superAdmin.images.reorderRow"),
+              blockedHint: t("superAdmin.images.reorderBlocked"),
+            }}
+            empty={
+              <EmptyState
+                icon={Disc3}
+                title={t("superAdmin.images.empty")}
+                description={t("superAdmin.images.emptySubtitle")}
+                action={{ label: t("superAdmin.images.add"), onClick: openCreate }}
+              />
+            }
           />
-        }
-      />
+        </>
+      ) : (
+        <EmptyState
+          icon={Construction}
+          title={t(KIND_LABEL_KEYS[kind])}
+          description={t("superAdmin.images.kindComingSoon")}
+        />
+      )}
 
       <ImageFormSheet open={formOpen} onOpenChange={setFormOpen} image={editing} />
 

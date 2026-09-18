@@ -1,12 +1,22 @@
-import type { RouteObject } from "react-router-dom"
+import { Navigate, type RouteObject } from "react-router-dom"
 
 export const vpcRoutes: RouteObject[] = [
   {
-    path: "networking/route-tables",
+    path: "networking/routing",
     lazy: async () => {
-      const { RouteTablesPage } = await import("./partials/RouteTablesPage")
-      return { Component: RouteTablesPage }
+      const { RoutingPage } = await import("./partials/RoutingPage")
+      return { Component: RoutingPage }
     },
+  },
+  // Routers and route tables were separate nav entries until they merged into
+  // one Routing page; both old paths stay linkable.
+  {
+    path: "networking/route-tables",
+    element: <Navigate to="/networking/routing" replace />,
+  },
+  {
+    path: "networking/routers",
+    element: <Navigate to="/networking/routing?tab=routers" replace />,
   },
   {
     path: "networking/route-tables/:id",
@@ -92,13 +102,6 @@ export const vpcRoutes: RouteObject[] = [
     lazy: async () => {
       const { SecurityGroupDetailPage } = await import("./partials/SecurityGroupDetailPage")
       return { Component: SecurityGroupDetailPage }
-    },
-  },
-  {
-    path: "networking/routers",
-    lazy: async () => {
-      const { RoutersPage } = await import("./partials/RoutersPage")
-      return { Component: RoutersPage }
     },
   },
   {

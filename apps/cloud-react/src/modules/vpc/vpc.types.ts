@@ -328,14 +328,6 @@ export interface CreateNetworkInterfaceRequest {
   security_group_ids?: string[]
 }
 
-export interface CreateRouterRequest {
-  name: string
-  region: string
-  /** Native routing belongs to exactly one EVPN VPC. */
-  network_id: string
-  enable_snat: boolean
-}
-
 export interface CreateInternetGatewayRequest {
   name: string
   region: string

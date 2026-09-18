@@ -22,7 +22,6 @@ import type {
   UpdateIpSetRequest,
   UpdateNATGatewayRequest,
   CreateNetworkInterfaceRequest,
-  CreateRouterRequest,
   CreateSecurityGroupRequest,
   CreateSubnetRequest,
   CreateVPCRequest,
@@ -84,7 +83,6 @@ export const vpcService = {
 
   // Routers / gateways / VPN
   fetchRouters: () => routersApi.list(),
-  createRouter: (payload: CreateRouterRequest) => routersApi.create(payload),
   updateRouter: (id: string, enableSNAT: boolean) => routersApi.update(id, enableSNAT),
   removeRouter: (id: string) => routersApi.delete(id),
   fetchNATGateways: () => natGatewaysApi.list(),

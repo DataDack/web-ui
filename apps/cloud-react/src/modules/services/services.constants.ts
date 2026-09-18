@@ -124,11 +124,11 @@ export const SERVICE_REGISTRY: Record<string, ServiceDefinition> = {
         status: "operational",
       },
       {
-        id: "routers",
-        name: "Routers",
-        path: "/networking/routers",
+        id: "routing",
+        name: "Routing",
+        path: "/networking/routing",
         icon: ArrowLeftRight,
-        description: "Custom routing tables for fine-grained traffic control.",
+        description: "Route tables and the VPC routers that carry their traffic.",
         status: "operational",
       },
       {

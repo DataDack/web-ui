@@ -18,7 +18,6 @@ import type {
   UpdateIpSetRequest,
   UpdateNATGatewayRequest,
   CreateNetworkInterfaceRequest,
-  CreateRouterRequest,
   CreateSecurityGroupRequest,
   CreateSubnetRequest,
   CreateVPCRequest,
@@ -504,21 +503,6 @@ export function useRouters() {
     // configuring before settling, so poll while any row is still mid-flight.
     refetchInterval: (query) =>
       query.state.data?.some((r) => isVpcGatewayTransitional(r.status)) ? 4000 : false,
-  })
-}
-
-export function useCreateRouter() {
-  const queryClient = useQueryClient()
-  const { t } = useTranslation()
-  return useMutation({
-    mutationFn: (payload: CreateRouterRequest) => vpcService.createRouter(payload),
-    onSuccess: (router) => {
-      void queryClient.invalidateQueries({ queryKey: VPC_QUERY_KEYS.routers })
-      toast.success(t("routers.toasts.created", { name: router.name }))
-    },
-    onError: (e) => {
-      if (!handleQuotaGateError(e)) toast.error(extractError(e, t("routers.toasts.createFailed")))
-    },
   })
 }
 

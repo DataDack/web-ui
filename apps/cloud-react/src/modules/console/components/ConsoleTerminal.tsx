@@ -7,6 +7,7 @@ import { Terminal } from "@xterm/xterm"
 import "@xterm/xterm/css/xterm.css"
 
 import { consoleApi, consoleWsUrl, type ConsoleTarget } from "../console.api"
+import { CLOSE_CONSOLE_FAILED } from "../console.types"
 
 type Status = "connecting" | "connected" | "error" | "closed"
 
@@ -108,7 +109,16 @@ export function ConsoleTerminal({
             /* ignore non-JSON control frames */
           }
         }
-        ws.onclose = () => {
+        ws.onclose = (ev) => {
+          // A console that never opened says why in the close frame. The node
+          // sends the same sentence as a JSON error frame too, but only the
+          // close frame survives a socket that fails before the first message.
+          if (ev.code === CLOSE_CONSOLE_FAILED && ev.reason) {
+            setStatus("error")
+            setError(ev.reason)
+            term.writeln(`\r\n\x1b[31m✖ ${ev.reason}\x1b[0m`)
+            return
+          }
           setStatus((s) => (s === "error" ? s : "closed"))
         }
         ws.onerror = () => {

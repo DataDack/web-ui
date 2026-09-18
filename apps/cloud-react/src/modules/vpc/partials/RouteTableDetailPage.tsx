@@ -263,7 +263,7 @@ export function RouteTableDetailPage() {
           title={table.name}
           breadcrumbs={[
             { label: "Networking", to: "/networking" },
-            { label: "Route tables", to: "/networking/route-tables" },
+            { label: "Routing", to: VPC_ROUTES.ROUTING },
             { label: table.name },
           ]}
           actions={
@@ -321,7 +321,7 @@ export function RouteTableDetailPage() {
         onConfirm={() => {
           remove.mutate(table.id, {
             onSuccess: () => {
-              void navigate("/networking/route-tables")
+              void navigate(VPC_ROUTES.ROUTING)
             },
           })
         }}

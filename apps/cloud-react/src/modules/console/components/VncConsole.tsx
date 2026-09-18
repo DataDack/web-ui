@@ -6,6 +6,7 @@ import { ClipboardType, Keyboard, Maximize, Minimize } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { consoleApi, consoleWsUrl } from "../console.api"
+import { CLOSE_CONSOLE_FAILED } from "../console.types"
 
 type Status = "connecting" | "connected" | "error" | "closed"
 
@@ -17,7 +18,6 @@ const STATUS_DOT: Record<Status, string> = {
 }
 
 /** The close code the server uses when it could not open the display. */
-const CLOSE_CONSOLE_FAILED = 4001
 
 /** Longest clipboard text "Paste as keystrokes" will type. */
 const MAX_PASTE = 512

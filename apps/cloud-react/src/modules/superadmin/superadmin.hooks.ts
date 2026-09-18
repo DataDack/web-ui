@@ -31,6 +31,7 @@ import type {
   CreateStaticIPPriceRequest,
   CreateStoragePriceRequest,
   CreateVMPriceRequest,
+  Image,
   OverviewSection,
   PaymentLedgerFilters,
   CreatePaymentRefundRequest,
@@ -753,6 +754,48 @@ export function useUploadImageIcon() {
       toast.success(t("superAdmin.toasts.iconUploaded"))
     },
     onError: (e) => toast.error(extractError(e, t("superAdmin.toasts.iconFailed"))),
+  })
+}
+
+/**
+ * Persists the drag-and-drop order of the OS image families.
+ *
+ * Optimistic for the same reason the service catalog's is: a row that snaps
+ * back while the request is in flight reads as the drop having failed. The new
+ * order goes into the cache immediately and is restored from the snapshot if
+ * the server refuses it — which it does when the list no longer matches, i.e.
+ * somebody else added or deleted a family since this table was loaded. The
+ * settle refetch is what then shows what actually changed.
+ */
+export function useReorderImages() {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (vars: { ordered: Image[] }) =>
+      superAdminApi.reorderImages({ ids: vars.ordered.map((i) => i.id) }),
+    onMutate: async (vars) => {
+      await queryClient.cancelQueries({ queryKey: SUPERADMIN_QUERY_KEYS.images })
+      const previous = queryClient.getQueryData<Image[]>(SUPERADMIN_QUERY_KEYS.images)
+      // Renumber locally too, so the Sort order column agrees with the rows
+      // instead of showing the old numbers until the refetch lands.
+      queryClient.setQueryData(
+        SUPERADMIN_QUERY_KEYS.images,
+        vars.ordered.map((image, index) => ({ ...image, sort_order: index + 1 })),
+      )
+      return { previous }
+    },
+    onError: (e, _vars, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(SUPERADMIN_QUERY_KEYS.images, context.previous)
+      }
+      toast.error(extractError(e, t("superAdmin.toasts.imageOrderFailed")))
+    },
+    onSuccess: () => {
+      toast.success(t("superAdmin.toasts.imageOrderSaved"))
+    },
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: SUPERADMIN_QUERY_KEYS.images })
+    },
   })
 }
 
