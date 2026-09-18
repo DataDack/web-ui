@@ -4,12 +4,10 @@ import {
   Boxes,
   Cloud,
   Download,
-  FileJson,
   Container,
   Layers3,
   Network,
   Rocket,
-  ShieldCheck,
   Sigma,
   Trash2,
   Zap,
@@ -39,11 +37,7 @@ import {
 import { errorMessage } from "./errorMessage"
 import {
   useApi,
-  useCreateModel,
-  useDeleteModel,
   useExportApi,
-  useModels,
-  useAuthorizers,
   useCreateDeployment,
   useCreateIntegration,
   useCreateRoute,
@@ -108,8 +102,7 @@ export function ApiDetailPage() {
 
       <div className="mb-6 flex flex-wrap items-center gap-2">
         <Badge variant="outline" className="gap-1.5 font-mono text-[11px]">
-          {apiId}
-          <CopyButton value={apiId} />
+          <CopyButton value={apiId} className="text-[11px]" />
         </Badge>
         <Badge variant="outline" className="font-mono text-[11px]">
           {api?.protocolType ?? "HTTP"}
@@ -136,8 +129,7 @@ export function ApiDetailPage() {
         ) : null}
         {api?.apiEndpoint ? (
           <Badge variant="outline" className="gap-1.5 font-mono text-[11px]">
-            {api.apiEndpoint}
-            <CopyButton value={api.apiEndpoint} />
+            <CopyButton value={api.apiEndpoint} className="text-[11px]" />
           </Badge>
         ) : null}
       </div>
@@ -152,8 +144,6 @@ export function ApiDetailPage() {
           <TabsTrigger value="integrations">Integrations</TabsTrigger>
           <TabsTrigger value="stages">Stages</TabsTrigger>
           <TabsTrigger value="deployments">Deployments</TabsTrigger>
-          <TabsTrigger value="authorizers">Authorizers</TabsTrigger>
-          <TabsTrigger value="models">Models</TabsTrigger>
         </TabsList>
 
         <TabsContent value="routes" className="mt-4">
@@ -167,12 +157,6 @@ export function ApiDetailPage() {
         </TabsContent>
         <TabsContent value="deployments" className="mt-4">
           <DeploymentsTab apiId={apiId} />
-        </TabsContent>
-        <TabsContent value="authorizers" className="mt-4">
-          <AuthorizersTab apiId={apiId} />
-        </TabsContent>
-        <TabsContent value="models" className="mt-4">
-          <ModelsTab apiId={apiId} />
         </TabsContent>
       </Tabs>
     </>
@@ -615,35 +599,6 @@ function DeploymentsTab({ apiId }: Readonly<{ apiId: string }>) {
   )
 }
 
-function AuthorizersTab({ apiId }: Readonly<{ apiId: string }>) {
-  const { data: authorizers } = useAuthorizers(apiId)
-
-  return (
-    <Panel title="Authorizers">
-      {(authorizers ?? []).length === 0 ? (
-        <EmptyState
-          icon={ShieldCheck}
-          title="No authorizers"
-          description="A JWT authorizer validates a token before a route is reached."
-        />
-      ) : (
-        (authorizers ?? []).map((authorizer) => (
-          <Row
-            key={authorizer.authorizerId}
-            title={authorizer.name}
-            subtitle={orElse(authorizer.jwtConfiguration?.issuer, authorizer.authorizerUri)}
-            badges={
-              <Badge variant="secondary" className="font-mono text-[10px]">
-                {authorizer.authorizerType}
-              </Badge>
-            }
-          />
-        ))
-      )}
-    </Panel>
-  )
-}
-
 /**
  * Downloads the API's OpenAPI definition.
  *
@@ -684,97 +639,5 @@ function ExportButton({ apiId }: Readonly<{ apiId: string }>) {
         </p>
       ) : null}
     </>
-  )
-}
-
-/**
- * Models: the JSON Schemas a route validates a request body against.
- *
- * A platform extension rather than an apigatewayv2 resource, which is why the
- * tab is last: it is the one thing here an SDK client cannot also manage.
- */
-function ModelsTab({ apiId }: Readonly<{ apiId: string }>) {
-  const { data: models } = useModels(apiId)
-  const create = useCreateModel(apiId)
-  const remove = useDeleteModel(apiId)
-  const [name, setName] = useState("")
-  const [schema, setSchema] = useState("")
-
-  return (
-    <Panel
-      title="Add model"
-      form={
-        <div className="flex flex-wrap items-end gap-2">
-          <div className="flex min-w-40 flex-col gap-1.5">
-            <Label htmlFor="model-name">Name</Label>
-            <Input
-              id="model-name"
-              placeholder="Pet"
-              value={name}
-              onChange={(event) => {
-                setName(event.target.value)
-              }}
-            />
-          </div>
-          <div className="flex min-w-64 flex-1 flex-col gap-1.5">
-            <Label htmlFor="model-schema">JSON Schema</Label>
-            <Input
-              id="model-schema"
-              placeholder={'{"type":"object"}'}
-              value={schema}
-              onChange={(event) => {
-                setSchema(event.target.value)
-              }}
-            />
-          </div>
-          <Button
-            variant="gold"
-            disabled={!name.trim() || !schema.trim() || create.isPending}
-            onClick={() => {
-              create.mutate(
-                { name: name.trim(), schema: schema.trim(), contentType: "application/json" },
-                {
-                  onSuccess: () => {
-                    setName("")
-                    setSchema("")
-                  },
-                },
-              )
-            }}
-          >
-            Add
-          </Button>
-        </div>
-      }
-    >
-      {create.error ? (
-        <p className="text-status-danger mb-2 text-xs">
-          {errorMessage(create.error, "Could not create the model")}
-        </p>
-      ) : null}
-      {(models ?? []).length === 0 ? (
-        <EmptyState
-          icon={FileJson}
-          title="No models"
-          description="A model is the JSON Schema a route validates a request body against."
-        />
-      ) : (
-        (models ?? []).map((model) => (
-          <Row
-            key={model.modelId}
-            title={model.name}
-            subtitle={model.schema}
-            badges={
-              <Badge variant="secondary" className="font-mono text-[10px]">
-                {model.contentType}
-              </Badge>
-            }
-            onDelete={() => {
-              remove.mutate(model.modelId)
-            }}
-          />
-        ))
-      )}
-    </Panel>
   )
 }

@@ -29,6 +29,10 @@ export interface Disk {
    */
   instance_id: string
   device_name: string
+  /** Where the filesystem landed inside the guest ("D:", "/mnt/data"), or "". */
+  guest_device: string
+  /** Tenant-safe note on the last attach (needs a restart, no filesystem yet), or "". */
+  placement_detail: string
   user_id: string
   tags: string
   multi_attach: boolean

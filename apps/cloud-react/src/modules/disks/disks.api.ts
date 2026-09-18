@@ -37,6 +37,8 @@ interface RawDisk {
   // ("00000000-…") / "" when the disk is not attached to any instance.
   instance_id?: string
   device_name?: string
+  guest_device?: string
+  placement_detail?: string
   user_id: number | string
   tags?: string
 }
@@ -75,6 +77,8 @@ function toDisk(raw: RawDisk): Disk {
     // compare against a string instance id and render a dash when empty.
     instance_id: normalizeInstanceId(raw.instance_id),
     device_name: raw.device_name ?? "",
+    guest_device: raw.guest_device ?? "",
+    placement_detail: raw.placement_detail ?? "",
     user_id: String(raw.user_id),
     tags: raw.tags ?? "{}",
   }

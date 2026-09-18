@@ -1,7 +1,7 @@
 import { useState } from "react"
 
 import { FileInput } from "lucide-react"
-import { useNavigate, useSearchParams } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 
 import { Checkbox, Input, Label, PageHeader } from "@datadack/common-ui"
 
@@ -13,15 +13,12 @@ import type { ImportApiResult } from "../../data/schemas"
 import { errorMessage } from "../errorMessage"
 
 /**
- * Import an HTTP or REST API from an OpenAPI definition — the "Import" button
- * on the type chooser. The protocol comes from the button that led here.
+ * Import an HTTP API from an OpenAPI definition — the "Import" button on the
+ * API list. HTTP is the only kind of API this console creates.
  */
 export function ImportApiPage() {
   const navigate = useNavigate()
   const base = useGatewayBase()
-  const [params] = useSearchParams()
-  const protocol = params.get("type") === "REST" ? "REST" : "HTTP"
-  const label = protocol === "REST" ? "REST API" : "HTTP API"
 
   const importApi = useImportApi()
   const [body, setBody] = useState("")
@@ -44,7 +41,7 @@ export function ImportApiPage() {
     setAttempted(true)
     if (bodyError || nameError || needsName) return
     importApi.mutate(
-      { body, name: name.trim() || undefined, failOnWarnings, protocolType: protocol },
+      { body, name: name.trim() || undefined, failOnWarnings, protocolType: "HTTP" },
       {
         onSuccess: (imported) => {
           if (imported.warnings.length > 0) setResult(imported)
@@ -57,13 +54,9 @@ export function ImportApiPage() {
   return (
     <div className="mx-auto w-full max-w-4xl">
       <PageHeader
-        title={`Import ${label}`}
+        title="Import HTTP API"
         icon={FileInput}
-        breadcrumbs={[
-          { label: "API Gateway", to: base },
-          { label: "Create API", to: `${base}/create` },
-          { label: `Import ${label}` },
-        ]}
+        breadcrumbs={[{ label: "API Gateway", to: base }, { label: "Import HTTP API" }]}
         renderLink={crumbLink}
         description="Create an API, with its routes, from an existing OpenAPI definition."
       />
@@ -126,7 +119,7 @@ export function ImportApiPage() {
 
       <WizardFooter
         onCancel={() => {
-          void navigate(`${base}/create`)
+          void navigate(base)
         }}
         primaryLabel="Import"
         primaryLoading={importApi.isPending}

@@ -610,7 +610,20 @@ function DisksTab({ instance }: Readonly<{ instance: Instance }>) {
               )}
             </span>
             {row.original.device_name && (
-              <span className="text-[11px] text-muted-foreground">{row.original.device_name}</span>
+              <span className="text-[11px] text-muted-foreground">
+                {row.original.device_name}
+                {row.original.guest_device &&
+                  ` · ${t("vms.detail.diskInGuest", { device: row.original.guest_device })}`}
+              </span>
+            )}
+            {/* The node can attach a disk and still leave work for the tenant:
+                a restart before it appears, or a filesystem the guest could
+                not create. Said here, rather than leaving them to look for a
+                drive that is not in Explorer. */}
+            {row.original.placement_detail && !row.original.is_boot && (
+              <span className="block max-w-md font-sans text-[11px] font-normal text-status-warning">
+                {row.original.placement_detail}
+              </span>
             )}
           </div>
         ),

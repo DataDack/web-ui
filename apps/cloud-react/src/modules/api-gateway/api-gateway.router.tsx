@@ -15,21 +15,45 @@ import type { RouteObject } from "react-router-dom"
  * ordering that keeps "domains" from being read as an API id — and repeating
  * that here is how the two get out of step.
  */
+type ApiGatewayPage = "ApiGatewayRoutes" | "CreateApiWizard" | "ImportApiPage"
+
+/** Loads one of the package's screens inside this app's provider. */
+function section(page: ApiGatewayPage): RouteObject["lazy"] {
+  return async () => {
+    const [{ ApiGatewaySection }, pkg] = await Promise.all([
+      import("./ApiGatewaySection"),
+      import("@datadack/api-gateway"),
+    ])
+    const Page = pkg[page]
+    return {
+      Component: () => (
+        <ApiGatewaySection>
+          <Page />
+        </ApiGatewaySection>
+      ),
+    }
+  }
+}
+
+/*
+ * The create screens are matched here, ahead of the splat, only so they can
+ * carry `hideSidebar` like every other create surface in the console. They
+ * render the package's own pages, which find their way back to the list from
+ * the URL (useGatewayBase), so nothing about their routing is duplicated.
+ */
 export const apiGatewayRoutes: RouteObject[] = [
   {
+    path: "api-gateway/create",
+    handle: { hideSidebar: true },
+    lazy: section("CreateApiWizard"),
+  },
+  {
+    path: "api-gateway/create/import",
+    handle: { hideSidebar: true },
+    lazy: section("ImportApiPage"),
+  },
+  {
     path: "api-gateway/*",
-    lazy: async () => {
-      const [{ ApiGatewaySection }, { ApiGatewayRoutes }] = await Promise.all([
-        import("./ApiGatewaySection"),
-        import("@datadack/api-gateway"),
-      ])
-      return {
-        Component: () => (
-          <ApiGatewaySection>
-            <ApiGatewayRoutes />
-          </ApiGatewaySection>
-        ),
-      }
-    },
+    lazy: section("ApiGatewayRoutes"),
   },
 ]

@@ -3,9 +3,7 @@ import { Route, Routes } from "react-router-dom"
 import { ApiDetailPage } from "./ApiDetailPage"
 import { ApiGatewayPage } from "./ApiGatewayPage"
 import { ApiKeysPage } from "./ApiKeysPage"
-import { ChooseApiTypePage } from "./create/ChooseApiTypePage"
 import { CreateApiWizard } from "./create/CreateApiWizard"
-import { CreateRestApiPage } from "./create/CreateRestApiPage"
 import { ImportApiPage } from "./create/ImportApiPage"
 import { CustomDomainsPage } from "./CustomDomainsPage"
 import { UsagePlansPage } from "./UsagePlansPage"
@@ -24,13 +22,9 @@ export function ApiGatewayRoutes() {
   return (
     <Routes>
       <Route index element={<ApiGatewayPage />} />
-      <Route path="create" element={<ChooseApiTypePage />} />
-      <Route path="create/http" element={<CreateApiWizard key="http" protocol="HTTP" />} />
-      <Route
-        path="create/websocket"
-        element={<CreateApiWizard key="websocket" protocol="WEBSOCKET" />}
-      />
-      <Route path="create/rest" element={<CreateRestApiPage />} />
+      {/* HTTP is the only kind of API this console creates, so "create" is the
+          wizard itself rather than a type chooser in front of it. */}
+      <Route path="create" element={<CreateApiWizard />} />
       <Route path="create/import" element={<ImportApiPage />} />
       <Route path="domains" element={<CustomDomainsPage />} />
       <Route path="keys" element={<ApiKeysPage />} />

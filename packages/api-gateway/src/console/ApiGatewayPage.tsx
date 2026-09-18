@@ -1,7 +1,7 @@
 import { useMemo } from "react"
 
 import type { ColumnDef } from "@tanstack/react-table"
-import { Globe2, Network, Plus, Router, ShieldCheck } from "lucide-react"
+import { FileInput, Globe2, Network, Plus, Router, ShieldCheck } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
 
 import {
@@ -13,7 +13,6 @@ import {
   PageHeader,
   StatCard,
   StatGrid,
-  cellMono,
   cellText,
   timeAgo,
 } from "@datadack/common-ui"
@@ -61,12 +60,7 @@ export function ApiGatewayPage() {
       {
         accessorKey: "apiId",
         header: "API ID",
-        cell: ({ row }) => (
-          <div className="flex items-center gap-1.5">
-            {cellMono(row.original.apiId)}
-            <CopyButton value={row.original.apiId} />
-          </div>
-        ),
+        cell: ({ row }) => <CopyButton value={row.original.apiId} />,
       },
       {
         accessorKey: "protocolType",
@@ -115,16 +109,26 @@ export function ApiGatewayPage() {
         icon={Network}
         description="HTTP APIs, their routes, integrations, stages and custom domains. Configuration only — the edge does not serve from these tables yet."
         actions={
-          <Button
-            variant="gold"
-            onClick={() => {
-              // Relative: this console is mounted at /apigateway in one app and
-              // at .../api-gateway in the other.
-              void navigate("create")
-            }}
-          >
-            <Plus /> Create API
-          </Button>
+          <>
+            <Button
+              variant="outline"
+              onClick={() => {
+                void navigate("create/import")
+              }}
+            >
+              <FileInput /> Import OpenAPI
+            </Button>
+            <Button
+              variant="gold"
+              onClick={() => {
+                // Relative: this console is mounted at /apigateway in one app and
+                // at .../api-gateway in the other.
+                void navigate("create")
+              }}
+            >
+              <Plus /> Create API
+            </Button>
+          </>
         }
       />
 

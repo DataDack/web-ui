@@ -9,9 +9,7 @@
 
 export { ApiGatewayRoutes } from "./console/ApiGatewayRoutes"
 export { ApiGatewayPage } from "./console/ApiGatewayPage"
-export { ChooseApiTypePage } from "./console/create/ChooseApiTypePage"
 export { CreateApiWizard } from "./console/create/CreateApiWizard"
-export { CreateRestApiPage } from "./console/create/CreateRestApiPage"
 export { ImportApiPage } from "./console/create/ImportApiPage"
 export { ApiDetailPage } from "./console/ApiDetailPage"
 export { CustomDomainsPage } from "./console/CustomDomainsPage"

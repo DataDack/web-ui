@@ -227,8 +227,7 @@ function MappingsPanel({
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-1.5">
-          <span className="font-mono text-sm">{domainName}</span>
-          <CopyButton value={domainName} />
+          <CopyButton value={domainName} className="text-foreground text-sm" />
         </div>
         <Button variant="ghost" size="sm" onClick={onDeleteDomain}>
           <Trash2 className="size-3.5" /> Delete domain

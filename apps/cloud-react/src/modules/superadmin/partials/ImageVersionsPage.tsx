@@ -47,6 +47,7 @@ import { useQueryParamState } from "@/hooks/use-query-param-state"
 import { useScreen } from "@/services/api/screen"
 
 import { ActiveBadge } from "../components/ActiveBadge"
+import { sortVersionsByVmid } from "../image-utils"
 import { useAdminImages, useDeleteImageVersion, useSaveImageVersion } from "../superadmin.hooks"
 import type {
   AddImageVersionRequest,
@@ -172,7 +173,7 @@ export function ImageVersionsPage() {
   }, [image])
 
   const visibleVersions = useMemo(() => {
-    const versions = image?.versions ?? []
+    const versions = sortVersionsByVmid(image?.versions ?? [])
     if (statusFilter === "all") return versions
     return versions.filter((version) => version.status === statusFilter)
   }, [image, statusFilter])

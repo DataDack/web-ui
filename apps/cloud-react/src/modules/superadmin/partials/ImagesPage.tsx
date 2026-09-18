@@ -23,6 +23,7 @@ import {
 } from "@datadack/common-ui"
 
 import { ActiveBadge } from "../components/ActiveBadge"
+import { sortVersionsByVmid } from "../image-utils"
 import { useAdminImages, useDeleteImage, useReorderImages } from "../superadmin.hooks"
 import type { Image } from "../superadmin.types"
 import { ImageFormSheet } from "./ImageFormSheet"
@@ -197,11 +198,9 @@ export function ImagesPage() {
         id: "vmids",
         header: t("superAdmin.images.fields.vmids"),
         accessor: (i) => {
-          const ids = i.versions
+          const ids = sortVersionsByVmid(i.versions)
             .filter((v) => (v.vmid ?? 0) > 0)
-            .map((v) => v.vmid as number)
-            .sort((a, b) => a - b)
-            .map(String)
+            .map((v) => String(v.vmid))
           return ids.length > 0 ? ids.join(", ") : null
         },
         mono: true,

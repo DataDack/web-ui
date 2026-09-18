@@ -121,8 +121,10 @@ export function ApiKeysPage() {
             explicit reveal.
           </p>
           <div className="flex items-center gap-1.5">
-            <code className="bg-card rounded px-2 py-1 font-mono text-[12px]">{issued.value}</code>
-            <CopyButton value={issued.value} />
+            <CopyButton
+              value={issued.value}
+              className="bg-card text-foreground rounded px-2 py-1"
+            />
             <Button
               variant="ghost"
               size="sm"
@@ -229,8 +231,7 @@ function ApiKeyRow({
       <div className="min-w-0">
         <div className="font-mono text-[13px] font-medium">{apiKey.name}</div>
         <div className="text-muted-foreground flex items-center gap-1.5 font-mono text-[11px]">
-          {secret ?? apiKey.maskedValue}
-          {secret ? <CopyButton value={secret} /> : null}
+          {secret ? <CopyButton value={secret} className="text-[11px]" /> : apiKey.maskedValue}
           {apiKey.customerId ? <span>· {apiKey.customerId}</span> : null}
         </div>
       </div>
