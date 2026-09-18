@@ -78,6 +78,7 @@ import type {
   AdminResourceFilters,
   AdminResourceInventory,
   AccountSpend,
+  UsageReport,
   OverviewSection,
   PlatformOverview,
   PaymentLedgerEntry,
@@ -456,6 +457,10 @@ export const superAdminApi = {
   /* account active-spend summary (monthly run-rate, per-kind breakdown, wallet) */
   getAccountSpend: (accountId: string) =>
     apiGet<AccountSpend>(`/billing/charge/accounts/${accountId}/spend`),
+  getAccountUsageReport: (accountId: string, month: string) =>
+    apiGet<UsageReport>(
+      `/billing/charge/accounts/${accountId}/usage-report?month=${encodeURIComponent(month)}`,
+    ),
 
   /* quota increase requests (apps/quotas) — keyed on the support ticket the
 	   request was filed as. There is no list here on purpose: quota tickets are

@@ -3190,6 +3190,7 @@
       "tenancy": "Tenancy",
       "resources": "Resources",
       "ledger": "Ledger",
+      "usageReports": "Usage reports",
       "groups": {
         "tenancy": "Tenancy",
         "attention": "Needs attention",

@@ -1605,6 +1605,45 @@ export interface DeleteAccountResponse {
   cleanup_started: boolean
 }
 
+// One billed line of a usage report: a resource's net consumption in the month
+// after credits returned for failed resources are netted off.
+export interface UsageReportLine {
+  ledger_id: string
+  posted_at: string
+  module: string // compute | storage | network | loadbalancer | …
+  service: string
+  resource_urn: string
+  description: string
+  quantity: number
+  unit: string
+  price: number // credits per unit
+  credits: number
+}
+
+export interface UsageReportModule {
+  module: string
+  resources: number
+  credits: number
+}
+
+// One account's credit usage for one UTC month (super-admin only:
+// /billing/charge/accounts/:accountId/usage-report?month=YYYY-MM).
+// "statement" = the closed month's immutable snapshot the customer received;
+// "live" = read from the ledger for a month not closed yet, still moving.
+export interface UsageReport {
+  account_id: string
+  month: string
+  currency: string
+  source: "statement" | "live"
+  opening_balance: number
+  credits_added: number
+  credits_used: number
+  closing_balance: number
+  usage_credits: number
+  by_module: UsageReportModule[]
+  lines: UsageReportLine[]
+}
+
 // Active-spend rollup for one resource family, projected to a monthly run-rate.
 export interface AccountSpendKind {
   kind: string // compute | storage | network | loadbalancer

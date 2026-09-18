@@ -89,6 +89,15 @@ export const superadminRoutes: RouteObject[] = [
         },
       },
       {
+        // One account's credit usage for one month, picked by user. Billing is
+        // per account, so a user in several accounts picks which one too.
+        path: "usage-reports",
+        lazy: async () => {
+          const { UsageReportsPage } = await import("./partials/UsageReportsPage")
+          return { Component: UsageReportsPage }
+        },
+      },
+      {
         path: "accounts/:accountId/resources",
         lazy: async () => {
           const { AccountResourcesPage } = await import("./partials/AccountResourcesPage")

@@ -1295,6 +1295,19 @@ export function useAdminAccountSpend(accountId: string | undefined) {
   })
 }
 
+// One account's credit usage for one month. Disabled until both are chosen.
+export function useAdminUsageReport(accountId: string | undefined, month: string | undefined) {
+  return useQuery({
+    queryKey: [...SUPERADMIN_QUERY_KEYS.usageReport, accountId ?? "", month ?? ""] as const,
+    queryFn: () => {
+      if (!accountId || !month) throw new Error("accountId and month are required")
+      return superAdminApi.getAccountUsageReport(accountId, month)
+    },
+    enabled: !!accountId && !!month,
+    staleTime: 30 * 1000,
+  })
+}
+
 export function useDeleteAccount() {
   const queryClient = useQueryClient()
   const { t } = useTranslation()
