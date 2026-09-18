@@ -26,7 +26,7 @@ import {
 } from "@datadack/common-ui"
 import { zodResolver } from "@hookform/resolvers/zod"
 import type { ColumnDef } from "@tanstack/react-table"
-import { ArrowRightLeft, Plus, RefreshCw, Search, Trash2 } from "lucide-react"
+import { ArrowRightLeft, Plus, Power, PowerOff, RefreshCw, Search, Trash2 } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { z } from "zod/v4"
@@ -42,6 +42,7 @@ import {
   useAllSubnets,
   useCreateNATGateway,
   useDeleteNATGateway,
+  useUpdateNATGateway,
   useNATGateways,
   useStaticIPs,
   useVPCs,
@@ -292,6 +293,7 @@ export function NatGatewaysPage() {
   const { data: subnets = [] } = useAllSubnets()
   const { data: staticIps = [] } = useStaticIPs()
   const { mutate: deleteNat, isPending: isDeleting } = useDeleteNATGateway()
+  const { mutate: updateNat } = useUpdateNATGateway()
 
   const [query, setQuery] = useState("")
   const [createOpen, setCreateOpen] = useState(false)
@@ -361,6 +363,24 @@ export function NatGatewaysPage() {
           </Badge>
         ),
       },
+      {
+        id: "translation",
+        accessorFn: (n: NATGateway) => (n.enabled ? "enabled" : "disabled"),
+        header: () => t("natGateways.columns.translation"),
+        meta: { responsive: "md" },
+        // Worth its own column rather than folding into status: a disabled
+        // gateway still reports "available", because the resource is healthy —
+        // it is just not translating. Reading status alone would suggest egress
+        // works.
+        cell: ({ row }) => (
+          <Badge
+            variant={row.original.enabled ? "outline" : "secondary"}
+            className="font-mono text-[11px]"
+          >
+            {t(`natGateways.badges.${row.original.enabled ? "enabled" : "disabled"}`)}
+          </Badge>
+        ),
+      },
       copyColumn<NATGateway>({
         id: "eip",
         header: t("natGateways.columns.eip"),
@@ -373,7 +393,16 @@ export function NatGatewaysPage() {
       }),
       actionsColumn<NATGateway>({
         ariaLabel: t("console.table.actions"),
-        actions: () => [
+        actions: (row) => [
+          {
+            label: row.enabled
+              ? t("natGateways.actions.disable")
+              : t("natGateways.actions.enable"),
+            icon: row.enabled ? PowerOff : Power,
+            onAction: (target) => {
+              updateNat({ id: target.id, enabled: !target.enabled })
+            },
+          },
           {
             label: t("natGateways.actions.delete"),
             icon: Trash2,
@@ -385,7 +414,7 @@ export function NatGatewaysPage() {
         ],
       }),
     ],
-    [t, subnetNames, staticIpAddresses],
+    [t, subnetNames, staticIpAddresses, updateNat],
   )
 
   return (

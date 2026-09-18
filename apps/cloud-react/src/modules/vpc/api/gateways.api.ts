@@ -8,6 +8,7 @@ import type {
   InternetGatewayStatus,
   NATGateway,
   NATGatewayStatus,
+  UpdateNATGatewayRequest,
   Router,
   VPNConnection,
   VPNConnectionStatus,
@@ -68,6 +69,10 @@ interface RawNATGateway {
   static_ip_id: string
   connectivity: string
   status: string
+  /** Absent on rows written before the column existed; those were translating,
+   *  so absence reads as enabled. */
+  enabled?: boolean
+  status_reason?: string
   user_id: string
 }
 
@@ -88,6 +93,7 @@ function toNATGateway(raw: RawNATGateway): NATGateway {
     static_ip_id: raw.static_ip_id && raw.static_ip_id !== ZERO_UUID ? raw.static_ip_id : undefined,
     connectivity: (raw.connectivity || "public") as NATGateway["connectivity"],
     status: raw.status as NATGatewayStatus,
+    enabled: raw.enabled ?? true,
     user_id: raw.user_id,
   }
 }
@@ -103,6 +109,17 @@ export const natGatewaysApi = {
     if (payload.static_ip_id) body.static_ip_id = payload.static_ip_id
     if (payload.connectivity) body.connectivity = payload.connectivity
     const raw = await apiPost<RawNATGateway>(NAT_BASE, body)
+    return toNATGateway(raw)
+  },
+
+  /** Rename, or turn outbound translation on/off without deleting the gateway.
+   *  `enabled` is sent only when the caller passes it, so a rename cannot be
+   *  read as a request to disable. */
+  update: async (id: string, payload: UpdateNATGatewayRequest): Promise<NATGateway> => {
+    const body: Record<string, unknown> = {}
+    if (payload.name !== undefined) body.name = payload.name
+    if (payload.enabled !== undefined) body.enabled = payload.enabled
+    const raw = await apiPut<RawNATGateway>(`${NAT_BASE}/${id}`, body)
     return toNATGateway(raw)
   },
 

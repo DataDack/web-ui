@@ -10,9 +10,10 @@ export interface RawSGRule {
   protocol: string // tcp | udp | icmp | all
   port_from: number
   port_to: number
-  source_type: string // cidr | security_group
+  source_type: string // cidr | security_group | ip_set
   source_cidr: string
   source_sg_id: string | null
+  source_ip_set_id?: string | null
   action: string // allow | deny
   description: string
 }

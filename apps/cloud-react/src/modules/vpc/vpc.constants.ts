@@ -36,6 +36,8 @@ export const VPC_QUERY_KEYS = {
   vpn: ["vpc", "vpn"] as const,
   peerings: ["vpc", "peerings"] as const,
   sgScoping: (vpcId: string) => ["vpc", "sg-scoping", vpcId] as const,
+  ipSets: ["vpc", "ip-sets"] as const,
+  ipSetDetail: (id: string) => ["vpc", "ip-sets", "detail", id] as const,
 }
 
 // Gateway resources (routers, NAT/internet gateways, VPN connections) all

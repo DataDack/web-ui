@@ -71,7 +71,11 @@ export interface SecurityGroup {
 export type SGDirection = "ingress" | "egress"
 export type SGProtocol = "tcp" | "udp" | "icmp" | "all"
 export type SGRuleAction = "allow" | "deny"
-export type SGSourceType = "cidr" | "security_group"
+/** A rule's source is exactly one of: a literal CIDR, another security group
+ *  (AWS SG-referencing rules), or a named CIDR list (AWS prefix lists). The last
+ *  two both compile to an address-set reference on the cluster; they differ only
+ *  in where the addresses come from. */
+export type SGSourceType = "cidr" | "security_group" | "ip_set"
 
 export interface SGRule {
   id: string
@@ -84,6 +88,8 @@ export interface SGRule {
   /** Normalized from backend `source_cidr`. */
   source: string
   source_sg_id: string | null
+  /** Set when source_type is "ip_set". */
+  source_ip_set_id: string | null
   action: SGRuleAction
   description: string
 }
@@ -205,6 +211,9 @@ export interface NATGateway {
   static_ip_id?: string
   connectivity: NATGatewayConnectivity
   status: NATGatewayStatus
+  /** False stops outbound translation without deleting the gateway. Rows that
+   *  predate the column read as enabled, which is what they were doing. */
+  enabled: boolean
   user_id: string
 }
 
@@ -292,7 +301,13 @@ export interface AddSGRuleRequest {
   direction: SGDirection
   protocol: SGProtocol
   port_range: string
+  /** Defaults to "cidr" when omitted, which is what every caller sent before
+   *  security groups and IP sets became selectable sources. */
+  source_type?: SGSourceType
+  /** The CIDR, when source_type is "cidr". Ignored for the other two. */
   source: string
+  source_sg_id?: string
+  source_ip_set_id?: string
   action: SGRuleAction
   description?: string
 }
@@ -333,6 +348,63 @@ export interface CreateNATGatewayRequest {
   static_ip_id?: string
   /** Defaults to "public" server-side when omitted. */
   connectivity?: NATGatewayConnectivity
+}
+
+/** PATCH body for a NAT gateway. Both fields are optional: renaming must not be
+ *  read as a request to disable, so `enabled` is only sent when it changed. */
+export interface UpdateNATGatewayRequest {
+  name?: string
+  enabled?: boolean
+}
+
+/* ── IP sets (named CIDR lists, AWS prefix lists) ───────────────────────── */
+
+export type IPSetIPVersion = "ipv4" | "ipv6"
+
+export interface IPSetEntry {
+  id: string
+  ip_set_id: string
+  cidr: string
+  comment: string
+  created_at: string
+}
+
+export interface IPSet {
+  id: string
+  created_at: string
+  updated_at: string
+  name: string
+  description: string
+  ip_version: IPSetIPVersion
+  /** Present on the detail read; the list endpoint does not expand entries. */
+  entries?: IPSetEntry[]
+  entry_count?: number
+}
+
+export interface CreateIPSetRequest {
+  name: string
+  description?: string
+  ip_version: IPSetIPVersion
+}
+
+/** The IP version is absent on purpose: it cannot change while the set has
+ *  entries, and an empty set is cheaper to delete and recreate. */
+export interface UpdateIPSetRequest {
+  name?: string
+  description?: string
+}
+
+export interface AddIPSetEntriesRequest {
+  entries: { cidr: string; comment?: string }[]
+}
+
+/** What a bulk add actually did. Duplicates are skipped rather than rejected —
+ *  pasting a list that overlaps what is already there is how these are
+ *  maintained, so failing the whole call over it would make the form unusable. */
+export interface AddIPSetEntriesResult {
+  added: number
+  skipped: number
+  invalid?: string[]
 }
 
 /* ── VPC peering ────────────────────────────────────────────────────────── */

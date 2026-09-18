@@ -12,7 +12,11 @@ import { vpcService } from "./vpc.service"
 import type {
   AddSGRuleRequest,
   CreateInternetGatewayRequest,
+  AddIPSetEntriesRequest,
+  CreateIPSetRequest,
   CreateNATGatewayRequest,
+  UpdateIPSetRequest,
+  UpdateNATGatewayRequest,
   CreateNetworkInterfaceRequest,
   CreateRouterRequest,
   CreateSecurityGroupRequest,
@@ -566,6 +570,132 @@ export function useCreateNATGateway() {
     onError: (e) => {
       if (!handleQuotaGateError(e)) toast.error(t("natGateways.toasts.createFailed"))
     },
+  })
+}
+
+/** Rename, or stop/resume outbound translation. `enabled` is only sent when it
+ *  is passed, so a rename never reads as a request to disable the gateway. */
+export function useUpdateNATGateway() {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: ({ id, ...payload }: UpdateNATGatewayRequest & { id: string }) =>
+      vpcService.updateNATGateway(id, payload),
+    onSuccess: (nat) => {
+      void queryClient.invalidateQueries({ queryKey: VPC_QUERY_KEYS.nat })
+      toast.success(
+        nat.enabled
+          ? t("natGateways.toasts.enabled", { name: nat.name })
+          : t("natGateways.toasts.disabled", { name: nat.name }),
+      )
+    },
+    onError: (e) => toast.error(extractError(e, t("natGateways.toasts.updateFailed"))),
+  })
+}
+
+/* ── IP sets ───────────────────────────────────────────────────────────── */
+
+export function useIPSets() {
+  return useQuery({ queryKey: VPC_QUERY_KEYS.ipSets, queryFn: vpcService.fetchIPSets })
+}
+
+export function useIPSet(id: string) {
+  return useQuery({
+    queryKey: VPC_QUERY_KEYS.ipSetDetail(id),
+    queryFn: () => vpcService.fetchIPSet(id),
+    enabled: !!id,
+  })
+}
+
+export function useCreateIPSet() {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (payload: CreateIPSetRequest) => vpcService.createIPSet(payload),
+    onSuccess: (set) => {
+      void queryClient.invalidateQueries({ queryKey: VPC_QUERY_KEYS.ipSets })
+      toast.success(t("ipSets.toasts.created", { name: set.name }))
+    },
+    onError: (e) => {
+      if (!handleQuotaGateError(e)) toast.error(t("ipSets.toasts.createFailed"))
+    },
+  })
+}
+
+export function useUpdateIPSet() {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: ({ id, ...payload }: UpdateIPSetRequest & { id: string }) =>
+      vpcService.updateIPSet(id, payload),
+    onSuccess: (set) => {
+      void queryClient.invalidateQueries({ queryKey: VPC_QUERY_KEYS.ipSets })
+      void queryClient.invalidateQueries({ queryKey: VPC_QUERY_KEYS.ipSetDetail(set.id) })
+      toast.success(t("ipSets.toasts.updated"))
+    },
+    onError: (e) => toast.error(extractError(e, t("ipSets.toasts.updateFailed"))),
+  })
+}
+
+export function useDeleteIPSet() {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: (id: string) => vpcService.removeIPSet(id),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: VPC_QUERY_KEYS.ipSets })
+      toast.success(t("ipSets.toasts.deleted"))
+    },
+    // A set still referenced by a security group rule is refused with a 409;
+    // surfacing the server's message names the rule, which "delete failed"
+    // would not.
+    onError: (e) => toast.error(extractError(e, t("ipSets.toasts.deleteFailed"))),
+  })
+}
+
+/** A bulk add is normally a PARTIAL success: duplicates are skipped and bad
+ *  CIDRs are reported rather than failing the call, so the toast reports all
+ *  three outcomes instead of a flat "saved". */
+export function useAddIPSetEntries() {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: ({ id, entries }: AddIPSetEntriesRequest & { id: string }) =>
+      vpcService.addIPSetEntries(id, { entries }),
+    onSuccess: (result, { id }) => {
+      void queryClient.invalidateQueries({ queryKey: VPC_QUERY_KEYS.ipSetDetail(id) })
+      void queryClient.invalidateQueries({ queryKey: VPC_QUERY_KEYS.ipSets })
+      if (result.invalid?.length) {
+        toast.warning(
+          t("ipSets.toasts.addedWithInvalid", {
+            added: result.added,
+            invalid: result.invalid.join(", "),
+          }),
+        )
+        return
+      }
+      toast.success(
+        result.skipped > 0
+          ? t("ipSets.toasts.addedWithSkipped", { added: result.added, skipped: result.skipped })
+          : t("ipSets.toasts.added", { added: result.added }),
+      )
+    },
+    onError: (e) => toast.error(extractError(e, t("ipSets.toasts.addFailed"))),
+  })
+}
+
+export function useRemoveIPSetEntry() {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  return useMutation({
+    mutationFn: ({ id, entryId }: { id: string; entryId: string }) =>
+      vpcService.removeIPSetEntry(id, entryId),
+    onSuccess: (_r, { id }) => {
+      void queryClient.invalidateQueries({ queryKey: VPC_QUERY_KEYS.ipSetDetail(id) })
+      void queryClient.invalidateQueries({ queryKey: VPC_QUERY_KEYS.ipSets })
+      toast.success(t("ipSets.toasts.entryRemoved"))
+    },
+    onError: (e) => toast.error(extractError(e, t("ipSets.toasts.entryRemoveFailed"))),
   })
 }
 

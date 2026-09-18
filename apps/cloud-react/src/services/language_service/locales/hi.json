@@ -91,7 +91,8 @@
         "registeredDomains": "पंजीकृत डोमेन",
         "hostnames": "डोमेन कनेक्शन",
         "apiGateway": "API गेटवे",
-        "reachability": "रीचेबिलिटी"
+        "reachability": "रीचेबिलिटी",
+        "ipSets": "IP सेट"
       },
       "soon": "जल्द आ रहा है",
       "collapse": "संकुचित करें",
@@ -1612,7 +1613,15 @@
       "save": "नियम सहेजें",
       "cancel": "संपादन रद्द करें",
       "description": "विवरण",
-      "descriptionPlaceholder": "कहीं से भी HTTPS की अनुमति दें…"
+      "descriptionPlaceholder": "कहीं से भी HTTPS की अनुमति दें…",
+      "type": "स्रोत प्रकार",
+      "cidr": "CIDR",
+      "securityGroup": "सुरक्षा समूह",
+      "ipSet": "IP सेट",
+      "selectSG": "सुरक्षा समूह चुनें",
+      "selectIPSet": "IP सेट चुनें",
+      "sgHint": "उस समूह के सदस्यों के वर्तमान पतों से मेल खाता है।",
+      "ipSetHint": "सूची के हर CIDR से मेल खाता है। सूची बदलने पर उसका उपयोग करने वाला हर नियम बदल जाता है।"
     },
     "actions": {
       "delete": "हटाएं",
@@ -6403,14 +6412,19 @@
       "status": "स्थिति",
       "subnet": "सबनेट",
       "connectivity": "कनेक्टिविटी",
-      "eip": "इलास्टिक IP"
+      "eip": "इलास्टिक IP",
+      "translation": "अनुवाद"
     },
     "badges": {
       "public": "सार्वजनिक",
-      "private": "निजी"
+      "private": "निजी",
+      "enabled": "सक्षम",
+      "disabled": "अक्षम"
     },
     "actions": {
-      "delete": "हटाएं"
+      "delete": "हटाएं",
+      "enable": "अनुवाद सक्षम करें",
+      "disable": "अनुवाद अक्षम करें"
     },
     "createForm": {
       "title": "NAT गेटवे बनाएं",
@@ -6437,7 +6451,10 @@
       "created": "\"{{name}}\" प्रावधानित हो रहा है…",
       "createFailed": "NAT गेटवे नहीं बनाया जा सका",
       "deleted": "NAT गेटवे हटाया गया",
-      "deleteFailed": "NAT गेटवे हटाया नहीं जा सका"
+      "deleteFailed": "NAT गेटवे हटाया नहीं जा सका",
+      "enabled": "{{name}} के लिए आउटबाउंड अनुवाद सक्षम किया गया",
+      "disabled": "{{name}} के लिए आउटबाउंड अनुवाद अक्षम किया गया। गेटवे अब भी मौजूद है।",
+      "updateFailed": "NAT गेटवे अपडेट नहीं हो सका"
     }
   },
   "vpn": {
@@ -7333,6 +7350,54 @@
     },
     "toasts": {
       "failed": "रीचेबिलिटी का विश्लेषण नहीं हो सका"
+    }
+  },
+  "ipSets": {
+    "title": "IP सेट",
+    "subtitle": "CIDR की नामित सूचियाँ, जिन्हें सुरक्षा समूह नियम के स्रोत के रूप में दोबारा उपयोग किया जा सकता है।",
+    "create": "IP सेट बनाएँ",
+    "empty": "अभी कोई IP सेट नहीं",
+    "emptySubtitle": "IP सेट CIDR की एक नामित सूची है, जिसे सुरक्षा समूह नियम हर बार सूची दोहराने के बजाय संदर्भित कर सकते हैं।",
+    "searchPlaceholder": "IP सेट खोजें",
+    "columns": {
+      "name": "नाम",
+      "ipVersion": "IP संस्करण",
+      "entries": "प्रविष्टियाँ",
+      "description": "विवरण"
+    },
+    "detail": {
+      "entries": "प्रविष्टियाँ",
+      "entriesEmpty": "इस सेट में कोई प्रविष्टि नहीं है, इसलिए इसका उपयोग करने वाला नियम कुछ भी मेल नहीं करेगा।",
+      "addEntries": "प्रविष्टियाँ जोड़ें",
+      "cidr": "CIDR",
+      "comment": "टिप्पणी",
+      "removeEntry": "हटाएँ",
+      "bulkHint": "प्रति पंक्ति एक CIDR। डुप्लिकेट छोड़ दिए जाते हैं।",
+      "bulkPlaceholder": "10.0.0.0/24\n203.0.113.4/32"
+    },
+    "form": {
+      "name": "नाम",
+      "description": "विवरण",
+      "ipVersion": "IP संस्करण",
+      "ipVersionHint": "प्रविष्टियाँ जुड़ने के बाद बदला नहीं जा सकता।"
+    },
+    "deleteConfirm": {
+      "title": "IP सेट हटाएँ",
+      "body": "इस सेट को संदर्भित करने वाले सुरक्षा समूह नियम मेल करना बंद कर देंगे। इसे पूर्ववत नहीं किया जा सकता।"
+    },
+    "toasts": {
+      "created": "IP सेट {{name}} बनाया गया",
+      "createFailed": "IP सेट नहीं बन सका",
+      "updated": "IP सेट अपडेट हुआ",
+      "updateFailed": "IP सेट अपडेट नहीं हो सका",
+      "deleted": "IP सेट हटाया गया",
+      "deleteFailed": "IP सेट हटाया नहीं जा सका",
+      "added": "{{added}} प्रविष्टियाँ जोड़ी गईं",
+      "addedWithSkipped": "{{added}} प्रविष्टियाँ जोड़ी गईं, {{skipped}} पहले से मौजूद थीं",
+      "addedWithInvalid": "{{added}} प्रविष्टियाँ जोड़ी गईं। अमान्य CIDR: {{invalid}}",
+      "addFailed": "प्रविष्टियाँ नहीं जोड़ी जा सकीं",
+      "entryRemoved": "प्रविष्टि हटाई गई",
+      "entryRemoveFailed": "प्रविष्टि हटाई नहीं जा सकी"
     }
   }
 }

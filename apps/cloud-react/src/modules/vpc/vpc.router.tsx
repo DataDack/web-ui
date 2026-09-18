@@ -45,6 +45,20 @@ export const vpcRoutes: RouteObject[] = [
     },
   },
   {
+    path: "networking/ip-sets",
+    lazy: async () => {
+      const { IPSetsPage } = await import("./partials/IPSetsPage")
+      return { Component: IPSetsPage }
+    },
+  },
+  {
+    path: "networking/ip-sets/:id",
+    lazy: async () => {
+      const { IPSetDetailPage } = await import("./partials/IPSetDetailPage")
+      return { Component: IPSetDetailPage }
+    },
+  },
+  {
     path: "networking/static-ips",
     lazy: async () => {
       const { StaticIpsPage } = await import("./partials/StaticIpsPage")

@@ -93,7 +93,8 @@
         "domainDns": "DNS",
         "hostnames": "Domain Connections",
         "apiGateway": "API Gateway",
-        "reachability": "Reachability"
+        "reachability": "Reachability",
+        "ipSets": "IP sets"
       },
       "soon": "Soon",
       "collapse": "Collapse",
@@ -1617,7 +1618,15 @@
       "cancel": "Cancel edit",
       "description": "Description",
       "descriptionPlaceholder": "Allow HTTPS from anywhere…",
-      "vnetScope": "On native EVPN networks, these rules apply to every workload on this VPC’s VNet. Forwarded traffic is filtered in both directions; configure the return path as well."
+      "vnetScope": "On native EVPN networks, these rules apply to every workload on this VPC’s VNet. Forwarded traffic is filtered in both directions; configure the return path as well.",
+      "type": "Source type",
+      "cidr": "CIDR",
+      "securityGroup": "Security group",
+      "ipSet": "IP set",
+      "selectSG": "Select a security group",
+      "selectIPSet": "Select an IP set",
+      "sgHint": "Matches whatever addresses the members of that group currently have.",
+      "ipSetHint": "Matches every CIDR in the list. Editing the list updates every rule using it."
     },
     "actions": {
       "delete": "Delete",
@@ -2491,14 +2500,19 @@
       "status": "Status",
       "subnet": "Subnet",
       "connectivity": "Connectivity",
-      "eip": "Elastic IP"
+      "eip": "Elastic IP",
+      "translation": "Translation"
     },
     "badges": {
       "public": "Public",
-      "private": "Private"
+      "private": "Private",
+      "enabled": "Enabled",
+      "disabled": "Disabled"
     },
     "actions": {
-      "delete": "Delete"
+      "delete": "Delete",
+      "enable": "Enable translation",
+      "disable": "Disable translation"
     },
     "createForm": {
       "title": "Create NAT gateway",
@@ -2525,7 +2539,10 @@
       "created": "Provisioning \"{{name}}\"…",
       "createFailed": "Failed to create NAT gateway",
       "deleted": "NAT gateway deleted",
-      "deleteFailed": "Failed to delete NAT gateway"
+      "deleteFailed": "Failed to delete NAT gateway",
+      "enabled": "Outbound translation enabled for {{name}}",
+      "disabled": "Outbound translation disabled for {{name}}. The gateway still exists.",
+      "updateFailed": "Could not update the NAT gateway"
     }
   },
   "vpn": {
@@ -7308,6 +7325,54 @@
     },
     "toasts": {
       "failed": "Could not analyze reachability"
+    }
+  },
+  "ipSets": {
+    "title": "IP sets",
+    "subtitle": "Named lists of CIDRs you can reuse as the source of a security group rule.",
+    "create": "Create IP set",
+    "empty": "No IP sets yet",
+    "emptySubtitle": "An IP set is a named list of CIDRs — an office range, a partner's addresses — that security group rules can point at instead of repeating the list in every rule.",
+    "searchPlaceholder": "Search IP sets",
+    "columns": {
+      "name": "Name",
+      "ipVersion": "IP version",
+      "entries": "Entries",
+      "description": "Description"
+    },
+    "detail": {
+      "entries": "Entries",
+      "entriesEmpty": "This set has no entries, so a rule using it matches nothing.",
+      "addEntries": "Add entries",
+      "cidr": "CIDR",
+      "comment": "Comment",
+      "removeEntry": "Remove",
+      "bulkHint": "One CIDR per line. Duplicates are skipped, so pasting a list that overlaps what is already here is safe.",
+      "bulkPlaceholder": "10.0.0.0/24\n203.0.113.4/32"
+    },
+    "form": {
+      "name": "Name",
+      "description": "Description",
+      "ipVersion": "IP version",
+      "ipVersionHint": "Cannot be changed once the set has entries."
+    },
+    "deleteConfirm": {
+      "title": "Delete IP set",
+      "body": "Security group rules that point at this set will stop matching. This cannot be undone."
+    },
+    "toasts": {
+      "created": "IP set {{name}} created",
+      "createFailed": "Could not create the IP set",
+      "updated": "IP set updated",
+      "updateFailed": "Could not update the IP set",
+      "deleted": "IP set deleted",
+      "deleteFailed": "Could not delete the IP set",
+      "added": "Added {{added}} entries",
+      "addedWithSkipped": "Added {{added}} entries, skipped {{skipped}} already present",
+      "addedWithInvalid": "Added {{added}} entries. Not valid CIDRs: {{invalid}}",
+      "addFailed": "Could not add the entries",
+      "entryRemoved": "Entry removed",
+      "entryRemoveFailed": "Could not remove the entry"
     }
   }
 }

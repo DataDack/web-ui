@@ -44,6 +44,7 @@ function toSGRule(raw: RawSGRule): SGRule {
     source_type: (raw.source_type || "cidr") as SGSourceType,
     source: raw.source_cidr,
     source_sg_id: raw.source_sg_id,
+    source_ip_set_id: raw.source_ip_set_id ?? null,
     action: raw.action as SGRuleAction,
     description: raw.description || "",
   }
@@ -54,13 +55,24 @@ function toRuleBody(payload: AddSGRuleRequest) {
   const { portFrom, portTo } = sgProtocolUsesPorts(payload.protocol)
     ? parsePortRange(payload.port_range)
     : { portFrom: 0, portTo: 0 }
+  // source_type used to be hardcoded to "cidr" here, so a rule referencing
+  // another security group was stored as a CIDR rule with an empty address —
+  // it matched nothing. Send what the caller actually chose, and send only the
+  // field that belongs to it: the backend validates "exactly one source".
+  const sourceType = payload.source_type ?? "cidr"
   return {
     direction: toBEDirection(payload.direction),
     protocol: payload.protocol,
     port_from: portFrom,
     port_to: portTo,
-    source_type: "cidr",
-    source_cidr: payload.source,
+    source_type: sourceType,
+    source_cidr: sourceType === "cidr" ? payload.source : "",
+    ...(sourceType === "security_group" && payload.source_sg_id
+      ? { source_sg_id: payload.source_sg_id }
+      : {}),
+    ...(sourceType === "ip_set" && payload.source_ip_set_id
+      ? { source_ip_set_id: payload.source_ip_set_id }
+      : {}),
     action: payload.action,
     description: payload.description ?? "",
   }
