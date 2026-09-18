@@ -2446,6 +2446,7 @@
   "natGateways": {
     "title": "NAT Gateways",
     "subtitle": "Outbound internet access for private subnets.",
+    "create": "Create NAT gateway",
     "empty": "No NAT gateways",
     "emptySubtitle": "Create a NAT gateway to give a private subnet outbound internet access.",
     "searchPlaceholder": "Filter by name, subnet…",
@@ -2472,6 +2473,23 @@
       "delete": "Delete",
       "enable": "Enable translation",
       "disable": "Disable translation"
+    },
+    "createForm": {
+      "title": "Create NAT Gateway",
+      "description": "Provision outbound internet access for a private subnet.",
+      "name": "Name",
+      "vpc": "VPC",
+      "vpcPlaceholder": "Select a VPC",
+      "subnet": "Subnet",
+      "subnetPlaceholder": "Select a subnet",
+      "selectVpcFirst": "Select a VPC first",
+      "subnetEmpty": "No subnets available in this VPC",
+      "connectivity": "Connectivity",
+      "staticIp": "Elastic IP",
+      "staticIpPlaceholder": "Select an elastic IP",
+      "staticIpEmpty": "No elastic IPs available",
+      "submit": "Create NAT gateway",
+      "submitting": "Creating…"
     },
     "deleteConfirm": {
       "title": "Delete NAT gateway?",
@@ -2858,6 +2876,7 @@
   "disks": {
     "title": "Disks",
     "subtitle": "Block storage volumes for your instances.",
+    "create": "Create disk",
     "empty": "No disks",
     "emptySubtitle": "Create a disk to add block storage to your instances.",
     "stats": {

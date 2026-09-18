@@ -64,16 +64,16 @@ const wrap = css`
 
 /* The frame every list page was drawing by hand with `glass-1 overflow-hidden`.
    Built in so a table looks like a table without the caller wrapping it, and so
-   the two consoles cannot drift on the surface treatment. */
-const borderedFrame = css`
+   the two consoles cannot drift on the surface treatment.
+
+   Split into two layers so the visual border/radius doesn't fight the scroll
+   container: the outer div owns the chrome (border, radius, background, and the
+   overflow:hidden that enforces the rounded corners), while the inner scroll
+   container — Table's own div — scrolls freely without being clipped. */
+const borderedFrameOuter = css`
   border: 1px solid var(--border-glass, var(--border));
   border-radius: var(--radius-xl, 0.75rem);
-  /* This class is applied to Table's scroll container. The previous hidden overflow
-     used to override the primitive's overflow-x:auto and made wide tables
-     impossible to pan. Keep the rounded frame vertically clipped while
-     preserving the container as the horizontal scroll boundary. */
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: hidden;
   background: ${mix("--card", 60)};
 `
 
@@ -1037,7 +1037,8 @@ export function DataTable<T>({
         </div>
       )}
 
-      <Table containerClassName={bordered ? borderedFrame : undefined}>
+      <div className={bordered ? borderedFrameOuter : undefined}>
+        <Table>
         <TableHeader className={stickyHeader ? stickyHead : undefined}>
           {table.getHeaderGroups().map((group) => (
             <TableRow key={group.id}>
@@ -1226,6 +1227,7 @@ export function DataTable<T>({
           {footerRow}
         </TableBody>
       </Table>
+      </div>
 
       {serverPaging && !loading && !hasError && rows.length > 0 && (
         <ServerPager pagination={serverPaging} selectedCount={selectedRows.length} />

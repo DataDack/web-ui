@@ -197,7 +197,11 @@ export function ImagesPage() {
         id: "vmids",
         header: t("superAdmin.images.fields.vmids"),
         accessor: (i) => {
-          const ids = i.versions.filter((v) => (v.vmid ?? 0) > 0).map((v) => String(v.vmid))
+          const ids = i.versions
+            .filter((v) => (v.vmid ?? 0) > 0)
+            .map((v) => v.vmid as number)
+            .sort((a, b) => a - b)
+            .map(String)
           return ids.length > 0 ? ids.join(", ") : null
         },
         mono: true,
