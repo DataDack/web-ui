@@ -116,18 +116,17 @@ export function CreateApiWizard() {
   const [routes, setRoutes] = useState<RouteDraft[]>([])
   const [seededRoutes, setSeededRoutes] = useState(false)
 
-  const [stages, setStages] = useState<StageDraft[]>([
-    {
-      key: draftKey(),
-      name: DEFAULT_STAGE,
-      autoDeploy: true,
-    },
-  ])
+  // Extra stages only. $default is always created, auto-deploying, so it is
+  // not an editable row: an API without it serves nothing at its invoke URL.
+  const [stages, setStages] = useState<StageDraft[]>([])
 
   // ── Validation, per step ────────────────────────────────────────────────
 
   const routeDupes = useMemo(() => duplicates(routes.map((route) => routeKeyOf(route))), [routes])
-  const stageDupes = useMemo(() => duplicates(stages.map((stage) => stage.name.trim())), [stages])
+  const stageDupes = useMemo(
+    () => duplicates([DEFAULT_STAGE, ...stages.map((stage) => stage.name.trim())]),
+    [stages],
+  )
 
   const stepValid = (index: number): boolean => {
     const title = steps[index]?.title
@@ -191,7 +190,7 @@ export function CreateApiWizard() {
         protocolType: "HTTP",
         ipAddressType,
         routes: wizardRoutes(routes, integrations),
-        stages: wizardStages(stages),
+        stages: wizardStages([DEFAULT_STAGE_DRAFT, ...stages]),
       },
       {
         onSuccess: (api) => {
@@ -504,8 +503,8 @@ export function CreateApiWizard() {
   const defineStages = (
     <Section
       title="Define stages"
-      count={stages.length}
-      description="Stages are independently deployable environments of your API, such as dev and production. With auto-deploy on, every change is deployed to the stage automatically."
+      count={stages.length + 1}
+      description="Every API gets a default stage, served at the root of its invoke URL and deployed automatically. Add more for other environments, such as staging — each is served under its own name."
       actions={
         <Button
           variant="outline"
@@ -518,12 +517,24 @@ export function CreateApiWizard() {
         </Button>
       }
     >
-      {stages.length === 0 ? (
-        <EmptyList>
-          No stages. The API will be created with a <code className="font-mono">$default</code>{" "}
-          stage that deploys automatically.
-        </EmptyList>
-      ) : (
+      <div className="border-brand-gold/40 bg-brand-gold/5 grid gap-3 rounded-lg border p-3 sm:grid-cols-[minmax(0,1fr)_auto_36px] sm:items-center">
+        <div className="flex items-center gap-2">
+          <span className="text-foreground font-mono text-[13px] font-semibold">
+            {DEFAULT_STAGE}
+          </span>
+          <span className="bg-brand-gold/15 text-brand-gold rounded-md px-1.5 py-0.5 text-[10px] font-medium">
+            Default · always on
+          </span>
+        </div>
+        <div className="flex h-9 items-center gap-2">
+          <Switch id="stage-default-auto" checked disabled aria-readonly />
+          <Label htmlFor="stage-default-auto" className="text-foreground text-sm">
+            Auto-deploy
+          </Label>
+        </div>
+        <span />
+      </div>
+      {stages.length === 0 ? null : (
         <div className="flex flex-col gap-3">
           {stages.map((stage, index) => {
             const n = String(index + 1)
@@ -536,7 +547,7 @@ export function CreateApiWizard() {
                 <div className="flex flex-col gap-1">
                   <Input
                     value={stage.name}
-                    placeholder="production"
+                    placeholder="staging"
                     aria-label={`Stage ${n} name`}
                     aria-invalid={Boolean(error)}
                     onChange={(event) => {
@@ -643,8 +654,8 @@ export function CreateApiWizard() {
       <Section title={`Step ${String(reviewStep)}: Stages`} actions={editButton("Define stages")}>
         <ReviewList
           title="Stages"
-          empty="$default, auto-deploy on (created automatically)"
-          rows={stages.map((stage) => ({
+          empty=""
+          rows={[DEFAULT_STAGE_DRAFT, ...stages].map((stage) => ({
             key: stage.key,
             left: stage.name.trim(),
             right: stage.autoDeploy ? "Auto-deploy on" : "Auto-deploy off",
@@ -735,9 +746,12 @@ function routeError(route: RouteDraft, dupes: Set<string>): string | undefined {
   return dupes.has(routeKeyOf(route)) ? "This route is listed more than once." : undefined
 }
 
+const DEFAULT_STAGE_DRAFT: StageDraft = { key: "default", name: DEFAULT_STAGE, autoDeploy: true }
+
 function stageError(stage: StageDraft, dupes: Set<string>): string | undefined {
   const invalid = stageNameError(stage.name)
   if (invalid) return invalid
+  if (stage.name.trim() === DEFAULT_STAGE) return "The default stage is already included."
   return dupes.has(stage.name.trim()) ? "Stage names must be unique." : undefined
 }
 

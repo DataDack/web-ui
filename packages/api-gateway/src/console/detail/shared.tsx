@@ -47,20 +47,25 @@ interface TargetKind {
  * platform's targetKind: integrationType alone cannot tell a function from a
  * load balancer, since both are reached over HTTP.
  */
-const TARGET_KINDS: Record<string, TargetKind> = {
+const HTTP_KIND: TargetKind = { label: "HTTP URL", icon: Cloud }
+const MOCK_KIND: TargetKind = { label: "Mock", icon: Boxes }
+const TARGET_KINDS: Partial<Record<string, TargetKind>> = {
   LAMBDA: { label: "Function", icon: Zap },
   LOAD_BALANCER: { label: "Load balancer", icon: Layers3 },
-  MOCK: { label: "Mock", icon: Boxes },
-  HTTP: { label: "HTTP URL", icon: Cloud },
+  MOCK: MOCK_KIND,
+  HTTP: HTTP_KIND,
 }
 
 export function targetKindOf(integration: Integration): TargetKind {
   const kind = integration["x-datadack-targetKind"]
-  return TARGET_KINDS[kind] ?? (integration.integrationType === "MOCK" ? TARGET_KINDS.MOCK : TARGET_KINDS.HTTP)
+  const fallback: TargetKind = integration.integrationType === "MOCK" ? MOCK_KIND : HTTP_KIND
+  return TARGET_KINDS[kind] ?? fallback
 }
 
 export function integrationTarget(integration: Integration): string {
-  return integration.integrationUri || (integration.integrationType === "MOCK" ? "Mock response" : "—")
+  return (
+    integration.integrationUri || (integration.integrationType === "MOCK" ? "Mock response" : "—")
+  )
 }
 
 /** A method, set in mono. ANY is outlined so a catch-all reads differently from a verb. */

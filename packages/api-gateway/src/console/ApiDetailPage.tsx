@@ -1,79 +1,69 @@
-import { useState } from "react"
+import { useState, type ReactNode } from "react"
+
+import { ChevronRight, Download, Network, Trash2 } from "lucide-react"
+import { Link, useNavigate, useParams } from "react-router-dom"
 
 import {
-  Boxes,
-  Cloud,
-  Download,
-  Container,
-  Layers3,
-  Network,
-  Rocket,
-  Sigma,
-  Trash2,
-  Zap,
-} from "lucide-react"
-import { Link, useParams } from "react-router-dom"
-
-import {
-  Badge,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
   Button,
   CopyButton,
   EmptyState,
-  Input,
-  Label,
+  KeyValueGrid,
   PageHeader,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  Skeleton,
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
   cn,
+  timeAgo,
 } from "@datadack/common-ui"
 
+import { DeploymentsTab } from "./detail/DeploymentsTab"
+import { IntegrationsTab } from "./detail/IntegrationsTab"
+import { RoutesTab } from "./detail/RoutesTab"
+import { DEFAULT_STAGE, MethodTag, splitRouteKey, stageUrl, targetKindOf } from "./detail/shared"
+import { EnableDefaultStageButton, StagesTab, orderStages } from "./detail/StagesTab"
 import { errorMessage } from "./errorMessage"
 import {
   useApi,
+  useDeleteApi,
   useExportApi,
-  useCreateDeployment,
-  useCreateIntegration,
-  useCreateRoute,
-  useCreateStage,
-  useDeleteIntegration,
-  useDeleteRoute,
-  useDeployments,
   useIntegrations,
   useRoutes,
   useStages,
 } from "../data/queries"
-import type { Integration } from "../data/schemas"
+import type { Api, Stage } from "../data/schemas"
+
+type Tab = "routes" | "integrations" | "stages" | "deployments"
+
+const TABS: { value: Tab; label: string }[] = [
+  { value: "routes", label: "Routes" },
+  { value: "integrations", label: "Integrations" },
+  { value: "stages", label: "Stages" },
+  { value: "deployments", label: "Deployments" },
+]
 
 /**
- * Falls back when a value is missing OR blank.
+ * One HTTP API.
  *
- * `??` is the usual choice and is wrong here: these fields come back as "" from
- * the API rather than absent, so nullish coalescing would render an empty
- * heading. This is what `||` meant, said explicitly so the linter and the next
- * reader both know it was deliberate.
- */
-function orElse(value: string | undefined, fallback: string): string {
-  return value !== undefined && value !== "" ? value : fallback
-}
-
-/**
- * One API: everything that hangs off it, on the tabs it hangs off.
- *
- * The tab order follows the order an API is actually built. An integration has
- * to exist before a route can point at one, and a stage before a deployment can
- * be pointed at it — so Routes sits first because it is what an operator comes
- * to read, and Integrations second because it is what they discover they need.
+ * The top of the page answers "how does a call reach my backend?" — the invoke
+ * URL, then the stage, route and integration a request passes through — because
+ * that chain is the thing an operator is usually here to check or fix. Each
+ * link in it opens the tab that edits it. The tabs below are the full lists.
  */
 export function ApiDetailPage() {
   const { apiId = "" } = useParams()
+  const navigate = useNavigate()
   const { data: api, error, isLoading } = useApi(apiId)
+  const [tab, setTab] = useState<Tab>("routes")
 
   if (error) {
     return (
@@ -85,77 +75,71 @@ export function ApiDetailPage() {
     )
   }
 
+  const name = api?.name || apiId
+
   return (
     <>
       <PageHeader
-        title={orElse(api?.name, apiId)}
+        title={name}
         icon={Network}
         // ".." rather than a literal: the console is mounted at /apigateway in
         // serverless-web and at .../api-gateway in cloud-react.
-        breadcrumbs={[{ label: "API Gateway", to: ".." }, { label: api?.name ?? apiId }]}
-        description={orElse(api?.description, "HTTP API configuration.")}
-        // common-ui is instantiated twice in this app, so a router context
+        breadcrumbs={[{ label: "API Gateway", to: ".." }, { label: name }]}
+        description={api?.description || undefined}
+        // common-ui is instantiated twice in serverless-web, so a router context
         // mounted through one instance is invisible to a component resolved
         // from the other. The crumb's link is passed in rather than looked up.
         renderLink={(crumb, children) => <Link to={crumb.to ?? "#"}>{children}</Link>}
+        actions={
+          <>
+            <ExportButton apiId={apiId} />
+            <DeleteApiButton
+              apiId={apiId}
+              name={name}
+              onDeleted={() => {
+                void navigate("..", { relative: "path" })
+              }}
+            />
+          </>
+        }
       />
 
-      <div className="mb-6 flex flex-wrap items-center gap-2">
-        <Badge variant="outline" className="gap-1.5 font-mono text-[11px]">
-          <CopyButton value={apiId} className="text-[11px]" />
-        </Badge>
-        <Badge variant="outline" className="font-mono text-[11px]">
-          {api?.protocolType ?? "HTTP"}
-        </Badge>
-        {api?.corsConfiguration ? (
-          <Badge variant="secondary" className="font-mono text-[11px]">
-            CORS: {orElse(api.corsConfiguration.allowOrigins.join(", "), "no origins")}
-          </Badge>
-        ) : null}
-        {api?.endpointType ? (
-          <Badge variant="outline" className="text-[11px]">
-            {api.endpointType === "REGIONAL" ? "Regional" : api.endpointType}
-          </Badge>
-        ) : null}
-        {api?.ipAddressType ? (
-          <Badge variant="outline" className="text-[11px]">
-            {api.ipAddressType === "dualstack" ? "Dualstack" : "IPv4"}
-          </Badge>
-        ) : null}
-        {api?.securityPolicy ? (
-          <Badge variant="outline" className="font-mono text-[11px]">
-            {api.securityPolicy.replace("TLS_1_", "TLS 1.")}
-          </Badge>
-        ) : null}
-        {api?.apiEndpoint ? (
-          <Badge variant="outline" className="gap-1.5 font-mono text-[11px]">
-            <CopyButton value={api.apiEndpoint} className="text-[11px]" />
-          </Badge>
-        ) : null}
-      </div>
+      <RequestAnatomy apiId={apiId} api={api} loading={isLoading} onOpen={setTab} />
 
-      <div className="mb-4">
-        <ExportButton apiId={apiId} />
-      </div>
+      <section className="border-border bg-card/40 mb-8 rounded-xl border p-5">
+        <h2 className="text-muted-foreground mb-4 text-xs font-medium tracking-wide uppercase">
+          Settings
+        </h2>
+        {isLoading || !api ? (
+          <Skeleton className="h-24 w-full" />
+        ) : (
+          <KeyValueGrid columns={3} items={settingsOf(api)} />
+        )}
+      </section>
 
-      <Tabs defaultValue="routes">
+      <Tabs
+        value={tab}
+        onValueChange={(value) => {
+          setTab(value as Tab)
+        }}
+      >
         <TabsList>
-          <TabsTrigger value="routes">Routes</TabsTrigger>
-          <TabsTrigger value="integrations">Integrations</TabsTrigger>
-          <TabsTrigger value="stages">Stages</TabsTrigger>
-          <TabsTrigger value="deployments">Deployments</TabsTrigger>
+          {TABS.map((item) => (
+            <TabsTrigger key={item.value} value={item.value}>
+              {item.label}
+            </TabsTrigger>
+          ))}
         </TabsList>
-
-        <TabsContent value="routes" className="mt-4">
-          <RoutesTab apiId={apiId} loading={isLoading} />
+        <TabsContent value="routes" className="mt-5">
+          <RoutesTab apiId={apiId} />
         </TabsContent>
-        <TabsContent value="integrations" className="mt-4">
+        <TabsContent value="integrations" className="mt-5">
           <IntegrationsTab apiId={apiId} />
         </TabsContent>
-        <TabsContent value="stages" className="mt-4">
-          <StagesTab apiId={apiId} />
+        <TabsContent value="stages" className="mt-5">
+          <StagesTab apiId={apiId} endpoint={api?.apiEndpoint ?? ""} />
         </TabsContent>
-        <TabsContent value="deployments" className="mt-4">
+        <TabsContent value="deployments" className="mt-5">
           <DeploymentsTab apiId={apiId} />
         </TabsContent>
       </Tabs>
@@ -163,439 +147,275 @@ export function ApiDetailPage() {
   )
 }
 
-/** A card list, which suits these short child collections better than a table. */
-function Row({
-  title,
-  subtitle,
-  badges,
-  onDelete,
-  deleteDisabled,
-  deleteReason,
-}: Readonly<{
-  title: string
-  subtitle?: string
-  badges?: React.ReactNode
-  onDelete?: () => void
-  deleteDisabled?: boolean
-  deleteReason?: string
-}>) {
-  return (
-    <div className="border-border/60 flex items-center justify-between gap-4 border-b py-2.5 last:border-b-0">
-      <div className="min-w-0">
-        <div className="font-mono text-[13px] font-medium">{title}</div>
-        {subtitle ? (
-          <div className="text-muted-foreground truncate font-mono text-[11px]">{subtitle}</div>
-        ) : null}
-      </div>
-      <div className="flex shrink-0 items-center gap-2">
-        {badges}
-        {onDelete ? (
-          <Button
-            variant="ghost"
-            size="sm"
-            disabled={deleteDisabled}
-            title={deleteDisabled ? deleteReason : undefined}
-            onClick={onDelete}
-          >
-            <Trash2 className="size-3.5" />
-          </Button>
-        ) : null}
-      </div>
-    </div>
-  )
+function corsLabel(api: Api): string {
+  const cors = api.corsConfiguration
+  if (!cors) return "Off"
+  return cors.allowOrigins.length === 0 ? "On, no origins allowed" : cors.allowOrigins.join(", ")
 }
 
-function Panel({
-  title,
-  children,
-  form,
-}: Readonly<{ title: string; children: React.ReactNode; form?: React.ReactNode }>) {
-  return (
-    <div className="flex flex-col gap-4">
-      {form ? (
-        <div className="border-border/60 bg-card/40 rounded-lg border p-3">
-          <div className="text-muted-foreground mb-2 font-mono text-[10px] tracking-[0.15em] uppercase">
-            {title}
-          </div>
-          {form}
-        </div>
-      ) : null}
-      <div>{children}</div>
-    </div>
-  )
+/** A ready-to-run call to the first real route, through the default stage. */
+function buildCurl(base: string, route: [string, string] | undefined): string {
+  const method = route && route[0] !== "GET" && route[0] !== "ANY" ? `-X ${route[0]} ` : ""
+  const path = route?.[1] ?? "/"
+  return `curl ${method}${base}${path}`
 }
 
-function RoutesTab({ apiId, loading }: Readonly<{ apiId: string; loading: boolean }>) {
-  const { data: routes } = useRoutes(apiId)
-  const { data: integrations } = useIntegrations(apiId)
-  const create = useCreateRoute(apiId)
-  const remove = useDeleteRoute(apiId)
-  const [routeKey, setRouteKey] = useState("")
-  const [target, setTarget] = useState("")
-
-  const byId = new Map((integrations ?? []).map((row) => [row.integrationId, row]))
-
-  return (
-    <Panel
-      title="Add route"
-      form={
-        <div className="flex flex-wrap items-end gap-2">
-          <div className="flex min-w-56 flex-1 flex-col gap-1.5">
-            <Label htmlFor="route-key">Route key</Label>
-            <Input
-              id="route-key"
-              placeholder="GET /pets"
-              value={routeKey}
-              onChange={(event) => {
-                setRouteKey(event.target.value)
-              }}
-            />
-          </div>
-          <div className="flex min-w-56 flex-1 flex-col gap-1.5">
-            <Label>Integration</Label>
-            <Select value={target} onValueChange={setTarget}>
-              <SelectTrigger>
-                <SelectValue placeholder="None" />
-              </SelectTrigger>
-              <SelectContent>
-                {(integrations ?? []).map((row) => (
-                  <SelectItem key={row.integrationId} value={row.integrationId}>
-                    {row.integrationUri || row.integrationType}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <Button
-            variant="gold"
-            disabled={!routeKey.trim() || create.isPending}
-            onClick={() => {
-              create.mutate(
-                {
-                  routeKey: routeKey.trim(),
-                  target: target ? `integrations/${target}` : undefined,
-                },
-                {
-                  onSuccess: () => {
-                    setRouteKey("")
-                    setTarget("")
-                  },
-                },
-              )
-            }}
-          >
-            Add
-          </Button>
-        </div>
-      }
-    >
-      {create.error ? (
-        <p className="text-status-danger mb-2 text-xs">
-          {errorMessage(create.error, "Could not create")}
-        </p>
-      ) : null}
-      {(routes ?? []).length === 0 && !loading ? (
-        <EmptyState
-          icon={Sigma}
-          title="No routes"
-          description="A route maps a method and path onto an integration."
-        />
-      ) : (
-        (routes ?? []).map((route) => {
-          const integration = byId.get(route.target.replace("integrations/", ""))
-          return (
-            <Row
-              key={route.routeId}
-              title={route.routeKey}
-              subtitle={integration ? integration.integrationUri : "no integration attached"}
-              badges={
-                <>
-                  {route.authorizationType !== "NONE" ? (
-                    <Badge variant="secondary" className="font-mono text-[10px]">
-                      {route.authorizationType}
-                    </Badge>
-                  ) : null}
-                  {route.apiGatewayManaged ? (
-                    <Badge variant="outline" className="font-mono text-[10px]">
-                      managed
-                    </Badge>
-                  ) : null}
-                </>
-              }
-              onDelete={() => {
-                remove.mutate(route.routeId)
-              }}
-              // The service refuses to delete a row it created itself; saying so
-              // here is better than letting the click fail.
-              deleteDisabled={route.apiGatewayManaged}
-              deleteReason="Created by API Gateway and cannot be deleted"
-            />
-          )
-        })
-      )}
-    </Panel>
-  )
+function settingsOf(api: Api) {
+  return [
+    { label: "API ID", value: api.apiId, mono: true, copyable: true },
+    { label: "Protocol", value: api.protocolType || "HTTP" },
+    {
+      label: "Endpoint type",
+      value: api.endpointType === "REGIONAL" ? "Regional" : api.endpointType || undefined,
+    },
+    {
+      label: "IP address type",
+      value: api.ipAddressType === "dualstack" ? "Dualstack (IPv4 and IPv6)" : "IPv4",
+    },
+    {
+      label: "Minimum TLS version",
+      value: api.securityPolicy ? api.securityPolicy.replace("TLS_1_", "TLS 1.") : undefined,
+    },
+    {
+      label: "CORS",
+      value: corsLabel(api),
+    },
+    { label: "Version", value: api.version || undefined },
+    { label: "Created", value: api.createdDate ? timeAgo(api.createdDate) : undefined },
+    {
+      label: "Default endpoint",
+      value: api.disableExecuteApiEndpoint ? "Off — custom domains only" : "On",
+    },
+  ]
 }
 
 /**
- * targetKind is what the URI actually points at, and it is the platform's own
- * field rather than part of the contract: the wire's integrationType cannot
- * distinguish a function from a load balancer because both are reached over
- * HTTP. The icon comes from it, which is the whole reason it is sent.
+ * The invoke URL, then the three things a request passes through on its way
+ * to a backend. Each cell opens the tab that edits it, so a gap in the chain
+ * (no stage, no route, a route with no backend) is one click from its fix.
  */
-const TARGET_ICONS: Record<string, typeof Zap> = {
-  LAMBDA: Zap,
-  LOAD_BALANCER: Layers3,
-  MOCK: Boxes,
-  HTTP: Cloud,
-}
-
-function IntegrationsTab({ apiId }: Readonly<{ apiId: string }>) {
+function RequestAnatomy({
+  apiId,
+  api,
+  loading,
+  onOpen,
+}: Readonly<{ apiId: string; api?: Api; loading: boolean; onOpen: (tab: Tab) => void }>) {
+  const { data: stages, isLoading: stagesLoading } = useStages(apiId)
+  const { data: routes } = useRoutes(apiId)
   const { data: integrations } = useIntegrations(apiId)
-  const create = useCreateIntegration(apiId)
-  const remove = useDeleteIntegration(apiId)
-  const [uri, setUri] = useState("")
-  const [type, setType] = useState("HTTP_PROXY")
+
+  const endpoint = api?.apiEndpoint ?? ""
+  const orderedStages = orderStages(stages ?? [])
+  const stage = orderedStages[0]
+  const sample = (routes ?? [])
+    .map((route) => splitRouteKey(route.routeKey))
+    .find(([, path]) => !path.startsWith("$"))
+  const stagePrefix = stage && stage.stageName !== DEFAULT_STAGE ? `/${stage.stageName}` : ""
+  const samplePath = sample?.[1] ?? "/"
+  const baseUrl = endpoint && stage ? stageUrl(endpoint, stage.stageName) : endpoint
+  const curl = endpoint ? buildCurl(baseUrl, sample) : ""
+
+  const kinds = [...new Set((integrations ?? []).map((row) => targetKindOf(row).label))]
+  const routeCount = routes?.length ?? 0
+  const noStage = !stagesLoading && orderedStages.length === 0
 
   return (
-    <Panel
-      title="Add integration"
-      form={
-        <div className="flex flex-wrap items-end gap-2">
-          <div className="flex min-w-40 flex-col gap-1.5">
-            <Label>Type</Label>
-            <Select value={type} onValueChange={setType}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="HTTP_PROXY">HTTP_PROXY</SelectItem>
-                <SelectItem value="AWS_PROXY">AWS_PROXY (function)</SelectItem>
-                <SelectItem value="MOCK">MOCK</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex min-w-64 flex-1 flex-col gap-1.5">
-            <Label htmlFor="integration-uri">Backend URI</Label>
-            <Input
-              id="integration-uri"
-              placeholder="https://backend.internal or a function name"
-              value={uri}
-              onChange={(event) => {
-                setUri(event.target.value)
-              }}
-            />
-          </div>
-          <Button
-            variant="gold"
-            disabled={create.isPending || (type !== "MOCK" && !uri.trim())}
-            onClick={() => {
-              create.mutate(
-                { integrationType: type, integrationUri: uri.trim() || undefined },
-                {
-                  onSuccess: () => {
-                    setUri("")
-                  },
-                },
-              )
-            }}
-          >
-            Add
-          </Button>
-        </div>
-      }
+    <section
+      aria-label="How a request reaches your backend"
+      className="border-border from-card/80 to-card/30 mb-5 overflow-hidden rounded-xl border bg-gradient-to-b"
     >
-      {create.error ? (
-        <p className="text-status-danger mb-2 text-xs">
-          {errorMessage(create.error, "Could not create")}
+      <div className="px-5 pt-5 pb-4">
+        <p className="text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase">
+          Invoke URL
         </p>
+        {loading ? (
+          <Skeleton className="h-7 w-3/4" />
+        ) : (
+          <InvokeUrl
+            endpoint={endpoint}
+            stagePrefix={stagePrefix}
+            path={samplePath}
+            copyValue={baseUrl}
+          />
+        )}
+      </div>
+
+      <ol className="border-border grid border-t md:grid-cols-[1fr_auto_1fr_auto_1fr]">
+        <AnatomyCell
+          label="Stage"
+          onOpen={() => {
+            onOpen("stages")
+          }}
+          warn={noStage}
+        >
+          <StageSummary
+            apiId={apiId}
+            stage={stage}
+            others={orderedStages.length - 1}
+            missing={noStage}
+          />
+        </AnatomyCell>
+        <Joint />
+        <AnatomyCell
+          label="Routes"
+          onOpen={() => {
+            onOpen("routes")
+          }}
+          warn={routes !== undefined && routeCount === 0}
+        >
+          {routeCount === 0 ? (
+            <span>No routes: every request gets a 404.</span>
+          ) : (
+            <span className="flex flex-col gap-1">
+              {(routes ?? []).slice(0, 2).map((route) => {
+                const [method, path] = splitRouteKey(route.routeKey)
+                return (
+                  <span key={route.routeId} className="flex min-w-0 items-center gap-2">
+                    <MethodTag method={method} />
+                    <span className="text-foreground truncate font-mono text-[12px]">{path}</span>
+                  </span>
+                )
+              })}
+              {routeCount > 2 ? <span>+{String(routeCount - 2)} more</span> : null}
+            </span>
+          )}
+        </AnatomyCell>
+        <Joint />
+        <AnatomyCell
+          label="Integrations"
+          onOpen={() => {
+            onOpen("integrations")
+          }}
+          warn={integrations?.length === 0}
+        >
+          {(integrations ?? []).length === 0 ? (
+            <span>No backend connected yet.</span>
+          ) : (
+            <>
+              <span className="text-foreground text-[13px] font-semibold">
+                {String(integrations?.length ?? 0)} backend
+                {integrations?.length === 1 ? "" : "s"}
+              </span>
+              <span className="block">{kinds.join(" · ")}</span>
+            </>
+          )}
+        </AnatomyCell>
+      </ol>
+
+      {curl ? (
+        <div className="border-border bg-background/40 flex items-center gap-3 border-t px-5 py-3">
+          <span className="text-muted-foreground shrink-0 text-xs">Try it</span>
+          <code className="text-foreground min-w-0 flex-1 truncate font-mono text-[12px]">
+            {curl}
+          </code>
+          <CopyButton value={curl} label="Copy" mono={false} className="shrink-0 text-xs" />
+        </div>
       ) : null}
-      {(integrations ?? []).length === 0 ? (
-        <EmptyState
-          icon={Container}
-          title="No integrations"
-          description="An integration is the backend a route forwards to."
-        />
-      ) : (
-        (integrations ?? []).map((row: Integration) => {
-          const kind = row["x-datadack-targetKind"]
-          const Icon = TARGET_ICONS[kind] ?? Cloud
-          return (
-            <Row
-              key={row.integrationId}
-              title={orElse(row.integrationUri, row.integrationType)}
-              subtitle={row.integrationId}
-              badges={
-                <>
-                  <Badge variant="outline" className="gap-1 font-mono text-[10px]">
-                    <Icon className="size-3" />
-                    {kind.toLowerCase().replace("_", " ")}
-                  </Badge>
-                  <Badge variant="secondary" className="font-mono text-[10px]">
-                    {row.integrationType}
-                  </Badge>
-                </>
-              }
-              onDelete={() => {
-                remove.mutate(row.integrationId)
-              }}
-            />
-          )
-        })
-      )}
-    </Panel>
+    </section>
   )
 }
 
-function StagesTab({ apiId }: Readonly<{ apiId: string }>) {
-  const { data: stages } = useStages(apiId)
-  const create = useCreateStage(apiId)
-  const [name, setName] = useState("")
-
+function InvokeUrl({
+  endpoint,
+  stagePrefix,
+  path,
+  copyValue,
+}: Readonly<{ endpoint: string; stagePrefix: string; path: string; copyValue: string }>) {
+  if (!endpoint) {
+    return (
+      <p className="text-muted-foreground text-sm">
+        This API has no default endpoint. It is reachable only through a custom domain.
+      </p>
+    )
+  }
   return (
-    <Panel
-      title="Add stage"
-      form={
-        <div className="flex flex-wrap items-end gap-2">
-          <div className="flex min-w-56 flex-1 flex-col gap-1.5">
-            <Label htmlFor="stage-name">Stage name</Label>
-            <Input
-              id="stage-name"
-              placeholder="prod"
-              value={name}
-              onChange={(event) => {
-                setName(event.target.value)
-              }}
-            />
-          </div>
-          <Button
-            variant="gold"
-            disabled={!name.trim() || create.isPending}
-            onClick={() => {
-              create.mutate(
-                { stageName: name.trim(), autoDeploy: true },
-                {
-                  onSuccess: () => {
-                    setName("")
-                  },
-                },
-              )
-            }}
-          >
-            Add
-          </Button>
-        </div>
-      }
-    >
-      {create.error ? (
-        <p className="text-status-danger mb-2 text-xs">
-          {errorMessage(create.error, "Could not create")}
-        </p>
-      ) : null}
-      {(stages ?? []).length === 0 ? (
-        <EmptyState
-          icon={Layers3}
-          title="No stages"
-          description="A stage is a named deployment target."
-        />
-      ) : (
-        (stages ?? []).map((stage) => (
-          <Row
-            key={stage.stageName}
-            title={stage.stageName}
-            subtitle={orElse(stage.lastDeploymentStatusMessage, stage.description)}
-            badges={
-              <>
-                {stage.autoDeploy ? (
-                  <Badge variant="secondary" className="font-mono text-[10px]">
-                    auto-deploy
-                  </Badge>
-                ) : null}
-                {stage.deploymentId ? (
-                  <Badge variant="outline" className="font-mono text-[10px]">
-                    {stage.deploymentId}
-                  </Badge>
-                ) : null}
-              </>
-            }
-          />
-        ))
-      )}
-    </Panel>
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+      <p className="min-w-0 font-mono text-[15px] leading-7 break-all sm:text-base">
+        <span className="text-foreground">{endpoint}</span>
+        {stagePrefix ? <span className="text-brand-gold">{stagePrefix}</span> : null}
+        <span className="text-muted-foreground">{path}</span>
+      </p>
+      <CopyButton
+        value={copyValue}
+        label="Copy URL"
+        mono={false}
+        className="border-border hover:bg-muted/40 rounded-md border px-2 py-1 text-xs"
+      />
+    </div>
   )
 }
 
-function DeploymentsTab({ apiId }: Readonly<{ apiId: string }>) {
-  const { data: deployments } = useDeployments(apiId)
-  const { data: stages } = useStages(apiId)
-  const create = useCreateDeployment(apiId)
-  const [stageName, setStageName] = useState("")
-
+function StageSummary({
+  apiId,
+  stage,
+  others,
+  missing,
+}: Readonly<{ apiId: string; stage?: Stage; others: number; missing: boolean }>) {
+  if (missing) {
+    return (
+      <span className="flex flex-col items-start gap-2">
+        <span>No stage, so nothing is served.</span>
+        <EnableDefaultStageButton apiId={apiId} />
+      </span>
+    )
+  }
+  if (!stage) return <Skeleton className="h-4 w-24" />
   return (
-    <Panel
-      title="Deploy"
-      form={
-        <div className="flex flex-wrap items-end gap-2">
-          <div className="flex min-w-56 flex-col gap-1.5">
-            <Label>Stage</Label>
-            <Select value={stageName} onValueChange={setStageName}>
-              <SelectTrigger>
-                <SelectValue placeholder="Create without pointing a stage" />
-              </SelectTrigger>
-              <SelectContent>
-                {(stages ?? []).map((stage) => (
-                  <SelectItem key={stage.stageName} value={stage.stageName}>
-                    {stage.stageName}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <Button
-            variant="gold"
-            disabled={create.isPending}
-            onClick={() => {
-              create.mutate({ stageName: stageName || undefined })
-            }}
-          >
-            <Rocket className="size-3.5" /> Deploy
-          </Button>
-        </div>
-      }
-    >
-      {create.error ? (
-        <p className="text-status-danger mb-2 text-xs">
-          {errorMessage(create.error, "Could not create")}
-        </p>
-      ) : null}
-      {(deployments ?? []).length === 0 ? (
-        <EmptyState
-          icon={Rocket}
-          title="No deployments"
-          description="A deployment snapshots the API's routes and integrations."
-        />
-      ) : (
-        (deployments ?? []).map((deployment) => (
-          <Row
-            key={deployment.deploymentId}
-            title={deployment.deploymentId}
-            subtitle={orElse(deployment.description, deployment.deploymentStatusMessage)}
-            badges={
-              <Badge
-                variant="outline"
-                className={cn(
-                  "font-mono text-[10px]",
-                  deployment.deploymentStatus === "DEPLOYED" && "text-status-success",
-                  deployment.deploymentStatus === "FAILED" && "text-status-danger",
-                )}
-              >
-                {deployment.deploymentStatus.toLowerCase()}
-              </Badge>
-            }
+    <>
+      <span className="text-foreground font-mono text-[13px] font-semibold">{stage.stageName}</span>
+      <span className="block">
+        {stage.autoDeploy ? "Auto-deploys every change" : "Deploys manually"}
+        {others > 0 ? ` · +${String(others)} more` : ""}
+      </span>
+    </>
+  )
+}
+
+function AnatomyCell({
+  label,
+  warn,
+  onOpen,
+  children,
+}: Readonly<{ label: string; warn?: boolean; onOpen: () => void; children: ReactNode }>) {
+  return (
+    <li className="min-w-0">
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={onOpen}
+        onKeyDown={(event) => {
+          if (event.target !== event.currentTarget) return
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault()
+            onOpen()
+          }
+        }}
+        className="hover:bg-muted/30 focus-visible:ring-brand-gold/50 h-full cursor-pointer px-5 py-4 text-left transition-colors outline-none focus-visible:ring-2 focus-visible:ring-inset"
+      >
+        <span className="mb-1.5 flex items-center gap-1.5">
+          <span
+            aria-hidden
+            className={cn(
+              "size-1.5 rounded-full",
+              warn ? "bg-status-warning" : "bg-status-success",
+            )}
           />
-        ))
-      )}
-    </Panel>
+          <span className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
+            {label}
+          </span>
+        </span>
+        <span className="text-muted-foreground block text-xs leading-5">{children}</span>
+      </div>
+    </li>
+  )
+}
+
+/** The arrow between two links of the chain. Sideways on wide screens, down on narrow. */
+function Joint() {
+  return (
+    <li aria-hidden className="text-muted-foreground/60 flex items-center justify-center">
+      <ChevronRight className="size-4 rotate-90 md:rotate-0" />
+    </li>
   )
 }
 
@@ -609,35 +429,81 @@ function DeploymentsTab({ apiId }: Readonly<{ apiId: string }>) {
 function ExportButton({ apiId }: Readonly<{ apiId: string }>) {
   const exportApi = useExportApi()
   return (
+    <Button
+      variant="outline"
+      loading={exportApi.isPending}
+      title={exportApi.error ? errorMessage(exportApi.error, "Could not export") : undefined}
+      onClick={() => {
+        exportApi.mutate(apiId, {
+          onSuccess: (doc) => {
+            const blob = new Blob([JSON.stringify(doc, null, 2)], { type: "application/json" })
+            const url = URL.createObjectURL(blob)
+            const anchor = document.createElement("a")
+            anchor.href = url
+            anchor.download = `${apiId}-openapi.json`
+            anchor.click()
+            // Revoked immediately: the download has already been handed the
+            // blob, and leaving the URL alive pins it in memory for the life
+            // of the document.
+            URL.revokeObjectURL(url)
+          },
+        })
+      }}
+    >
+      <Download /> {exportApi.error ? "Export failed — retry" : "Export OpenAPI"}
+    </Button>
+  )
+}
+
+function DeleteApiButton({
+  apiId,
+  name,
+  onDeleted,
+}: Readonly<{ apiId: string; name: string; onDeleted: () => void }>) {
+  const remove = useDeleteApi()
+  const [open, setOpen] = useState(false)
+  return (
     <>
       <Button
         variant="ghost"
-        size="sm"
-        disabled={exportApi.isPending}
+        size="icon"
+        aria-label="Delete API"
+        title="Delete API"
         onClick={() => {
-          exportApi.mutate(apiId, {
-            onSuccess: (doc) => {
-              const blob = new Blob([JSON.stringify(doc, null, 2)], { type: "application/json" })
-              const url = URL.createObjectURL(blob)
-              const anchor = document.createElement("a")
-              anchor.href = url
-              anchor.download = `${apiId}-openapi.json`
-              anchor.click()
-              // Revoked immediately: the download has already been handed the
-              // blob, and leaving the URL alive pins it in memory for the life
-              // of the document.
-              URL.revokeObjectURL(url)
-            },
-          })
+          setOpen(true)
         }}
+        className="text-muted-foreground hover:text-status-danger"
       >
-        <Download className="size-3.5" /> Export OpenAPI
+        <Trash2 />
       </Button>
-      {exportApi.error ? (
-        <p className="text-status-danger mt-1 text-xs">
-          {errorMessage(exportApi.error, "Could not export")}
-        </p>
-      ) : null}
+      <AlertDialog open={open} onOpenChange={setOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete {name}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Its routes, integrations, stages and deployments are deleted with it, and its invoke
+              URL stops answering. Your backends are not affected.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          {remove.error ? (
+            <p role="alert" className="text-status-danger text-xs">
+              {errorMessage(remove.error, "Could not delete the API.")}
+            </p>
+          ) : null}
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(event) => {
+                // Stay open until the delete lands, so a failure is shown here.
+                event.preventDefault()
+                remove.mutate(apiId, { onSuccess: onDeleted })
+              }}
+            >
+              {remove.isPending ? "Deleting…" : "Delete API"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   )
 }
