@@ -186,7 +186,7 @@ export function ServiceFormSheet({ open, onOpenChange, service }: Readonly<Props
           {...register("description")}
           rows={3}
           placeholder={t(
-            "superadmin.serviceFormSheet.scalableHighPerformanceSovereignVirtualMachi",
+            "superAdmin.serviceFormSheet.scalableHighPerformanceSovereignVirtualMachi",
           )}
         />
       </Field>

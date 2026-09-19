@@ -153,7 +153,7 @@ export function TargetPicker({
                 <Input
                   className="h-7 w-24 font-mono text-[12px]"
                   inputMode="numeric"
-                  aria-label={t("loadBalancers.form2.targetPortFor", {
+                  aria-label={t("loadBalancers.wizard.targetPortFor", {
                     name: instance.name,
                   })}
                   placeholder={String(groupPort)}
@@ -182,7 +182,7 @@ export function TargetPicker({
       </div>
 
       <p className="text-[11px] text-muted-foreground">
-        {t("loadBalancers.form2.targetPortHint", { port: groupPort })}
+        {t("loadBalancers.wizard.targetPortHint", { port: groupPort })}
       </p>
     </div>
   )

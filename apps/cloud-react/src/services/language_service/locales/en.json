@@ -475,7 +475,8 @@
     },
     "editResourceGroupSheet": {
       "describeThePurposeOfThisResourceGroup": "Describe the purpose of this resource group..."
-    }
+    },
+    "create": "Create resource group"
   },
   "compute": {
     "overview": {
@@ -868,7 +869,8 @@
       },
       "username": "Username",
       "wizardDescription": "Set the Windows Administrator password"
-    }
+    },
+    "create": "Create instance"
   },
   "sshKeys": {
     "title": "SSH Keys",
@@ -1004,6 +1006,13 @@
       "deleteConfirm": {
         "title": "Delete role?",
         "description": "Users assigned \"{{name}}\" will lose its permissions."
+      },
+      "create": "Create role",
+      "createForm": {
+        "title": "Create Role",
+        "subtitle": "Roles bundle policies that can be assigned to users.",
+        "descriptionPlaceholder": "What this role is for…",
+        "creating": "Creating…"
       }
     },
     "policies": {
@@ -1042,7 +1051,16 @@
       "orgEmpty": "No organization policies",
       "orgEmptySubtitle": "Create a policy to grant permissions in your organization.",
       "systemEmpty": "No system policies",
-      "systemEmptySubtitle": "Platform-managed policies appear here."
+      "systemEmptySubtitle": "Platform-managed policies appear here.",
+      "create": "Create policy",
+      "createForm": {
+        "title": "Create Policy",
+        "subtitle": "Build an AWS-style policy document with statements.",
+        "descriptionPlaceholder": "What this policy grants…",
+        "document": "Policy document",
+        "documentHint": "Each statement grants or denies actions on resources.",
+        "creating": "Creating…"
+      }
     },
     "apiKeys": {
       "title": "API Keys",
@@ -1075,7 +1093,8 @@
       "deleteConfirm": {
         "title": "Delete API key?",
         "description": "Requests signed with \"{{name}}\" will be rejected immediately."
-      }
+      },
+      "create": "Create API key"
     },
     "toasts": {
       "userDeleted": "User deleted",
@@ -1126,6 +1145,13 @@
       "deleteConfirm": {
         "title": "Delete group?",
         "description": "This removes the group \"{{name}}\" and its memberships. This cannot be undone."
+      },
+      "create": "Create group",
+      "createForm": {
+        "title": "Create Group",
+        "subtitle": "Groups grant their attached policies to every member.",
+        "descriptionPlaceholder": "What this group is for…",
+        "creating": "Creating…"
       }
     },
     "invitations": {
@@ -1779,6 +1805,13 @@
       "name": "Name",
       "save": "Save",
       "saving": "Saving…"
+    },
+    "create": "Create VPC",
+    "form": {
+      "name": "Name",
+      "region": "Region",
+      "regionPlaceholder": "Select a region",
+      "cidr": "CIDR block"
     }
   },
   "common": {
@@ -1836,7 +1869,8 @@
     "unavailable": "Unavailable",
     "add": "Add",
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "delete": "Delete"
   },
   "staticIps": {
     "title": "Static IPs",
@@ -2352,7 +2386,8 @@
       "detachFailed": "Failed to detach network interface",
       "deleted": "Network interface deleted",
       "deleteFailed": "Failed to delete network interface"
-    }
+    },
+    "create": "Create network interface"
   },
   "routers": {
     "title": "Routers",
@@ -2442,7 +2477,8 @@
       "createFailed": "Failed to create internet gateway",
       "deleted": "Internet gateway deleted",
       "deleteFailed": "Failed to delete internet gateway"
-    }
+    },
+    "create": "Create internet gateway"
   },
   "natGateways": {
     "title": "NAT Gateways",
@@ -2801,9 +2837,12 @@
         "deleted": "Listener removed",
         "deleteFailed": "Could not remove the listener",
         "updated": "Listener updated",
-        "updateFailed": "Could not update the listener"
+        "updateFailed": "Could not update the listener",
+        "created": "Listener added",
+        "createFailed": "Could not add the listener"
       }
-    }
+    },
+    "create": "Create load balancer"
   },
   "kubernetes": {
     "subtitle": "Managed Kubernetes clusters for your containerized workloads."
@@ -2872,7 +2911,8 @@
       "closestToHour": "Closest To Hour",
       "capacityRebalance": "Capacity Rebalance",
       "automaticallyRedistributeInstancesAcrossAvai": "Automatically redistribute instances across availability zones."
-    }
+    },
+    "create": "Create group"
   },
   "disks": {
     "title": "Disks",
@@ -5540,7 +5580,8 @@
       "consultant": "Architecture or advisory requests",
       "feature": "Suggest an improvement",
       "quota": "Raise a service limit for this account"
-    }
+    },
+    "create": "New ticket"
   },
   "targetGroups": {
     "title": "Target Groups",
@@ -6442,14 +6483,19 @@
       "searchByAlarmNameResourceOrSignal": "Search by alarm name, resource, or signal…",
       "searchAlarms": "Search alarms",
       "resourceType": "Resource type",
-      "deleteAlarm": "Delete alarm"
+      "deleteAlarm": "Delete alarm",
+      "whatEachAlarmWatchesHowItIsDoingRightNowAndW": "What each alarm watches, how it is doing right now, and who hears about it."
     },
     "monitoringOverviewPage": {
       "needsAttention": "Needs attention",
       "groupedByTheResourceEachAlarmWatches": "Grouped by the resource each alarm watches.",
       "channelHealth": "Channel health",
       "recentStateTransitions": "Recent state transitions",
-      "newestFirst": "Newest first."
+      "newestFirst": "Newest first.",
+      "allAlarms": "All alarms",
+      "createAlarm": "Create alarm",
+      "last24Hours": "Last 24 hours",
+      "noAlarmHasChangedStateYet": "No alarm has changed state yet."
     },
     "alarmDetailPage": {
       "noDeliveriesListedForThisAlarm": "No deliveries listed for this alarm",
@@ -6458,7 +6504,14 @@
       "configuration": "configuration",
       "underlyingMetricSeries": "Underlying metric series",
       "alarmNotFound": "Alarm not found",
-      "deleteAlarm": "Delete alarm"
+      "deleteAlarm": "Delete alarm",
+      "aDisabledAlarmIsNotEvaluatedAndSendsNothingU": "A disabled alarm is not evaluated and sends nothing until you enable it.",
+      "deleteAlarm2": "Delete alarm",
+      "mostRecentTransitionFirstWithTheDatapointsTh": "Most recent transition first, with the datapoints that drove each decision.",
+      "noChannelsNobodyIsNotified": "No channels — nobody is notified",
+      "nobodyIsNotifiedThisAlarmHasNoChannelsEditIt": "Nobody is notified: this alarm has no channels. Edit it to add one.",
+      "recentNotificationAttemptsForThisAlarmAndWha": "Recent notification attempts for this alarm, and what each channel answered.",
+      "sendTest": "Send test"
     },
     "channelsPage": {
       "notificationChannels": "Notification channels",
@@ -6471,11 +6524,35 @@
       "chooseASite": "Choose a site",
       "opsCompanyCom": "ops@company.com",
       "apiToken": "API token",
-      "datadackMonitoringOps": "datadack-monitoring, ops"
+      "datadackMonitoringOps": "datadack-monitoring, ops",
+      "authentication": "Authentication",
+      "baseUrl": "Base URL",
+      "commaSeparatedJiraLabelsLeaveEmptyToUseDatad": "Comma-separated Jira labels. Leave empty to use datadack-monitoring.",
+      "issueType": "Issue type"
     },
     "targetSection": {
       "whatKindOfResourceToWatch": "What kind of resource to watch",
-      "serviceApiEnvProd": "service=api, env=prod"
+      "serviceApiEnvProd": "service=api, env=prod",
+      "anAlarmWatchesOneResourceChoosingAnotherMove": "An alarm watches one resource — choosing another moves this alarm to it.",
+      "eGMyappApi": "e.g. myapp/api",
+      "leaveEmptyToWatchEverySeriesInTheNamespace": "Leave empty to watch every series in the namespace.",
+      "notHealthyRightNowItMayReportNothingUntilItI": "Not healthy right now — it may report nothing until it is back.",
+      "selectAll": "Select all",
+      "theNamespaceYouPushThisMetricUnder": "The namespace you push this metric under."
+    },
+    "channelCreateDialog": {
+      "addChannel": "Add channel",
+      "anythingLessSeriousThanThisIsNotSentHere": "Anything less serious than this is not sent here.",
+      "channelType": "Channel type",
+      "eGOpsAlerts": "e.g. #ops-alerts",
+      "minimumSeverity": "Minimum severity",
+      "savedAs": "Saved as"
+    },
+    "notifySection": {
+      "loadingChannels": "Loading channels…",
+      "newChannel": "New channel",
+      "newChannel2": "New channel",
+      "notifyOn": "Notify on"
     }
   },
   "organizations": {
@@ -7344,6 +7421,7 @@
       "addFailed": "Could not add the entries",
       "entryRemoved": "Entry removed",
       "entryRemoveFailed": "Could not remove the entry"
-    }
+    },
+    "create": "Create IP set"
   }
 }

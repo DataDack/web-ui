@@ -326,7 +326,7 @@ export function AccountResourcesPage() {
             icon={Boxes}
             title={t("superAdmin.accountResourcesPage.noResources")}
             description={t(
-              "superadmin.accountResourcesPage.thisAccountIsnTConsumingAnyResourcesRightNow",
+              "superAdmin.accountResourcesPage.thisAccountIsnTConsumingAnyResourcesRightNow",
             )}
           />
         }

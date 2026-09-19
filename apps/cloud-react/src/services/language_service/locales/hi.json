@@ -474,7 +474,8 @@
     },
     "editResourceGroupSheet": {
       "describeThePurposeOfThisResourceGroup": "इस रिसोर्स ग्रुप का उद्देश्य बताएँ…"
-    }
+    },
+    "create": "संसाधन समूह बनाएं"
   },
   "compute": {
     "overview": {
@@ -866,7 +867,8 @@
       },
       "username": "यूज़रनेम",
       "wizardDescription": "Windows Administrator पासवर्ड सेट करें"
-    }
+    },
+    "create": "इंस्टेंस बनाएं"
   },
   "sshKeys": {
     "title": "SSH कुंजियां",
@@ -1002,6 +1004,13 @@
       "deleteConfirm": {
         "title": "भूमिका हटाएं?",
         "description": "\"{{name}}\" वाले उपयोगकर्ता इसकी अनुमतियां खो देंगे।"
+      },
+      "create": "भूमिका बनाएं",
+      "createForm": {
+        "title": "भूमिका बनाएं",
+        "subtitle": "भूमिकाएं उन नीतियों को समेटती हैं जो उपयोगकर्ताओं को सौंपी जा सकती हैं।",
+        "descriptionPlaceholder": "यह भूमिका किसलिए है…",
+        "creating": "बनाया जा रहा है…"
       }
     },
     "policies": {
@@ -1040,7 +1049,16 @@
       "orgEmpty": "कोई संगठन नीति नहीं",
       "orgEmptySubtitle": "अपने संगठन में अनुमतियाँ देने के लिए एक नीति बनाएँ।",
       "systemEmpty": "कोई सिस्टम नीति नहीं",
-      "systemEmptySubtitle": "प्लेटफ़ॉर्म द्वारा प्रबंधित नीतियाँ यहाँ दिखेंगी।"
+      "systemEmptySubtitle": "प्लेटफ़ॉर्म द्वारा प्रबंधित नीतियाँ यहाँ दिखेंगी।",
+      "create": "नीति बनाएं",
+      "createForm": {
+        "title": "नीति बनाएं",
+        "subtitle": "स्टेटमेंट के साथ AWS-शैली का नीति दस्तावेज़ बनाएँ।",
+        "descriptionPlaceholder": "यह नीति क्या अनुमति देती है…",
+        "document": "नीति दस्तावेज़",
+        "documentHint": "प्रत्येक स्टेटमेंट रिसोर्स पर क्रियाओं की अनुमति देता या मना करता है।",
+        "creating": "बनाया जा रहा है…"
+      }
     },
     "apiKeys": {
       "title": "API कुंजियां",
@@ -1073,7 +1091,8 @@
       "deleteConfirm": {
         "title": "API कुंजी हटाएं?",
         "description": "\"{{name}}\" से हस्ताक्षरित अनुरोध तुरंत अस्वीकार होंगे।"
-      }
+      },
+      "create": "API कुंजी बनाएं"
     },
     "toasts": {
       "userDeleted": "उपयोगकर्ता हटाया गया",
@@ -1124,6 +1143,13 @@
       "deleteConfirm": {
         "title": "समूह हटाएँ?",
         "description": "इससे समूह \"{{name}}\" और उसकी सदस्यताएँ हट जाएंगी। इसे पूर्ववत नहीं किया जा सकता।"
+      },
+      "create": "समूह बनाएं",
+      "createForm": {
+        "title": "समूह बनाएं",
+        "subtitle": "समूह अपनी संलग्न नीतियां हर सदस्य को देते हैं।",
+        "descriptionPlaceholder": "यह समूह किसलिए है…",
+        "creating": "बनाया जा रहा है…"
       }
     },
     "invitations": {
@@ -1775,6 +1801,13 @@
       "name": "नाम",
       "save": "सहेजें",
       "saving": "सहेजा जा रहा है…"
+    },
+    "create": "VPC बनाएं",
+    "form": {
+      "name": "नाम",
+      "region": "क्षेत्र",
+      "regionPlaceholder": "एक क्षेत्र चुनें",
+      "cidr": "CIDR ब्लॉक"
     }
   },
   "common": {
@@ -1832,7 +1865,8 @@
     "edit": "संपादित करें",
     "unavailable": "अनुपलब्ध",
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "delete": "हटाएं"
   },
   "staticIps": {
     "title": "स्टैटिक IP",
@@ -2505,7 +2539,9 @@
         "updated": "लिसनर अपडेट हुआ",
         "updateFailed": "लिसनर अपडेट नहीं हो सका",
         "deleted": "लिसनर हटाया गया",
-        "deleteFailed": "लिसनर हटाया नहीं जा सका"
+        "deleteFailed": "लिसनर हटाया नहीं जा सका",
+        "created": "लिसनर जोड़ा गया",
+        "createFailed": "लिसनर जोड़ा नहीं जा सका"
       },
       "description": "वे पोर्ट जिन पर यह लोड बैलेंसर ट्रैफ़िक स्वीकार करता है, और प्रत्येक कहाँ अग्रेषित करता है।",
       "add": "लिसनर जोड़ें",
@@ -2539,7 +2575,8 @@
       "nic": "NIC",
       "noNetworks": "कोई नेटवर्क संलग्न नहीं",
       "noNetworksSubtitle": "इस लोड बैलेंसर से अभी कोई सबनेट संलग्न नहीं है।"
-    }
+    },
+    "create": "लोड बैलेंसर बनाएं"
   },
   "kubernetes": {
     "subtitle": "आपके कंटेनरीकृत वर्कलोड के लिए प्रबंधित Kubernetes क्लस्टर।"
@@ -2608,7 +2645,8 @@
       "closestToHour": "घंटे के सबसे निकट",
       "capacityRebalance": "क्षमता पुनर्संतुलन",
       "automaticallyRedistributeInstancesAcrossAvai": "उपलब्धता क्षेत्रों में इंस्टेंस स्वतः पुनर्वितरित करें।"
-    }
+    },
+    "create": "समूह बनाएं"
   },
   "disks": {
     "title": "डिस्क",
@@ -5909,14 +5947,19 @@
       "searchByAlarmNameResourceOrSignal": "अलार्म नाम, रिसोर्स या सिग्नल से खोजें…",
       "searchAlarms": "अलार्म खोजें",
       "resourceType": "रिसोर्स प्रकार",
-      "deleteAlarm": "अलार्म हटाएँ"
+      "deleteAlarm": "अलार्म हटाएँ",
+      "whatEachAlarmWatchesHowItIsDoingRightNowAndW": "हर अलार्म क्या देखता है, अभी उसकी स्थिति क्या है, और किसे सूचना मिलती है।"
     },
     "monitoringOverviewPage": {
       "needsAttention": "ध्यान चाहिए",
       "groupedByTheResourceEachAlarmWatches": "प्रत्येक अलार्म जिस रिसोर्स की निगरानी करता है, उसके अनुसार समूहित।",
       "channelHealth": "चैनल स्वास्थ्य",
       "recentStateTransitions": "हाल के स्थिति परिवर्तन",
-      "newestFirst": "नवीनतम पहले।"
+      "newestFirst": "नवीनतम पहले।",
+      "allAlarms": "सभी अलार्म",
+      "createAlarm": "अलार्म बनाएँ",
+      "last24Hours": "पिछले 24 घंटे",
+      "noAlarmHasChangedStateYet": "अभी तक किसी अलार्म की स्थिति नहीं बदली है।"
     },
     "alarmDetailPage": {
       "noDeliveriesListedForThisAlarm": "इस अलार्म के लिए कोई डिलीवरी सूचीबद्ध नहीं",
@@ -5925,7 +5968,14 @@
       "configuration": "कॉन्फ़िगरेशन",
       "underlyingMetricSeries": "आधारभूत मेट्रिक श्रेणी",
       "alarmNotFound": "अलार्म नहीं मिला",
-      "deleteAlarm": "अलार्म हटाएँ"
+      "deleteAlarm": "अलार्म हटाएँ",
+      "aDisabledAlarmIsNotEvaluatedAndSendsNothingU": "अक्षम अलार्म का मूल्यांकन नहीं होता और सक्षम करने तक यह कुछ नहीं भेजता।",
+      "deleteAlarm2": "अलार्म हटाएं",
+      "mostRecentTransitionFirstWithTheDatapointsTh": "सबसे हालिया बदलाव पहले, साथ में वे डेटापॉइंट जिन्होंने हर निर्णय को तय किया।",
+      "noChannelsNobodyIsNotified": "कोई चैनल नहीं — किसी को सूचना नहीं जाती",
+      "nobodyIsNotifiedThisAlarmHasNoChannelsEditIt": "किसी को सूचना नहीं जाती: इस अलार्म में कोई चैनल नहीं है। जोड़ने के लिए इसे संपादित करें।",
+      "recentNotificationAttemptsForThisAlarmAndWha": "इस अलार्म के हालिया सूचना प्रयास, और हर चैनल ने क्या उत्तर दिया।",
+      "sendTest": "टेस्ट भेजें"
     },
     "channelsPage": {
       "notificationChannels": "सूचना चैनल",
@@ -5938,11 +5988,35 @@
       "chooseASite": "एक साइट चुनें",
       "opsCompanyCom": "ops@company.com",
       "apiToken": "API टोकन",
-      "datadackMonitoringOps": "datadack-monitoring, ops"
+      "datadackMonitoringOps": "datadack-monitoring, ops",
+      "authentication": "प्रमाणीकरण",
+      "baseUrl": "बेस URL",
+      "commaSeparatedJiraLabelsLeaveEmptyToUseDatad": "अल्पविराम से अलग किए गए Jira लेबल। datadack-monitoring उपयोग करने के लिए खाली छोड़ें।",
+      "issueType": "इश्यू प्रकार"
     },
     "targetSection": {
       "whatKindOfResourceToWatch": "किस प्रकार के रिसोर्स की निगरानी करें",
-      "serviceApiEnvProd": "service=api, env=prod"
+      "serviceApiEnvProd": "service=api, env=prod",
+      "anAlarmWatchesOneResourceChoosingAnotherMove": "एक अलार्म एक ही रिसोर्स को देखता है — दूसरा चुनने पर यह अलार्म उसी पर चला जाता है।",
+      "eGMyappApi": "उदा. myapp/api",
+      "leaveEmptyToWatchEverySeriesInTheNamespace": "नेमस्पेस की हर सीरीज़ देखने के लिए खाली छोड़ें।",
+      "notHealthyRightNowItMayReportNothingUntilItI": "अभी स्वस्थ नहीं — वापस आने तक यह कुछ भी रिपोर्ट नहीं कर सकता।",
+      "selectAll": "सभी चुनें",
+      "theNamespaceYouPushThisMetricUnder": "वह नेमस्पेस जिसके अंतर्गत आप यह मेट्रिक भेजते हैं।"
+    },
+    "channelCreateDialog": {
+      "addChannel": "चैनल जोड़ें",
+      "anythingLessSeriousThanThisIsNotSentHere": "इससे कम गंभीर कुछ भी यहां नहीं भेजा जाता।",
+      "channelType": "चैनल प्रकार",
+      "eGOpsAlerts": "उदा. #ops-alerts",
+      "minimumSeverity": "न्यूनतम गंभीरता",
+      "savedAs": "इस रूप में सहेजा गया"
+    },
+    "notifySection": {
+      "loadingChannels": "चैनल लोड हो रहे हैं…",
+      "newChannel": "नया चैनल",
+      "newChannel2": "नया चैनल",
+      "notifyOn": "इस पर सूचित करें"
     }
   },
   "targetGroups": {
@@ -6122,7 +6196,8 @@
       "consultant": "आर्किटेक्चर या सलाह संबंधी अनुरोध",
       "feature": "किसी सुधार का सुझाव दें",
       "quota": "इस खाते के लिए सेवा सीमा बढ़ाएँ"
-    }
+    },
+    "create": "नया टिकट"
   },
   "taxSettings": {
     "title": "कर सेटिंग्स",
@@ -6282,7 +6357,8 @@
       "detachFailed": "नेटवर्क इंटरफ़ेस अलग नहीं किया जा सका",
       "deleted": "नेटवर्क इंटरफ़ेस हटाया गया",
       "deleteFailed": "नेटवर्क इंटरफ़ेस हटाया नहीं जा सका"
-    }
+    },
+    "create": "नेटवर्क इंटरफ़ेस बनाएं"
   },
   "routers": {
     "title": "राउटर",
@@ -6364,7 +6440,8 @@
       "createFailed": "इंटरनेट गेटवे नहीं बनाया जा सका",
       "deleted": "इंटरनेट गेटवे हटाया गया",
       "deleteFailed": "इंटरनेट गेटवे हटाया नहीं जा सका"
-    }
+    },
+    "create": "इंटरनेट गेटवे बनाएं"
   },
   "natGateways": {
     "title": "NAT गेटवे",
@@ -7350,6 +7427,7 @@
       "addFailed": "प्रविष्टियाँ नहीं जोड़ी जा सकीं",
       "entryRemoved": "प्रविष्टि हटाई गई",
       "entryRemoveFailed": "प्रविष्टि हटाई नहीं जा सकी"
-    }
+    },
+    "create": "IP सेट बनाएं"
   }
 }
